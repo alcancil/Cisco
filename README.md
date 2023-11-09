@@ -1,7 +1,7 @@
 # Cisco
 
 Este repositório é destinado a laboratórios CISCO. <br> </br>
-Pode ocorrer de ter algum laboratório com CISCO e outros fabricantes.
+Pode ocorrer algum laboratório com CISCO e outros fabricantes.
 
 <strong>Fontes:</strong>
 * https://www.cisco.com
