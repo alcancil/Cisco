@@ -1,4 +1,4 @@
-<h1> CISCO 
+# Cisco
 
-Este repositório é destina a laboratórios do fabricante CISCO. Pode ocorrer de conter laboratórios do fabricante CISCO
-com outros fabricantes diferentes.
+Este repositório é destinado a laboratórios CISCO.
+Pode ocorrer de ter algum laboratório com CISCO e outros fabricantes.
