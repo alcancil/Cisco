@@ -31,7 +31,7 @@ Para a utilização dessas técnicas, são nessários 3 passos :
 2. definição da política (police-map)
 3. aplicação das pólíticas nas interfaces (Essas podem ser de entrada ou saída)<br></br>
 
-**OBS:** a recomendação é que a técnica de Polcing seja sempre aplicada na interface de entrada do tráfego e o Shapping na interface de saída do tráfego. <br></br>
+**OBS:** a recomendação é que a técnica de Policing seja sempre aplicada na interface de entrada do tráfego e o Shapping na interface de saída do tráfego. <br></br>
 
 **ENTÃO VAMOS COMEÇAR NOSSAS CONFIGURAÇÔES** <br></br>
 
