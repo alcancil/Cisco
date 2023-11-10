@@ -38,6 +38,13 @@ Para a utilização dessas técnicas, são nessários 3 passos :
 **Exemplo de POLICING** <br></br>
 Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Então, vamos seguir os 3 passos citados anteriormente. Como aqui só queremos limitar a utilização de banda para um host de Ip conhecido, então vamos utilizar um access-list para poder classicar o tráfego. <br></br>
 
-1. classificação do tráfego (class-map) <br></br>
+**1. Classificação do tráfego (class-map)** <br></br>
 
 ![Classificação](Imagens/policing/01-%20classificacao.png) <br></br>
+
+01. Qos(Config)# ip access-list extended POLICING
+02. QoS(config-ext-nacl)# permit ip any host 192.168.3.11
+03. QoS(config-ext-nacl)# permit ip host 192.168.3.11 any
+04. Qos(config-ext-nacl)# exit
+
+**2. Definição da política (police-map)** <br></br>
