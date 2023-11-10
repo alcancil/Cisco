@@ -13,4 +13,11 @@ Bem se nada for feito, esse usuário "guluso" irá acabar com toda a largura de 
 Pensando nisso, podemos então limitar o uso de banda desse usuário, uma vez que seu ip é conhecido.<br></br>
 Primeiro é interessante salientar que existe duas técnicas que fazem parte do recurso QoS (Quality Of Service) : Policing e Shapping. Ambas as técnicas visam modelar o fluxo de dados a partir de uma taxa definida, a CIR (Committed Info Rate), ou seja, define-se uma taxa de transmissão de dados e a técnica faz com que a taxa fique próxima da taxa definida. Observe o gráfico da técnica Policing. <br> </br>
 
-<center> ![ cenário](Imagens/policing.png) </center> <br></br>
+![ cenário](Imagens/policing.png) <br></br>
+
+Esse técnica costuma ser mais polida pois o que ela faz é assim: defini-se a taxa de transmissão limite e o tráfego que ultrapassa esse limite ele é descartado. Isso mesmo, é descartado o tráfego excedente. Mas então isso que ocorrerá perca de dados ? <br></br>
+Para que isso não ocorra, o algorítmo remarca o excesso e tem que fazer a retransmissão desse tráfego descartado. <br></br>
+
+Agora observe o gráfico a seguir que representa a técnica de shapping. <br></br>
+
+![ cenário](Imagens/shapping.png) <br></br>
