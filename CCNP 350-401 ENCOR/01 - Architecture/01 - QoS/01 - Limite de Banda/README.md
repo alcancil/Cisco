@@ -40,4 +40,4 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Entã
 
 1. classificação do tráfego (class-map) <br></br>
 
-![Classificação](Imagens/policing/1 - classificacao) <br></br>
+![Classificação](Imagens/policing/01-%20classificacao.png) <br></br>
