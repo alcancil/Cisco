@@ -13,14 +13,14 @@ Bem se nada for feito, esse usuário "guluso" irá acabar com toda a largura de 
 Pensando nisso, podemos então limitar o uso de banda desse usuário, uma vez que seu ip é conhecido.<br></br>
 Primeiro é interessante salientar que existe duas técnicas que fazem parte do recurso QoS (Quality Of Service) : Policing e Shapping. Ambas as técnicas visam modelar o fluxo de dados a partir de uma taxa definida, a CIR (Committed Info Rate), ou seja, define-se uma taxa de transmissão de dados e a técnica faz com que a taxa fique próxima da taxa definida. Observe o gráfico da técnica Policing. <br> </br>
 
-![ cenário](Imagens/policing.png) <br></br>
+![ policing](Imagens/policing.png) <br></br>
 
 Esse técnica costuma ser mais agressiva pois o que ela faz é assim: defini-se a taxa de transmissão limite e o tráfego que ultrapassa esse limite ele é descartado. Isso mesmo, é descartado o tráfego excedente. Mas então isso que ocorrerá perca de dados ? <br></br>
 Para que isso não ocorra, o algorítmo remarca o excesso e tem que fazer a retransmissão desse tráfego descartado. <br></br>
 
 Agora observe o gráfico a seguir que representa a técnica de shapping. <br></br>
 
-![ cenário](Imagens/shapping.png) <br></br>
+![ shapping](Imagens/shapping.png) <br></br>
 
 Já no shapping, todo o tráfego que execede a taxa configurada é colocado em uma espécie de buffer (fila) e depois agenda a transmissão desse tráfego excedente ao longo do tempo até tudo ser transmitido. Então percebe-se que o shapping tem uma vantegem de ter menos retransmissões. Porém, cabe aqui ressaltar que essa técnica traz duas desvantagens: a primeira é que ela aumenta a latÊncia pois os pacotes são colocados em fila e, a segunda é que isso faz com que se utilize mais memória e CPU para o processamento dessas filas. <br></br>
 
@@ -36,4 +36,8 @@ Para a utilização dessas técnicas, são nessários 3 passos :
 **ENTÃO VAMOS COMEÇAR NOSSAS CONFIGURAÇÔES** <br></br>
 
 **Exemplo de POLICING** <br></br>
-Então vamos acessar o roteador
+Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Então, vamos seguir os 3 passos citados anteriormente. Como aqui só queremos limitar a utilização de banda para um host de Ip conhecido, então vamos utilizar um access-list para poder classicar o tráfego. <br></br>
+
+1. classificação do tráfego (class-map) <br></br>
+
+![Classificação](Imagens/policing/1 - classificacao) <br></br>
