@@ -48,3 +48,5 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Entã
 04. Qos(config-ext-nacl)# exit
 
 **2. Definição da política (police-map)** <br></br>
+
+![Definição](imagens/policing/02-politica.png) <br></br>
