@@ -49,4 +49,4 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Entã
 
 **2. Definição da política (police-map)** <br></br>
 
-![Definição](imagens/policing/02-politica.png) <br></br>
+![Definição](Imagens/policing/02-politica.png) <br></br>
