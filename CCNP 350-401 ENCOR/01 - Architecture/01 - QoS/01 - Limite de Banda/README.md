@@ -22,4 +22,6 @@ Agora observe o gráfico a seguir que representa a técnica de shapping. <br></b
 
 ![ cenário](Imagens/shapping.png) <br></br>
 
-Já no shapping, todo o tráfego que execede a taxa configurada é colocado em uma espécie de buffer (fila) e depois agenda a transmissão desse tráfego excedente ao longo do tempo até tudo ser transmitido. Então percebe-se que o shapping tem uma vantegem de ter menos retransmissões.
+Já no shapping, todo o tráfego que execede a taxa configurada é colocado em uma espécie de buffer (fila) e depois agenda a transmissão desse tráfego excedente ao longo do tempo até tudo ser transmitido. Então percebe-se que o shapping tem uma vantegem de ter menos retransmissões. Porém, cabe aqui ressaltar que essa técnica traz duas desvantagens: a primeira é que ela aumenta a latÊncia pois os pacotes são colocados em fila e, a segunda é que isso faz com que se utilize mais memória e CPU para o processamento dessas filas. <br></br>
+
+**OBS:** Fonte dos Gráficos : Cisco Systems
