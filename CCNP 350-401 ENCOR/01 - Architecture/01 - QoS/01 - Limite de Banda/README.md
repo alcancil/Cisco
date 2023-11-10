@@ -15,9 +15,11 @@ Primeiro é interessante salientar que existe duas técnicas que fazem parte do 
 
 ![ cenário](Imagens/policing.png) <br></br>
 
-Esse técnica costuma ser mais polida pois o que ela faz é assim: defini-se a taxa de transmissão limite e o tráfego que ultrapassa esse limite ele é descartado. Isso mesmo, é descartado o tráfego excedente. Mas então isso que ocorrerá perca de dados ? <br></br>
+Esse técnica costuma ser mais agressiva pois o que ela faz é assim: defini-se a taxa de transmissão limite e o tráfego que ultrapassa esse limite ele é descartado. Isso mesmo, é descartado o tráfego excedente. Mas então isso que ocorrerá perca de dados ? <br></br>
 Para que isso não ocorra, o algorítmo remarca o excesso e tem que fazer a retransmissão desse tráfego descartado. <br></br>
 
 Agora observe o gráfico a seguir que representa a técnica de shapping. <br></br>
 
 ![ cenário](Imagens/shapping.png) <br></br>
+
+Já no shapping, todo o tráfego que execede a taxa configurada é colocado em uma espécie de buffer (fila) e depois agenda a transmissão desse tráfego excedente ao longo do tempo até tudo ser transmitido. Então percebe-se que o shapping tem uma vantegem de ter menos retransmissões.
