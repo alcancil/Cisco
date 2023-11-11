@@ -74,3 +74,10 @@ Agora nesse ponto temos que escolher a interface que queremos aplicar a limitaç
 **Testes e comandos úteis** <br></br>
 
 Bom nesse ponto, estamos com tudo pronto para realizarmos nossos testes. Para isso, irei utilizar o Jperf que é uma implementação gráfica do Iperf. Este é um aplicativo de medição e stress de largura de banda que pode ser obtido em (https://iperf.fr/) <br></br> 
+Agora vamos acessar o computador de ip 172.16.0.10 do lado do roteador Internet e vamos iniciar a aplicação. O Iperf possui vários parâmetros porém aqui somente irei iniciar como servidor neste host. <br></br>
+![Iperf](Imagens/policing/iperf/01-server.png) <br></br>
+
+Note que no campo Iperf Command, fica escrito o comando que é utilizado na versão texto do aplicativo. <br></br>
+Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora iremos iniciar no modo cliente e temos que informar o endereço do servidor que é **172.16.0.10** no campo Server Address. Também no campo transmite irei utilizar **10000** que é a quantidade de pacotes por segundo que devem ser enviados ao servidor. OBS: devemos nos atentar agora que o host 192.168.0.11 está limitado a 1Mbps. <br></br>
+
+![Hosts](Imagens/policing/iperf/02-hosts.png) <br></br>
