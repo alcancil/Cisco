@@ -82,3 +82,5 @@ Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora irem
 
 ![Hosts](Imagens/policing/iperf/02-hosts.png) <br></br>
 
+Olhando os resultados podemos perceber que alimitação de banda foi aplicada. <br></br>
+![Resultados](Imagens/policing/iperf/03-limitado.png) ![Resultado](Imagens/policing/iperf/04-normal.png) <br></br>
