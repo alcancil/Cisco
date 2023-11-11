@@ -81,3 +81,4 @@ Note que no campo Iperf Command, fica escrito o comando que é utilizado na vers
 Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora iremos iniciar no modo cliente e temos que informar o endereço do servidor que é **172.16.0.10** no campo Server Address. Também no campo transmite irei utilizar **10000** que é a quantidade de pacotes por segundo que devem ser enviados ao servidor. OBS: devemos nos atentar agora que o host 192.168.0.11 está limitado a 1Mbps. <br></br>
 
 ![Hosts](Imagens/policing/iperf/02-hosts.png) <br></br>
+
