@@ -50,3 +50,9 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos
 **2. Definição da política (police-map)** <br></br>
 
 ![Definição](Imagens/policing/02-politica.png) <br></br>
+
+01. QoS(Config)# class-map match all POLICING
+02. QoS(config-cmap)# match access-group name POLICING
+03. QoS(config-cmap)# exit <br></br>
+
+Aqui cabe ressaltar que utilizamos o comando class-map match **all**, mas poderiamos ter utilizado a palavra **any** . A diferença é quando utilizamos o **match-all**, o pacote tem que necessáriamente atender a todos os requisitos especificados na etapa de classificação. Agora se utlizarmos **match-any**, se o pacote atender a um ou mais dos requisitos, ele será classificado <br></br> 
