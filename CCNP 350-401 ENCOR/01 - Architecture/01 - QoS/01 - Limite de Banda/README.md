@@ -70,3 +70,7 @@ Agora nesse ponto temos que escolher a interface que queremos aplicar a limitaç
 
 01. QoS(Config)# interface FastEthernet0/0
 02. QoS(Config-if)# service-policy input QoS <br></br>
+
+**Testes e comandos úteis** <br></br>
+
+Bom nesse ponto, estamos com tudo pronto para realizarmos nossos testes. Para isso, irei utilizar o Jperf que é uma implementação gráfica do Iperf. 
