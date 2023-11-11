@@ -29,7 +29,7 @@ Já no shapping, todo o tráfego que execede a taxa configurada é colocado em u
 Para a utilização dessas técnicas, são nessários 3 passos : 
 1. classificação do tráfego (class-map) 
 2. definição da política (police-map)
-3. aplicação das pólíticas nas interfaces (Essas podem ser de entrada ou saída)<br></br>
+3. aplicação das políticas nas interfaces (Essas podem ser de entrada ou saída)<br></br>
 
 **OBS:** a recomendação é que a técnica de Policing seja sempre aplicada na interface de entrada do tráfego e o Shapping na interface de saída do tráfego. <br></br>
 
@@ -54,5 +54,14 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos
 01. QoS(Config)# class-map match all POLICING
 02. QoS(config-cmap)# match access-group name POLICING
 03. QoS(config-cmap)# exit <br></br>
+04. QoS(config)# policy-map QoS
+05. QoS(config-pmap)# class POLICING
+06. **QoS(config-pmap-c)# police rate 1000000 bps**
+07. QoS(config-pmap-c-police)# end <br></br> 
 
 Aqui cabe ressaltar que utilizamos o comando class-map match **all**, mas poderiamos ter utilizado a palavra **any** . A diferença é quando utilizamos o **match-all**, o pacote tem que necessáriamente atender a todos os requisitos especificados na etapa de classificação. Agora se utlizarmos **match-any**, se o pacote atender a um ou mais dos requisitos, ele será classificado <br></br> 
+Também vale ressaltar que na linha 06 da configuração, escolhemos uma taxa de 1000000 bps ou 1Mbps. Ou seja, agora o usuário estara limitado a uma taxa de transmissão de somente 1 megabit por segundo. <br></br>
+
+**3. Aplicação das políticas nas interfaces** <br></br>
+
+Agora nesse ponto temos que escolher a interface que queremos aplicar a limitação de banda. <br></br>
