@@ -73,4 +73,4 @@ Agora nesse ponto temos que escolher a interface que queremos aplicar a limitaç
 
 **Testes e comandos úteis** <br></br>
 
-Bom nesse ponto, estamos com tudo pronto para realizarmos nossos testes. Para isso, irei utilizar o Jperf que é uma implementação gráfica do Iperf. 
+Bom nesse ponto, estamos com tudo pronto para realizarmos nossos testes. Para isso, irei utilizar o Jperf que é uma implementação gráfica do Iperf. Este é um aplicativo de medição e stress de largura de banda que pode ser obtido em (https://iperf.fr/) <br></br> 
