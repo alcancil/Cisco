@@ -84,3 +84,10 @@ Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora irem
 
 Olhando os resultados podemos perceber que alimitação de banda foi aplicada. <br></br>
 ![Resultados](Imagens/policing/iperf/03-limitado.png) ![Resultado](Imagens/policing/iperf/04-normal.png) <br></br>
+
+O gráfico da parte superior representa o host limitado e o gráfico da parte inferior representa o host sem limitação. <br></br>
+
+Mas então não esxistem maneiras de verificação no próprio equipamento ? Sim. Temos alguns comandos que podemos executar para verificar os resultados. <br></br>
+O primeiro comando a ser executo é **show policy-map**. Porém se somente execurtarmos o comando assim, o equipamento vai exibir todas as políticas que estão configuradas. Então devmos executar o comando informando a interface a se analisar, **show policy-map interface f0/0** <br></br>
+
+![Resultado](Imagens/policing/04-verifica01.png) <br></br>
