@@ -36,7 +36,7 @@ Para a utilização dessas técnicas, são nessários 3 passos :
 **ENTÃO VAMOS COMEÇAR NOSSAS CONFIGURAÇÔES** <br></br>
 
 **Exemplo de POLICING** <br></br>
-Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Então, vamos seguir os 3 passos citados anteriormente. Como aqui só queremos limitar a utilização de banda para um host de Ip conhecido, então vamos utilizar um access-list para poder classicar o tráfego. <br></br>
+Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos seguir os 3 passos citados anteriormente. Como aqui só queremos limitar a utilização de banda para um host de Ip conhecido, vamos utilizar um access-list para poder classicar o tráfego. <br></br>
 
 **1. Classificação do tráfego (class-map)** <br></br>
 
