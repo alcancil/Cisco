@@ -49,7 +49,7 @@ Também vale ressaltar que na linha 06 da configuração, escolhemos uma taxa de
 
 Agora nesse ponto temos que escolher a interface que queremos aplicar a limitação de banda. A interface escolhida foi a FastEthernet0/0 no sentido de entrada. <br></br>
 
-![Interface](Imagens/policing/03-interface.png) <br></br>
+![Interface](Imagens/shaping/03-interface.png) <br></br>
 
 01. QoS(Config)# interface FastEthernet0/0
 02. QoS(Config-if)# service-policy input QoS <br></br>
