@@ -23,7 +23,7 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos
 
 **1. Classificação do tráfego (class-map)** <br></br>
 
-![Classificação](Imagens/policing/01%20-%20clssificacao.png) <br></br>
+![Classificação](Imagens/policing/01 - clssificacao.png) <br></br>
 
 01. Qos(Config)# ip access-list extended SHAPPING
 02. QoS(config-ext-nacl)# permit ip any host 192.168.3.11
