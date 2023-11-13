@@ -1,4 +1,4 @@
-# Cisco
+# 01 - QoS - Limite de Banda - Policing
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
@@ -98,4 +98,6 @@ O segundo comando que podemos executar é **show interface f0/0** <br></br>
 
 ![Resultado](Imagens/policing/05-verifica02.png) <br></br>
 
-Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivessemos escolhido algum outro algorítimo de enfileiramento ele apareceria aqui.
+Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivessemos escolhido algum outro algorítimo de enfileiramento ele apareceria aqui. <br></br>
+
+**OBS: Os arquivos com as configurções dos equipamentos presentes no laboratório se encontram na pasta arquivos.**
