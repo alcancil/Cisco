@@ -101,3 +101,4 @@ O segundo comando que podemos executar é **show interface f0/0** <br></br>
 Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivessemos escolhido algum outro algorítimo de enfileiramento ele apareceria aqui. <br></br>
 
 **OBS: Os arquivos com as configurções dos equipamentos presentes no laboratório se encontram na pasta arquivos.**
+**OBS2: Aqui eu utilizei o GNS3 para o laboratório. Deixei uma cópia do arquivo chamado Polcing_Shapping.zip dentro da pasta arquivos.**
