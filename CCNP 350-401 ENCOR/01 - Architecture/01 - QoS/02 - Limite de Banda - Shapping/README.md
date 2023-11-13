@@ -2,7 +2,7 @@
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
-No artigo anterior eu demonstrei como limitar o uso de banda de um host de Ip conhecido através da técnica de policing. Agora vou utilizar o mesmo cenário porém demonstrado como utilizar a técnica de Shaping que é menos agressiva a princípio pois ela enfileira os pacotes que ultrapassam a taxa limite específicada ao invés de descartar o excesso. <br><br>
+No artigo anterior eu demonstrei como limitar o uso de banda de um host de Ip conhecido através da técnica de policing. Agora vou utilizar o mesmo cenário porém demonstrado como utilizar a técnica de Shaping que é menos agressiva a princípio pois ela enfileira os pacotes que ultrapassam a taxa limite específicada ao invés de descartar o excesso. O host que iremos limitar tem o Ip **192.168.3.11** <br><br>
 
 ![ cenário](Imagens/cenario.png) <br></br>
 
@@ -25,20 +25,20 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos
 
 ![Classificação](Imagens/policing/01%20-%20clssificacao.png) <br></br>
 
-01. Qos(Config)# ip access-list extended POLICING
+01. Qos(Config)# ip access-list extended SHAPPING
 02. QoS(config-ext-nacl)# permit ip any host 192.168.3.11
 03. QoS(config-ext-nacl)# permit ip host 192.168.3.11 any
 04. Qos(config-ext-nacl)# exit
 
 **2. Definição da política (police-map)** <br></br>
 
-![Definição](Imagens/policing/02-politica.png) <br></br>
+![Definição](Imagens/shapping/02-politica.png) <br></br>
 
-01. QoS(Config)# class-map match all POLICING
-02. QoS(config-cmap)# match access-group name POLICING
+01. QoS(Config)# class-map match all SHAPPING
+02. QoS(config-cmap)# match access-group name SHAPPING
 03. QoS(config-cmap)# exit <br></br>
 04. QoS(config)# policy-map QoS
-05. QoS(config-pmap)# class POLICING
+05. QoS(config-pmap)# class SHAPPING
 06. **QoS(config-pmap-c)# police rate 1000000 bps**
 07. QoS(config-pmap-c-police)# end <br></br> 
 
