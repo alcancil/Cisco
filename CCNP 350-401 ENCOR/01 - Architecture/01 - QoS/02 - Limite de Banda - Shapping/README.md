@@ -47,7 +47,7 @@ Também vale ressaltar que na linha 06 da configuração, escolhemos uma taxa de
 
 **3. Aplicação das políticas nas interfaces** <br></br>
 
-Agora nesse ponto temos que escolher a interface que queremos aplicar a limitação de banda. A interface escolhida foi a FastEthernet0/0 no sentido de entrada. <br></br>
+Agora nesse ponto temos que escolher a interface que queremos aplicar a limitação de banda. A interface escolhida foi a Ethernet1/0 no sentido de saída. <br></br>
 
 ![Interface](Imagens/shapping/03-interface.png) <br></br>
 
@@ -63,23 +63,23 @@ Agora vamos acessar o computador de ip 172.16.0.10 do lado do roteador Internet 
 Note que no campo Iperf Command, fica escrito o comando que é utilizado na versão texto do aplicativo. <br></br>
 Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora iremos iniciar no modo cliente e temos que informar o endereço do servidor que é **172.16.0.10** no campo Server Address. Também no campo transmite irei utilizar **10000** que é a quantidade de pacotes por segundo que devem ser enviados ao servidor. OBS: devemos nos atentar agora que o host 192.168.0.11 está limitado a 1Mbps. <br></br>
 
-![Hosts](Imagens/policing/iperf/02-hosts.png) <br></br>
+![Hosts](Imagens/shapping/iperf/02-hosts.png) <br></br>
 
 Olhando os resultados podemos perceber que alimitação de banda foi aplicada. <br></br>
-![Resultados](Imagens/policing/iperf/03-limitado.png) ![Resultado](Imagens/policing/iperf/04-normal.png) <br></br>
+![Resultados](Imagens/shapping/iperf/03-limitado.png) ![Resultado](Imagens/shapping/iperf/04-normal.png) <br></br>
 
 O gráfico da parte superior representa o host limitado e o gráfico da parte inferior representa o host sem limitação. <br></br>
 
 Mas então não esxistem maneiras de verificação no próprio equipamento ? Sim. Temos alguns comandos que podemos executar para verificar os resultados. <br></br>
 O primeiro comando a ser executo é **show policy-map**. Porém se somente execurtarmos o comando assim, o equipamento vai exibir todas as políticas que estão configuradas. Então devmos executar o comando informando a interface a se analisar, **show policy-map interface f0/0** <br></br>
 
-![Resultado](Imagens/policing/04-verifica01.png) <br></br>
+![Resultado](Imagens/policingshapping/04-verifica01.png) <br></br>
 
 Com esse comando é possível se ver todos os incrementos na politica aplicada na interface. Também é possível se observar quantos pacotes ultrapassaram a taxa especificada e a ação a ser tomada, que no caso é descartar os pacotes que ultrapassam essa taxa. <br></br>
 
 O segundo comando que podemos executar é **show interface f0/0** <br></br>
 
-![Resultado](Imagens/policing/05-verifica02.png) <br></br>
+![Resultado](Imagens/shapping/05-verifica02.png) <br></br>
 
 Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivessemos escolhido algum outro algorítimo de enfileiramento ele apareceria aqui. <br></br>
 
