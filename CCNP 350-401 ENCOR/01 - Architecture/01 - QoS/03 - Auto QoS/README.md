@@ -10,6 +10,9 @@ Mas isso era caro e complicado de se manter. Só as grandes Indústrias e empres
 
 ![Convergindo](Imagens/convergindo.png) <br></br>
 
+Então agora a complexidade e os custos diminuem conforme as tecnologias se unem. Porém podemos perceber que agora, todos os diferentes tipos de tráfegos que antes tinham seu circuito dedicado agora passam através do mesmo meio. Com isso, novos desafios aparecem. Agora podemos ter problemas de atraso, jitter, perca de pacotes e até mesmo de escassez de largura de banda se nada for feito. <br></br>
+Com isso em mente, os fabricantes desenvolram a tecnologia de QoS (Quality Of Service). Ela tem por característica melhorar a experiência do usuário. <br></br> 
+
 
 
 
