@@ -6,9 +6,9 @@ No inicio quando foram criadas as redes, o tráfego de vídeo, voz e dados possu
 
 ![Redes](Imagens/Sem_QoS.png) <br></br>
 
-Mas isso era caro e complicado de se manter. Só as grandes Indústria e empresas conseguia ter um tipo de rede com todos esses aspectos. Mas conforme as redes foram evoluindo, novas tecnologias foram surgindo e com isso os circuitos dedicados começaram a serem menos utilizadas cada vez mais.
+Mas isso era caro e complicado de se manter. Só as grandes Indústrias e empresas conseguia ter um tipo de rede com todos esses aspectos. Conforme as redes foram evoluindo, novas tecnologias foram surgindo e com isso os circuitos dedicados começaram a serem menos utilizadas. Então vamos analisar o seguinte cenário: <br></br>
 
-
+![Convergindo](Imagens/convergindo.png) <br></br>
 
 
 
