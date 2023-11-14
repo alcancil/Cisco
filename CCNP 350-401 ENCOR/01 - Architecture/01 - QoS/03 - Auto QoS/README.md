@@ -2,11 +2,11 @@
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
-No inicio quando foram criadas as redes, o tráfego de vídeo, voz e dados possuía um circuito dedicado para cada tipo de tráfego. <br></br>
+No inicio quando foram criadas as redes, o tráfego de vídeo, voz e dados possuíam um circuito dedicado para cada tipo de tráfego. <br></br>
 
 ![Redes](Imagens/Sem_QoS.png) <br></br>
 
-
+Mas isso era caro e complicado de se manter. Só as grandes Indústria e empresas conseguia ter um tipo de rede com todos esses aspectos. Mas conforme as redes foram evoluindo, novas tecnologias foram surgindo e com isso os circuitos dedicados começaram a serem menos utilizadas cada vez mais.
 
 
 
