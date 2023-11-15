@@ -10,8 +10,14 @@ Mas isso era caro e complicado de se manter. Só as grandes Indústrias e empres
 
 ![Convergindo](Imagens/convergindo.png) <br></br>
    
-Agora a complexidade e os custos diminuem conforme as tecnologias se unem. Porém podemos perceber que agora, todos os diferentes tipos de tráfegos que antes tinham seu circuito dedicado agora passam através do mesmo meio. Com isso, novos desafios aparecem. Agora podemos ter problemas de atraso, jitter, perca de pacotes e até mesmo de escassez de largura de banda se nada for feito. <br></br>
-Com isso em mente, os fabricantes desenvolram a tecnologia de QoS (Quality Of Service). Ela tem por característica melhorar a experiência do usuário. Então basicamente ele classifica o tráfego e faz uma marcação, seja em camada 2 ou camada 3 e logo em seguida se cria uma política para dizer o que fazer com o tráfego. O passo final é aplicar essa política em alguma interfae.<br></br> 
+Agora a complexidade e os custos diminuem conforme as tecnologias se unem. Porém podemos perceber que todos os diferentes tipos de tráfegos que antes tinham seu circuito dedicado, agora passam através do mesmo meio. Com isso, novos desafios aparecem. Com isso podemos ter problemas de atraso, jitter, perca de pacotes e até mesmo de escassez de largura de banda se nada for feito. <br></br>
+Com isso em mente, os fabricantes desenvolveram a tecnologia de QoS (Quality Of Service) que serve para marcar diferentes níveis de prioridade para diferentes tipos de tráfego e realizar o tratamento especial dos diferentes tipos de tráfegos. Ela tem por característica melhorar a experiência do usuário. Então os mecanimos em que o QoS se apoia são : classificação e marcação, policing e shapping. gerenciamento e prevenção de congestionamento. <br></br>
+
+Podemos observar como funciona o fluxo de dados com e sem a aplicação de QoS.
 
 ![QoS](Imagens/Sem_QoS_x_QoS.png) <br></br>
+
 Mas como existe uma quantidade muito extensa de tipos de tráfegos, foram desenvolvidos diversos algorítmos e abordagens para se tratar esses fluxos. E, portanto, para tentar diminuir a complexidade e automatizar os processos, a Cisco desenvolveu o AutoQoS. <br></br>
+
+Então basicamente ele classifica o tráfego e faz uma marcação, seja em camada 2 ou camada 3 e logo em seguida se cria uma política para dizer o que fazer com o tráfego. O passo final é aplicar essa política em alguma interfae.<br></br> 
+
