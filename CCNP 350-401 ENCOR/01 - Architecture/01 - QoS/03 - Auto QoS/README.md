@@ -55,3 +55,12 @@ Perceba agora que no campo *Queing Strategy* agora aparece como **Class-based qu
 Por fim, podemos ter uma visão consolidada, bem como o sentido em que o QoS foi aplicado executando o comando **show auto qos** <br></br>
 
 ![AutoQos](Imagens/auto_qos/06-auto_qos.png) <br></br>
+
+## **Algumas Recomendações** <br></br>
+
+A Itu (International Telecommunication Union) desenvolveu a norma G.114 que faz as seguintes recoemndações:
+
+01. A latÊncia não deve ser maior que 400ms;
+02. Para aplicações de tráfeg em tempo real, a latÊncia não pode ultrapassar 150 ms <br></br>
+
+Para maiores informações acessar: https://www.itu.int/en/ITU-D/Regulatory-Market/Pages/Quality-of-Service-Regulation.aspx  
