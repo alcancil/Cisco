@@ -36,3 +36,10 @@ Como esse é um cenário bem básico, irei acessa o roteador R3. Então podemos 
 Então podemos notar que no equipamento não temos nenhum tipo de mecanismo de QoS ativado. Então vamos agora configurar o QoS na interface Ethernet 0/0. <br></br>
 
 ![AutoQos](Imagens/auto_qos/02-auto_qos.png) <br></br>
+
+A princípio pode parecer que não aconteceu nada, mas não se engane. Esse comando é poderoso. Vamos analisar o que realmente aconteceu. <br></br>
+Vamos executar o comando **show class map** e observar a saida. <br></br>
+
+![Marcação](Imagens/auto_qos/03-marcacao(class-map).png) <br></br>
+
+Aqui podemos notar que foram criadas 2 classes : AutoQoS-VoIP-RTP-Trust e AutoQoS-VoIP-Control-Trust. A terceira que aparece é classe default sempre presente para o restante da banda. Essas duas classes servem para a marcação dos diferentes tipos de trafego. <br></br> 
