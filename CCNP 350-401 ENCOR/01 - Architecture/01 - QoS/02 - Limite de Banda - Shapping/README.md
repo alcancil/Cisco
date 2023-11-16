@@ -1,4 +1,4 @@
-# 01 - QoS - Limite de Banda - Shapping
+# 02 - QoS - Limite de Banda - Shapping
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
@@ -58,7 +58,7 @@ Agora nesse ponto temos que escolher a interface que queremos aplicar a limitaç
 
 Bom nesse ponto, estamos com tudo pronto para realizarmos nossos testes. Para isso, irei utilizar o Jperf que é uma implementação gráfica do Iperf. Este é um aplicativo de medição e stress de largura de banda que pode ser obtido em (https://iperf.fr/) <br></br> 
 Agora vamos acessar o computador de ip 172.16.0.10 do lado do roteador Internet e vamos iniciar a aplicação. O Iperf possui vários parâmetros porém aqui somente irei iniciar como servidor neste host. <br></br>
-![Iperf](Imagens/policing/iperf/01-server.png) <br></br>
+![Iperf](Imagens/shapping/iperf/01-server.png) <br></br>
 
 Note que no campo Iperf Command, fica escrito o comando que é utilizado na versão texto do aplicativo. <br></br>
 Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora iremos iniciar no modo cliente e temos que informar o endereço do servidor que é **172.16.0.10** no campo Server Address. Também no campo transmite irei utilizar **10000** que é a quantidade de pacotes por segundo que devem ser enviados ao servidor. OBS: devemos nos atentar agora que o host 192.168.0.11 está limitado a 1Mbps. <br></br>
@@ -73,7 +73,7 @@ O gráfico da parte superior representa o host limitado e o gráfico da parte in
 Mas então não esxistem maneiras de verificação no próprio equipamento ? Sim. Temos alguns comandos que podemos executar para verificar os resultados. <br></br>
 O primeiro comando a ser executo é **show policy-map**. Porém se somente execurtarmos o comando assim, o equipamento vai exibir todas as políticas que estão configuradas. Então devmos executar o comando informando a interface a se analisar, **show policy-map interface f0/0** <br></br>
 
-![Resultado](Imagens/policingshapping/04-verifica01.png) <br></br>
+![Resultado](Imagens/shapping/04-verifica01.png) <br></br>
 
 Com esse comando é possível se ver todos os incrementos na politica aplicada na interface. Também é possível se observar quantos pacotes ultrapassaram a taxa especificada e a ação a ser tomada, que no caso é descartar os pacotes que ultrapassam essa taxa. <br></br>
 
