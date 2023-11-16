@@ -42,4 +42,10 @@ Vamos executar o comando **show class map** e observar a saida. <br></br>
 
 ![Marcação](Imagens/auto_qos/03-marcacao(class-map).png) <br></br>
 
-Aqui podemos notar que foram criadas 2 classes : AutoQoS-VoIP-RTP-Trust e AutoQoS-VoIP-Control-Trust. A terceira que aparece é classe default sempre presente para o restante da banda. Essas duas classes servem para a marcação dos diferentes tipos de trafego. <br></br> 
+Aqui podemos notar que foram criadas 2 classes : AutoQoS-VoIP-RTP-Trust e AutoQoS-VoIP-Control-Trust. A terceira que aparece é classe default sempre presente para o restante da banda. Essas duas classes servem para a marcação dos diferentes tipos de trafego. <br></br>
+Agora vamos executar o comando **show policy-map** . Nessa etapa é feita a classificação do trafego. Note que para a primeira classe, **AutoQoS-VoIP-RTP-Trust**, foi reservado 70% da largira de banda. Já na segunda classe, **AutoQoS-VoIP-Control-Trust**, foi resarvado apens 5% da banda. Para o restante, **class-default**, foi utilizado o mecanismo *fair-queue*. <br></br>
+
+![Classificação](Imagens/auto_qos/04-classificacao.png) </br></br>
+
+
+
