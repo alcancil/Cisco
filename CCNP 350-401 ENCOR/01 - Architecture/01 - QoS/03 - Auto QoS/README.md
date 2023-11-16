@@ -52,4 +52,6 @@ Agora vamos analisar a interface *Ethernet 0/0* e vamos analisar a sua estratég
 ![Aplicação](Imagens/auto_qos/05-aplicacao.png) <br></br>
 
 Perceba agora que no campo *Queing Strategy* agora aparece como **Class-based queueing** o que comprova que a estratégia de QoS foi aplicada nessa interface. <br></br>
+Por fim, podemos ter uma visão consolidada, bem como o sentido em que o QoS foi aplicado executando o comando **show auto qos** <br></br>
 
+![AutoQos](Imagens/auto_qos/06-auto_qos.png) <br></br>
