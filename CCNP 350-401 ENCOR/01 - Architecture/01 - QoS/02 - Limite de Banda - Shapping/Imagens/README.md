@@ -1,4 +1,4 @@
-# 01 - QoS - Limite de Banda - Policing
+# 01 - QoS - Limite de Banda - Shapping
 
 Pasta contendo as imagens do laboratório. <br></br>
 
