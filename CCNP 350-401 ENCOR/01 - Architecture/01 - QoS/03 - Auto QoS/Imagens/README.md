@@ -1,4 +1,4 @@
-# 01 - QoS - Limite de Banda - Policing
+# 03 - Auto QoS
 
-Pasta contendo as imagens do laboratório. <br></br>
+Pasta contendo todas as imagens do laboratório. <br></br>
 
