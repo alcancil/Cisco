@@ -1,4 +1,4 @@
-# 01 - Auto QoS
+# 03 - Auto QoS
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
@@ -17,7 +17,10 @@ Podemos observar como funciona o fluxo de dados com e sem a aplicação de QoS.
 
 ![QoS](Imagens/Sem_QoS_x_QoS.png) <br></br>
 
-Mas como existe uma quantidade muito extensa de tipos de tráfegos, foram desenvolvidos diversos algorítmos e abordagens para se tratar esses fluxos. E, portanto, para tentar diminuir a complexidade e automatizar os processos, a Cisco desenvolveu o AutoQoS. <br></br>
+Tráfego de voz, vídeo e tráfego crítico ao negócio sempre devem ser priorizados reservando largura de banda suficiente para atender aos requisitos do negócio. O restante do tráfego deve ser alocado no que restar da banda. Quando ocorrem os problemas citados anteriormente, uma solução possível para o problema é aumentar a largura de banda disponível, mas nem sempre isso é possivel e barato. Então, a outra solução é a adoção dos mecanismos de QoS. <br></br>
+Mas isso pode não ser uma tarefa tão fácil assim de se implementar. Como existem diversos tipos de fluxo de dados, foram adotados alguns modelos e algorítmos para se utilizar dentro de QoS e para isso, é necessário se ter gente especializada para se realizar as devidas configurações. A recomendação é que se configure QoS em cada equipamento que faz parte da rede para se garantir a marcação e a priorização dos diferentes tipos de fluxo de dados na rede toda. <br></br>
+Tendo em mente esse tipo de situação, a Cisco e a maioria dos fabricantes do mercado implementaram o recurso de **Auto QoS**, ou seja, o QoS de forma automática. Então basicamente ele classifica o tráfego e faz uma marcação, seja em camada 2 ou camada 3 e logo em seguida se cria uma política para dizer o que fazer com o tráfego.<br></br> 
 
-Então basicamente ele classifica o tráfego e faz uma marcação, seja em camada 2 ou camada 3 e logo em seguida se cria uma política para dizer o que fazer com o tráfego. O passo final é aplicar essa política em alguma interfae.<br></br> 
+**OBS:** cada fabricante tem sua implementação própria do Auto Qos e pode se comportar de forma difrente uma da outra. <br></br>
 
+Aqui irei demonstrar uma simples ativação do recurso para termos uma ideia do que é possível acontecer no equipamento com esse tipo de recurso. <br></br>
