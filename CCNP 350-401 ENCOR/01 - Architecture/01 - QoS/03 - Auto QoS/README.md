@@ -24,3 +24,7 @@ Tendo em mente esse tipo de situação, a Cisco e a maioria dos fabricantes do m
 **OBS:** cada fabricante tem sua implementação própria do Auto Qos e pode se comportar de forma difrente uma da outra. <br></br>
 
 Aqui irei demonstrar uma simples ativação do recurso para termos uma ideia do que é possível acontecer no equipamento com esse tipo de recurso. <br></br>
+
+Observe o cenário: <br></br>
+
+![Cenário](Imagens/cenario.png) <br></br>
