@@ -47,5 +47,9 @@ Agora vamos executar o comando **show policy-map** . Nessa etapa é feita a clas
 
 ![Classificação](Imagens/auto_qos/04-classificacao.png) </br></br>
 
+Agora vamos analisar a interface *Ethernet 0/0* e vamos analisar a sua estratégia de enfileiramento. Vale dizer aqui que se nada tivesse sido feito, a estratégia fica sendo como *fifo (first in / first out)*, ou seja, o primeiro pacote que chega é o primeiro a sair. <br></br>
 
+![Aplicação](Imagens/auto_qos/05-aplicacao.png) <br></br>
+
+Perceba agora que no campo *Queing Strategy* agora aparece como **Class-based queueing** o que comprova que a estratégia de QoS foi aplicada nessa interface. <br></br>
 
