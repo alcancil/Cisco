@@ -8,11 +8,12 @@ Mas o quer dizer essa monte de nomes esquisitos e o que realmente isso afeta den
 
 **01. LATÊNCIA** <br></br>
 
-Latência pode-se dizer que é o sinônimo de atraso, pois é o tempo que um pacote leva para sair de um ponto ao outro e é medido em ms. <br></br>
+Latência pode-se dizer que é o sinônimo de atraso, pois é o tempo que um pacote leva para sair de um ponto ao outro e é medido em ms. Por exemplo, vamos imaginar que um usuário dentro da rede está jogando online. Então quando ele solicita que um pacote saia da rede e chegue no servidor do jogo, essa é a latencia. Vamos supor que seja de 20 ms<br></br>
 
 **02. JITTER** <br></br>
 
-Jitter é muito parecido com a Latência mas ele é mais importante quando se trata de aplicções em tempo real como voz e vídeo por exemplo. O Jitter é variação do atraso e também é medido em milessegundos. <br></br>
+Jitter é muito parecido com a Latência mas ele é mais importante quando se trata de aplicções em tempo real como voz e vídeo por exemplo. O Jitter é variação do atraso e também é medido em milessegundos. Vamos retomar o exemplo anterior do jogo online onde a latência tinha sido de 20 ms. Agora imagine que um segundo pacote saia da rede com uma latência de 50 Ms<br></br>
+Então: **jitter = 50 ms - 20 ms = 30ms** 
 
 **03. PERCA DE PACOTES** <br></br>
 
@@ -28,32 +29,4 @@ Nesse caso se a matriz quizesse conversar com o escritório, teríamos uma largu
 
 ### Problemas <br></br>
 
-Então os principais problemas sentidos seriam fala fora de sincronia em um vídeo, voz metalizada em uma ligação, eco numa ligação, travamentos de aplicativos, etc. Esses são os sintomas que os usuários na sua maioria irão relatar. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-No inicio quando foram criadas as redes, o tráfego de vídeo, voz e dados possuíam um circuito dedicado para cada tipo de tráfego. 
-
-![Redes](Imagens/Sem_QoS.png) <br></br>
-
-Observe o cenário: <br></br>
-
-![Cenário](Imagens/cenario.png) <br></br>
+Então os principais problemas sentidos seriam fala fora de sincronia em um vídeo, voz metalizada em uma ligação, eco em uma ligação, travamentos de aplicativos, lentidão, pixelização de vídeos, etc. Esses são os sintomas que os usuários na sua maioria irão relatar. É aqui que podemos notar a importância de se aplicar algum mecanismo de QoS. <br></br>
