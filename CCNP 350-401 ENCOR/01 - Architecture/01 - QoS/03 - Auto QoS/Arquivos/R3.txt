@@ -1,0 +1,121 @@
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R01
+!
+boot-start-marker
+boot-end-marker
+!
+aqm-register-fnf
+!
+!
+no aaa new-model
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+!
+!
+!
+class-map match-any AutoQoS-VoIP-RTP-Trust
+ match ip dscp ef
+class-map match-any AutoQoS-VoIP-Control-Trust
+ match ip dscp cs3
+ match ip dscp af31
+!
+policy-map AutoQoS-Policy-Trust
+ class AutoQoS-VoIP-RTP-Trust
+  priority percent 70
+ class AutoQoS-VoIP-Control-Trust
+  bandwidth percent 5
+ class class-default
+  fair-queue
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ ip address 10.0.0.1 255.255.255.0
+ auto qos voip trust
+ service-policy output AutoQoS-Policy-Trust
+!
+interface Ethernet0/1
+ ip address 172.16.0.1 255.255.255.0
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+rmon event 33333 log trap AutoQoS description "AutoQoS SNMP traps for Voice Drops" owner AutoQoS
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ length 0
+ transport input none
+!
+!
+end
