@@ -32,3 +32,7 @@ Observe o cenário: <br></br>
 Como esse é um cenário bem básico, irei acessa o roteador R3. Então podemos observar que não temos nada de QoS configurado nele. <br></br>
 
 ![AutoQos](Imagens/auto_qos/01-show_auto_qos.png) <br></br>
+
+Então podemos notar que no equipamento não temos nenhum tipo de mecanismo de QoS ativado. Então vamos agora configurar o QoS na interface Ethernet 0/0. <br></br>
+
+![AutoQos](Imagens/auto_qos/02-auto_qos.png) <br></br>
