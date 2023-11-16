@@ -22,6 +22,13 @@ Quando os pacotes atingem um tamanho maior que o seu tamanho máximo de transmis
 
 Largura de banda é a capacidade de transmissão dentro de um meio e é medida em bits po segundo. A largura de banda disponível entre a origem e o destino é *igual a cpacidade do link com menor largura de banda* . Vamos ver um exemplo: <br></br>
 
+![Largura de Banda](Imagens/Largura.png) <br></br>
+
+Nesse caso se a matriz quizesse conversar com o escritório, teríamos uma largura de banda disponível de 1 Mbps. Por mais que o plano de Intrente fosse maior e temos um link de 10 Mbps com a Internet, a largura de banda disponível sempre será a menor no circuito todo. <br></br>
+
+### Problemas <br></br>
+
+Então os principais problemas sentidos seriam fala fora de sincronia em um vídeo, voz metalizada em uma ligação, eco numa ligação, travamentos de aplicativos, etc. Esses são os sintomas que os usuários na sua maioria irão relatar. 
 
 
 
