@@ -28,3 +28,7 @@ Aqui irei demonstrar uma simples ativação do recurso para termos uma ideia do 
 Observe o cenário: <br></br>
 
 ![Cenário](Imagens/cenario.png) <br></br>
+
+Como esse é um cenário bem básico, irei acessa o roteador R3. Então podemos observar que não temos nada de QoS configurado nele. <br></br>
+
+![AutoQos](Imagens/auto_qos/01-show_auto_qos.png) <br></br>
