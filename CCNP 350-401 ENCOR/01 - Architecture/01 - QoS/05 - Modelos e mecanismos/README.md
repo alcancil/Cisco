@@ -4,26 +4,11 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 
 Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 técnicas e expliquei os problemas existentes por falta da aplicação dos mecanismos de QoS. Mas existem 3 modelos de QoS. Vamos analisá-los: <br></br>
 
-<table>
-       <tr backgroound-color="red">
-           <th> MODELO </th> </td>  <th> SIGNIFICADO </th>
-       </tr>
-       <tr>
-           <td> MELHOR ESFORÇO </td> <td> É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de algum tipo de tratamento.</td>
-       </tr>
-       <tr>    
-           <td> SERVIÇOS INTEGRADOS (IntServ) </td> <td> é a reserva de banda feita fim-a-fim</td>
-        </tr>
-        <tr>
-           <td> DIFERENCIAÇÃO DE SERVIÇOS (DiffServ) </td> <td> É feito por saltos e a rede identifica as classes que requerem tratamento diferenciaciado </td> 
-       </tr>  
-</table>
-
 | MODELO                                     | SIGNIFICADO                                                                                   |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| <span style="background-color:#CD853F">MELHOR ESFORÇO</span>                | <span style="background-color:#CD853F">É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de tratamento.</span> |
-| <span style="background-color:#e6e6e6">SERVIÇOS INTEGRADOS (IntServ)</span> | <span style="background-color:#e6e6e6">É a reserva de banda feita fim-a-fim.</span>                                                           |
-| <span style="background-color:#f2f2f2">DIFERENCIAÇÃO DE SERVIÇOS</span>     | <span style="background-color:#f2f2f2">É feito por saltos, e a rede identifica as classes que requerem tratamento diferenciado.</span>      |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| MELHOR ESFORÇO                             | É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de tratamento. |
+| SERVIÇOS INTEGRADOS (IntServ)              | É a reserva de banda feita fim-a-fim.                                                         |
+| DIFERENCIAÇÃO DE SERVIÇOS                  | É feito por saltos, e a rede identifica as classes que requerem tratamento diferenciado.      |
 
 Agora repare na saída. <br></br>
 
