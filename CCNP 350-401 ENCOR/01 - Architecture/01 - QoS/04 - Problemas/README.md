@@ -37,7 +37,18 @@ Agora vamos observar o cenário. Aqui eu estou aproveitando o mesmo cenário ant
 
 ![NETem](Imagens/cenario.png) <br></br>
 
-Então vou realizar um simples Ping no Windows. Essa é uma ferramenta que utiliza o protocolo ICMP e, inicialmente ele envia um pacto Echo Request para um destino e, se encontrar esse destino recebe um pacote Echo Reply, que é a resposta. A principio, nenhum mecanismo de QoS foi configurado. <br></br>
+Então vou realizar um simples Ping no Windows do host **10.0.0.10** para o host **172.16.0.10**. Essa é uma ferramenta que utiliza o protocolo ICMP e, inicialmente ele envia um pacto Echo Request para um destino e, se encontrar esse destino recebe um pacote Echo Reply, que é a resposta. A principio, nenhum mecanismo de QoS foi configurado. <br></br>
+
+1[PING](Imagens/ping_normal.png) <br></br>
+
+Analisando essa saída, podemos observar que o ping possue algumas colunas que mostram algumas informações que são: <br></br>
+
+01. *Reply from 172.16.0.10* ou seja, aqui ele diz que recebeu uma reposta do host alvo
+02. *bytes=32* tamanho do pacote medido em bytes
+03. *time=1ms* esse é o tempo em que o pacote demorou para sair do destino e voltar para a origem, ou seja, essa é a **LATÊNCIA**
+04. *TTL=127* TTL é a abreviação de Time To Live, ou o tempo de vida. Ou seja, esse é número máximo de saltos ou roteadores que o pacote pode trafegar. Sem esse campo, ele ficaria andando pela rede eternamente. </br><br>
+
+Ao final do resultado do comando, são exibidas algumas estatísticas. É por aqui também que conseguimos medir o desempenho da rede. <br></br>
 
 
 
