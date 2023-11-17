@@ -10,7 +10,15 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 | SERVIÇOS INTEGRADOS (IntServ)        | É a reserva de banda feita fim-a-fim. Para isso utiliza o protocolo RSVP (Resource Reservation Protocol)                                                        |
 | DIFERENCIAÇÃO DE SERVIÇOS (DiffServ) | É feito por saltos, e a rede identifica as classes que requerem tratamento diferenciado. Os pacotes são marcados e classificados individualemnte e depois é aplicada uma política de decisão em cada um dos tráfegos    |
 
-Agora repare na saída. <br></br>
+| DIFERENÇAS ENTRE OS MODELOS                                                                                                                                                  |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| INTSERV                                                                                | DIFFSERV                                                                                     |
+|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| Desenvolvido para aplicações em tempo real como voz e vídeo                            | Não utiliza protocolo de sinalização                                                         |
+| Utiliza recursos (como largura de banda) fim-a-fim e utiliza o protocolo RSVP          | É altamente escalável e por esse motivo é mais preferido                                     |
+| Qualquer largura de banda reservada e não utilizad é desperdiçada                      | Funciona por slatos (PBH - Per Hop Basis), então tem que ser configurado em cada equipamento |
+| Não escala muito bem em redes grandes                                                  | Divide o tráfego IP em classes e realiza a marcação baseado nos requerimentos de negócio     |
+| Para realizar o QoS fim-a-fim, necessita rodar em todos os nós, iclusive nos endpoints | Cada classe pode ser marcadacom um tipo diferente de nível de serviço
 
 ![PING](Imagens/ping_delay.png) <br></br>
 
