@@ -46,9 +46,12 @@ Analisando essa saída, podemos observar que o ping possue algumas colunas que m
 01. *Reply from 172.16.0.10* ou seja, aqui ele diz que recebeu uma reposta do host alvo
 02. *bytes=32* tamanho do pacote medido em bytes
 03. *time=1ms* esse é o tempo em que o pacote demorou para sair do destino e voltar para a origem, ou seja, essa é a **LATÊNCIA**
-04. *TTL=127* TTL é a abreviação de Time To Live, ou o tempo de vida. Ou seja, esse é número máximo de saltos ou roteadores que o pacote pode trafegar. Sem esse campo, ele ficaria andando pela rede eternamente. </br><br>
+04. *TTL=127* TTL é a abreviação de Time To Live, ou o tempo de vida. Ou seja, esse é número máximo de saltos ou roteadores que o pacote pode trafegar. Sem esse campo, ele ficaria andando pela rede eternamente. <br></br>
 
 Ao final do resultado do comando, são exibidas algumas estatísticas. É por aqui também que conseguimos medir o desempenho da rede. <br></br>
+Agora vou ligar o NETem e simular um atraso na rede, um delay de 50 ms. Aqui cabe ressaltar que essa é uma aplicação muito simples de uso, ou seja só iniciar a máquina virtual e escolher os parâmetros desejados. <br></br> 
+
+![NETem](Imagens/netem_01.png) ![NETem](Imagens/netem_02.png) <br></br>
 
 
 
