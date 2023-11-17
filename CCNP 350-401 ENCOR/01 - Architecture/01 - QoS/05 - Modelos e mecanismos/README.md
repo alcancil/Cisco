@@ -7,7 +7,11 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 <table>
        <tr>
            <td> MELHOR ESFORÇO </td> </td>  <td> É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de algum tipo de tratamento.</td>
+       </tr>
+       <tr>    
            <td> SERVIÇOS INTEGRADOS (IntServ) </td> <td> é a reserva de banda feita fim-a-fim</td>
+        </tr>
+        <tr>
            <td> DIFERENCIAÇÃO DE SERVIÇOS </td> <td> É feito por saltos e a rede identifica as classes que requerem tratamento diferenciaciado </td> 
        </tr>  
 </table>
