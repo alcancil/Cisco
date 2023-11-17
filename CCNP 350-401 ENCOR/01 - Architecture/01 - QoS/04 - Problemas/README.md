@@ -71,3 +71,9 @@ Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 2
 </table>
 
 Então vamos analisar agora a saída do ping. <br></br>
+
+![PING](Imagens/ping_jitter.png) <br></br>
+
+Agora podemos notar que existe uma variação no atraso da resposta que ficou em um média de 107 ms. Então isso é o **jitter** . Mas muitas vezes para solucionarmos esses problemas, ou mesmo evitá-los, fazemos a associação de aumentar a largura de banda e longo pensamos assim: "Bom preciso aumentar meu plano de Internet !" Mas, muitas vezes isso não é possível ou é muito caro. E é aqui que entram os mecanismos de QoS. <br></br>
+
+Nos próximos artigos eu irei demonstrar a configuração de alguns mecanismos de QoS.
