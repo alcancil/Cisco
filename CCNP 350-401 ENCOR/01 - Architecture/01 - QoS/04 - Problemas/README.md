@@ -53,7 +53,7 @@ Agora vou ligar o NETem e simular um atraso na rede, um delay de 50 ms. Aqui cab
 
 <table>
        <tr>
-           <th>&nbsp;![NETem](Imagens/netem_01.png)</th>  <td> &nbsp; ![NETem](Imagens/netem_02.png) </td>
+           <th img src = ![NETem](Imagens/netem_01.png) >&nbsp;</th>  <td> &nbsp; ![NETem](Imagens/netem_02.png) </td>
        </tr>  
 </table>
 
