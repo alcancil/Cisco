@@ -6,7 +6,7 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 
 <table>
        <tr >
-           <th> MODELO </th> </td>  <th> SIGNIFICADO </th>
+           <th bgcolo="blue"> MODELO </th> </td>  <th bgcolo="blue"> SIGNIFICADO </th>
        </tr>
        <tr>
            <td> MELHOR ESFORÇO </td> <td> É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de algum tipo de tratamento.</td>
