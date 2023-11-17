@@ -5,8 +5,8 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 técnicas e expliquei os problemas existentes por falta da aplicação dos mecanismos de QoS. Mas existem 3 modelos de QoS. Vamos analisá-los: <br></br>
 
 <table>
-       <tr >
-           <th bgcolor="blue"> MODELO </th> </td>  <th bgcolor="blue"> SIGNIFICADO </th>
+       <tr color="blue">
+           <th> MODELO </th> </td>  <th> SIGNIFICADO </th>
        </tr>
        <tr>
            <td> MELHOR ESFORÇO </td> <td> É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de algum tipo de tratamento.</td>
