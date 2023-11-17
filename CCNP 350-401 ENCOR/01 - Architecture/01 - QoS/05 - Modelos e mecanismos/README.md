@@ -18,7 +18,7 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 | Não escala muito bem em redes grandes                                                  | Divide o tráfego IP em classes e realiza a marcação baseado nos requerimentos de negócio     |
 | Para realizar o QoS fim-a-fim, necessita rodar em todos os nós, iclusive nos endpoints | Cada classe pode ser marcadacom um tipo diferente de nível de serviço                        |
 
-# CLASSIFICAÇÃO E MARCAÇÃO
+## CLASSIFICAÇÃO E MARCAÇÃO
 
 Bom agora que entendemos as diferenças entre os modelos de QoS, temos que entender que o tráfego Ip precisa ser marcado e classificado para que depois se possa aplicar uma política em cima dessa classificação e marcação, o seja, para que possamos escolher o que vai acontecer com o tráfego. Etnão cada dispositivo primeiro identifica o tipo de tráfego para após, marcá-lo. Depois de calssificado, o dispositivo vai colorir cada tipo de tráfego para assim fazer a sua marcação e com isso conseguir separar cada tráfego por classes. <br></br>
 
