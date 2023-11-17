@@ -39,7 +39,7 @@ Agora vamos observar o cenário. Aqui eu estou aproveitando o mesmo cenário ant
 
 Então vou realizar um simples Ping no Windows do host **10.0.0.10** para o host **172.16.0.10**. Essa é uma ferramenta que utiliza o protocolo ICMP e, inicialmente ele envia um pacto Echo Request para um destino e, se encontrar esse destino recebe um pacote Echo Reply, que é a resposta. A principio, nenhum mecanismo de QoS foi configurado. <br></br>
 
-1[PING](Imagens/ping_normal.png) <br></br>
+![PING](Imagens/ping_normal.png) <br></br>
 
 Analisando essa saída, podemos observar que o ping possue algumas colunas que mostram algumas informações que são: <br></br>
 
