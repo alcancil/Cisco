@@ -10,8 +10,6 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 | SERVIÇOS INTEGRADOS (IntServ)        | É a reserva de banda feita fim-a-fim. Para isso utiliza o protocolo RSVP (Resource Reservation Protocol)                                                        |
 | DIFERENCIAÇÃO DE SERVIÇOS (DiffServ) | É feito por saltos, e a rede identifica as classes que requerem tratamento diferenciado. Os pacotes são marcados e classificados individualemnte e depois é aplicada uma política de decisão em cada um dos tráfegos    |
 
-| DIFERENÇAS ENTRE OS MODELOS                                                                                                                                                  |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | INTSERV                                                                                | DIFFSERV                                                                                     |
 |----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | Desenvolvido para aplicações em tempo real como voz e vídeo                            | Não utiliza protocolo de sinalização                                                         |
