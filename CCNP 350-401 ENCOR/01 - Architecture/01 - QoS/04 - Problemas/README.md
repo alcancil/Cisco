@@ -51,7 +51,7 @@ Analisando essa saída, podemos observar que o ping possue algumas colunas que m
 Ao final do resultado do comando, são exibidas algumas estatísticas. É por aqui também que conseguimos medir o desempenho da rede. <br></br>
 Agora vou ligar o NETem e simular um atraso na rede, um delay de 50 ms. Aqui cabe ressaltar que essa é uma aplicação muito simples de uso, ou seja só iniciar a máquina virtual e escolher os parâmetros desejados. <br></br> 
 
-![NETem](Imagens/netem_01.png) ![NETem](Imagens/netem_02.png) <br></br>
+| ![NETem](Imagens/netem_01.png) | | ![NETem](Imagens/netem_02.png) | <br></br>
 
 
 
