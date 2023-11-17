@@ -68,7 +68,7 @@ Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 2
 
 <table>
        <tr>
-           <td> <img src = "Imagens/netem_00.jpg"> </img> </td>  <td> <img src = "Imagens/netem_04.png"> </img> </td>
+           <td> <img src = "Imagens/netem_03.jpg"> </img> </td>  <td> <img src = "Imagens/netem_04.png"> </img> </td>
        </tr>  
 </table>
 
