@@ -66,6 +66,12 @@ Agora repare na saída. <br></br>
 Agora podemos perceber que o tempo de resposta aumentou. Agora ele fica em uma média de 102 ms. Então esse é um atraso adicionado no tempo de resposa, ou seja, é o **Delay** <br></br>
 Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 20 ms. Ou seja, nosso **jitter** será de 20 ms . <br></br>
 
-![PING](Imagens/netem_04.png) <br></br>
+<table>
+       <tr>
+           <td> <img src = "Imagens/netem_03.png"> </img> </td>  <td> <img src = "Imagens/netem_04.png"> </img> </td>
+       </tr>  
+</table>
+
+<br></br>
 
 Então vamos analisar agora a saída do ping. <br></br>
