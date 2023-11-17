@@ -59,3 +59,9 @@ Agora vou ligar o NETem e simular um atraso na rede, um delay de 50 ms. Aqui cab
 
 <br></br>
 
+Agora repare na saída. <br></br>
+
+![PING](Imagens/ping_delay.png) <br></br>
+
+Agora podemos perceber que o tempo de resposta aumentou. Agora ele fica em uma média de 102 ms. Então esse é um atraso adicionado no tempo de resposa, ou seja, é o **Delay** <br></br>
+Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 20 ms. Ou seja, nosso **jitter será de 20 ms . <br></br>
