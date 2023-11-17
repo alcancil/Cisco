@@ -22,21 +22,4 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 
 Bom agora que entendemos as diferenças entre os modelos de QoS, temos que entender que o tráfego Ip precisa ser marcado e classificado para que depois se possa aplicar uma política em cima dessa classificação e marcação, o seja, para que possamos escolher o que vai acontecer com o tráfego. Etnão cada dispositivo primeiro identifica o tipo de tráfego para após, marcá-lo. Depois de calssificado, o dispositivo vai colorir cada tipo de tráfego para assim fazer a sua marcação e com isso conseguir separar cada tráfego por classes. <br></br>
 
-
-
-
-
-
-
-![PING](Imagens/ping_delay.png) <br></br>
-
-Agora podemos perceber que o tempo de resposta aumentou. Agora ele fica em uma média de 102 ms. Então esse é um atraso adicionado no tempo de resposa, ou seja, é o **Delay** <br></br>
-Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 20 ms. Ou seja, nosso **jitter** será de 20 ms . <br></br>
-
-<table>
-       <tr>
-           <td> <img src = "Imagens/netem_03.png"> </img> </td>  <td> <img src = "Imagens/netem_04.png"> </img> </td>
-       </tr>  
-</table>
-
-![PING](Imagens/ping_normal.png) <br></br>
+![CLASSIFICAÇÃO](Imagens/classificao.png) <br></br>
