@@ -57,8 +57,6 @@ Agora vou ligar o NETem e simular um atraso na rede, um delay de 50 ms. Aqui cab
        </tr>  
 </table>
 
-<br></br>
-
 Agora repare na saída. <br></br>
 
 ![PING](Imagens/ping_delay.png) <br></br>
@@ -71,7 +69,5 @@ Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 2
            <td> <img src = "Imagens/netem_03.png"> </img> </td>  <td> <img src = "Imagens/netem_04.png"> </img> </td>
        </tr>  
 </table>
-
-<br></br>
 
 Então vamos analisar agora a saída do ping. <br></br>
