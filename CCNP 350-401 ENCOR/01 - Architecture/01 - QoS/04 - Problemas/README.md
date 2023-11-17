@@ -13,7 +13,9 @@ Latência pode-se dizer que é o sinônimo de atraso, pois é o tempo que um pac
 **02. JITTER** <br></br>
 
 Jitter é muito parecido com a Latência mas ele é mais importante quando se trata de aplicções em tempo real como voz e vídeo por exemplo. O Jitter é variação do atraso e também é medido em milessegundos. Vamos retomar o exemplo anterior do jogo online onde a latência tinha sido de 20 ms. Agora imagine que um segundo pacote saia da rede com uma latência de 50 Ms<br></br>
-Então: **jitter = 50 ms - 20 ms = 30ms** 
+Então: **jitter = 50 ms - 20 ms = 30 ms** <br></br>
+
+A recomendação é que o *jitter não ultrapasse os 30 ms* pois com mais de 30 ms  começamos a ter uma degradação na qualidade do sinal. <br></br>
 
 **03. PERCA DE PACOTES** <br></br>
 
@@ -30,3 +32,12 @@ Nesse caso se a matriz quizesse conversar com o escritório, teríamos uma largu
 ### Problemas <br></br>
 
 Então os principais problemas sentidos seriam fala fora de sincronia em um vídeo, voz metalizada em uma ligação, eco em uma ligação, travamentos de aplicativos, lentidão, pixelização de vídeos, etc. Esses são os sintomas que os usuários na sua maioria irão relatar. É aqui que podemos notar a importância de se aplicar algum mecanismo de QoS. <br></br>
+
+Agora vamos observar o cenário. Aqui eu estou aproveitando o mesmo cenário anterior, do tópico 03 - Auto QoS. Porém entre o switch 01 e o roteador 03 eu adicionei o *NETem*, que é uma aplicação Linux que foi desenvolvida para gerar alguns tipos de tráfego na rede. Aqui foi utilizada a versão para o emulador Gns3 e convertida para o Eve-Ng. Link para download  https://gns3.com/marketplace/appliances/netem . <br></br>
+
+![NETem](Imagens/cenario.png) <br></br>
+
+Então vou realizar um simples Ping no Windows. Essa é uma ferramenta que utiliza o protocolo ICMP e, inicialmente ele envia um pacto Echo Request para um destino e, se encontrar esse destino recebe um pacote Echo Reply, que é a resposta. A principio, nenhum mecanismo de QoS foi configurado. <br></br>
+
+
+
