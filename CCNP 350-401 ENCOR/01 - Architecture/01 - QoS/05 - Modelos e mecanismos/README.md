@@ -21,7 +21,7 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 
 | MODELO                                     | SIGNIFICADO                                                                                   |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| <span style="background-color:#f2f2f2">MELHOR ESFORÇO</span>                | <span style="background-color:#f2f2f2">É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de tratamento.</span> |
+| <span style="background-color:#CD853F">MELHOR ESFORÇO</span>                | <span style="background-color:#CD853F">É o modelo padrão utilizado para todos os tipos de tráfegos que não necessitam de tratamento.</span> |
 | <span style="background-color:#e6e6e6">SERVIÇOS INTEGRADOS (IntServ)</span> | <span style="background-color:#e6e6e6">É a reserva de banda feita fim-a-fim.</span>                                                           |
 | <span style="background-color:#f2f2f2">DIFERENCIAÇÃO DE SERVIÇOS</span>     | <span style="background-color:#f2f2f2">É feito por saltos, e a rede identifica as classes que requerem tratamento diferenciado.</span>      |
 
