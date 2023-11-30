@@ -23,3 +23,25 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 Bom agora que entendemos as diferenças entre os modelos de QoS, temos que entender que o tráfego Ip precisa ser marcado e classificado para que depois se possa aplicar uma política em cima dessa classificação e marcação, ou seja, para que possamos escolher o que vai acontecer com o tráfego. Então cada dispositivo primeiro identifica o tipo de tráfego para após, marcá-lo. Depois de calssificado, o dispositivo vai colorir cada tipo de tráfego para assim fazer a sua marcação e com isso conseguir separar cada tráfego por classes. <br></br>
 
 ![CLASSIFICAÇÃO](Imagens/classificao.png) <br></br>
+
+# CLASSIFICAÇÃO <br></br>
+
+Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfileirado, policiado (Policing), formatado (Shapping) ou qualquer uma das combinações. <br></br>
+
+|  DESCRITO DE TRÁFEGO                                                              |  DESCRIÇÃO                                                                                        |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| INTERNO                                                                           | Grupos de Qos (Tem Significado Local para o roteador)                                             |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 1                                                                           | Interface física, sub interface ou rota                                                           |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 2                                                                           | MAC Addres e bits 802.1 Q / P, Classe de Serviços (COS)                                           |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 2.5                                                                         | Bits MPLS Experimental (ExP)                                                                      |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 3                                                                           | Differentiated Services Code Points (DSCP), IP Precedence (IPP) e endereço IP de origem / destino |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 4                                                                           | Portas TCP ou UDP                                                                                 |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------|
+| LAYER 7                                                                           | Nexte Generation Network Based Application Recognition (NBAR2)                                    |
+
+dsfsdfsd
