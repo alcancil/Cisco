@@ -24,7 +24,7 @@ Bom agora que entendemos as diferenças entre os modelos de QoS, temos que enten
 
 ![CLASSIFICAÇÃO](Imagens/classificao.png) <br></br>
 
-# CLASSIFICAÇÃO <br></br>
+# CLASSIFICAÇÃO 
 
 Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfileirado, policiado (Policing), formatado (Shapping) ou qualquer uma das combinações. <br></br>
 
@@ -42,3 +42,5 @@ O *NBAR 2.0* é o mecanismo que a CISCO implementou para realizar a inspeção p
 
 * __Descoberta de Protocolos :__ nesse modo, o NBAR identifica automáticamente os protocolos que passam através de uma interface, identifica quais estão ativos e habilita estatísticas em modo real.
 * __Modular QoS CLI (MQC) :__ o MQC é uma interface de linha de comando que permite definir classes de tráfego, criar e configurar classes de tráfego e, em seguida, anexar essas políticas nas interfaces. Com isso, os diferentes tráfegos são colocados em diferentes categorias o que permite se criar diferentes políticas de tráfego de rede, uma para cada tráfego, por exemplo.
+
+# MARCAÇÃO
