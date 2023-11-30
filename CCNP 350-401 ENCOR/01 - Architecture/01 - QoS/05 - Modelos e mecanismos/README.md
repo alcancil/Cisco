@@ -32,13 +32,9 @@ Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfile
 |----------------------|------------------------------------------------------------------------------------------------------------- |
 | INTERNO              | Grupos de Qos (Tem Significado Local para o roteador)                                                        |
 | LAYER 1              | Interface física, sub interface ou rota                                                                      |
-
 | LAYER 2              | MAC Addres e bits 802.1 Q / P, Classe de Serviços (COS)                                                      |
-
 | LAYER 2.5            | Bits MPLS Experimental (ExP)                                                                                 |
-
 | LAYER 3              | Differentiated Services Code Points (DSCP), IP Precedence (IPP) e endereço IP de origem / destino            |
-| -------------------- | ------------------------------------------------------------------------------------------------------------ |
 | LAYER 4              | Portas TCP ou UDP                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------------------ |
 | LAYER 7              | Next Generation Network Based Application Recognition (NBAR2)                                                |
