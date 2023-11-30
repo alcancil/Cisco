@@ -54,6 +54,8 @@ Depois de classificados, os fluxos precisam ser marcados. Esse é um mecânismo 
 | DESCRITOR DE TRÁFEGO                  | DESCRIÇÃO                                                                                                    |
 |---------------------------------------|------------------------------------------------------------------------------------------------------------- |
 | INTERNO                               | Grupos de Qos                                                                                                |
-| LAYER 2                               | Bits 802.1 Q / P (Class of service (## COS ##) ) 
+| LAYER 2                               | Bits 802.1 Q / P (COS - Class of service)                                                                    |
+| LAYER 2.5                             | Bits MPLS Experimentais (EXP)                                                                                |
+| LAYER 3                               | DSCP - Differentiated Services Code Points e IPP - IP Precedence                                             |
 
 
