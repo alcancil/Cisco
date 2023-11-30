@@ -49,3 +49,11 @@ Exemplo de Protocolos suportados pelo NBAR
 
 ## MARCAÇÃO
 
+Depois de classificados, os fluxos precisam ser marcados. Esse é um mecânismo de QoS que colore um pacote / frame alterando um campo do cabeçalho com um discritor. Isso faz com que os diferentes tipos de pacotes / frames sejam diferenciados para poderem depois serem remarcados, enfileirados ou passar pelos mecanismos de evitar congestionamento.
+
+| DESCRITOR DE TRÁFEGO                  | DESCRIÇÃO                                                                                                    |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------- |
+| INTERNO                               | Grupos de Qos                                                                                                |
+| LAYER 2                               | Bits 802.1 Q / P (Class of service (## COS ##) ) 
+
+
