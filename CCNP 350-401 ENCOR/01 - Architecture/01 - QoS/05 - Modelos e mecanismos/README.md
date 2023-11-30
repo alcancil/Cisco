@@ -28,10 +28,10 @@ Bom agora que entendemos as diferenças entre os modelos de QoS, temos que enten
 
 Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfileirado, policiado (Policing), formatado (Shapping) ou qualquer uma das combinações. <br></br>
 
-|  DESCRITO DE TRÁFEGO |  DESCRIÇÃO                                                                                                   |
-| -------------------- | ------------------------------------------------------------------------------------------------------------ |
+| DESCRITO DE TRÁFEGO  | DESCRIÇÃO                                                                                                    |
+|----------------------|------------------------------------------------------------------------------------------------------------- |
 | INTERNO              | Grupos de Qos (Tem Significado Local para o roteador)                                                        |
-| -------------------- | ------------------------------------------------------------------------------------------------------------ |
+|----------------------|------------------------------------------------------------------------------------------------------------- |
 | LAYER 1              | Interface física, sub interface ou rota                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------ |
 | LAYER 2              | MAC Addres e bits 802.1 Q / P, Classe de Serviços (COS)                                                      |
