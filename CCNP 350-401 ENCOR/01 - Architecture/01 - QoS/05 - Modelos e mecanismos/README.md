@@ -38,7 +38,7 @@ Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfile
 | LAYER 4                               | Portas TCP ou UDP                                                                                            |
 | LAYER 7                               | Next Generation Network Based Application Recognition (NBAR2)                                                |
 
-O *NBAR 2.0* é o mecanismo que a CISCO implementou para realizar a inspeção profunda de pacotes desde a camada 3 até a camada 7. Ele também verifica portas TCP/UDP estáticas ou dinâmicas e também consegue verificar sub interfaces. Ele trabalha em 2 modos: <br></br>
+O *NBAR 2.0* é o mecanismo que a CISCO implementou para realizar a inspeção profunda de pacotes desde a camada 3 até a camada 7. Ele também verifica portas TCP/UDP estáticas ou dinâmicas e também consegue verificar sub interfaces. Ele trabalha em 2 modos: 
 
-01. Descoberta de Protocolos : nesse modo, o NBAR identifica automáticamente os protocolos que passam através de uma interface, identifica quais estão ativos e habilita estatísticas em modo real.
-02. Modular QoS CLI (MQC) : o MQC é uma interface de linha de comando que permite definir classes de tráfego, criar e configurar classes de tráfego e, em seguida, anexar essas políticas nas interfaces. Com isso, os diferentes tráfegos são colocados em diferentes categorias o que permite se criar diferentes políticas de tráfego de rede, uma para cada tráfego, por exemplo.
+* _Descoberta de Protocolos :_ nesse modo, o NBAR identifica automáticamente os protocolos que passam através de uma interface, identifica quais estão ativos e habilita estatísticas em modo real.
+* _Modular QoS CLI (MQC) :_ o MQC é uma interface de linha de comando que permite definir classes de tráfego, criar e configurar classes de tráfego e, em seguida, anexar essas políticas nas interfaces. Com isso, os diferentes tráfegos são colocados em diferentes categorias o que permite se criar diferentes políticas de tráfego de rede, uma para cada tráfego, por exemplo.
