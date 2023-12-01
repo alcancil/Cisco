@@ -58,4 +58,6 @@ Depois de classificados, os fluxos precisam ser marcados. Esse é um mecânismo 
 | LAYER 2.5                             | Bits MPLS Experimentais (EXP)                                                                                |
 | LAYER 3                               | DSCP - Differentiated Services Code Points e IPP - IP Precedence                                             |
 
-
+Deixo aqui dois documentos retirados do site da Cisco com exemplos de configuração do NBAR
+![NBAR01](Arquivos/01-nbar_mqc.pdf)
+![NBAR02](Arquivos/02-nbar_protocol_discovery.pdf)
