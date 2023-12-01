@@ -5,7 +5,7 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 Agora que mostrei os mecanismos de QoS disponíveis, está na hora de falarmos um pouco mais sobre marcação. Como QoS é um assunto muito extenso, estou tentando contextualizar um pouco da teoria e mesclar com exemplos práticos para tentar elucidar melhor as coisas. Então vou tentar vamos olhar um pouco sobre a marcação em layer 2. <br></br>
 Ela é chama de **CoS (Class of Service)** ela utiliza alguns campos do quadro Ethernet 802.1Q, que é um padrão IEE onde são especificadas as Vlans. Nesse tipo de quadro temos dois campos: **TPID (Tag Protocol Identifier)** e **TCI (Tag Control Information)** que são inseridos nesse frma Ethernet no campo de endereço de origem. <br></br>
 
-![CLASSIFICAÇÃO](Imagens/quadro_ethernet.drawio) <br></br>
+![CLASSIFICAÇÃO](Imagens/quadro_ethernet.png) <br></br>
 
 
 
