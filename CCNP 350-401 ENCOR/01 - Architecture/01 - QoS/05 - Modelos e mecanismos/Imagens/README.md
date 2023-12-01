@@ -1,4 +1,4 @@
-# 03 - Auto QoS
+# 05 - Modelos e mecanismos
 
-Pasta contendo todas as imagens do laboratório. <br></br>
+Pasta contendo todas as imagens do artigo. <br></br>
 
