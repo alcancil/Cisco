@@ -59,6 +59,5 @@ Depois de classificados, os fluxos precisam ser marcados. Esse é um mecânismo 
 | LAYER 3                               | DSCP - Differentiated Services Code Points e IPP - IP Precedence                                             |
 
 Deixo aqui dois documentos retirados do site da Cisco com exemplos de configuração do NBAR <br></br>
-![NBAR01](Arquivos/01-nbar_mqc.pdf) ou 
-![https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/qos_nbar/configuration/xe-3s/qos-nbar-xe-3s-book/configuring_nbar_using_the_mqc.pdf](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/qos_nbar/configuration/xe-3s/qos-nbar-xe-3s-book/configuring_nbar_using_the_mqc.pdf) <br></br>
+![NBAR01](Arquivos/01-nbar_mqc.pdf) <br></br>
 ![NBAR02](Arquivos/02-nbar_protocol_discovery.pdf) <br></br>
