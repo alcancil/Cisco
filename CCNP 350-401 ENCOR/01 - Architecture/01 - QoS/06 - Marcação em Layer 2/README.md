@@ -38,3 +38,6 @@ Ela é chamada de **CoS (Class of Service)** e ela utiliza alguns campos do quad
 | 2   | CRITICAL DATA    | 010  |
 | 1   | BULK DATA        | 001  |
 | 0   | BEST EFFORT DATA | 000  |
+
+* Uma desvantagem de se utilizar o CoS é que os frames perdem a marcação CoS quando eles atravessam links que não são 802.1Q ou quando são layer 3. Por esta razão os pacotes deve ser marcados com marcações mais altas.
+* O campo **DEI (DROP ELIGIBLE INDICATOR)** possui -**1bit**- que pode ser usado de forma independente ou em conjunto com o PCP para indicar que os frames estão elegíveis para descarte nos tempos de congestionamento. O valor padrão é **0**, ou seja, desligado e quando é **1** está ligado.
