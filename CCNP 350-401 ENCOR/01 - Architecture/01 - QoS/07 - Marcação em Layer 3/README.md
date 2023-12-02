@@ -1,4 +1,4 @@
-# 06 - Marcação em Layer 2
+# 07 - Marcação em Layer 3
 
 Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
