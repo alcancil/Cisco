@@ -13,7 +13,7 @@ Ela é chamada de **CoS (Class of Service)** e ela utiliza alguns campos do quad
     * **Drop Eligible Indicator (DEI)** com 1 bit
     * **Vlan Identificator (Vlan ID)** com 12 bits 
 
-**OBS:** As especificações do campo de 3 bits PCP são definidas pela IEE 802.1p . Esse campo serve para marcar os pacotes como sendo de COS e isso permite que um fram layer 2 possa ter alocado em 8 níveis diferentes  indo de 0 a 7, onde 0 é o nível mais baixo e 7 o mais alto.
+**OBS:** As especificações do campo de 3 bits PCP (chamados também de User Priority) são definidas pela IEE 802.1p . Esse campo serve para marcar os pacotes como sendo de COS e isso permite que um fram layer 2 possa ter alocado em 8 níveis diferentes  indo de 0 a 7, onde 0 é o nível mais baixo e 7 o mais alto.
 
 | PCP VALUE | ACRONIMO | TRAFFIC TYPE |
 | :-------: | :------: | :----------- |
@@ -26,8 +26,15 @@ Ela é chamada de **CoS (Class of Service)** e ela utiliza alguns campos do quad
 |   6       |   IC     | INTERNEWORK CONTROL |
 |   7       |   NC     | NETWORK CONTROL |
 
+## EXEMPLO PRÁTICO DE USO DA MARCAÇÃO ##
 
-
-
-![NBAR01](Arquivos/01-nbar_mqc.pdf) <br></br>
-![NBAR02](Arquivos/02-nbar_protocol_discovery.pdf) <br></br>
+| COS | APPLICATION      | BITS |
+| :--:| :--------------- | :--: |
+| 7   | RESERVED         | 111  |
+| 6   | ROUTING          | 110  |
+| 5   | VOICE            | 101  | 
+| 4   | VIDEO            | 100  |
+| 3   | CALL SIGNALLING  | 011  |
+| 2   | CRITICAL DATA    | 010  |
+| 1   | BULK DATA        | 001  |
+| 0   | BEST EFFORT DATA | 000  |
