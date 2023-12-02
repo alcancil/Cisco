@@ -16,27 +16,18 @@ Ela é chamada de **CoS (Class of Service)** e ela utiliza alguns campos do quad
 **OBS:** As especificações do campo de 3 bits PCP são definidas pela IEE 802.1p . Esse campo serve para marcar os pacotes como sendo de COS e isso permite que um fram layer 2 possa ter alocado em 8 níveis diferentes  indo de 0 a 7, onde 0 é o nível mais baixo e 7 o mais alto.
 
 | PCP VALUE | ACRONIMO | TRAFFIC TYPE |
-| --------- | -------- | ------------ |
-| : 0 :     | : BK :   | BACKGROUND   |
-| : 1 :     | : BE :   | BEST EFFORT  |
-| : 2 :     | : EE :   | EXCELLENT EFFORT |
-| : 3 :     | : CA :   | CRITICAL APPLICATION |
-| : 4 :     | : VI :   | VIDEO WITH < 100ms LATENCY AND JITTER |
-| : 5 :     | : VO :   | VOICE WITH < 100ms LATENCY AND JITTER | 
-| : 6 :     | : IC :   | INTERNEWORK CONTROL |
-| : 7 :     | : NC :   | NETWORK CONTROL |
+| :-------: | :------: | :----------: |
+|   0       |   BK     | BACKGROUND   |
+|   1       |   BE     | BEST EFFORT  |
+|   2       |   EE     | EXCELLENT EFFORT |
+|   3       |   CA     | CRITICAL APPLICATION |
+|   4       |   VI     | VIDEO WITH < 100ms LATENCY AND JITTER |
+|   5       |   VO     | VOICE WITH < 100ms LATENCY AND JITTER | 
+|   6       |   IC     | INTERNEWORK CONTROL |
+|   7       |   NC     | NETWORK CONTROL |
 
 
 
-| DESCRITOR DE TRÁFEGO                  | DESCRIÇÃO                                                                                                    |
-|---------------------------------------|------------------------------------------------------------------------------------------------------------- |
-| INTERNO                               | Grupos de Qos (Tem Significado Local para o roteador)                                                        |
-| LAYER 1                               | Interface física, sub interface ou rota                                                                      |
-| LAYER 2                               | MAC Addres e bits 802.1 Q / P, Classe de Serviços (COS)                                                      |
-| LAYER 2.5                             | Bits MPLS Experimental (ExP)                                                                                 |
-| LAYER 3                               | Differentiated Services Code Points (DSCP), IP Precedence (IPP) e endereço IP de origem / destino            |
-| LAYER 4                               | Portas TCP ou UDP                                                                                            |
-| LAYER 7                               | Next Generation Network Based Application Recognition (NBAR2)                                                |
 
 ![NBAR01](Arquivos/01-nbar_mqc.pdf) <br></br>
 ![NBAR02](Arquivos/02-nbar_protocol_discovery.pdf) <br></br>
