@@ -16,7 +16,7 @@ Ela é chamada de **CoS (Class of Service)** e ela utiliza alguns campos do quad
 **OBS:** As especificações do campo de 3 bits PCP são definidas pela IEE 802.1p . Esse campo serve para marcar os pacotes como sendo de COS e isso permite que um fram layer 2 possa ter alocado em 8 níveis diferentes  indo de 0 a 7, onde 0 é o nível mais baixo e 7 o mais alto.
 
 | PCP VALUE | ACRONIMO | TRAFFIC TYPE |
-| :-------: | :------: | :----------: |
+| :-------: | :------: | :----------- |
 |   0       |   BK     | BACKGROUND   |
 |   1       |   BE     | BEST EFFORT  |
 |   2       |   EE     | EXCELLENT EFFORT |
