@@ -33,3 +33,10 @@ O Default Best-Effort Forwarding também é aplicado a pacotes que não podem se
 Isso normalmente ocorre quando a política QoS no nó não está completa ou quando os valores estão fora da faixa definida para o CS, AF e EF PHBs. <br></br>
 
 ![MARCAÇÃO](Imagens/campo_dscp2.png) <br></br>
+
+Essa é uma classe para aplicações padrão que não possuem nemhuma prioridade. <br></br>
+
+## ASSURED FORWARDING (AF) PHB
+
+O AF PHB garante uma certa quantidade de banda para uma classe AF e permite acesso a uma banda extra caso esteja disponível. <br></br>
+Os pacotes que necessitam do AF PHB devem ser marcados com o valor binário de **_aaadd0_**
