@@ -42,3 +42,10 @@ O AF PHB garante uma certa quantidade de banda para uma classe AF e permite aces
 Os pacotes que necessitam do AF PHB devem ser marcados com o valor binário de **_aaadd0_**, onde ***aaa** é o valor binário da classe AF (bits de 5 a 7), e **dd** (bits de 2 a 4) é a probabilidade de descarte onde o bit 2 não é utilizado e sempre é setado em 0. 
 
 ![MARCAÇÃO](Imagens/campo_dscp3.png) <br></br>
+
+Existem 4 padrões definidos nas classes AF: **AF1, AF2, AF3 e AF4** . <br></br>
+O número da classe AF não representa precedência. AF4 não tem nenhum tratamento especial sobre AF1. Cada classe é tratada de forma independente. <br></br>
+A tabela a seguir ilustra como cada classe AF é assinalada a um IP Precedence (sob um valor binário de uma classe AF) e ele tem 3 valores possíveis de descarte baixo, médio e alto. <br></br>
+O nome **AF (AFxy)** é composto de um valor IP AF Precedence de descarte **(y)** em decimal. <br></br>
+Por exemplo, AF41 é a combinação do IP Precedence 4 e a probabilidade de descarte 1 <br></br>
+Para converter rapidamente um nome AF em um valor decimal DSCP, use a fórmula **__8x+2y__**. Por exemplo, o valor DSCP para AF41 é **8(4)+2(1)=34**
