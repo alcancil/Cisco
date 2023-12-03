@@ -25,3 +25,11 @@ Os 3 últimos bits do DSCP (bits 2 a 4), quando configurados em 0, identificam o
 Existem 8 classes, indo de cs0 a cs7, o que corresponde exatamente com os 8 valores possíves do IP Precedence.
 
 ![MARCAÇÃO](Imagens/campo_dscp.png) <br></br>
+
+## DEFAULT FORWARDING (DF) PHB
+
+O Default Forwarding (DF) PHB e o Class Selector 0 (CS0) tem o comportamento de best effort e usam o valor 000000 no campo DS. <br></br>
+O Default Best-Effort Forwarding também é aplicado a pacotes que não podem ser classificados por um mecanismo QoS como enfileiramento, shapping ou policing. <br></br>
+Isso normalmente ocorre quando a política QoS no nó não está completa ou quando os valores estão fora da faixa definida para o CS, AF e EF PHBs. <br></br>
+
+![MARCAÇÃO](Imagens/campo_dscp2.png) <br></br>
