@@ -10,4 +10,10 @@ Depois de um tempo, o padrão foi atualizado e o campo IP Precedence foi substit
 
 ## DSCP PER HOP BEHEAVIORS
 
-
+O campo Diffserv serve para marcar os pacotes de acordo com a sia classificação em **Diffserv Behaivior Aggregates (BAS)** . Um Diffserve BA é uma coleção de pacotes com o mesmo valor de Diffserv cruzando um link em uma direção particular. **Per Hop Beheavior (PHB)** é o comportamento externo observado (tratamento de encaminhamento) plicado ao nó Diffserv compatível com a coleção de pacotes com o mesmo valor de diffserv cruzando um link em uma direção. <br></br>
+O **PHB** adianta, atrasa ou descarta uma coleção de pacotes através de um ou muitos mecanismos de QoS através do **per-hop-basis**, baseado no valor DSCP. A Diffserv BA pode marcar diversas aplicações com o mesmo DSCP. <br></br>
+Existe 4 PHBS que são: 
+* **Class Selector (CS) PHB:** os 3 primeiros bits do campo DSCP são utilizados como bits CS. Os CS Bits tornam o DSCP compatíveis com o IP Precedence porque ele utilizam os mesmo 3 bits para determinar a classe
+* **Default Forwarding (DF) PHB:** usado para o serviço de best effort
+* **Assured Forwarding (AF) PHB:** utilizado para o serviço de garantia de banda
+* **Expedited Forwarding (EF) PHB:** usado para o serviço de low-delay
