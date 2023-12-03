@@ -6,7 +6,7 @@ Agora que já vimos a marcação de camada 2, vamos falar um pouco sobre a marca
 O campo ToS também poderia ser utilizado como um campo DS (Differentiated Services). <br></br>
 Depois de um tempo, o padrão foi atualizado e o campo IP Precedence foi substituido para ToSIpv4 e Traffic Class Ipv6. Já o campo DS passou a ser o campo DSCP (Diffeserv Code Point. Então aqui mantiveram os mesmos 8 bits e deixaram ele compatível com o IP Precedence. <br></br>
 
-![CLASSIFICAÇÃO](Imagens/pacote_ipv4.png) <br></br>
+![MARCAÇÃO](Imagens/pacote_ipv4.png) <br></br>
 
 ## DSCP PER HOP BEHEAVIORS
 
@@ -17,3 +17,11 @@ Existe 4 PHBS que são:
 * **Default Forwarding (DF) PHB:** usado para o serviço de best effort
 * **Assured Forwarding (AF) PHB:** utilizado para o serviço de garantia de banda
 * **Expedited Forwarding (EF) PHB:** usado para o serviço de low-delay
+
+## CLASS SELECTOR PHB
+
+O Class Selector (CS) PHB foi desenvolvido na rfc 2474 e torna o campo ToS obsoleto introduzindo o novo campo DiffServ, e o Class Selector (CS PHB) foi criado para trazer compatibilidade com o IP PRECEDENCE. <br></br>
+Os 3 últimos bits do DSCP (bits 2 a 4), quando configurados em 0, identificam o Class Selector PHB, os bits de 5 a 7 do Class Selector são os que setam o IP Precedence. Os bits 2 e 4 são ignorados por equipamentos mais antigos que só classificam através de IP Precedence. <br></br>
+Existem 8 classes, indo de cs0 a cs7, o que corresponde exatamente com os 8 valores possíves do IP Precedence.
+
+![MARCAÇÃO](Imagens/campo_dscp.png) <br></br>
