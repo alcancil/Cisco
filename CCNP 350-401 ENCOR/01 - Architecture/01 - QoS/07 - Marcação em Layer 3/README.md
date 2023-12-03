@@ -39,4 +39,6 @@ Essa é uma classe para aplicações padrão que não possuem nemhuma prioridade
 ## ASSURED FORWARDING (AF) PHB
 
 O AF PHB garante uma certa quantidade de banda para uma classe AF e permite acesso a uma banda extra caso esteja disponível. <br></br>
-Os pacotes que necessitam do AF PHB devem ser marcados com o valor binário de **_aaadd0_**
+Os pacotes que necessitam do AF PHB devem ser marcados com o valor binário de **_aaadd0_**, onde ***aaa** é o valor binário da classe AF (bits de 5 a 7), e **dd** (bits de 2 a 4) é a probabilidade de descarte onde o bit 2 não é utilizado e sempre é setado em 0. 
+
+![MARCAÇÃO](Imagens/campo_dscp3.png) <br></br>
