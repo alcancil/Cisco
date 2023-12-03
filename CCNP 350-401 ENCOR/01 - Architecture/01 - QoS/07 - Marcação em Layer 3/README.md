@@ -7,3 +7,7 @@ O campo ToS também poderia ser utilizado como um campo DS (Differentiated Servi
 Depois de um tempo, o padrão foi atualizado e o campo IP Precedence foi substituido para ToSIpv4 e Traffic Class Ipv6. Já o campo DS passou a ser o campo DSCP (Diffeserv Code Point. Então aqui mantiveram os mesmos 8 bits e deixaram ele compatível com o IP Precedence. <br></br>
 
 ![CLASSIFICAÇÃO](Imagens/pacote_ipv4.png) <br></br>
+
+## DSCP PER HOP BEHEAVIORS
+
+
