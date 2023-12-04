@@ -79,4 +79,4 @@ O tráfego best-effort utiliza um DF PHB com um valor DSCP de **000000 (CS0)**. 
 
 ## SUMÁRIO DO DSCP
 
-![MARCAÇÃO](Imagens/sumario_dscp.drawio)
+![MARCAÇÃO](Imagens/sumario_dscp.png)
