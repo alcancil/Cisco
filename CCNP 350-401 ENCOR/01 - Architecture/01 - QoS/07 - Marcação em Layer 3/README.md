@@ -78,3 +78,5 @@ Uma peculiaridade da classe Scavenger  é que ela foi desenvolvida para ter prio
 O tráfego best-effort utiliza um DF PHB com um valor DSCP de **000000 (CS0)**. Como não existem valores negativos de DSCP decidiu-se utilizar CS1 para tráfego scavenger. Isso está definido na **RFC 4594**
 
 ## SUMÁRIO DO DSCP
+
+![MARCAÇÃO](Imagens/sumario_dscp4.png)
