@@ -51,3 +51,11 @@ Por exemplo, AF41 é a combinação do IP Precedence 4 e a probabilidade de desc
 Para converter rapidamente um nome AF em um valor decimal DSCP, use a fórmula **__8x+2y__**. Por exemplo, o valor DSCP para AF41 é **8(4) + 2(1) = 34**
 
 ![MARCAÇÃO](Imagens/campo_dscp4.png) <br></br>
+
+## ASSURE FORWARDING (AF) AND WRED
+
+Uma implementação AF deve detectar responder a congestionamentos a longo prazo dentro de cada classe descartando pacotes usando um algorítmo de prevenção de congestionamento como o **WRED (WEIGTHED RANDON EARLY DETECTION)**. <br></br>
+O WRED utiliza o valor AF de probabilidade de descarte em cada classe - onde 1 é o valor mais baixo possível e 3 o maior - para determinar quais pacotes devem ser descartados por primeiro nos momentos de congestionamento. <br></br>
+Ele també deve ser capaz de tratar os congestionamentos a curto prazo resultantes de rajadas em que cada classe é colocada em uma fila separada, utilizando um algorítmo de enfileiramento como o **CBWFQ (CLASS-BASED WEIGTHED FAIR QUEING)**. As especificações do AF não definem o uso de nenhum algorítmo em particular para se utilizar enfileiramento e prevenção de congestionamento, mas ele especifica alguns requerimentos e propriedades para o uso de tais algorítmos. <br></br>
+
+## EXPEDITED FORWARDING (EF) PHB
