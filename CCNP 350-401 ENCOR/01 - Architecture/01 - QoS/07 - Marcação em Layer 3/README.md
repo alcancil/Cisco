@@ -49,3 +49,5 @@ A tabela a seguir ilustra como cada classe AF é assinalada a um IP Precedence (
 O nome **AF (AFxy)** é composto de um valor IP AF Precedence de descarte **(y)** em decimal. <br></br>
 Por exemplo, AF41 é a combinação do IP Precedence 4 e a probabilidade de descarte 1 <br></br>
 Para converter rapidamente um nome AF em um valor decimal DSCP, use a fórmula **__8x+2y__**. Por exemplo, o valor DSCP para AF41 é **8(4) + 2(1) = 34**
+
+![MARCAÇÃO](Imagens/campo_dscp4.png) <br></br>
