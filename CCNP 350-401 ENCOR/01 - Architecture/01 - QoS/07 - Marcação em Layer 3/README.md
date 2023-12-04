@@ -59,3 +59,22 @@ O WRED utiliza o valor AF de probabilidade de descarte em cada classe - onde 1 �
 Ele també deve ser capaz de tratar os congestionamentos a curto prazo resultantes de rajadas em que cada classe é colocada em uma fila separada, utilizando um algorítmo de enfileiramento como o **CBWFQ (CLASS-BASED WEIGTHED FAIR QUEING)**. As especificações do AF não definem o uso de nenhum algorítmo em particular para se utilizar enfileiramento e prevenção de congestionamento, mas ele especifica alguns requerimentos e propriedades para o uso de tais algorítmos. <br></br>
 
 ## EXPEDITED FORWARDING (EF) PHB
+
+O EF PHB pode ser utilizado para entregar pouca perda, pouco atraso, pouco jitter, garantir largura de banda e serviço fim - a - fim. <br></br>
+O EF PHB garante largura de banda garantindo uma taxa mínima de saída e prevê o menor atraso possível implementando o enfileiramento de baixa latência. <br></br>
+Ele também previne a escassez de outras aplicações ou classes que não estão utilizando EF PHB através de políticas de tráfego EF quando o congestionamento ocorre. <br></br>
+Os pacotes que requerem EF devem ser marcados com os valos DSCP binário **101110 (46 em decimal)**. Os bits de 5 a 7 (101) do valor EF DSCP deixam o EF PHB compatíveis com IP PRECENCE. <br></br>
+Utilizado para tráfego de voz e serviços em tempo real. Ele previne que fique sem largura de banda.
+
+## SCAVENGER CLASS
+
+É utilizado para aplicações que fazem um consumo exagerado de banda e tem prioridade menor que o best effort. <br></br>
+São aplicações que trazem pouca ou nenhuma contribuição para o negócio e geralmente são aplicações voltadas para entretenimento. Exemplos:
+* Aplicações peer-to-peer (como os Torrents)
+* Jogos
+* Aplicações de vídeo (Youtube, Netflix, etc)
+Essas aplicações normalmente são muito limitadas ou bloqueadas por completo. <br></br>
+Uma peculiaridade da classe Scavenger  é que ela foi desenvolvida para ter prioridade menor que o best-effort. <br></br>
+O tráfego best-effort utiliza um DF PHB com um valor DSCP de **000000 (CS0)**. Como não existem valores negativos de DSCP decidiu-se utilizar CS1 para tráfego scavenger. Isso está definido na **RFC 4594**
+
+## SUMÁRIO DO DSCP
