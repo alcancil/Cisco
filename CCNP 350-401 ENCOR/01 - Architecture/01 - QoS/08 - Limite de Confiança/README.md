@@ -10,6 +10,8 @@ A primeira coisa a se verificar é se no switch onde temos o telefone ip, se rea
 
 ![LIMITE](Imagens/01-voice_vlan.png)
 
+Agorva vamos configurar a Vlan de voz na porta f0/10 do switch SW01 para qua porta identifique esse tráfego será o do telefone IP. <br></br>
+
 ![LIMITE](Imagens/02-voice_vlan.png)
 
 ![LIMITE](Imagens/03-mls_qos.png)
