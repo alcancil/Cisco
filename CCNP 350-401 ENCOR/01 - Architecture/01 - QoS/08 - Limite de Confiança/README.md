@@ -9,3 +9,15 @@ Sendo assim, o tráfego não é priorizado e fica marcado como best effort utili
 A primeira coisa a se verificar é se no switch onde temos o telefone ip, se realmente possui uma vlan de voz. Aqui, nesse exemplo eu estarei utilizando a vlan padrão que é a VLAN 1. Então vamos acessar o switch 01 e verificar essa configuração. <br></br>
 
 ![LIMITE](Imagens/01-voice_vlan.png)
+
+![LIMITE](Imagens/02-voice_vlan.png)
+
+![LIMITE](Imagens/03-mls_qos.png)
+
+![LIMITE](Imagens/04-mls_qos_cos.png)
+
+![LIMITE](Imagens/05-mls_qos_cisco_phone.png)
+
+![LIMITE](Imagens/06-mls_qos_voip.png)
+
+![LIMITE](Imagens/07-mls_qos_voip_extend.png)
