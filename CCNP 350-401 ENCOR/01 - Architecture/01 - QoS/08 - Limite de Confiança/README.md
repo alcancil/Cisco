@@ -10,7 +10,7 @@ A primeira coisa a se verificar é se no switch onde temos o telefone ip, se rea
 
 ![LIMITE](Imagens/01-voice_vlan.png)
 
-Agorva vamos configurar a Vlan de voz na porta f0/10 do switch SW01 para qua porta identifique esse tráfego será o do telefone IP. <br></br>
+Agora vamos configurar a Vlan de voz na porta f0/10 do switch SW01 para qua porta identifique esse tráfego será o do telefone IP. <br></br>
 
 ![LIMITE](Imagens/02-voice_vlan.png)
 
@@ -18,7 +18,7 @@ Uma vez que configuramos a porta f0/10 para aceitar o trafego do telefone IP e c
 
 ![LIMITE](Imagens/03-mls_qos.png)
 
-Perceba que ele vem como não confiável. Como queremos que o switch confie em marcações em camada 2, maracção COS, temos que alterar esse comportamento. Então primeiro vamos alterar o padrão para confiar em marcação COS. <br></br>
+Perceba que ele vem como não confiável. Como queremos que o switch confie em marcações em camada 2, marcação COS, temos que alterar esse comportamento. Então vamos digitar os comando a seguir: <br></br>
 
 ![LIMITE](Imagens/04-mls_qos_cos.png)
 
