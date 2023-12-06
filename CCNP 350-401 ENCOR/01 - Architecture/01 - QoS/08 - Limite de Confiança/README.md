@@ -14,9 +14,11 @@ Agorva vamos configurar a Vlan de voz na porta f0/10 do switch SW01 para qua por
 
 ![LIMITE](Imagens/02-voice_vlan.png)
 
-Uma vez que configuramos a porta f0/10 para aceitar o trafego do telefone IP e colocá-lo em uma vlna de voz, agora pode ativar o QoS em modo global. Para, podemos digitar: **sw03(config)# mls qos** . Com isso estamos ativando o QoS em modo global. Em seguida, vamos exibir como está configurado o QoS na interface F0/10, pois ela está no padrão do momneto ativação do QoS em modo global. <br></br>
+Uma vez que configuramos a porta f0/10 para aceitar o trafego do telefone IP e colocá-lo em uma vlna de voz, agora pode ativar o QoS em modo global. Para, podemos digitar: **sw03(config)# mls qos** . Com isso estamos ativando o QoS em modo global. Em seguida, vamos exibir como está configurado o QoS na interface F0/10, pois ela está no padrão do momento ativação do QoS em modo global. <br></br>
 
 ![LIMITE](Imagens/03-mls_qos.png)
+
+Perceba que ele vem como não confiável. Como queremos que o switch confie em marcações em camada 2, maracção COS, temos que alterar esse comportamento. Então primeiro vamos alterar o padrão para confiar em marcação COS. <br></br>
 
 ![LIMITE](Imagens/04-mls_qos_cos.png)
 
