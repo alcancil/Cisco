@@ -47,3 +47,5 @@ Como podemos ver, agora o switch03 confia na marcação COS5 e em Telephone IP C
 | CRITICAL        | 5       |  101    | VOIP FORWARDING                    |
 | INTERNET        | 6       |  110    | INTER-NETWORK CONTROL RESERVED     |
 | NETWORK CONTROL | 7       |  111    | NETWORK-CONTROL (RESERVED)         |
+
+**OBS:** Os telefones IP por padrão marcam o tráfego de voz com o valor de DSCP 46(EF) e COS5, enquanto que o tráfego  de um endpoint, tráfego de dados, é remarcado com 0 para COS e 0 para DSCP. <br></br>
