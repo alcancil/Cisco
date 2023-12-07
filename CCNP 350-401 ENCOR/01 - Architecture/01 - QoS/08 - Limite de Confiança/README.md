@@ -22,7 +22,8 @@ Perceba que ele vem como não confiável. Como queremos que o switch confie em m
 
 ![LIMITE](Imagens/04-mls_qos_cos.png)
 
-Agora, nesse ponto na interface F0/10, o switch confia em marcações COS, ou seja todo o quadro que chegar marcado como COS, ele não precisa mais analisar e remarcar.
+Agora, nesse ponto na interface F0/10, o switch confia em marcações COS, ou seja todo o quadro que chegar marcado como COS, ele não precisa mais analisar e remarcar. Ele aceita a mracção COS que entra na interface e passa para dentro do switch. <br></br>
+Mas e nesse caso que temos um telefone ip conectado ao switch ? Bom, primeiro temos que entender que se conectarmos um telefone IP, como foi feito no exemplo, o switch não vai entender que esse equipamento é confiável e simplesmente ao receber os quadros dele, vai analisar e remara como o padrão que é **COS 0** e não é isso que queremos. Por essa razão, temos que extender o limite de confiança para o telefone também. <br></br>
 
 ![LIMITE](Imagens/05-mls_qos_cisco_phone.png)
 
