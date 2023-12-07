@@ -34,3 +34,16 @@ Bom então, agora temos um switch que confia em marcações de cos e que confia 
 E mais uma vez, precisamos extender a marcação COS 5 para o telefone IP, para que o switch entenda que a marcação deva ser **COS 5** e não **0**. <br></br>
 
 ![LIMITE](Imagens/07-mls_qos_voip_extend.png)
+
+Como podemos ver, agora o switch03 confia na marcação COS5 e em Telephone IP Cisco e vai entender direito esse tipo de marcação. Agora devemos replicar as configurações de QOS para os switches 04 e 02 nas portas F0/10 e com isso vamos ter o nosso limite de confiança. <br></br>
+
+| TIPO            | DECIMAL | BINARIO | APLICAÇÂO                          |
+|---------------- |:------: | :-----: |----------------------------------- |
+| ROUTINE         | 0       |  000    | BEST EFFORD FORWARDING             |
+| PRIORITY        | 1       |  001    | MEDIUM PRIORITY FORWARDING         |
+| IMMEDIATE       | 2       |  010    | HIGH PRIORITY FORWARDING           |
+| FLASH           | 3       |  011    | VOIP CALL SIGNALLING FORWARDING    |
+| FLASH-OVERRIDE  | 4       |  100    | VIDEO CONFERENCING FORWARDING      |
+| CRITICAL        | 5       |  101    | VOIP FORWARDING                    |
+| INTERNET        | 6       |  110    | INTER-NETWORK CONTROL RESERVED     |
+| NETWORK CONTROL | 7       |  111    | NETWORK-CONTROL (RESERVED)         |
