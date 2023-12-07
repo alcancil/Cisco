@@ -31,4 +31,6 @@ Bom então, agora temos um switch que confia em marcações de cos e que confia 
 
 ![LIMITE](Imagens/06-mls_qos_voip.png)
 
+E mais uma vez, precisamos extender a marcação COS 5 para o telefone IP, para que o switch entenda que a marcação deva ser **COS 5** e não **0**. <br></br>
+
 ![LIMITE](Imagens/07-mls_qos_voip_extend.png)
