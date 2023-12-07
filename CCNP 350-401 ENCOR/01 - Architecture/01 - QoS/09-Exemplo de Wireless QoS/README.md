@@ -14,7 +14,7 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 
 Deixo aqui um artigo completo do site da Cisco onde existe um exemplo de QoS em controladoras Wirelles e Aps.
 
-![Exemlo](https://www.cisco.com/c/pt_br/support/docs/wireless-mobility/wireless-lan-wlan/81831-qos-wlc-lap.html)
+![Exemlo]<https://www.cisco.com/c/pt_br/support/docs/wireless-mobility/wireless-lan-wlan/81831-qos-wlc-lap.html>
 
 ![LIMITE](Imagens/00-cenario.png)
 
