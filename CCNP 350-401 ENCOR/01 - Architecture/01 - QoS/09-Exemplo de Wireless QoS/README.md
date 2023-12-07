@@ -10,7 +10,7 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 
 
 
-
+![WIFI_QoS](Imagens/01-exemplo_qos.jpg)
 
 Deixo aqui um artigo completo do site da Cisco onde existe um exemplo de QoS em controladoras Wirelles e Aps.
 
