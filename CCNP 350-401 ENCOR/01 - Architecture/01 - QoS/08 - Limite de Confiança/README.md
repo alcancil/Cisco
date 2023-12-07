@@ -27,6 +27,8 @@ Mas e nesse caso que temos um telefone ip conectado ao switch ? Bom, primeiro te
 
 ![LIMITE](Imagens/05-mls_qos_cisco_phone.png)
 
+Bom então, agora temos um switch que confia em marcações de cos e que confia em telefones IP Cisco. Porém, como é o recomendado, existe a marcção 5 do CoS que é para telefonia IP. Então vamos configurar a interface para acitar essa marcação. <br></br>
+
 ![LIMITE](Imagens/06-mls_qos_voip.png)
 
 ![LIMITE](Imagens/07-mls_qos_voip_extend.png)
