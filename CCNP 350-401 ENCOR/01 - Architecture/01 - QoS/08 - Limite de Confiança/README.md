@@ -22,6 +22,8 @@ Perceba que ele vem como não confiável. Como queremos que o switch confie em m
 
 ![LIMITE](Imagens/04-mls_qos_cos.png)
 
+Agora, nesse ponto na interface F0/10, o switch confia em marcações COS, ou seja todo o quadro que chegar marcado como COS, ele não precisa mais analisar e remarcar.
+
 ![LIMITE](Imagens/05-mls_qos_cisco_phone.png)
 
 ![LIMITE](Imagens/06-mls_qos_voip.png)
