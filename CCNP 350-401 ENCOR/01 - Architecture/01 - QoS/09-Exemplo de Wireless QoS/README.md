@@ -14,9 +14,9 @@ Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configura
 
 Deixo aqui um artigo completo do site da Cisco onde existe um exemplo de QoS em controladoras Wirelles e Aps.
 
-![Exemlo]<https://www.cisco.com/c/pt_br/support/docs/wireless-mobility/wireless-lan-wlan/81831-qos-wlc-lap.html>
+<https://www.cisco.com/c/pt_br/support/docs/wireless-mobility/wireless-lan-wlan/81831-qos-wlc-lap.html>
 
-![LIMITE](Imagens/00-cenario.png)
+
 
 Vamos imaginar o cenário ilustrado. Imagine que o tráfego que entra na rede, está na camada de acesso, onde os hosts estão ligados. Então qual é o comportamento dos switches quanto ao tráfego que entra ? Bom quando um quadro vai atravessar os switches, pode ser confiável ou não. Então, o comportamento padrão dos switches é não confiar nos endpoints e ai, mesmo que o trafego entrante esteja com uma marcação COS e DSCP adequadas, o switch remarca esse tráfego para 0 antes de enviar o frame para dentro do switch. <br></br>
 Sendo assim, o tráfego não é priorizado e fica marcado como best effort utilizado a lógica do algorítmo FIFO (First IN First Out), o primeiro que entra é o primeiro que sai. Mas e se desjámos alterar esse comportamento ? Vamos imaginar que no nosso cenário queremos confiar no tráfego do telefone ip, no sw03 e no sw04 e no sw05 não. Ou seja, o limite fica sendo a parte em rosa.<br></br>
