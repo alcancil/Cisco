@@ -13,9 +13,11 @@ Então a recomendação aqui é que o QoS seja configurado em cada equipamento e
 Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para podermos analisar como estão os pacotes. Para isso, irei utilizar a ferramenta wireshark de código aberto que é um sniffer de pacotes. Então irei posicionar o Wireshark na interface G0/0 do roteador ISP e nesse momento irei realizar um acesso HTTP, TFTP e um PIMG (ICMP) do host 192.168.10.10 . <br></br>
 
 <tr >
-     <td> <img src="Imagens/wireshark/01-Sem_QoS_ICMP.png" alt="Image" heigth="600" width="600"></img> </td>
-     <td> <img src="Imagens/wireshark/02-Sem_QoS_HTTP.png" alt="Image" heigth="600" width="600"></img> </td>
-     <td> <img src="Imagens/wireshark/03-Sem_QoS_TFTP.png" alt="Image" heigth="600" width="600"></img> </td>
+     <td> 
+         <img src="Imagens/wireshark/01-Sem_QoS_ICMP.png" alt="Image" heigth="600" width="600"></img> 
+         <img src="Imagens/wireshark/02-Sem_QoS_HTTP.png" alt="Image" heigth="600" width="600"></img> 
+         <img src="Imagens/wireshark/03-Sem_QoS_TFTP.png" alt="Image" heigth="600" width="600"></img> 
+    </td>
 </tr>
 
 ![Análise](Imagens/wireshark/01-Sem_QoS_ICMP.png) 
