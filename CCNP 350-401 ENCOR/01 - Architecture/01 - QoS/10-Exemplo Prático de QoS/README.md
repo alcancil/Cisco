@@ -25,7 +25,7 @@ Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para pode
 Observe que o campo que interessa nessa análise é o **DIFFSERV** que no nosso caso está marcado como **COS0**, ou seja, ele não recebeu marcação alguma, está no padrão. Esse comportamento é o padrão para todo tipo de tráfego e nesse caso, será aplicado o algorítmo **FIFO (FIRST IN / FIRST OUT)**, ou seja, o primeiro que entra é o primeiro que sai. <br></br>
 Agora deixa duas tabelas com algumas recomendações de marcação e classificação para podermos dar sequência ao nosso exemplo. <br></br>
 
-![TABELA](Imagens/02-tabela_qos.png "Fonte: Internet sem especificação de autoria") <br></br>
-![TABELA](Imagens/03-tabela_qos_02.png "Fonte: Internet sem especificação de autoria") <br></br>
+![TABELA](Imagens/02-tabela_qos.png "Fonte: Internet sem especificação de autoria"){.text-center] <br></br>
+![TABELA](Imagens/03-tabela_qos_02.png "Fonte: Internet sem especificação de autoria"){.text-center] <br></br>
 
 
