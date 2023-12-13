@@ -14,9 +14,9 @@ Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para pode
 
 <table>
     <tr >
-        <td width="50%"> <img src="Imagens/wireshark/01-Sem_QoS_ICMP.png"></img> </td>
-        <td width="50%"> <img src="Imagens/wireshark/02-Sem_QoS_HTTP.png"></img> </td> 
-        <td width="50%"> <img src="Imagens/wireshark/03-Sem_QoS_TFTP.png"></img> </td>
+        <td width="30%"> <img src="Imagens/wireshark/01-Sem_QoS_ICMP.png"></img> </td>
+        <td width="30%"> <img src="Imagens/wireshark/02-Sem_QoS_HTTP.png"></img> </td> 
+        <td width="30%"> <img src="Imagens/wireshark/03-Sem_QoS_TFTP.png"></img> </td>
     </tr>
 </table>
 
