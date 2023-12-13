@@ -20,8 +20,8 @@ Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para pode
     </tr>
 </table>
 
-![Análise](Imagens/wireshark/01-Sem_QoS_ICMP.png) 
-![Análise](Imagens/wireshark/02-Sem_QoS_HTTP.png)
-![Análise](Imagens/wireshark/03-Sem_QoS_TFTP.png) 
+**OBS:** clique na imagem para aumentar e depois em voltar para retornar ao texto <br></br>
+
+Observe que o campo que interessa nessa análise é o **DIFFSERV** que no nosso caso está marcado como **COS0**, ou seja, ele não recebeu marcação alguma, está no padrão. Esse comportamento é o padrão para todo tipo de tráfego e nesse caso, será aplicado o algorítmo **FIFO (FIRST IN / FIRST OUT)**, ou seja, o primeiro que entra é o primeiro que sai. <br></br>
 
 
