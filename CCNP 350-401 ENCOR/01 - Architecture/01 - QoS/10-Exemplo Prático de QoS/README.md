@@ -12,7 +12,7 @@ Aqui temos que seguir alguns passos para realizara aconfiguração do QoS que s�
 Então a recomendação aqui é que o QoS seja configurado em cada equipamento em que o fluxo fora trafegar. <br></br>
 Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para podermos analisar como estão os pacotes. Para isso, irei utilizar a ferramenta wireshark de código aberto que é um sniffer de pacotes. Então irei posicionar o Wireshark na interface G0/0 do roteador ISP e nesse momento irei realizar um acesso HTTP, TFTP e um PIMG (ICMP) do host 192.168.10.10 . <br></br>
 
-<img src="Imagens/wireshark/01-Sem_QoS_ICMP.png" alt="Image" heigth="100" width="100"></img>
+<img src="Imagens/wireshark/01-Sem_QoS_ICMP.png" alt="Image" heigth="600" width="600"></img>
 ![Análise](Imagens/wireshark/01-Sem_QoS_ICMP.png) 
 ![Análise](Imagens/wireshark/02-Sem_QoS_HTTP.png)
 ![Análise](Imagens/wireshark/03-Sem_QoS_TFTP.png) |
