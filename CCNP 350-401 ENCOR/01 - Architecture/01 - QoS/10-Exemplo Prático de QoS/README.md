@@ -9,5 +9,5 @@ Aqui temos que seguir alguns passos para realizara aconfiguração do QoS que s�
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
 3. Aplicara política em uma interface.
-Então a recomendação aqui é que o QoS seja configurado em cada equipamento em que o fluxo fora trafegar.
-
+Então a recomendação aqui é que o QoS seja configurado em cada equipamento em que o fluxo fora trafegar. <br></br>
+Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para podermos analisar como estão os pacotes. Para isso, irei utilizar a ferramenta wireshark de código aberto que é um sniffer de pacotes. 
