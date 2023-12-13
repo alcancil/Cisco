@@ -2,7 +2,7 @@
 
 Agora vamos imaginar o seguinte cenário: <br></br>
 
-![WIFI_QoS](Imagens/01-cenario.png)
+![CENAÁRIO](Imagens/01-cenario.png)
 
 Aqui irei simular uma pequena empresa que se conecta a sua central passando pela Internet, representada aqui pelo roteador ISP. Então aqui teremos 3 fluxos de tráfego: o trafego HTTP, o tráfego TFTP e o tráfego do ICMP. Como esse somente é um exemplo, vamos dizer que o tráfego HTTP é critico para a empresa e queremos dar prioridade maior para esse tipo de tráfego. Em seguida, vamos dar uma prioridade menor ao tráfego FTP e por fim, a menor prioridade será dada ao tráfego ICMP. <br></br>
 Aqui temos que seguir alguns passos para realizara aconfiguração do QoS que são:
@@ -23,5 +23,9 @@ Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para pode
 **OBS:** clique na imagem para aumentar e depois em voltar para retornar ao texto <br></br>
 
 Observe que o campo que interessa nessa análise é o **DIFFSERV** que no nosso caso está marcado como **COS0**, ou seja, ele não recebeu marcação alguma, está no padrão. Esse comportamento é o padrão para todo tipo de tráfego e nesse caso, será aplicado o algorítmo **FIFO (FIRST IN / FIRST OUT)**, ou seja, o primeiro que entra é o primeiro que sai. <br></br>
+Agora deixa duas tabelas com algumas recomendações de marcação e classificação para podermos dar sequência ao nosso exemplo. <br></br>
+
+![TABELA](Imagens/02-tabela_qos.png) "Fonte: Internet sem especificação de autoria"
+![TABELA](Imagens/03-tabela_qos_02.png) "Fonte: Internet sem especificação de autoria"
 
 
