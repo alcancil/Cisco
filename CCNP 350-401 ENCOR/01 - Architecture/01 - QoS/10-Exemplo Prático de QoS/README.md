@@ -28,4 +28,4 @@ Agora deixa duas tabelas com algumas recomendações de marcação e classifica�
 ![TABELA](Imagens/02-tabela_qos.png "Fonte: Internet sem especificação de autoria") <br></br>
 ![TABELA](Imagens/03-tabela_qos_02.png "Fonte: Internet sem especificação de autoria") <br></br>
 
-
+Então agora vamos acessar o {c:red} SWITCH04 {/c} e seguir o primeiro dos 3 passos citados acima. Aqui vou começar criando uma access-list para selecionar o tráfego interessante. <br></br>
