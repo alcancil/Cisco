@@ -30,7 +30,7 @@ Agora deixa duas tabelas com algumas recomendações de marcação e classifica�
 
 Então agora vamos acessar o roteador **R01** e seguir o primeiro dos 3 passos citados acima. Aqui vou começar criando uma access-list para selecionar o tráfego interessante. <br></br>
 
-| COMANDOS                                                                                |
+|      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
 | 01   | R01(config)# ip access-list extended CRITICAL                                    |
 | 02   | R01(config-ext-nacl)#permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www |
