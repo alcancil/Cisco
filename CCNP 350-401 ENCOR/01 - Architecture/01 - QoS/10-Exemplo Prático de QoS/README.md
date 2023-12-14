@@ -66,3 +66,41 @@ Então percebam que agora, quando o tráfego http sai do roteador R01 e vai em d
         <td width="50%"> <img src="Imagens/wireshark/host_server/02-Com_QoS_Http_volta.png"></img> </td> 
     </tr>
 </table>
+
+Então aqui iremos realizar a marcação com o trafego contrário. Para isso iremos crirar uma nova access-list que nomeei como **CRITICAL-VOLTA**
+
+|      |  COMANDOS                                                                             |
+| :--: | ------------------------------------------------------------------------------------- | 
+| 01   | R01(config)# ip access-list extended CRITICAL-VOLTA                                   |
+| 02   | R01(config-ext-nacl)#permit tcp host 192.168.20.10 192.168.10.0 0.0.0.255 established |
+
+Por questões de organização optei aqui por crir uma class-map chamada de **CRITICAL-VOLTA** <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#class-map match-any CRITICAL                                         |
+| 02   | R01(config-cmap)#match access-group name CRITICAL                                |
+
+E logo em seguida crio outra policy-map chamada de **QoS-VOLTA** <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#policy-map QoS-VOLTA                                                 |
+| 02   | R01(config-pmap)#class CRITICAL                                                  |
+| 03   | R01(config-pmap-c)#set dscp af31                                                 |
+
+E finalmente aplico a política na interface G0/0 no sentido de saída da interface. <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#int g0/1                                                             |
+| 02   | R01(config-if)#service-policy output QoS-VOLTA                                   |
+
+Agora vamos analisar uma captura do Whireshark na interface G0/0 do roteador **R01** para verificarmos como ficou agora.
+
+<table>
+    <tr >
+        <td width="50%"> <img src="Imagens/wireshark/server_host/01-Com_QoS_Http_ida.png"></img> </td>
+        <td width="50%"> <img src="Imagens/wireshark/server_host/01-Com_QoS_Http_volta.png"></img> </td> 
+    </tr>
+</table>
