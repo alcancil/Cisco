@@ -34,3 +34,13 @@ Então agora vamos acessar o roteador **R01** e seguir o primeiro dos 3 passos c
 | :--: | -------------------------------------------------------------------------------- | 
 | 01   | R01(config)# ip access-list extended CRITICAL                                    |
 | 02   | R01(config-ext-nacl)#permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www |
+
+Nessa acl eu estou dizendo que permito o tráfego da rede 192.168.10.0 /24 para o host 192.168.20.10 na porta 80 (palavra www). Agora precisamos que algo dê um match com essa regra para que depois possamos escolher o que fazer com isso. Então agora vou criar um **CLASS-MAP**. <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#class-map match-any CRITICAL                                         |
+| 02   | R01(config-cmap)#match access-group name CRITICAL                                |
+
+Pronto, aqui selecionamos noss tráfego interessante. Cabe aqui ressaltar que eu usei a palavra **match-any** ao invés de **match-all**. Imagine que tivéssemos dois ou mais critérios de seleção que não somente a access-list. Se usarmos o **match-all** o nosso CLASS-MAP tem que necessáriamente atender a todos os critérios. Já quando utilizamos **match-any**, a lógica passa a ser: **"Atenda ou um ou outro critério". <br></br>
+Então vamos ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego** <br></br>
