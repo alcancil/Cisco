@@ -47,7 +47,13 @@ Então vamos ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o 
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
-| 01   | R01(config)#policy-map CRITICAL                                                  |
+| 01   | R01(config)#policy-map QoS                                                       |
 | 02   | R01(config-pmap)#class CRITICAL                                                  |
 | 03   | R01(config-pmap-c)#set dscp af31                                                 |
-| 04   | R01(config-pmap-c)#set cos 3                                                     |
+
+Agora o que nos resta é aplicar a política em uma interface para que essa possa começar a valer. Então vou esolher a Interface G0/1 no sentido de output <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#int g0/1                                                             |
+| 02   | R01(config-if)#service-policy output QoS                                         |
