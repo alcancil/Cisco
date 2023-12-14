@@ -57,3 +57,12 @@ Agora o que nos resta é aplicar a política em uma interface para que essa poss
 | :--: | -------------------------------------------------------------------------------- | 
 | 01   | R01(config)#int g0/1                                                             |
 | 02   | R01(config-if)#service-policy output QoS                                         |
+
+Então percebam que agora, quando o tráfego http sai do roteador R01 e vai em direção ao servidor HTTP, ele é marcado com **DSCP AF31**, ou seja, como um tráfego critico. Como estamos dando um match nos baseando em acls, temos que ter em mente que essa marcação permaneçeram somente nesse sentido do tráfego. Mas e como fica o tráfego de volta ? Vamos analisar uma captura do wireshark que foi realizada na interface **G0/0** do roteado **R01**.
+
+<table>
+    <tr >
+        <td width="50%"> <img src="Imagens/wireshark/host_server/01-Com_QoS_Http_ida.png"></img> </td>
+        <td width="50%"> <img src="Imagens/wireshark/host_server/02-Com_QoS_Http_volta.png"></img> </td> 
+    </tr>
+</table>
