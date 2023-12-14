@@ -44,3 +44,10 @@ Nessa acl eu estou dizendo que permito o tráfego da rede 192.168.10.0 /24 para 
 
 Pronto, aqui selecionamos noss tráfego interessante. Cabe aqui ressaltar que eu usei a palavra **match-any** ao invés de **match-all**. Imagine que tivéssemos dois ou mais critérios de seleção que não somente a access-list. Se usarmos o **match-all** o nosso CLASS-MAP tem que necessáriamente atender a todos os critérios. Já quando utilizamos **match-any**, a lógica passa a ser: **"Atenda ou um ou outro critério". <br></br>
 Então vamos ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego** <br></br>
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#policy-map CRITICAL                                                  |
+| 02   | R01(config-pmap)#class CRITICAL                                                  |
+| 03   | R01(config-pmap-c)#set dscp af31                                                 |
+| 04   | R01(config-pmap-c)#set cos 3                                                     |
