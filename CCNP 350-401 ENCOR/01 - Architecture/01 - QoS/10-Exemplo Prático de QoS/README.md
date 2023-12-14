@@ -104,3 +104,12 @@ Agora vamos analisar uma captura do Whireshark na interface G0/0 do roteador **R
         <td width="50%"> <img src="Imagens/wireshark/server_host/01-Com_QoS_Http_volta.png"></img> </td> 
     </tr>
 </table>
+
+Todo o restante dos tráfegos que não são classificados, caem em uma classe chamada de class-default. Como aqui estou utilizando o modelo **DiffServ**, AF31 tem o seguinte significado: o número 3 é referente a prioridade da classe e o número 1 é referente a possíbilidade de descarte do pacote. Em outras palvras e seguindo a tabela anterior, é um tráfego CRITICO.
+
+| Descarte | Classe 1 | Classe 2 | Classe 3 | Classe 4 | Expresso |
+| :------: | :------: | :------: | :------: | :------: | :------: |
+| Baixo    |   AF11   |   AF21   |   AF31   |   AF41   |          |
+| Médio    |   AF12   |   AF22   |   AF32   |   AF42   |    EF    |
+| Alto     |   AF13   |   AF23   |   AF33   |   AF43   |          |
+
