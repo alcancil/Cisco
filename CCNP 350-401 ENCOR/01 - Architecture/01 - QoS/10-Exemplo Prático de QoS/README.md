@@ -28,4 +28,9 @@ Agora deixa duas tabelas com algumas recomendações de marcação e classifica�
 ![TABELA](Imagens/02-tabela_qos.png "Fonte: Internet sem especificação de autoria") <br></br>
 ![TABELA](Imagens/03-tabela_qos_02.png "Fonte: Internet sem especificação de autoria") <br></br>
 
-Então agora vamos acessar o <span style="color: red"> SWITCH04 </span> e seguir o primeiro dos 3 passos citados acima. Aqui vou começar criando uma access-list para selecionar o tráfego interessante. <br></br>
+Então agora vamos acessar o roteador **R01** e seguir o primeiro dos 3 passos citados acima. Aqui vou começar criando uma access-list para selecionar o tráfego interessante. <br></br>
+
+| COMANDOS                                                                                |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)# ip access-list extended CRITICAL                                    |
+| 02   | R01(config-ext-nacl)#permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www |
