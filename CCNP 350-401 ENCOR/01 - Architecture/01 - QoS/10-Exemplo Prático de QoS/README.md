@@ -113,3 +113,8 @@ Todo o restante dos tráfegos que não são classificados, caem em uma classe ch
 | Médio    |   AF12   |   AF22   |   AF32   |   AF42   |    EF    |
 | Alto     |   AF13   |   AF23   |   AF33   |   AF43   |          |
 
+Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamos voltar na nossa **police-map QoS** e acessat a classe **CRITICAL**. Agora vamos analisar as opções que temos aqui:
+
+![OPÇÕES](Imagens/02-opoes_QoS.png) <br></br>
+
+É aqui vamos escolher se iremos utilizar o modelo de police ou shapper, a quantidade de banda que iremos reservar, aprioridade do tráfego, etc. <br></br>
