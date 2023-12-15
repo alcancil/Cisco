@@ -67,6 +67,5 @@ Agora vamos verificar as configurações com alguns comandos interessantes. <br>
 </table>
 
 
-Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R01).zip](Arquivos/02-QoS_(R01).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
-Também deixei o arquivo ![R01.txt](Arquivos/R01.txt) contendo todas as configurações de R01. <br></br>
-Por fim, deixei uma pasta chamada ![WHIRESHARK](Imagens/wireshark/) com os arquivos de captura que realizei para que possem ser importados no wireshark e depois feita a análise dos mesmos.
+Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
+Também deixei o arquivo ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01. <br></br>

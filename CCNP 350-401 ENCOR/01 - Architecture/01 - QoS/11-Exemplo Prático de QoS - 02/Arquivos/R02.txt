@@ -1,8 +1,8 @@
 service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
- 
-hostname R01
+
+hostname R02
 
 boot-start-marker
 boot-end-marker
@@ -32,24 +32,18 @@ class-map match-any CRITICAL-VOLTA
 policy-map QoS-VOLTA
  class CRITICAL-VOLTA
   set dscp af31
-  police cir percent 30
-   conform-action transmit
-   exceed-action drop
-   violate-action drop
+  shape average 3000000
 policy-map QoS
  class CRITICAL
   set dscp af31
-  police cir percent 30
-   conform-action transmit
-   exceed-action drop
-   violate-action drop
+  shape average 3000000
 
 interface Loopback0
- ip address 10.10.10.10 255.255.255.255
+ ip address 20.20.20.20 255.255.255.255
 
 interface GigabitEthernet0/0
  bandwidth 10000000
- ip address 10.0.0.1 255.255.255.252
+ ip address 192.168.20.1 255.255.255.0
  ip ospf 100 area 0
  duplex auto
  speed auto
@@ -58,7 +52,7 @@ interface GigabitEthernet0/0
 
 interface GigabitEthernet0/1
  bandwidth 10000000
- ip address 192.168.10.1 255.255.255.0
+ ip address 10.0.0.6 255.255.255.252
  ip ospf 100 area 0
  duplex auto
  speed auto
@@ -80,7 +74,7 @@ interface GigabitEthernet0/3
  media-type rj45
 
 router ospf 100
- router-id 10.10.10.10
+ router-id 20.20.20.20
 
 ip forward-protocol nd
 
@@ -99,7 +93,8 @@ banner exec ^C
 * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 * education. IOSv is provided as-is and is not supported by Cisco's      *
 * Technical Advisory Center. Any use or disclosure, in whole or in part, *
-* of the IOSv Software or Documentation to any third party for any       *
+ --More--
+*Dec 15 23:44:45.525: %PLATFORM-5-SIGNATURE_VERIFIED: Image 'flash0:/vios-adventerprisek9-m' passed code signing ve* of the IOSv Software or Documentation to any third party for any       *
 * purposes is expressly prohibited except as otherwise authorized by     *
 * Cisco in writing.                                                      *
 **************************************************************************^C
