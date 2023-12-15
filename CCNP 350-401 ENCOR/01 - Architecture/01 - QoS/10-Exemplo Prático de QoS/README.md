@@ -113,8 +113,27 @@ Todo o restante dos tráfegos que não são classificados, caem em uma classe ch
 | Médio    |   AF12   |   AF22   |   AF32   |   AF42   |    EF    |
 | Alto     |   AF13   |   AF23   |   AF33   |   AF43   |          |
 
+Aqui vou abrir um parêntesis. Como as interfaces são Gigabits, então elas são 1.000 Mbps ou 100.000.0 bps. Com isso vamos ajustar as velocidades das interfaces com o comando **bandwith** <br></br>
+
+|      |  COMANDOS  INTERFACE G0/1          |  COMANDOS  INTERFACE G0/1          |
+| :--: | ---------------------------------- | ---------------------------------- |
+| 01   | R01(config)#int g0/0               | R01(config)#int g0/1               |
+| 02   | R01(config-if)#bandwith 10000000   | R01(config-if)#bandwith 10000000   |
+
 Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamos voltar na nossa **police-map QoS** e acessat a classe **CRITICAL**. Agora vamos analisar as opções que temos aqui:
 
 ![OPÇÕES](Imagens/02-opoes_QoS.png) <br></br>
 
-É aqui vamos escolher se iremos utilizar o modelo de police ou shapper, a quantidade de banda que iremos reservar, aprioridade do tráfego, etc. <br></br>
+É aqui que vamos escolher se iremos utilizar o modelo de police ou shapper, a quantidade de banda que iremos reservar, aprioridade do tráfego, etc. Então aqui vou escolher a prioridade de 30% de garantia da banda para o trafego selecionado, no caso o tráfego CRITICO (HTTP).
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#policy-map QoS                                                       |
+| 02   | R01(config-pmap)#class CRITICAL                                                  |
+| 03   | R01(config-if)#R01(config-pmap-c)#priority percent 30                            |
+
+**OBS:** executar o mesmo comando de **priority** na class QoS-VOLTA para garantir uma banda de 30% na ida e na volta. <br></br>
+
+Agora vamos listar como ficaram nossas polítcas de QoS.
+
+![POLÍTICA](Imagens/03-policy_map.png)
