@@ -135,3 +135,18 @@ Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamo
 | 05   | R01(config-pmap-c-police)#exceed-action drop                                     |
 | 06   | R01(config-pmap-c-police)#violate-action drop                                    |
 
+Aqui configuramos o policer para ter uma CIR (Commited Information Rate), ou seja, a taxa de tráfego monitorada em 30% que é medida em bits por segundo. O que estiver em conformidade com essa taxa a ação é de transmitir. Já o que excerder ou violar será descartado (DROP). <br></br>
+Agora para completar essa parte do nosso exemplo, vamos executar os mesmos passos na calsse CRITICAL-VOLTA da policy QoS-VOLTA.
+
+|      |  COMANDOS                                                                        |
+| :--: | -------------------------------------------------------------------------------- | 
+| 01   | R01(config)#policy-map QoS-VOLTA                                                 |
+| 02   | R01(config-pmap)#class CRITICAL-VOLTA                                            |
+| 03   | R01(config-pmap-c)#police cir percente 30                                        |
+| 04   | R01(config-pmap-c-police)#conform-action transmit                                |
+| 05   | R01(config-pmap-c-police)#exceed-action drop                                     |
+| 06   | R01(config-pmap-c-police)#violate-action drop                                    |
+
+Então vamos verificar como ficaram nossas políticas. <br></br>
+
+![POLÍTICAS](Imagens/05-policy_map.png)
