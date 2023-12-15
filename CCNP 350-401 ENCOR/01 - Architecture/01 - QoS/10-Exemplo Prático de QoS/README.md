@@ -157,3 +157,5 @@ Agora, dissmos anteriormente que na nossa **class-map** utlizamos a lógica **ma
 | :--: | ---------------------------------- | ------------------------------------ |
 | 01   | R01(config)#class-map CRITICAL     | R01(config)#class-map CRITICAL-VOLTA |
 | 02   | R01(config-cmap)#match dscp af31   | R01(config-cmap)#match dscp af31     |
+
+Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip)
