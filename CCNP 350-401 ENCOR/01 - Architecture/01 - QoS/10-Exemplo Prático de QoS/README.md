@@ -113,14 +113,14 @@ Todo o restante dos tráfegos que não são classificados, caem em uma classe ch
 | Médio    |   AF12   |   AF22   |   AF32   |   AF42   |    EF    |
 | Alto     |   AF13   |   AF23   |   AF33   |   AF43   |          |
 
-Aqui vou abrir um parêntesis. Como as interfaces são Gigabits, então elas são 1.000 Mbps ou 100.000.0 bps. Com isso vamos ajustar as velocidades das interfaces com o comando **bandwith** <br></br>
+Aqui vou abrir um parêntesis. Como as interfaces são Gigabits, então elas são 1.000 Mbps ou 100.000.0 bps. Com isso vamos ajustar as largura de banda das interfaces com o comando **bandwith** <br></br>
 
 |      |  COMANDOS  INTERFACE G0/1          |  COMANDOS  INTERFACE G0/1          |
 | :--: | ---------------------------------- | ---------------------------------- |
 | 01   | R01(config)#int g0/0               | R01(config)#int g0/1               |
 | 02   | R01(config-if)#bandwith 10000000   | R01(config-if)#bandwith 10000000   |
 
-Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamos voltar na nossa **police-map QoS** e acessat a classe **CRITICAL**. Agora vamos analisar as opções que temos aqui:
+Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamos voltar na nossa **police-map QoS** e acessar a classe **CRITICAL**. Agora vamos analisar as opções que temos aqui:
 
 ![OPÇÕES](Imagens/02-opoes_QoS.png) <br></br>
 
