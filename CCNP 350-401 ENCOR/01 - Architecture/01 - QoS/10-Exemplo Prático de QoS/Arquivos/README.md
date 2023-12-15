@@ -1,4 +1,4 @@
-# 06 - Marcação em Layer 2
+# 10 - EXEMPLO PRÁTICO DE QoS
 
 Pasta com os arquivos de exemplos de configuração dos equipamentos. <br></br>
 
