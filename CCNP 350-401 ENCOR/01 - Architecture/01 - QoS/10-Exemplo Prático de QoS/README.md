@@ -4,7 +4,7 @@ Agora vamos imaginar o seguinte cenário: <br></br>
 
 ![CENAÁRIO](Imagens/01-cenario.png)
 
-Aqui irei simular uma pequena empresa que se conecta a sua central passando pela Internet, representada aqui pelo roteador ISP. Então aqui teremos 3 fluxos de tráfego: o trafego HTTP, o tráfego TFTP e o tráfego do ICMP. Como esse somente é um exemplo, vamos dizer que o tráfego HTTP é critico para a empresa e queremos dar prioridade maior para esse tipo de tráfego. Em seguida, vamos dar uma prioridade menor ao tráfego FTP e por fim, a menor prioridade será dada ao tráfego ICMP. <br></br>
+Aqui irei simular uma pequena empresa que se conecta a sua central passando pela Internet, representada aqui pelo roteador ISP. Então aqui teremos 3 fluxos de tráfego: o trafego HTTP, o tráfego TFTP e o tráfego do ICMP. Como aqui somente é um exemplo, vamos dizer que o tráfego HTTP é critico para a empresa e queremos dar prioridade maior para esse tipo de tráfego. Em seguida, vamos dar uma prioridade menor ao tráfego FTP e por fim, a menor prioridade será dada ao tráfego ICMP. <br></br>
 Aqui temos que seguir alguns passos para realizara aconfiguração do QoS que são:
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
@@ -23,7 +23,7 @@ Primeiro irei realizar a captura dos pacotes de redes em alguns pontos para pode
 **OBS:** clique na imagem para aumentar e depois em voltar para retornar ao texto <br></br>
 
 Observe que o campo que interessa nessa análise é o **DIFFSERV** que no nosso caso está marcado como **COS0**, ou seja, ele não recebeu marcação alguma, está no padrão. Esse comportamento é o padrão para todo tipo de tráfego e nesse caso, será aplicado o algorítmo **FIFO (FIRST IN / FIRST OUT)**, ou seja, o primeiro que entra é o primeiro que sai. <br></br>
-Agora deixa duas tabelas com algumas recomendações de marcação e classificação para podermos dar sequência ao nosso exemplo. <br></br>
+Agora deixo duas tabelas com algumas recomendações de marcação e classificação para podermos dar sequência ao nosso exemplo. <br></br>
 
 ![TABELA](Imagens/02-tabela_qos.png "Fonte: Internet sem especificação de autoria") <br></br>
 ![TABELA](Imagens/03-tabela_qos_02.png "Fonte: Internet sem especificação de autoria") <br></br>
@@ -51,14 +51,14 @@ Então vamos ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o 
 | 02   | R01(config-pmap)#class CRITICAL                                                  |
 | 03   | R01(config-pmap-c)#set dscp af31                                                 |
 
-Agora o que nos resta é aplicar a política em uma interface para que essa possa começar a valer. Então vou esolher a Interface G0/1 no sentido de output <br></br>
+Agora o que nos resta é aplicar a política em uma interface para que essa possa começar a valer. Então vou escolher a Interface G0/0 no sentido de input <br></br>
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
-| 01   | R01(config)#int g0/1                                                             |
-| 02   | R01(config-if)#service-policy output QoS                                         |
+| 01   | R01(config)#int g0/0                                                             |
+| 02   | R01(config-if)#service-policy input QoS                                          |
 
-Então percebam que agora, quando o tráfego http sai do roteador R01 e vai em direção ao servidor HTTP, ele é marcado com **DSCP AF31**, ou seja, como um tráfego critico. Como estamos dando um match nos baseando em acls, temos que ter em mente que essa marcação permaneçeram somente nesse sentido do tráfego. Mas e como fica o tráfego de volta ? Vamos analisar uma captura do wireshark que foi realizada na interface **G0/0** do roteado **R01**.
+Então percebam que agora, quando o tráfego http sai do roteador R01 e vai em direção ao servidor HTTP, ele é marcado com **DSCP AF31**, ou seja, como um tráfego critico. Como estamos dando um match nos baseando em acls, temos que ter em mente que essa marcação permaneçerá somente nesse sentido do tráfego. Mas e como fica o tráfego de volta ? Vamos analisar uma captura do wireshark que foi realizada na interface **G0/0** do roteado **R01**.
 
 <table>
     <tr >
@@ -89,7 +89,7 @@ E logo em seguida crio outra policy-map chamada de **QoS-VOLTA** <br></br>
 | 02   | R01(config-pmap)#class CRITICAL                                                  |
 | 03   | R01(config-pmap-c)#set dscp af31                                                 |
 
-E finalmente aplico a política na interface G0/0 no sentido de saída da interface. <br></br>
+E finalmente aplico a política na interface G0/1 no sentido de saída da interface. <br></br>
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
@@ -122,18 +122,16 @@ Aqui vou abrir um parêntesis. Como as interfaces são Gigabits, então elas sã
 
 Bom, até aqui somente marcamos nosso tráfego tanto de ida, como de volta. Vamos voltar na nossa **police-map QoS** e acessar a classe **CRITICAL**. Agora vamos analisar as opções que temos aqui:
 
-![OPÇÕES](Imagens/02-opoes_QoS.png) <br></br>
+![OPÇÕES](Imagens/04-opoes_QoS.png) <br></br>
 
-É aqui que vamos escolher se iremos utilizar o modelo de police ou shapper, a quantidade de banda que iremos reservar, aprioridade do tráfego, etc. Então aqui vou escolher a prioridade de 30% de garantia da banda para o trafego selecionado, no caso o tráfego CRITICO (HTTP).
+É aqui que vamos escolher se iremos utilizar o modelo de police ou shapper, a quantidade de banda que iremos reservar, aprioridade do tráfego, etc. Então aqui vou escolher o modelo de policer garantindo banda para o trafego selecionado, no caso o tráfego CRITICO (HTTP).
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
 | 01   | R01(config)#policy-map QoS                                                       |
 | 02   | R01(config-pmap)#class CRITICAL                                                  |
-| 03   | R01(config-if)#R01(config-pmap-c)#priority percent 30                            |
+| 03   | R01(config-pmap-c)#police cir percente 30                                        |
+| 04   | R01(config-pmap-c-police)#conform-action transmit                                |
+| 05   | R01(config-pmap-c-police)#exceed-action drop                                     |
+| 06   | R01(config-pmap-c-police)#violate-action drop                                    |
 
-**OBS:** executar o mesmo comando de **priority** na class QoS-VOLTA para garantir uma banda de 30% na ida e na volta. <br></br>
-
-Agora vamos listar como ficaram nossas polítcas de QoS.
-
-![POLÍTICA](Imagens/03-policy_map.png)
