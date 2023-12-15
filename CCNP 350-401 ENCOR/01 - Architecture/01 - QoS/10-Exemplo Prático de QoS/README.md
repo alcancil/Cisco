@@ -149,4 +149,11 @@ Agora para completar essa parte do nosso exemplo, vamos executar os mesmos passo
 
 Então vamos verificar como ficaram nossas políticas. <br></br>
 
-![POLÍTICAS](Imagens/05-policy_map.png)
+![POLÍTICAS](Imagens/05-policy_map.png) <br></br>
+
+Agora, dissmos anteriormente que na nossa **class-map** utlizamos a lógica **match-any** que é para atender ou um ou outro critério. Então aqui vou adicionar mais um critério em ambas as class-maps. Imagine que queremos dar um match também em pacotes que vierem marcados como af31. Então devemos executra os comandos: <br></br>
+
+|      |  COMANDOS  CLASS-MAP CRITICAL      |  COMANDOS CLASS-MAP CRITICAL-VOLTA   |
+| :--: | ---------------------------------- | ------------------------------------ |
+| 01   | R01(config)#class-map CRITICAL     | R01(config)#class-map CRITICAL-VOLTA |
+| 02   | R01(config-cmap)#match dscp af31   | R01(config-cmap)#match dscp af31     |
