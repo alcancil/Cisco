@@ -57,10 +57,12 @@ Agora vamos verificar as configurações com alguns comandos interessantes. <br>
 
 <table>
     <tr >
-        <td width="30%"> <img src="Imagens/02-class_maps.png"></img> </td>
-        <td width="30%"> <img src="Imagens/03-policy_maps.png"></img> </td> 
-        <td width="30%"> <img src="Imagens/04-policy_maps_interface.png"></img> </td>
-        <td width="30%"> <img src="Imagens/05-policy_maps_interface.png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-class_maps.png"></img> </td>
+        <td width="50%"> <img src="Imagens/03-policy_maps.png"></img> </td>
+    </tr>
+    <tr >    
+        <td width="50%"> <img src="Imagens/04-policy_maps_interface.png"></img> </td>
+        <td width="50%"> <img src="Imagens/05-policy_maps_interface.png"></img> </td>
     </tr>
 </table>
 
