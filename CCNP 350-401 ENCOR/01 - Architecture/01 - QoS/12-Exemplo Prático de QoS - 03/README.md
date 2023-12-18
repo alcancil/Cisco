@@ -1,12 +1,11 @@
-# 11 - EXEMPLO PRÁTICO DE QoS 02
+# 12 - EXEMPLO PRÁTICO DE QoS 03
  
-Aqui vamos utilizar o mesmo cenário do exemplo anterior: <br></br>
+Sei que parece um pouco repetitivo, mas agora vou adicionar as classes restantes: TFTP e ICMP. Então mais uma vez vou partir do mesmo cenário: <br></br>
 
 ![CENAÁRIO](Imagens/01-cenario.png)
 
-Então no exemplo anterior configuramos o modelo de policer com marcação dscp no roteado **R01**. Agora vamos configurar o roteador **R02** que está posicionado após ao ISP. Dessa vez vamos escolher o modelo **shapper**. 
+Então agora vamos acessar o roteador R01 e completar o que falta por primeiro. Depois iremos partir para o roteador R02. Mais uma vez, lembre-se dos passos para implemntar QoS:<br></br> 
 
-Então vou avançar mais rápido pois as configurações são parecidas. Agora vamos acessar o roteador **R02** e seguir o primeiro dos 3 passos citados ateriormente. <br></br>
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
 3. Aplicara política em uma interface.
@@ -15,54 +14,54 @@ Então novamente vou começar criando as access-lists, tanto de ida e de volta, 
 
 |      |  COMANDOS                                                                             |
 | :--: | ------------------------------------------------------------------------------------- | 
-| 01   | R02(config)# ip access-list extended CRITICAL                                         |
-| 02   | R02(config-ext-nacl)#permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www      |
-| 03   | R02(config-ext-nacl)#exit                                                                      |
-| 04   | R02(config)# ip access-list extended CRITICAL-VOLTA                                   |
-| 05   | R02(config-ext-nacl)#permit tcp host 192.168.20.10 192.168.10.0 0.0.0.255 established |
-| 06   | R02(config-ext-nacl)#exit                                                                      |
+| 01   | R02(config)# ip access-list extended TFTP                                             |
+| 02   | R02(config-ext-nacl)#permit udp 192.168.10.0 0.0.0.255 host 192.168.20.11 eq tftp     |
+| 03   | R02(config-ext-nacl)#deny   udp any any eq tftp                                       |
+| 04   | R02(config-ext-nacl)#permit ip any any                                                |
+| 05   | R02(config-ext-nacl)#exit                                                             |
+| 06   | R02(config)# ip access-list extended TFTP-VOLTA                                       |
+| 07   | R02(config-ext-nacl)#permit ip any any                                                |
+| 08   | R02(config-ext-nacl)#exit                                                             |
 
-Na acl **CRITICAL** eu estou dizendo que permito o tráfego da rede 192.168.10.0 /24 para o host 192.168.20.10 na porta 80 (palavra www) para o tráfego de ida. Depois eu crio a segunda acl chamada **CRITICAL-VOLTA** onde digo que permito o trafego da rede 192.168.10.0 /24 que foi estabelecido com o servidor 192.168.20.10, ou seja, o tráfego http de volta. Agora precisamos que algo dê um match com essas regras para que depois possamos escolher o que fazer com isso. Então agora vou criar as **CLASS-MAP**. <br></br>
+Agora vamos as **CLASS-MAP TFTP** e **CLASS-MAP TFTP-VOLTA**. <br></br>
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
-| 01   | R02(config-cmap)# match access-group name CRITICAL                               |
-| 02   | R02(config-cmap)# match dscp af31                                                |
-| 03   | R02(config-cmap)# exit                                                           |
-| 04   | R02(config-cmap)#class-map match-any CRITICAL-VOLTA                              |
-| 05   | R02(config-cmap)# match dscp af31                                                |
-| 06   | R02(config-cmap)# exit                                                           |
+| 01   | R01(CONFIG)#class-map match-any TFTP                                             |
+| 02   | R01(config-cmap)# match access-group name TFTP                                   |
+| 03   | R01(config-cmap)# match dscp af31                                                |
+| 04   | R01(config-cmap)# exit                                                           |
+| 05   | R01(config-cmap)#class-map match-any TFTP-VOLTA                                  |
+| 02   | R01(config-cmap)# match access-group name TFTP-VOLTA                             |
+| 05   | R01(config-cmap)# match dscp af31                                                |
+| 06   | R01(config-cmap)# exit                                                           |
 
 Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego**. <br></br>
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
-| 01   | Router(config-pmap)# class CRITICALL                                             |
-| 02   | Router(config-pmap-c)#  set dscp af31                                            |
-| 03   | Router(config-pmap-c)#  shape average 3000000                                    |
-| 04   | Router(config-pmap-c)# exit                                                      |
-| 05   | Router(config-pmap-c)#  set dscp af31                                            |
-| 06   | Router(config-pmap-c)#  shape average 3000000                                    |
-| 07   | Router(config-pmap-c)# exit                                                      |
+| 01   | R01(config)#policy-map QoS                                                       |
+| 02   | Router(config-pmap)# class TFTP                                                  |
+| 03   | Router(config-pmap-c)# police cir percent 20                                     |
+| 04   | Router(config-pmap-c)# conform-action transmit                                   |
+| 05   | Router(config-pmap-c)# exceed-action drop                                        |
+| 06   | Router(config-pmap-c)# violate-action drop                                       |
+| 07   | Router(config-pmap-c)#  set dscp af11                                            |
+| 08   | Router(config-pmap-c)# exit                                                      |
+| 09   | R01(config)#policy-map QoS-VOLTA                                                 |
+| 10   | Router(config-pmap)# class TFTP-VOLTA                                            |
+| 11   | Router(config-pmap-c)# police cir percent 20                                     |
+| 12   | Router(config-pmap-c)# conform-action transmit                                   |
+| 13   | Router(config-pmap-c)# exceed-action drop                                        |
+| 14   | Router(config-pmap-c)# violate-action drop                                       |
+| 15   | Router(config-pmap-c)#  set dscp af11                                            |
+| 16   | Router(config-pmap-c)# exit                                                      |
 
-
-Agora o que nos resta é aplicar a política em uma interface para que essa possa começar a valer. Então vou escolher a Interface G0/0 no sentido de input <br></br>
-
-|      |  COMANDOS  INTERFACE G0/1                |  COMANDOS  INTERFACE G0/1                 |
-| :--: | ---------------------------------------- | ----------------------------------------- |
-| 01   | R01(config)#int g0/0                     | R01(config)#int g0/1                      |
-| 02   | R01(config-if)#service-policy input QoS  | R01(config-if)#service-policy input QoS   |
-
-Agora vamos verificar as configurações com alguns comandos interessantes. <br></br>
-
+Perceba que agora somente eu adicionei mais uma classe as políticas **QoS** e **QoS-VOLTA** não preciso fazer mais nada referente as interfaces pois essas políticas já estão aplicadas. Segue a captura do trafego **TFTP** no sentido de ida, **interface G0/0** e volta, **interface G0/1**
 <table>
     <tr >
-        <td width="50%"> <img src="Imagens/02-class_maps.png"></img> </td>
-        <td width="50%"> <img src="Imagens/03-policy_maps.png"></img> </td>
-    </tr>
-    <tr >    
-        <td width="50%"> <img src="Imagens/04-policy_maps_interface.png"></img> </td>
-        <td width="50%"> <img src="Imagens/05-policy_maps_interface.png"></img> </td>
+        <td width="50%"> <img src="Imagens/wireshark/01-TFTP_R01_G0_0.png"></img> </td>
+        <td width="50%"> <img src="Imagens/wireshark/02-TFTP_R01_G0_1.png"></img> </td>
     </tr>
 </table>
 
