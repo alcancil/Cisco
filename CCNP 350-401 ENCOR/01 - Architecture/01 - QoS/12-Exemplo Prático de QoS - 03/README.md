@@ -112,4 +112,4 @@ Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o t
 
 
 Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
-Também deixei o arquivo ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01. <br></br>
+Também deixei os arquivos ![R01.txt](Arquivos/R01.txt) e ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01 R02 respectivamente. <br></br>
