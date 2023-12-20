@@ -19,11 +19,8 @@ Então novamente vou começar criando as access-lists, tanto de ida e de volta, 
 | 03   | R02(config-ext-nacl)#deny   udp any any eq tftp                                       |
 | 04   | R02(config-ext-nacl)#permit ip any any                                                |
 | 05   | R02(config-ext-nacl)#exit                                                             |
-| 06   | R02(config)# ip access-list extended TFTP-VOLTA                                       |
-| 07   | R02(config-ext-nacl)#permit ip any any                                                |
-| 08   | R02(config-ext-nacl)#exit                                                             |
 
-Agora vamos as **CLASS-MAP TFTP** e **CLASS-MAP TFTP-VOLTA**. <br></br>
+Agora vamos as **CLASS-MAP TFTP**. <br></br>
 
 |      |  COMANDOS                                                                        |
 | :--: | -------------------------------------------------------------------------------- | 
@@ -31,10 +28,6 @@ Agora vamos as **CLASS-MAP TFTP** e **CLASS-MAP TFTP-VOLTA**. <br></br>
 | 02   | R01(config-cmap)# match access-group name TFTP                                   |
 | 03   | R01(config-cmap)# match dscp af31                                                |
 | 04   | R01(config-cmap)# exit                                                           |
-| 05   | R01(config-cmap)#class-map match-any TFTP-VOLTA                                  |
-| 02   | R01(config-cmap)# match access-group name TFTP-VOLTA                             |
-| 05   | R01(config-cmap)# match dscp af31                                                |
-| 06   | R01(config-cmap)# exit                                                           |
 
 Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego**. <br></br>
 
@@ -48,14 +41,8 @@ Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o t
 | 06   | Router(config-pmap-c)# violate-action drop                                       |
 | 07   | Router(config-pmap-c)#  set dscp af11                                            |
 | 08   | Router(config-pmap-c)# exit                                                      |
-| 09   | R01(config)#policy-map QoS-VOLTA                                                 |
-| 10   | Router(config-pmap)# class TFTP-VOLTA                                            |
-| 11   | Router(config-pmap-c)# police cir percent 20                                     |
-| 12   | Router(config-pmap-c)# conform-action transmit                                   |
-| 13   | Router(config-pmap-c)# exceed-action drop                                        |
-| 14   | Router(config-pmap-c)# violate-action drop                                       |
-| 15   | Router(config-pmap-c)#  set dscp af11                                            |
-| 16   | Router(config-pmap-c)# exit                                                      |
+
+**OBS:** aqui eu não criei uma classe chamada TFTP-VOLTA pois o trafego TFTP utiliza portas altas aleatórias para o trafego de volta. Já para o de ida ele utiliza a porta **69**. Como atendeu o match de ida, na volta não há nada que esteja marcando o trafego para outra classe e, sendo assim, manterá marcação escolhida.
 
 Perceba que agora somente eu adicionei mais uma classe as políticas **QoS** e **QoS-VOLTA** não preciso fazer mais nada referente as interfaces pois essas políticas já estão aplicadas. Segue a captura do trafego **TFTP** no sentido de ida, **interface G0/0** e volta, **interface G0/1**
 <table>
