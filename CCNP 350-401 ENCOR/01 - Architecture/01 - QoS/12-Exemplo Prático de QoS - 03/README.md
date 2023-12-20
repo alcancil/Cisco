@@ -47,7 +47,8 @@ Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o t
 Perceba que agora somente eu adicionei mais uma classe a política **QoS** e não preciso fazer mais nada referente as interfaces pois essas políticas já estão aplicadas. Segue a captura do trafego **TFTP** no sentido de ida, **interface G0/0** e volta, **interface G0/1**
 <table>
     <tr>
-        <td width="50%" align="center"> Captura tráfego TFTP </td>
+        <td width="50%" align="center"> Captura tráfego TFTP IDA</td>
+        <td width="50%" align="center"> Captura tráfego TFTP VOLTA</td>
     </tr>
     <tr >
         <td width="50%"> <img src="Imagens/wireshark/01-TFTP_R01_G0_0.png"></img> </td>
