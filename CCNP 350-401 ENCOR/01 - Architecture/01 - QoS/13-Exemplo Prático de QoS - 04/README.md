@@ -46,16 +46,33 @@ Agora, como já estamos mais acostumados com QoS, a única mudança que precisam
 | 04   | R01(config)#class-map match-any CRITICAL-VOLTA                                        |
 | 05   | R01(config-cmap)# match protocol http                                                 |
 | 06   | R01(config-cmap)# exit                                                                |
-| 07   | R01(config-cmap)#match protocol http                                                  |
-| 08   | R01(config)# class-map match-any TFTP                                                 |
-| 09   | R01(config-cmap)# match protocol TFTP                                                 |
-| 10   | R01(config-cmap)# exit                                                                |
-| 11   | R01(config)# class-map match-any SSH                                                  |
-| 12   | R01(config-cmap)# match protocol SSH                                                  |
-| 13   | R01(config-cmap)# exit                                                                |
+| 07   | R01(config)# class-map match-any TFTP                                                 |
+| 08   | R01(config-cmap)# match protocol TFTP                                                 |
+| 09   | R01(config-cmap)# exit                                                                |
+| 10   | R01(config)# class-map match-any SSH                                                  |
+| 11   | R01(config-cmap)# match protocol SSH                                                  |
+| 12   | R01(config-cmap)# exit                                                                |
 
+Agora vamos ver como ficaram nossas class-map em R01. <br></br>
 
+![CLASS-MAP](Imagens/03-Class-Map_R01.png) <br></br>
 
+Então temos que repetir o mesmo processo em R02. <br></br>
+
+|      |  COMANDOS                                                                             |
+| :--: | ------------------------------------------------------------------------------------- | 
+| 01   | R02(config)# class-map match-any CRITICAL                                             |
+| 02   | R02(config-cmap)# match protocol http                                                 |
+| 03   | R02(config-cmap)# exit                                                                |
+| 04   | R02(config)#class-map match-any CRITICAL-VOLTA                                        |
+| 05   | R02(config-cmap)# match protocol http                                                 |
+| 06   | R02(config-cmap)# exit                                                                |
+| 07   | R02(config)# class-map match-any TFTP                                                 |
+| 08   | R02(config-cmap)# match protocol TFTP                                                 |
+| 09   | R02(config-cmap)# exit                                                                |
+| 10   | R02(config)# class-map match-any SSH                                                  |
+| 11   | R02(config-cmap)# match protocol SSH                                                  |
+| 12   | R02(config-cmap)# exit                                                                |
 
 Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
 Também deixei os arquivos ![R01.txt](Arquivos/R01.txt) e ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01 R02 respectivamente. <br></br>
