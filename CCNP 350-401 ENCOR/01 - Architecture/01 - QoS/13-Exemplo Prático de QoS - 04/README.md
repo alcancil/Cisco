@@ -1,4 +1,33 @@
-# 12 - EXEMPLO PRÁTICO DE QoS 03
+# 13 - EXEMPLO PRÁTICO DE QoS 04
+
+Até aqui utlizamos o MQC (Modular QoS Cli) que nada mais é a interface de texto que acessessamos os equipamentos. Então vale a pena reforçar uam última vez os passos para se criar e aplicar as políticas de QoS que são: <br></br>
+
+1. Criar um **CLASS MAP** - Selecionar o tráfego importante
+2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
+3. Aplicara política em uma interface.
+
+Deixo um link com mais informações sobre o **MQC** <br></br>
+
+![MQC](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/qos_mqc/configuration/15-mt/qos-mqc-15-mt-book/qos-mqc.html) <br></br>
+
+Então quando vamos dar um match em uma acl estamos utilizando acls para isso. Mas a cisco disponibiliza o recurso NBAR (Network Based Application Recognition, reconhecimento de aplicativos baseado em rede), que é o sistema de inspeção profunda e inteligente da CISCO. Agora podemos analisar o tráfego desde a cama 3 até a camada 7. <br></br>
+
+Para acessarmos o NBAR através da cli, vamos realizar o seguintes passos:
+
+1. Acessar nossa **CLASS MAP** criada nos exemplos anteriores
+2. E dar um match a um protocolo. Aqui existe uma infinidade de protocolos que o IOS já reconhece. (Veja o exemplo.)
+
+<table>
+    <tr >
+        <td width="50%"> <img src="Imagens/02-Nbar(01).png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-Nbar(02).png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-Nbar(03).png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-Nbar(04).png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-Nbar(05).png"></img> </td>
+    </tr>
+</table>
+
+
  
 Sei que parece um pouco repetitivo, mas agora vou adicionar as classes restantes: TFTP e ICMP. Então mais uma vez vou partir do mesmo cenário: <br></br>
 
