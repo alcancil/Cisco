@@ -15,7 +15,6 @@ no mmi auto-configure
 no mmi pvc
 mmi snmp-timeout 180
 
-
 ip cef
 no ipv6 cef
 
@@ -26,15 +25,20 @@ redundancy
 class-map match-any CRITICAL
  match access-group name CRITICAL
  match dscp af31
+ match protocol http
+class-map match-any CRUTUCAL
 class-map match-any TFTP
  match access-group name TFTP
  match dscp af11
+ match protocol tftp
 class-map match-any SSH
  match access-group name SSH
  match dscp cs2
+ match protocol ssh
 class-map match-any CRITICAL-VOLTA
  match access-group name CRITICAL-VOLTA
  match dscp af31
+ match protocol http
 
 policy-map QoS-VOLTA
  class CRITICAL-VOLTA
@@ -62,7 +66,6 @@ policy-map QoS
    exceed-action drop
    violate-action drop
   set dscp cs2
-
 
 interface Loopback0
  ip address 10.10.10.10 255.255.255.255

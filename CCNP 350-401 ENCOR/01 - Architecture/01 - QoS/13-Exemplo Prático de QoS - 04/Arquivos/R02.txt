@@ -25,15 +25,19 @@ redundancy
 class-map match-any CRITICAL
  match access-group name CRITICAL
  match dscp af31
+ match protocol http
 class-map match-any TFTP
- match access-group name TFTP
+ match protocol tftp
  match dscp af11
+ match access-group name TFTP
 class-map match-any SSH
- match access-group name SSH
+ match protocol ssh
  match dscp cs2
+ match access-group name SSH
 class-map match-any CRITICAL-VOLTA
  match access-group name CRITICAL-VOLTA
  match dscp af31
+ match protocol http
 
 policy-map QoS-VOLTA
  class CRITICAL-VOLTA
@@ -44,11 +48,11 @@ policy-map QoS
   set dscp af31
   shape average 3000000
  class TFTP
+  shape average 20000000
   set dscp af11
-  shape average 2000000
  class SSH
-  set dscp cs2
   shape average 10000000
+  set dscp cs2
 
 interface Loopback0
  ip address 20.20.20.20 255.255.255.255
@@ -57,6 +61,7 @@ interface GigabitEthernet0/0
  bandwidth 10000000
  ip address 192.168.20.1 255.255.255.0
  ip ospf 100 area 0
+ shutdown
  duplex auto
  speed auto
  media-type rj45
@@ -66,6 +71,7 @@ interface GigabitEthernet0/1
  bandwidth 10000000
  ip address 10.0.0.6 255.255.255.252
  ip ospf 100 area 0
+ shutdown
  duplex auto
  speed auto
  media-type rj45
@@ -97,10 +103,6 @@ ip access-list extended CRITICAL
  permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www
 ip access-list extended CRITICAL-VOLTA
  permit tcp host 192.168.20.10 192.168.10.0 0.0.0.255 established
-ip access-list extended SSH
- permit tcp 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255 eq 22
-ip access-list extended TFTP
- permit udp 192.168.10.0 0.0.0.255 host 192.168.20.11 eq tftp
 
 control-plane
 
