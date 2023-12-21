@@ -1,0 +1,143 @@
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+
+hostname R02
+
+boot-start-marker
+boot-end-marker
+
+no aaa new-model
+ethernet lmi ce
+
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+
+ip cef
+no ipv6 cef
+
+multilink bundle-name authenticated
+
+redundancy
+
+class-map match-any CRITICAL
+ match access-group name CRITICAL
+ match dscp af31
+class-map match-any TFTP
+ match access-group name TFTP
+ match dscp af11
+class-map match-any SSH
+ match access-group name SSH
+ match dscp cs2
+class-map match-any CRITICAL-VOLTA
+ match access-group name CRITICAL-VOLTA
+ match dscp af31
+
+policy-map QoS-VOLTA
+ class CRITICAL-VOLTA
+  set dscp af31
+  shape average 3000000
+policy-map QoS
+ class CRITICAL
+  set dscp af31
+  shape average 3000000
+ class TFTP
+  set dscp af11
+  shape average 2000000
+ class SSH
+  set dscp cs2
+  shape average 10000000
+
+interface Loopback0
+ ip address 20.20.20.20 255.255.255.255
+
+interface GigabitEthernet0/0
+ bandwidth 10000000
+ ip address 192.168.20.1 255.255.255.0
+ ip ospf 100 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+ service-policy output QoS
+
+interface GigabitEthernet0/1
+ bandwidth 10000000
+ ip address 10.0.0.6 255.255.255.252
+ ip ospf 100 area 0
+ duplex auto
+ speed auto
+ media-type rj45
+ service-policy output QoS-VOLTA
+
+interface GigabitEthernet0/2
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+
+router ospf 100
+ router-id 20.20.20.20
+
+ip forward-protocol nd
+
+no ip http server
+no ip http secure-server
+
+ip access-list extended CRITICAL
+ permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq www
+ip access-list extended CRITICAL-VOLTA
+ permit tcp host 192.168.20.10 192.168.10.0 0.0.0.255 established
+ip access-list extended SSH
+ permit tcp 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255 eq 22
+ip access-list extended TFTP
+ permit udp 192.168.10.0 0.0.0.255 host 192.168.20.11 eq tftp
+
+control-plane
+
+banner exec ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+
+no scheduler allocate
+
+end
