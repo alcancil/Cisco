@@ -21,9 +21,14 @@ Para acessarmos o NBAR através da cli, vamos realizar o seguintes passos:
     <tr >
         <td width="50%"> <img src="Imagens/02-Nbar(01).png"></img> </td>
         <td width="50%"> <img src="Imagens/02-Nbar(02).png"></img> </td>
+    </tr>
+    <tr >
         <td width="50%"> <img src="Imagens/02-Nbar(03).png"></img> </td>
         <td width="50%"> <img src="Imagens/02-Nbar(04).png"></img> </td>
+    </tr>
+    <tr>
         <td width="50%"> <img src="Imagens/02-Nbar(05).png"></img> </td>
+        <td width="50%"> <img src="Imagens/02-Nbar(06).png"></img> </td>
     </tr>
 </table>
 
