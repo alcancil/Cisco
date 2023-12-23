@@ -17,5 +17,11 @@ Depois de remarcar / rebaixar a prioridade do tráfego, os mecanismos que evitam
 
 ## TOKEN BUCKET ALGORITHMS
 
+Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Então vou citar alguns termos para demonstrar como esse tipo de algorítmo funciona: 
+- **Commited Information Rate (CIR)**: essa é a taxa monitorada, definida no controle de tráfego. É medida em bits por segundo.
+- **Commited Time Interval (TC)**: O intervalo de tempo, em milessegundos (ms)
 
+Este é um <span style="color: red;">texto vermelho</span>.
+Este é um <span style="color: blue;">texto azul</span>.
+Este é um <span style="color: green;">texto verde</span>.
 
