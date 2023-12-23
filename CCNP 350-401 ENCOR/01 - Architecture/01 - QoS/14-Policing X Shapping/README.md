@@ -28,12 +28,15 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+
     .vermelho {
       color: red;
     }
+    
     .azul {
       color: blue;
     }
+    
     .verde {
       color: green;
     }
