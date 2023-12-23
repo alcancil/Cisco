@@ -28,3 +28,5 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
 - **BC** é o número de bits permitidos para serem enviados por TC
 - **CIR** é a taxa que quer manter
 
+![INTERFACE](Imagens/int_100_mbps.drawio.png) <br></br>
+
