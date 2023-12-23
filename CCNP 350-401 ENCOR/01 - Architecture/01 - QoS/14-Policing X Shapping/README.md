@@ -20,4 +20,11 @@ Depois de remarcar / rebaixar a prioridade do tráfego, os mecanismos que evitam
 Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Então vou citar alguns termos para demonstrar como esse tipo de algorítmo funciona: 
 - **Commited Information Rate (CIR)**: essa é a taxa monitorada, definida no controle de tráfego. É medida em bits por segundo.
 - **Commited Time Interval (TC)**: O intervalo de tempo, em milessegundos (ms) dividido pela rajada / pico de tráfego (BC). **TC** pode ser calculado pela fórmula: **TC = (BC[bits]) / CIR[bps] x 1000**
+- **Cmmited Burst Size (BC)**: o tamanho máximo do CIR token bucket, medido em bytes, e o máximo montante de tráfego que pode ser cálculado atráves da fórmula **BC = CIR x (TC / 1000)**
+- **TOKEN**: um único token representa **1 byte ou 8 bits**
+
+**OBS:** <br></br>
+- **TC** é o número de segmentos que será dividido em um segundo
+- **BC** é o número de bits permitidos para serem enviados por TC
+- **CIR** é a taxa que quer manter
 
