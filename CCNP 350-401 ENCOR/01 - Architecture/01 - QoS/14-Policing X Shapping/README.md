@@ -21,6 +21,21 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
 - **Commited Information Rate (CIR)**: essa é a taxa monitorada, definida no controle de tráfego. É medida em bits por segundo.
 - **Commited Time Interval (TC)**: O intervalo de tempo, em milessegundos (ms)
 
+
+<style>
+    .vermelho {
+      color: red;
+    }
+
+    .azul {
+      color: blue;
+    }
+
+    .verde {
+      color: green;
+    }
+  </style>
+
 Este é um <span style="color: red;">texto vermelho</span>.
 Este é um <span style="color: blue;">texto azul</span>.
 Este é um <span style="color: green;">texto verde</span>.
