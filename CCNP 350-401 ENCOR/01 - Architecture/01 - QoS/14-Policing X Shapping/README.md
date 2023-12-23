@@ -31,11 +31,9 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
     .vermelho {
       color: red;
     }
-
     .azul {
       color: blue;
     }
-
     .verde {
       color: green;
     }
