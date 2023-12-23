@@ -30,3 +30,8 @@ Este é um <span style="color: green;">texto verde</span>. <br></br>
 <span style="color:red;">Este é um texto vermelho.</span> <br></br>
 <span style="color:blue;">Este é um texto azul.</span> <br></br>
 <span style="color:green;">Este é um texto verde.</span> <br></br>
+
+`Este é um texto em cor vermelha` <br></br>
+`Este é um texto em cor azul` <br></br>
+`Este é um texto em cor verde` <br></br>
+
