@@ -22,7 +22,13 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
 - **Commited Time Interval (TC)**: O intervalo de tempo, em milessegundos (ms)
 
 
-<style>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colorindo Textos</title>
+  <style>
     .vermelho {
       color: red;
     }
@@ -35,8 +41,13 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
       color: green;
     }
   </style>
+</head>
+<body>
 
-Este é um <span style="color: red;">texto vermelho</span>.
-Este é um <span style="color: blue;">texto azul</span>.
-Este é um <span style="color: green;">texto verde</span>.
+<p>Este é um <span class="vermelho">texto vermelho</span>.</p>
+<p>Este é um <span class="azul">texto azul</span>.</p>
+<p>Este é um <span class="verde">texto verde</span>.</p>
+
+</body>
+</html>
 
