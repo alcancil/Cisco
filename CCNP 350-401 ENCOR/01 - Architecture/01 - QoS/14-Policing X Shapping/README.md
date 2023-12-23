@@ -30,3 +30,5 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
 
 ![INTERFACE](Imagens/int_100_mbps.drawio.png) <br></br>
 
+Esse gráfico representa uma interface de 100 mbits no período de 1 segundo. Não existe uma forma de dizer para a interface "transmita 50 mbits agora", por exemplo. Então como é feito o controle de tráfeo pela tax estipulada ? Simples: começa a enviar o tráfego e para a transmissão. Espera alguns segundos e ai retorna o tráfego, e isso ai sendo enfileirado. Então, para obtermos os **50mbps** na interface, o tráfego em 15 segundos é dividido por **8**, o que nos retorna **125ms**, ou seja, a cada 125 ms envia um pouco e para, espera 125 ms e depois envia de novo. No total isso serão 50 mbps. Se existir mais tráfego que o contratado, no exemplo 50 mbps, ou ele é descartado ou é armazenado em um buffer e enviado "atrasado". <br></br>
+
