@@ -72,3 +72,5 @@ Para calcular o intervalo de tempo que levaria para 1.000 pacotes serem enviados
 - **TIME INTERVAL AT LINE RATE = 12 ms**
 
 Então, como no exemplo anteriror de uma interface de 1 Gbps a 1.500 bytes cada pacote, ou 12 mb sendo enviados a cada segundo, a interface envia e depois para, depois envia e para, até terminar de enviar tudo. <br></br>
+
+![TRANSMISSÃO](Imagens/transmissao.png) <br></br>
