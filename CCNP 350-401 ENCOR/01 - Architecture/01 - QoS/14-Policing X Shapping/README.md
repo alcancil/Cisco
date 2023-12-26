@@ -40,3 +40,6 @@ Esse gráfico representa uma interface de 100 mbits no período de 1 segundo. N�
 É recomendado que o valor de BC seja **maior ou igual ao tamanho do do maior pacote IP no fluxo do tráfego**. De outra forma, nunca existiram tokens suficientes no bucket para os pacotes maiores e, eles sempre vão utrapassar a taxa limite pré-definida. <br></br>
 - Se o bucket ficar completamente cheio, os novos tokens serão descartados. Os tokens descartados não ficam disponíveis para os novos pacotes que surgirem.
 - Para os algorítmos **single bucket tokens**, a taxa de tráfego medida pode estar de acordo ou exceder a taxa de tráfego definida. <br></br>
+
+![TOKENS](Imagens/token.png) <br></br>
+
