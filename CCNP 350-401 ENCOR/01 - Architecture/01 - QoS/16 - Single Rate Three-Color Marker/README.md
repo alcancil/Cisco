@@ -14,4 +14,6 @@
 - O algorítmo two-rate three-color marker / policer resolve esse problema utilizando 2 taxas distintas
 > - **A CIR**
 > - **THE PEAK INFORMATION RATE (RIR)**
-- O algorítmo two-rate three-color marker / policer permite que uma taxa de excesso baseada em **PIR** tome duas ações diferentes para o tráfego excedente em diferentes valores de rajadas. Por exemplo, o tráfego violado pode ser descartado quando chega em uma taxa pré-estabelecida, e isso é uma coisa que não e possível com o algorítmo single-rate three-color policer. 
+- O algorítmo two-rate three-color marker / policer permite que uma taxa de excesso baseada em **PIR** tome duas ações diferentes para o tráfego excedente em diferentes valores de rajadas. Por exemplo, o tráfego violado pode ser descartado quando chega em uma taxa pré-estabelecida, e isso é uma coisa que não e possível com o algorítmo single-rate three-color policer.
+
+![CIR_X_PIR](Imagens/CIR_PIR.png)
