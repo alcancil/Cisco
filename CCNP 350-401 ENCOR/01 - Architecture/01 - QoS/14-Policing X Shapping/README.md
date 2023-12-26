@@ -59,3 +59,16 @@ Uma vez que o valor de TC é descoberto, o número de TCs por segundo podem ser 
 
 ## CÁLCULO DE CIR
 
+Para calcular uma CIR de 10.000, podemos utilizar a seguinte fórmula: 
+- **CIR = PACOTES POR SEGUNDO x PACOTES EM bits**
+- **CIR = 10.000 PACOTES POR SEGUNDO x 12.000 bits = 120.000.000 bps**
+- **CIR = 120 Mbps**
+
+Para calcular o intervalo de tempo que levaria para 1.000 pacotes serem enviados na interface (em linha), a seguinte fórmula é utilizada:
+
+- **TIME INTERVAL AT LINE RATE = (BC[bits] / INTERFACE SPEEED [bps]) x 1.000**
+- **TIME INTERVAL AT LINE RATE = (12 Mb / 1 Gbps) x 1.000**
+- **TIME INTERVAL AT LINE RATE = (12.000.000 bits / 1.000.000.000 bps) x 1.000**
+- **TIME INTERVAL AT LINE RATE = 12 ms**
+
+Então, como no exemplo anteriror de uma interface de 1 Gbps a 1.500 bytes cada pacote, ou 12 mb sendo enviados a cada segundo, a interface envia e depois para, depois envia e para, até terminar de enviar tudo. <br></br>
