@@ -47,7 +47,7 @@ Esse gráfico representa uma interface de 100 mbits no período de 1 segundo. N�
 
 Para entendermos melhor como esse algorítmo funciona, imagine que uma interface de 1 Gbps está configurada com um policer com uma taxa CIR definida para 120 Mbps e BC para 12 Mb. <br><br>
 O valor de TC não pode ser explicitado diretamente no IOS, mas pode se calculado: <br></br>
-**TC = (BC[bits] / CIR[bps]) * 1.000**
-**TC = (12 Mb / 120 Mbps) * 1.000**
-**Tc = (12.000.000 bits / 120.000.000 bps) * 1.000**
-**TC = 100 ms**
+- **TC = (BC[bits] / CIR[bps]) * 1.000**
+- **TC = (12 Mb / 120 Mbps) * 1.000**
+- **Tc = (12.000.000 bits / 120.000.000 bps) * 1.000**
+- **TC = 100 ms**
