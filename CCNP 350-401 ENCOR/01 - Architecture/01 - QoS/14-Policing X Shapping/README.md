@@ -32,3 +32,7 @@ Os Policers e os Shappers são baseados em algorítmos de **token buccket**. Ent
 
 Esse gráfico representa uma interface de 100 mbits no período de 1 segundo. Não existe uma forma de dizer para a interface "transmita 50 mbits agora", por exemplo. Então como é feito o controle de tráfeo pela tax estipulada ? Simples: começa a enviar o tráfego e para a transmissão. Espera alguns segundos e ai retorna o tráfego, e isso ai sendo enfileirado. Então, para obtermos os **50mbps** na interface, o tráfego em 15 segundos é dividido por **8**, o que nos retorna **125ms**, ou seja, a cada 125 ms envia um pouco e para, espera 125 ms e depois envia de novo. No total isso serão 50 mbps. Se existir mais tráfego que o contratado, no exemplo 50 mbps, ou ele é descartado ou é armazenado em um buffer e enviado "atrasado". <br></br>
 
+**TOKEN BUCKET:** um balde de tokens é um "espaço" que acumula os tokens até que o número máximo de tokens é atingido (como o BC quando utiliza um único bucket). Esses tokens são adicionados dentro de um buckt com uma taxa fixa (CIR). Cada pacote é checado para deixá-lo em conformidade com a taxa estipulad com o tamanho do pacote. Por exemplo, se o tamanho do pacote é de 1.500 bytes, ele retira 12.000 bits (1.500 x 8) do buckte para enviar ao pacote, o mecanismo de condicionante de tráfego pode tomar as seguintes ações:
+- **TRAFFIC SHAPPING**: armazena os pacotes em um buffer até tokes suficientes em um bucket
+- **TRAFFIC POLICING**: descarta os pacotes
+- **TRAFFIC POLICING**: remarca (Mark Down) os pacotes
