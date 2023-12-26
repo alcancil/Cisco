@@ -74,3 +74,8 @@ Para calcular o intervalo de tempo que levaria para 1.000 pacotes serem enviados
 Então, como no exemplo anteriror de uma interface de 1 Gbps a 1.500 bytes cada pacote, ou 12 mb sendo enviados a cada segundo, a interface envia e depois para, depois envia e para, até terminar de enviar tudo. <br></br>
 
 ![TRANSMISSÃO](Imagens/transmissao.png) <br></br>
+
+Os valores recomendados para o TC vão de 8ms á 125ms. Os valores de 8ms a 10ms são utilizados para tráfegos com menos delay, como voz, por exemplo. Valores maiores que 125 ms não saão recomendados pois ai o atraso é muito grande. <br></br>
+**OBS:** <br></br>
+Vamos supor que em uma interface de 100 mbps quisessemos estabelecer uma taxa de 50 mbps. Então poderíamos enviar o tráfego por 500ms e depois não enviar e esperar outro pacote ? <br></br>
+A resposta é não. Protocolos como voz e vídeo consideram isso como delay de 500ms, o que ultrapassa o limite suportado e, sendo assim, o pacote nunca seria enviado. Por isso o comprtamento anterior é o correto, envia, para, envia, para, etc até terminar de enviar tudo.
