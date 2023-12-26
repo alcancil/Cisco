@@ -51,3 +51,11 @@ O valor de TC não pode ser explicitado diretamente no IOS, mas pode se calculad
 - **TC = (12 Mb / 120 Mbps) * 1.000**
 - **Tc = (12.000.000 bits / 120.000.000 bps) * 1.000**
 - **TC = 100 ms**
+
+Uma vez que o valor de TC é descoberti, o número de TCs por segundo podem ser calculados: <br></br>
+
+- **TCs por segundo = 1.000 / TC**
+- **TCs por segundo = 1.000 ms / 100 ms = 10 TCs**
+
+## CÁLCULO DE CIR
+
