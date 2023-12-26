@@ -13,4 +13,6 @@ O primeiro token bucket opera muito parecido com o sistema Single-Rate Two Color
 - Se existirem tokens sobrando no bucket nos períodos de pouca ou nenhuma atividade, ao invés de descartar o excesso, o algorítmo coloca esses tokens em um segundo bucket para ser utilizado nos picos de tráfego que ultrapassem o CIR. 
 - Os token que são armazenados nesse segundo bucket são chamados de **excess burst (Be)** e, o Be é o número máximo de bits que pode exceder o valor de BC.
 
-O tráfegi pode ser classificado em 3 cores ou estados: <br></br>
+O tráfego pode ser classificado em 3 cores ou estados: <br></br>
+
+![THREE-COLOR](Imagens/Single_rate_three_colors.png) <br></br>
