@@ -1,14 +1,14 @@
 # 02 - QoS - Limite de Banda - Shapping
 
-Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
+Este tópico faz parte do item **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
-No artigo anterior eu demonstrei como limitar o uso de banda de um host de Ip conhecido através da técnica de policing. Agora vou utilizar o mesmo cenário porém demonstrado como utilizar a técnica de Shaping que é menos agressiva a princípio pois ela enfileira os pacotes que ultrapassam a taxa limite específicada ao invés de descartar o excesso. O host que iremos limitar tem o Ip **192.168.3.11** <br><br>
+No artigo anterior eu demonstrei como limitar o uso de banda de um host de Ip conhecido através da técnica de policing. Agora vou utilizar o mesmo cenário porém demonstrado como utilizar a técnica de Shaping que é menos agressiva a princípio pois ela enfileira os pacotes que ultrapassam a taxa limite especificada ao invés de descartar o excesso. O host que iremos limitar tem o Ip **192.168.3.11** <br><br>
 
 ![ cenário](Imagens/cenario.png) <br></br>
 
 Como todo o contexto já foi feito no artigo anterior, aqui vou começar logo com as configurações. <br></br>
 
-Para a utilização dessas técnicas, são nessários 3 passos : 
+Para a utilização dessas técnicas, são necessários 3 passos : 
 1. classificação do tráfego (class-map) 
 2. definição da política (police-map)
 3. aplicação das políticas nas interfaces (Essas podem ser de entrada ou saída)<br></br>
@@ -42,8 +42,8 @@ Então vamos acessar o roteador QoS da parte superior marcada em vermelho. Vamos
 06. **QoS(config-pmap-c)# police rate 1000000 bps**
 07. QoS(config-pmap-c-police)# end <br></br> 
 
-Aqui cabe ressaltar que utilizamos o comando class-map match **all**, mas poderiamos ter utilizado a palavra **any** . A diferença é quando utilizamos o **match-all**, o pacote tem que necessáriamente atender a todos os requisitos especificados na etapa de classificação. Agora se utlizarmos **match-any**, se o pacote atender a um ou mais dos requisitos, ele será classificado <br></br> 
-Também vale ressaltar que na linha 06 da configuração, escolhemos uma taxa de 1000000 bps ou 1Mbps. Ou seja, agora o usuário estara limitado a uma taxa de transmissão de somente 1 megabit por segundo. <br></br>
+Aqui cabe ressaltar que utilizamos o comando class-map match **all**, mas poderíamos ter utilizado a palavra **any** . A diferença é quando utilizamos o **match-all**, o pacote tem que necessariamente atender a todos os requisitos especificados na etapa de classificação. Agora se utilizarmos **match-any**, se o pacote atender a um ou mais dos requisitos, ele será classificado <br></br> 
+Também vale ressaltar que na linha 06 da configuração, escolhemos uma taxa de 1000000 bps ou 1Mbps. Ou seja, agora o usuário estará limitado a uma taxa de transmissão de somente 1 megabit por segundo. <br></br>
 
 **3. Aplicação das políticas nas interfaces** <br></br>
 
@@ -65,13 +65,13 @@ Logo após irei ligar o aplicativo nos hosts do lado do roteador QoS. Agora irem
 
 ![Hosts](Imagens/shapping/iperf/02-hosts.png) <br></br>
 
-Olhando os resultados podemos perceber que alimitação de banda foi aplicada. <br></br>
+Olhando os resultados podemos perceber que a limitação de banda foi aplicada. <br></br>
 ![Resultados](Imagens/shapping/iperf/03-limitado.png) ![Resultado](Imagens/shapping/iperf/04-normal.png) <br></br>
 
 O gráfico da parte superior representa o host limitado e o gráfico da parte inferior representa o host sem limitação. <br></br>
 
-Mas então não esxistem maneiras de verificação no próprio equipamento ? Sim. Temos alguns comandos que podemos executar para verificar os resultados. <br></br>
-O primeiro comando a ser executo é **show policy-map**. Porém se somente execurtarmos o comando assim, o equipamento vai exibir todas as políticas que estão configuradas. Então devmos executar o comando informando a interface a se analisar, **show policy-map interface f0/0** <br></br>
+Mas então não existem maneiras de verificação no próprio equipamento ? Sim. Temos alguns comandos que podemos executar para verificar os resultados. <br></br>
+O primeiro comando a ser executo é **show policy-map**. Porém se somente executarmos o comando assim, o equipamento vai exibir todas as políticas que estão configuradas. Então devemos executar o comando informando a interface a se analisar, **show policy-map interface f0/0** <br></br>
 
 ![Resultado](Imagens/shapping/04-verifica01.png) <br></br>
 
@@ -81,7 +81,7 @@ O segundo comando que podemos executar é **show interface f0/0** <br></br>
 
 ![Resultado](Imagens/shapping/05-verifica02.png) <br></br>
 
-Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivessemos escolhido algum outro algorítimo de enfileiramento ele apareceria aqui. <br></br>
+Nesse comando, é interessante se atentar ao campo **Queing Strategy** que indica qual é a estratégia de enfileiramento aplicada na interface. Podemos notar que aqui está como **Fifo (First In / First Out)** que é o padrão para todas as interfaces. Ou seja, o primeiro pacote que entra é o primeiro que sai. Esse comportamento se mantém assim pois aqui somente limitamos a largura de banda de um host até essa interface. Se tivéssemos escolhido algum outro algoritmo de enfileiramento ele apareceria aqui. <br></br>
 
-**OBS: Os arquivos com as configurções dos equipamentos presentes no laboratório se encontram na pasta arquivos.** <br></br>
+**OBS: Os arquivos com as configurações dos equipamentos presentes no laboratório se encontram na pasta arquivos.** <br></br>
 **OBS2: Aqui eu utilizei o EVE-NG para o laboratório. Deixei uma cópia do arquivo chamado Polcing_Shapping.zip dentro da pasta arquivos.**
