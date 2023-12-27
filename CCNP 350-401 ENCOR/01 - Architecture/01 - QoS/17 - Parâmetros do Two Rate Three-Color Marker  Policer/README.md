@@ -9,3 +9,5 @@ O Two-rate utiliza os seguintes parâmetros para medir o fluxo do tráfego:
 - **INCOMING PACKET LENGTH (B):** o tamanho do pacote de entrada, em bits
 - O algorítmo twoo-rate three color policer também utiliza dois token buckets
 - Ao invés de transferir os tokens não utilizados do bucket **BC** para o bucket **Be**, o policer tem dois buckets separados que são preenchidos com duas taxas diferentes de tokens
+
+![TOKEN](Imagens/Twoo_rate_Three_color_marker_policer.png) <br></br>
