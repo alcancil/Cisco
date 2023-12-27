@@ -4,7 +4,7 @@ Sei que parece um pouco repetitivo, mas agora vou adicionar as classes restantes
 
 ![CENAÁRIO](Imagens/01-cenario.png)
 
-Então agora vamos acessar o roteador R01 e completar o que falta por primeiro. Depois iremos partir para o roteador R02. Mais uma vez, lembre-se dos passos para implemntar QoS:<br></br> 
+Então agora vamos acessar o roteador R01 e completar o que falta por primeiro. Depois iremos partir para o roteador R02. Mais uma vez, lembre-se dos passos para implementar QoS:<br></br> 
 
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
@@ -56,7 +56,7 @@ Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o t
 | 14   | R01(config-pmap-c)# set dscp cs2                                                 |
 | 15   | R01(config-pmap-c)# exit                                                         |
 
-**OBS:** aqui eu não criei uma classe chamada TFTP-VOLTA e nem SSH-VOLTA pois o trafego TFTP utiliza portas altas aleatórias para o trafego de volta. Já para o de ida ele utiliza a porta **69**. Como atendeu o match de ida, na volta não há nada que esteja marcando o trafego para outra classe e, sendo assim, manterá marcação escolhida. O mesmo ocorre para o tráfego ssh, que utiliza a porta 22 no servidor e porta aleatórias no client. <br></br>
+**OBS:** aqui eu não criei uma classe chamada TFTP-VOLTA e nem SSH-VOLTA pois o trafego TFTP utiliza portas altas aleatórias para o trafego de volta. Já para o de ida ele utiliza a porta **69**. Como atendeu o match de ida, na volta não há nada que esteja marcando o trafego para outra classe e, sendo assim, manterá marcação escolhida. O mesmo ocorre para o tráfego ssh, que utiliza a porta 22 no servidor e porta aleatórias no cliente. <br></br>
 
 Perceba que agora somente eu adicionei mais uma classe a política **QoS** e não preciso fazer mais nada referente as interfaces pois essas políticas já estão aplicadas. Segue a captura do trafego **TFTP** no sentido de ida, **interface G0/0** e volta, **interface G0/1**
 <table>
@@ -111,5 +111,5 @@ Vamos agora ao passo **2. Criar uma **Policy MAP** - Definir o que fazer com o t
 | 09   | R01(config-pmap-c)# exit                                                         |
 
 
-Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
+Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteamento chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
 Também deixei os arquivos ![R01.txt](Arquivos/R01.txt) e ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01 R02 respectivamente. <br></br>

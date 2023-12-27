@@ -6,7 +6,7 @@ Aqui vamos utilizar o mesmo cenário do exemplo anterior: <br></br>
 
 Então no exemplo anterior configuramos o modelo de policer com marcação dscp no roteado **R01**. Agora vamos configurar o roteador **R02** que está posicionado após ao ISP. Dessa vez vamos escolher o modelo **shapper**. 
 
-Então vou avançar mais rápido pois as configurações são parecidas. Agora vamos acessar o roteador **R02** e seguir o primeiro dos 3 passos citados ateriormente. <br></br>
+Então vou avançar mais rápido pois as configurações são parecidas. Agora vamos acessar o roteador **R02** e seguir o primeiro dos 3 passos citados anteriormente. <br></br>
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
 3. Aplicara política em uma interface.
@@ -67,5 +67,5 @@ Agora vamos verificar as configurações com alguns comandos interessantes. <br>
 </table>
 
 
-Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
+Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteamento chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
 Também deixei o arquivo ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01. <br></br>

@@ -1,9 +1,9 @@
 # 09 - EXEMPLO DE QOS WIRELLESS
 
-Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
+Este tópico faz parte do item **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
 Uma rede sem fio pode ser configurada para utilizar QoS. Por exemplo, uma Wirelles Lan Controller (WLC) pode estar no limite de uma rede cabeada e a rede sem fio, então esse seria o local ideal para configurar os limites de confiança. <br></br>
-Os tráfegos de entrada e saída da WLC podem ser classificados e marcados e isso pode ser tratado de forma apropriada conforme é transmitido atráves do ar e dentro da rede cabeada. <br></br>
+Os tráfegos de entrada e saída da WLC podem ser classificados e marcados e isso pode ser tratado de forma apropriada conforme é transmitido através do ar e dentro da rede cabeada. <br></br>
 O QoS Wirelles pode somente utilizar 4 categorias para classificação / marcação. Note que os nomes das categorias estão em palavras humanas, o que corresponde a valores **802.1p e DSCP** <br></br>
 
 | CATEGORIA QoS | TIPO DE TRÁFEGO      | 802.1 p TAG | VALOR DSCP |

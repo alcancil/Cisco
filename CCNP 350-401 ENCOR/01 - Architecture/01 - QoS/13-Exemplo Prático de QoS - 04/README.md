@@ -1,6 +1,6 @@
 # 13 - EXEMPLO PRÁTICO DE QoS 04
 
-Até aqui utlizamos o MQC (Modular QoS Cli) que nada mais é a interface de texto que acessessamos os equipamentos. Então vale a pena reforçar uam última vez os passos para se criar e aplicar as políticas de QoS que são: <br></br>
+Até aqui utilizamos o MQC (Modular QoS Cli) que nada mais é a interface de texto que acessamos os equipamentos. Então vale a pena reforçar uma última vez os passos para se criar e aplicar as políticas de QoS que são: <br></br>
 
 1. Criar um **CLASS MAP** - Selecionar o tráfego importante
 2. Criar uma **Policy MAP** - Definir o que fazer com o tráfego
@@ -74,5 +74,5 @@ Então temos que repetir o mesmo processo em R02. <br></br>
 | 11   | R02(config-cmap)# match protocol SSH                                                  |
 | 12   | R02(config-cmap)# exit                                                                |
 
-Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteaemneto chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
+Deixo aqui dois arquivos. O primeiro contendo as configurações iniciais de roteamento chama de ![01-QoS(Zerado).zip](Arquivos/01-QoS(Zerado).zip) e outro com as configurações realizadas em R01 chamado ![02-QoS_(R02).zip](Arquivos/02-QoS_(R02).zip). Estes arquivos podem ser importados no EVE-NG. **OBS:** favor se atentar as interfaces pois devido a imagem utilizadas, elas sempre iniciam desligadas, mesmo salvando a configuração para estarem ligadas. <br></br>
 Também deixei os arquivos ![R01.txt](Arquivos/R01.txt) e ![R02.txt](Arquivos/R02.txt) contendo todas as configurações de R01 R02 respectivamente. <br></br>
