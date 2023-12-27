@@ -1,6 +1,6 @@
 # 04 - Problemas
 
-Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
+Este tópico faz parte do item **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
 No artigo anterior, eu contextualizei um pouco sobre o surgimento das redes e como surgiram os seus problemas. Então quando se fala em aplicar QoS é por conta de uma real necessidade. <br></br>
 Quando pacotes trafegam pela Internet, eles utilizam um modelo chamado de Best Effort, ou melhor esforço, ou seja, nenhum tipo de trafego vai receber algum tipo de tratamento ou priorização. Então nos momentos de congestionamento de uma rede, esses pacotes vão ficar a mercê da capacidade de processamento dos roteadores e da disponibilidade da largura de banda do link local. Então como visto anteriormente, podem ocorrer diversos problemas tais como latência, jitter, escassez de banda e até mesmo perca de pacotes. <br></br>
@@ -12,7 +12,7 @@ Latência pode-se dizer que é o sinônimo de atraso, pois é o tempo que um pac
 
 **02. JITTER** <br></br>
 
-Jitter é muito parecido com a Latência mas ele é mais importante quando se trata de aplicações em tempo real como voz e vídeo por exemplo. O Jitter é variação do atraso e também é medido em milessegundos. Vamos retomar o exemplo anterior do jogo online onde a latência tinha sido de 20 ms. Agora imagine que um segundo pacote saia da rede com uma latência de 50 Ms<br></br>
+Jitter é muito parecido com a Latência mas ele é mais importante quando se trata de aplicações em tempo real como voz e vídeo por exemplo. O Jitter é variação do atraso e também é medido em milissegundos. Vamos retomar o exemplo anterior do jogo online onde a latência tinha sido de 20 ms. Agora imagine que um segundo pacote saia da rede com uma latência de 50 Ms<br></br>
 Então: **jitter = 50 ms - 20 ms = 30 ms** <br></br>
 
 A recomendação é que o *jitter não ultrapasse os 30 ms* pois com mais de 30 ms  começamos a ter uma degradação na qualidade do sinal. <br></br>
@@ -33,7 +33,7 @@ Nesse caso se a matriz quisesse conversar com o escritório, teríamos uma largu
 
 Então os principais problemas sentidos seriam fala fora de sincronia em um vídeo, voz metalizada em uma ligação, eco em uma ligação, travamentos de aplicativos, lentidão, pixelização de vídeos, etc. Esses são os sintomas que os usuários na sua maioria irão relatar. É aqui que podemos notar a importância de se aplicar algum mecanismo de QoS. <br></br>
 
-Agora vamos observar o cenário. Aqui eu estou aproveitando o mesmo cenário anterior, do tópico 03 - Auto QoS. Porém entre o switch 01 e o roteador 03 eu adicionei o *NETem*, que é uma aplicação Linux que foi desenvolvida para gerar alguns tipos de tráfego na rede. Aqui foi utilizada a versão para o emulador Gns3 e convertida para o Eve-Ng. Link para download  https://gns3.com/marketplace/appliances/netem . Mais informações sobre a aplicção podem ser obtidas em: https://wiki.linuxfoundation.org/networking/netem <br></br>
+Agora vamos observar o cenário. Aqui eu estou aproveitando o mesmo cenário anterior, do tópico 03 - Auto QoS. Porém entre o switch 01 e o roteador 03 eu adicionei o *NETem*, que é uma aplicação Linux que foi desenvolvida para gerar alguns tipos de tráfego na rede. Aqui foi utilizada a versão para o emulador Gns3 e convertida para o Eve-Ng. Link para download  https://gns3.com/marketplace/appliances/netem . Mais informações sobre a aplicação podem ser obtidas em: https://wiki.linuxfoundation.org/networking/netem <br></br>
 
 ![NETem](Imagens/cenario.png) <br></br>
 
@@ -61,7 +61,7 @@ Agora repare na saída. <br></br>
 
 ![PING](Imagens/ping_delay.png) <br></br>
 
-Agora podemos perceber que o tempo de resposta aumentou. Agora ele fica em uma média de 102 ms. Então esse é um atraso adicionado no tempo de resposa, ou seja, é o **Delay** <br></br>
+Agora podemos perceber que o tempo de resposta aumentou. Agora ele fica em uma média de 102 ms. Então esse é um atraso adicionado no tempo de resposta, ou seja, é o **Delay** <br></br>
 Por fim, vou alterar o NETem para termos um delay de 50 ms e uma variação de 20 ms. Ou seja, nosso **jitter** será de 20 ms . <br></br>
 
 <table>

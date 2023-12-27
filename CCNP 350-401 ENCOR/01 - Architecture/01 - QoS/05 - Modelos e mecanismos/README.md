@@ -1,6 +1,6 @@
 # 05 - Modelos e mecanismos QoS
 
-Este tópico faz parte do ítem **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
+Este tópico faz parte do item **1.5 Interpret wired and wireless QoS configurations** do blueprint do exame. <br></br>
 
 Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 técnicas e expliquei os problemas existentes por falta da aplicação dos mecanismos de QoS. Mas existem 3 modelos de QoS. Vamos analisá-los: <br></br>
 
@@ -14,13 +14,13 @@ Bom, até aqui eu demonstrei um caso de limitação de banda com o uso de 2 téc
 |----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | Desenvolvido para aplicações em tempo real como voz e vídeo                            | Não utiliza protocolo de sinalização                                                         |
 | Utiliza recursos (como largura de banda) fim-a-fim e utiliza o protocolo RSVP          | É altamente escalável e por esse motivo é mais preferido                                     |
-| Qualquer largura de banda reservada e não utilizad é desperdiçada                      | Funciona por slatos (PBH - Per Hop Basis), então tem que ser configurado em cada equipamento |
+| Qualquer largura de banda reservada e não utilizad é desperdiçada                      | Funciona por saltos (PBH - Per Hop Basis), então tem que ser configurado em cada equipamento |
 | Não escala muito bem em redes grandes                                                  | Divide o tráfego IP em classes e realiza a marcação baseado nos requerimentos de negócio     |
-| Para realizar o QoS fim-a-fim, necessita rodar em todos os nós, iclusive nos endpoints | Cada classe pode ser marcadacom um tipo diferente de nível de serviço                        |
+| Para realizar o QoS fim-a-fim, necessita rodar em todos os nós, inclusive nos endpoints | Cada classe pode ser marcada com um tipo diferente de nível de serviço                        |
 
 ## CLASSIFICAÇÃO E MARCAÇÃO
 
-Bom agora que entendemos as diferenças entre os modelos de QoS, temos que entender que o tráfego Ip precisa ser marcado e classificado para que depois se possa aplicar uma política em cima dessa classificação e marcação, ou seja, para que possamos escolher o que vai acontecer com o tráfego. Então cada dispositivo primeiro identifica o tipo de tráfego para após, marcá-lo. Depois de calssificado, o dispositivo vai colorir cada tipo de tráfego para assim fazer a sua marcação e com isso conseguir separar cada tráfego por classes. <br></br>
+Bom agora que entendemos as diferenças entre os modelos de QoS, temos que entender que o tráfego Ip precisa ser marcado e classificado para que depois se possa aplicar uma política em cima dessa classificação e marcação, ou seja, para que possamos escolher o que vai acontecer com o tráfego. Então cada dispositivo primeiro identifica o tipo de tráfego para após, marcá-lo. Depois de classificado, o dispositivo vai colorir cada tipo de tráfego para assim fazer a sua marcação e com isso conseguir separar cada tráfego por classes. <br></br>
 
 ![CLASSIFICAÇÃO](Imagens/classificao.png) <br></br>
 
@@ -40,7 +40,7 @@ Depois que o pacote IP é classificado, ele pode ser marcado / remarcado, enfile
 
 O *NBAR 2.0* é o mecanismo que a CISCO implementou para realizar a inspeção profunda de pacotes desde a camada 3 até a camada 7. Ele também verifica portas TCP/UDP estáticas ou dinâmicas e também consegue verificar sub interfaces. Ele trabalha em 2 modos: 
 
-* __Descoberta de Protocolos :__ nesse modo, o NBAR identifica automáticamente os protocolos que passam através de uma interface, identifica quais estão ativos e habilita estatísticas em modo real.
+* __Descoberta de Protocolos :__ nesse modo, o NBAR identifica automaticamente os protocolos que passam através de uma interface, identifica quais estão ativos e habilita estatísticas em modo real.
 * __Modular QoS CLI (MQC) :__ o MQC é uma interface de linha de comando que permite definir classes de tráfego, criar e configurar classes de tráfego e, em seguida, anexar essas políticas nas interfaces. Com isso, os diferentes tráfegos são colocados em diferentes categorias o que permite se criar diferentes políticas de tráfego de rede, uma para cada tráfego, por exemplo.
 
 Exemplo de Protocolos suportados pelo NBAR
@@ -49,7 +49,7 @@ Exemplo de Protocolos suportados pelo NBAR
 
 ## MARCAÇÃO
 
-Depois de classificados, os fluxos precisam ser marcados. Esse é um mecânismo de QoS que colore um pacote / frame alterando um campo do cabeçalho com um discritor. Isso faz com que os diferentes tipos de pacotes / frames sejam diferenciados para poderem depois serem remarcados, enfileirados ou passar pelos mecanismos de evitar congestionamento.
+Depois de classificados, os fluxos precisam ser marcados. Esse é um mecanismo de QoS que colore um pacote / frame alterando um campo do cabeçalho com um descritor. Isso faz com que os diferentes tipos de pacotes / frames sejam diferenciados para poderem depois serem remarcados, enfileirados ou passar pelos mecanismos de evitar congestionamento.
 
 | DESCRITOR DE TRÁFEGO                  | DESCRIÇÃO                                                                                                    |
 |---------------------------------------|------------------------------------------------------------------------------------------------------------- |
