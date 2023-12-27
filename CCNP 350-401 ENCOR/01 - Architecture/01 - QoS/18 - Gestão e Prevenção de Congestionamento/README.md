@@ -1,4 +1,4 @@
-# 17 - Parâmetros do Two Rate Three-Color Marker  Policer
+# 18 - Gestão e Prevenção de Congestionamento
 
 O Two-rate utiliza os seguintes parâmetros para medir o fluxo do tráfego:
 - **COMMITED INFORMATION RATE (CIR):** A taxa monitorada
