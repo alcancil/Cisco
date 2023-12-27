@@ -1,16 +1,22 @@
 # 18 - Gestão e Prevenção de Congestionamento
 
-O Two-rate utiliza os seguintes parâmetros para medir o fluxo do tráfego:
-- **COMMITED INFORMATION RATE (CIR):** A taxa monitorada
-- **PEAK INFORMATION RATE (PIR):** A taxa máximo de tráfego permitido. O PIR de ser igual ou maior que o CIR
-- **PEAK BURST SIZE (Be):** O tamanho máximo de PIR do token bucket, medido em bytes. Também chamado de **PBS** e está na rfc 2698. Deve ser igual ou maior que **BC**
-- **COMMITED BURST SIZE (BC):** O número de tokens dentro do bucket **BC**. Não confundir com **TC (Commited Time Interval)**
-- **BP BUCKET TOKEN COUNT (TP):** o número de tokens no bucket BP
-- **INCOMING PACKET LENGTH (B):** o tamanho do pacote de entrada, em bits
-- O algoritmo two-rate three color policer também utiliza dois token buckets
-- Ao invés de transferir os tokens não utilizados do bucket **BC** para o bucket **Be**, o policer tem dois buckets separados que são preenchidos com duas taxas diferentes de tokens
+O gerenciamento de congestionamento envolve a combinação de enfileiramento e agendamento. <br></br>
+- **Queuing (também conhecido como buffering)** é o armazenamento temporário dos pacotes em excesso (buffer)
+- Queuing é ativado quando uma interface de saída está congestionada e é desativado quando acaba o congestionamento
+> - O congestionamento é detectado pelo algoritmo de enfileiramento quando ocorre um enfileiramento na camada de hardware / layer 1 presente nas interfaces físicas, conhecido como **transmit ring (Tx-Ring ou TxQ)** e eles estão cheios 
+> - Quando o Tx-Ring esvazia, isso indica que não existem mais congestionamentos e é desativado
+- O congestionamento pode ocorrer por uma dessas duas razões:
+> - A interface de entrada é mais rápida do que a de saída
+> - A interface de saída está recebendo pacotes de múltiplas interfaces de entrada
 
-![TOKEN](Imagens/Twoo_rate_Three_color_marker_policer.png) <br></br>
+## TÈCNICAS LEGADAS DE ENFILEIRAMENTO
 
-- O bucket Be é preenchido com os Tokens PIR, e o bucket BC é preenchido com os tokens CIR. Nesse modelo, BE representa o pico máximo de tráfego que pode ser enviado durante um intervalo de um sub-segundo.
-- A lógica varia ainda mais, pois a verificação inicial é para ver se o tráfego está dentro do PIR. Só então o trafego é comparado com o CIR. Em outras palavras, uma condição de violação e a primeira a ser checada, depois a condição exceed e, por fim, a condição conform, ou seja, utiliza a lógica reversa de algoritmo single-rate three-color policer.
+- Quando o congestionamento está ocorrendo, as filas enchem e os pacotes podem ser reordenados por algum algoritmo de enfileiramento e, então, os pacotes de maior prioridade saem mais rápido que os de baixa prioridade.
+- Um algoritmo de agendamento (Scheduling) decide qual será o próximo pacote a ser transmitido. O Scheduling sempre fica ativo, mesmo quando a interface enfrenta congestionamento.
+- Existem vários algoritmos de enfileiramento, mas a maioria não é adequado para as redes modernas. Os algoritmos que precedem a arquitetura MQC incluem: <br></br>
+
+|                          LEGACY QUEUING                         |
+| :----------------------------- | :----------------------------- | 
+| First In First Out (FIFO)      | Weighted Round Robin (Wrr)     |
+| Priority Queuing (PQ)          | Round Robin                    |
+| Custom Queuing                 | Weigted Fair Queuing (WFQ)     |
