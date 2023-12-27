@@ -9,13 +9,13 @@ O gerenciamento de congestionamento envolve a combinação de enfileiramento e a
 > - A interface de entrada é mais rápida do que a de saída
 > - A interface de saída está recebendo pacotes de múltiplas interfaces de entrada
 
-## TÈCNICAS LEGADAS DE ENFILEIRAMENTO
+## TÉCNICAS LEGADAS DE ENFILEIRAMENTO
 
 - Quando o congestionamento está ocorrendo, as filas enchem e os pacotes podem ser reordenados por algum algoritmo de enfileiramento e, então, os pacotes de maior prioridade saem mais rápido que os de baixa prioridade.
 - Um algoritmo de agendamento (Scheduling) decide qual será o próximo pacote a ser transmitido. O Scheduling sempre fica ativo, mesmo quando a interface enfrenta congestionamento.
 - Existem vários algoritmos de enfileiramento, mas a maioria não é adequado para as redes modernas. Os algoritmos que precedem a arquitetura MQC incluem: <br></br>
 
-|                          LEGACY QUEUING                         |
+|         LEGACY QUEUING         |   LEGACY QUEUING               |
 | :----------------------------- | :----------------------------- | 
 | First In First Out (FIFO)      | Weighted Round Robin (Wrr)     |
 | Priority Queuing (PQ)          | Round Robin                    |
