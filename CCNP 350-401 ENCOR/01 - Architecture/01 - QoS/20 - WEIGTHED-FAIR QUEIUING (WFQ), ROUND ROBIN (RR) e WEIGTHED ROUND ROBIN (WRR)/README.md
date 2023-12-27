@@ -16,6 +16,6 @@ Cada fila recebe uma parcela igual da largura de banda. Ele atende os pacotes de
 
 ## WEIGTHED ROUND ROBIN (WRR)
 
-São filas criadas com base em necessidades específicas do usuário / aplicativo. São filas personalizadas. <br></br>
+É bem parecido com o Round Robim porém são colocados pesos nas filas. Filas com peso maior tem prioridades maior e recebem mais largura de banda. <br></br>
 
-![CQ](Imagens/custom_queuing(cq).png) <br></br>
+![WRR](Imagens/wrr.png) <br></br>
