@@ -18,3 +18,5 @@ Isso pode gerar um fenômeno chamado de starvation, ou seja, dependendo como sã
 ## CUSTOM QUEUING (CQ)
 
 São filas criadas com base em necessidades específicas do usuário / aplicativo. São filas personalizadas. <br></br>
+
+![CQ](Imagens/custom_queuing(cq).png) <br></br>
