@@ -10,12 +10,9 @@ Ou seja, criam as filas por usuário e depois faz a distribuição "justa" do tr
 
 ## ROUND ROBIN (RR)
 
-As filas são criadas através de prioridades definidas para diferentes tipos de tráfego.
+Cada fila recebe uma parcela igual da largura de banda. Ele atende os pacotes de forma circular conforme vão chegando; Pode gerar jitter.
 
-![PQ](Imagens/priority_queu_pq.png) <br></br>
-
-Enquanto tiver tráfego na fila de alta prioridade, as outras não mudam nada até acabar o tráfego na fila de High. <br></br>
-Isso pode gerar um fenômeno chamado de starvation, ou seja, dependendo como são configuradas as prioridades, pode ser que a fila High monopolize o tráfego das outras dilas e as demais prioridades ficam um tempo muito grande sem enviar nada.
+![RR](Imagens/rr.png) <br></br>
 
 ## WEIGTHED ROUND ROBIN (WRR)
 
