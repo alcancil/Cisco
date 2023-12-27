@@ -11,3 +11,6 @@ O Two-rate utiliza os seguintes parâmetros para medir o fluxo do tráfego:
 - Ao invés de transferir os tokens não utilizados do bucket **BC** para o bucket **Be**, o policer tem dois buckets separados que são preenchidos com duas taxas diferentes de tokens
 
 ![TOKEN](Imagens/Twoo_rate_Three_color_marker_policer.png) <br></br>
+
+- O bucket Be é preenchido com os Tokens PIR, e o bucket BC é preenchido com os tokens CIR. Nesse modelo, BE representa o pico máximo de tráfego que pode ser enviado durante um intervalo de um subsegundo.
+- A lógica varia ainda mais, pois a verificação inicial é para ver se o tráfego está dentro do PIR. Só então o trafego é comparado com o CIR. Em outras palavras, uma condição de violação e a primeira a ser checada, depois a condição exceed e, por fim, a condição conform, ou seja, utiliza a lógica reversa de algorítimo single-rate three-color policer.
