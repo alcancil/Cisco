@@ -20,3 +20,7 @@ O gerenciamento de congestionamento envolve a combinação de enfileiramento e a
 | First In First Out (FIFO)      | Weighted Round Robin (Wrr)     |
 | Priority Queuing (PQ)          | Round Robin                    |
 | Custom Queuing                 | Weigted Fair Queuing (WFQ)     |
+
+**Obs:** estão disponíveis por questões de compatibilidade. <br></br>
+
+Nos próximos tópicos irei comentar mais sobre os sistemas de enfileiramento.
