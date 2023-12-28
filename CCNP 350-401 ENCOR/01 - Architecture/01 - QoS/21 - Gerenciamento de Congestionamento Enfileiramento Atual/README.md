@@ -15,4 +15,4 @@ As técnicas de algoritmos mais atuais são as recomendadas para as redes mais a
 - Quando o LLQ é configurado, o monitoramento da taxa precisa especificar a quantidade fixa de largura de banda assim como o percentual de largura de banda na interface
 - O LLQ permite que duas classes de tráfego diferentes sejam marcadas e então diferentes taxas de monitoramento podem se aplicadas para diferentes tipo s de tráfego de alta prioridade. Por exemplo, tráfego de voz pode ser monitorado durante os tempos de congestionamento para 10 mbps, enquanto que para vídeo seja monitorado para 100 mbps. Isso não é possível quando se utiliza somente uma classe de tráfego e um único policer.
 
-![FLUXOGRAMA](Imagens/fluxograma)
+![FLUXOGRAMA](Imagens/fluxograma.png)
