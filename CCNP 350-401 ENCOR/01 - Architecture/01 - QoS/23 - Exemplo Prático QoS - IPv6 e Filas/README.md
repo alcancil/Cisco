@@ -46,8 +46,8 @@ Então vamos analisar como ficaram nossas configurações até agora. <br> </br>
 
 <table>
     <tr >
-        <td width="33%"> <img src="Imagens/class_map.png"></img> </td>
-        <td width="33%"> <img src="Imagens/policy_map.png"></img> </td>
-        <td width="33%"> <img src="Imagens/policy_map_int_e0_0.png"></img> </td>
+        <td width="50%"> <img src="Imagens/class_map.png"></img> </td>
+        <td width="50%"> <img src="Imagens/policy_map.png"></img> </td>
+        <td width="50%"> <img src="Imagens/policy_map_int_e0_0.png"></img> </td>
     </tr>
 </table>
