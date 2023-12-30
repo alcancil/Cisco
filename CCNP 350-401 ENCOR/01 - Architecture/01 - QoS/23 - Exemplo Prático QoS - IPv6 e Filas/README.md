@@ -10,3 +10,13 @@ Então vamos analisar mais de perto a interface E0/0 como o comando: **show inte
 
 ![INTERFACE_E0/0](Imagens/interface_e0_0.png) <br></br>
 
+Notem que nada foi feito quanto ao tipo de fila e a interface é automaticamente colocada no algoritmo FIFO. Então primeiro vamos configurar o QoS como feito até agora e depois vamos alterar esse comportamento. <br></br>
+
+| ROTEADOR ISP | COMANDOS                                   |
+| ------------ | ------------------------------------------ |
+| 01           | ISP(config)#class-map match-all TFTP       |
+| 02           | ISP(config-cmap)# match protocol tftp      |
+| 03           | ISP(config)#class-map match-all ICMP       |
+| 04           | ISP(config-cmap)# match protocol ipv6-icmp |
+| 05           | ISP(config)#class-map match-all SSH        |
+| 06           | ISP(config-cmap)# match protocol ssh       |
