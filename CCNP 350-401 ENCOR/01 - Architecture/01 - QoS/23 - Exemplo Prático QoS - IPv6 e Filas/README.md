@@ -112,3 +112,15 @@ Agora observe como ficaram as configurações e a fila na **interface e0/1** <br
         <td width="50%"> <img src="Imagens/interface_e0_1.png"></img> </td>
     </tr>
 </table>
+
+## Congestion Avoidance
+
+No primeiro mecanismo tratamos do gerenciamento de congestionamento. Bom, congestionamento é quando as filas enchem. Mas pode ser que as filas encham ao ponto do tráfego não ser mais suportado e é ai que entra a prevenção do congestionamento. Como citado anteriormente, aqui temos dois mecanismo possíveis de se usar: **Tail Drop** ou **WRED**. <br></br>
+Vamos optar pelo **Wred** pois ele tem abordagem mais interessante. Enquanto **Tail Drop** descarta pacotes, o Wred estipula limites e prioridades para cada fila antes de começar a descartar os pacotes.
+
+| DSCP | LIMITE MÍNIMO | LIMITE MÁXIMO |
+| :--: | :-----------: | :-----------: |
+| AFx1 | 33            | 40            |
+| AFx2 | 28            | 40            |
+| AFx3 | 24            | 40            |
+| EF   | 37            | 40            |
