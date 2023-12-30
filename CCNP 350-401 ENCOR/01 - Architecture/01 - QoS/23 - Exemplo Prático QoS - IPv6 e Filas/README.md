@@ -142,3 +142,13 @@ Então vamos as configurações. <br></br>
 E agora vamos verificar como ficaram as políticas.
 
 ![POLÍTICAS](Imagens/policy_map_wred.png)
+
+<table>
+    <tr >
+        <td width="50%"> <img src="Imagens/policy_map_int_e0_1_wred.png"></img> </td>
+        <td width="50%"> <img src="Imagens/policy_map_int_e0_1_wred02.png"></img> </td>
+    </tr>
+</table>
+
+![POLÍTICAS](Imagens/policy_map_int_e0_1_wred.png)
+![POLÍTICAS](Imagens/policy_map_int_e0_1_wred02.png)
