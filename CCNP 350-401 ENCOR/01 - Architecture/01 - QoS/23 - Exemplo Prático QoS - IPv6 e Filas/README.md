@@ -89,7 +89,7 @@ Agora aqui nesse momento temos as classes criadas e então queremos dar um trata
  **Considerações**
 
 - Cabe dizer que aqui podemos escolher o WFQ – Weighted Fair Queueing (ou CBWFQ- Class Based Weighted Fair Queueing) 
-- O CBWFQ associa um peso (a conta leva em consideração o IPP) para cada flow, e os flows com pesos menores são encaminhados primeiro. 
+- O CBWFQ associa um peso (a conta leva em consideração o IPP) para cada fluxo, e os fluxos com pesos menores são encaminhados primeiro. 
 - Quando aplicamos o comando **bandwidth percent** na **policy** estamos reservando uma porcentagem com base no comando **bandwitdth que foi aplicado na interface**, e não na velocidade da porta.
 - Se primeiro configuramos as classes com o comando bandwidth e depois mudamos o bandwidth na interface, as políticas não são atualizadas.
 - Se não houver nenhuma configuração de bandwidth na interface, é considerado o valor real/físico.
@@ -100,7 +100,9 @@ Agora aqui nesse momento temos as classes criadas e então queremos dar um trata
 - Quando a class-default não tem banda configurada ela recebe a banda não usada.
 - Por padrão a class-default tem **1%** da banda.
 - A soma das velocidades configuradas não pode exceder **100%**
-- Também é bom ressaltar que o comando **priority** habilita o Low Latency Queuing, e os pacotes que estão nesta fila tem prioridade (são tirados da fila em software e colocados na fila em hardware antes dos pacotes que estão nas demais classes).
+
+
+- É importante destacar igualmente que a instrução **priority** ativa o Low Latency Queuing (LLQ), conferindo prioridade aos pacotes contidos nessa fila (sendo retirados da fila em software e inseridos na fila em hardware antes dos pacotes presentes nas demais classes)
 
 Agora observe como ficaram as configurações e a fila na **interface e0/1** <br></br>
 
