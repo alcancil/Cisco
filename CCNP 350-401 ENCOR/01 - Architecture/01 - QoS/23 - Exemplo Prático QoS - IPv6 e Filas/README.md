@@ -44,13 +44,15 @@ Notem que nada foi feito quanto ao tipo de fila e a interface é automaticamente
 
 Então vamos analisar como ficaram nossas configurações até agora. <br> </br>
 
-<tabe>
-     <tr>
-        <td>
-        </td>
-        <td>
-        </td>
-        <td>
-        </td>
+<table>
+    <tr >
+        <td width="33%"> <img src="Imagens/class_map.png"></img> </td>
+    </tr>
+    <tr >
+        <td width="33%"> <img src="Imagens/policy_map.png"></img> </td>
+    </tr>
+    <tr>
+        <td width="33%"> <img src="Imagens/02-Nbar(05).png"></img> </td>
+        <td width="40%"> <img src="Imagens/02-Nbar(06).png"></img> </td>
     </tr>
 </table>
