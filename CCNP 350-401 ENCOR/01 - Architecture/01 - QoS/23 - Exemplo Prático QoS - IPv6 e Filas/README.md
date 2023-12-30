@@ -124,3 +124,21 @@ Vamos optar pelo **Wred** pois ele tem abordagem mais interessante. Enquanto **T
 | AFx2 | 28            | 40            |
 | AFx3 | 24            | 40            |
 | EF   | 37            | 40            |
+
+Então vamos as configurações. <br></br>
+
+| ROTEADOR ISP | COMANDOS                                    |
+| ------------ | ------------------------------------------- |
+| 01           | ISP(config)# policy-map FILAS               |
+| 02           | ISP(config-pmap)#class SSH                  |
+| 03           | ISP(config-pmap-c)#random-detect dscp-based |
+| 04           | ISP(config-pmap)#class TFTP                 |
+| 05           | ISP(config-pmap-c)#random-detect dscp-based |
+| 06           | ISP(config-pmap)#class ICMP                 |
+| 07           | ISP(config-pmap-c)#random-detect dscp-based |
+| 04           | ISP(config-pmap)#class class-default        |
+| 05           | ISP(config-pmap-c)#random-detect dscp-based |
+
+E agora vamos verificar como ficaram as políticas.
+
+![POLÍTICAS](Imagens/policy_map_wred.png)
