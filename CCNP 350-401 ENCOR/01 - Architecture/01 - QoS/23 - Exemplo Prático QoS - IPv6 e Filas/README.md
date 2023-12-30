@@ -73,3 +73,40 @@ Agora aqui nesse momento temos as classes criadas e então queremos dar um trata
 > - Tfp deverá ter 10% da banda
 > - ICMP deverá ter 256 Kbps, e ser colocado na fila prioritária (LLC)
 > - Configurar a class-default para usar WFQ
+
+| ROTEADOR ISP | COMANDOS                                   |
+| ------------ | ------------------------------------------ |
+| 01           | ISP(config)# policy-map FILAS              |
+| 02           | ISP(config-pmap)# class SSH                |
+| 03           | ISP(config-pmap-c)#bandwidth percent 40    |
+| 04           | ISP(config-pmap)# class TFTP               |
+| 05           | ISP(config-pmap-c)#bandwidth percent 10    |
+| 06           | ISP(config-pmap)# class ICMP               |
+| 07           | ISP(config-pmap-c)#priority 256            |
+| 08           | ISP(config-pmap)# class class-default      |
+| 09           | ISP(config-pmap-c)#fair-queu               |
+
+ **Considerações**
+
+- Cabe dizer que aqui podemos escolher o WFQ – Weighted Fair Queueing (ou CBWFQ- Class Based Weighted Fair Queueing) 
+- O CBWFQ associa um peso (a conta leva em consideração o IPP) para cada flow, e os flows com pesos menores são encaminhados primeiro. 
+- Quando aplicamos o comando **bandwidth percent** na **policy** estamos reservando uma porcentagem com base no comando **bandwitdth que foi aplicado na interface**, e não na velocidade da porta.
+- Se primeiro configuramos as classes com o comando bandwidth e depois mudamos o bandwidth na interface, as políticas não são atualizadas.
+- Se não houver nenhuma configuração de bandwidth na interface, é considerado o valor real/físico.
+- Podemos especificar o valor em Kbps (ao invés de percent) quando usamos a opção bandwidth, assim como fizemos com o comando priority.
+- Além das opções priority e bandwidth ainda temos o comando bandwidth remain percent, que reserva a porcentagem especificada desconsiderando os valores já alocados para outras classes.
+- Todas as classes configuradas com bandwidth precisam ser configuradas no mesmo padrão. Ou usamos todas com bandwidth Kbps, ou com bandwidth percent ou com bandwidth remaining percent. Mas podemos usar um classe com priority Kbps e outra com priority percent.
+- Podemos ter mais de uma class configurada como LLC, mas os pacotes serão colocados em uma única fila prioritária.
+- Quando a class-default não tem banda configurada ela recebe a banda não usada.
+- Por padrão a class-default tem **1%** da banda.
+- A soma das velocidades configuradas não pode exceder **100%**
+- Também é bom ressaltar que o comando **priority** habilita o Low Latency Queuing, e os pacotes que estão nesta fila tem prioridade (são tirados da fila em software e colocados na fila em hardware antes dos pacotes que estão nas demais classes).
+
+Agora observe como ficaram as configurações e a fila na **interface e0/1** <br></br>
+
+<table>
+    <tr >
+        <td width="50%"> <img src="Imagens/policy_map_int_e0_1.png"></img> </td>
+        <td width="50%"> <img src="Imagens/interface_e0_1.png"></img> </td>
+    </tr>
+</table>
