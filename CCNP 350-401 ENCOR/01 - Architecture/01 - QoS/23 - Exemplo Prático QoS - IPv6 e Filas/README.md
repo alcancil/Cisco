@@ -12,6 +12,8 @@ Então vamos analisar mais de perto a interface E0/0 como o comando: **show inte
 
 Notem que nada foi feito quanto ao tipo de fila e a interface é automaticamente colocada no algoritmo FIFO. Então primeiro vamos configurar o QoS como feito até agora e depois vamos alterar esse comportamento. <br></br>
 
+01. Escolher o tráfego interessante
+
 | ROTEADOR ISP | COMANDOS                                   |
 | ------------ | ------------------------------------------ |
 | 01           | ISP(config)#class-map match-all TFTP       |
@@ -20,3 +22,22 @@ Notem que nada foi feito quanto ao tipo de fila e a interface é automaticamente
 | 04           | ISP(config-cmap)# match protocol ipv6-icmp |
 | 05           | ISP(config)#class-map match-all SSH        |
 | 06           | ISP(config-cmap)# match protocol ssh       |
+
+02. Escolher a política a ser aplicada a cada tráfego interessante.
+
+| ROTEADOR ISP | COMANDOS                                   |
+| ------------ | ------------------------------------------ |
+| 01           | ISP(config)#policy-map QoS                 |
+| 02           | ISP(config-pmap)#class SSH                 |
+| 03           | ISP(config-pmap-c)# set dscp cs6           |
+| 04           | ISP(config-pmap)#class TFTP                |
+| 05           | ISP(config-pmap-c)# set dscp af31          |
+| 06           | ISP(config-pmap)#class ICMP                |
+| 07           | ISP(config-pmap-c)# set dscp ef            |
+
+03. Aplicar a política a interface e0/0
+
+| ROTEADOR ISP | COMANDOS                                   |
+| ------------ | ------------------------------------------ |
+| 01           | ISP(config)# int e0/0                      |
+| 02           | ISP(config-if)#service-policy input QoS    |
