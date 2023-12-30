@@ -51,3 +51,25 @@ Então vamos analisar como ficaram nossas configurações até agora. <br> </br>
         <td width="33%"> <img src="Imagens/policy_map_int_e0_0.png"></img> </td>
     </tr>
 </table>
+
+Antes de avançarmos vamos configurar as larguras de bandas para as interface **e0/0 e e0/1** pois as porcentagens de bandas reservadas para cada classe se baseia no comando **bandwith** aplicado na interface. <br></br>
+
+| ROTEADOR ISP | COMANDOS                                   |
+| ------------ | ------------------------------------------ |
+| 01           | ISP(config)# int e0/0                      |
+| 02           | ISP(config-if)#bandwidth 1000000           |
+| 03           | ISP(config-if)# int e0/1                   |
+| 04           | ISP(config-if)#bandwidth 1000000           |
+
+Aqui configuramos as interfaces como 100Mbps. <br></br>
+
+Como visto anteriormente, temos dois mecanismos de enfileiramento: **Congestion Management** e **Congestion Avoidance**. Então vamos tratar do primeiro. <br></br>
+
+## Congestion Management
+
+Agora aqui nesse momento temos as classes criadas e então queremos dar um tratamento diferenciado para cada fila, conforme o plano escolhido: <br></br>
+
+> - SSH deverá ter 40% da banda
+> - Tfp deverá ter 10% da banda
+> - ICMP deverá ter 256 Kbps, e ser colocado na fila prioritária (LLC)
+> - Configurar a class-default para usar WFQ
