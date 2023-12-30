@@ -41,3 +41,16 @@ Notem que nada foi feito quanto ao tipo de fila e a interface é automaticamente
 | ------------ | ------------------------------------------ |
 | 01           | ISP(config)# int e0/0                      |
 | 02           | ISP(config-if)#service-policy input QoS    |
+
+Então vamos analisar como ficaram nossas configurações até agora. <br> </br>
+
+<tabe>
+     <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+    </tr>
+</table>
