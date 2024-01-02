@@ -144,3 +144,9 @@ E agora vamos verificar como ficaram as políticas.
 ![POLÍTICAS](Imagens/policy_map_wred.png) <br></br>
 ![POLÍTICAS](Imagens/policy_map_int_e0_1_wred.png)
 ![POLÍTICAS](Imagens/policy_map_int_e0_1_wred02.png)
+
+Deixo aqui alguns arquivos interessantes: <br></br>
+
+![QOS(ZERADO)](Arquivos/QoS(Zerado).zip) --- arquivo para importação no eve-ng com algumas configurações. Pronto para realizar o laboratório. <br></br>
+![QOS(RESOLVIDO)](Arquivos/QoS(Resolvido).zip) --- arquivo com a resolução do laboratório. <br></br>
+![ISP](Arquivos/Isp.txt) --- Arquivo com todas as configurações do roteador ISP.
