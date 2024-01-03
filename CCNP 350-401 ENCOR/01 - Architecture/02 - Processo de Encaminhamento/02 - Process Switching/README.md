@@ -10,3 +10,5 @@ Existem alguns casos onde é necessário se utilizar esse método. Os tipos de p
 
 O software switching é muito mais lento que o switching feito pelo hardware. O processo NET IO foi desenvolvido para lidar com uma pequena porcentagem do tráfego tratado pelo sistema. Os pacotes são sempre tratados pelo hardware quando possível. <br></br>
 A tabela de roteamento também conhecida como **Routing Information Base (RIB)**; é gerada a partir das informações dos protocolos de roteamento dinâmicos, das rotas diretamente conectadas e das rotas estáticas. A tabela ARP é formada através de informação do protocolo ARP.
+
+![CEF](Imagens/cef.png) <br></br>
