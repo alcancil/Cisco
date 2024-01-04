@@ -9,3 +9,4 @@ Após o recebimento de um pacote IP, a FIB é checada para validar as entradas. 
 - As entradas válidas na FIB continuam processando e checando a tabela de adjacência para cada destino de endereço IP de cada pacote.
 - As entradas faltantes invocam o processo ARP. Quando o ARP termina, ele completa a entrada faltante na CEF.
 
+![SOFTWARE_CEF](Imagens/software_cef.png) <br></br>
