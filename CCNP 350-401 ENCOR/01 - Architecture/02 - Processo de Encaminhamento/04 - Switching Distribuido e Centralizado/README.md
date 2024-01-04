@@ -9,3 +9,14 @@ Em uma arquitetura distribuída, quando um pacote chega na placa de linha de ent
 Se for verificado que a interface de saída está em outra line card, o pacote é enviado através do switching fabric, diretamente para a line card de saída ignorando o RP. <br></br>
 
 ![CENTALIZDA_X_DISTRIBUIDA](Imagens/centralizada_distribuida.png) <br></br>
+
+**OBS:** esses dois tipos de arquitetura estão presentes somente em equipamentos modulares.
+
+Agora irei demonstrar um exemplo em uma placa supervisora 720 da Cisco. <br></br>
+
+<table>
+      <tr>
+         <td> <img src="Imagens/cisco supervisor engine 720/1.png"></img> </td>
+         <td> <img src="Imagens/cisco supervisor engine 720/2.png"></img> </td>
+      </tr>
+</table>
