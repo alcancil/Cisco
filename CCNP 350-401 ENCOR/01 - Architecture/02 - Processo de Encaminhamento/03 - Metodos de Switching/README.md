@@ -12,4 +12,4 @@ Então quando o quadro chega na cpu, ele precisa ser desmontado, verificar o IP 
 
 ## Fast Switching
 
-![FSWITCHING](Imagens/fast_switching.png) <br></br>
+![FSWITCHING](Imagens/fast_switiching.png) <br></br>
