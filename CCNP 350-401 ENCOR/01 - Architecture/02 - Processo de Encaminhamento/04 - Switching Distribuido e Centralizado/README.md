@@ -20,3 +20,13 @@ Agora irei demonstrar um exemplo em uma placa supervisora 720 da Cisco. <br></br
          <td> <img src="Imagens/cisco supervisor engine 720/2.png"></img> </td>
       </tr>
 </table>
+
+# CENTRALIZADA
+
+![CENTRALIZADA](Imagens/cisco%20supervisor%20engine%20720/centralizada.png "Foto de Autoria Desconhecida") <br></br>
+
+1. O pacote entra na interface de entrada de uma placa de linha de uma fonte S e o Port ASIC o encaminha para a interface Fabric.
+2. O cabeçalho do pacote (apenas e não o pacote completo) é encaminhado para o RP (processador de rota é uma combinação de processador de switch e processador de rota) onde a tabela CEF está presente.
+3. O CEF centralizado (que reside no RP) processa o pacote. Processar o pacote significa que ele procura o FIB para o próximo salto e busca a reescrita (cabeçalho) L2, modifica o cabeçalho original e envia o cabeçalho atualizado para a interface Fabric da mesma placa de linha.
+4. O pacote da malha de interface é então encaminhado para a malha de interface da placa de linha de saída usando os detalhes de reescrita Int + L2 de saída compartilhados pelo CEF na etapa 3.
+5. O pacote é encaminhado da estrutura de interface da interface de saída para a porta de saída e liberado por fio em direção ao Destino D.
