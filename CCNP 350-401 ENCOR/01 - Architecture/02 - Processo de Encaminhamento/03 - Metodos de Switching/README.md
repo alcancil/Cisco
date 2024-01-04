@@ -13,3 +13,10 @@ Então quando o quadro chega na cpu, ele precisa ser desmontado, verificar o IP 
 ## Fast Switching
 
 ![FSWITCHING](Imagens/fast_switiching.png) <br></br>
+
+Nesse processo, o primeiro pacote realiza o process switching. Logo após, o roteador monta o Fast Forward Cache. Essa é uma tabela que armazena o mac de origem mais o mac de destino e quando o pacote entra na interface, só é necessário realizar a pesquisa nesse cache e depois que achar a correspondência basta somente encaminhar. <br></br>
+Então já fica aramazenado em cache por onde os pacotes devem sair e o processador não precisa mais "trabalhar" para isso.
+
+## CEF (CISCO EXPRESS FORWARDING)
+
+![CEF](Imagens/cef.png) <br></br>
