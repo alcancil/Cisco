@@ -21,7 +21,7 @@ Agora irei demonstrar um exemplo em uma placa supervisora 720 da Cisco. <br></br
       </tr>
 </table>
 
-# CENTRALIZADA
+## CENTRALIZADA
 
 ![CENTRALIZADA](Imagens/cisco%20supervisor%20engine%20720/centralizada.png "Foto de Autoria Desconhecida") <br></br>
 
@@ -30,3 +30,13 @@ Agora irei demonstrar um exemplo em uma placa supervisora 720 da Cisco. <br></br
 3. O CEF centralizado (que reside no RP) processa o pacote. Processar o pacote significa que ele procura o FIB para o próximo salto e busca a reescrita (cabeçalho) L2, modifica o cabeçalho original e envia o cabeçalho atualizado para a interface Fabric da mesma placa de linha.
 4. O pacote da malha de interface é então encaminhado para a malha de interface da placa de linha de saída usando os detalhes de reescrita Int + L2 de saída compartilhados pelo CEF na etapa 3.
 5. O pacote é encaminhado da estrutura de interface da interface de saída para a porta de saída e liberado por fio em direção ao Destino D.
+
+## DISTRIBUIDA
+
+![DISTRIBUÍDA](Imagens/cisco%20supervisor%20engine%20720/distribuida.png "Foto de Autoria Desconhecida") <br></br>
+
+1. O pacote entra na interface de entrada de uma placa de linha de uma fonte S e o Port ASIC o encaminha para o mecanismo de replicação da interface Fabric.
+2. O cabeçalho do pacote (apenas e não o pacote completo) não é encaminhado para o RP, mas para o processador da placa de linha (onde reside uma cópia do CEF). 
+3. dCEF (que reside no processador da placa de linha) processa o pacote. Processar o pacote significa que ele procura o FIB para o próximo salto e busca a reescrita (cabeçalho) L2, modifica o cabeçalho original e envia o cabeçalho atualizado para o mecanismo de replicação da interface Fabric da mesma placa de linha.
+4. O pacote do mecanismo de replicação da interface Fabric é então encaminhado para o mecanismo de replicação da interface Fabric da placa de linha de saída usando os detalhes de reescrita Int + L2 de saída compartilhados pelo dCEF na etapa 3.
+5. O pacote é encaminhado do mecanismo de replicação da interface Fabric da interface de saída para a porta de saída e liberado na conexão para o Destino D.
