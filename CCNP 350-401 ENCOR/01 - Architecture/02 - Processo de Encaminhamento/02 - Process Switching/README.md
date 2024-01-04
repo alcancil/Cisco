@@ -12,3 +12,10 @@ O software switching é muito mais lento que o switching feito pelo hardware. O 
 A tabela de roteamento também conhecida como **Routing Information Base (RIB)**; é gerada a partir das informações dos protocolos de roteamento dinâmicos, das rotas diretamente conectadas e das rotas estáticas. A tabela ARP é formada através de informação do protocolo ARP.
 
 ![CEF](Imagens/cef.png) <br></br>
+
+<table>
+    <tr>
+      <td> 1212</td>
+      <td> 9898</td>
+    </tr>
+</table>
