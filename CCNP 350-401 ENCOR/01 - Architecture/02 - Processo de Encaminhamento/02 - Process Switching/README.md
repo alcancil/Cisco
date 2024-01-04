@@ -15,7 +15,11 @@ A tabela de roteamento também conhecida como **Routing Information Base (RIB)**
 
 <table>
     <tr>
-      <td> 1212</td>
-      <td> 9898</td>
+      <td> ARP TABLE</td>
+      <td> ROUTE TABLE</td>
+    </tr>
+    <tr>
+      <td width="50%"><img src="Imagens/arp_table.png"></img></td>
+      <td width="50%"><img src="Imagens/route_table.png"></img></td>
     </tr>
 </table>
