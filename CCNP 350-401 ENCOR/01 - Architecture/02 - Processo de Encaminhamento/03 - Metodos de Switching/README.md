@@ -20,3 +20,6 @@ Então já fica aramazenado em cache por onde os pacotes devem sair e o processa
 ## CEF (CISCO EXPRESS FORWARDING)
 
 ![CEF](Imagens/cef.png) <br></br>
+
+Neste tipo de encaminhamento, o CEF já constrói uma FIB e uma tabela de adjacência, ou seja, ele consegue resolver praticamente todos os encaminhamentos necessários. Nesse caso ele retorna mais rápido pois a CPU não tem mais nenhum trabalho. <br></br>
+**OBS:** existem algumas exceções que são os CEF punted packets onde o CEF não consegue tratar e ai manda direto para a CPU.
