@@ -7,3 +7,5 @@ Na **Arquitetura Centralizada**, quando um pacote chega na interface de entrada,
 Se as line cards forem equipadas com o motor de encaminhamento, então ela pode tomar decisões de switching sem intervenção do RP, e isso é chamado de **Arquitetura Distribuida**. <br></br>
 Em uma arquitetura distribuída, quando um pacote chega na placa de linha de entrada, ele é encaminhado para o motor de forwarding local. Então esse motor faz o lookup de pacotes e, se ele determinar que a saída é uma interface local, ele encaminha o pacote para a interface. <br></br>
 Se for verificado que a interface de saída está em outra line card, o pacote é enviado através do switching fabric, diretamente para a line card de saída ignorando o RP. <br></br>
+
+![CENTALIZDA_X_DISTRIBUIDA](Imagens/centralizada_distribuida.png) <br></br>
