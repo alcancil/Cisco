@@ -5,7 +5,7 @@
 - [ ] 2.0 Virtualization 10%
 - [ ] 3.0 Infrastructure 30%
 - [ ] 4.0 Network Assurance 10%
-- [ ] Security 20%
-- [ ] Automation 15%
+- [ ] 5.0 Security 20%
+- [ ] 6.0 Automation 15%
 
 --
