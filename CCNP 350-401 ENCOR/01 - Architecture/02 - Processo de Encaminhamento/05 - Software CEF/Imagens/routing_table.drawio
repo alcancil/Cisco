@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-05T03:23:42.482Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0" etag="oBr47Rpi-_nLEUiAdnnd" version="22.1.16" type="device">
+<mxfile host="app.diagrams.net" modified="2024-01-05T03:38:24.312Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0" etag="M3wkRBblkNWO7ty9T-47" version="22.1.16" type="device">
   <diagram name="Página-1" id="00M8zRfkyxRggsTmf3tM">
     <mxGraphModel dx="1194" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -126,6 +126,9 @@
         </mxCell>
         <mxCell id="mPJ2v4zrO77l32GKz1xa-47" value="CONNECTED" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;" vertex="1" parent="1">
           <mxGeometry x="150" y="285" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="mPJ2v4zrO77l32GKz1xa-48" value="R01# SHOW IP ROUTE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="114" y="415" width="180" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
