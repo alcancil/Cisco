@@ -107,7 +107,7 @@
 
 - - - 
 
-### Automation 15%
+### 6.0 Automation 15%
 
 - [ ] 6.1 Interpret basic Python components and scripts
 - [ ] 6.2 Construct valid JSON-encoded files
