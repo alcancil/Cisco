@@ -35,4 +35,5 @@ Agora percebam que ao executar o comando **show sdm prefer** agora o nome do tem
 
 Agora deixo dois links com exemplos direto do site da Cisco: <br></br>
 
-![Exemplo01](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3650/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_3650_cg/configuring_sdm_templates.html) <br></br>
+![Exemplo01](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3650/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_3650_cg/configuring_sdm_templates.html) 
+![Exemplo02](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9200/software/release/17-2/configuration_guide/sys_mgmt/b_172_sys_mgmt_9200_cg/configuring_sdm_templates.pdf)
