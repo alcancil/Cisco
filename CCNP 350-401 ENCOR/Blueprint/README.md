@@ -59,7 +59,7 @@
   - [ ] 3.2.c Configure and verify eBGP between directly connected neighbors (best path selection algorithm and neighbor relationships)
   - [ ] 3.2.d Describe policy-based routing
 - [ ] 3.3 Wireless
-  - [ ]3.3.a Describe Layer 1 concepts, such as RF power, RSSI, SNR, interference, noise, bands, channels, and wireless client devices capabilities
+  - [ ] 3.3.a Describe Layer 1 concepts, such as RF power, RSSI, SNR, interference, noise, bands, channels, and wireless client devices capabilities
   - [ ] 3.3.b Describe AP modes and antenna types
   - [ ] 3.3.c Describe access point discovery and join process (discovery algorithms, WLC selection process)
   - [ ] 3.3.d Describe the main principles and use cases for Layer 2 and Layer 3 roaming
