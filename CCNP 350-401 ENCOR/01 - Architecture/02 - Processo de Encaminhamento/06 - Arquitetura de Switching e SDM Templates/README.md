@@ -19,3 +19,7 @@ Então vamos acessar o equipamento e mostrar o template que já vem habilitado p
 
 ![SDM_DEFAULT](Imagens/sdm_default.png) <br></br>
 
+Podemos notar que o template é default e nele podemos observar que ele suporta 8.000 endereços mac address para unicast, suporta 20 aces IPv6, 25 aces de segurança IPv6 e assim por diante. Mas vamos supor que queremos otimizar esse switch para o uso de QoS. Então teremos que trocar esse template para um que se adeque a essa necessidade. Então vamos entrar em modo de configuração e exibir os templates suportados nesse switch e no packet tracer<br></br>
+
+![TEMPLATES](Imagens/templates.png) <br></br>
+
