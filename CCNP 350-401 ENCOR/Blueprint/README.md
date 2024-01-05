@@ -65,3 +65,56 @@
   - [ ] 3.3.d Describe the main principles and use cases for Layer 2 and Layer 3 roaming
   - [ ] 3.3.e Troubleshoot WLAN configuration and wireless client connectivity issues using GUI only
   - [ ] 3.3.f Describe wireless segmentation with groups, profiles, and tags3.3 Wireless
+- [ ] 3.4 IP Services
+  - [ ] 3.4.a Interpret network time protocol configurations such as NTP and PTP
+  - [ ] 3.4.b Configure NAT/PAT
+  - [ ] 3.4.c Configure first hop redundancy protocols, such as HSRP, VRRP
+  - [ ] 3.4.d Describe multicast protocols, such as RPF check, PIM and IGMP v2/v3
+
+- - -
+
+## 4.0 Network Assurance 10%
+
+- [ ] 4.1 Diagnose network problems using tools such as debugs, conditional debugs, traceroute, ping, SNMP, and syslog
+- [ ] 4.2 Configure and verify Flexible NetFlow
+- [ ] 4.3 Configure SPAN/RSPAN/ERSPAN
+- [ ] 4.4 Configure and verify IPSLA
+- [ ] 4.5 Describe Cisco DNA Center workflows to apply network configuration, monitoring, and management
+- [ ] 4.6 Configure and verify NETCONF and RESTCONF
+
+- - - 
+
+## 5.0 Security 20%
+
+- [ ] 5.1 Configure and verify device access control
+  - [ ] 5.1.a Lines and local user authentication
+  - [ ] 5.1.b Authentication and authorization using AAA
+- [ ] 5.2 Configure and verify infrastructure security features
+  - [ ] 5.2.a ACLs
+  - [ ] 5.2.b CoPP
+- [ ] 5.3 Describe REST API security
+- [ ] 5.4 Configure and verify wireless security features
+  - [ ] 5.4.a 802.1X
+  - [ ] 5.4.b WebAuth
+  - [ ] 5.4.c PSK
+  - [ ] 5.4.d EAPOL (4-way handshake)
+- [ ] 5.5 Describe the components of network security design
+  - [ ] 5.5.a Threat defense
+  - [ ] 5.5.b Endpoint security
+  - [ ] 5.5.c Next-generation firewall
+  - [ ] 5.5.d TrustSec and MACsec
+  - [ ] 5.5.e Network access control with 802.1X, MAB, and WebAuth
+
+- - - 
+
+### Automation 15%
+
+- [ ] 6.1 Interpret basic Python components and scripts
+- [ ] 6.2 Construct valid JSON-encoded files
+- [ ] 6.3 Describe the high-level principles and benefits of a data modeling language, such as YANG
+- [ ] 6.4 Describe APIs for Cisco DNA Center and vManage
+- [ ] 6.5 Interpret REST API response codes and results in payload using Cisco DNA Center and RESTCONF
+- [ ] 6.6 Construct an EEM applet to automate configuration, troubleshooting, or data collection
+- [ ] 6.7 Compare agent vs. agentless orchestration tools, such as Chef, Puppet, Ansible, and SaltStack
+
+
