@@ -8,3 +8,14 @@ O **statful switchover (sso)** é um recurso de redundância que permite um rote
 
 O número de endereços MAC que um switch necessita, comparado com o número de rotas que ele suporta depende do local onde ele está na rede. A memória para as tabelas **TCAM** são estaticamente alocadas durante o processo de boot do switch. Quando uma seção do hardware está cheia, todo o processamento excedente é enviado para a CPU. Isso impacta negativamente a performance do switch. <br></br>
 Os indices de alocação entre várias tabelas TCAM são armazenadas e podem ser modificadas com o **SDM (Switching Database Manager templates)**. O template sdm pode ser configurado em switches da linha catalyst 9.000 com o comando **sdm prefer {vlan | advanced}**. O switch precisa ser reiniciado com o comando **reload**.
+
+### Exemplo prático de SDM Templates
+
+Agora vou demonstrar um exemplo utilizando o Cisco Packet Tracer. Esse exemplo é simples, mas serve para demonstrar o funcionamento dos SDM Templates. Então vou utilizar somente 1 switch catlyst 2960 no nosso exemplo. <br></br>
+
+![CENÁRIO](Imagens/cenario.png) <br></br>
+
+Então vamos acessar o equipamento e mostrar o template que já vem habilitado por padrão que é o **default**. Para isso vamos digitar o comando **Switch#show sdm prefer** <br></br>
+
+![SDM_DEFAULT](Imagens/sdm_default.png) <br></br>
+
