@@ -31,4 +31,8 @@ Percebam a mensagem logo após o comando. Precisamos salvar a configuração e r
 
 ![QoS](Imagens/qos2.png) <br></br>
 
-Agora percebam que ao executar o comando **show sdm prefer** agora o nome do template vem como **QoS**. Pode parecer que somente foi alterado o nome do template mas nesse ponto preciso ressaltar que aqui o Cisco Packet tracer é um pouco limitado nesses comandos, mas passa a ideia geral.
+Agora percebam que ao executar o comando **show sdm prefer** agora o nome do template vem como **QoS**. Pode parecer que somente foi alterado o nome do template mas nesse ponto preciso ressaltar que aqui o Cisco Packet tracer é um pouco limitado nesses comandos, mas passa a ideia geral. <br></br>
+
+Agora deixo dois links com exemplos direto do site da Cisco: <br></br>
+
+![Exemplo01](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3650/software/release/16-12/configuration_guide/sys_mgmt/b_1612_sys_mgmt_3650_cg/configuring_sdm_templates.html) <br></br>
