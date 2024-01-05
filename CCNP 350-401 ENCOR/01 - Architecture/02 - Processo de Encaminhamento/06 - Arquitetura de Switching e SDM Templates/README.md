@@ -23,3 +23,12 @@ Podemos notar que o template é default e nele podemos observar que ele suporta 
 
 ![TEMPLATES](Imagens/templates.png) <br></br>
 
+Então vamos configurar o **template QoS**. <br></br>
+
+![QoS](Imagens/qos.png) <br></br>
+
+Percebam a mensagem logo após o comando. Precisamos salvar a configuração e reiniciar o switch para que ele realize os ajustes nos templates. Então vamos ver as diferenças como ficou agora.
+
+![QoS](Imagens/qos2.png) <br></br>
+
+Agora percebam que ao executar o comando **show sdm prefer** agora o nome do template vem como **QoS**. Pode parecer que somente foi alterado o nome do template mas nesse ponto preciso ressaltar que aqui o Cisco Packet tracer é um pouco limitado nesses comandos, mas passa a ideia geral.
