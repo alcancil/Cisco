@@ -14,7 +14,7 @@ Após o recebimento de um pacote IP, a FIB é checada para validar as entradas. 
 <table>
       <tr>            
          <td width=50%><img src="Imagens/routing_table.png"></img></td>               
-         <td width=50%><img src="Imagens/routing_table.png"></img></td>
+         <td width=50%><img src="Imagens/arp_table.png"></img></td>
       </tr>
       <tr>
           <td width=50%><img src="Imagens/routing_table.png"></img></td>
