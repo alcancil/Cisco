@@ -12,3 +12,6 @@ Mas como inicialmente o hub era só uma grande extensão, não tinha como o comp
 Mas a colisão pode também ocorrer não somente no mesmo hub, pode ser que existam um ou mais hubs interligados e isso vai aumentar a probabilidade de colisões porém aumenta o tempo de recuperação. <br></rb>
 Para resolver esse tipo de problema, foi implementado o algoritmo **CSMA/CD (Carrier Sense / Colision Detection)**. Então esse algoritmo verifica a portadora com múltiplo acesso e identifica a colisão. Ai quem "produziu" a colisão tem que esperar um tempo aleatório para depois poder voltar e enviar. Mas ainda existia o problema de enviar o tráfego para todo mundo. <br></br>
 A primeira evolução que veio para o hub foram as **Bridges**. Ele é uma "caixa" com somente 2 portas ethernets, baseada em software, que foi desenvolvido justamente para "quebrar" um **domínio de colisão em dois** e com isso diminuir o número de colisões que ocorrem dentro da rede. <br></br>
+
+![DOMÍNIO_DE_COLISÃO](Imagens/colisao.png) <br></br>
+
