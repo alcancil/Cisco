@@ -22,3 +22,4 @@ Alguns comandos interessantes:
 > - **show adjacency detail --> mostra detalhes da adjacência**
 > - **show ip CEF detail --> mostra detalhes da tabela CEF**
 
+![CEF2](Imagens/cef2.png) <br></br>
