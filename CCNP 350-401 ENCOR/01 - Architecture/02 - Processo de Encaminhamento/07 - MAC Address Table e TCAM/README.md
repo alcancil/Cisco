@@ -33,3 +33,10 @@ Por padrão, os endereços MAC ficam na tabela por 300s ou 5 minutos. Se não ho
 
 ![FLUXOGRAMA](Imagens/fluxograma.png) <br></br>
 
+| ENDEREÇO MAC | EGRESS PORT | VLAN |
+| :----------: | :---------: | :--: |
+| 000.000.00a  | Giga 1/0/1  | 10   |
+| 000.000.00b  | Giga 1/0/2  | 10   |
+| 000.000.00c  | Giga 1/0/3  | 100  |
+
+Esse é o fluxograma dos switches. Agora aqui temos duas tabelas adicionais TCAM, uma para **ACL de segurança para bloqueio de pacotes / quadros** e outra para **QoS para poder marcar os quadros**.
