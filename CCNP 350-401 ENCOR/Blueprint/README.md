@@ -25,7 +25,7 @@
 - [ ] 1.4 Explain the working principles of the Cisco SD-Access solution
 - [ ] 1.4.a SD-Access control and data planes elements
 - [ ] 1.4.b Traditional campus interoperating with SD-Access
-- [ ] 1.5 Interpret wired and wireless QoS configurations
+- [x] 1.5 Interpret wired and wireless QoS configurations
 - [x] 1.5.a QoS components
 - [x] 1.5.b QoS policy
 - [x] 1.6 Describe hardware and software switching mechanisms such as CEF, CAM, TCAM, FIB, RIB, and adjacency tables
