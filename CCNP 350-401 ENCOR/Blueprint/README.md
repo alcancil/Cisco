@@ -28,7 +28,7 @@
 - [ ] 1.5 Interpret wired and wireless QoS configurations
 - [x] 1.5.a QoS components
 - [x] 1.5.b QoS policy
-- [ ] 1.6 Describe hardware and software switching mechanisms such as CEF, CAM, TCAM, FIB, RIB, and adjacency tables
+- [x] 1.6 Describe hardware and software switching mechanisms such as CEF, CAM, TCAM, FIB, RIB, and adjacency tables
 
 - - -
 
