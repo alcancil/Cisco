@@ -15,3 +15,9 @@ A primeira evolução que veio para o hub foram as **Bridges**. Ele é uma "caix
 
 ![DOMÍNIO_DE_COLISÃO](Imagens/colisao.png) <br></br>
 
+Então agora a bridge consegue ler quais os endereços mac estão em cada porta e com isso ele monta uma tabela associando um endereço mac a uma porta, de onde foi originado o tráfego. Essa é a **tabela de endereços MAC.** <br></br>
+Agora os computadores só conseguem falar dentro do mesmo segmento. Exemplo: o host 4 quer falar com o host 3. Primeiro se consulta a tabela mac e ai, se os dois hosts estão no mesmo segmento, o tráfego é encaminhado. Se ele estiver em outro segmento, se não existir outro caminho, o tráfego é descartado. Com isso você diminui em 50% as chances de colisão. <br></br>
+Com o passar do tempo, os fabricantes pensaram assim: "Por que somente duas portas nas bridges ?". Ai nasceram as bridges multiportas, ou os **switches**. Porém eles não tinham ainda o conceito de vlans. <br></br>
+A grande vantagem / evolução agora é que os switches utilizam asics, ou seja, agora ele grava a tabela mac em um chip específico e faz encaminhamento por hardware que é muito mais rápido.
+
+![MAC](Imagens/mac.png) <br></br>
