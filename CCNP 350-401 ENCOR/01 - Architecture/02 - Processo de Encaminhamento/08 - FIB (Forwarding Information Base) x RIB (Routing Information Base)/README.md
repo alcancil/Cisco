@@ -23,3 +23,16 @@ Alguns comandos interessantes:
 > - **show ip CEF detail --> mostra detalhes da tabela CEF**
 
 ![CEF2](Imagens/cef2.png) <br></br>
+
+Então quando um pacote entra, ele vai fazer a consulta direto na FIB para verificar uma rota, depois consulta os vizinhos na tabela de adjacência, reescreve o pacote e encaminha. <br></br>
+Quando o pacote entra, porém ele ainda não tem todas as informações sobre ele, por exemplo ele não tem o endereço MAC de destino ou mesmo recebe um pacote com TTL expirado, ele precisa enviar para o Layer 3 Engine para a CPU tomar uma ação. Isso é uma **adjacency punt** <br></br>
+As adjacências podem ter alguns estados. Esses estados são mostrados no comando: **show ip cef** <br></br>
+Esses estados são: <br></br>
+> - **RECIVE:** é uma rede que o switch conhece, consegue resolver
+> - **ATTACHED:** é uma rede que está diretamente conectada mas que pertence a um vizinho. Precisa do ARP para ser resolvido.
+> - **GLEAN:** durante o processo de ARP, pode ser que entre um pacote a consulta porém o processo ARP ainda não terminou. Informações incompletas. Essa é uma entrada **GLEAN**. Nesse estado não é possível encaminhar tráfego. Descarta os pacotes até resolver a adjacência
+> - **NULL ADJACENCY:** interface nula. Descarta pacotes.
+> - **DROP ADJACENCY:** descarta pacotes pois existe algum problema com o pacote
+> - **DISCARD ADJACENCY:** descarta pacotes por conta de ACLS
+> - **PUNT ADJACENCY:** casos especiais que o CEF não consegue tratar e o switch envia para o layer 3 engine
+
