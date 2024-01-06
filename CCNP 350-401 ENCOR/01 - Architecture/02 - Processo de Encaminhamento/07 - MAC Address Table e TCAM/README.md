@@ -21,3 +21,11 @@ Com o passar do tempo, os fabricantes pensaram assim: "Por que somente duas port
 A grande vantagem / evolução agora é que os switches utilizam asics, ou seja, agora ele grava a tabela mac em um chip específico e faz encaminhamento por hardware que é muito mais rápido.
 
 ![MAC](Imagens/mac.png) <br></br>
+
+Então, quando um quadro chega agora em uma porta, ele consulta a tabela MAC. Se ele não conhece o destino, ou seja, agora ele faz o processo de **flooding**, ou seja, ele encaminha o quadro para todas as portas menos para a que começou o processo. <br></br>
+Se o host com o MAC de origem existir, ele atualiza a tabela MAC e anota o MAC + a porta. Com isso agora consegue enviar o tráfego. <br></br>
+Se o pacote que entra estiver com o endereço MAC de destino presente na tabela AC, o pacote é enviado diretamente, ou seja, a comunicação é feita de forma **unicast**. <br></br>
+Após isso, o mercado percebeu que poderia evoluir um pouco mais as bridges multiportas e adicionou o conceito de **Vlans.** Esse é um tipo de virtualização onde são criadas as lans virtuais dentro da mesma caixa. Ou seja, dentro de 1 switch, agora pode existir vários switches virtuais dentro da mesma caixa. <br></br>
+
+![VLANS](Imagens/vlans.png) <br></br>
+
