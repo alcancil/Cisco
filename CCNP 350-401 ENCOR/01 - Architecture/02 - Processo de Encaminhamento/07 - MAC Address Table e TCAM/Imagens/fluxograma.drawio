@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-06T01:55:14.912Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0" etag="tCXuGTbI_FfsOBMb-xUL" version="22.1.16" type="device">
+<mxfile host="app.diagrams.net" modified="2024-01-06T01:57:02.850Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0" etag="WPh_dhscKE1X76KnHoNe" version="22.1.16" type="device">
   <diagram name="Página-1" id="cTQg8CfVpZIRvhcbB6Gg">
     <mxGraphModel dx="2021" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -111,12 +111,6 @@
         </mxCell>
         <mxCell id="lKmiFkmc8dkFFEs9oPCB-25" value="&lt;div&gt;RX&lt;/div&gt;&lt;div&gt;SWITCH&lt;/div&gt;&lt;div&gt;PORTS&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="-180" y="232" width="60" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="lKmiFkmc8dkFFEs9oPCB-26" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="360" y="400" as="sourcePoint" />
-            <mxPoint x="410" y="350" as="targetPoint" />
-          </mxGeometry>
         </mxCell>
         <mxCell id="lKmiFkmc8dkFFEs9oPCB-27" value="&lt;div&gt;TX&lt;/div&gt;&lt;div&gt;SWITCH&lt;/div&gt;&lt;div&gt;PORTS&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="980" y="262" width="60" height="30" as="geometry" />
