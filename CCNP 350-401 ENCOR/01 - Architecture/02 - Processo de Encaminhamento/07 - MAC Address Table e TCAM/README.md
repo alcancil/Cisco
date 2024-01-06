@@ -29,3 +29,7 @@ Após isso, o mercado percebeu que poderia evoluir um pouco mais as bridges mult
 
 ![VLANS](Imagens/vlans.png) <br></br>
 
+Por padrão, os endereços MAC ficam na tabela por 300s ou 5 minutos. Se não houver mais comunicação nessa porta, o endereço MAC é apagado da tabela. Esse tempo é conhecido por **aging time**. Ele pode ser configurado. <br></br>
+
+![FLUXOGRAMA](Imagens/fluxograma.png) <br></br>
+
