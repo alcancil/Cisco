@@ -14,4 +14,5 @@ Então agora aqui passamos a ter algumas características diferentes que trazem 
 
 ![GERÊNCIA](Imagens/gerencia.png) <br></br>
 
-
+**Desvantagens:**
+- **Custo:**
