@@ -19,3 +19,5 @@ Então agora aqui passamos a ter algumas características diferentes que trazem 
 - **Complexidade:** agora a complexidade é maior e é necessário ter uma maior especialização para se trabalhar com esse tipo de hypervisor. Por exemplo, agora na parte de rede não são mais somente as placas de rede que ficam presentes. Existem os **vswitches ou switches virtuais** com bem mais características e opções a se configurar. <br></br>
 
 ![vSWITCH](Imagens/vswitch.png) <br></br>
+
+Agora o armazenamento pode ser feito em Storages com redes SAN.
