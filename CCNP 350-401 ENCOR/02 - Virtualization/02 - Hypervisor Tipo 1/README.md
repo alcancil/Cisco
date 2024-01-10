@@ -15,4 +15,7 @@ Então agora aqui passamos a ter algumas características diferentes que trazem 
 ![GERÊNCIA](Imagens/gerencia.png) <br></br>
 
 **Desvantagens:**
-- **Custo:**
+- **Custo:** agora temos hardware dedicado para o hypervisor e é qualquer tipo de hardware que serve pois temos que analisar as especificações do fabricante e os requisitos de negócio para implementar o Hypervisor. São hardwares mais caros.
+- **Complexidade:** agora a complexidade é maior e é necessário ter uma maior especialização para se trabalhar com esse tipo de hypervisor. Por exemplo, agora na parte de rede não são mais somente as placas de rede que ficam presentes. Existem os **vswitches ou switches virtuais** com bem mais características e opções a se configurar. <br></br>
+
+![vSWITCH](Imagens/vswitch.png) <br></br>
