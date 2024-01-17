@@ -1,10 +1,13 @@
-# 01 - Vmware Player em Windows>
+# 01 - Vmware Player em Linux
 
 Agora vou demonstrar como realizar a instalação do vmware player no Linux. Aqui eu escolhi a distribuição Debian 11, porém ela pode ser realizada em outras distribuições diferentes. Então fiquem atentos que algum comando ou outro poderá sofrer variações. <br><br>
 
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
-Perceba que aqui só temos uma placa de rede que é a placa física. Então vamos entrar no site: https://customerconnect.vmware.com/en/downloads/details?downloadGroup=WKST-PLAYER-1750&productId=1377&rPId=111473 e vamos clicar na versão para windows. Irei salvar o arquivo na pasta c:\downloads. <br></br>
+Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
+> -**sudo apt-get install build-essential linux-headers-$(uname -r)**
+
+![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
 ![DOWNLOADS](Imagens/vmware_player/01.png) <br></br>
 
