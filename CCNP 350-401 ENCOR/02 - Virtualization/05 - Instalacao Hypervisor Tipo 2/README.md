@@ -8,3 +8,21 @@ Perceba que aqui só temos uma placa de rede que é a placa física. Então vamo
 
 ![DOWNLOADS](Imagens/vmware_player/01.png) <br></br>
 
+<table>
+     <tr>
+         <td width="33%"><img src="Imagens/vmware_player/01.png"></img></td>
+         <td width="33%"><img src="Imagens/vmware_player/02.png"></img></td>
+         <td width="33%"><img src="Imagens/vmware_player/03.png"></img></td>
+    </tr>
+    <tr>
+        <td width="33%"><img src="Imagens/vmware_player/04.png"></img></td>
+        <td width="33%"><img src="Imagens/vmware_player/05.png"></img></td>
+        <td width="33%"><img src="Imagens/vmware_player/06.png"></img></td>
+    </tr>
+      <tr>
+        <td width="33%"><img src="Imagens/vmware_player/07.png"></img></td>
+        <td width="33%"><img src="Imagens/vmware_player/08.png"></img></td>
+        <td width="33%"><img src="Imagens/vmware_player/09.png"></img></td>
+    </tr>
+</table>
+
