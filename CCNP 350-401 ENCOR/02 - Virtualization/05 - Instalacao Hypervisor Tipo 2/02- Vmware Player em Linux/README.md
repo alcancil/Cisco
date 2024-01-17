@@ -9,7 +9,13 @@ Como podemos notar atráves do comando ip, agora temos duas placas de rede físi
 
 ![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
-![DOWNLOADS](Imagens/vmware_player/01.png) <br></br>
+Agora vamos baixar o binário com o comando wget:
+
+> - **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
+
+**OBS:** aqui estou baixando a versão 17.5 Verifique a versão mais recente em: https://softwareupdate.vmware.com/cds/vmw-desktop/player/ 
+
+![DOWNLOAD](Imagens/wget.png) <br></br>
 
 Agora, aqui a instalação é como de um programa qualquer. Só vou alterar e deixar selecionado a opção para instalar o driver avançado de teclado. <br></br>
 
