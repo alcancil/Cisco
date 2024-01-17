@@ -8,6 +8,8 @@ Perceba que aqui só temos uma placa de rede que é a placa física. Então vamo
 
 ![DOWNLOADS](Imagens/vmware_player/01.png) <br></br>
 
+Agora, aqui a instalação é como de um programa qualquer. Só vou alterar e deixar selecionado a opção para instalar o driver avançado de teclado. <br></br>
+
 <table>
      <tr>
          <td width="33%"><img src="Imagens/vmware_player/01.png"></img></td>
@@ -26,3 +28,4 @@ Perceba que aqui só temos uma placa de rede que é a placa física. Então vamo
     </tr>
 </table>
 
+Depois disso é necessário reiniciar o windows. <br></br>
