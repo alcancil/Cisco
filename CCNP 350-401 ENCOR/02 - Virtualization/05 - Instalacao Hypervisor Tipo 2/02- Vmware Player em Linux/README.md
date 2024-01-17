@@ -1,6 +1,6 @@
 # 01 - Vmware Player em Windows>
 
-Aqui vou dar o exemplo da instalação de dois hypervisors do Tipo 2 mais comuns do mercado. O Vmware Player e o VirtualBox. Ambos são gratuitos e podem ser obtidos no site dos próprios fabricantes. Antes de qualquer coisa, vamos analisar como está a parte de rede do nosso sistema operacional. Primeiro vamos analisar o microsoft windows<br></br>
+Agora vou demonstrar como realizar a instalação do vmware player no Linux. Aqui eu escolhi a distribuição Debian 11, porém ela pode ser realizada em outras distribuições diferentes. Então fiquem atentos que algum comando ou outro poderá sofrer variações. <br><br>
 
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
