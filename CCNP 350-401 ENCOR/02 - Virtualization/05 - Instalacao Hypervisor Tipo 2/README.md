@@ -1,4 +1,4 @@
-# \05 - Instalação Hypervisor Tipo 2
+# 05 - Instalação Hypervisor Tipo 2
 
 Aqui vou dar o exemplo da instalação de dois hypervisors do Tipo 2 mais comuns do mercado. O Vmware Player e o VirtualBox. Ambos são gratuitos e podem ser obtidos no site dos próprios fabricantes. Antes de qualquer coisa, vamos analisar como está a parte de rede do nosso sistema operacional. Primeiro vamos analisar o microsoft windows<br></br>
 
@@ -34,3 +34,6 @@ Após reiniciar, podemos notar que ao lado do relógio aparece um ícone. <br></
 ![TOOLS](Imagens/vmware_player/vmware_tools.png) <br></br>
 
 Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
+Outro detalhe é que ao iniciar o Vmware Player, ele vai exibir uma tela perguntado sobre a licença de uso do aplicativo. Aqui iremos escolher a opção: "for free non-comercial use" <br></br>
+
+![LICENÇA](Imagens/vmware_player/licenca.png) <br></br>
