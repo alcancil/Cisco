@@ -5,17 +5,23 @@ Agora vou demonstrar como realizar a instalação do vmware player no Linux. Aqu
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
 Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
-> - **sudo apt-get install build-essential linux-headers-$(uname -r)**
+>  **sudo apt-get install build-essential linux-headers-$(uname -r)**
 
 ![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
 Agora vamos baixar o binário com o comando wget:
 
-> - **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
+>  **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
 
 **OBS:** aqui estou baixando a versão 17.5 Verifique a versão mais recente em: https://softwareupdate.vmware.com/cds/vmw-desktop/player/ 
 
 ![DOWNLOAD](Imagens/wget.png) <br></br>
+
+Efetuado o download, precisamos descompactar os binários. <br></br>
+
+> **tar -xvf VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
+
+![TAR](Imagens/tar.png) <br></br>
 
 Agora, aqui a instalação é como de um programa qualquer. Só vou alterar e deixar selecionado a opção para instalar o driver avançado de teclado. <br></br>
 
