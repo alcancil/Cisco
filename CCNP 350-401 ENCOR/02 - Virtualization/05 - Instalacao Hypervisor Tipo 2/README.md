@@ -37,3 +37,10 @@ Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas V
 Outro detalhe é que ao iniciar o Vmware Player, ele vai exibir uma tela perguntado sobre a licença de uso do aplicativo. Aqui iremos escolher a opção: "for free non-comercial use" <br></br>
 
 ![LICENÇA](Imagens/vmware_player/licenca.png) <br></br>
+
+Nesse momento vamos voltar analisar as placas de rede do sistema operacional host. <br></br>
+![REDE](Imagens/02-placas_de_rede_vmware.png) <br></br>
+
+Percebam que nesse momento o Vmware criou duas placas de rede novas. São essas as placas de rede vão permitir que as Máquinas Virtuais (VMs) possam interagir com o sistema operacional. Agora, para não ficar repetitivo, criei uma máquina virtual dentro do vmware player e vou analisar direto a parte de configuração das placas de rede. <br></br>
+
+![REDE_VMS](Imagens/vmware_player/placas_de_rede.png) <br></br>
