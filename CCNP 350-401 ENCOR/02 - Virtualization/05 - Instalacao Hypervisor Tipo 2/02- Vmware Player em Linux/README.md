@@ -23,6 +23,12 @@ Efetuado o download, precisamos descompactar os binários. <br></br>
 
 ![TAR](Imagens/tar.png) <br></br>
 
+Depois de descompactado, vamos executar o script de instalação:
+
+> sudo sh VMware-Player*
+
+![SCRIPT](Imagens/script.png)
+
 Agora, aqui a instalação é como de um programa qualquer. Só vou alterar e deixar selecionado a opção para instalar o driver avançado de teclado. <br></br>
 
 <table>
