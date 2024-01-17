@@ -5,7 +5,7 @@ Agora vou demonstrar como realizar a instalação do vmware player no Linux. Aqu
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
 Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
-> -**sudo apt-get install build-essential linux-headers-$(uname -r)**
+> - **sudo apt-get install build-essential linux-headers-$(uname -r)**
 
 ![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
