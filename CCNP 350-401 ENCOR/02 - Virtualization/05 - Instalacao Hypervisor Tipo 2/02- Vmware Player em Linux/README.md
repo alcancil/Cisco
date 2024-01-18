@@ -59,7 +59,7 @@ Nesse momento vamos voltar analisar as placas de rede do sistema operacional hos
 
 ![REDE](Imagens/03-placas_de_rede.png) <br></br>
 
-Percebam que nesse momento o Vmware criou duas placas de rede novas. São essas as placas de rede vão permitir que as Máquinas Virtuais (VMs) possam interagir com o sistema operacional. Agora, para não ficar repetitivo, criei uma máquina virtual dentro do vmware player e vou analisar direto a parte de configuração das placas de rede. <br></br>
+Percebam que nesse momento o Vmware criou duas placas de rede novas, a **vmnet1 e a vmnet8**. São essas as placas de rede vão permitir que as Máquinas Virtuais (VMs) possam interagir com o sistema operacional. Agora, para não ficar repetitivo, criei uma máquina virtual dentro do vmware player e vou analisar direto a parte de configuração das placas de rede. <br></br>
 
 ![REDE_VMS](Imagens/vmware_player/placas_de_rede.png) <br></br>
 
