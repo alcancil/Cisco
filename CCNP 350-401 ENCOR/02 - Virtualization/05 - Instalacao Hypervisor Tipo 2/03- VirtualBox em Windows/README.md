@@ -45,6 +45,9 @@ Agora só falta instalarmos o Extension Pack, que são os drivers de aprimoramen
 
 ![EXTENSION](Imagens/virtualbox/07.png) <br></br>
 
+Vamos clicar no arquivo e ao executar será perguntado se desejamos instalar o pacote de extensões no virtualbox. Vamos clicar em sim. <br></br>
+
+![EXTENSION](Imagens/virtualbox/08.png) <br></br>
 
 Pronto, agora terminamos de instalar o virtualbox e suas dependências. <br></br>
 
