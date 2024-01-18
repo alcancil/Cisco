@@ -20,7 +20,7 @@ Feito isso iremos atualizar a lista de pacotes do sistema. <br></br>
 
 Agora precisamos instalar o aplicativo de fato e vamos utilizar o gerenciador de pacotes apt. <br></br>
 
-> - **sudo apt update**
+> - **sudo apt install virtualbox**
 
 Depois disso basta instalar o pacote de extensões:
 
