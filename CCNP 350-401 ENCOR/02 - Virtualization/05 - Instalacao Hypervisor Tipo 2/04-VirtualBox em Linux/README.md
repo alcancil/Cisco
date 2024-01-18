@@ -42,27 +42,11 @@ Depois disso basta instalar o pacote de extensões. Então vamos baixar o pacote
 
 ![WGET](Imagens/06-wget.png) <br></br>
 
-Agora vamos baixar o binário com o comando wget:
+Despois de copiado o arquivos, vamos instalá-lo com o comando **dpkg**. <br></br>
 
->  **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
+> - **sudo dpkg -i virtualbox-7.0_7.0.14-161095~Debian~bullseye_amd64.deb.1**
 
-**OBS:** aqui estou baixando a versão 17.5 Verifique a versão mais recente em: https://softwareupdate.vmware.com/cds/vmw-desktop/player/ 
-
-![DOWNLOAD](Imagens/wget.png) <br></br>
-
-Efetuado o download, precisamos descompactar os binários. <br></br>
-
-> **tar -xvf VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
-
-![TAR](Imagens/tar.png) <br></br>
-
-Depois de descompactado, vamos executar o script de instalação:
-
-> sudo sh VMware-Player*
-
-![SCRIPT](Imagens/script.png)
-
-Agora é só abrir a aplicação e seguir as instruções. <br></br>
+![DPKG](Imagens/07-dpkg.png) <br></br>
 
 <table>
      <tr>
