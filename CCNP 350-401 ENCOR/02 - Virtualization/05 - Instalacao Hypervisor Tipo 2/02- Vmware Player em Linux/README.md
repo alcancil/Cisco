@@ -50,18 +50,14 @@ Agora é só abrir a aplicação e seguir as instruções. <br></br>
     </tr>
 </table>
 
-Depois disso é necessário reiniciar o windows. <br></br>
-Após reiniciar, podemos notar que ao lado do relógio aparece um ícone. <br></br>
-
-![TOOLS](Imagens/vmware_player/vmware_tools.png) <br></br>
+Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
 
 Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
-Outro detalhe é que ao iniciar o Vmware Player, ele vai exibir uma tela perguntado sobre a licença de uso do aplicativo. Aqui iremos escolher a opção: "for free non-comercial use" <br></br>
+Outro detalhe é que ao configurar o Vmware Player, ele vai exibir uma tela perguntado sobre a licença de uso do aplicativo. Aqui iremos escolher a opção: "for free non-comercial use" <br></br>
 
-![LICENÇA](Imagens/vmware_player/licenca.png) <br></br>
+Nesse momento vamos voltar analisar as placas de rede do sistema operacional host através do comando **ip**. <br></br>
 
-Nesse momento vamos voltar analisar as placas de rede do sistema operacional host. <br></br>
-![REDE](Imagens/02-placas_de_rede_vmware.png) <br></br>
+![REDE](Imagens/03-placas_de_rede.png) <br></br>
 
 Percebam que nesse momento o Vmware criou duas placas de rede novas. São essas as placas de rede vão permitir que as Máquinas Virtuais (VMs) possam interagir com o sistema operacional. Agora, para não ficar repetitivo, criei uma máquina virtual dentro do vmware player e vou analisar direto a parte de configuração das placas de rede. <br></br>
 
