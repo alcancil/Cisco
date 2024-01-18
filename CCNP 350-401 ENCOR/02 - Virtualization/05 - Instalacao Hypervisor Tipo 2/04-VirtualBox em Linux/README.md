@@ -4,8 +4,11 @@ Agora vou demonstrar como realizar a instalação do virtualbox no Linux. Aqui e
 
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
-Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
->  **sudo apt-get install build-essential linux-headers-$(uname -r)**
+Como podemos notar atráves do comando ip, agora temos quatro placas de rede físicas no sistema operacional, duas físicas **(eth0 e eth1)** e duas virtuais **(vmnet1 e a vmnet8)** criadas pelo Vmware Player. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então adicionar o repositório dos pacotes do virtualbox :
+
+> **Editar /etc/apt/sources.list e adicionar os componentes "contrib" e "non-free"**
+> **# Debian Unstable "Sid"**
+> **deb http://deb.debian.org/debian/ sid main contrib non-free**
 
 ![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
