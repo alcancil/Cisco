@@ -54,12 +54,7 @@ Despois de copiado o arquivos, vamos instalá-lo. Para isso precisamos abrir o V
         <td width="33%"><img src="Imagens/07-extension4.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/07-extension5.png"></img></td>
-        <td width="33%"><img src="Imagens/07-extension6.png"></img></td>
-    </tr>
-    <tr>
-        <td width="33%"><img src="Imagens/vmware_player/07.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/08.png"></img></td>
+        <td width="100%"><img src="Imagens/07-extension5.png"></img></td>
     </tr>
 </table>
 
