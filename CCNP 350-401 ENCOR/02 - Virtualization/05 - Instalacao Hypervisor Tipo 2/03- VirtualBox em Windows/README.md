@@ -27,6 +27,16 @@ Agora é clicar no arquivo executável e seguir as instruções. <br></br>
     </tr>
 </table>
 
+Como podemos ver, a instalação deu uma mensagem de aviso que está faltando Python Core / win32api . Agora o virtualbox possui uma integração com a linguagem de programação python, porém como não temos esse programa instalado, então o hypervisor perde essas funcionalidades. Para resolvermos isso, precisamos instalar o python e logo após a win32api. Então vamos baixar o python em: https://www.python.org/downloads/ e vamos salvar o executável na mesma pasta que baixamos o virtualbox. <br></br> 
+
+Vamos executar o instalador quando começar a instalação, marcar a opção de adicionar o python ao path do sistema operacional. <br></br>
+
+![PYTHON](Imagens/python/01.png) <br></br>
+
+Bom aqui instalamos o python porém ainda não temos a api do python instalado. Vamos abrir o cmd e verificar a instalação do python. <br></br>
+
+![VERSÂO](Imagens/python/02.png) <br></br>
+
 Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
 
 Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
