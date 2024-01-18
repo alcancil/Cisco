@@ -18,6 +18,14 @@ Feito isso iremos atualizar a lista de pacotes do sistema. <br></br>
 
 ![UPDATE](Imagens/03-update.png) <br></br>
 
+Agora precisamos instalar o aplicativo de fato e vamos utilizar o gerenciador de pacotes apt. <br></br>
+
+> - **sudo apt update**
+
+Depois disso basta instalar o pacote de extensões:
+
+> - **sudo apt install virtualbox-ext-pack**
+
 Agora vamos baixar o binário com o comando wget:
 
 >  **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
