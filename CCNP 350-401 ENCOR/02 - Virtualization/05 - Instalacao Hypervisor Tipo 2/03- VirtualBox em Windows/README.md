@@ -8,7 +8,7 @@ Então vamos analisar novamente como estão as nossas placas de rede no windows.
 
 Aqui podemos notar que temos 1 placa de rede física e mais duas virtuais, que foram criadas no exemplo anterior onde instalamos o Vmware Player. Então vou copiar o instalador do VirtaulBox do site e guardar em uma pasta no hd do sistema operacional host, o sistema físico. <br></br>
 
-
+![SOFTWARE](Imagens/02-software.png) <br></br>
 
 Agora vamos baixar o binário com o comando wget:
 
