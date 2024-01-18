@@ -42,24 +42,20 @@ Depois disso basta instalar o pacote de extensões. Então vamos baixar o pacote
 
 ![WGET](Imagens/06-wget.png) <br></br>
 
-Despois de copiado o arquivos, vamos instalá-lo com o comando **dpkg**. <br></br>
-
-> - **sudo dpkg -i virtualbox-7.0_7.0.14-161095~Debian~bullseye_amd64.deb.1**
-
-![DPKG](Imagens/07-dpkg.png) <br></br>
+Despois de copiado o arquivos, vamos instalá-lo. Para isso precisamos abrir o VirtualBox e ir no gerenciador de pacotes de extensão. <br></br>
 
 <table>
      <tr>
-         <td width="33%"><img src="Imagens/vmware_player/01.png"></img></td>
-         <td width="33%"><img src="Imagens/vmware_player/02.png"></img></td>
+         <td width="33%"><img src="Imagens/07-extension.png"></img></td>
+         <td width="33%"><img src="Imagens/07-extension2.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/vmware_player/03.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/04.png"></img></td>
+        <td width="33%"><img src="Imagens/07-extension3.png"></img></td>
+        <td width="33%"><img src="Imagens/07-extension4.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/vmware_player/05.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/06.png"></img></td>
+        <td width="33%"><img src="Imagens/07-extension05.png"></img></td>
+        <td width="33%"><img src="Imagens/07-extension06.png"></img></td>
     </tr>
     <tr>
         <td width="33%"><img src="Imagens/vmware_player/07.png"></img></td>
