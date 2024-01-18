@@ -16,6 +16,8 @@ Feito isso iremos atualizar a lista de pacotes do sistema. <br></br>
 
 > - **sudo apt update**
 
+![UPDATE](Imagens/03-update.png) <br></br>
+
 Agora vamos baixar o binário com o comando wget:
 
 >  **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
