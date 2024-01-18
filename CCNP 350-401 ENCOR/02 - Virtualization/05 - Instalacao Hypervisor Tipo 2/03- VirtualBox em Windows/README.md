@@ -49,6 +49,10 @@ Vamos clicar no arquivo e ao executar será perguntado se desejamos instalar o p
 
 ![EXTENSION](Imagens/virtualbox/08.png) <br></br>
 
+Então irá abrir uma tela com os termos de utilização do programa. Devemos descer o texto até o final e depois clicar em concordar. <br></br>
+
+![EXTENSION](Imagens/virtualbox/09.png) <br></br>
+
 Pronto, agora terminamos de instalar o virtualbox e suas dependências. <br></br>
 
 
