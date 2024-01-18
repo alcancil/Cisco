@@ -14,20 +14,20 @@ Agora é clicar no arquivo executável e seguir as instruções. <br></br>
 
 <table>
      <tr>
-         <td width="33%"><img src="Imagens/vmware_player/01.png"></img></td>
-         <td width="33%"><img src="Imagens/vmware_player/02.png"></img></td>
+         <td width="33%"><img src="Imagens/virtualbox/01.png"></img></td>
+         <td width="33%"><img src="Imagens/virtualbox/02.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/vmware_player/03.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/04.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/03.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox04.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/vmware_player/05.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/06.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/05.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/06.png"></img></td>
     </tr>
     <tr>
-        <td width="33%"><img src="Imagens/vmware_player/07.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/08.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/07.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/08.png"></img></td>
     </tr>
 </table>
 
