@@ -55,22 +55,13 @@ Então irá abrir uma tela com os termos de utilização do programa. Devemos de
 
 Pronto, agora terminamos de instalar o virtualbox e suas dependências. <br></br>
 
+Como feito no vmware, já criei uma máquina virtual e vamos analisar as placas de rede. <br></br>
 
-
-Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
-
-Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
-Outro detalhe é que ao configurar o Vmware Player, ele vai exibir uma tela perguntado sobre a licença de uso do aplicativo. Aqui iremos escolher a opção: "for free non-comercial use" <br></br>
-
-Nesse momento vamos voltar analisar as placas de rede do sistema operacional host através do comando **ip**. <br></br>
-
-![REDE](Imagens/03-placas_de_rede.png) <br></br>
-
-Percebam que nesse momento o Vmware criou duas placas de rede novas, a **vmnet1 e a vmnet8**. São essas as placas de rede vão permitir que as Máquinas Virtuais (VMs) possam interagir com o sistema operacional. Agora, para não ficar repetitivo, criei uma máquina virtual dentro do vmware player e vou analisar direto a parte de configuração das placas de rede. <br></br>
-
-![REDE_VMS](Imagens/vmware_player/placas_de_rede.png) <br></br>
+![REDE_VMS](Imagens/virtualbox/10.png) <br></br>
 
 É aqui que podemos escolher como a placa de rede vai funcionar. Então temos as opções: 
 > - **01 - Bridge:** aqui ela funciona como uma ponte. Ou marcamos a opção de replicar o endereço de IP da placa física ou, deixamos a placa obter um endereço automaticamente através do servidor DHCP da rede física. Essa opção é utilizada para as vms conseguirem sair para a Internet e conseguir "enxergar" as outras máquinas físicas da rede.
 > - **02 - Nat:** esta opção serve para pegar o endereço de IP atribuído não roteável da VM e traduzir para um endereço de rede roteável, como os roteadores fazem com os endereços IPv4 das Lans. Essa opção normalmente é utilizada quando queremos que as Vms saiam para a Internet mas não enxerguem as máquinas físicas da rede real.
 > - **03 - Host-only:** está opção serve para isolar a rede virtual da rede física. Então as vms se enxergam porém não conseguem sair para a Internet e nem conseguem conversar com as máquinas físicas da rede real.
+
+Temos mais algumas opções, mas essencialmente são as mesmas.
