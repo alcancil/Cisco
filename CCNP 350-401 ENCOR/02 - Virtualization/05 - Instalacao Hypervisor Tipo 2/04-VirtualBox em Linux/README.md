@@ -54,7 +54,8 @@ Despois de copiado o arquivos, vamos instalá-lo. Para isso precisamos abrir o V
         <td width="33%"><img src="Imagens/07-extension4.png"></img></td>
     </tr>
     <tr>
-        <td width="100%"><img src="Imagens/07-extension5.png"></img></td>
+        <td width="33%"><img src="Imagens/07-extension5.png"></img></td>
+        <td width="33%"><img src="Imagens/08-virtualbox.png"></img></td>
     </tr>
 </table>
 
