@@ -10,27 +10,7 @@ Aqui podemos notar que temos 1 placa de rede física e mais duas virtuais, que f
 
 ![SOFTWARE](Imagens/02-software.png) <br></br>
 
-Agora vamos baixar o binário com o comando wget:
-
->  **wget -c https://softwareupdate.vmware.com/cds/vmw-desktop/player/17.5.0/22583795/linux/core/VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
-
-**OBS:** aqui estou baixando a versão 17.5 Verifique a versão mais recente em: https://softwareupdate.vmware.com/cds/vmw-desktop/player/ 
-
-![DOWNLOAD](Imagens/wget.png) <br></br>
-
-Efetuado o download, precisamos descompactar os binários. <br></br>
-
-> **tar -xvf VMware-Player-17.5.0-22583795.x86_64.bundle.tar**
-
-![TAR](Imagens/tar.png) <br></br>
-
-Depois de descompactado, vamos executar o script de instalação:
-
-> sudo sh VMware-Player*
-
-![SCRIPT](Imagens/script.png)
-
-Agora é só abrir a aplicação e seguir as instruções. <br></br>
+Agora é clicar no arquivo executável e seguir as instruções. <br></br>
 
 <table>
      <tr>
