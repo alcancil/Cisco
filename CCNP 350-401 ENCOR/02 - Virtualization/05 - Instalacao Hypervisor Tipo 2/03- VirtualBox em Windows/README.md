@@ -19,7 +19,7 @@ Agora é clicar no arquivo executável e seguir as instruções. <br></br>
     </tr>
     <tr>
         <td width="33%"><img src="Imagens/virtualbox/03.png"></img></td>
-        <td width="33%"><img src="Imagens/virtualbox04.png"></img></td>
+        <td width="33%"><img src="Imagens/virtualbox/04.png"></img></td>
     </tr>
     <tr>
         <td width="33%"><img src="Imagens/virtualbox/05.png"></img></td>
