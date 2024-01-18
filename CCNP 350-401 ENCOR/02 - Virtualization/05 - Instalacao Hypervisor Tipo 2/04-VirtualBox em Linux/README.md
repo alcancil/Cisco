@@ -36,9 +36,11 @@ Ao final da instalação, podemos ver que o grupo **vboxusers** é criado. entã
 
 ![USUÁRIOS](Imagens/05-users.png) <br></br>
 
-Depois disso basta instalar o pacote de extensões:
+Depois disso basta instalar o pacote de extensões. Então vamos baixar o pacote de extensões do site da oracle:
 
-> - **sudo apt install virtualbox-ext-pack**
+> - **sudo wget https://download.virtualbox.org/virtualbox/7.0.14/virtualbox-7.0_7.0.14-161095~Debian~bullseye_amd64.deb**
+
+![WGET](Imagens/06-wget.png) <br></br>
 
 Agora vamos baixar o binário com o comando wget:
 
