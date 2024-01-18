@@ -4,7 +4,7 @@ Agora vou demonstrar como realizar a instalação do VirtualBox no Windows. Ele 
 
 Então vamos analisar novamente como estão as nossas placas de rede no windows. <br></br>
 
-![REDE](Imagens/01-placas_de_rede_vmware.png <br></br>
+![REDE](Imagens/01-placas_de_rede_vmware.png) <br></br>
 
 Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
 >  **sudo apt-get install build-essential linux-headers-$(uname -r)**
