@@ -20,6 +20,12 @@ Feito isso precisamos baixar as chaves de criptografia dos repositórios. **OBS:
 
 ![UPDATE](Imagens/03-update.png) <br></br>
 
+Então vamos verificar as versões do VirtualBox disponíveis. <br></br>
+
+> - **apt search virtualbox-**
+
+![VERSÕES](Imagens/04-versoes.png) <br></br>
+
 Agora precisamos instalar o aplicativo de fato e vamos utilizar o gerenciador de pacotes apt. <br></br>
 
 > - **sudo apt install virtualbox**
