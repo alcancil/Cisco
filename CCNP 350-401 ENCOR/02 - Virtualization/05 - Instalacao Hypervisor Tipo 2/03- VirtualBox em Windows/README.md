@@ -1,6 +1,6 @@
-# 01 - Vmware Player em Linux
+# 01 - VirtualBox em Windows
 
-Agora vou demonstrar como realizar a instalação do vmware player no Linux. Aqui eu escolhi a distribuição Debian 11, porém ela pode ser realizada em outras distribuições diferentes. Então fiquem atentos que algum comando ou outro poderá sofrer variações. <br><br>
+Agora vou demonstrar como realizar a instalação do VirtualBox no Windows. Ele é da empresa Oracle e pode ser obtido em : https://www.virtualbox.org/wiki/Downloads . <br><br>
 
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
