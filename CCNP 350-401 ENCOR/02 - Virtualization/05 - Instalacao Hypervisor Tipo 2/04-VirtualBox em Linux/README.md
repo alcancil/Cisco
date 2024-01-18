@@ -12,8 +12,10 @@ Como podemos notar atráves do comando ip, agora temos quatro placas de rede fí
 
 ![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
 
-Feito isso iremos atualizar a lista de pacotes do sistema. <br></br>
+Feito isso precisamos baixar as chaves de criptografia dos repositórios. **OBS:** desde 2019 foi removido dos repositórios stable oficiais e só existe nos repositórios Unstable. Para contornar isso, então vamos baixar direto do fabricante, a oracle.  <br></br>
 
+> - **sudo wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O /etc/apt/trusted.gpg.d/virtualbox-key.asc**
+> - **sudo wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O /etc/apt/trusted.gpg.d/virtualbox-key-2.asc**
 > - **sudo apt update**
 
 ![UPDATE](Imagens/03-update.png) <br></br>
