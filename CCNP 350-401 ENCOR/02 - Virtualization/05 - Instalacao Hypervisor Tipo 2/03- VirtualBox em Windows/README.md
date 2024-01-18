@@ -6,10 +6,9 @@ Então vamos analisar novamente como estão as nossas placas de rede no windows.
 
 ![REDE](Imagens/01-placas_de_rede_vmware.png) <br></br>
 
-Como podemos notar atráves do comando ip, agora temos duas placas de rede físicas no sistema operacional. Mas antes de começarmos de fato a instalação do Hypervisor, precisamos resolver qualquer dependência que o software irá exigir. Então iremos digitar o seguinte comando:
->  **sudo apt-get install build-essential linux-headers-$(uname -r)**
+Aqui podemos notar que temos 1 placa de rede física e mais duas virtuais, que foram criadas no exemplo anterior onde instalamos o Vmware Player. Então vou copiar o instalador do VirtaulBox do site e guardar em uma pasta no hd do sistema operacional host, o sistema físico. <br></br>
 
-![DEPENDÊNCIAS](Imagens/02-dependencias.png)<br></br>
+
 
 Agora vamos baixar o binário com o comando wget:
 
