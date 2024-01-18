@@ -37,6 +37,10 @@ Bom aqui instalamos o python porém ainda não temos a api do python instalado. 
 
 ![VERSÂO](Imagens/python/02.png) <br></br>
 
+Agora vamos abrir o cmd e executar o seguinte comando: **py -m pip install pywin32**
+
+![API](Imagens/python/03.png) <br></br>
+
 Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
 
 Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
