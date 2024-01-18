@@ -26,9 +26,15 @@ Então vamos verificar as versões do VirtualBox disponíveis. <br></br>
 
 ![VERSÕES](Imagens/04-versoes.png) <br></br>
 
-Agora precisamos instalar o aplicativo de fato e vamos utilizar o gerenciador de pacotes apt. <br></br>
+Na data deste artigo temos duas versões disponíveis do VirtualBox, a 6.1 e a 7.0. Então precisamos instalar o aplicativo de fato e vamos utilizar o gerenciador de pacotes apt. <br></br>
 
-> - **sudo apt install virtualbox**
+> - **sudo apt install virtualbox-7.0**
+
+Ao final da instalação, podemos ver que o grupo **vboxusers** é criado. então precisamos adicionar nosso usuário a esse grupo.
+
+> - **sudo adduser seuusuario vboxusers**
+
+![USUÁRIOS](Imagens/05-users.png) <br></br>
 
 Depois disso basta instalar o pacote de extensões:
 
