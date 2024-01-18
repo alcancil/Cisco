@@ -41,6 +41,15 @@ Agora vamos abrir o cmd e executar o seguinte comando: **py -m pip install pywin
 
 ![API](Imagens/python/03.png) <br></br>
 
+Agora só falta instalarmos o Extension Pack, que são os drivers de aprimoramento do virtualbox. Então vamos ir ao link https://download.virtualbox.org/virtualbox/7.0.14/Oracle_VM_VirtualBox_Extension_Pack-7.0.14.vbox-extpack e salvar o aplicativo na mesma pasta onde salvamos o virtualbox. <br></br>
+
+![EXTENSION](Imagens/virtualbox/07.png) <br></br>
+
+
+Pronto, agora terminamos de instalar o virtualbox e suas dependências. <br></br>
+
+
+
 Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
 
 Esse é um conjunto de drivers do próprio hypervisor que permite as Máquinas Virtuais se comunicarem diretamente com o host e terem algumas melhorias como driver de vídeo. Com esse driver instalado é possível copiar algo para a memória do sistema operacional host e de dentro da máquina virtual regatar esse conteúdo com o comando "colar" do windows. <br></br>
