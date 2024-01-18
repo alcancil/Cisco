@@ -29,23 +29,24 @@ Depois de descompactado, vamos executar o script de instalação:
 
 ![SCRIPT](Imagens/script.png)
 
-Agora, aqui a instalação é como de um programa qualquer. Só vou alterar e deixar selecionado a opção para instalar o driver avançado de teclado. <br></br>
+Agora é só abrir a aplicação e seguir as instruções. <br></br>
 
 <table>
      <tr>
          <td width="33%"><img src="Imagens/vmware_player/01.png"></img></td>
          <td width="33%"><img src="Imagens/vmware_player/02.png"></img></td>
-         <td width="33%"><img src="Imagens/vmware_player/03.png"></img></td>
     </tr>
     <tr>
+        <td width="33%"><img src="Imagens/vmware_player/03.png"></img></td>
         <td width="33%"><img src="Imagens/vmware_player/04.png"></img></td>
+    </tr>
+    <tr>
         <td width="33%"><img src="Imagens/vmware_player/05.png"></img></td>
         <td width="33%"><img src="Imagens/vmware_player/06.png"></img></td>
     </tr>
-      <tr>
+    <tr>
         <td width="33%"><img src="Imagens/vmware_player/07.png"></img></td>
         <td width="33%"><img src="Imagens/vmware_player/08.png"></img></td>
-        <td width="33%"><img src="Imagens/vmware_player/09.png"></img></td>
     </tr>
 </table>
 
