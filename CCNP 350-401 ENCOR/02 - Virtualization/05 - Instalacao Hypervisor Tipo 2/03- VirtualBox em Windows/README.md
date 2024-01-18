@@ -1,6 +1,8 @@
 # 01 - VirtualBox em Windows
 
-Agora vou demonstrar como realizar a instalação do VirtualBox no Windows. Ele é da empresa Oracle e pode ser obtido em : https://www.virtualbox.org/wiki/Downloads . <br><br>
+Agora vou demonstrar como realizar a instalação do VirtualBox no Windows. Ele é da empresa Oracle e pode ser obtido em : https://www.virtualbox.org/wiki/Downloads . Ele é bem parecido com o Vmware Player citado anteriormente. <br><br>
+
+Então vamos analisar novamente como estão as nossas placas de rede no windows. <br></br>
 
 ![REDE](Imagens/01-placas_de_rede.png) <br></br>
 
