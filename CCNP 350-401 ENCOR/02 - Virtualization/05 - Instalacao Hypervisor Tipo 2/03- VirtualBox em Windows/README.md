@@ -25,10 +25,6 @@ Agora é clicar no arquivo executável e seguir as instruções. <br></br>
         <td width="33%"><img src="Imagens/virtualbox/05.png"></img></td>
         <td width="33%"><img src="Imagens/virtualbox/06.png"></img></td>
     </tr>
-    <tr>
-        <td width="33%"><img src="Imagens/virtualbox/07.png"></img></td>
-        <td width="33%"><img src="Imagens/virtualbox/08.png"></img></td>
-    </tr>
 </table>
 
 Até aqui a configuração do Vmware Player é muito semelhante a do windows porém, reparem na última tela. Ali tivemos que entrar em preferences e clicar em "download all components now". Isso é feito para baixar todos os drivers para todos os tipos de SO suportados pelo hypervisor. <br></br>
