@@ -7,21 +7,11 @@ Na época existia o IBM mainframes System/360 porém como ele funcionava com um 
 
 <table>
       <tr>
-           <td width="33%"><img src="Imagens/MainFrame/01.jpg"></img></td>
+           <td width="50%"><img src="Imagens/MainFrame/01.jpg"></img></td>
+           <td width="50%"><img src="Imagens/MainFrame/02.jpg"></img></td>
       </tr>
-</table>
-
-<table>
-     <tr>
-         <td width="33%"><img src="Imagens/"></img></td>
-         <td width="33%"><img src="Imagens/07-extension2.png"></img></td>
-    </tr>
-    <tr>
-        <td width="33%"><img src="Imagens/07-extension3.png"></img></td>
-        <td width="33%"><img src="Imagens/07-extension4.png"></img></td>
-    </tr>
-    <tr>
-        <td width="33%"><img src="Imagens/07-extension5.png"></img></td>
-        <td width="33%"><img src="Imagens/08-virtualbox.png"></img></td>
-    </tr>
+       <tr>
+           <td width="50%"><img src="Imagens/MainFrame/03.jpg"></img></td>
+           <td width="50%"><img src="Imagens/MainFrame/04.jpg"></img></td>
+      </tr>
 </table>
