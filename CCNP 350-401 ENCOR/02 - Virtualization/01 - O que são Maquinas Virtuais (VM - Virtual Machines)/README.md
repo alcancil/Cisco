@@ -7,6 +7,6 @@ Na época existia o IBM mainframes System/360 porém como ele funcionava com um 
 
 <table>
       <tr>
-           <td widht="50%"> <img src="Imagens/MainFrame/01.jpg"></img></td>
+           <td width="33%"><img src="Imagens/MainFrame/01.jpg"></img></td>
       </tr>
 </table>
