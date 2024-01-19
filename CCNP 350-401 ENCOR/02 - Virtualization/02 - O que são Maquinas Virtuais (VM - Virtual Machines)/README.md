@@ -33,3 +33,5 @@ Então com esse problema em mãos foi desenvolvido o sistema de VMs (Virtual MAc
 - Gerenciamento: apesar de existir produtos capazes de gerenciarem os ambientes virtuais, eles precisam ser monitorados, configurados e salvos.
 - Desempenho. Uma vez que se instala um software em cima de um sistema operacional, isso gera um concorrência de tarefas e pode comprometer o desempenho do sistema todo dependendo do número de máquinas virtuais criadas.
 - Enorme utilização de Memória real já que agora temos que atender os requisitos das máquinas virtuais e das aplicações que irão rodar dentro delas
+
+Deixo um link da própria Cisco com a descrição dela do que são máquinas virtuais. ![VIRTUAl_MACHINES](https://www.cisco.com/c/en/us/solutions/computing/what-is-a-virtual-machine.html)<br></br>
