@@ -15,3 +15,6 @@ Na época existia o IBM mainframes System/360 porém como ele funcionava com um 
            <td width="50%"><img src="Imagens/MainFrame/04.jpg"></img></td>
       </tr>
 </table>
+
+Então com esse problema em mãos foi desenvolvido o sistema de VMs (Virtual MAchines) onde era feita uma abstração do hardware, ou seja agora um programa de controle (CP) emulava o hardware físico em pequenos espaços separados dentro do sistema operacional do MainFraime. Ou seja, o sistema de controle pega uma parte do hardware (Processador, Hd, Memória, etc) e divide através de software em outros hardwares emulando vários comutadores dentre um só MainFraime. Com esse tipo de tecnologia, era possível que uma ou mais pessoas pudessem trabalhar no mesmo hardware ao mesmo tempo. <br></br>
+
