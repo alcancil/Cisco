@@ -2,12 +2,12 @@
 
 <table>
      <tr>
-          <td><img src="/Imagens/conatainer_simples.png"></img></td>
-          <td><img src="/Imagens/x.png"></img></td>
-          <td><img src="/Imagens/docker.png"></img></td>
-          <td><img src="/Imagens/x.png"></img></td>
-          <td><img src="/Imagens/kubernets.png"></img></td>
-          <td><img src="/Imagens/x.png"></img></td>
+          <td><img src="Imagens/conatainer_simples.png"></img></td>
+          <td><img src="Imagens/x.png"></img></td>
+          <td><img src="Imagens/docker.png"></img></td>
+          <td><img src="Imagens/x.png"></img></td>
+          <td><img src="Imagens/kubernets.png"></img></td>
+          <td><img src="Imagens/x.png"></img></td>
      </tr>
 <table>
 
