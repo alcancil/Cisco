@@ -26,4 +26,6 @@ Então os containers são utilizados para empacotar funções individuais que re
 Então agora fica mais fácil de escalar / aumentar o ambiente de produção. <br></br>
 Conforme vão surgindo as necessidades, ao invés de subir uma vm completa é mais fácil subir um container com as aplicações ou serviços necessários. <br></br>
 **OBS:** os containers podem estar dentro de uma vm completa ou mesmo de um so guest completo instalado no hardware. <br></br>
-Mas conforme vão crescendo o número de containers, a gerência pode ficar complicada. Então, o Docker é indicado para ambientes menores. Já para ambientes maiores foi criado o Kubernets.
+Mas conforme vão crescendo o número de containers, a gerência pode ficar complicada. Então, o Docker é indicado para ambientes menores. Já para ambientes maiores foi criado o Kubernets. <br></br>
+
+![ARUITETURA](Imagens/arquitetura_kubernets.png) <br></br>
