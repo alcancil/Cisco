@@ -29,3 +29,6 @@ Conforme vão surgindo as necessidades, ao invés de subir uma vm completa é ma
 Mas conforme vão crescendo o número de containers, a gerência pode ficar complicada. Então, o Docker é indicado para ambientes menores. Já para ambientes maiores foi criado o Kubernets. <br></br>
 
 ![ARUITETURA](Imagens/arquitetura_kubernets.png) <br></br>
+
+Agora com o Kubernetes é possível administrar vários Dockers ao mesmo tempo. <br></br>
+**OBS:** aqui também existe a parte da rede. Então é preciso se atentar que cada container pode ter um endereço IP. Logo é preciso seguir as boas práticas com um bom plano de endereço IP no uso do Docker e do Kubernet.
