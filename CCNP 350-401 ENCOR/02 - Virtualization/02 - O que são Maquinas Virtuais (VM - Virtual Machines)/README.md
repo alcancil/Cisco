@@ -8,7 +8,7 @@ Agora deixo algumas imagens ilustrativas do IBM Mainframe System/360
 
 <table>
       <tr>
-           <td width="50%"><img src="Imagens/MainFrame/01.jpg Imagem sem especificação de autoria"></img></td>
+           <td width="50%"><img src="Imagens/MainFrame/01.jpg" Imagem sem especificação de autoria></img></td>
            <td width="50%"><img src="Imagens/MainFrame/02.jpg"></img></td>
       </tr>
        <tr>
