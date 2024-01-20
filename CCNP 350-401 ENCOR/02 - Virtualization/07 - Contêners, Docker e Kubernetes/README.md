@@ -2,7 +2,7 @@
 
 <table>
      <tr>
-          <td width="200%"><img src="Imagens/conatainer_simples.png"></img></td>
+          <td width="100%"><img src="Imagens/conatainer_simples.png"></img></td>
           <td width="20%"><img src="Imagens/x.png"></img></td>
           <td width="20%"><img src="Imagens/docker.png"></img></td>
           <td width="200%"><img src="Imagens/x.png"></img></td>
