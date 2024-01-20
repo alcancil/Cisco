@@ -6,3 +6,5 @@ Com isso em mente foi criado o conceito de contêiner. Então ao invés de insta
 
 Com isso, os containers ficam mais leves e podem se medidos em megabytes uma vez que não precisam subir um so completo a cada vez que precisar rodar a aplicação / serviço. O container já aproveita o so que está de pé servindo como host e com isso eles se tronam mais rápidos. <br></br>
 
+![CONTAINER](Imagens/cointainer.png) <br></br>
+
