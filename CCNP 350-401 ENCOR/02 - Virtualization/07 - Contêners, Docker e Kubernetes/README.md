@@ -9,6 +9,11 @@ Com isso, os containers ficam mais leves e podem se medidos em megabytes uma vez
 ![CONTAINER](Imagens/cointainer.png) <br></br>
 
 Existem várias empresas que fornecem o Container Engine porém uma das mais populares é o Docker. Ele fornece uma pçataforma que permite criar, implantar e executar os containers de forma fácil e eficiente. Ele também fornece a opção de realizar snpashots dos mesmos. <br></br>
-Então os containers são utilizados para empacotar funções individuais que realizam tarefas especificas, os chamados **microserviços**. <br></br>
+Então os containers são utilizados para empacotar funções individuais que realizam tarefas especificas, os chamados **micro serviços**. <br></br>
 
 ![MICROSERVIÇOS](Imagens/microservicos.png) <br></br>
+
+Então agora fica mais fácil de escalar / aumentar o ambiente de produção. <br></br>
+Conforme vão surgindo as necessidades, ao invés de subir uma vm completa é mais fácil subir um container com as aplicações ou serviços necessários. <br></br>
+**OBS:** os containers podem estar dentro de uma vm completa ou mesmo de um so guest completo instalado no hardware. <br></br>
+Mas conforme vão crescendo o número de containers, a gerência pode ficar complicada. Então, o Docker é indicado para ambientes menores. Já para ambientes maiores foi criado o Kubernets.
