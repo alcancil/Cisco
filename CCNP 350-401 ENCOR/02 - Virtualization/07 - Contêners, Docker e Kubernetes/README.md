@@ -7,7 +7,6 @@
           <td width="20%"><img src="Imagens/docker.png"></img></td>
           <td width="15%"><img src="Imagens/x.png"></img></td>
           <td width="20%"><img src="Imagens/kubernets.png"></img></td>
-          <td width="15%"><img src="Imagens/x.png"></img></td>
      </tr>
 <table>
 
