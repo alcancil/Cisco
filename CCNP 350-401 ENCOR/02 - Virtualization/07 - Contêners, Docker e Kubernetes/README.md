@@ -11,3 +11,4 @@ Com isso, os containers ficam mais leves e podem se medidos em megabytes uma vez
 Existem várias empresas que fornecem o Container Engine porém uma das mais populares é o Docker. Ele fornece uma pçataforma que permite criar, implantar e executar os containers de forma fácil e eficiente. Ele também fornece a opção de realizar snpashots dos mesmos. <br></br>
 Então os containers são utilizados para empacotar funções individuais que realizam tarefas especificas, os chamados **microserviços**. <br></br>
 
+![MICROSERVIÇOS](Imagens/microservicos.png) <br></br>
