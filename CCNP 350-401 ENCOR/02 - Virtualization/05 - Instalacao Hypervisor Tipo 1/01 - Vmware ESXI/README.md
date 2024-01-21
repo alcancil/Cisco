@@ -1,6 +1,26 @@
 # 01 - Vmware ESXI
 
-Aqui eu irei demonstrar a instalação de Hypervisor do tipo 1. Eu escolhi o Vmware Esxi e o Proxmox (opensource). Mais informações podem ser encontradas em:
+Aqui a instalação segue a de um software comum. Devemos iniciar o computador e dar o boot através da mídia de instalação. Feito isso, é só seguir as etapas de instalação. <br></br>
 
-- **Vmware ESXI** (https://www.vmware.com/products/esxi-and-esx.html)
-- **PROXMOX** (https://www.proxmox.com/en/)
+<table>
+       <tr>
+            <td width="50%"><img src="Imagens/ESXI/01.png"></img></td>
+            <td width="50%"><img src="Imagens/ESXI/02.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/ESXI/03.png"></img></td>
+            <td width="50%"><img src="Imagens/ESXI/04.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/ESXI/05.png"></img></td>
+            <td width="50%"><img src="Imagens/ESXI/06.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/ESXI/07.png"></img></td>
+            <td width="50%"><img src="Imagens/ESXI/08.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/ESXI/09.png"></img></td>
+            <td width="50%"><img src="Imagens/ESXI/10.png"></img></td> 
+       </tr>
+</table>
