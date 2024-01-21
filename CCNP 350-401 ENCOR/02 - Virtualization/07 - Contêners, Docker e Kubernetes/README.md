@@ -32,3 +32,8 @@ Mas conforme vão crescendo o número de containers, a gerência pode ficar comp
 
 Agora com o Kubernetes é possível administrar vários Dockers ao mesmo tempo. <br></br>
 **OBS:** aqui também existe a parte da rede. Então é preciso se atentar que cada container pode ter um endereço IP. Logo é preciso seguir as boas práticas com um bom plano de endereço IP no uso do Docker e do Kubernet.
+
+Para saber mais, deixo o site oficial do [DOCKER](https://www.docker.com/) e do [KUBERNETES](https://kubernetes.io/pt-br/)
+
+- https://www.docker.com/
+- https://kubernetes.io/pt-br/ 
