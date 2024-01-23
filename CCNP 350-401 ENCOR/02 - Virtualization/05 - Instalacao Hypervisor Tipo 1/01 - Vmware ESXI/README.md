@@ -24,3 +24,7 @@ Aqui a instalação segue a de um software comum. Devemos iniciar o computador e
             <td width="50%"><img src="Imagens/ESXI/10.png"></img></td> 
        </tr>
 </table>
+
+Bom, como podemos ver na última imagem, o ESXI já pegou um endereço de IP que foi fornecido através de um servidor DHCP. Então cabe aqui ressaltar que essa é a parte de rede que vamos utilizar para administrar o Hypervisor. Nesse momento, vou pressionar **F2 (Customize System/View Logs)** para analisarmos as opções. Veja, aqui estou mostrando somente um exemplo da instalação de Hypervisor do tipo 1 e portanto o enfoque será somente na parte das configurações de rede. <br></br>
+
+![SENHA](Imagens/11.png) <br></br>
