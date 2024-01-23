@@ -33,3 +33,6 @@ Como podemos ver, ele funciona como um Sistema Operacional completo, com usuári
 
 ![INTERFACE_DE_GERÊNCIA](Imagens/12.png) <br></br>
 
+Aqui iremos configurar as opções da Interface de Gerência do Hypervisor. Podemos escolher configurar o endereço IPv4 / IPv6 manualmente ou via DHCP, colocar a interface em uma Vlan e configurar a parte do DNS para que os outros hosts possam encontrar o ESXI através do nome FQDN.
+
+![REDE](Imagens/13.png) <br></br>
