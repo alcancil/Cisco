@@ -45,3 +45,7 @@ Para acessarmos o ESXI propriamente dito, agora precisamos ir em outro terminal,
 Como não configuramos nada, o navegador irá tentar realizar um acesso via HTTPS seguro, porém como não temos nenhum certificado configurado para esse tipo de acesso, vamos clicar em **aceitar o risco e continuar** para prosseguirmos. <br></br>
 
 ![ROOT](Imagens/15.png) <br></br>
+
+Novamente aqui devemos informar o usuário administrador e a senha. Notem que são dois acessos diferentes. Aqui vamos ter o acesso de utilização do Hypervisor. Aqui podemos criar as VMs, discos virtuais e configurar a rede das VMs, que é diferente da rede gerência. <br></br>
+
+![ROOT](Imagens/16.png) <br></br>
