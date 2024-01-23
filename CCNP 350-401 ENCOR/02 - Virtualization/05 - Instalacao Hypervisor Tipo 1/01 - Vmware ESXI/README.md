@@ -49,3 +49,8 @@ Como não configuramos nada, o navegador irá tentar realizar um acesso via HTTP
 Novamente aqui devemos informar o usuário administrador e a senha. Notem que são dois acessos diferentes. Aqui vamos ter o acesso de utilização do Hypervisor. Aqui podemos criar as VMs, discos virtuais e configurar a rede das VMs, que é diferente da rede gerência. <br></br>
 
 ![ROOT](Imagens/16.png) <br></br>
+
+Vamos clicar na guia **NETWORKING** para podermos analisar as opções que irão aparecer.
+
+![NETWORKING](Imagens/17.png) <br></br>
+
