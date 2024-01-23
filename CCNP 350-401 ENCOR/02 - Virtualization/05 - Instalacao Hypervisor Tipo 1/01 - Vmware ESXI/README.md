@@ -42,4 +42,6 @@ Para acessarmos o ESXI propriamente dito, agora precisamos ir em outro terminal,
 
 ![ACESSO](Imagens/14.png) <br></br>
 
-Como não configuramos nada, o navegador irá tentar realizar um acesso via HTTPS seguro, porém como não temos nenhum certificado configurado para esse tipo de acesso, vamos clicar em **aceitar o risco e continuar** para prosseguirmos.
+Como não configuramos nada, o navegador irá tentar realizar um acesso via HTTPS seguro, porém como não temos nenhum certificado configurado para esse tipo de acesso, vamos clicar em **aceitar o risco e continuar** para prosseguirmos. <br></br>
+
+![ROOT](Imagens/15.png) <br></br>
