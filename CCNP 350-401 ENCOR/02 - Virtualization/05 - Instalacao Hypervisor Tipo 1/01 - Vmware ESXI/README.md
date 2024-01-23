@@ -41,3 +41,5 @@ Para acessarmos o ESXI propriamente dito, agora precisamos ir em outro terminal,
 **OBS:** aqui estou deixando na configuração padrão a rede gerência por se tratar de um mero exemplo mas, o recomendado quando se for utilizar um tipo de Hypervisors desses o recomendado é se utilizar um IP Fixo.
 
 ![ACESSO](Imagens/14.png) <br></br>
+
+Como não configuramos nada, o navegador irá tentar realizar um acesso via HTTPS seguro, porém como não temos nenhum certificado configurado para esse tipo de acesso, vamos clicar em **aceitar o risco e continuar** para prosseguirmos.
