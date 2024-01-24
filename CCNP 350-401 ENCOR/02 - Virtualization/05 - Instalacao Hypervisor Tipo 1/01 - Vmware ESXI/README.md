@@ -104,7 +104,11 @@ Os vSwitches suportam VLANs (Virtual LANs), permitindo a segmentação do tráfe
 
 ## Physical Nics
 
-São as placas de rede físicas.
+São as placas de rede físicas. Essas NICs são responsáveis por estabelecer a conectividade física entre o servidor e a rede externa. No contexto da virtualização, como no ambiente VMware vSphere e ESXi, as Physical NICs desempenham um papel fundamental na comunicação entre as máquinas virtuais e a rede física. <br></br>
+Cada Physical NIC está associada a uma porta física no servidor e se conecta diretamente à infraestrutura de rede física. No âmbito de software, as NICs físicas são usadas para criar adaptadores virtuais, conhecidos como vmnics (Virtual Machine NICs). Esses vmnics são associados aos switchs virtuais (vSwitches) no host ESXi. <br></br>
+As Physical NICs são usadas como uplinks para conectar o vSwitch (Switch Virtual) ao ambiente de rede física. Elas servem como ponte entre o mundo virtual (onde as máquinas virtuais operam) e o mundo físico (a rede externa). Pode-se configurar várias Physical NICs em um host ESXi para fornecer redundância. Se uma NIC falhar, o tráfego pode ser automaticamente direcionado para as NICs funcionais, garantindo maior disponibilidade. <br></br>
+As Physical NICs podem ser configuradas para suportar VLANs, permitindo a segmentação do tráfego de rede em redes virtuais separadas. <br></br>
+Ao configurar port groups em vSwitches, as Physical NICs são associadas a esses grupos para direcionar o tráfego de rede das máquinas virtuais para a rede física. <br></br>
 
 <table>
        <tr>
@@ -112,3 +116,5 @@ São as placas de rede físicas.
             <td width="50%"><img src="Imagens/REDE_ESXI/Physical NICs/2.png"></img></td> 
        </tr>
 </table>
+
+## VMKernel NICS
