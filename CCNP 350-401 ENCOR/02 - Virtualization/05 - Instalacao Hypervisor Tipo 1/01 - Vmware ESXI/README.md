@@ -63,5 +63,18 @@ Aqui temos as seguintes opções:
 > - **TCP/IP STACKS**
 > - **Firewall Rules**
 
+**OBS:** como boa prática a ser seguida, você nunca deve misturar o tráfego de redes lan que utilizam o protocolo Ethernet com o tráfego de redes de Storages que utilizam o protocolo iscsi dentro do mesmo switch. Isso pode gerar problemas e deixar o tráfego muito lento. Então utilize switchs separados para cada tipo de tráfego.
+
+## Port GROUPS
 
 
+<table>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/port groups/1.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/port groups/2.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/port groups/3.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/port groups/4.png"></img></td> 
+       </tr>
+</table>
