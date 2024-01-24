@@ -67,6 +67,10 @@ Aqui temos as seguintes opções:
 
 ## Port GROUPS
 
+Podemos pensar que um Port Group é como se fosse uma porta virtual com um conjunto específico de configurações aplicadas sobre ela. Eles são responsáveis por conectar as máquinas virtuais aos vSwitches.<br></br>
+Para os port groups funcionarem, é necessário que eles tenham portas de uplink, que representam as conexões entre as placas de rede físicas e os vSwitches do host ESXi. Dessa forma, os port groups são associados a uma VLAN específica, e o tráfego flui através das NICs físicas.<br></br>
+**OBS:** É possível associar mais de uma placa de rede física a um vSwitch para fornecer redundância de uplink. <br></br>
+É possível observar que nas configurações podemos especificar em qual vswitch o port group está associado, configurar a parte de segurança, realizar um nic teaming e até mesmo realizar um traffic shapping. <br></br>
 
 <table>
        <tr>
