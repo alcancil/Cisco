@@ -160,3 +160,13 @@ A implementação do TCP/IP no VMware ESXi é composta por diversas camadas e m�
             <td width="50%"><img src="Imagens/REDE_ESXI/TCP IP STACKS//4.png"></img></td> 
        </tr>
 </table>
+
+## Firewall Rules
+
+<table>
+       <tr>
+            <td width="33%"><img src="Imagens/REDE_ESXI/Firewall Rules/1.png"></img></td>
+            <td width="33%"><img src="Imagens/REDE_ESXI/Firewall Rules/2.png"></img></td>
+            <td width="33%"><img src="Imagens/REDE_ESXI/Firewall Rules/3.png"></img></td> 
+       </tr>
+</table>
