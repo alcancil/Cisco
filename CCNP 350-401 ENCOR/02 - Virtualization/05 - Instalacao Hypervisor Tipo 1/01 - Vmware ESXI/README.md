@@ -163,6 +163,10 @@ A implementação do TCP/IP no VMware ESXi é composta por diversas camadas e m�
 
 ## Firewall Rules
 
+Aqui é parte de segurança do VMWARE ESXi. São configurações que controlam e regulam o tráfego de rede para e a partir do host ESXi. O firewall no ESXi é uma medida de segurança que ajuda a proteger o host e as máquinas virtuais (VMs) hospedadas contra tráfego indesejado ou não autorizado. As Firewall Rules especificam quais tipos de tráfego são permitidos ou bloqueados. <br></br>
+Aqui podemos ter Proteção do Host e das VMs, Regras Padrão e Personalizadas, Portas e Protocolos, Regras de Acesso Remoto, Regras de Serviços de Gerenciamento, regras para vMotion, personalização de regras e registro de Logs. <br></br>
+Em resumo, as Firewall Rules no VMware ESXi são um componente importante da segurança da infraestrutura virtualizada, permitindo que os administradores controlem o tráfego de rede e protejam o ambiente contra ameaças potenciais.<br></br>
+
 <table>
        <tr>
             <td width="33%"><img src="Imagens/REDE_ESXI/Firewall Rules/1.png"></img></td>
