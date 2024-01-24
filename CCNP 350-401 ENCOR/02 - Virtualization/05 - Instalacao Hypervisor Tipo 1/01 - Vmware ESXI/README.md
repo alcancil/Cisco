@@ -174,3 +174,9 @@ Em resumo, as Firewall Rules no VMware ESXi são um componente importante da seg
             <td width="33%"><img src="Imagens/REDE_ESXI/Firewall Rules/3.png"></img></td> 
        </tr>
 </table>
+
+## Considerações Finais
+
+Então aqui eu demonstrei um pouco sobre o Hypervisor Tipo 1, o Vmware Vsphere ESXi. Também apresentei um pouco sobre a parte de redes deles, que como podemos notar não é muito transparente como nos Hypervisors do Tipo 2 porém seguem os mesmos conceitos de redes. <br></br>
+
+Também recomendo que queira se aprofundar mais sobre o tema leia a documentação oficial do produto em: https://docs.vmware.com/br/VMware-vSphere/index.html 
