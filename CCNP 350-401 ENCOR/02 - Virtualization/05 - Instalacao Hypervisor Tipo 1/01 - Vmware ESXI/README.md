@@ -1,5 +1,6 @@
 # 01 - Vmware ESXI
 
+Antes de iniciarmos, é preciso salientar que o ESXI na verdade faz parte de um conjunto de aplicativos. Como assim ? Bom, a solução completa se chama Vmware vSphere e ela possui o sistema operacional ESXI, que é hypervisor que vamos abordar aqui, e o vCenter; que é o gerenciador do ESXI. Esse conjunto é a solução de virtualização de servidores x86 para datacenter da empresa **VMWARE**. <br></br> 
 Aqui a instalação segue a de um software comum. Devemos iniciar o computador e dar o boot através da mídia de instalação. Feito isso, é só seguir as etapas de instalação. <br></br>
 
 <table>
@@ -118,3 +119,13 @@ Ao configurar port groups em vSwitches, as Physical NICs são associadas a esses
 </table>
 
 ## VMKernel NICS
+
+As VMkernel NICs (Network Interface Cards) são interfaces de rede virtuais específicas no ambiente VMware vSphere e ESXi que são usadas para comunicação do kernel e operações de gerenciamento no host ESXi. Diferentemente das NICs virtuais associadas a máquinas virtuais (vmnics), as VMkernel NICs são dedicadas a funções específicas relacionadas à infraestrutura do host ESXi. Aqui estão alguns pontos-chave sobre as VMkernel NICs:
+
+> - **Comunicação de Kernel:** As VMkernel NICs são usadas para a comunicação entre o kernel do host ESXi e outros dispositivos, como outros hosts ESXi, dispositivos de armazenamento e sistemas de gerenciamento.
+> - **vMotion e Migração de Armazenamento:** As VMkernel NICs são essenciais para recursos como vMotion e Storage vMotion, que permitem a migração de máquinas virtuais entre hosts ESXi e movimentação de armazenamento sem interrupção do serviço.
+> - **Gestão e Acesso ao Host:** As VMkernel NICs fornecem conectividade para operações de gerenciamento, como acesso ao vCenter Server, SSH (Secure Shell), e outros serviços de gerenciamento do host.
+> - **iSCSI e NFS:** Em configurações que utilizam protocolos de armazenamento de rede, como iSCSI (Internet Small Computer System Interface) ou NFS (Network File System), as VMkernel NICs são usadas para a comunicação com dispositivos de armazenamento remotos.
+> - **vSphere Fault Tolerance (FT):** No caso do recurso de Fault Tolerance do vSphere, as VMkernel NICs são usadas para a comunicação entre as instâncias primária e secundária de uma máquina virtual para garantir alta disponibilidade.
+> - **Configuração de Redundância:** Assim como com outras interfaces de rede, você pode configurar redundância nas VMkernel NICs para garantir a disponibilidade e o failover em caso de falha de uma NIC.
+> - **Separadas das VM Networks:** As VMkernel NICs operam em uma camada diferente daquelas associadas às VMs. Elas são dedicadas a operações de sistema e gerenciamento, enquanto as NICs virtuais (vmnics) associadas a port groups são usadas para o tráfego de máquinas virtuais.
