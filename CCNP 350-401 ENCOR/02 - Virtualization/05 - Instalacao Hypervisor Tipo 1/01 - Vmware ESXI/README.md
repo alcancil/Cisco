@@ -137,3 +137,18 @@ As VMkernel NICs (Network Interface Cards) são interfaces de rede virtuais espe
             <td width="33%"><img src="Imagens/REDE_ESXI/VMKernel NICS/3.png"></img></td> 
        </tr>
 </table>
+
+## TCP/IP STACKS
+
+Essa é a parte da implementação do protocolo TCP/IP que fica sobre um sistema operacional. <br></br>
+
+<table>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/TCP IP STACKS//1.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/TCP IP STACKS//2.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/TCP IP STACKS//3.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/TCP IP STACKS//4.png"></img></td> 
+       </tr>
+</table>
