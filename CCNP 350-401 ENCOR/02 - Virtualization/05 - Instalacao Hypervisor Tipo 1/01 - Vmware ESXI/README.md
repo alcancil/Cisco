@@ -129,3 +129,11 @@ As VMkernel NICs (Network Interface Cards) são interfaces de rede virtuais espe
 > - **vSphere Fault Tolerance (FT):** No caso do recurso de Fault Tolerance do vSphere, as VMkernel NICs são usadas para a comunicação entre as instâncias primária e secundária de uma máquina virtual para garantir alta disponibilidade.
 > - **Configuração de Redundância:** Assim como com outras interfaces de rede, você pode configurar redundância nas VMkernel NICs para garantir a disponibilidade e o failover em caso de falha de uma NIC.
 > - **Separadas das VM Networks:** As VMkernel NICs operam em uma camada diferente daquelas associadas às VMs. Elas são dedicadas a operações de sistema e gerenciamento, enquanto as NICs virtuais (vmnics) associadas a port groups são usadas para o tráfego de máquinas virtuais.
+
+<table>
+       <tr>
+            <td width="33%"><img src="Imagens/REDE_ESXI/VMKernel NICS/1.png"></img></td>
+            <td width="33%"><img src="Imagens/REDE_ESXI/VMKernel NICS/2.png"></img></td>
+            <td width="33%"><img src="Imagens/REDE_ESXI/VMKernel NICS/3.png"></img></td> 
+       </tr>
+</table>
