@@ -82,3 +82,16 @@ Para os port groups funcionarem, é necessário que eles tenham portas de uplink
             <td width="50%"><img src="Imagens/REDE_ESXI/port groups/4.png"></img></td> 
        </tr>
 </table>
+
+## VIRTUAL SWITCHES
+
+<table>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/1.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/2.png"></img></td> 
+       </tr>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/3.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/4.png"></img></td> 
+       </tr>
+</table>
