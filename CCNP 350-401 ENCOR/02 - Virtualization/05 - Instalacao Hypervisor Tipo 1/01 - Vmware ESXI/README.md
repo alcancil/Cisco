@@ -103,3 +103,12 @@ Os vSwitches suportam VLANs (Virtual LANs), permitindo a segmentação do tráfe
 </table>
 
 ## Physical Nics
+
+São as placas de rede físicas.
+
+<table>
+       <tr>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Physical NICs/1.png"></img></td>
+            <td width="50%"><img src="Imagens/REDE_ESXI/Physical NICs/2.png"></img></td> 
+       </tr>
+</table>
