@@ -54,3 +54,14 @@ Vamos clicar na guia **NETWORKING** para podermos analisar as opções que irão
 
 ![NETWORKING](Imagens/17.png) <br></br>
 
+Aqui temos as seguintes opções:
+
+> - **Port Groups**
+> - **Virtual Switches**
+> - **Physical Nics**
+> - **VMKernel NICS**
+> - **TCP/IP STACKS**
+> - **Firewall Rules**
+
+
+
