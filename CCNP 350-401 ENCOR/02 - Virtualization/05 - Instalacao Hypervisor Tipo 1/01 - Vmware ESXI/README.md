@@ -85,6 +85,12 @@ Para os port groups funcionarem, é necessário que eles tenham portas de uplink
 
 ## VIRTUAL SWITCHES
 
+Pode-se afirmar que essa é um elemento fundamental para parte de redes no ESXI. Ele atua como um switch físico de camada 2 mas que opera na camada de software. É ele quem fornece a conectividade das máquinas virtuais entre si e, delas para as redes externas. <br></br>
+Os vSwitches contêm port groups, que são conjuntos de portas de rede virtual com configurações específicas. Cada VM é associada a um port group, determinando assim as configurações de rede aplicadas a ela. <br></br>
+Eles podem ter uplinks, que são as conexões físicas às placas de rede no host ESXi. Esses uplinks conectam o vSwitch à rede física externa. <br></br>
+Os vSwitches suportam VLANs (Virtual LANs), permitindo a segmentação do tráfego de rede e a criação de redes virtuais independentes.Eles também têm configurações que incluem políticas de segurança, configurações de tráfego, VLANs e outras opções que afetam como o tráfego é gerenciado e distribuído.
+**OBS:** mais a frente vou falar um pouco mais sobre os **vswitches** em um capítulo específico. <br></br>
+
 <table>
        <tr>
             <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/1.png"></img></td>
@@ -95,3 +101,5 @@ Para os port groups funcionarem, é necessário que eles tenham portas de uplink
             <td width="50%"><img src="Imagens/REDE_ESXI/Vswitches/4.png"></img></td> 
        </tr>
 </table>
+
+## Physical Nics
