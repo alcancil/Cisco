@@ -1,28 +1,27 @@
-# 01 - Vmware ESXI
+# 02 - Proxmox
 
-Antes de iniciarmos, é preciso salientar que o ESXI na verdade faz parte de um conjunto de aplicativos. Como assim ? Bom, a solução completa se chama Vmware vSphere e ela possui o sistema operacional ESXI, que é hypervisor que vamos abordar aqui, e o vCenter; que é o gerenciador do ESXI. Esse conjunto é a solução de virtualização de servidores x86 para datacenter da empresa **VMWARE**. <br></br> 
-Aqui a instalação segue a de um software comum. Devemos iniciar o computador e dar o boot através da mídia de instalação. Feito isso, é só seguir as etapas de instalação. <br></br>
+Aqui, como nos outros fabricantes, devemos iniciar o computador dando boot pela mídia de instalação. <br></br>
 
 <table>
        <tr>
-            <td width="50%"><img src="Imagens/ESXI/01.png"></img></td>
-            <td width="50%"><img src="Imagens/ESXI/02.png"></img></td> 
+            <td width="50%"><img src="Imagens/1.png"></img></td>
+            <td width="50%"><img src="Imagens/2.png"></img></td> 
        </tr>
        <tr>
-            <td width="50%"><img src="Imagens/ESXI/03.png"></img></td>
-            <td width="50%"><img src="Imagens/ESXI/04.png"></img></td> 
+            <td width="50%"><img src="Imagens/3.png"></img></td>
+            <td width="50%"><img src="Imagens/4.png"></img></td> 
        </tr>
        <tr>
-            <td width="50%"><img src="Imagens/ESXI/05.png"></img></td>
-            <td width="50%"><img src="Imagens/ESXI/06.png"></img></td> 
+            <td width="50%"><img src="Imagens/5.png"></img></td>
+            <td width="50%"><img src="Imagens/6.png"></img></td> 
        </tr>
        <tr>
-            <td width="50%"><img src="Imagens/ESXI/07.png"></img></td>
-            <td width="50%"><img src="Imagens/ESXI/08.png"></img></td> 
+            <td width="50%"><img src="Imagens/7.png"></img></td>
+            <td width="50%"><img src="Imagens/8.png"></img></td> 
        </tr>
        <tr>
-            <td width="50%"><img src="Imagens/ESXI/09.png"></img></td>
-            <td width="50%"><img src="Imagens/ESXI/10.png"></img></td> 
+            <td width="50%"><img src="Imagens/9.png"></img></td>
+            <td width="50%"><img src="Imagens/10.png"></img></td> 
        </tr>
 </table>
 
