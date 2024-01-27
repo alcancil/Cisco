@@ -35,3 +35,6 @@ Essa é a solução enterprise da Cisco para poder virtualizar nas empresas. Sã
 - Ctera
 - Windows Server
 - Linux Server
+
+https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
+https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
