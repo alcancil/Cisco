@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-27T19:29:18.555Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="NEX1lzOvbwaVZo7GDd5w" version="22.1.21" type="device">
+<mxfile host="app.diagrams.net" modified="2024-01-27T19:31:51.657Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="WSYyvwaRHInaF6v6DiZW" version="22.1.21" type="device">
   <diagram name="Página-1" id="0V7frbU5FmqlEiVW2ZVQ">
     <mxGraphModel dx="1194" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -139,7 +139,7 @@
         <mxCell id="hXfypBzdt3UK9iyCR_KY-75" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;strokeWidth=4;" vertex="1" parent="1">
           <mxGeometry x="530" y="310" width="330" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="hXfypBzdt3UK9iyCR_KY-76" value="VIRTUALIZATION LAYER3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="hXfypBzdt3UK9iyCR_KY-76" value="VIRTUALIZATION LAYER" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="585" y="325" width="220" height="30" as="geometry" />
         </mxCell>
         <mxCell id="hXfypBzdt3UK9iyCR_KY-78" value="" style="sketch=0;outlineConnect=0;fillColor=#ffcccc;strokeColor=#36393d;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.cold_storage;" vertex="1" parent="1">
