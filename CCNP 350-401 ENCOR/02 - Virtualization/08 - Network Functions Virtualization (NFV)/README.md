@@ -17,3 +17,21 @@ Também podem ser utilizados em nuvem. <br></br>
 - **Operations Support System (OSS) / Bussiness Support System (BSS):** esse é o elemento que fornece as redes para as demais redes menores. É o elemento que está no topo do Framework e que lida com a maior carga do Framework inteiro. Até a parte de cobrança dos serviços é ele quem fornece. Por exemplo, um provedor de serviços fornece a rede para os demais clientes. Então imagine que esse provedor possua milhares de clientes. Ou seja, uma rede fornecendo redes para os demais clientes. É nesse nível que o OSS / BSS trabalha. <br></br>
 
 ![OSS/BSS](Imagens/oss_bss.png) <br></br>
+
+## CISCO Enterprise Network Functions Virtualization (ENFV)
+
+Essa é a solução enterprise da Cisco para poder virtualizar nas empresas. São suportados por essa solução:
+
+- Cisco Integrated Services Virtual Router (ISRv)
+- Cisco Adaptative Security Virtual Applience (ASAv)
+- Cisco Firepower Next-Generation Firewall virtual (NGFWv)
+- Viptela vEdge e cEdge para Sd-Wan
+- Cisco virtual Wide Area Application Services (vWAAS)
+- Cisco Virtual Wirelles Lan controlers (vWLCs)
+- ThousandEyes
+- Fortinet
+- Palo Alto
+- Info Vista
+- Ctera
+- Windows Server
+- Linux Server
