@@ -85,5 +85,7 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
 - **Menos dispositivos:** como NFV é executado em máquinas virtuais em vez de máquinas físicas, são necessários menos dispositivos e os custos operacionais são mais baixos.
 - **Escalabilidade:** dimensionar a arquitetura de rede com máquinas virtuais é mais rápido e fácil e não requer a compra de mais hardware.
 
-https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
-https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
+Agora deixo dois links para quem desejar se aprofundar mais sobre o assunto. O primeiro é a apresentação da cisco sobre o que é NFV. O segundo é o guia do NFV que dá uma visão geral e ensina como instalar o Cisco NFV.
+
+https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html <br></br>
+https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide.html <br></br>
