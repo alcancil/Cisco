@@ -38,5 +38,9 @@ Essa é a solução enterprise da Cisco para poder virtualizar nas empresas. Sã
 
 ![DNA_CENTER](Imagens/dna.png) <br></br>
 
+Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixas", cada uma com uma função) para o "novo mundo" onde existe um servidor x86 ou algum dispositivo semelhante onde dentro vão existir várias máquinas virtuais VNFs. <br></br>
+
+![NOVO](Imagens/velho_novo.png) <br></br>
+
 https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
 https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
