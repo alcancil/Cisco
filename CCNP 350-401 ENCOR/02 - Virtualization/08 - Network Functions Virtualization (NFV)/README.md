@@ -48,8 +48,8 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
 
 <table>
       <tr>
-           <td width="50%"><img src="/Imagens/Equipamentos/tradicional/4000.png"></img></td>
-           <td width="50%"><img src="/Imagens/Equipamentos/tradicional/9000.png"></img></td>
+           <td width="50%"><img src="Imagens/Equipamentos/tradicional/4000.png"></img></td>
+           <td width="50%"><img src="Imagens/Equipamentos/tradicional/9000.png"></img></td>
       </tr>
       <tr>
            <td align="center">Cisco 4000 ISR</td>
