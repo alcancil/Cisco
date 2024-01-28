@@ -42,5 +42,9 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
 
 ![NOVO](Imagens/velho_novo.png) <br></br>
 
+## Exemplos de equipamentos CISCO
+
+- **Tradicional:** Cisco 4000 series ISR, Cisco Catalyst 9000 series - Com serviços centralizados e serviços físicos conservadores.
+
 https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
 https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
