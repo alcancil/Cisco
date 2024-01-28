@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" modified="2024-01-28T18:28:53.511Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="QYPfaN3kjb7VGiu8EdBc" version="23.0.2" type="device">
+  <diagram name="Página-1" id="Gd_w7DrsUppdvLayA0gW">
+    <mxGraphModel dx="1194" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-1" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;fillColor=#d0cee2;strokeColor=#56517e;" vertex="1" parent="1">
+          <mxGeometry x="50" y="40" width="820" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-4" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;dashed=1;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="150" width="760" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-19" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;dashed=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="670" y="198" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-18" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;dashed=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="480" y="199" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-17" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;dashed=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="287" y="199" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-16" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;dashed=1;strokeWidth=4;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="120" y="200" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-2" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="760" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-3" value="CISCO DNA CENTER (MANAGEMENT AND ORCHESTATION) MANO" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="110" y="95" width="550" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-6" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/networking/Virtual_Router.svg;" vertex="1" parent="1">
+          <mxGeometry x="136" y="216" width="68" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-8" value="" style="verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;align=center;outlineConnect=0;shape=mxgraph.citrix.firewall;" vertex="1" parent="1">
+          <mxGeometry x="320.38" y="211" width="53.23" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-9" value="" style="shape=mxgraph.cisco.wireless.wlan_controller;html=1;pointerEvents=1;dashed=0;fillColor=#1ba1e2;strokeColor=#006EAF;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="497.75" y="222" width="84.5" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-14" value="" style="sketch=0;outlineConnect=0;fontColor=#ffffff;fillColor=#0050ef;strokeColor=#001DBC;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.traditional_server;" vertex="1" parent="1">
+          <mxGeometry x="709.81" y="206" width="40.38" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-20" value="&lt;div&gt;VIRTUAL ROUTER&lt;/div&gt;&lt;div&gt;(ISR VEDGE)&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="95" y="330" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-22" value="&lt;div&gt;VIRTUAL FIREWALL (ASAv NGFWv)&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="264" y="330" width="166" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-24" value="&lt;div&gt;VIRTUAL WLAN&lt;/div&gt;&lt;div&gt;CONTROLLER (vWLC)&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="330" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-25" value="&lt;div&gt;THIRDY PARTY&lt;/div&gt;&lt;div&gt;VNFs&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="640" y="330" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-27" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=4;fillColor=#b0e3e6;strokeColor=#0e8088;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="760" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-28" value="&lt;div&gt;NETWORK FUNCTIONS VIRTUALIZATION INFRASTRUCTURE SOFTWARE (NFVIS) - SERVIDORES&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="80" y="435" width="755" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-29" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="500" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-30" value="ENTERPRISE NETWORK COMPUT SYSTEM (ENCS)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="87.5" y="515" width="205" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-31" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="350" y="500" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-32" value="&lt;div&gt;CISCO 4000 SERIES ISR+&lt;/div&gt;&lt;div&gt;UCS SERIES&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="352.5" y="515" width="205" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-33" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="620" y="500" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6HsFvnNpamQ9f5Tcxm5-35" value="UCS SERIES" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="627.5" y="515" width="205" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
