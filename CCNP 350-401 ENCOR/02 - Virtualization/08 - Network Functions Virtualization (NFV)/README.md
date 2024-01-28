@@ -55,7 +55,20 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
            <td align="center">Cisco 4000 ISR</td>
            <td align="center">Cisco Catalyst 9000</td>
       </tr>
-</tbale>
+</table>
+
+- **Enterprise:** 4000 ISR + UCS Eseries (Possui router físico com serviços virtuais), Enterprise Network Compute System (ECS) e UCS Series CSP series (Roteador virtual e serviços virtuais).
+
+<table>
+      <tr>
+           <td width="50%"><img src="Imagens/Equipamentos/enterprise nfv/ucs.png"></img></td>
+           <td width="50%"><img src="Imagens/Equipamentos/enterprise nfv/5000.png"></img></td>
+      </tr>
+      <tr>
+           <td align="center">4000 series + UCS ESeries</td>
+           <td align="center">Cisco 5000 Series Enterprise Network Compute System</td>
+      </tr>
+</table>
 
 https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
 https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
