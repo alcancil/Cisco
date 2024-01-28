@@ -74,5 +74,16 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
 
 ## Riscos da Virtualização de Funções de rede
 
+- **Os controles de segurança não são eficazes:** a virtualização de componentes de rede aumenta sua vulnerabilidade a novo tipos de ataques em comparação com equipamentos físicos bloqueados em um datacenter.
+- **O malware é difícil de isolar e conter:** é mais fácil para o malware viajar entre componentes virtuais que estão todos em execução em uma máquina virtual do que entre componentes de hardware que podem ser isolados ou separados fisicamente
+- **O tráfego de rede é menos transparente:** as ferramentas tradicionais de monitoramento de tráfego tem dificuldade em detectar anomalias potencialmente maliciosas no tráfego de rede que viaja de leste a oeste entre máquinas virtuais, portanto o NFV requer soluções de segurança mais refinadas.
+- **Camadas complexas exigem múltiplas formas de segurança:** os ambientes de virtualização de função de rede são inerentemente complexas, com múltiplas camadas que são difíceis de proteger com políticas de segurança abrangentes.
+
+## Benefícios
+
+- **Pagamento pelo uso:** os modelos NFV de pagamento conforme o uso podem reduzir custos porque as empresas pagam apenas pelo que precisam, ou o que consomem.
+- **Menos dispositivos:** como NFV é executado em máquinas virtuais em vez de máquinas físicas, são necessários menos dispositivos e os custos operacionais são mais baixos.
+- **Escalabilidade:** dimensionar a arquitetura de rede com máquinas virtuais é mais rápido e fácil e não requer a compra de mais hardware.
+
 https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
 https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
