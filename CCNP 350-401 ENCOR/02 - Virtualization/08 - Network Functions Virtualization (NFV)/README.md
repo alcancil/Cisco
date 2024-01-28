@@ -70,5 +70,9 @@ Essa é a plataforma da CISCO que traz uma rede convencional (com várias "caixa
       </tr>
 </table>
 
+**OBS:** O Cisco Enterprise NFVIS possui uma interface gráfica onde pode-se configurar as opções. É ele que vai fazer a parte de abstração. Também possui um cli.
+
+## Riscos da Virtualização de Funções de rede
+
 https://www.cisco.com/c/en/us/solutions/service-provider/network-functions-virtualization-nfv/index.html
 https://www.cisco.com/c/en/us/td/docs/routers/nfvis/get_started/nfvis-getting-started-guide/m_install-nfvis-new.html
