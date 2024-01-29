@@ -27,3 +27,7 @@ Exemplos de vswitches vmware. <br></br>
 Nesse exemplo temos 2 vswitches em um único host ESXI. Como dito anteriormente, eles emulam switches layer 2 e mesmo estando no mesmo host ESXI não se comunicam diretamente. Precisam de algum dispositivo de virtualização de camada 3 como um vrouter, por exemplo, para poderm se comunicar. <br></br>
 
 ![TRUNK](Imagens/trunk.png) <br></br>
+
+Nesse segundo exemplo temos dois hosts ESXI. Cada um possui 1 vswitch com vms ligadas a eles. Agora a diferença aqui é que cada vswitch tem suas portas de uplink ligadas as placas de rede físicas e, essas estão ligadas a um switch físico. Isso é feito para poder criar **trunks 802.1q** entre o switch físico e as placas de rede físicas. <br></br>
+Note que dentro dos vswitches, alguns grupos de portas estão em vlans diferentes, vlan 10 e vlan 20. Como dissemos anteriormente, os vswitches emulam switches layer 2 e, portanto, as vlans precisam de algum dispositivo de camada 3 para se conversarem. <br></br>
+Aqui o switch físico está ligado a um roteador físico e, com isso, a parte de roteamento é feita fora dos hosts ESXI. Agora, as vlans passam a se enchergar. <br></br>
