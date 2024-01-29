@@ -25,3 +25,5 @@ Exemplos de vswitches vmware. <br></br>
 ![VSWITCH](Imagens/vswitch.png) <br></br>
 
 Nesse exemplo temos 2 vswitches em um único host ESXI. Como dito anteriormente, eles emulam switches layer 2 e mesmo estando no mesmo host ESXI não se comunicam diretamente. Precisam de algum dispositivo de virtualização de camada 3 como um vrouter, por exemplo, para poderm se comunicar. <br></br>
+
+![TRUNK](Imagens/trunk.png) <br></br>
