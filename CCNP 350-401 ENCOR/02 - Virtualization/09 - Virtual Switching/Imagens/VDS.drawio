@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-30T04:17:19.108Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="Pce97earcg7oF37v0aes" version="23.0.2" type="device">
+<mxfile host="app.diagrams.net" modified="2024-01-30T04:19:00.790Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="pYP1sEf__l3On9q8ccAB" version="23.0.2" type="device">
   <diagram name="Página-1" id="40VW-iZry-zgK4zTb7AF">
     <mxGraphModel dx="2021" dy="1885" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -216,9 +216,6 @@
             <mxPoint x="795.5" y="633" as="sourcePoint" />
             <mxPoint x="795" y="463" as="targetPoint" />
           </mxGeometry>
-        </mxCell>
-        <mxCell id="w9JJ6rMWMCZdvsnwuQ7H-143" value="VLAN20" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="1626.6" y="380" width="96.5" height="30" as="geometry" />
         </mxCell>
         <mxCell id="w9JJ6rMWMCZdvsnwuQ7H-144" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.devices.nic;" parent="1" vertex="1">
           <mxGeometry x="687" y="632" width="57" height="38" as="geometry" />
