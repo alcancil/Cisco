@@ -48,3 +48,7 @@ Agora aqui estamos tratando de virtualização de containers, como o Docker, por
 ![Docker](Imagens/docker.png) <br></br>
 
 **OBS:** se você tiver vários dockers instalados em vários hosts, ai é necessário um orquestrador para gerenciar eles. O mais famoso é o Kubernetes.
+
+Aqui deixo alguns links com mais informações relevantes sobre o assunto. <br></br>
+
+- [REDES_VMWARE_ESXI](https://docs.vmware.com/br/VMware-vSphere/7.0/com.vmware.vsphere.hostclient.doc/GUID-31C1864C-5B1A-4586-947E-96E984B8F23C.html)
