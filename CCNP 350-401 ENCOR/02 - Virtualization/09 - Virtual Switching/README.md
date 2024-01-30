@@ -44,3 +44,7 @@ Com isso, é possível se movimentar uma vm de uma porta de um vswitch para outr
 ## Containers (Virtual Bridge)
 
 Agora aqui estamos tratando de virtualização de containers, como o Docker, por exemplo. Quando um conatiner engine é instalado, ele isola uma parte do SO com todos os binários e bibliotecas necessárias para que as aplicações possam funcionar. Porém cada container vai ter sua placa de rede virtual que é ligada a uma bridge. Essa bridge que vai ser responsável por fornecer os IPs para as placas de rede virtuais dos containers e, essa bridge se comunica direto com a placa de rede física do host físico para poder ter acesso as redes físicas reais. <br></br>
+
+![Docker](Imagens/docker.png) <br></br>
+
+**OBS:** se você tiver vários dockers instalados em vários hosts, ai é necessário um orquestrador para gerenciar eles. O mais famoso é o Kubernetes.
