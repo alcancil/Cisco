@@ -51,4 +51,8 @@ Agora aqui estamos tratando de virtualização de containers, como o Docker, por
 
 Aqui deixo alguns links com mais informações relevantes sobre o assunto. <br></br>
 
-- [REDES_VMWARE_ESXI](https://docs.vmware.com/br/VMware-vSphere/7.0/com.vmware.vsphere.hostclient.doc/GUID-31C1864C-5B1A-4586-947E-96E984B8F23C.html)
+- [REDES VMWARE ESXI](https://docs.vmware.com/br/VMware-vSphere/7.0/com.vmware.vsphere.hostclient.doc/GUID-31C1864C-5B1A-4586-947E-96E984B8F23C.html)
+- [Conceitos básicos do adaptador de rede](https://docs.vmware.com/br/VMware-vSphere/7.0/com.vmware.vsphere.hostclient.doc/GUID-AF9E24A8-2CFA-447B-AC83-35D563119667.html?hWord=N4IghgNiBcIG4EsBOAXArpABAZwO4JQGMALEAXyA)
+- [IOChain](https://blogs.vmware.com/vsphere/2018/12/understanding-the-esxi-network-iochain.html)
+- [VLAN tagging](https://kb.vmware.com/s/article/1004074)
+- [vSwitch ou switch distribuído de vNetwork](https://kb.vmware.com/s/article/1008127?lang=pt_PT)
