@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-30T21:55:30.578Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="QZ6P7em0l6CloV-LvAmh" version="23.0.2" type="device">
+<mxfile host="app.diagrams.net" modified="2024-01-30T22:08:11.716Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="6HSUP076hVw_0d5nkUVz" version="23.0.2" type="device">
   <diagram name="Página-1" id="FJyDDwkfmckldkVXgaXi">
     <mxGraphModel dx="1822" dy="597" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -58,7 +58,7 @@
         <mxCell id="lu7XamibzpSkQB7wHSbF-25" value="COSTUMER A" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="25" y="200" width="170" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="lu7XamibzpSkQB7wHSbF-26" value="COM VRF" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="lu7XamibzpSkQB7wHSbF-26" value="SEM VRF" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="730" y="430" width="170" height="30" as="geometry" />
         </mxCell>
         <mxCell id="lu7XamibzpSkQB7wHSbF-27" value="INTERNET" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
@@ -121,7 +121,7 @@
         <mxCell id="lu7XamibzpSkQB7wHSbF-46" value="COSTUMER B" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="715" y="210" width="170" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="lu7XamibzpSkQB7wHSbF-47" value="SEM VRF" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="lu7XamibzpSkQB7wHSbF-47" value="COM VRF" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="1590" y="430" width="170" height="30" as="geometry" />
         </mxCell>
       </root>
