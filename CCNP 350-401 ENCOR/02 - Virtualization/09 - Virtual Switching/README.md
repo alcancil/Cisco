@@ -31,3 +31,12 @@ Nesse exemplo temos 2 vswitches em um único host ESXI. Como dito anteriormente,
 Nesse segundo exemplo temos dois hosts ESXI. Cada um possui 1 vswitch com vms ligadas a eles. Agora a diferença aqui é que cada vswitch tem suas portas de uplink ligadas as placas de rede físicas e, essas estão ligadas a um switch físico. Isso é feito para poder criar **trunks 802.1q** entre o switch físico e as placas de rede físicas. <br></br>
 Note que dentro dos vswitches, alguns grupos de portas estão em vlans diferentes, vlan 10 e vlan 20. Como dissemos anteriormente, os vswitches emulam switches layer 2 e, portanto, as vlans precisam de algum dispositivo de camada 3 para se conversarem. <br></br>
 Aqui o switch físico está ligado a um roteador físico e, com isso, a parte de roteamento é feita fora dos hosts ESXI. Agora, as vlans passam a se enxergar. <br></br>
+
+## vNetwork Distributed vSwitch (dvSwitch ou VDS)
+
+![VDS](Imagens/vds.png) <br></br>
+
+Agora nesse exemplo, temos dois hosts físicos isolados fisicamente. Como mostrado nos exemplos anteriores, precisaríamos interligar os vswitches a switches físicos para poderem se conversar. <br></br>
+Porém aqui é instalado um sistema de gerência em um ponto central que se comunica com os dois hosts físicos que estão separados. <br></br>
+Então esse sistema de gerência faz com que os vswitches se tornem um só, ou **vswitches distribuidos**. Agora os dois switches passam a se conversar diretamente pois os hosts passam a entender que eles são um somente. <br></br>
+Com isso, é possível se movimentar uma vm de uma porta de um vswitch para outra de forma mais simples <br></br>
