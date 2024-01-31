@@ -22,3 +22,10 @@ Agora vou atribuir o mesmo endereço IP (172.16.0.2 /24) na interface e0/2e vamo
 ![E0/2](Imagens/05.png) <br></br>
 
 Percebam que o roteador irá retornar a mensagem de **"OVERLAPS"**. Isso ocorre porque se o roteador permitir que essa rota seja instalada ele irá ficar perdido. Veja, uma rota é é uma caminho indicado ao roteador onde dizemos qual protocolo de roteamento foi utilizado, se é uma rota manualmente inserida, uma rota local, o endereço de IP e por onde ele deve passar, qual interface utilizar. Então se conseguíssemos adicionar 2 rotas para o mesmo endereço IP, uma dizendo para sair pela interface e0/2 e outra para sair pela interface e0/3 qual rota o roteador iria escolher ? Por esse motivo ele apresenta a mensagem de erro e não instala a rota. <br></br>
+
+Certo até agora nada de novidade. Não criamos nada de novo. Então vamos criar a vrf. Para isso temos os seguintes passos:
+
+> 01. **"vrf definition vrf-name"** : aqui criamos as novas tabelas de roteamento para cada VRF que queremos criar. Comando em modo global
+> 02. **address family {Ipv4 / Ipv6}** : aqui escolhemos qual versão de Ip queremos utilizar. Podemos escolher uma versão ou as duas ao mesmo tempo. Comando em modo de configuração VRF.
+> 03. **vrf forwarding vrf-name**: então aqui devemos entrar na interface desejada e digitar o comando. Esse comando associa a interface a VRF criada.
+
