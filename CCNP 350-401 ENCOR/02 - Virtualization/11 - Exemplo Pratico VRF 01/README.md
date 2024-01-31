@@ -84,6 +84,6 @@ Agora vamos repetir o mesmo processo nas interface e0/2 e e0/1 que são as que f
 
 Então vamos exibir como ficaram as VRFs agora. <br></br>
 
-![VRF](Imagens/16.png) <br></br>
 ![VRF](Imagens/17.png) <br></br>
+![VRF](Imagens/18.png) <br></br>
 
