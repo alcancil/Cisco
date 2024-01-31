@@ -73,7 +73,7 @@ Vamos entrar agora na interface e0/0 e vamos repetir o mesmo processo. Perceba q
 
 ![VRF](Imagens/14.png) <br></br>
 
-Agora vamos repetir o mesmo processo nas interface e0/2 e e0/3 que são as que faltam.
+Agora vamos repetir o mesmo processo nas interface e0/2 e e0/1 que são as que faltam.
 
 <table>
        <tr>
@@ -85,4 +85,5 @@ Agora vamos repetir o mesmo processo nas interface e0/2 e e0/3 que são as que f
 Então vamos exibir como ficaram as VRFs agora. <br></br>
 
 ![VRF](Imagens/17.png) <br></br>
+![VRF](Imagens/18.png) <br></br>
 
