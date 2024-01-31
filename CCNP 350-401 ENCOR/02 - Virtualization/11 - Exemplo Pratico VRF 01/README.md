@@ -25,7 +25,10 @@ Percebam que o roteador irá retornar a mensagem de **"OVERLAPS"**. Isso ocorre 
 
 Certo até agora nada de novidade. Não criamos nada de novo. Então vamos criar a vrf. Para isso temos os seguintes passos:
 
-> 01. **"vrf definition vrf-name"** : aqui criamos as novas tabelas de roteamento para cada VRF que queremos criar. Comando em modo global
-> 02. **address family {Ipv4 / Ipv6}** : aqui escolhemos qual versão de Ip queremos utilizar. Podemos escolher uma versão ou as duas ao mesmo tempo. Comando em modo de configuração VRF.
-> 03. **vrf forwarding vrf-name**: então aqui devemos entrar na interface desejada e digitar o comando. Esse comando associa a interface a VRF criada.
+> 01. **"vrf definition vrf-name"** : 
+    aqui criamos as novas tabelas de roteamento para cada VRF que queremos criar. Comando em modo global
+> 02. **address family {Ipv4 / Ipv6}** : 
+    aqui escolhemos qual versão de Ip queremos utilizar. Podemos escolher uma versão ou as duas ao mesmo tempo. Comando em modo de configuração VRF.
+> 03. **vrf forwarding vrf-name**: 
+    então aqui devemos entrar na interface desejada e digitar o comando. Esse comando associa a interface a VRF criada.
 
