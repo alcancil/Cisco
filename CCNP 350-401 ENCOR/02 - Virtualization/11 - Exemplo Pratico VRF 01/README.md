@@ -10,5 +10,10 @@ No cenário eu estou interligando dois roteadores, simulando a situação de sob
 
 Bom, como não não temos nada configurado, aqui temos somente a tabela de roteamento sem nenhuma rota instalada nela. Então vou atribuir um endereço IP á interface e0/1 do roteador e mostrar a tabela de roteamento após isso. <br></br>
 
-![TABELA](Imagens/03.png) <br></br>
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/03.png"></img></td>
+           <td width="50%"><img src="Imagens/04.png"></img></td>
+       </tr>
+</table>
 
