@@ -69,7 +69,16 @@ Agora vamos entrar na interface e0/3 e vamos dizer para a interface utilizar a V
 ![VRF](Imagens/13.png) <br></br>
 
 Isso mesmo, o roteador desativa a interface e remove o endereço IP atribuído pois agora estamos vinculando essa interface a uma nova tabela de roteamento e, essa tabela, não possui essa rota ainda. <br></br>
-Vamos entrar agora na interface e0/2 e vamos repetir o mesmo processo. Perceba que vamos atrelar essa interface a VRF1, a mesma VRF atrelada a interface e0/3 anteriormente. Então aqui é o mesmo caso, se tentarmos configurar o mesmo endereço IP aqui vamos ter a mensagem de **Overlapping** pois estamos na mesma VRF, a VRF1. <br></br>
+Vamos entrar agora na interface e0/0 e vamos repetir o mesmo processo. Perceba que vamos atrelar essa interface a VRF1, a mesma VRF atrelada a interface e0/3 anteriormente. Então aqui é o mesmo caso, se tentarmos configurar o mesmo endereço IP aqui vamos ter a mensagem de **Overlapping** pois estamos na mesma VRF, a VRF1. <br></br>
 
 ![VRF](Imagens/14.png) <br></br>
+
+Agora vamos repetir o mesmo processo nas interface e0/ e e0/ que são as que faltam.
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/15.png"></img></td>
+           <td width="50%"><img src="Imagens/16.png"></img></td>
+       </tr>
+</table>
 
