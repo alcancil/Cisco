@@ -8,7 +8,7 @@ No cenário eu estou interligando dois roteadores, simulando a situação de sob
 
 ![R01](Imagens/02.png) <br></br>
 
-Bom, como não não temos nada configurado, aqui temos somente a tabela de roteamento sem nenhuma rota instalada nela. Então vou atribuir um endereço IP á interface e0/1 do roteador e mostrar a tabela de roteamento após isso. <br></br>
+Bom, como não não temos nada configurado, aqui temos somente a tabela de roteamento sem nenhuma rota instalada nela. Então vou atribuir um endereço IP (172.16.0.2 /24) á interface e0/3 do roteador e mostrar a tabela de roteamento após isso. <br></br>
 
 <table>
        <tr>
@@ -17,3 +17,8 @@ Bom, como não não temos nada configurado, aqui temos somente a tabela de rotea
        </tr>
 </table>
 
+Agora vou atribuir o mesmo endereço IP (172.16.0.2 /24) na interface e0/2e vamos observar o comportamento do roteador. <br></br>
+
+![E0/2](Imagens/05.png) <br></br>
+
+Percebam que o roteador irá retornar a mensagem de **"OVERLAPS"**. Isso ocorre porque se o roteador permitir que essa rota seja instalada ele irá ficar perdido. Veja, uma rota é é uma caminho indicado ao roteador onde dizemos qual protocolo de roteamento foi utilizado, se é uma rota manualmente inserida, uma rota local, o endereço de IP e por onde ele deve passar, qual interface utilizar. Então se conseguíssemos adicionar 2 rotas para o mesmo endereço IP, uma dizendo para sair pela interface e0/2 e outra para sair pela interface e0/3 qual rota o roteador iria escolher ? Por esse motivo ele apresenta a mensagem de erro e não instala a rota. <br></br>
