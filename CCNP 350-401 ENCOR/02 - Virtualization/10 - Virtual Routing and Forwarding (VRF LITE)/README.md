@@ -46,3 +46,11 @@ O roteamento continua igual, com VRF ou sem VRF. A criação das vrfs e configur
     - IPv6: **ipv6 address endereço-IPv6 / comprimento do prefixo**
 
 ## Roteamento com VRF
+
+**COM OSPF**
+
+- **router ospf process-id VRF name**
+    - **router-id**
+    - **network**
+    - **passive interface**
+    - **etc**
