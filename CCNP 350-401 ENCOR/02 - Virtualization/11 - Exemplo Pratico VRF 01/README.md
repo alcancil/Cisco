@@ -58,3 +58,8 @@ Agora vamos analisar como ficaram as nossas VRFs.
            <td width="50%"><img src="Imagens/11.png"></img></td>
        </tr>
 </table>
+
+Agora vamos entrar na interface e0/3 e vamos dizer para a interface utilizar a VRF1. Percebam que quando mostrei as VRFs, nenhuma interface estava atrelada a nenhuma VRF e, portanto, **todas fazem parte da VRF GLOBAL**, que no caso é igual a tabela de roteamento tradicional. <br></br>
+
+![VRF](Imagens/12.png) <br></br>
+
