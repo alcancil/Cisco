@@ -54,3 +54,16 @@ O roteamento continua igual, com VRF ou sem VRF. A criação das vrfs e configur
     - **network**
     - **passive interface**
     - **etc**
+
+**OBS:** para os outros protocolos, seguir o mesmo raciocínio. <br></br>
+
+**ROTA ESTÁTICA**
+
+- **ip route vrf name rede-destino máscara gateway ou interface de saída**
+
+**COMANDOS SHOW**
+
+- **show ip vrf**
+- **show ip route vrf vrf-name**
+- **show ip protocols vrf vrf-name**
+- **ping vrf vrf-name ip ip-address**
