@@ -21,3 +21,5 @@ Então o VRF LITE é uma simplificação do VRF para podermos utilizar dentro da
 
 ## Tabela de roteamento e endereçamento global
 
+![VRF3](Imagens/vrf3.png) <br></br>
+
