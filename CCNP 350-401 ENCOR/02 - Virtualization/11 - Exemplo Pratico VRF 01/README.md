@@ -85,5 +85,5 @@ Então vamos exibir como ficaram as VRFs agora. <br></br>
 ![VRF](Imagens/16.png) <br></br>
 ![VRF](Imagens/17.png) <br></br>
 
-Agora conseguimos ver que temos 3 tabelas de roteamento instaladas no mesmo roteador: **A GLOBAL, A VRF1 e A RF2** respectivamente. Com isso conseguimos segregar as rotas e agora podemos dizer que temos 3 roteadores dentro da mesma caixa.
+Agora conseguimos ver que temos 3 tabelas de roteamento instaladas no mesmo roteador: **A GLOBAL, A VRF1 e A RF2** respectivamente. Com isso conseguimos segregar as rotas e agora podemos dizer que temos 3 roteadores dentro da mesma caixa. Então agora o que falta fazer ? Falta realizarmos as mesmas configurações em R02, ou seja, criarmos as duas VRFs, atribuir as interface e fornecer os Ips as mesmas. Então vamos lá. <br></br>
 
