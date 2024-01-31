@@ -91,9 +91,17 @@ Agora conseguimos ver que temos 3 tabelas de roteamento instaladas no mesmo rote
        <tr>
            <td width="50%"><img src="Imagens/R02/01.png"></img></td>
            <td width="50%"><img src="Imagens/R02/02.png"></img></td>
+       </tr>
+       <tr>
            <td width="50%"><img src="Imagens/R02/03.png"></img></td>
            <td width="50%"><img src="Imagens/R02/04.png"></img></td>
+       </tr>
+       <tr>
            <td width="50%"><img src="Imagens/R02/05.png"></img></td>
            <td width="50%"><img src="Imagens/R02/06.png"></img></td>
+       </tr>
+       <tr> 
+           <td width="50%"><img src="Imagens/R02/07.png"></img></td>
+           <td width="50%"><img src="Imagens/R02/08.png"></img></td>
        </tr>
 </table>
