@@ -50,3 +50,11 @@ Agora a VRF2 em R01. <br></br>
        </tr>
 </table>
 
+Agora vamos analisar como ficaram as nossas VRFs.
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/10.png"></img></td>
+           <td width="50%"><img src="Imagens/11.png"></img></td>
+       </tr>
+</table>
