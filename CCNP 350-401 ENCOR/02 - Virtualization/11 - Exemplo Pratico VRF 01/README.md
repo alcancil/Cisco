@@ -32,3 +32,21 @@ Certo até agora nada de novidade. Não criamos nada de novo. Então vamos criar
 > 03. **vrf forwarding vrf-name**: 
 >   - então aqui devemos entrar na interface desejada e digitar o comando. Esse comando associa a interface a VRF criada.
 
+Então vamos criar a VRF1 em R01. <br></br>
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/06.png"></img></td>
+           <td width="50%"><img src="Imagens/07.png"></img></td>
+       </tr>
+</table>
+
+Agora a VRF2 em R01. <br></br>
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/08.png"></img></td>
+           <td width="50%"><img src="Imagens/09.png"></img></td>
+       </tr>
+</table>
+
