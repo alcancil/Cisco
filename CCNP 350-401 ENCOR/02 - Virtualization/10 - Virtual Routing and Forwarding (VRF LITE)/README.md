@@ -18,3 +18,6 @@ As VRFs são de camada 3 e, portanto, são configuradas em: **interfaces, sub-in
 ![VRF2](Imagens/vrf2.png) <br></br>
 
 Então o VRF LITE é uma simplificação do VRF para podermos utilizar dentro das empresas. Como mostrado no exemplo, em um service provider, todo o tráfego passa dentro de um mesmo roteador. Então sem nenhuma VRF, o cliente A enxerga o cliente B, o que não é recomendado. <br></br>
+
+## Tabela de roteamento e endereçamento global
+
