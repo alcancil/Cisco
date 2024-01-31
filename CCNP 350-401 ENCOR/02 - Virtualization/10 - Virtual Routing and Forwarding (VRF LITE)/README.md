@@ -23,3 +23,26 @@ Então o VRF LITE é uma simplificação do VRF para podermos utilizar dentro da
 
 ![VRF3](Imagens/vrf3.png) <br></br>
 
+Aqui a **VRF GLOBAL** é igual a tabela de roteamento que já conhecemos porém, para cada roteador virtual é criada uma tabela de endereços IP separadas. <br></br>
+**OBS:** então os roteadores virtuais não são como as máquinas virtuais que fazem a abstração e separam um pedaço do hardware para cada vm. Aqui, cada tabela de roteamento nova que é criada é como se fosse um roteador novo e a tabela global é a tabela que já vem na caixa. <br></br>
+Com isso, é possível que exista a sobreposição de endereços IPs. Quando não temos a VRF, se colocarmos o mesmo endereço de IP em duas portas distintas do mesmo roteador, iremos receber uma mensagem de sobreposição de IPs (Overlapping) pois somente existe uma tabela de roteamento. Já com VRF isso é possível pois estamos criando mais de uma tabela de roteamento e com isso segregamos rotas. <br></br>
+Com isso, a configuração do VRF em um roteador garante que os caminhos sejam isolados, a segurança da rede seja aumentada e que a criptografia do tráfego na rede seja necessária para manter a privacidade entre as instâncias de VRF.
+
+## Configurações
+
+> - **1 - VRF definition-name:** em modo global
+> - **2 - address-family {ipv4/ipv6}:** em modo de configuração VRF
+> - **3 - VRF forwarding VRF-name:** no modo de configuração da interface ou sub-interface
+
+O roteamento continua igual, com VRF ou sem VRF. A criação das vrfs e configurações de interfaces serão feitas apenas em um ponto central, os demais roteadores das pontas não necessitam de VRF.
+
+## Passo a passo para configurar VRFS
+
+1. Crie uma tabela de roteamento VRF usando o comando **VRF definition VRF-name**
+2. Inicie a família de endereços apropriada usando o comando **address-family {ipv4 / ipv6}**
+3. Entre no modo de configuração da interface e especifique a interface a ser associada á instancia VRF usando o comando **interface interface-id**
+4. Associe a instância VRF à interface ou sub-interface inserindo um ou ambos os comandos a seguir:
+    - IPv4: **ip address ip máscara-de-sub-rede**
+    - IPv6: **ipv6 address endereço-IPv6 / comprimento do prefixo**
+
+## Roteamento com VRF
