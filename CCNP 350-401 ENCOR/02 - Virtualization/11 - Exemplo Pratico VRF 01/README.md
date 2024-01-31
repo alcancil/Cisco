@@ -63,3 +63,9 @@ Agora vamos entrar na interface e0/3 e vamos dizer para a interface utilizar a V
 
 ![VRF](Imagens/12.png) <br></br>
 
+**OBS:** percebam que se digitarmos o comando: **vrf forwarding ?** 'faz com que o roteador nos mostre os nomes das VRFs disponíveis que já foram criadas.
+**OBS2:** lembram que antes tínhamos atribuído um endereço IP para essa interface ? Olha o que acontece agora.
+
+![VRF](Imagens/13.png) <br></br>
+
+Isso mesmo, o roteador desativa a interface e remove o endereço IP atribuído pois agora estamos vinculando essa interface a uma nova tabela de roteamento e, essa tabela, não possui essa rota ainda. <br></br>
