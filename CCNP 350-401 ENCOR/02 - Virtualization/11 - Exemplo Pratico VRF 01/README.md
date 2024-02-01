@@ -110,4 +110,13 @@ Mas agora os hosts conseguem se enxergar ? Aqui é um onde as coisas ficam inter
 
 ![ROTAS](Imagens/rotas/01.png) <br></br>
 
+Agora vamos analisar como ficaram as tabelas de roteamento das VRF1 e VRF2. <br></br>
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/rotas/02.png"></img></td>
+           <td width="50%"><img src="Imagens/rotas/03.png"></img></td>
+       </tr>
+</table>
+
 Pronto, agora eu configurei a rota padrão para as vrfs VRF1 e VRF2. Falta fazermos o mesmo no rotador R2. <br></br>
