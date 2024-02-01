@@ -105,3 +105,9 @@ Agora conseguimos ver que temos 3 tabelas de roteamento instaladas no mesmo rote
            <td width="50%"><img src="Imagens/R02/08.png"></img></td>
        </tr>
 </table>
+
+Mas agora os hosts conseguem se enxergar ? Aqui é um onde as coisas ficam interessantes. Se pensarmos bem, nossas VRFs já possuem as interfaces atreladas a elas, portanto só temos as rotas locais. Então os roteadores não "sabem" como chegar no vizinho. Então agora falta informarmos as rotas. Podemos utilizar rota estática ou um protocolo de roteamento dinâmico. Aqui vou optar por configurar uma rota estática. Porém, em cada VRF precisamos configurar a rota estática. Então vamos acessar o R1.<br></br>
+
+![ROTAS](Imagens/rotas/01.png) <br></br>
+
+Pronto, agora eu configurei a rota padrão para as vrfs VRF1 e VRF2. Falta fazermos o mesmo no rotador R2. <br></br>
