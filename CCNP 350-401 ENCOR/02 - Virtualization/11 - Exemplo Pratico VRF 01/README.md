@@ -131,3 +131,8 @@ E agora vamos mostrar também as tabelas de roteamento das VRF1 e VRF2 em R02. <
            <td width="50%"><img src="Imagens/rotas/06.png"></img></td>
        </tr>
 </table>
+
+Então vamos realizar alguns testes. <br></br>
+
+![TESTES](Imagens/rotas/07.png) <br></br>
+
