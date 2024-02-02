@@ -136,3 +136,8 @@ Então vamos realizar alguns testes. <br></br>
 
 ![TESTES](Imagens/rotas/07.png) <br></br>
 
+Como podemos olhar pela imagem, agora os hosts se conversam. Mas perceberam algo de estranho ? Quando eu realizo um teste por ping, ele executa sem problemas. Mas quando eu executo o trace, quando chega no último salto, que é o host é exibida a mensagem: **"3   *172.16.2.2   0.213 ms (ICMP type:3, code:3, Destination port unreachable)"**. A explicação aqui é simples mas não óbvia. Na sua grande maioria, o trace executa por icmp. Já em linux ele é executado em udp. Então quando executamos dessa maneira ai, ele vai resultar em problemas no último salto. Então como os VPCs no EVE NG são baseados em Linux, temos que indicar isso no nosso teste. <br></br>
+
+![UDP](Imagens/rotas/08.png) <br></br>
+
+
