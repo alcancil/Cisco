@@ -24,6 +24,13 @@ Agora vamos remover as rotas estáticas e as vrfs.<br></br>
        </tr>
 </table>
 
-Então agora devemos remover as vrfs. <br></br>
+Então agora devemos remover as vrfs. Note que ao retirarmos as vrfs de R01, automaticamente nos é apresentada a mensagem de que os ips são removidos das interfaces e com isso, as interfaces perdem também as associações com as vrfs.<br></br>
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/R01/06.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/07.png"></img></td>
+       </tr>
+</table>
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
