@@ -4,9 +4,16 @@ Aqui não vou me alongar muito nas explicações e vou direto a prática. Para e
 
 ![CENÁRIO](Imagens/01.png) <br></br>
 
-No exemplo anterior eu criei duas VRFs em cada roteador e escolhi utilizar rotas estáticas como meio de roteamento. Mas sabemos que para a parte de roteamento podemos utilizar protocolos dinâmicos para isso. Então, como parte da pratica, vou remover as configurações e vou começar do zero. <br></br> 
+No exemplo anterior eu criei duas VRFs em cada roteador e escolhi utilizar rotas estáticas como meio de roteamento. Mas sabemos que para a parte de roteamento podemos utilizar protocolos dinâmicos para isso. Então, como parte da pratica, vou remover as configurações e vou começar do zero. <br></br>
+Então vamos entrar no roteador 01 e mostrar as configurações das vrfs e as suas tabelas de roteamento. <br></br> 
 
-![R01](Imagens/02.png) <br></br>
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/01.png"></img></td>
+           <td width="50%"><img src="Imagens/02.png"></img></td>
+           <td width="50%"><img src="Imagens/03.png"></img></td>
+       </tr>
+</table>
 
 Bom, como não não temos nada configurado, aqui temos somente a tabela de roteamento sem nenhuma rota instalada nela. Então vou atribuir um endereço IP (172.16.0.2 /24) á interface e0/3 do roteador e mostrar a tabela de roteamento após isso. <br></br>
 
