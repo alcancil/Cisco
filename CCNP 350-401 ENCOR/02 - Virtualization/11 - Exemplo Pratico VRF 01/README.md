@@ -140,4 +140,4 @@ Como podemos olhar pela imagem, agora os hosts se conversam. Mas perceberam algo
 
 ![UDP](Imagens/rotas/08.png) <br></br>
 
-Deixo aqui uma cópia do arquivo com a resolução . [LAB](Arquivos/vrf(resolvido).zip)
+Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
