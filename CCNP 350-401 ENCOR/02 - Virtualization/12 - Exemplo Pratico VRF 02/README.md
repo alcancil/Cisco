@@ -15,12 +15,12 @@ Então vamos entrar no roteador 01 e mostrar as configurações das vrfs e as su
        </tr>
 </table>
 
-Bom, como não não temos nada configurado, aqui temos somente a tabela de roteamento sem nenhuma rota instalada nela. Então vou atribuir um endereço IP (172.16.0.2 /24) á interface e0/3 do roteador e mostrar a tabela de roteamento após isso. <br></br>
+Agora vamos remover as rotas estáticas e as vrfs.<br></br>
 
 <table>
        <tr>
-           <td width="50%"><img src="Imagens/03.png"></img></td>
-           <td width="50%"><img src="Imagens/04.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/04.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/05.png"></img></td>
        </tr>
 </table>
 
