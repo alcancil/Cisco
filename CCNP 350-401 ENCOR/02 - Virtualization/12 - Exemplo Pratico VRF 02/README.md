@@ -4,7 +4,7 @@ Aqui não vou me alongar muito nas explicações e vou direto a prática. Para e
 
 ![CENÁRIO](Imagens/01.png) <br></br>
 
-No cenário eu estou interligando dois roteadores, simulando a situação de sobrepor endereços IPv4 nas interfaces dos mesmos roteadores. Essa situação também ira acontecer nos hosts. Em cenários normais isso não é possível pois o roteador possui somente uma tabela de roteamento nativa. Então vamos dar uma olhada na tabela de roteamento de R01. <br></br>
+No exemplo anterior eu criei duas VRFs em cada roteador e escolhi utilizar rotas estáticas como meio de roteamento. Mas sabemos que para a parte de roteamento podemos utilizar protocolos dinâmicos para isso. Então, como parte da pratica, vou remover as configurações e vou começar do zero. <br></br> 
 
 ![R01](Imagens/02.png) <br></br>
 
