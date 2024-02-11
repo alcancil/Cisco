@@ -9,9 +9,9 @@ Então vamos entrar no roteador 01 e mostrar as configurações das vrfs e as su
 
 <table>
        <tr>
-           <td width="50%"><img src="Imagens/R01/01.png"></img></td>
-           <td width="50%"><img src="Imagens/R01/02.png"></img></td>
-           <td width="50%"><img src="Imagens/R01/03.png"></img></td>
+           <td width="33%"><img src="Imagens/R01/01.png"></img></td>
+           <td width="33%"><img src="Imagens/R01/02.png"></img></td>
+           <td width="33%"><img src="Imagens/R01/03.png"></img></td>
        </tr>
 </table>
 
