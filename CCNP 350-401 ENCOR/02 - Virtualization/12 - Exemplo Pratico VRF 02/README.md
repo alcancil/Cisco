@@ -33,4 +33,6 @@ Então agora devemos remover as vrfs. Note que ao retirarmos as vrfs de R01, aut
        </tr>
 </table>
 
+O mesmo processo deverá ser realizado em R02.<br></br>
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
