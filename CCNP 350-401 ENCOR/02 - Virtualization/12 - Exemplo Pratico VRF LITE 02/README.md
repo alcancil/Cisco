@@ -61,4 +61,6 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
        </tr>
 </table>
 
+Até aqui confesso que é pura e simples repetição do laboratório anterior. Mas agora vamos entrar na parte de roteamento. Agora vou utilizar protocolos dinâmicos. <br></br>
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
