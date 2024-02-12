@@ -36,4 +36,11 @@ Então agora devemos remover as vrfs. Note que ao retirarmos as vrfs de R01, aut
 O mesmo processo deverá ser realizado em R02.<br></br>
 Bom, como agora temos os roteadores configurados na condição inicial (sem VRFs, só com a tabela de roteamento global), então vamos configurar as VRFs 1 e 2 nos roteadores R01 e R02. Sim esse processo já foi feito anteriormente e não muda em nada, mas como trata-se de prática, quantos mais praticamos, mais fixamos os conceitos e comandos. Então vamos-lá. <br><br>
 
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/R01/08.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/09.png"></img></td>
+       </tr>
+</table>
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
