@@ -1,4 +1,4 @@
-# 11 - Exemplo Pratico VRF 01
+# 11 - Exemplo Pratico VRF LITE 01
 
 Agora vamos praticar e para isso vou demonstrar em alguns exemplos práticos o funcionamento da tecnologia VRF. <br></br>
 
