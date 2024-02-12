@@ -48,4 +48,17 @@ Veja como ficou em R02.<br></br>
 
 ![R02](Imagens/R02/01.png) <br></br>
 
+Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já criamos as VRFs e já associamos as devidas interfaces. Veja como ficaram as VRFs depois de configurarmos os endereços IP. <br></br>
+
+<table>
+       <tr>
+           <td width="50%">ROTEADOR R01</td>
+           <td width="50%">ROTEADOR R02</img></td>
+       </tr>
+       <tr>
+           <td width="50%"><img src="Imagens/R01/10.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/02.png"></img></td>
+       </tr>
+</table>
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
