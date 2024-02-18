@@ -97,4 +97,9 @@ Podemos notar que agora o processo de adjacência está completo e os roteadores
        </tr>
 </table>
 
+Mas ainda não completamos nosso cenário. Falta ainda habilitarmos o OSPF na interfaces **E0/2 e E0/3 em R01** e **E0/2 e E0/3 em R02**. Então vamos configurar os roteadores. <br></br>
+
+
+
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
