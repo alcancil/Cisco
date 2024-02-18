@@ -53,7 +53,7 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
 <table>
        <tr>
            <td width="50%">ROTEADOR R01</td>
-           <td width="50%">ROTEADOR R02</img></td>
+           <td width="50%">ROTEADOR R02</td>
        </tr>
        <tr>
            <td width="50%"><img src="Imagens/R01/10.png"></img></td>
@@ -70,7 +70,7 @@ Então vamos acessar R01 e habilitar o OSPF nas interfaces **E0/0 e E0/1**. Tamb
 
 <table>
        <tr>
-           <td width="50%"><img src="Imagens/ospf/R01/01.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R01/01.png"></img></td>
            <td width="50%"><img src="Imagens/ospf/R01/02.png"></img></td>
        </tr>
 </table>
@@ -81,7 +81,7 @@ Então o mesmo deverá ser feito em R02. <br></br>
 
 <table>
        <tr>
-           <td width="50%"><img src="Imagens/ospf/R02/01.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R02/01.png"></img></td>
            <td width="50%"><img src="Imagens/ospf/R02/02.png"></img></td>
        </tr>
 </table>
@@ -92,14 +92,19 @@ Podemos notar que agora o processo de adjacência está completo e os roteadores
 
 <table>
        <tr>
-           <td width="50%"><img src="Imagens/ospf/R01/04.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R01/04.png"></img></td>
            <td width="50%"><img src="Imagens/ospf/R02/04.png"></img></td>
        </tr>
 </table>
 
 Mas ainda não completamos nosso cenário. Falta ainda habilitarmos o OSPF na interfaces **E0/2 e E0/3 em R01** e **E0/2 e E0/3 em R02**. Então vamos configurar os roteadores. <br></br>
 
-
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/ospf/R01/05.png"></img></td>
+           <td width="50%"><img src="Imagens/ospf/R02/05.png"></img></td>
+       </tr>
+</table>
 
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
