@@ -63,4 +63,8 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
 
 Até aqui confesso que é pura e simples repetição do laboratório anterior. Mas agora vamos entrar na parte de roteamento. Agora vou utilizar protocolos dinâmicos. <br></br>
 
+## OPEN SHORTEST PATH (OSPF) SINGLE ÁREA
+
+Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF coonfigurada.
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
