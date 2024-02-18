@@ -73,9 +73,10 @@ Então vamos acessar R01 e habilitar o OSPF nas interfaces **E0/0 e E0/1**. Tamb
            <td width="50%"><img src="Imagens/ospf/R01/01.png"></td>
            <td width="50%"><img src="Imagens/ospf/R01/02.png"></img></td>
        </tr>
-       <tr>
-           <td width="100%"><img src="Imagens/ospf/R01/03.png"></img></td>
-       </tr>
 </table>
+
+![R01](Imagens/ospf/R01/03.png)
+
+
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
