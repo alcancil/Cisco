@@ -111,4 +111,8 @@ Agora vamos verificar as tabelas de roteamento. <br></br>
 ![R01](Imagens/ospf/R01/06.png) <br></br>
 ![R02](Imagens/ospf/R02/06.png) <br></br>
 
+Agora podemos notar que as VRFs conseguiram aprender as rotas. Com isso os hosts passam a se comunicar. Vamos realizar um teste. Vamos acessar o VPC1. <br></br>
+
+![VPC](Imagens/02.png) <br></br>
+
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
