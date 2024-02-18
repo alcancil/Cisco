@@ -57,7 +57,7 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
        </tr>
        <tr>
            <td width="50%"><img src="Imagens/R01/10.png"></img></td>
-           <td width="50%"><img src="Imagens/R01/02.png"></img></td>
+           <td width="50%"><img src="Imagens/R01/11.png"></img></td>
        </tr>
 </table>
 
@@ -65,6 +65,6 @@ Até aqui confesso que é pura e simples repetição do laboratório anterior. M
 
 ## OPEN SHORTEST PATH (OSPF) SINGLE ÁREA
 
-Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF coonfigurada.
+Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF configurada.
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
