@@ -57,7 +57,7 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
        </tr>
        <tr>
            <td width="50%"><img src="Imagens/R01/10.png"></img></td>
-           <td width="50%"><img src="Imagens/R01/11.png"></img></td>
+           <td width="50%"><img src="Imagens/R02/02.png"></img></td>
        </tr>
 </table>
 
