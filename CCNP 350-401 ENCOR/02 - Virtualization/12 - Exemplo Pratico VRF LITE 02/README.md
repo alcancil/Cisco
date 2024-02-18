@@ -65,6 +65,18 @@ Até aqui confesso que é pura e simples repetição do laboratório anterior. M
 
 ## OPEN SHORTEST PATH (OSPF) SINGLE ÁREA
 
-Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF configurada.
+Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF configurada.<br></br>
+Então vamos acessar R01 e habilitar o OSPF nas interfaces **E0/0 e E0/1**. Também vamos definir as mesmas interfaces como sendo do tipo **point-to-point** pois não queremos ativar a eleição de DR e BR nesses links uma vez que não temos mais roteadores participando do processo. <br></br>
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/ospf/R01/01.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R01/02.png"></img></td>
+       </tr>
+       <tr>
+           <td width="50%"><img src="Imagens/ospf/R01/03.png"></img></td>
+           <td width="50%"><img src="Imagens/ospf/R01/04.png"></img></td>
+       </tr>
+</table>
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
