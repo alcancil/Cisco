@@ -77,6 +77,24 @@ Então vamos acessar R01 e habilitar o OSPF nas interfaces **E0/0 e E0/1**. Tamb
 
 ![R01](Imagens/ospf/R01/03.png)
 
+Então o mesmo deverá ser feito em R02. <br></br>
 
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/ospf/R02/01.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R02/02.png"></img></td>
+       </tr>
+</table>
+
+![R02](Imagens/ospf/R02/03.png)
+
+Podemos notar que agora o processo de adjacência está completo e os roteadores se tornaram vizinhos. <br></br> 
+
+<table>
+       <tr>
+           <td width="50%"><img src="Imagens/ospf/R01/04.png"></td>
+           <td width="50%"><img src="Imagens/ospf/R02/04.png"></img></td>
+       </tr>
+</table>
 
 Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
