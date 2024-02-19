@@ -65,5 +65,10 @@ Até aqui confesso que é pura e simples repetição do laboratório anterior. M
 
 ## Enhanced Interior Gateway Routing Protocol (EIGRP)
 
+Agora aqui como opção de Roteamento Dinâmico escolhemos o EIGRP. Então vamos acessar o roteador R01 e vamos configurar esse protocolo. <br></br>
 
+![R01](Imagens/EIGRP/R01/01.png) <br></br>
+![R01](Imagens/EIGRP/R01/02.png) <br></br>
+
+Percebam agora que a configuração é feita dentro da **definição da VRF dentro do parâmetro address-family** mas, basicamente é a mesma configuração que é realizada quando não se configuram as VRFs. Então vamos fazer o mesmo em R02. <br></br>
 
