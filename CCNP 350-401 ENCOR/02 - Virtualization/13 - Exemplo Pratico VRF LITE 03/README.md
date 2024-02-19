@@ -63,56 +63,7 @@ Agora é só configurarmos os endereços de ip nas interfaces, uma vez que já c
 
 Até aqui confesso que é pura e simples repetição do laboratório anterior. Mas agora vamos entrar na parte de roteamento. Agora vou utilizar protocolos dinâmicos. <br></br>
 
-## OPEN SHORTEST PATH (OSPF) SINGLE ÁREA
+## Enhanced Interior Gateway Routing Protocol (EIGRP)
 
-Agora vou demonstrar como realizar o roteamento através do OSPF single área. Aqui, o processo é quase o mesmo quando temos nenhuma VRF configurada.<br></br>
-Então vamos acessar R01 e habilitar o OSPF nas interfaces **E0/0 e E0/1**. Também vamos definir as mesmas interfaces como sendo do tipo **point-to-point** pois não queremos ativar a eleição de DR e BR nesses links uma vez que não temos mais roteadores participando do processo. <br></br>
 
-<table>
-       <tr>
-           <td width="50%"><img src="Imagens/ospf/R01/01.png"></img></td>
-           <td width="50%"><img src="Imagens/ospf/R01/02.png"></img></td>
-       </tr>
-</table>
 
-![R01](Imagens/ospf/R01/03.png)
-
-Então o mesmo deverá ser feito em R02. <br></br>
-
-<table>
-       <tr>
-           <td width="50%"><img src="Imagens/ospf/R02/01.png"></img></td>
-           <td width="50%"><img src="Imagens/ospf/R02/02.png"></img></td>
-       </tr>
-</table>
-
-![R02](Imagens/ospf/R02/03.png)
-
-Podemos notar que agora o processo de adjacência está completo e os roteadores se tornaram vizinhos. <br></br> 
-
-<table>
-       <tr>
-           <td width="50%"><img src="Imagens/ospf/R01/04.png"></img></td>
-           <td width="50%"><img src="Imagens/ospf/R02/04.png"></img></td>
-       </tr>
-</table>
-
-Mas ainda não completamos nosso cenário. Falta ainda habilitarmos o OSPF na interfaces **E0/2 e E0/3 em R01** e **E0/2 e E0/3 em R02**. Então vamos configurar os roteadores. <br></br>
-
-<table>
-       <tr>
-           <td width="50%"><img src="Imagens/ospf/R01/05.png"></img></td>
-           <td width="50%"><img src="Imagens/ospf/R02/05.png"></img></td>
-       </tr>
-</table>
-
-Agora vamos verificar as tabelas de roteamento. <br></br>
-
-![R01](Imagens/ospf/R01/06.png) <br></br>
-![R02](Imagens/ospf/R02/06.png) <br></br>
-
-Agora podemos notar que as VRFs conseguiram aprender as rotas. Com isso os hosts passam a se comunicar. Vamos realizar um teste. Vamos acessar o VPC1. <br></br>
-
-![VPC](Imagens/02.png) <br></br>
-
-Deixo aqui uma cópia do arquivo com a resolução . [LAB(RESOLVIDO)](Arquivos/vrf(resolvido).zip)
