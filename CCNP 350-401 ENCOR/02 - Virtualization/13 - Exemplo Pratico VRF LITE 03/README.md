@@ -77,4 +77,23 @@ Eu acho essa abordagem um pouco confusa e então prefiro realizar as configuraç
 ![R01](Imagens/EIGRP/R01/03.png) <br></br>
 ![R02](Imagens/EIGRP/R02/01.png) <br></br>
 
-Bom configuramos as interfaces e agora vou entrar no processo de roteamento EIGRP. Mas antes de mais nada, vou relembrar que o IGRP possui um número de processo e, os roteadores que estão na mesma área precisam ter o mesmo número do processo para que a vizinhança seja estabelecida. Outro ponto que vale ressaltar é que todo processo de EIGRP possui um número de **id que é escrito no formato do ipv4**. Esse parâmetro serve para identificar e distinguir cada roteador no processo do EIGRP. Serve também para a **Eleição do Sucessor e do Sucessor do Feasible (FS e FDS)**. Como estamos configurando o EIGRP em VRF, aqui teremos uma leve mudança, que é bem importante. Então vamos as configurações. <br></br>
+Bom configuramos as interfaces e agora vou entrar no processo de roteamento EIGRP. Mas antes de mais nada, vou relembrar que o IGRP possui um número de processo e, os roteadores que estão na mesma área precisam ter o mesmo número do processo para que a vizinhança seja estabelecida. Outro ponto que vale ressaltar é que todo processo de EIGRP possui um número de **id que é escrito no formato do ipv4**. Esse parâmetro serve para identificar e distinguir cada roteador no processo do EIGRP. Serve também para a **Eleição do Sucessor e do Sucessor do Feasible (FS e FDS)**. Como estamos configurando o EIGRP em VRF, aqui teremos uma leve mudança, que é bem importante. Então vamos as configurações. <br></brwr>
+
+<table>
+       <tr>
+           <td width="50%">ROTEADOR R01</td>
+           <td width="50%">ROTEADOR R01</td>
+       </tr>
+       <tr>
+           <td width="50%"><img src="Imagens/EIGRP/R01/04.png"></img></td>
+           <td width="50%"><img src="Imagens/EIGRP/R01/05.png"></img></td>
+       </tr> 
+       <tr>
+           <td width="50%">ROTEADOR R02</td>
+           <td width="50%">ROTEADOR R02</td>
+       </tr>   
+       <tr>
+           <td width="50%"><img src="Imagens/EIGRP/R02/02.png"></img></td>
+           <td width="50%"><img src="Imagens/EIGRP/R02/03.png"></img></td>
+       </tr> 
+</table>
