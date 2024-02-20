@@ -1,4 +1,4 @@
-# 12 - Exemplo Pratico VRF LITE 02
+# 12 - Exemplo Pratico VRF LITE 03 - EIGRP
 
 Aqui não vou me alongar muito nas explicações e vou direto a prática. Para esse segundo exemplo vou utilizar o mesmo cenário doe exemplo anterior.
 
@@ -70,5 +70,7 @@ Agora aqui como opção de Roteamento Dinâmico escolhemos o EIGRP. Então vamos
 ![R01](Imagens/EIGRP/R01/01.png) <br></br>
 ![R01](Imagens/EIGRP/R01/02.png) <br></br>
 
-Percebam agora que a configuração é feita dentro da **definição da VRF dentro do parâmetro address-family** mas, basicamente é a mesma configuração que é realizada quando não se configuram as VRFs. Então vamos fazer o mesmo em R02. <br></br>
+Percebam agora que a configuração é feita dentro da **definição da VRF dentro do parâmetro address-family** mas, basicamente é a mesma configuração que é realizada quando não se configuram as VRFs. <br></br>
+
+Eu acho essa abordagem um pouco confusa e então prefiro realizar as configurações dentro das definições do protocolo eigrp. Dentro dele vamos ter também a **definição da VRF dentro do parâmetro address-family**. Agora aqui cabe um parênteses. Por questões de estabilidade, vou criar duas interfaces LoopBack, uma para cada VRF. Como elas sempre ficam no estado de up, elas ajudam a manter a estabilidade do processo de roteamento. <br><br>
 
