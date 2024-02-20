@@ -97,3 +97,6 @@ Bom configuramos as interfaces e agora vou entrar no processo de roteamento EIGR
            <td width="50%"><img src="Imagens/EIGRP/R02/03.png"></img></td>
        </tr> 
 </table>
+
+Então podemos notar que dentro do parâmetro address-family adicionamos o parâmetro **autonomous-system**. Esse parâmetro é o mesmo parâmetro quando digitamos **router eigrp nº do processo**. Tanto o EIGRP quanto autonomous-system precisam ter o mesmo número pois esse é o número do processo do EIGRP que vai rodar dentro da caixa. Então vamos analisar agora como ficaram as tabelas de roteamento. <br></br>
+
