@@ -1,4 +1,4 @@
-# 12 - Exemplo Pratico VRF LITE 02
+# 12 - Exemplo Pratico VRF LITE 02 - OSPF SINGLE ÁREA
 
 Aqui não vou me alongar muito nas explicações e vou direto a prática. Para esse segundo exemplo vou utilizar o mesmo cenário doe exemplo anterior.
 
