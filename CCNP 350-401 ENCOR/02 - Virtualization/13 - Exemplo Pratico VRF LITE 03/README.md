@@ -109,4 +109,8 @@ Então podemos notar que dentro do parâmetro address-family adicionamos o parâ
            <td width="50%"><img src="Imagens/EIGRP/R01/06.png"></img></td>
            <td width="50%"><img src="Imagens/EIGRP/R02/04.png"></img></td>
        </tr>
-</table> 
+</table>
+
+Agora vamos acessar o vpc1 e realizar um teste. <br></br>
+
+![VPC1](Imagens/03.png)<br></br>
