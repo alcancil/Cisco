@@ -74,3 +74,7 @@ Percebam agora que a configuração é feita dentro da **definição da VRF dent
 
 Eu acho essa abordagem um pouco confusa e então prefiro realizar as configurações dentro das definições do protocolo eigrp. Dentro dele vamos ter também a **definição da VRF dentro do parâmetro address-family**. Agora aqui cabe um parênteses. Por questões de estabilidade, vou criar duas interfaces LoopBack, uma para cada VRF. Como elas sempre ficam no estado de up, elas ajudam a manter a estabilidade do processo de roteamento. <br><br>
 
+![R01](Imagens/EIGRP/R01/03.png) <br></br>
+![R02](Imagens/EIGRP/R02/01.png) <br></br>
+
+Bom configuramos as interfaces e agora vou entrar no processo de roteamento EIGRP. Mas antes de mais nada, vou relembrar que o IGRP possui um número de processo e, os roteadores que estão na mesma área precisam ter o mesmo número do processo para que a vizinhança seja estabelecida. Outro ponto que vale ressaltar é que todo processo de EIGRP possui um número de **id que é escrito no formato do ipv4**. Esse parâmetro serve para identificar e distinguir cada roteador no processo do EIGRP. Serve também para a **Eleição do Sucessor e do Sucessor do Feasible (FS e FDS)**. Como estamos configurando o EIGRP em VRF, aqui teremos uma leve mudança, que é bem importante. Então vamos as configurações. <br></br>
