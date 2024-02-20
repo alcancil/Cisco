@@ -1,4 +1,4 @@
-# 12 - Exemplo Pratico VRF LITE 03 - EIGRP
+# 13 - Exemplo Pratico VRF LITE 03 - EIGRP
 
 Aqui não vou me alongar muito nas explicações e vou direto a prática. Para esse segundo exemplo vou utilizar o mesmo cenário doe exemplo anterior.
 
@@ -100,3 +100,13 @@ Bom configuramos as interfaces e agora vou entrar no processo de roteamento EIGR
 
 Então podemos notar que dentro do parâmetro address-family adicionamos o parâmetro **autonomous-system**. Esse parâmetro é o mesmo parâmetro quando digitamos **router eigrp nº do processo**. Tanto o EIGRP quanto autonomous-system precisam ter o mesmo número pois esse é o número do processo do EIGRP que vai rodar dentro da caixa. Então vamos analisar agora como ficaram as tabelas de roteamento. <br></br>
 
+<table>
+       <tr>
+           <td width="50%">ROTEADOR R01</td>
+           <td width="50%">ROTEADOR R02</td>
+       </tr>
+       <tr>
+           <td width="50%"><img src="Imagens/EIGRP/R01/06.png"></img></td>
+           <td width="50%"><img src="Imagens/EIGRP/R02/04.png"></img></td>
+       </tr>
+</table> 
