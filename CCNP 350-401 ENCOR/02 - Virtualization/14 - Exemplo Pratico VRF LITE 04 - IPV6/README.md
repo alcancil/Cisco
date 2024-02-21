@@ -4,3 +4,4 @@ Agora eu estou utilizando o mesmo cenário anterior porém eu estou utilizando I
 
 ![CENÁRIO](Imagens/01.png) <br></br>
 
+No cenário temos configurado os hosts. Então vamos entrar nos equipamentos e criar as vrfs. <br></br>
