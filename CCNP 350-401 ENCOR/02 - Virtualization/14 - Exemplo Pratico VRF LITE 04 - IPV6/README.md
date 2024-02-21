@@ -17,19 +17,19 @@ Aqui eu defini duas VRFs, **VRF1 e VRF2** nos dois roteadores. Depois disso eu a
 
 <table>
       <tr>
-          <td width="50%">ROTEADOR01</td>
-          <td width="50%">ROTEADOR01</td>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R01</td>
       </tr>
       <tr>
           <td width="50%"><img src="Imagens/R01/02.png"></img></td>
           <td width="50%"><img src="Imagens/R01/03.png"></img></td>
       </tr>
       <tr>
-          <td width="50%">ROTEADOR02</td>
-          <td width="50%">ROTEADOR02</td>
+          <td width="50%">ROTEADOR R02</td>
+          <td width="50%">ROTEADOR R02</td>
       </tr>
       <tr>
-          <td width="50%"><img src="Imagens/R01/02.png"></img></td>
-          <td width="50%"><img src="Imagens/R01/03.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/02.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/03.png"></img></td>
       </tr>
 </table>
