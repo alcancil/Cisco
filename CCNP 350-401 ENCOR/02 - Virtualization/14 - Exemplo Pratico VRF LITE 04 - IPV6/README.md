@@ -14,3 +14,22 @@ No cenário temos configurado os hosts. Então vamos entrar nos equipamentos e c
 </table>
 
 Aqui eu defini duas VRFs, **VRF1 e VRF2** nos dois roteadores. Depois disso eu ativei o roteamento ipv6. Agora vamos colocar as interfaces nas respectivas VRFs e configurar seus IPs. <br></br>
+
+<table>
+      <tr>
+          <td width="50%">ROTEADOR01</td>
+          <td width="50%">ROTEADOR01</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/02.png"></img></td>
+          <td width="50%"><img src="Imagens/R01/03.png"></img></td>
+      </tr>
+      <tr>
+          <td width="50%">ROTEADOR02</td>
+          <td width="50%">ROTEADOR02</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/02.png"></img></td>
+          <td width="50%"><img src="Imagens/R01/03.png"></img></td>
+      </tr>
+</table>
