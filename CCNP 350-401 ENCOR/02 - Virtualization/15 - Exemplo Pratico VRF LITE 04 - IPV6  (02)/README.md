@@ -18,6 +18,14 @@ Bom vamos começar configurando as VRFs, as interfaces de Loopback e as interfac
           <td width="50%"><img src="Imagens/R01/01.png"></img></td>
           <td width="50%"><img src="Imagens/R01/02.png"></img></td>
       </tr>
+      <tr>
+          <td width="50%">ROTEADOR R02</td>
+          <td width="50%">ROTEADOR R02</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R02/01.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/02.png"></img></td>
+      </tr>
 </table>
 
 Aqui eu defini duas VRFs, **VRF1 e VRF2** nos dois roteadores. Depois disso eu ativei o roteamento ipv6. Agora vamos colocar as interfaces nas respectivas VRFs e configurar seus IPs. <br></br>
