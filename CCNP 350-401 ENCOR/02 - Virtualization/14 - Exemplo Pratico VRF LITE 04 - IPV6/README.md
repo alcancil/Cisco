@@ -63,3 +63,16 @@ Agora vamos acessar os roteadores e realizar as configurações. <br></br>
           <td width="50%"><img src="Imagens/R02/05.png"></img></td>
       </tr>
 </table>
+
+Então vamos verificar as tabelas de roteamento. <br></br>
+
+<table>
+      <tr>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R01</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/06.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/06.png"></img></td>
+      </tr>
+</table>
