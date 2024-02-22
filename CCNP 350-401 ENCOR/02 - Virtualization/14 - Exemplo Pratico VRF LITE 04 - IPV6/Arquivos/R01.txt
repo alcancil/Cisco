@@ -3,20 +3,16 @@ service timestamps log datetime msec
 no service password-encryption
 
 hostname R01
-
 boot-start-marker
 boot-end-marker
-
 aqm-register-fnf
 
 vrf definition VRF1
- 
- address-family ipv4
+ address-family ipv6
  exit-address-family
 
 vrf definition VRF2
- 
- address-family ipv4
+ address-family ipv6
  exit-address-family
 
 no aaa new-model
@@ -27,11 +23,12 @@ no mmi pvc
 mmi snmp-timeout 180
 
 ip cef
-no ipv6 cef
+ipv6 unicast-routing
+ipv6 cef
 
 multilink bundle-name authenticated
-
 redundancy
+
 interface Loopback1
  vrf forwarding VRF1
  ip address 1.1.1.1 255.255.255.255
@@ -40,59 +37,57 @@ interface Loopback2
  vrf forwarding VRF2
  ip address 2.2.2.2 255.255.255.255
 
-interface Loopback10
- ip address 10.10.10.10 255.255.255.255
-
-interface Loopback20
- ip address 20.20.20.20 255.255.255.255
-
 interface Ethernet0/0
  vrf forwarding VRF1
- ip address 172.16.1.1 255.255.255.0
+ no ip address
+ ipv6 address 2001:DB8:3::1/64
+ ospfv3 network point-to-point
+ ospfv3 100 ipv6 area 0
 
 interface Ethernet0/1
  vrf forwarding VRF2
- ip address 172.16.1.1 255.255.255.0
+ no ip address
+ ipv6 address 2001:DB8:3::1/64
+ ospfv3 network point-to-point
+ ospfv3 200 ipv6 area 0
 
 interface Ethernet0/2
  vrf forwarding VRF2
- ip address 172.16.0.1 255.255.255.0
+ no ip address
+ ipv6 address 2001:DB8:2::1/64
+ ospfv3 200 ipv6 area 0
 
 interface Ethernet0/3
  vrf forwarding VRF1
- ip address 172.16.0.1 255.255.255.0
+ no ip address
+ ipv6 address 2001:DB8:1::1/64
+ ospfv3 100 ipv6 area 0
 
-router eigrp 100
- 
- address-family ipv4 vrf VRF1
-  network 172.16.0.0 0.0.0.255
-  network 172.16.1.0 0.0.0.255
-  autonomous-system 100
-  eigrp router-id 1.1.1.1
+router ospfv3 100
+ router-id 1.1.1.1
+ address-family ipv6 unicast vrf VRF2
  exit-address-family
- eigrp router-id 10.10.10.10
-
-router eigrp 200
-
- address-family ipv4 vrf VRF2
-  network 172.16.0.0 0.0.0.255
-  network 172.16.1.0 0.0.0.255
-  autonomous-system 200
-  eigrp router-id 2.2.2.2
+ address-family ipv6 unicast vrf VRF1
  exit-address-family
- eigrp router-id 20.20.20.20
+
+router ospfv3 200
+ router-id 2.2.2.2
+ address-family ipv6 unicast vrf VRF2
+ exit-address-family
 
 ip forward-protocol nd
+
 
 no ip http server
 no ip http secure-server
 
 control-plane
-
 line con 0
  logging synchronous
 line aux 0
 line vty 0 4
  login
  transport input none
+
+
 end
