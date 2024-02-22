@@ -34,4 +34,7 @@ Aqui eu defini duas VRFs, **VRF1 e VRF2** nos dois roteadores. Depois disso eu a
       </tr>
 </table>
 
-Aqui podemos ver que eu deixei as interfaces e0/2 e e0/3 dos dois roteadores na tabela de roteamento global. Portanto, só as outras interfaces que foram alocadas nas VRFs. Nesse momento, agora falta somente a parte de roteamento, que eu optei pelo OSPF single área. <br></br>
+Nesse momento, agora falta somente a parte de roteamento, que eu optei pelo OSPF single área. <br></br>
+
+## ROTEAMENTO OSPF SINGLE ÁREA
+
