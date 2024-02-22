@@ -76,3 +76,9 @@ Então vamos verificar as tabelas de roteamento. <br></br>
           <td width="50%"><img src="Imagens/R02/06.png"></img></td>
       </tr>
 </table>
+
+Agora vou entrar no VPC05 e vou realizar um Ping no VPC6 e depois no VPC4. <br></br>
+
+![VPC](Imagens/02.png) <br></br>
+
+Percebam que do VPC5 eu consigo Pingar pois estamos dentro da mesma VRF, a VRF1. Já do VPC5 não conseguimos pingar o VPC4 pois estamos em duas VRFS diferentes. Com isso conseguimos segregar o trafego de camada 3 dentro dos roteadores. Isso permite escalabilidade e crescimento.
