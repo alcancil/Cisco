@@ -39,7 +39,7 @@ Por questões de organização e estabilidade vou criar duas interfaces **LOOPBA
 <table>
       <tr>
           <td width="50%">ROTEADOR R01</td>
-          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R02</td>
       </tr>
       <tr>
           <td width="50%"><img src="Imagens/R01/04.png"></img></td>
@@ -56,7 +56,7 @@ Agora vamos acessar os roteadores e realizar as configurações. <br></br>
 <table>
       <tr>
           <td width="50%">ROTEADOR R01</td>
-          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R02</td>
       </tr>
       <tr>
           <td width="50%"><img src="Imagens/R01/05.png"></img></td>
@@ -69,7 +69,7 @@ Então vamos verificar as tabelas de roteamento. <br></br>
 <table>
       <tr>
           <td width="50%">ROTEADOR R01</td>
-          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R02</td>
       </tr>
       <tr>
           <td width="50%"><img src="Imagens/R01/06.png"></img></td>
