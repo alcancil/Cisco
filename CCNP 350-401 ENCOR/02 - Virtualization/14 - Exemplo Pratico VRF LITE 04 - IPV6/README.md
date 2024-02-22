@@ -51,3 +51,15 @@ Nesse momento, agora falta somente a parte de roteamento, que eu optei pelo OSPF
 
 ## ROTEAMENTO OSPF SINGLE ÁREA
 
+Agora vamos acessar os roteadores e realizar as configurações. <br></br>
+
+<table>
+      <tr>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R01</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/05.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/05.png"></img></td>
+      </tr>
+</table>
