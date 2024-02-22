@@ -1,0 +1,93 @@
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+
+hostname R01
+boot-start-marker
+boot-end-marker
+aqm-register-fnf
+
+vrf definition VRF1
+ address-family ipv6
+ exit-address-family
+
+vrf definition VRF2
+ address-family ipv6
+ exit-address-family
+
+no aaa new-model
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+
+multilink bundle-name authenticated
+redundancy
+
+interface Loopback1
+ vrf forwarding VRF1
+ ip address 1.1.1.1 255.255.255.255
+
+interface Loopback2
+ vrf forwarding VRF2
+ ip address 2.2.2.2 255.255.255.255
+
+interface Ethernet0/0
+ vrf forwarding VRF1
+ no ip address
+ ipv6 address 2001:DB8:3::1/64
+ ospfv3 network point-to-point
+ ospfv3 100 ipv6 area 0
+
+interface Ethernet0/1
+ vrf forwarding VRF2
+ no ip address
+ ipv6 address 2001:DB8:3::1/64
+ ospfv3 network point-to-point
+ ospfv3 200 ipv6 area 0
+
+interface Ethernet0/2
+ vrf forwarding VRF2
+ no ip address
+ ipv6 address 2001:DB8:2::1/64
+ ospfv3 200 ipv6 area 0
+
+interface Ethernet0/3
+ vrf forwarding VRF1
+ no ip address
+ ipv6 address 2001:DB8:1::1/64
+ ospfv3 100 ipv6 area 0
+
+router ospfv3 100
+ router-id 1.1.1.1
+ address-family ipv6 unicast vrf VRF2
+ exit-address-family
+ address-family ipv6 unicast vrf VRF1
+ exit-address-family
+
+router ospfv3 200
+ router-id 2.2.2.2
+ address-family ipv6 unicast vrf VRF2
+ exit-address-family
+
+ip forward-protocol nd
+
+
+no ip http server
+no ip http secure-server
+
+control-plane
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+
+
+end
