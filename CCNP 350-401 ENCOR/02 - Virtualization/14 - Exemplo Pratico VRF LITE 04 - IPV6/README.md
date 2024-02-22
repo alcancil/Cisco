@@ -34,6 +34,19 @@ Aqui eu defini duas VRFs, **VRF1 e VRF2** nos dois roteadores. Depois disso eu a
       </tr>
 </table>
 
+Por questões de organização e estabilidade vou criar duas interfaces **LOOPBACK (Lo01 e Lo02)** nos dois roteadores e posteriormente vou associá-las as devidas VRFs. <br></br>
+
+<table>
+      <tr>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R01</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/04.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/04.png"></img></td>
+      </tr>
+</table>
+
 Nesse momento, agora falta somente a parte de roteamento, que eu optei pelo OSPF single área. <br></br>
 
 ## ROTEAMENTO OSPF SINGLE ÁREA
