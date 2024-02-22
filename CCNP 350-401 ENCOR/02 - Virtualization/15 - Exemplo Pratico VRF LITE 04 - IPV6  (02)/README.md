@@ -6,10 +6,17 @@ Agora vou utilizar o mesmo cenário do exemplo anterior porém estou realizando 
 
 Se pararmos para analisar, agora vamos manter as duas VRFs, VRF1 e VRF2 que utilizamos até aqui porém só teremos uma interface de saída em cada roteador. Então como faremos para interligar as dois roteadores para que os mesmos possam permitir o tráfego das duas VRFs ? <br></br>
 
+Bom vamos começar configurando as VRFs, as interfaces de Loopback e as interfaces que não se ligam aos roteadores. <br></br>
+**OBS:** não se esquece que sempre que for utilizar o IPv6, você deverá ativar o roteamento IPv6 em modo global com o comando: **ipv6 unicast-routing**
+
 <table>
       <tr>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R01</td>
+      </tr>
+      <tr>
           <td width="50%"><img src="Imagens/R01/01.png"></img></td>
-          <td width="50%"><img src="Imagens/R02/01.png"></img></td>
+          <td width="50%"><img src="Imagens/R01/02.png"></img></td>
       </tr>
 </table>
 
