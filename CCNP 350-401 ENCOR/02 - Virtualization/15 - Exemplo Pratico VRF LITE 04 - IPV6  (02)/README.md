@@ -46,3 +46,11 @@ Bom agora falta a parte de roteamento. <br></br>
 
 ## ROTEAMENTO OSPF SINGLE ÁREA
 
+Agora vou direto em R01 e já vou adicionar as interfaces no OSPF e terminar os demais ajustes do protocolo.<br></br>
+
+<table>
+        <tr>
+            <td width="505"><img src="Imagens/R01/05.png"></img></td>
+            <td width="505"><img src="Imagens/R01/06.png"></img></td>
+        </tr>
+</table>
