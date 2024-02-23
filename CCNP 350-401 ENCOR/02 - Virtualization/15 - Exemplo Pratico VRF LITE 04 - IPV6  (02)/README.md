@@ -54,3 +54,12 @@ Agora vou direto em R01 e já vou adicionar as interfaces no OSPF e terminar os 
             <td width="505"><img src="Imagens/R01/06.png"></img></td>
         </tr>
 </table>
+
+Vamos repetir o mesmo processo no roteador R02 <br></br>
+
+<table>
+        <tr>
+            <td width="505"><img src="Imagens/R02/05.png"></img></td>
+            <td width="505"><img src="Imagens/R02/06.png"></img></td>
+        </tr>
+</table>
