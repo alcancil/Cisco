@@ -28,6 +28,21 @@ Bom vamos começar configurando as VRFs, as interfaces de Loopback e as interfac
       </tr>
 </table>
 
+Certo, então até aqui temos 02 VRFs em cada roteador, as interfaces ligadas aos hosts finais estão configuradas nas suas respectivas VRFs e temos também duas interfaces Loopbacks no dois roteadores. Agora falta a gente configurar as interfaces que ligam os roteadores. Já conseguiram imaginar como configurar agora ? <br></br>
+Bom aqui iremos utilizar o recurso de sub interfaces para podermos resolver o problema. Então vamos acessar os equipamentos e configurá-los. <br></br>
+
+<table>
+      <tr>
+          <td width="50%">ROTEADOR R01</td>
+          <td width="50%">ROTEADOR R02</td>
+      </tr>
+      <tr>
+          <td width="50%"><img src="Imagens/R01/03.png"></img></td>
+          <td width="50%"><img src="Imagens/R02/03.png"></img></td>
+      </tr>
+<table>
+
+Bom agora falta a parte de roteamento. <br></br> 
 
 ## ROTEAMENTO OSPF SINGLE ÁREA
 
