@@ -72,6 +72,6 @@ Vale a pena relembrar que estamos utilizando o conceito de **router on a sticky*
 <table>
         <tr>
             <td width="50%"><img src="Imagens/R01/07.png"></img></td>
-            <td width="50%"><img src="Imagens/R01/07.png"></img></td>
+            <td width="50%"><img src="Imagens/R02/07.png"></img></td>
         </tr>
 </table>
