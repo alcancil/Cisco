@@ -75,3 +75,12 @@ Vale a pena relembrar que estamos utilizando o conceito de **router on a sticky*
             <td width="50%"><img src="Imagens/R02/07.png"></img></td>
         </tr>
 </table>
+
+Como podemos notar agora o ospf forma a vizinhança e passa a distribuir as rotas. 
+
+<table>
+        <tr>
+            <td width="50%"><img src="Imagens/R01/08.png"></img></td>
+            <td width="50%"><img src="Imagens/R02/08.png"></img></td>
+        </tr>
+</table>
