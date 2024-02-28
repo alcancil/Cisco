@@ -84,3 +84,7 @@ Como podemos notar agora o ospf forma a vizinhança e passa a distribuir as rota
             <td width="50%"><img src="Imagens/R02/08.png"></img></td>
         </tr>
 </table>
+
+Agora vou entrar no VPC5 e realizar um teste de pinga nas redes **2001:D8::4/64 e 2001:D8::5/64**. Percebam que como dividimos os tráfegos em vrfs diferentes, um é para conseguir realizar o teste e o outro não. <br></br>
+
+![PING](Imagens/02.png)
