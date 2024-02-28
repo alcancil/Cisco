@@ -65,3 +65,13 @@ Vamos repetir o mesmo processo no roteador R02 <br></br>
             <td width="33%"><img src="Imagens/R02/06.png"></img></td>
         </tr>
 </table>
+
+Agora aqui você deve estar se perguntando: "Mas se configuramos toda a parte de roteamento, as VRFs então porque o OSPF não consegue formar vizinhança ainda ?". Bom, como estamos utilizando sub interfaces, como o roteador faz para identificar qual rede ele deve enviar para cada sub interface ? <br></br>
+Vale a pena relembrar que estamos utilizando o conceito de **router on a sticky** então temos que utilizar a marcação 802.1Q para separarmos os tráfegos de rede nas interfaces.
+
+<table>
+        <tr>
+            <td width="50%"><img src="Imagens/R01/07.png"></img></td>
+            <td width="50%"><img src="Imagens/R01/07.png"></img></td>
+        </tr>
+</table>
