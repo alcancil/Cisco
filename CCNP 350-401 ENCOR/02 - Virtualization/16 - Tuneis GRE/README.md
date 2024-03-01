@@ -13,3 +13,10 @@ O GRE foi desenvolvido pela CISCO e está descrita na **RFC 4213**. Ele não pro
 Os pacotes enviados através do GRE são encapsulados por um novo cabeçalho e colocados no túnel com o endereço de destino final do túnel.<br></br>
 
 ![TÚNEL](Imagens/gre.png) <br></br>
+
+Então como podemos observar nas figuras, o pacote pode passar por vários roteadores ao longo do caminho até chegar ao seu destino final. <br></br>
+Porém quando utilizamos o GRE, formamos um túnel com início em um roteador terminando em outro, como em uma mtariz e filial. Esse é o nosso **overlay**, que fica sobre o **underlay**. Aos olhos do usuário final, isso é transparente, ou seja, se o usuário executar um **tracert**, será mostrado somente as interfaces dos roteadores que formam o túnel mas por trás disso, o pacote pode estar passando por um caminho complexo. <br></br>
+Com isso podemos notar que o GRE adiciona um overhead no cabeçalho IP original e é necessário ficar atento ao tamanho do mtu do pacote agora. Ele encapsula o pacote original e acrescenta dois campos: **IP e GRE**.<br></br>
+No destino, os pacotes são descapsulados e continuam seu caminho pelo cabeçalho original. <br></br>
+
+![TÚNEL](Imagens/tunel.png)<br></br>
