@@ -23,3 +23,13 @@ No destino, os pacotes são descapsulados e continuam seu caminho pelo cabeçalh
 
 Se os pacotes forem trafegar pela Internet, é necessário se ter IPs roteáveis nas pontas. O túnel também pode ser formado na Internet. <br></br>
 
+## Principais Características do GRE
+
+* **Multiprotocolo:** encapsula uma grande variedade de tipos de protocolos de pacotes dentro de túneis 
+* **Cria um link virtual** ponto a ponto para os roteadores CISCO em pontos remotos através de uma rede **IP**
+* **Usa o IP para transporte** (camada3) e suporta diversos de roteamento 
+* **Utiliza um cabeçalho adicional** para suportar  multicasting e qualquer outro protocolo da camada 3 do modelo **OSI** como caraga útil (payload ou dados)
+
+## Cabeçalho GRE
+
+![CABEÇALHO](Imagens/cabecalho.png) <br></br>
