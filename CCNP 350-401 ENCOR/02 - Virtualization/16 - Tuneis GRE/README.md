@@ -44,3 +44,10 @@ Se os pacotes forem trafegar pela Internet, é necessário se ter IPs roteáveis
 * **ETAPA 6:** Repita os mesmo passos no roteador remoto
 
 ## Comandos de verificações
+
+Para verificar um túnel podemos utilizar os comandos:
+
+* **show interface tunnel num-tunnel:** verificar o estado do túnel e detalhes da conexão
+* **show ip interface brief:** verificar resumidamente o IP e o estado do túnel
+* **traceroute IP-LAN-REMOTE:** verificar se o roteador pega a saída correta para a LAN remora via túnel 
+* **Comandos para IPv6:** *show ipv6 interface tunnel num-tunnel; show ipv6 interface brief e traceroute*
