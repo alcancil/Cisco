@@ -8,3 +8,8 @@ Então, um túnel nada mais é a abstração do cabo, ou seja, é como se um "ca
 Mas aí é criado um outro problema: **segurança**. Como de início foi pensado só no túnel, não existe nenhum tipo de criptografia e o tráfego passa em modo transparente, ou seja, o tráfego vai acessar a Internet e quem estiver no mesmo meio pode interceptar essa comunicação e conseguir ver o tráfego. A solução para esse tipo de problema é a utilização do protocolo **IPSEC** sobre o túnel, pois ele vai criptografar os dados, e mesmo que o tráfego seja interceptado, a conversa não pode ser vista. <br></br>
 
 ## GRE: Generic Routing Encpasulation 
+
+O GRE foi desenvolvido pela CISCO e está descrita na **RFC 4213**. Ele não provê segurança. <br></br>
+Os pacotes enviados através do GRE são encapsulados por um novo cabeçalho e colocados no túnel com o endereço de destino final do túnel.<br></br>
+
+![CABEÇALHO](Imagens/cabecalho.png) <br></br>
