@@ -12,4 +12,4 @@ Mas aí é criado um outro problema: **segurança**. Como de início foi pensado
 O GRE foi desenvolvido pela CISCO e está descrita na **RFC 4213**. Ele não provê segurança. <br></br>
 Os pacotes enviados através do GRE são encapsulados por um novo cabeçalho e colocados no túnel com o endereço de destino final do túnel.<br></br>
 
-![TÚNEL](Imagens/tunel.png) <br></br>
+![TÚNEL](Imagens/gre.png) <br></br>
