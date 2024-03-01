@@ -33,3 +33,14 @@ Se os pacotes forem trafegar pela Internet, é necessário se ter IPs roteáveis
 ## Cabeçalho GRE
 
 ![CABEÇALHO](Imagens/cabecalho.png) <br></br>
+
+## Configurando um túnel GRE
+
+* **ETAPA 1:** criar uma interface de túnel (comando **interface tunnel x** onde x é o número do túnel, como na criação de interfaces loopbacks)
+* **ETAPA 2:** atribuir os endereços IPv4 e IPv6 ao túnel (comando **ip address e ipv6 address**)
+* **ETAPA 3:** configurar a interface de origem (comando **tunnel source serial xy** podendo ser também um endereço IPv4 alcançável)
+* **ETAPA 4:** identificar o IP de destino do túnel (comando **túnnel destination x.x.x.x**)
+* **ETAPA 5:** (opcional) configurar qual protocolo de camada 3 o GRE vai encapsular (comando **tunnel mode gre {IP | IPv6 | Multipoint})
+* **ETAPA 6:** Repita os mesmo passos no roteador remoto
+
+## Comandos de verificações
