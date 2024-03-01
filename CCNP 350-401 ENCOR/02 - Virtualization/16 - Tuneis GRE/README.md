@@ -20,3 +20,6 @@ Com isso podemos notar que o GRE adiciona um overhead no cabeçalho IP original 
 No destino, os pacotes são descapsulados e continuam seu caminho pelo cabeçalho original. <br></br>
 
 ![TÚNEL](Imagens/tunel.png)<br></br>
+
+Se os pacotes forem trafegar pela Internet, é necessário se ter IPs roteáveis nas pontas. O túnel também pode ser formado na Internet. <br></br>
+
