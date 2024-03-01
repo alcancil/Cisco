@@ -37,9 +37,9 @@
 - [x] 2.1 Describe device virtualization technologies
 - [x] 2.1.a Hypervisor type 1 and 2
 - [x] 2.1.b Virtual machine
-- [ ] 2.1.c Virtual switching
-- [ ] 2.2 Configure and verify data path virtualization technologies
-- [ ] 2.2.a VRF
+- [x] 2.1.c Virtual switching
+- [x] 2.2 Configure and verify data path virtualization technologies
+- [x] 2.2.a VRF
 - [ ] 2.2.b GRE and IPsec tunneling
 - [ ] 2.3 Describe network virtualization concepts
 - [ ] 2.3.a LISP
