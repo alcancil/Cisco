@@ -59,3 +59,9 @@ Para verificar um túnel podemos utilizar os comandos:
 ![CONFIGURAÇÔES](Imagens/configs.png) <br></br>
 
 Observe no exemplo que temos 4 roteadores. Então, para que cada roteador possa se ligar ao vizinho por túneis, são necessários criar 3 túneis por roteador. No exemplo temos 4 roteadores, logo **4 x 3 = 12** túneis para interligar tudo. <br></br>
+Isso começa a ficar inviável pois o número de conexões e configurações a serem feitas fica grande, tudo de forma manual. <br></br>
+Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso, os túneis precisam trocar informações e, mesmo que eles não estejam em uso, eles sempre conseomem largura de banda. <br></br>
+
+* **Solução: *DMVPN*** (Dynamic Multipoint VPN) com **mGRE** (GRE multiponto) e **NHRP** (Next Hop Resolution Protocol)
+
+![MGRE](Imagens/mgre.pmg) <br></br>
