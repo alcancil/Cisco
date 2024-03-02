@@ -15,7 +15,7 @@ Os pacotes enviados através do GRE são encapsulados por um novo cabeçalho e c
 ![TÚNEL](Imagens/gre.png) <br></br>
 
 Então como podemos observar nas figuras, o pacote pode passar por vários roteadores ao longo do caminho até chegar ao seu destino final. <br></br>
-Porém quando utilizamos o GRE, formamos um túnel com início em um roteador terminando em outro, como em uma mtariz e filial. Esse é o nosso **overlay**, que fica sobre o **underlay**. Aos olhos do usuário final, isso é transparente, ou seja, se o usuário executar um **tracert**, será mostrado somente as interfaces dos roteadores que formam o túnel mas por trás disso, o pacote pode estar passando por um caminho complexo. <br></br>
+Porém quando utilizamos o GRE, formamos um túnel com início em um roteador terminando em outro, como em uma matriz e filial. Esse é o nosso **overlay**, que fica sobre o **underlay**. Aos olhos do usuário final, isso é transparente, ou seja, se o usuário executar um **tracert**, será mostrado somente as interfaces dos roteadores que formam o túnel mas por trás disso, o pacote pode estar passando por um caminho complexo. <br></br>
 Com isso podemos notar que o GRE adiciona um overhead no cabeçalho IP original e é necessário ficar atento ao tamanho do mtu do pacote agora. Ele encapsula o pacote original e acrescenta dois campos: **IP e GRE**.<br></br>
 No destino, os pacotes são descapsulados e continuam seu caminho pelo cabeçalho original. <br></br>
 
@@ -28,7 +28,7 @@ Se os pacotes forem trafegar pela Internet, é necessário se ter IPs roteáveis
 * **Multiprotocolo:** encapsula uma grande variedade de tipos de protocolos de pacotes dentro de túneis 
 * **Cria um link virtual** ponto a ponto para os roteadores CISCO em pontos remotos através de uma rede **IP**
 * **Usa o IP para transporte** (camada3) e suporta diversos de roteamento 
-* **Utiliza um cabeçalho adicional** para suportar  multicasting e qualquer outro protocolo da camada 3 do modelo **OSI** como caraga útil (payload ou dados)
+* **Utiliza um cabeçalho adicional** para suportar  multicasting e qualquer outro protocolo da camada 3 do modelo **OSI** como carga útil (payload ou dados)
 
 ## Cabeçalho GRE
 
@@ -60,7 +60,7 @@ Para verificar um túnel podemos utilizar os comandos:
 
 Observe no exemplo que temos 4 roteadores. Então, para que cada roteador possa se ligar ao vizinho por túneis, são necessários criar 3 túneis por roteador. No exemplo temos 4 roteadores, logo **4 x 3 = 12** túneis para interligar tudo. <br></br>
 Isso começa a ficar inviável pois o número de conexões e configurações a serem feitas fica grande, tudo de forma manual. <br></br>
-Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso, os túneis precisam trocar informações e, mesmo que eles não estejam em uso, eles sempre conseomem largura de banda. <br></br>
+Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso, os túneis precisam trocar informações e, mesmo que eles não estejam em uso, eles sempre consomem largura de banda. <br></br>
 
 * **Solução: *DMVPN*** (Dynamic Multipoint VPN) com **mGRE** (GRE multiponto) e **NHRP** (Next Hop Resolution Protocol)
 
@@ -68,4 +68,4 @@ Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso
 
 Com o mGRE só é necessário colocar uma configuração em cada roteador e o **NHRP** vai montar os túneis conforme a necessidade de forma dinâmica. <br></br> 
 Porém tanto o GRE e mGRE precisam do **IPSEC** para fornecer segurança. <br></br>
-* **Solução 2:** ***SD-WAN***. Essa é a tendência de mercado. O SD-WAN tem todas as características já citadas (túneis e segurança) porém ele tem uma espécie de inteligência onde se pode ter mais controle e gerenciamento. Exemplo: quem pode entrar na rede, quem pode formar túnel, escolha de melhor lin, etc. Funciona com interface gráfica e de forma mais atualizada.
+* **Solução 2:** ***SD-WAN***. Essa é a tendência de mercado. O SD-WAN tem todas as características já citadas (túneis e segurança) porém ele tem uma espécie de inteligência onde se pode ter mais controle e gerenciamento. Exemplo: quem pode entrar na rede, quem pode formar túnel, escolha de melhor link, etc. Funciona com interface gráfica e de forma mais atualizada.
