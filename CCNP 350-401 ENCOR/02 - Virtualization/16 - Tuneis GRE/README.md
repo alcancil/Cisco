@@ -65,3 +65,7 @@ Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso
 * **Solução: *DMVPN*** (Dynamic Multipoint VPN) com **mGRE** (GRE multiponto) e **NHRP** (Next Hop Resolution Protocol)
 
 ![MGRE](Imagens/mgre.png) <br></br>
+
+Com o mGRE só é necessário colocar uma configuração em cada roteador e o **NHRP** vai montar os túneis conforme a necessidade de forma dinâmica. <br></br> 
+Porém tanto o GRE e mGRE precisam do **IPSEC** para fornecer segurança. <br></br>
+* **Solução 2:** ***SD-WAN***. Essa é a tendência de mercado. O SD-WAN tem todas as características já citadas (túneis e segurança) porém ele tem uma espécie de inteligência onde se pode ter mais controle e gerenciamento. Exemplo: quem pode entrar na rede, quem pode formar túnel, escolha de melhor lin, etc. Funciona com interface gráfica e de forma mais atualizada.
