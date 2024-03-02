@@ -51,3 +51,9 @@ Para verificar um túnel podemos utilizar os comandos:
 * **show ip interface brief:** verificar resumidamente o IP e o estado do túnel
 * **traceroute IP-LAN-REMOTE:** verificar se o roteador pega a saída correta para a LAN remora via túnel 
 * **Comandos para IPv6:** *show ipv6 interface tunnel num-tunnel; show ipv6 interface brief e traceroute*
+
+## Desvantagem do GRE
+
+* Muita configuração para ambientes grandes
+
+![CONFIGURAÇÔES](Imagens/configs.png) <br></br>
