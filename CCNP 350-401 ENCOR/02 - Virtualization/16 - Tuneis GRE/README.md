@@ -64,4 +64,4 @@ Uma vez que o túnel é formado, ele não "cai", ele sempre fica ativo. Com isso
 
 * **Solução: *DMVPN*** (Dynamic Multipoint VPN) com **mGRE** (GRE multiponto) e **NHRP** (Next Hop Resolution Protocol)
 
-![MGRE](Imagens/mgre.pmg) <br></br>
+![MGRE](Imagens/mgre.png) <br></br>
