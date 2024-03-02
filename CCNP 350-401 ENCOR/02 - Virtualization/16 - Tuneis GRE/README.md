@@ -57,3 +57,5 @@ Para verificar um túnel podemos utilizar os comandos:
 * Muita configuração para ambientes grandes
 
 ![CONFIGURAÇÔES](Imagens/configs.png) <br></br>
+
+Observe no exemplo que temos 4 roteadores. Então, para que cada roteador possa se ligar ao vizinho por túneis, são necessários criar 3 túneis por roteador. No exemplo temos 4 roteadores, logo **4 x 3 = 12** túneis para interligar tudo. <br></br>
