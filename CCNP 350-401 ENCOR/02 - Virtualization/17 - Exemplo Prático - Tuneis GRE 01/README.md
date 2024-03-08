@@ -48,3 +48,15 @@ Bom, agora é possível se pingar os endereços dos túneis mas não os endereç
           <Td width="50%"><img src="Imagens\R04\04.png"> </img> </Td>
       </TR>
 </Table>
+
+Agora nesse momento podemos perceber que os túneis formaram o processo de adjacência e podemos pensar que agora as redes da Matriz e Filial conseguem se comunicar. Mas vamos analisar as tabelas de roteamento de ambos os roteadores para verificarmos os detalhes com calma. <br></br>
+
+<Table>
+      <TR>
+          <Td width="50%"><img src="Imagens\R01\05.png"> </img> </Td>
+          <Td width="50%"><img src="Imagens\R04\05.png"> </img> </Td>
+      </TR>
+</Table>
+
+Como podemos perceber, ativamos o OSPF nas Interface Tunnel0 em R01 e R04 mas o ospf não informou nenhuma rota para os roteadores. O segredo aqui é que queremos que o ospf passe as interfaces diretamente conectadas, pois são elas que possuem a comunicação interna com as redes locais. Então vamos habilitar esse parâmetro no ospf. <br></br>
+
