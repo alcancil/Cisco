@@ -39,3 +39,12 @@ Da mesma forma que configuramos em R01, aqui definimos a interface **tunnel sour
 Então vamos verificar o status da interface tunel0. <br></br>
 
 ![INTERFACE](Imagens/R04/03.png) <br></br>
+
+Bom, agora é possível se pingar os endereços dos túneis mas não os endereços internos da Matriz e Filial. Ainda falta a parte de roteamento. Para isso eu escolhi o protocolo OSPF como protocolo de roteamento. Então vamos configurar as duas pontas do túnel. <br></br>
+
+<Table>
+      <TR>
+          <Td width="50%"><img src="Imagens\R01\04.png"> </img> </Td>
+          <Td width="50%"><img src="Imagens\R04\04.png"> </img> </Td>
+      </TR>
+</Table>
