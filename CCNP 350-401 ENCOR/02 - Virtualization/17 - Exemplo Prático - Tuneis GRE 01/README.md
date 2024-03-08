@@ -20,7 +20,7 @@ E agora vamos criar a interface túnel. <br></br>
 
 ![TÚNEL](Imagens/R01/02.png) <br></br>
 
-Percebam que aqui eu indico a origem **(tunnel source)** como sendo a interface com saída para a Internet, a **E0/1**. Como destino eu indiquei o endereço IPv6 do roteador da filial que está ligado na Internet. Então aqui temos origem e destino do túnel. Como vamos atravessar o tráfego pela Internet que somente é em IPv6, temos que fornecer o comando **tunnel mode gre ipv6** para ele entender que irá passar pelo IPv6. E depois eu configurei o endereço IPv4 dessa interface, ou seja, o túnel será formado em IPv4 mas está passando pela Internet em IPv6. <br></br>
+Percebam que aqui eu indico a origem **(tunnel source)** como sendo a interface com saída para a Internet, a **E0/1**. Como destino eu indiquei o endereço IPv6 do roteador R04 da filial que está ligado na Internet. Então aqui temos origem e destino do túnel. Como vamos atravessar o tráfego pela Internet que somente é em IPv6, temos que fornecer o comando **tunnel mode gre ipv6** para ele entender que irá passar pelo IPv6. E depois eu configurei o endereço IPv4 dessa interface, ou seja, o túnel será formado em IPv4 mas está passando pela Internet em IPv6. <br></br>
 
 Como podemos notar, ele exibe a Informação de que a interface Tunnel0 fica ativa mesmo não tendo a outra ponta do Túnel configurada. Também podemos confirmar através do comando **show ip interface brief**. <br></br>
 
@@ -29,3 +29,13 @@ Como podemos notar, ele exibe a Informação de que a interface Tunnel0 fica ati
 Então agora o que falta é fazer o mesmo no outro lado do túnel, ou seja, fazer o mesmo em R04. Então vamos lá. <br></br>
 
 ![ROTA_DEFAULT](Imagens/R04/01.png) <br></br> 
+
+Primeiro configuramos a rota padrão para a interface que está com saída para Internet. Agora vamos configurar a interface Tunnel0. <br></br>
+
+![TÚNEL](Imagens/R04/02.png) <br></br>
+
+Da mesma forma que configuramos em R01, aqui definimos a interface **tunnel source** como sendo a **E0/1** que tem a saída para Internet. Como destino **(source detination)** eu indico o IPv6 do roteador R01 da matriz. Também precisamos indicar o modo do túnel como **tunnel mode gre ipv6**. <br></br>
+
+Então vamos verificar o status da interface tunel0. <br></br>
+
+![INTERFACE](Imagens/R04/03.png) <br></br>
