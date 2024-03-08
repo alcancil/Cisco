@@ -75,3 +75,15 @@ E vamos analisar novamente as tabelas de roteamento para ver a diferença agora.
           <Td width="50%"><img src="Imagens\R04\07.png"> </img> </Td>
       </TR>
 </Table>
+
+Agora podemos reparar que apareceu uma rota do tipo **E2 (External Type 2)** em cada roteador apontando para a rede local. Ou seja, o ospf agora passa a divulgar as interfaces diretamente conectadas e com isso as redes passam a se comunicar. Então vou fazer um teste do VPC1 para o VPC2. Vamos observar. <br></br>
+
+![TESTES](Imagens/testes.png) <br></br>
+
+Como podemos analisar através do ping, podemos notar que as duas redes agora se comunicam apesar de não suportarem o IPv6. Também podemos perceber através do trace que o pacote sai da rede 192.168.1.0, passa pela rede 10.0.0.0 e chega direto a rede 192.168.2.0 ,  ou seja, os roteadores agora pensam que os pacotes saem direto do roteador R01 para o R04 sem passar na Internet. Ele somente pensa, mas o trafego realmente atravessa a Internet. <br></br>
+
+Para finalizar, eu abri uma sessão do Wireshark e realizei a captura de pacotes na interface E0/1 para podermos analisar a comunicação. <br></br>
+
+![WIRESHARK](Imagens/wireshark.png) <br></br>
+
+Através da analise dessa captura, podemos notar que a comunicação começa em IPv6, ai o pacote é encapsulado pelo túnel GRE e depois vemos o pacote IPv4, dentro do túnel e, com isso é possível se ter a comunicação entre Matriz e Filial.
