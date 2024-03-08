@@ -66,3 +66,12 @@ Como podemos perceber, ativamos o OSPF nas Interface Tunnel0 em R01 e R04 mas o 
           <Td width="50%"><img src="Imagens\R04\06.png"> </img> </Td>
       </TR>
 </Table>
+
+E vamos analisar novamente as tabelas de roteamento para ver a diferença agora. <br></br>
+
+<Table>
+      <TR>
+          <Td width="50%"><img src="Imagens\R01\07.png"> </img> </Td>
+          <Td width="50%"><img src="Imagens\R04\07.png"> </img> </Td>
+      </TR>
+</Table>
