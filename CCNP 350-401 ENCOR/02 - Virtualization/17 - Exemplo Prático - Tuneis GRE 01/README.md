@@ -16,3 +16,7 @@ Então vamos as configurações. Vamos acessar primeiro o roteador R01. Aqui vou
 
 ![ROTA_DEFAULT](Imagens/R01/01.png) <br></br>
 
+E agora vamos criar a interface túnel. <br></br>
+
+![TÚNEL](Imagens/R01/02.png) <br></br>
+
