@@ -8,3 +8,6 @@ Como podemos notar, o link da operadora só possui IPv6 e a matriz / filial só 
 
 ![FLUXO](Imagens/fluxo.png) <br></br>
 
+Mas como essa mágica é feita se temos somente uma rede IPv4 e a Operadora IPv6 ?  Simples, o GRE encapsula o pacote original e assim, o pacote encapsulado é suportado pelo túnel. <br><br> 
+
+![ENCAPSULADO](Imagens/encapsulado.png) <br></br>
