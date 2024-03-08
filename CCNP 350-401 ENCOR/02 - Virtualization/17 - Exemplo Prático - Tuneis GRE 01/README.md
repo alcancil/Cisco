@@ -11,3 +11,8 @@ Como podemos notar, o link da operadora só possui IPv6 e a matriz / filial só 
 Mas como essa mágica é feita se temos somente uma rede IPv4 e a Operadora IPv6 ?  Simples, o GRE encapsula o pacote original e assim, o pacote encapsulado é suportado pelo túnel. <br><br> 
 
 ![ENCAPSULADO](Imagens/encapsulado.png) <br></br>
+
+Então vamos as configurações. Vamos acessar primeiro o roteador R01. Aqui vou assumir que o endereçamento de IP das interfaces já está configurada e que vamos configurar o default gateway para a interface de saída com a Internet, a interface E0/1. <br></br>
+
+![ROTA_DEFAULT](Imagens/R01/01.png) <br></br>
+

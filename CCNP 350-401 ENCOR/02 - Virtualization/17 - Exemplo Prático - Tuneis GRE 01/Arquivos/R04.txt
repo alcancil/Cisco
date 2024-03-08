@@ -1,0 +1,119 @@
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R04
+!
+boot-start-marker
+boot-end-marker
+!
+aqm-register-fnf
+!
+!
+no aaa new-model
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback1
+ ip address 2.2.2.2 255.255.255.255
+!
+interface Tunnel0
+ ip address 10.0.0.2 255.255.255.252
+ tunnel source Ethernet0/1
+ tunnel mode gre ipv6
+ tunnel destination 2001:DB8:1::1
+!
+interface Ethernet0/0
+ ip address 192.168.2.1 255.255.255.0
+!
+interface Ethernet0/1
+ no ip address
+ ipv6 address 2001:DB8:3::1/64
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router ospf 100
+ router-id 2.2.2.2
+ redistribute connected subnets
+ network 10.0.0.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 route ::/0 2001:DB8:3::2
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+!
+end
