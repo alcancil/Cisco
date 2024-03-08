@@ -28,4 +28,4 @@ Como podemos notar, ele exibe a Informação de que a interface Tunnel0 fica ati
 
 Então agora o que falta é fazer o mesmo no outro lado do túnel, ou seja, fazer o mesmo em R04. Então vamos lá. <br></br>
 
-![ROTA_DEFAULT](Imagens/R02/01.png) <br></br> 
+![ROTA_DEFAULT](Imagens/R04/01.png) <br></br> 
