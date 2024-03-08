@@ -60,3 +60,9 @@ Agora nesse momento podemos perceber que os túneis formaram o processo de adjac
 
 Como podemos perceber, ativamos o OSPF nas Interface Tunnel0 em R01 e R04 mas o ospf não informou nenhuma rota para os roteadores. O segredo aqui é que queremos que o ospf passe as interfaces diretamente conectadas, pois são elas que possuem a comunicação interna com as redes locais. Então vamos habilitar esse parâmetro no ospf. <br></br>
 
+<Table>
+      <TR>
+          <Td width="50%"><img src="Imagens\R01\06.png"> </img> </Td>
+          <Td width="50%"><img src="Imagens\R04\06.png"> </img> </Td>
+      </TR>
+</Table>
