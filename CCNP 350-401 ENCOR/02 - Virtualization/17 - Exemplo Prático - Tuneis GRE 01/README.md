@@ -86,4 +86,10 @@ Para finalizar, eu abri uma sessão do Wireshark e realizei a captura de pacotes
 
 ![WIRESHARK](Imagens/wireshark.png) <br></br>
 
-Através da analise dessa captura, podemos notar que a comunicação começa em IPv6, ai o pacote é encapsulado pelo túnel GRE e depois vemos o pacote IPv4, dentro do túnel e, com isso é possível se ter a comunicação entre Matriz e Filial.
+Através da analise dessa captura, podemos notar que a comunicação começa em IPv6, ai o pacote é encapsulado pelo túnel GRE e depois vemos o pacote IPv4, dentro do túnel e, com isso é possível se ter a comunicação entre Matriz e Filial. <br></br>
+
+Agora que conseguimos verificar que o túnel está formado e a comunicação ocorre entre Matriz e Filial, vamos analisar a interface **Túnel 0**. <br></br>
+
+![MTU](Imagens/mtu.png) <br></br>
+
+Como podemos notar através do comando, temos que o **MTU (Maximium Transmition Unit) é de 1476 bytes**. Bom sabemos que o padrão é **1500 bytes**, então porque isso ocorre ? Bom a explicação é simples. Como dito anteriormente, o GRE adiciona um overhead ao pacote IP. O GRE adiciona **24 bytes** de cabeçalho sobre o pacote IP e se o tamanho continuasse 1500, então teríamos um cabeçalho de **1524 bytes**. Isso iria gerar fragmentação e em ambientes onde existem equipamentos que não suporta fragmentação, isso pode gerar perca de pacotes. Então, automaticamente a caixa faz a seguinte conta: **MTU_FINAL = MTU_ORIGINAL - OVERHEAD**, que no nosso caso fica assim: **MTU_FINAL = 1500 - 24 = 1476bytes**
