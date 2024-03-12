@@ -27,3 +27,13 @@ Esse tipo de necessidade é mais comum em data center. Para essa comunicação o
 
 ![CABEÇALHO](Imagens/cabecalho.png) <br></br>
 
+Esse é um valor de camada 3, ou seja, é um valor que precisa ser ajustado conforme o tipo de protocolo que irá passar nas interfaces. <br></br>
+Então no caso de um túnel GRE, precisam ser adicionadas dados dos cabeçalhos IP original. Por esse motivo, o tamanho do **IP MTU** fica menor que os 1500 bytes. <br></br>
+Se esse valor não for ajustado e o IP MTU ficar acima dos 1500 bytes, ou o pacato é descartado ou ocorrerá fragmentação. Isso pode ser um problema pois existem equipamentos que não suportam a fragmentação. Isso pode até fazer com que o túnel GRE pare de funcionar se ocorrer. <br></br>
+
+No exemplo, o MTU no túnel GRE foi configurado para **1400 bytes**. Então podemos observar que 1400 bytes é o tamanho total do pacote IP nesse túnel e que depois é **adicionado mais 24 bytes** do túnel GRE. Com isso, não ocorrerá fragmentação. <br></br>
+
+## MSS - CAMADA 4
+
+![MTU3](Imagens/mtu3.png) <br></br>
+
