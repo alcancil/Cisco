@@ -10,3 +10,5 @@ Então quando falamos MTU, normalmente estamos falando de **camada 02**, ou seja
 Mas não existe uma negociação no meio, esse é um parâmetro que é configurado nas portas de roteadores, switches, etc. <br></br>
 
 ![MTU](Imagens/mtu.png) <br></br>
+
+Então como não há uma negociação, um lado do link não conhece o MTU do outro lado, e com isso, poderão existir MTUs diferentes. Nesse caso dizemos que quando essa situação ocorre temos **um mismatch de MTUs**. Com isso os pacotes são descartados e o contador **Giant** é acrescentado. <br></br>
