@@ -46,3 +46,13 @@ Bom sabemos que o MTU do quadro Ethernet é 1500 bytes. Então se o MSS for de *
 Quando o TCP começa a negociação ele pode ajustar automaticamente. Mas vamos analisar a situação: <br></br>
 
 ![MTU4](Imagens/mtu4.png) <br></br>
+
+Agora nesse caso, entre os roteadores temos uma nuvem. Então precisamos ajustar o mss para suportar o cabeçalho do protocolo que atravessa a nuvem. Nesse caso, o mss ficou em 1432. Com isso, se realizarmos a soma: 20 bytes IP + 20 bytes TCP + 1432 MSS = **1472 bytes** Com isso sobra espaço para a nuvem utilizar algum outro protocolo ou mesmo algum outro túnel. <br></br>
+
+## Comandos no CISCO IOS
+
+* **MTU L2:** ***mtu valor-bytes***
+* **MTU L3:** ***ip myu valor-bytes***
+* **MSS:** ***tcp adjust-mss valor bytes***
+
+Para o GRE, podemos configurar o MTU L3, MSS ou os dois em conjunto para evitar a fragmentação.
