@@ -20,3 +20,8 @@ Existem os frames chamados de ***Jumbo Frames***, ou seja, são frames **são fr
 Esse tipo de necessidade é mais comum em data center. Para essa comunicação ocorrer, é necessário que esse tipo de frame seja configurado nas portas dos roteadores e switches e; os servidores e endpoints envolvidos também estejam configurados para utilizar os *jumbo frames*. <br></br>
 
 ![MTU1](Imagens/mtu1.png) <br></br>
+
+## IP MTU
+
+![MTU2](Imagens/mtu2.png) <br></br>
+

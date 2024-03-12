@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net" modified="2024-03-12T20:45:01.018Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0" etag="L3gCBYZ7cakyxaAwHzb8" version="24.0.4" type="device">
+  <diagram name="Página-1" id="5nc2uqD75pJNyqpq4T2S">
+    <mxGraphModel dx="2021" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-6" value="" style="image;html=1;image=img/lib/clip_art/networking/Router_Icon_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="110" y="190" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-7" value="" style="image;html=1;image=img/lib/clip_art/networking/Router_Icon_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="567" y="190" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-9" value="" style="image;html=1;image=img/lib/clip_art/computers/Netbook_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="-50" y="320" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-10" value="" style="image;html=1;image=img/lib/clip_art/computers/Netbook_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="747" y="320" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-12" value="" style="endArrow=none;html=1;rounded=0;strokeWidth=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="10" y="360" as="sourcePoint" />
+            <mxPoint x="140" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-13" value="" style="endArrow=none;html=1;rounded=0;strokeWidth=4;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" edge="1" parent="1" source="zQqOxH6t-eHAAriKxPJr-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="717" y="360" as="sourcePoint" />
+            <mxPoint x="627" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-15" value="MTU 1400" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="170" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-16" value="MTU 1500" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="-10" y="240" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-17" value="MTU 1500" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="620" y="240" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-22" value="" style="shape=flexArrow;endArrow=none;startArrow=none;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=4;startWidth=25;startSize=4.67;width=32;entryX=-0.037;entryY=0.625;entryDx=0;entryDy=0;entryPerimeter=0;startFill=0;endFill=0;" edge="1" parent="1">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="190" y="234.5" as="sourcePoint" />
+            <mxPoint x="564.04" y="234.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-26" value="TÚNEL GRE" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="290" y="220" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="zQqOxH6t-eHAAriKxPJr-31" value="MTU 1400" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="130" y="170" width="170" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
