@@ -37,3 +37,12 @@ No exemplo, o MTU no túnel GRE foi configurado para **1400 bytes**. Então pode
 
 ![MTU3](Imagens/mtu3.png) <br></br>
 
+Agora como estamos na camada 4, quando a origem e o destino querem se comunicar, então eles realizam o hadnshake triplo para o tcp. <br></br>
+Co isso, o valor de MSS é ajustado automaticamente para **1460**. Mas por que esse tamanho ? <br></br>
+Bom sabemos que o MTU do quadro Ethernet é 1500 bytes. Então se o MSS for de **1460**, ainda faltam o cabeçalho IP e TCP. Então a conta fica assim: **20 bytes do IP + 20 bytes do TCP + 1460 MSS =** ***1500 bytes.***
+
+## Ajustes no MSS
+
+Quando o TCP começa a negociação ele pode ajustar automaticamente. Mas vamos analisar a situação: <br></br>
+
+![MTU4](Imagens/mtu4.png) <br></br>
