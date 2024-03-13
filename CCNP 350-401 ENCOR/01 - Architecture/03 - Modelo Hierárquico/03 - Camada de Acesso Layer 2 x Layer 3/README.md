@@ -8,5 +8,5 @@ A melhor opção de escolha é a topologia **1** pois fica mais fácil de lidar 
 
 ![LAYER2](Imagens/acesso2.png)
 
-Quando se usa a topologia **A**, os links de acesso são em layer 2. Nessa topologia o gateway da rede são os switches de distribuição. <br>></br>
+Quando se usa a topologia **A**, os links de acesso são em layer 2. Nessa topologia o gateway da rede são os switches de distribuição. <br></br>
 Já na topologia **B**, os links de acesso são todos layer 3. Agora o gateway da rede passa a ser os switches de acesso. <br></br>
