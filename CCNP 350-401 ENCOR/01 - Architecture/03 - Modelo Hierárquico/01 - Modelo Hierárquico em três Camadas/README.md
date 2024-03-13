@@ -30,3 +30,13 @@ Vamos supor que estamos em uma sala (Small Office / Home Office). Nesse tipo de 
 ## Camada de distribuição
 
 Essa camada é o limite entre a camada de acesso (l2) e a camada core (l3). É nessa camada que se configuram alguns itens mais avançados. Ela serve de gateway para a camada de acesso, pode ter um servidor DHCP configurado, se existirem servidores de DHCP específicos na camada core, essa camada funciona como um agent relay; é nela que se aplicam ACLS, protocolos de proteção de primeiro salto (HSRP, VRRP, GLBP), spanning three, sumarização de redes, etc. <br></br>
+
+* Agregação dos vários switches de acesso
+* Limite entre os domínios L2 da camada de acesso e L3 do core
+* Protege a camada 2 contra a propagação de erros de L2 utilizando o STP
+* Serve como ponto de agregação das diversas redes IPs das diversas distribuições conectadas em pares para garantir redundância. OBS: Existem casos em que se utiliza 1 switch apenas. Camada Core Colapsada oe mesmo 1 switch modular com 2 placas supervisoras e fontes de energia.
+* Os switches são conectados via links L2 e L3
+* Os switches não precisam estar no mesmo prédio para economizar conexões
+
+## Camada Core
+
