@@ -40,3 +40,5 @@ Essa camada é o limite entre a camada de acesso (l2) e a camada core (l3). É n
 
 ## Camada Core
 
+![NÚCLEO](Imagens/nucleo.png) <br></br>
+
