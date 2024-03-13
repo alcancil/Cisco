@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-03-13T20:40:06.012Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0" etag="7ik1dCggonTXYBeQn2Tz" version="24.0.5" type="device">
+<mxfile host="app.diagrams.net" modified="2024-03-13T20:41:09.072Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0" etag="yp-nl-DM9wkVxqK1jjU_" version="24.0.5" type="device">
   <diagram name="Página-1" id="dn1WERP5WJdpw7qh-cQa">
     <mxGraphModel dx="1194" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -206,12 +206,6 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="1420" y="190" as="sourcePoint" />
             <mxPoint x="970" y="190" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="2IVi3ITnMaEK0_wljfeU-85" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeWidth=4;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="2190" y="179.5" as="sourcePoint" />
-            <mxPoint x="1740" y="179.5" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="2IVi3ITnMaEK0_wljfeU-86" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeWidth=4;fillColor=#e1d5e7;strokeColor=#9673a6;" edge="1" parent="1">
