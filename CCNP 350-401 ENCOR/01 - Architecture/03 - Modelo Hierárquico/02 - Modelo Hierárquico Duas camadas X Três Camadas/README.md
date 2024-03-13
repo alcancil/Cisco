@@ -6,3 +6,5 @@ Nesse tipo de cenário é comum que se utilize o modelo de 3 camadas (camada de 
 **OBS:** em Data Center se utiliza o design Spie and Leafe já em empresas menores, o modelo adotado, **O CORO  COLAPSADO** onde existe a camada de acesso e a camada de distribuição / core atuando como uma única camada. <br></br>
 
 ## Moelo de 2 camadas (CORE COLAPSADO)
+
+![2CAMADAS](Imagens/2camadas.png) <br></br>
