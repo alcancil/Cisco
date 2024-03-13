@@ -20,3 +20,6 @@ Isso faz com que existam caminhos "alternativos" para o fluxo de dados. Para a p
 
 ![3CAMADAS](Imagens/3camadas.png) <br></br>
 
+Conforme as empresas vão crescendo, ou mesmo se ela já é grande, existe a necessidade de se agregar várias distribuições. É nesse cenário que se utiliza o modelo de 3 camadas. <br></br>
+Agora para se ligar os endpoints, são utilizados switches maiores. Isso dentro da camada de acesso. Esses switches maiores são utilizados para agregar os switches de acesso e os mesmos é que se ligam agora a camada core. O mesmo vale para as conexões superiores do desenho. <br></br>
+Novamente, as boas práticas recomendam sempre interligar os equipamentos de forma redundante para que se tenha mais que um caminho somente para trafegar. <br></br>
