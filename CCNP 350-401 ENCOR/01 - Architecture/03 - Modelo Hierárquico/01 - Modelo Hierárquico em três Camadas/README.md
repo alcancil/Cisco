@@ -42,3 +42,8 @@ Essa camada é o limite entre a camada de acesso (l2) e a camada core (l3). É n
 
 ![NÚCLEO](Imagens/nucleo.png) <br></br>
 
+* Reduz Complexidade
+* A camada central é o backbone e o ponto de agregação para várias redes
+* Fornece escalabilidade, alta disponibilidade e convergência rápida para a rede
+* O core pode fornecer conectividade de alta velocidade para grandes empresas com várias redes de campus distribuídas em todo o mundo e também pode fornecer interconectividade entre a camada de acesso do campus ao usuário final / endpoint e outros blocos de rede, como o data center, a nuvem privada, a nuvem pública, WAN, borda da Internet e serviços de rede.
+* Interfaces de altíssima velocidade: 10G, 40G, 100G, 400G
