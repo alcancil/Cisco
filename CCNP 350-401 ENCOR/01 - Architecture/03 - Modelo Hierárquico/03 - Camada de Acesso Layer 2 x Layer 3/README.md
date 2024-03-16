@@ -23,3 +23,4 @@ Na topologia **B**, somente os clientes estão em layer 2. Com isso algumas cois
 
 Além dessas abordagens existem mais outras duas abordagens que simplificam mais ainda o design: **VSS e STACKWISE**. <br></br>
 
+![VSS](Imagens/vss.png) <br></br>
