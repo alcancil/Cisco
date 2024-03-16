@@ -24,3 +24,7 @@ Na topologia **B**, somente os clientes estão em layer 2. Com isso algumas cois
 Além dessas abordagens existem mais outras duas abordagens que simplificam mais ainda o design: **VSS e STACKWISE**. <br></br>
 
 ![VSS](Imagens/vss.png) <br></br>
+
+Aqui temos mais duas opções. A primeira é utilizar a tecnologia VSS onde os switches de distribuição se conversam entre placas supervisoras e "virtualmente" funcionam como se fosse um único switch de distribuição. Ai é que vem o melhor aproveitamento dos links pois agora, como os switches de acesso "enxergam" os switches de distribuição como um só todos os links ficam ativos. <br></br>
+Já a segunda opção funciona da mesma maneira. A diferença agora é que vamos ter uma "única caixa" nos switches de distribuição pois agora eles são empilháveis e respondem a um único IP que fica nas controladoras. Para o **stackwise**, é necessário se utilizar cabos especiais. <br></br>
+Esse tipo de abordagem gera uma simplificação para o spanning three. <br></br>
