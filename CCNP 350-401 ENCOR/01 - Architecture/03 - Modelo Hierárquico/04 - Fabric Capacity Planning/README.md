@@ -15,11 +15,11 @@ Então o Fabric Capacit Palanning é a quantidade de dispositivos e largura de b
 
 Exemplo: <br></br>
 
-Sw Bw Capacity = [550 Gbps * 16] + [(2 * 550 Gbps) / 2] <br>></br>
-Sw Bw Capacity = 8800 Gbps + 550 Gbps <br>></br>
-Sw Bw Capacity = 9350 Gbps <br>></br>
-<br>></br>
-Full Duples Switch Bw Capacity = 9350 * 2 = ***18,7 Tbps*** <br>></br>
+Sw Bw Capacity = [550 Gbps * 16] + [(2 * 550 Gbps) / 2] <br></br>
+Sw Bw Capacity = 8800 Gbps + 550 Gbps <br></br>
+Sw Bw Capacity = 9350 Gbps <br></br>
+<br></br>
+Full Duples Switch Bw Capacity = 9350 * 2 = ***18,7 Tbps*** <br></br>
 
 Essa é a fórmula para se calcular a capacidade máxima de um switch. Mas o que se utiliza na prática é ir no site do fabricante. Lá ele mostra todas as características e capacidades dos switches. <br></br>
 
