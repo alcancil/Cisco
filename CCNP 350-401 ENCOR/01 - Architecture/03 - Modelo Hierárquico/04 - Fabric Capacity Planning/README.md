@@ -11,4 +11,18 @@ Então o Fabric Capacit Palanning é a quantidade de dispositivos e largura de b
 
 ![NEXUS](Imagens/nexus.png) <br></br>
 
+***Switch Bw CAPACITY=*** **[Inter-Slot Capacity * Number Of I/O Slots] + [ (Number of SE Modules * Inter Slot Switching Capacity) /2 ]**
+
+Exemplo: <br></br>
+
+Sw Bw Capacity = [550 Gbps * 16] + [(2 * 550 Gbps) / 2] <br>></br>
+Sw Bw Capacity = 8800 Gbps + 550 Gbps <br>></br>
+Sw Bw Capacity = 9350 Gbps <br>></br>
+<br>></br>
+Full Duples Switch Bw Capacity = 9350 * 2 = ***18,7 Tbps*** <br>></br>
+
+Essa é a fórmula para se calcular a capacidade máxima de um switch. Mas o que se utiliza na prática é ir no site do fabricante. Lá ele mostra todas as características e capacidades dos switches. <br></br>
+
+Deixo aqui um artigo do site da Cisco com exemplos de arquitetura que utilizam os switches Cisco Nexus para complementar os estudos. 
+
 [Introduction to Nexus Data Center Infrastructure and Architecture](https://www.ciscopress.com/articles/article.asp?p=2762085&seqNum=2)
