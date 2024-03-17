@@ -12,8 +12,8 @@
 
 ## 1.0 Architecture 15%
 
-- [ ] 1.1 Explain the different design principles used in an enterprise network
-- [ ] 1.1.a High-level enterprise network design such as 2-tier, 3-tier, fabric, and cloud
+- [x] 1.1 Explain the different design principles used in an enterprise network
+- [x] 1.1.a High-level enterprise network design such as 2-tier, 3-tier, fabric, and cloud
 - [ ] 1.1.b High availability techniques such as redundancy, FHRP, and SSO
 - [ ] 1.2 Describe wireless network design principles
 - [ ] 1.2.a Wireless deployment models (centralized, distributed, controller-less, controller-based, cloud, remote branch)
