@@ -6,6 +6,9 @@ Na CISCO, esse é o conceito de **SD-WAN (Software Defined Netwaork)**. Ele é c
 
 ![CAMADAS](Imagens/camadas.png) <br></br>
 
+Mas e o que é uma rede **FABRIC ?** Uma rede Fabric é a malha de conexões entre os dispositivos de acesso como switches, por exemplo, e os roteadores que transportam os dados para o seu destino "Fabric" podem ser os cabos físicos que compõem essas conexões, mas geralmente se refere a uma rede virtualizada e automatizada de conexões de sobreposição sobre a topologia física. <br></br>
+Então o Fabric Capacit Palanning é a quantidade de dispositivos e largura de banda que a rede irá dispor / necessitar. Ou seja, quanto de largura de banda é necessário disponibilizar para a quantidade de dispositivos presentes na rede. (ou um pouco mais para futuros crescimentos)
+
 ![NEXUS](Imagens/nexus.png) <br></br>
 
 [Introduction to Nexus Data Center Infrastructure and Architecture](https://www.ciscopress.com/articles/article.asp?p=2762085&seqNum=2)
