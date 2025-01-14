@@ -4,7 +4,7 @@
 
 Agora como falar sobre um tipo de comunicação é preciso se fazer uma pequena revisão. Então primeiramente vamos observar os tipos de comunicação existentes.
 
-| TIPOS DE COMUNICAÇÂO                                                                                                   |
+|--------------------------------                TIPOS DE COMUNICAÇÂO      ----------------------------------------------|
 |---------------------------------|--------------------------------------|-----------------------------------------------|
 |![UNICAST](Imagens/unicast.png)  | ![BROADCAST](Imagens/broadcast.png)  | ![MULTICAST](Imagens/multicast.png)           |
 
