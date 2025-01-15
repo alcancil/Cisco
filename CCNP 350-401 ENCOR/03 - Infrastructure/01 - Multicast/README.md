@@ -35,7 +35,7 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 | Unicast Global       |  2000::/3           | Usado para comunicação unicast na Internet. É equivalente aos endereços públicos no IPv4.                                               |
 | Unicast Link-Local   |  FE80::/10	         | Usado para comunicação dentro de um link (como em uma LAN). Esses endereços são configurados automaticamente em cada interface de rede. |
 | Unicast Unique Local |  FC00::/7	         | Endereços para redes privadas (semelhante a 192.168.0.0/16 no IPv4).                                                                    |
-| Multicast	           |  FF00::/8           | Usado para comunicação multicast.                                                                                                       |
+| **Multicast**	       |  FF00::/8           | Usado para comunicação multicast.                                                                                                       |
 | Anycast              | Derivado de unicast | Endereços unicast atribuídos a vários nós, mas roteados para o mais próximo.                                                            |
 | Loopback	                | ::1            | Endereço para a própria máquina (equivalente a 127.0.0.1 no IPv4).                                                                      |
 | Endereço Não Especificado	| ::	         | Indica ausência de endereço (usado como fonte em algumas situações, como durante a autoconfiguração).                                   |
