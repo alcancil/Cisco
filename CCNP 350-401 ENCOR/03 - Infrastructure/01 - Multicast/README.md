@@ -30,21 +30,20 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 
 ### **IPV6**
 
-| Tipo de Endereço	   |  Faixa de Endereçamento |	Descrição                                                                                                                    |
-| ------------------   | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------|
-| Unicast Global       |  2000::/3     | Usado para comunicação unicast na Internet. É equivalente aos endereços públicos no IPv4.                                               |
-| Unicast Link-Local   |  FE80::/10	   | Usado para comunicação dentro de um link (como em uma LAN). Esses endereços são configurados automaticamente em cada interface de rede. |
-| Unicast Unique Local |  FC00::/7	   | Endereços para redes privadas (semelhante a 192.168.0.0/16 no IPv4).                                                                    |
-| Multicast	           |  FF00::/8     | Usado para comunicação multicast.                                                                                                       |
-| Anycast	Derivado de unicast	Endereços unicast atribuídos a vários nós, mas roteados para o mais próximo.
-| Loopback	::1	Endereço para a própria máquina (equivalente a 127.0.0.1 no IPv4).
-| Endereço Não Especificado	::	Indica ausência de endereço (usado como fonte em algumas situações, como durante a autoconfiguração).
-| Reservado	4000::/2, 6000::/3 e outras faixas	Reservado pela IETF para uso futuro.
-| Embedded IPv4	::FFFF:0:0/96 e 2002::/16	Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.
+| Tipo de Endereço	   |  Faixa de Endereçamento |	Descrição                                                                                                                          |
+| ------------------   | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------|
+| Unicast Global       |  2000::/3           | Usado para comunicação unicast na Internet. É equivalente aos endereços públicos no IPv4.                                               |
+| Unicast Link-Local   |  FE80::/10	         | Usado para comunicação dentro de um link (como em uma LAN). Esses endereços são configurados automaticamente em cada interface de rede. |
+| Unicast Unique Local |  FC00::/7	         | Endereços para redes privadas (semelhante a 192.168.0.0/16 no IPv4).                                                                    |
+| Multicast	           |  FF00::/8           | Usado para comunicação multicast.                                                                                                       |
+| Anycast              | Derivado de unicast | Endereços unicast atribuídos a vários nós, mas roteados para o mais próximo.                                                            |
+| Loopback	                | ::1            | Endereço para a própria máquina (equivalente a 127.0.0.1 no IPv4).                                                                      |
+| Endereço Não Especificado	| ::	         | Indica ausência de endereço (usado como fonte em algumas situações, como durante a autoconfiguração).                                   |
+| Reservado	           |4000::/2, 6000::/3 e outras faixas | Reservado pela IETF para uso futuro.                                                                                      |
+| Embedded IPv4	       | ::FFFF:0:0/96 e 2002::/16 | Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.                            |
 
-Destaques sobre a tabela:
-
-    Unicast Global: Utilizado para endereços roteáveis na Internet.
-    Link-Local: Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
-    Multicast: Substitui a funcionalidade de broadcast no IPv6.
-    Loopback: Para testes internos no dispositivo.
+**Destaques sobre a tabela:**
+    * **Unicast Global:** Utilizado para endereços roteáveis na Internet.
+    * **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
+* Multicast: Substitui a funcionalidade de broadcast no IPv6.
+Loopback: Para testes internos no dispositivo.
