@@ -42,8 +42,9 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 | Reservado	           |4000::/2, 6000::/3 e outras faixas | Reservado pela IETF para uso futuro.                                                                                      |
 | Embedded IPv4	       | ::FFFF:0:0/96 e 2002::/16 | Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.                            |
 
-**Destaques sobre a tabela:**
-    * **Unicast Global:** Utilizado para endereços roteáveis na Internet.
-    * **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
-* Multicast: Substitui a funcionalidade de broadcast no IPv6.
-Loopback: Para testes internos no dispositivo.
+**Destaques sobre a tabela:** <br></br>
+
+* **Unicast Global:** Utilizado para endereços roteáveis na Internet.
+* **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
+* **Multicast:** Substitui a funcionalidade de broadcast no IPv6.
+* **Loopback:** Para testes internos no dispositivo.
