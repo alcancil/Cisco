@@ -1,6 +1,6 @@
 # 01 - Multicast
 
-Agora como falar sobre um tipo de comunicação é preciso se fazer uma pequena revisão. Então primeiramente vamos observar os tipos de comunicação existentes.
+Agora para falar sobre o tipo de comunicação **unicast** é preciso se fazer uma pequena revisão. Então primeiramente vamos observar os tipos de comunicação existentes.
 
 | UNICAST                         | BROADCAST                            | MULTICAST                                     |
 |---------------------------------|--------------------------------------|-----------------------------------------------|
