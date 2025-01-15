@@ -50,4 +50,10 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 * **Loopback:** Para testes internos no dispositivo.
 <br></br>
 
-Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadacst e os roteadores não. Isso é importante de se lembrar pois o multicast vai funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, o switches formam os grupos em que os hosts irão participar e o roteador é quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** . Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
+Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadacst e os roteadores não. Isso é importante de se lembrar pois o multicast vai 
+funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, o switches formam os grupos em que os hosts irão participar e o roteador é 
+quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** . 
+Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos 
+além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
+
+![TOPOLOGIA](Imagens/topologia.png) <br></br>
