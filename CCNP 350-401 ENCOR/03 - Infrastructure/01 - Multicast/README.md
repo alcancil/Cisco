@@ -56,4 +56,4 @@ quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não
 Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos 
 além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
 
-![TOPOLOGIA](Imagens/topologia.png) <br></br>
+![TOPOLOGIA](Imagens/topologia1.png) <br></br>
