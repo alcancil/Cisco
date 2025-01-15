@@ -121,6 +121,12 @@
         <mxCell id="KIZLUZyQ1Ud5sTdA2fOX-45" value="PEDIDOS IGMP" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="780" y="222" width="160" height="40" as="geometry" />
         </mxCell>
+        <mxCell id="KIZLUZyQ1Ud5sTdA2fOX-46" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;rotation=-90;strokeWidth=3;fillColor=#76608a;fontColor=#ffffff;strokeColor=#432D57;" vertex="1" parent="1">
+          <mxGeometry x="530" y="190" width="20" height="840" as="geometry" />
+        </mxCell>
+        <mxCell id="KIZLUZyQ1Ud5sTdA2fOX-47" value="&lt;font face=&quot;Helvetica&quot;&gt;TRAFEGO UNICAST (UTP / RDP)&lt;br&gt;&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="409.5" y="630" width="261" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
