@@ -64,3 +64,9 @@ Depois de entender isso, vamos analisar um cenário onde eu tenho um servidor de
 eu ocupe 10mbs de largura de banda. <br> </br>
 
 ![TOPOLOGIA2](Imagens/topologia2.png) <br></br>
+
+Como podemos perceber, o servidor de vídeos envia os pacotes para todos os computadores da rede. Então no primeiro salto, teríamos 10 mbps ocupados, mas conforme vão se somando se saltos, 
+o pacote é enviado novamente. Sendo assim, a cada salto podemos dizer o link vai sendo cada vez mais ocupado ao ponto de que se tivermos 5 fluxos ao mesmo tempo no link, então agora teremos 
+50mbps trafegando no link. E ai teríamos que ter uma estimativa de quando link teremos que ter por link para atender a demanda sem termos perca de pacotes. <br></br>
+Outro problema é que todos os computadores finais irão receber os pacotes, mesmo que ele não seja o destinatário. Então o computador ao receber o pacote, tem que processar o mesmo, gastando
+cpu e memória e, ao perceber que o pacote não é para ele, descartar o mesmo. Ou seja, essa é uma forma de comunicação menos eficiente.
