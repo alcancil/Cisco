@@ -57,3 +57,10 @@ Mas se precisarmos enviar a comunicação para outras redes quem faz esse proces
 além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
 
 ![TOPOLOGIA](Imagens/topologia.png) <br></br>
+
+## Problemas de não utilizar o multicast
+
+Depois de entender isso, vamos analisar um cenário onde eu tenho um servidor de vídeos e que esteja transmitindo para a rede toda em **broadcast**. Agora vamos supor que em cada salto,
+eu ocupe 10mbs de largura de banda. <br> </br>
+
+![TOPOLOGIA2](Imagens/topologia2.png) <br></br>
