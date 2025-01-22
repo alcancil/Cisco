@@ -75,3 +75,60 @@ Como podemos observar nas duas topologias apresentadas, temos duas situações: 
 
 **OBS:** O protocolo IGMP é ativado em switches e tem a função ***snooping*** ( no sentido de escuta em inglês), ou seja, ele trabalha com  requisições e envios de informações. Já o protocolo 
 ***PIM*** é ativado em roteadores.
+
+## Endereçamento Multicast
+
+Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para a comunicação multicast. Seguem as faixa de endereços definidas pela IANA. <br></br>
+
+**IPv4** <br></br>
+
+| Designation                                      | Multicast Address Range                 |
+|--------------------------------------------------|-----------------------------------------|
+| Local network control block                      | 224.0.0.0 to 224.0.0.255                |
+| Internetwork control block                       | 224.0.1.0 to 224.0.1.255                |
+| Ad hoc block I                                   | 224.0.2.0 to 224.0.255.255              |
+| Reserved                                         | 224.1.0.0 to 224.1.255.255              |
+| SDP/SAP block                                    | 224.2.0.0 to 224.2.255.255              |
+| Ad hoc block II                                  | 224.3.0.0 to 224.4.255.255              |
+| Reserved                                         | 224.5.0.0 to 224.251.255.255            |
+| DIS Transient Groups                             | 224.252.0.0 to 224.255.255.255          |
+| Reserved                                         | 225.0.0.0 to 231.255.255.255            |
+| Source Specific Multicast (SSM) block            | 232.0.0.0 to 232.255.255.255            |
+| GLOP block                                       | 233.0.0.0 to 233.251.255.255            |
+| Ad hoc block III                                 | 233.252.0.0 to 233.255.255.255          |
+| Unicast-Prefix-based IPv4 Multicast Addresses    | 234.0.0.0 to 234.255.255.255            |
+| Reserved                                         | 235.0.0.0 to 238.255.255.255            |
+| Organization-Local Scope (Administratively scoped block) | 239.0.0.0 to 239.255.255.255    |
+
+**IPv6** <br></br>
+
+| **Endereço Multicast IPv6** | **Descrição**                               | **Escopo Disponível**                  |
+|-----------------------------|---------------------------------------------|----------------------------------------|
+| FF0X::1                     | Todos os nós                                | Interface-local (1), Link-local (2)    |
+| FF0X::2                     | Todos os roteadores                         | Interface-local (1), Link-local (2), Site-local (5) |
+| FF0X::5                     | Roteadores OSPFv3 AllSPF                    | Link-local (2)                         |
+| FF0X::6                     | Roteadores OSPFv3 Designated                | Link-local (2)                         |
+| FF0X::9                     | Roteadores RIP                              | Link-local (2)                         |
+| FF0X::A                     | Roteadores EIGRP                            | Link-local (2)                         |
+| FF0X::12                    | Todos os roteadores PIM                     | Link-local (2)                         |
+| FF0X::16                    | Todos os roteadores RPL                     | Link-local (2)                         |
+| FF0X::FB                    | mDNSv6                                      | Todos os escopos                       |
+| FF0X::101                   | Todos os servidores NTP                     | Todos os escopos                       |
+| FF0X::1:2                   | Todos os servidores e agentes de retransmissão DHCPv6   | Link-local (2)             |
+| FF0X::1:3                   | Todos os servidores DHCPv6 no site          | Site-local (5)                         |
+| FF0X::1:FFXX:XXXX           | Endereço multicast de nó solicitado         | Link-local (2)                         |
+
+
+Notas:
+
+    O campo 'X' no endereço multicast representa o valor do campo de escopo, que define a abrangência do endereço multicast. Os valores possíveis para 'X' são:
+        1: Interface-Local
+        2: Link-Local
+        5: Site-Local
+        8: Organization-Local
+        E: Global
+
+    O endereço FF0X::1:FFXX:XXXX é utilizado para os endereços de nó solicitado, onde os últimos 24 bits correspondem aos últimos 24 bits do endereço unicast ou anycast do nó.
+
+Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
+IANA
