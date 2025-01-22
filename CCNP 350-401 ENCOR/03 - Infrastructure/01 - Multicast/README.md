@@ -70,13 +70,8 @@ podemos notar que a cada salto então teríamos que ter uma largura de banda 10 
 Portanto teríamos que ter 50 Mbps de largura de banda, mesmo para os hosts não interessados. Isso é refletido em desperdício de banda e, outro ponto é que os hosts finais não interessados
 necessariamente tem que processar esses pacotes consumindo mais processador e memória. <br></br>
 
-## Alterar daqui pra baixo ##
+Como podemos observar nas duas topologias apresentadas, temos duas situações: a comunicação em camada 2 e a comunicação em camada 3. Para a comunicação em camada 2 iremos utilizar o 
+**protocolo IGMP (Internet Group Management Protocol)** e em camada 3 o **protocolo PIM (Protocol Independent Multicast)** . <br></br>
 
-Então no primeiro salto, teríamos 10 mbps ocupados, mas conforme vão se somando se saltos, 
-o pacote é enviado novamente. Sendo assim, a cada salto podemos dizer o link vai sendo cada vez mais ocupado ao ponto de que se tivermos 5 fluxos ao mesmo tempo no link, então agora teremos 
-50mbps trafegando no link. E ai teríamos que ter uma estimativa de quando link teremos que ter por link para atender a demanda sem termos perca de pacotes. <br></br>
-Outro problema é que todos os computadores finais irão receber os pacotes, mesmo que ele não seja o destinatário. Então o computador ao receber o pacote, tem que processar o mesmo, gastando
-cpu e memória e, ao perceber que o pacote não é para ele, descartar o mesmo. Ou seja, essa é uma forma de comunicação menos eficiente. <br></br>
-
-Agora, na topologia, vemos que todos os computadores estão ligados diretamente a roteadores. Mas normalmente utilizamos switches e os computadores são ligados neles. Ai, para resolver
-esses problemas, ativamos o **IGMP SNOOPING**. Com isso, os computadores ingressam em grupos e os pacotes só serão encaminhados aos computadores pertencentes a esses grupos.
+**OBS:** O protocolo IGMP é ativado em switches e tem a função ***snooping*** ( no sentido de escuta em inglês), ou seja, ele trabalha com  requisições e envios de informações. Já o protocolo 
+***PIM*** é ativado em roteadores.
