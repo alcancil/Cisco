@@ -65,7 +65,14 @@ eu ocupe 10mbs de largura de banda. <br> </br>
 
 ![TOPOLOGIA2](Imagens/topologia2.png) <br></br>
 
-Como podemos perceber, o servidor de vídeos envia os pacotes para todos os computadores da rede. Então no primeiro salto, teríamos 10 mbps ocupados, mas conforme vão se somando se saltos, 
+Como podemos perceber, o servidor de vídeos envia os pacotes para todos os computadores da rede. Vamos imaginar que o servidor de vídeos ocupe 10 Mbps para enviar os dados. Rapidamente
+podemos notar que a cada salto então teríamos que ter uma largura de banda 10 Mbps no mínimo para cada salto. Agora vamos imaginar que cada host resolva assistir a 5 vídeos ao mesmo tempo.
+Portanto teríamos que ter 50 Mbps de largura de banda, mesmo para os hosts não interessados. Isso é refletido em desperdício de banda e, outro ponto é que os hosts finais não interessados
+necessariamente tem que processar esses pacotes consumindo mais processador e memória. <br></br>
+
+## Alterar daqui pra baixo ##
+
+Então no primeiro salto, teríamos 10 mbps ocupados, mas conforme vão se somando se saltos, 
 o pacote é enviado novamente. Sendo assim, a cada salto podemos dizer o link vai sendo cada vez mais ocupado ao ponto de que se tivermos 5 fluxos ao mesmo tempo no link, então agora teremos 
 50mbps trafegando no link. E ai teríamos que ter uma estimativa de quando link teremos que ter por link para atender a demanda sem termos perca de pacotes. <br></br>
 Outro problema é que todos os computadores finais irão receber os pacotes, mesmo que ele não seja o destinatário. Então o computador ao receber o pacote, tem que processar o mesmo, gastando
