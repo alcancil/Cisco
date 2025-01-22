@@ -100,6 +100,10 @@ Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para 
 | Reserved                                         | 235.0.0.0 to 238.255.255.255            |
 | Organization-Local Scope (Administratively scoped block) | 239.0.0.0 to 239.255.255.255    |
 
+Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
+[Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml)
+
+
 **IPv6** <br></br>
 
 | **Endereço Multicast IPv6** | **Descrição**                               | **Escopo Disponível**                  |
@@ -131,4 +135,5 @@ Notas:
     O endereço FF0X::1:FFXX:XXXX é utilizado para os endereços de nó solicitado, onde os últimos 24 bits correspondem aos últimos 24 bits do endereço unicast ou anycast do nó.
 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
-IANA
+[Registro oficial de endereços multicast IPv6 pela IANA](https://www.iana.org/assignments/ipv6-multicast-addresses/ipv6-multicast-addresses.xhtml)
+
