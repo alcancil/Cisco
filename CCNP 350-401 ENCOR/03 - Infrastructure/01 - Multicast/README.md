@@ -107,8 +107,11 @@ Para informações mais detalhadas e atualizadas, consulte o registro oficial da
 são encaminhados para domínios de broadcast. São de escopo local. Exemplos desses endereços são o ***todos os hosts nessa sub-rede (2240.0.0.2) e todos os roteadores PIM (224.0.0.13)***
 
 . **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce***
-  ***(224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***
+ ***(224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***
 
+. ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.
+ Em outras palavras os administradores de redes estão livres para poder utilizá-los dentro do próprio domínio sem se preocupar com conflitos
+ em outras redes. 
 
 **IPv6** <br></br>
 
