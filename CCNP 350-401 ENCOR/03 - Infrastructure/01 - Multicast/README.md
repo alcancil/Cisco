@@ -146,3 +146,15 @@ Notas:
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
 [Registro oficial de endereços multicast IPv6 pela IANA](https://www.iana.org/assignments/ipv6-multicast-addresses/ipv6-multicast-addresses.xhtml)
 
+# Endereços de Camada 02 (Mac Address)
+
+Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em múlticast, os hosts
+tem que responder a um endereço de grupo de múlticast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo 
+tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras. <br></br>
+
+Primeiro precisamos lembrar que o mac addres é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 <br></br>
+
+. Os **primeiros 24 bits** de um Mac Addres de multicast sempre serão **01:00:5E**
+. O primeiro bit mais a esquerda é conhecido como **individual/group bit (I/G)** e sempre que ele for o valor **1**, isso indica que ele é um multicast.
+. O vigésimo quinto bit sempre será seta em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
+. O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast
