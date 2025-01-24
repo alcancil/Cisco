@@ -101,7 +101,13 @@ Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para 
 | Organization-Local Scope (Administratively scoped block) | 239.0.0.0 to 239.255.255.255    |
 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
-[Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml)
+[Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml) <br></br>
+
+. **Local network control block (224.0.0.0/24):** Endereços de controle no bloco de rede local são utilizados pelo ***protocolo de controle de tráfego*** e não
+são encaminhados para domínios de broadcast. São de escopo local. Exemplos desses endereços são o ***todos os hosts nessa sub-rede (2240.0.0.2) e todos os roteadores PIM (224.0.0.13)***
+
+. **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce***
+  ***(224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***
 
 
 **IPv6** <br></br>
