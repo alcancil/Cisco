@@ -103,13 +103,13 @@ Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
 [Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml) <br></br>
 
-. **Local network control block (224.0.0.0/24):** Endereços de controle no bloco de rede local são utilizados pelo ***protocolo de controle de tráfego*** e não
+• **Local network control block (224.0.0.0/24):** Endereços de controle no bloco de rede local são utilizados pelo ***protocolo de controle de tráfego*** e não
 são encaminhados para domínios de broadcast. São de escopo local. Exemplos desses endereços são o ***todos os hosts nessa sub-rede (2240.0.0.2) e todos os roteadores PIM (224.0.0.13)***
 
-. **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce***
+• **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce***
  ***(224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***
 
-. ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.
+• ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.
  Em outras palavras os administradores de redes estão livres para poder utilizá-los dentro do próprio domínio sem se preocupar com conflitos
  em outras redes. 
 
@@ -154,7 +154,7 @@ tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tan
 
 Primeiro precisamos lembrar que o mac addres é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 <br></br>
 
- • Os **primeiros 24 bits** de um Mac Addres de multicast sempre serão **01:00:5E**
- • O primeiro bit mais a esquerda é conhecido como **individual/group bit (I/G)** e sempre que ele for o valor **1**, isso indica que ele é um multicast.
- • O vigésimo quinto bit sempre será seta em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
- • O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast
+- Os **primeiros 24 bits** de um Mac Address de multicast sempre serão **01:00:5E**
+- O primeiro bit mais à esquerda é conhecido como **individual/group bit (I/G)** e sempre que ele for o valor **1**, isso indica que ele é um multicast.
+- O vigésimo quinto bit sempre será setado em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
+- O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast.
