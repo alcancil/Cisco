@@ -161,4 +161,4 @@ Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em 
 
 Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .<br></br>
 
-![IP](Imagens/ip.jpg) <br></br>
+![IP](Imagens/ip.png) <br></br>
