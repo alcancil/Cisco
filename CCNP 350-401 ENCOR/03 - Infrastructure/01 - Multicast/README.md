@@ -162,3 +162,11 @@ Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em 
 Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .<br></br>
 
 ![IP](Imagens/ip.png) <br></br>
+
+Certo agora aplicamos a regra. <br></br>
+
+![FÓRMULA](Imagens/formula.png) <br></br>
+
+E por fim agora é só converter a parte em Binário para Hexadecimal. <br></br>
+
+![MAC](Imagens/mac.png) <br></br>
