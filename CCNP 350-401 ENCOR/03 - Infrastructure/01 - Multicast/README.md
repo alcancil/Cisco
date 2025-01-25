@@ -159,4 +159,6 @@ Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em 
 - O vigésimo quinto bit sempre será setado em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
 - O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast.
 
-Agora vamos a um exemplo de como funciona essa regra. <br></br>
+Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .<br></br>
+
+![IP](Imagens/ip.jpg) <br></br>
