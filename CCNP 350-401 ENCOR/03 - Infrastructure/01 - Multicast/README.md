@@ -175,3 +175,6 @@ Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode g
 últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo: <br></br>
 
 ![SOBRE](Imagens/sobre.png) <br></br>
+
+Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitados e isso dificulta a gerência dos grupos multicast. Para solucionar esse
+tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados.
