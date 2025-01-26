@@ -170,3 +170,8 @@ Certo agora aplicamos a regra. <br></br>
 E por fim agora é só converter a parte em Binário para Hexadecimal. <br></br>
 
 ![MAC](Imagens/mac.png) <br></br>
+
+Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23 
+últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo: <br></br>
+
+![SOBRE](Imagens/sobre.png) <br></br>
