@@ -8,4 +8,10 @@ Esse é o protocolo utilizado para os hosts se juntarem aos grupos de multicast.
 A mensagens são encapsulados dentro do protocolo  **IP com a marcação de número 2** . Ela possui um TTL (Time To Live) de 1, ou seja, essas mensagens tem escopo local. Só conseguem ser encaminhadas 
 para os roteadores locais e não são roteadas para outras redes uma vez que para o próximo salto o TTL é decrementado para 0 e a mensagem é descartada. <br></br>
 
-* **TIPO:** 
+* **TIPO:** esse campo indica **5** tipos de mensagens IGMP diferentes:
+    * 1
+    * 2
+    * 3
+    * 4
+    * 5
+* 
