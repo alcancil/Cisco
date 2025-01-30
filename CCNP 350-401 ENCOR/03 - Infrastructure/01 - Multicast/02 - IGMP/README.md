@@ -95,12 +95,12 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 ![IGMP](Imagens/igmpv3.png) <br></br>
 
 
-* **Max Response Time :** Este campo é ignorado para tipos de mensagens diferentes de consulta de associação. Para o tipo de consulta de adesão, é o tempo máximo permitido antes de enviar um relatório de resposta. O valor está em unidades de 0,1 segundos.
-* **Checksum :** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP.
-* **Group Address :** É definido como 0 ao enviar uma consulta geral. Caso contrário, endereço multicast para consultas específicas de grupo ou de origem.
-* **Resv :** É configurado em 0 e é ignorado quando recebido
-* **S flag :** Representa o sinalizador Suprimir processamento do lado do roteador. Quando o sinalizador está definido, ele indica a supressão das atualizações de timer que os roteadores multicast realizam ao receber qualquer consulta.
+* **CÓDIGO MÁXMIO DE RESPOSTA :** Este campo é ignorado para tipos de mensagens diferentes de consulta de associação. Para o tipo de consulta de adesão, é o tempo máximo permitido antes de enviar um relatório de resposta. O valor está em unidades de 0,1 segundos.
+* **CHECKSUM :** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP.
+* **ENDEREÇO DE GRUPO :** É definido como 0 ao enviar uma consulta geral. Caso contrário, endereço multicast para consultas específicas de grupo ou de origem.
+* **RESV :** É configurado em 0 e é ignorado quando recebido
+* **S FLAG :** Representa o sinalizador Suprimir processamento do lado do roteador. Quando o sinalizador está definido, ele indica a supressão das atualizações de timer que os roteadores multicast realizam ao receber qualquer consulta.
 * **QRV :** Representa a variável de robustez do consultor (querier). Os roteadores continuam recuperando o valor QRV da consulta recebida mais recentemente como seu próprio valor até que o QRV recebido mais recentemente seja zero.
 * **QQIC :** Representa o código de intervalo de consulta do consultor.
-* **Number of sources :** Representa o número de endereços de origem presentes na consulta. Para consulta geral ou consulta específica de grupo, este campo é zero e para consulta específica de grupo e origem, este campo é diferente de zero.
-* **Source Address[i] :** Representa o endereço IP unicast para N campos.
+* **NÚMERO DE FONTES :** Representa o número de endereços de origem presentes na consulta. Para consulta geral ou consulta específica de grupo, este campo é zero e para consulta específica de grupo e origem, este campo é diferente de zero.
+* **ENDEREÇO DE ORIGEM[N] :** Representa o endereço IP unicast para N campos.
