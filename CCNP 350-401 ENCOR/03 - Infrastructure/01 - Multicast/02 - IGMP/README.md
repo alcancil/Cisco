@@ -44,4 +44,6 @@ enviam mensagens de consultas genéricas de adesão contendo o endereço do seu 
 da mensagem com o endereço IP da sua própria interface de rede. O roteador **com o menor endereço IP** então é eleito como o roteador que irá responder as consultas IGMP dessa sub-rede.
 Nesse momento, os outros roteadores iniciam um timer que reinicia toda a vez que ele recebe uma mensagem de consulta de adesão do roteador que venceu a eleição. <br></br>
 
-Se por algum motivo o roteador que venceu a eleição para de enviar as mensagens, uma nova eleição ocorre.
+Se por algum motivo o roteador que venceu a eleição para de enviar as mensagens, uma nova eleição ocorre. Um roteador que não responde as consultas, espera o dobro do tempo, que por
+padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP. <br></br>
+
