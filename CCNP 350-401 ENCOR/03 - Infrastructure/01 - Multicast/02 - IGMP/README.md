@@ -79,7 +79,8 @@ mensagem IGMP chamado relatório de associação da versão 3 para oferecer supo
 IGMPv3 oferece suporte a aplicativos que sinalizam fontes explicitamente do qual desejam receber tráfego. Com IGMPv3, os destinatários sinalizam a intenção de se associar a um endereço 
 de grupo multicast usando um relatório de associação nos dois modos a seguir:
 
-* **MODO DE INCLUSÂO:**
-* **MODO DE EXCLUSÂO:**
+* **MODO DE INCLUSÂO:** nesse modo, o destinatário anuncia a adesão para um endereço de grupo de multicast e fornece uma lista (include list) de endereços de fontes de quem ele deseja receber o tráfego
+* **MODO DE EXCLUSÂO:** nesse modo, o destinatário anuncia a adesão para um endereço de grupo de multicast e fornece uma lista (exclude list) de endereços de quem ele não receber o tráfego.
+Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o destinatário utiliza **o modo de exclusão de adesão com um uma lista de exclusão vazia**
 
 ![IGMP](Imagens/igmpv3.png) <br></br>
