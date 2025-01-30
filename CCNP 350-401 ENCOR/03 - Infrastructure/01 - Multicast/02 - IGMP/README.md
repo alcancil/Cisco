@@ -5,7 +5,7 @@ Esse é o protocolo utilizado para os hosts se juntarem aos grupos de multicast.
 
 # IGMPv2
 
-![IGMP](Imagens/igmp.png) <br></br>
+![IGMP](Imagens/igmpv2.png) <br></br>
 
 A mensagens são encapsulados dentro do protocolo  **IP com a marcação de número 2** . Ela possui um TTL (Time To Live) de 1, ou seja, essas mensagens tem escopo local. Só conseguem ser encaminhadas 
 para os roteadores locais e não são roteadas para outras redes uma vez que para o próximo salto o TTL é decrementado para 0 e a mensagem é descartada. <br></br>
@@ -48,3 +48,5 @@ Se por algum motivo o roteador que venceu a eleição para de enviar as mensagen
 padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP. <br></br>
 
 # IGMPv3
+
+![IGMP](Imagens/igmpv3.png) <br></br>
