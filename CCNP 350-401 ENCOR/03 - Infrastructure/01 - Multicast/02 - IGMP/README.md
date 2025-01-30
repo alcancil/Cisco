@@ -1,7 +1,17 @@
 # 02 - Internet Group Management Protocol
 
-Esse é o protocolo utilizado para os hosts se juntarem aos grupos de multicast. Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, 
-**IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada e **RFC 3376** definida na RFC 3376. <br></br>
+Esse é um protocolo criado para os hosts e os roteadores adjacentes para criarem uma comunicação multicast entre redes IP e para utilizarem de forma mais eficiente as transmissões de
+pacotes e dados. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) 
+que é um protocolo que gerência membros multicast IPv6. <br></br>
+
+Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada e 
+**RFC 3376** definida na RFC 3376. <br></br>
+
+# Aplicações
+
+* **Streaming:** o IGMP é muito utilizado em streaming de áudio e vídeo onde uma pessoa transmite um único fluxo de comunicação para um grupo em específico.
+* **Jogos Online:** esse também é um uso comum para esse protocolo onde hoje em dia cada vez mais os usuários de jogos se tornaram mais exigentes e com a utilização do IGMP a comunicação se dá de forma mais eficiente.
+* **Videoconferência:** essa é uma modalidade de comunicação que vem se tornando cada vez mais popular e exige também um uso mais eficiente de banda.
 
 # IGMPv1
 
