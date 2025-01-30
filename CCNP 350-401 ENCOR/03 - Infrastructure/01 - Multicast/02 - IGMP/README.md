@@ -7,6 +7,13 @@ Esse é o protocolo utilizado para os hosts se juntarem aos grupos de multicast.
 
 ![IGMP](Imagens/igmpv1.png) <br></br>
 
+* **VERSÂO:** Campo configurado em 1. Versão do protocolo.
+* **TIPO:** 1 para consulta de associação e relatório de associação de destinatário. 
+* **NÂO UTILIZADO:** campo não utilizado preenchido com zeros.
+* **CHECKSUM:** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP 
+* **ENDEREÇO DE GRUPO:** O campo de endereço do grupo é zero quando enviado e ignorado quando recebido na mensagem de consulta de associação. Em uma mensagem de relatório de associação, 
+o campo de endereço do grupo utiliza o endereço do grupo de hosts IP do grupo que está sendo relatado
+
 # IGMPv2
 
 ![IGMP](Imagens/igmpv2.png) <br></br>
