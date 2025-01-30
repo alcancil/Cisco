@@ -70,4 +70,16 @@ padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, 
 
 # IGMPv3
 
+O IGMPv3 é uma evolução da versão 2 e agora é possível qual é a fonte que quer receber o tráfego multicast. Com isso agora é possível fazer um filtro de origem de tráfego multicast. 
+Com isso, os destinatários podem escolher as fontes de onde desejam receber o trafego multicast. <br></br>
+
+Essa versão foi desenvolvida para coexistir junto das outras. A diferença da versão 3 para 2 é que na versão 3 foram acrescentados novos campos na consulta de adesão e um novo tipo de 
+mensagem IGMP chamado relatório de associação da versão 3 para oferecer suporte à filtragem de origem. <br></br>
+
+IGMPv3 oferece suporte a aplicativos que sinalizam fontes explicitamente do qual desejam receber tráfego. Com IGMPv3, os destinatários sinalizam a intenção de se associar a um endereço 
+de grupo multicast usando um relatório de associação nos dois modos a seguir:
+
+* **MODO DE INCLUSÂO:**
+* **MODO DE EXCLUSÂO:**
+
 ![IGMP](Imagens/igmpv3.png) <br></br>
