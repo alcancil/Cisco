@@ -43,6 +43,15 @@ relatório de resposta em unidades de um décimo de segundo. Em todos as outras 
 * **ENDEREÇO DE GRUPO:** Este campo é definido como 0.0.0.0 nas mensagens de consulta geral e é definido para o endereço do grupo em configurações de mensagens específicas do grupo. As mensagens de relatório de adesão contém
 o endereço do grupo que está sendo reportado neste campo; as mensagens de saída do grupo contém o endereço do grupo que está sendo deixado neste campo. <br></br>
 
+**OBS:** <br></br>
+    **Tipos**
+
+    0x11 for Membership Query
+    0x12 for IGMPv1 Membership Report
+    0x16 for IGMPv2 Membership Report
+    0x22 for IGMPv3 Membership Report
+    0x17 for Leave Group  
+
 Quando um destinatário quer receber um fluxo multicast, ele envia um relatório de adesão não solicitado para o roteador local, para o grupo que ele deseja se juntar. Esse termo: "relatório de adesão não solicitado"
 é o termo oficial porém é comum se ouvir falar IGMP Join pois é mais fácil de falar e escrever, porém IGMP Join não é o termo oficial. Então o roteador local envia uma mensagem PIM Join
 em direção á origem para solicitar um fluxo multicast. Quando o roteador local começa a receber o fluxo multicast, ele envia de volta o fluxo para a sub-rede que o destinatário está. <br></br>
