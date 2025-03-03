@@ -16,13 +16,59 @@ como os equipamentos são referenciados através do modelo OSI, os dois coexiste
 ![OSI](Imagens/osi.png)
 
 
+**Camada 7 : Aplicação**
+
+    Interface entre o usuário e a rede.
+    Proporciona serviços como e-mail, navegação na web, transferência de arquivos.
+    Exemplos de protocolos: HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, SSH, DNS.
+
+Camada 6 – Apresentação
+
+    Responsável por tradução, criptografia e compactação de dados.
+    Converte formatos de arquivos entre sistemas diferentes.
+    Exemplos de formatos e protocolos: SSL/TLS, JPEG, GIF, MP3, MPEG, ASCII, Unicode.
+
+Camada 5 – Sessão
+
+    Controla o estabelecimento, manutenção e encerramento de sessões de comunicação entre dispositivos.
+    Garante a sincronização e o gerenciamento das conexões.
+    Exemplos de protocolos: RPC, NetBIOS, PPTP, SIP.
+
+Camada 4 – Transporte
+
+    Fornece comunicação confiável ou não entre dispositivos.
+    Controla o fluxo de dados e pode realizar a retransmissão de pacotes perdidos.
+    Protocolos principais: TCP (confiável, orientado à conexão) e UDP (rápido, sem conexão).
+
+Camada 3 – Rede
+
+    Responsável pelo roteamento e endereçamento dos pacotes de dados entre redes diferentes.
+    Define os caminhos para a entrega eficiente dos pacotes.
+    Protocolos e tecnologias: IP, ICMP, ARP, RIP, OSPF, BGP.
+
+Camada 2 – Enlace de Dados
+
+    Controla o acesso ao meio físico e a detecção/correção de erros na transmissão.
+    Organiza os dados em quadros antes da transmissão.
+    Dividida em duas subcamadas: LLC (Logical Link Control) e MAC (Media Access Control).
+    Exemplos de protocolos e tecnologias: Ethernet, Wi-Fi (802.11), PPP, VLAN (802.1Q), ARP.
+
+Camada 1 – Física
+
+    Responsável pela transmissão de bits no meio físico (cabos, ondas de rádio, fibra óptica).
+    Define características elétricas e mecânicas da conexão.
+    Exemplos de tecnologias: Cabo UTP, Fibra Óptica, Bluetooth, Wi-Fi, RS-232, DSL.
+
 # MODELO TCP/IP
 
 ![TCP_IP](Imagens/tcp_ip.png)
 
+<br></br>
 
-
-
+Aqui vale notar que algumas camadas dos dois modelos são iguais. Já o modelo TCP/IP tem a camada **APRESENTAÇÂO, camada 4**, que é referente as camadas **APLICAÇÃO, APRESENTAÇÂO e SESSÂO** do modelo
+OSI, ou seja, **as camadas 7, 6 e 5**. A **camada 4** do OSI é igual a **camada 3** do modelo TCP/IP. <br></br>
+Agora a **camada 3** do OSI é igual a **camada 2** do TCP/IP porém uma é chamada de REDE e a outra de INTERNET. <br></br>
+Já a **camada 1** do modelo TCP/IP engloba as camadas **3, 2, 1** do modelo OSI. <br></br>
 
 
 
