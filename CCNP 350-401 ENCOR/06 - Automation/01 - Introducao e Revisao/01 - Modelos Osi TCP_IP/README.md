@@ -65,7 +65,7 @@ como os equipamentos são referenciados através do modelo OSI, os dois coexiste
 
 <br></br>
 
-** Camada 4 : Aplicação**
+**Camada 4 : Aplicação**
 
     Corresponde às camadas de Aplicação, Apresentação e Sessão do modelo OSI.
     Oferece serviços de rede diretamente para as aplicações do usuário.
