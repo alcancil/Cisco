@@ -67,3 +67,10 @@ Cabe aqui uma pequena explicação para o entendimento da configuração. Vale r
 
 **OBS:** Quando estamos nas linhas vty, se digitarmos somente **login** isso fará com que o equipamento exija uma senha. Essa senha é a definida no comando password e é única e compartilhada para toda a caixa. Já o comando **login local** faz com que a caixa peça uma senha do banco de dados local. Ou seja, isso permite que seja definidos múltiplos usuários
 e múltiplas senhas. Método mais recomendado.
+
+## Utilização
+
+Para utilizar o telnet é simples. Veja as opções em windows e linux.
+
+| ![WINDOWS](Imagens/telnet/man/windows.png) | ![LINUX](Imagens/telnet/man/windows.png) |
+|--------------------------------------------|------------------------------------------|
