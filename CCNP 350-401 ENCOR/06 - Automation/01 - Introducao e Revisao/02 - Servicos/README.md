@@ -51,7 +51,7 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
 
 Cabe aqui uma pequena explicação para o entendimento da configuração. Vale ressaltar que essa configuração serve tanto para roteadores e switches.
 
-    * **line vty 0 15** → Define as linhas de acesso remoto.
-    * **password SEU_PASSWORD** → Define uma senha para o Telnet.
-    * **login** → Exige autenticação para o acesso.
-    * **transport input telnet** → Permite conexões Telnet (se quiser SSH também, use telnet ssh).
+* **line vty 0 15** → Define as linhas de acesso remoto.
+* **password SEU_PASSWORD** → Define uma senha para o Telnet.
+* **login** → Exige autenticação para o acesso.
+* **transport input telnet** → Permite conexões Telnet (se quiser SSH também, use telnet ssh).
