@@ -72,5 +72,6 @@ e múltiplas senhas. Método mais recomendado.
 
 Para utilizar o telnet é simples. Veja as opções em windows e linux.
 
+| WINDOWS                                    | LINUX                                  |
+|--------------------------------------------|----------------------------------------|
 | ![WINDOWS](Imagens/telnet/man/windows.png) | ![LINUX](Imagens/telnet/man/linux.png) |
-|--------------------------------------------|------------------------------------------|
