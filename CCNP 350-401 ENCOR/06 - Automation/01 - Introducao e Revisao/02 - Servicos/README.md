@@ -65,7 +65,5 @@ Cabe aqui uma pequena explicação para o entendimento da configuração. Vale r
 * **login local** : Exige a senha do banco de dados local, ou seja, a senha criada para o usuário Cisco.
 * **transport input telnet** : Define que o protocolo de acesso as linhas vty será o Telnet 
 
-<br></br>
-
 **OBS:** Quando estamos nas linhas vty, se digitarmos somente **login** isso fará com que o equipamento exija uma senha. Essa senha é a definida no comando password e é única e compartilhada para toda a caixa. Já o comando **login local** faz com que a caixa peça uma senha do banco de dados local. Ou seja, isso permite que seja definidos múltiplos usuários
 e múltiplas senhas. Método mais recomendado.
