@@ -33,4 +33,12 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
 | ![WINDOWS](Imagens/telnet/windows/1.png) | ![WINDOWS](Imagens/telnet/windows/2.png) |
 |------------------------------------------|------------------------------------------|
 | ![WINDOWS](Imagens/telnet/windows/3.png) | ![WINDOWS](Imagens/telnet/windows/4.png) | 
-| ![WINDOWS](Imagens/telnet/windows/5.png) | ![WINDOWS](Imagens/telnet/windows/6.png) |  
+| ![WINDOWS](Imagens/telnet/windows/5.png) | ![WINDOWS](Imagens/telnet/windows/6.png) | 
+
+<br></br>
+
+### Linux
+
+| ![LINUX](Imagens/telnet/linux/01.png) | ![LINUX](Imagens/telnet/linux/02.png) |
+|---------------------------------------|---------------------------------------|
+| ![LINUX](Imagens/telnet/linux/03.png) | ![LINUX](Imagens/telnet/linux/04.png) |
