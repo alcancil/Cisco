@@ -42,3 +42,9 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
 | ![LINUX](Imagens/telnet/linux/01.png) | ![LINUX](Imagens/telnet/linux/02.png) |
 |---------------------------------------|---------------------------------------|
 | ![LINUX](Imagens/telnet/linux/03.png) | ![LINUX](Imagens/telnet/linux/04.png) |
+
+### Cisco
+
+| ![CISCO](Imagens/telnet/cisco/1.png) | ![CISCO](Imagens/telnet/cisco/2.png) |
+|--------------------------------------|--------------------------------------|
+| ![CISCO](Imagens/telnet/cisco/3.png)                                        |
