@@ -51,7 +51,21 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
 
 Cabe aqui uma pequena explicação para o entendimento da configuração. Vale ressaltar que essa configuração serve tanto para roteadores e switches.
 
-* **line vty 0 15** → Define as linhas de acesso remoto.
-* **password SEU_PASSWORD** → Define uma senha para o Telnet.
-* **login** → Exige autenticação para o acesso.
-* **transport input telnet** → Permite conexões Telnet (se quiser SSH também, use telnet ssh).
+**Configurar o Telnet na linha VTY**
+
+* **line vty 0 15** : Define as linhas de acesso remoto. OBS: 15 é número máximo de terminais, mas esse número varia dependendo do equipamento.
+* **password SEU_PASSWORD** : Define uma senha para o Telnet.
+* **login** : Exige autenticação para o acesso.
+* **transport input telnet** : Permite conexões Telnet.
+
+**Configurar autenticação via usuário e senha**
+
+* **username cisco privilege 15 password CISCO** : criação do usuário chamado cisco, com privilégio 15 (máximo) e com senha CISCO. OBS: sempre analisar o nível de privilégio necessário
+* **line vty 0 15** : Define as linhas de acesso remoto
+* **login local** : Exige a senha do banco de dados local, ou seja, a senha criada para o usuário Cisco.
+* **transport input telnet** : Define que o protocolo de acesso as linhas vty será o Telnet 
+
+<br></br>
+
+**OBS:** Quando estamos nas linhas vty, se digitarmos somente **login** isso fará com que o equipamento exija uma senha. Essa senha é a definida no comando password e é única e compartilhada para toda a caixa. Já o comando **login local** faz com que a caixa peça uma senha do banco de dados local. Ou seja, isso permite que seja definidos múltiplos usuários
+e múltiplas senhas. Método mais recomendado.
