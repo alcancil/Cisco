@@ -75,3 +75,24 @@ Para utilizar o telnet é simples. Veja as opções em windows e linux.
 | WINDOWS                                    | LINUX                                  |
 |--------------------------------------------|----------------------------------------|
 | ![WINDOWS](Imagens/telnet/man/windows.png) | ![LINUX](Imagens/telnet/man/linux.png) |
+
+Como podemos observar pelas opções a sintaxe é simples. Um exemplo: telnet 10.0.0.254. Depois é só colocar usuário e senha.
+
+**OBS:** como o telnet envia o fluxo de dados em texto plano sem criptografia, não é mais indicado se utilizar em produção. O indicado é substituir pelo SSH. <br></br>
+**OBS2:** existem casos como em equipamentos velhos que não suportam o SSH em que o Telnet serve para se utilizar. Mas ele pode ser utilizado em testes para alguns casos específicos:
+
+Exemplo:
+
+* Testar se um servidor SMTP (e-mail) está ativo na porta 25:
+
+    telnet mail.exemplo.com 25
+
+* Testar se um serviço HTTP responde na porta 80:
+
+    telnet site.com 80
+
+* Testar um servidor MySQL na porta 3306:
+
+    telnet 192.168.1.100 3306
+
+Caso a conexão seja bem-sucedida, a tela do Telnet ficará em branco, indicando que a porta está aberta e o serviço está rodando.
