@@ -30,7 +30,7 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
 
 ### Windows
 
-| ![WINDOWS](Imagens/windows/01.jpg) | ![Img2](https://via.placeholder.com/50) | ![Img3](https://via.placeholder.com/50) | ![Img4](https://via.placeholder.com/50) |
+| ![WINDOWS](Imagens/telnet/windows/windows/01.jpg) | ![Img2](https://via.placeholder.com/50) | ![Img3](https://via.placeholder.com/50) | ![Img4](https://via.placeholder.com/50) |
 |---|---|---|---|
 | ![Img5](https://via.placeholder.com/50) | ![Img6](https://via.placeholder.com/50) | ![Img7](https://via.placeholder.com/50) | ![Img8](https://via.placeholder.com/50) |
 | ![Img9](https://via.placeholder.com/50) | ![Img10](https://via.placeholder.com/50) | ![Img11](https://via.placeholder.com/50) | ![Img12](https://via.placeholder.com/50) |
