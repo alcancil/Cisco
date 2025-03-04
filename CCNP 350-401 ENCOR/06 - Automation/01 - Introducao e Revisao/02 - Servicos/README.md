@@ -25,3 +25,13 @@ O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que perm
     Vulnerável a ataques: Como transmite dados em texto puro, qualquer pessoa que consiga interceptar o tráfego pode visualizar informações sensíveis.
     Não recomendado para redes públicas: Pode ser facilmente explorado por invasores.
     Alternativa segura: O SSH (Secure Shell) substituiu o Telnet, oferecendo criptografia e autenticação mais seguras.
+
+## Instalação do Telnet
+
+### Windows
+
+| ![WINDOWS](Imagens/windows/01.jpg) | ![Img2](https://via.placeholder.com/50) | ![Img3](https://via.placeholder.com/50) | ![Img4](https://via.placeholder.com/50) |
+|---|---|---|---|
+| ![Img5](https://via.placeholder.com/50) | ![Img6](https://via.placeholder.com/50) | ![Img7](https://via.placeholder.com/50) | ![Img8](https://via.placeholder.com/50) |
+| ![Img9](https://via.placeholder.com/50) | ![Img10](https://via.placeholder.com/50) | ![Img11](https://via.placeholder.com/50) | ![Img12](https://via.placeholder.com/50) |
+| ![Img13](https://via.placeholder.com/50) | ![Img14](https://via.placeholder.com/50) | ![Img15](https://via.placeholder.com/50) | ![Img16](https://via.placeholder.com/50) |
