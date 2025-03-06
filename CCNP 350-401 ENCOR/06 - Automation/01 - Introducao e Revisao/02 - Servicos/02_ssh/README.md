@@ -18,9 +18,11 @@ Role para baixo e clique em "Exibir recursos" (ou "Adicionar um recurso").
 * Na lista de recursos, procure por "OpenSSH Server".
     ![SSH](Imagens/ssh/Windows/4.png)
 
-Marque a caixa ao lado de "OpenSSH Server" e clique em "Avançar".
+* Marque a caixa ao lado de "OpenSSH Server" e clique em "Avançar".
+    ![SSH](Imagens/ssh/Windows/5.png)
 
-Aguarde a instalação ser concluída.
+* Aguarde a instalação ser concluída.
+    ![SSH](Imagens/ssh/Windows/6.png)
 
 4. Iniciar o Serviço OpenSSH Server
 Após a instalação, você precisará iniciar o serviço OpenSSH Server manualmente.
