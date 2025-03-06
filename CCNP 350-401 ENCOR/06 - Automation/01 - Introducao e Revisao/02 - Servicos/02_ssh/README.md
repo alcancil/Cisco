@@ -59,6 +59,4 @@ Abra o Prompt de Comando ou PowerShell e digite:
 | ![SSH](Imagens/ssh/Windows/11.png) | ![SSH](Imagens/ssh/Windows/12.png) |
 |------------------------------------|------------------------------------|
 
-7. (Opcional) Configurar Chaves SSH
-Se você quiser usar autenticação por chave SSH, crie ou adicione suas chaves SSH no diretório C:\Users\SeuUsuario\.ssh\.
-
+Por padrão o OpenSSH é instalado no diretório **C:\Windows\System32\OpenSSH**.  Dentro desse diretório existe o arquivo **sshd_config_default** que contém todas as configurações necessárias para o funcionamento do ssh no Windows. É nesse arquivo que podemos alterar o número de portas e demais configurações necessárias. De inicio, não precisamos alterar nada pois o ssh estará funcionando normalmente. Outras ferramentas encontram-se disponíveis nesse diretório.
