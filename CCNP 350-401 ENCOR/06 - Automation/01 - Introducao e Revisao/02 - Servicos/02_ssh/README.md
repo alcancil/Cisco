@@ -26,14 +26,13 @@ Role para baixo e clique em "Exibir recursos" (ou "Adicionar um recurso").
 
 4. Iniciar o Serviço OpenSSH Server
 Após a instalação, você precisará iniciar o serviço OpenSSH Server manualmente.
-
 Pressione Win + R, digite services.msc e pressione Enter.
-
 No Gerenciador de Serviços, localize o serviço chamado "OpenSSH SSH Server".
-
 Clique com o botão direito sobre ele e selecione "Iniciar".
 
 Para garantir que o serviço inicie automaticamente com o Windows, clique com o botão direito novamente, selecione "Propriedades" e defina o "Tipo de inicialização" como "Automático".
+![SSH](Imagens/ssh/Windows/7.png)
+![SSH](Imagens/ssh/Windows/8.png)
 
 5. Configurar o Firewall para Permitir Conexões SSH
 Abra o Firewall do Windows:
