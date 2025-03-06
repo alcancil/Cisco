@@ -47,24 +47,10 @@ Para garantir que o serviço inicie automaticamente com o Windows, clique com o 
 | 05 Selecione "Porta" e clique em "Avançar"              | 06 Escolha "TCP" e insira a porta 22. Clique em "Avançar" |
 | ![SSH](Imagens/ssh/Windows/fw07.png)                    | ![SSH](Imagens/ssh/Windows/fw08.png)                      |
 | 07 Selecione "Permitir a conexão" e clique em "Avançar" | 08 Marque todas as opções de perfil (Domínio, Privado e Público) e clique em "Avançar"|
-|![SSH](Imagens/ssh/Windows/fw09.png)  | ![SSH](Imagens/ssh/Windows/fw10.png) |
+|![SSH](Imagens/ssh/Windows/fw09.png)                     | ![SSH](Imagens/ssh/Windows/fw10.png)                      |
+| Dê um nome à regra e clique em "Concluir"               | Verifique a regra                                         |
 
-
-Abra o Firewall do Windows:
-
-.
-
-.
-
-.
-
-.
-
-.
-
-Dê um nome à regra, como "OpenSSH Server", e clique em "Concluir".
-
-6. Verificar a Instalação
+8 Verificar a Instalação
 Abra o Prompt de Comando ou PowerShell e digite:
 
 bash
