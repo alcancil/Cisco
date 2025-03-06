@@ -24,7 +24,7 @@ Role para baixo e clique em "Exibir recursos" (ou "Adicionar um recurso").
 * Aguarde a instalação ser concluída.
     ![SSH](Imagens/ssh/Windows/6.png)
 
-4. Iniciar o Serviço OpenSSH Server
+* Iniciar o Serviço OpenSSH Server
 Após a instalação, você precisará iniciar o serviço OpenSSH Server manualmente.
 Pressione Win + R, digite services.msc e pressione Enter.
 No Gerenciador de Serviços, localize o serviço chamado "OpenSSH SSH Server".
@@ -36,7 +36,19 @@ Para garantir que o serviço inicie automaticamente com o Windows, clique com o 
 | ![SSH](Imagens/ssh/Windows/9.png) | ![SSH](Imagens/ssh/Windows/10.png) |
 
 
-5. Configurar o Firewall para Permitir Conexões SSH
+* Configurar o Firewall para Permitir Conexões SSH
+
+| ![SSH](Imagens/ssh/Windows/fw01.png) | ![SSH](Imagens/ssh/Windows/fw02.png) |
+|--------------------------------------|--------------------------------------|
+| ![SSH](Imagens/ssh/Windows/fw03.png) | ![SSH](Imagens/ssh/Windows/fw04.png) |
+|--------------------------------------|--------------------------------------|
+| ![SSH](Imagens/ssh/Windows/fw05.png) | ![SSH](Imagens/ssh/Windows/fw06.png) |
+|--------------------------------------|--------------------------------------|
+|![SSH](Imagens/ssh/Windows/fw07.png)  | ![SSH](Imagens/ssh/Windows/fw08.png) |
+|--------------------------------------|--------------------------------------|
+|![SSH](Imagens/ssh/Windows/fw09.png)  | ![SSH](Imagens/ssh/Windows/fw10.png) |
+
+
 Abra o Firewall do Windows:
 
 Pressione Win + S, digite "Firewall do Windows" e selecione "Firewall do Windows com Segurança Avançada".
