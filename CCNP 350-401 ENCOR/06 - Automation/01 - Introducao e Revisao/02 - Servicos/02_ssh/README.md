@@ -38,33 +38,29 @@ Para garantir que o serviço inicie automaticamente com o Windows, clique com o 
 
 * Configurar o Firewall para Permitir Conexões SSH
 
-| ![SSH](Imagens/ssh/Windows/fw01.png)               | ![SSH](Imagens/ssh/Windows/fw02.png)                      |
-|----------------------------------------------------|-----------------------------------------------------------|
-| 01 Pressione Win + S, digite "Firewall do Windows" | 02 Selecione "Firewall do Windows com Segurança Avançada" |
-| ![SSH](Imagens/ssh/Windows/fw03.png)               | ![SSH](Imagens/ssh/Windows/fw04.png)                      |
-|--------------------------------------|--------------------------------------|
-| ![SSH](Imagens/ssh/Windows/fw05.png) | ![SSH](Imagens/ssh/Windows/fw06.png) |
-|--------------------------------------|--------------------------------------|
-|![SSH](Imagens/ssh/Windows/fw07.png)  | ![SSH](Imagens/ssh/Windows/fw08.png) |
-|--------------------------------------|--------------------------------------|
+| ![SSH](Imagens/ssh/Windows/fw01.png)                    | ![SSH](Imagens/ssh/Windows/fw02.png)                      |
+|---------------------------------------------------------|-----------------------------------------------------------|
+| 01 Pressione Win + S, digite "Firewall do Windows"      | 02 Selecione "Firewall do Windows com Segurança Avançada" |
+| ![SSH](Imagens/ssh/Windows/fw03.png)                    | ![SSH](Imagens/ssh/Windows/fw04.png)                      |
+| 03 No painel esquerdo, clique em "Regras de Entrada"    | 04 No painel direito, clique em "Nova Regra"              |
+| ![SSH](Imagens/ssh/Windows/fw05.png)                    | ![SSH](Imagens/ssh/Windows/fw06.png)                      |
+| 05 Selecione "Porta" e clique em "Avançar"              | 06 Escolha "TCP" e insira a porta 22. Clique em "Avançar" |
+| ![SSH](Imagens/ssh/Windows/fw07.png)                    | ![SSH](Imagens/ssh/Windows/fw08.png)                      |
+| 07 Selecione "Permitir a conexão" e clique em "Avançar" | 08 Marque todas as opções de perfil (Domínio, Privado e Público) e clique em "Avançar"|
 |![SSH](Imagens/ssh/Windows/fw09.png)  | ![SSH](Imagens/ssh/Windows/fw10.png) |
 
 
 Abra o Firewall do Windows:
 
-Pressione Win + S, digite "Firewall do Windows" e selecione "Firewall do Windows com Segurança Avançada".
+.
 
-No painel esquerdo, clique em "Regras de Entrada".
+.
 
-No painel direito, clique em "Nova Regra...".
+.
 
-Selecione "Porta" e clique em "Avançar".
+.
 
-Escolha "TCP" e insira a porta 22 (porta padrão do SSH). Clique em "Avançar".
-
-Selecione "Permitir a conexão" e clique em "Avançar".
-
-Marque todas as opções de perfil (Domínio, Privado e Público) e clique em "Avançar".
+.
 
 Dê um nome à regra, como "OpenSSH Server", e clique em "Concluir".
 
