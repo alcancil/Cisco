@@ -38,8 +38,8 @@ Para garantir que o serviço inicie automaticamente com o Windows, clique com o 
 
 * Configurar o Firewall para Permitir Conexões SSH
 
-|----------------------------------------------------|-----------------------------------------------------------|
 | ![SSH](Imagens/ssh/Windows/fw01.png)               | ![SSH](Imagens/ssh/Windows/fw02.png)                      |
+|----------------------------------------------------|-----------------------------------------------------------|
 | 01 Pressione Win + S, digite "Firewall do Windows" | 02 Selecione "Firewall do Windows com Segurança Avançada" |
 | ![SSH](Imagens/ssh/Windows/fw03.png)               | ![SSH](Imagens/ssh/Windows/fw04.png)                      |
 |--------------------------------------|--------------------------------------|
