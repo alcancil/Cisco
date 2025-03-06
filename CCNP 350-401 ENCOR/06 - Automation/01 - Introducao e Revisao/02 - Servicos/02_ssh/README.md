@@ -4,12 +4,13 @@
 
 Para instalar o OpenSSH Server no Windows 11 usando, siga os passos:
 
-1.  Clique em iniciar e clique em Configurações.
+*  Clique em iniciar e clique em Configurações.
 
     ![SSH](Imagens/ssh/Windows/1.png)
 
-2. Acessar "Apps"
+* Acessar "Apps"
 No menu à esquerda, clique em "Apps".
+    ![SSH](Imagens/ssh/Windows/2.png)
 
 Em seguida, clique em "Recursos opcionais".
 
