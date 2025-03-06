@@ -50,13 +50,14 @@ Para garantir que o serviço inicie automaticamente com o Windows, clique com o 
 |![SSH](Imagens/ssh/Windows/fw09.png)                     | ![SSH](Imagens/ssh/Windows/fw10.png)                      |
 | Dê um nome à regra e clique em "Concluir"               | Verifique a regra                                         |
 
-8 Verificar a Instalação
+* Verificar a Instalação
 Abra o Prompt de Comando ou PowerShell e digite:
 
-bash
-Copy
-ssh localhost
-Se a instalação estiver correta, você será solicitado a inserir suas credenciais de usuário do Windows.
+    ssh localhost
+    Se a instalação estiver correta, você será solicitado a inserir suas credenciais de usuário do Windows.
+
+| ![SSH](Imagens/ssh/Windows/11.png) | ![SSH](Imagens/ssh/Windows/12.png) |
+|------------------------------------|------------------------------------|
 
 7. (Opcional) Configurar Chaves SSH
 Se você quiser usar autenticação por chave SSH, crie ou adicione suas chaves SSH no diretório C:\Users\SeuUsuario\.ssh\.
