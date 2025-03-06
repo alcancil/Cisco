@@ -1,7 +1,3 @@
-# 02 - Serviços
-
-Bom, agora que revisamos os modelos OSI e TC/IP vamos estudar os protocolos de acesso aos equipamentos. <br></br>
-
 ## Protocolo TELNET (TELECOMMUNICATION NETWORK)
 
 O Telnet é um protocolo da camada de Aplicação (Modelo OSI e TCP/IP) que permite a comunicação remota entre computadores através de uma interface de linha de comando. Ele foi um dos primeiros protocolos utilizados para acesso remoto a sistemas e equipamentos de rede. <br></br>
