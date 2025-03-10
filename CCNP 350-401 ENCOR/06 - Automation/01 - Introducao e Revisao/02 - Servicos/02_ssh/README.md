@@ -90,4 +90,10 @@ Então vamos iniciar o serviço e habilitar o mesmo para iniciar junto do sistem
 |----------------------------------|----------------------------------|
 |![SSH](Imagens/ssh/Linux/07.png)                                     |
 
-Toadas as configurações do servidor ficam em: **/etc/ssh/sshd_config** . Já as configurações do cliente ficam em: **/etc/ssh/sshd_config** .
+Todas as configurações do servidor ficam em: **/etc/ssh/sshd_config** . Já as configurações do cliente ficam em: **/etc/ssh/sshd_config** .<br></br>
+
+Agora vamos testar o ssh.
+
+![SSH](Imagens/ssh/Linux/08.png)
+
+## CISCO
