@@ -71,3 +71,11 @@ Primeiro vamos verificar se o SSH está instalado. A versão de linux que estou 
 Agora que conferimos que o SSH não está instalado, vamos instalar o client. Para isso devemos instalar o pacote **openssh-client**.
 
 ![SSH](Imagens/ssh/Linux/02.png)
+
+Agora faremos o mesmo para o para o pacote **openssh-server**.
+
+![SSH](Imagens/ssh/Linux/03.png)
+
+E agora precisamos instalar o pacote **openssh-sftp-server**
+
+![SSH](Imagens/ssh/Linux/04.png)
