@@ -79,3 +79,15 @@ Agora faremos o mesmo para o para o pacote **openssh-server**.
 E agora precisamos instalar o pacote **openssh-sftp-server**
 
 ![SSH](Imagens/ssh/Linux/04.png)
+
+Como todo serviço, podemos verificar que ele não fica ativo por padrão.
+
+![SSH](Imagens/ssh/Linux/04.png)
+
+Então vamos iniciar o serviço e habilitar o mesmo para iniciar junto do sistema.
+
+| [SSH](Imagens/ssh/Linux/05.png) | [SSH](Imagens/ssh/Linux/06.png) |
+|---------------------------------|---------------------------------|
+
+[SSH](Imagens/ssh/Linux/06.png)
+[SSH](Imagens/ssh/Linux/07.png)
