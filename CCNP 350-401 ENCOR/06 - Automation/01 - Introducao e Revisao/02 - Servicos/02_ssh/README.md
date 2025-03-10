@@ -60,3 +60,14 @@ Abra o Prompt de Comando ou PowerShell e digite:
 |------------------------------------|------------------------------------|
 
 Por padrão o OpenSSH é instalado no diretório **C:\Windows\System32\OpenSSH**.  Dentro desse diretório existe o arquivo **sshd_config_default** que contém todas as configurações necessárias para o funcionamento do ssh no Windows. É nesse arquivo que podemos alterar o número de portas e demais configurações necessárias. De inicio, não precisamos alterar nada pois o ssh estará funcionando normalmente. Outras ferramentas encontram-se disponíveis nesse diretório.
+
+
+## Linux
+
+Primeiro vamos verificar se o SSH está instalado. A versão de linux que estou utilizando nesse artigo é a Debian, mas nas outras distribuições o processo é semelhante. 
+
+![SSH](Imagens/ssh/Linux/01.png)
+
+Agora que conferimos que o SSH não está instalado, vamos instalar o client. Para isso devemos instalar o pacote **openssh-client**.
+
+![SSH](Imagens/ssh/Linux/02.png)
