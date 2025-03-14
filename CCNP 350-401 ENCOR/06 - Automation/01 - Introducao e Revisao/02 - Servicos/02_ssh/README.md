@@ -97,3 +97,7 @@ Agora vamos testar o ssh.
 ![SSH](Imagens/ssh/Linux/08.png)
 
 ## CISCO
+
+Para habilitarmos o **SSH** em equipamentos Cisco, primeiro precisamos configurar um usuário com privilégios de acesso. **OBS:** aqui vou criar um usuário chamado cisco com o **privilégio 15**, que é o maior privilégio possível. Não é recomendado utilizar esse privilégio em produção. 
+
+![SSH](Imagens/ssh/Cisco/01.png)
