@@ -128,3 +128,11 @@ Nesse ponto já temos o ssh habilitado. Porém ainda precisamos informar que nos
 * **exec-timeout 5 0 :** aqui indicamos que se a sessão ficar ociosa por 5 minutos e 0 segundos ela será encerrada
 * **login local :** nessa linha informamos que as linhas virtuais devem utilizar o usuário cadastrado na banco de dados local
 * **loggin synchronous :** esse comando impede que mensagens do sistema como mensagens de log interrompam a digitação no prompt das linhas virtuais
+
+Agora precisamos realizar um teste para saber se tudo está configurado e correto para utilização em produção. Então primeiro vamos verificar se o ssh está habilitado na caixa.
+
+![SSH](Imagens/ssh/Cisco/06.png)
+
+Feito isso vamos realizar uma conexão local.
+
+![SSH](Imagens/ssh/Cisco/07.png)
