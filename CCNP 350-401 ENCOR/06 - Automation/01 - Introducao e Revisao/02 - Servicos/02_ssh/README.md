@@ -114,3 +114,7 @@ O próximo passo agora é gerar a chave de criptografia.
 Como podemos perceber, logo após a geração da chave, a caixa retorna uma mensagem dizendo que o **ssh versão 1.9**está habilitado. Isso significa que já temos o ssha em nossa caixa, mas o recomendado é utilizarmos a versão mais nova suportada. Então aqui iremos realizar alguns ajustes no ssh.
 
 ![SSH](Imagens/ssh/Cisco/04.png)
+
+* **ip ssh version 2 :** aqui definimos que a versão do ssh a ser utilizada é a 2
+* **ip ssh authentication-retries 3:** esse linha define que só temos 3 tentativas de realizar o login
+* **ip ssh time-out 60:** tempo limite para o usuário fornecer as credenciais. Se em 60 segundos não forem digitados usuário e senha, a conexão é encerrada
