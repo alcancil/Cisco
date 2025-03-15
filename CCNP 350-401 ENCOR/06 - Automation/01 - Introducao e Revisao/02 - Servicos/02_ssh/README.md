@@ -101,3 +101,8 @@ Agora vamos testar o ssh.
 Para habilitarmos o **SSH** em equipamentos Cisco, primeiro precisamos configurar um usuário com privilégios de acesso. **OBS:** aqui vou criar um usuário chamado cisco com o **privilégio 15**, que é o maior privilégio possível. Não é recomendado utilizar esse privilégio em produção. 
 
 ![SSH](Imagens/ssh/Cisco/01.png)
+
+Como sabemos, o **SSH** é mais seguro que o TELNET que deve ser evitado por criptografar os dados durante a comunicação entre os dispositivos. Para fazer isso, ele utiliza chave criptográficas. **OBS:** chaves com tamanho igual a 1024 ou menores que esse tamanho são consideradas inseguras nos dias atuais. Recomenda-se utilizar chaves com tamanho de **2048** ou maiores que isso, lembrando que quanto maior for o tamanho da chave, maior será o consumo de cpu e memória pela caixa. <br></br>
+Antes de gerarmos a chave, devemos configurar o nome de domínio no equipamento. As chaves são baseadas nisso. 
+
+![SSH](Imagens/ssh/Cisco/02.png)  
