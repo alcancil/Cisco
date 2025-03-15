@@ -106,3 +106,11 @@ Como sabemos, o **SSH** é mais seguro que o TELNET que deve ser evitado por cri
 Antes de gerarmos a chave, devemos configurar o nome de domínio no equipamento. As chaves são baseadas nisso. 
 
 ![SSH](Imagens/ssh/Cisco/02.png)  
+
+O próximo passo agora é gerar a chave de criptografia.
+
+![SSH](Imagens/ssh/Cisco/03.png)
+
+Como podemos perceber, logo após a geração da chave, a caixa retorna uma mensagem dizendo que o **ssh versão 1.9**está habilitado. Isso significa que já temos o ssha em nossa caixa, mas o recomendado é utilizarmos a versão mais nova suportada. Então aqui iremos realizar alguns ajustes no ssh.
+
+![SSH](Imagens/ssh/Cisco/04.png)
