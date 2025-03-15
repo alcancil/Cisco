@@ -122,3 +122,9 @@ Como podemos perceber, logo após a geração da chave, a caixa retorna uma mens
 Nesse ponto já temos o ssh habilitado. Porém ainda precisamos informar que nossas linhas virtuais precisam utilizar o protocolo ssh.
 
 ![SSH](Imagens/ssh/Cisco/05.png)
+
+* **line vty 0 4 :** estamos acessando as linhas virtuais de 0 a 4
+* **transport input ssh :** aqui informamos para a caixa que queremos utilizar o protocolo ssh nas nossas linhas virtuais
+* **exec-timeout 5 0 :** aqui indicamos que se a sessão ficar ociosa por 5 minutos e 0 segundos ela será encerrada
+* **login local :** nessa linha informamos que as linhas virtuais devem utilizar o usuário cadastrado na banco de dados local
+* **loggin synchronous :** esse comando impede que mensagens do sistema como mensagens de log interrompam a digitação no prompt das linhas virtuais
