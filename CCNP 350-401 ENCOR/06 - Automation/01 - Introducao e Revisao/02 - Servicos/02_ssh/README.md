@@ -118,3 +118,7 @@ Como podemos perceber, logo após a geração da chave, a caixa retorna uma mens
 * **ip ssh version 2 :** aqui definimos que a versão do ssh a ser utilizada é a 2
 * **ip ssh authentication-retries 3:** esse linha define que só temos 3 tentativas de realizar o login
 * **ip ssh time-out 60:** tempo limite para o usuário fornecer as credenciais. Se em 60 segundos não forem digitados usuário e senha, a conexão é encerrada
+
+Nesse ponto já temos o ssh habilitado. Porém ainda precisamos informar que nossas linhas virtuais precisam utilizar o protocolo ssh.
+
+![SSH](Imagens/ssh/Cisco/05.png)
