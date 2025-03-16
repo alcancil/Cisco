@@ -15,23 +15,23 @@ Editar a Configuração do SSH
 
 **sudo nano /etc/ssh/sshd_config**
 
-Altere as seguintes configurações:
+1. Altere as seguintes configurações:
 
-**Desativar login como root**  
+🔹Desativar login como root  
     > **PermitRootLogin no**  
-*  Permitir apenas usuários específicos  
+🔹  Permitir apenas usuários específicos  
     > **AllowUsers usuario1 usuario2**  
-* Alterar a porta padrão (evita scanners automatizados)  
+🔹 Alterar a porta padrão (evita scanners automatizados)  
     > **Port 2222   # Escolha uma porta entre 1024-65535**  
-* Impedir autenticação por senha (usar apenas chaves)  
+🔹 Impedir autenticação por senha (usar apenas chaves)  
     > **PasswordAuthentication no**  
     > **PubkeyAuthentication yes**  
-* Habilitar apenas versões seguras do protocolo SSH  
+🔹 Habilitar apenas versões seguras do protocolo SSH  
     > **Protocol 2**  
-* Definir tempo de timeout para desconectar sessões inativas  
+🔹 Definir tempo de timeout para desconectar sessões inativas  
     > **ClientAliveInterval 300**  
     > **ClientAliveCountMax 2**  
-**Restringir o uso de certos algoritmos inseguros**
+🔹 Restringir o uso de certos algoritmos inseguros  
      **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384**  
      **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com**  
      **MACs hmac-sha2-512,hmac-sha2-256**  
