@@ -45,9 +45,8 @@ Permita apenas a porta do SSH:
       > **port = 2222**  
       > **maxretry = 3**  
       > **bantime = 600**  
-
-Reinicie o Fail2Ban:  
-   > **sudo systemctl restart fail2ban**
+   Reinicie o Fail2Ban:  
+      > **sudo systemctl restart fail2ban**
 
 ## 🔹 2. Hardening SSH no Windows
 
