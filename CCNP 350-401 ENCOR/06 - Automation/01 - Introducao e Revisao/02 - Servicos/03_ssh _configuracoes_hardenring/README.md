@@ -15,7 +15,7 @@ Editar a Configuração do SSH
 
 **sudo nano /etc/ssh/sshd_config**
 
-1. Altere as seguintes configurações:
+1. Altere as seguintes configurações:  
 
 🔹Desativar login como root  
    > **PermitRootLogin no**  
