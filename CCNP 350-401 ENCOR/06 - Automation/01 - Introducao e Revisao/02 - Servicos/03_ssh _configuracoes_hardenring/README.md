@@ -32,25 +32,24 @@ Editar a Configuração do SSH
     > **sudo systemctl restart ssh**  
 3. Configurar Firewall  
 Permita apenas a porta do SSH:  
-    > **sudo ufw allow 2222/tcp**
+    > **sudo ufw allow 2222/tcp**  
     > **sudo ufw enable**  
 4. Ativar Fail2Ban para proteção contra brute-force  
     > **sudo apt install fail2ban -y**  
 
     Crie um arquivo de configuração:  
-            🔹 **sudo nano /etc/fail2ban/jail.local**  
+      > **sudo nano /etc/fail2ban/jail.local**  
     Adicione:  
-            🔹 **[sshd]**  
-            🔹 **enabled = true**  
-            🔹 **port = 2222**  
-            🔹 **maxretry = 3**  
-            🔹 **bantime = 600**  
+      > **[sshd]**  
+      > **enabled = true**  
+      > **port = 2222**  
+      > **maxretry = 3**  
+      > **bantime = 600**  
 
-Reinicie o Fail2Ban:
+Reinicie o Fail2Ban:  
+   > **sudo systemctl restart fail2ban**
 
-sudo systemctl restart fail2ban
-
-🔹 2. Hardening SSH no Windows
+## 🔹 2. Hardening SSH no Windows
 
 📍 Passo a passo para reforçar a segurança do OpenSSH no Windows 10/11 e Windows Server.
 ✅ 1. Instalar o OpenSSH (caso não esteja instalado)
