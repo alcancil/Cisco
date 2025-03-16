@@ -18,23 +18,23 @@ Editar a Configuração do SSH
 Altere as seguintes configurações:
 
 * Desativar login como root
-    PermitRootLogin no
+    PermitRootLogin no  
 *  Permitir apenas usuários específicos
-    AllowUsers usuario1 usuario2
+    AllowUsers usuario1 usuario2  
 * Alterar a porta padrão (evita scanners automatizados)
-    Port 2222   # Escolha uma porta entre 1024-65535
+    Port 2222   # Escolha uma porta entre 1024-65535  
 * Impedir autenticação por senha (usar apenas chaves)
-    PasswordAuthentication no 
+    PasswordAuthentication no  
     PubkeyAuthentication yes
 * Habilitar apenas versões seguras do protocolo SSH
-    Protocol 2
+    Protocol 2  
 * Definir tempo de timeout para desconectar sessões inativas
-    ClientAliveInterval 300
+    ClientAliveInterval 300  
     ClientAliveCountMax 2
 * Restringir o uso de certos algoritmos inseguros
-    > KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384 <br></br>
-    > Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com <br></br>
-    > MACs hmac-sha2-512,hmac-sha2-256 <br></br>
+    > KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384  
+    > Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com  
+    > MACs hmac-sha2-512,hmac-sha2-256  
 
 ✅ 2. Reiniciar o SSH para aplicar as mudanças
 
