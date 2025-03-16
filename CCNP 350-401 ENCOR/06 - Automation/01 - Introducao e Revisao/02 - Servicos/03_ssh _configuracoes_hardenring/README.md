@@ -46,13 +46,13 @@ Permita apenas a porta do SSH:
     > **sudo apt install fail2ban -y**  
 
     Crie um arquivo de configuração:  
-            * **sudo nano /etc/fail2ban/jail.local**  
+            🔹 **sudo nano /etc/fail2ban/jail.local**  
     Adicione:  
-            * **[sshd]**  
-            * **enabled = true**  
-            * **port = 2222**  
-            * **maxretry = 3**  
-            * **bantime = 600**  
+            🔹 **[sshd]**  
+            🔹 **enabled = true**  
+            🔹 **port = 2222**  
+            🔹 **maxretry = 3**  
+            🔹 **bantime = 600**  
 
 Reinicie o Fail2Ban:
 
