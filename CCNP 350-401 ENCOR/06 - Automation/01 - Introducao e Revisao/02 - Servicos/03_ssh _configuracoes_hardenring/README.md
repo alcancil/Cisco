@@ -78,19 +78,17 @@ notepad C:\ProgramData\ssh\sshd_config
 
 Modifique estas linhas:
 
-# 1️⃣ Alterar a porta padrão
-Port 2222
+1️⃣ Alterar a porta padrão  
+Port 2222  
+2️⃣ Impedir login de administrador via SSH
+PermitRootLogin no  
+3️⃣ Habilitar apenas chaves SSH  
+**PasswordAuthentication no**  
+**PubkeyAuthentication yes**  
 
-# 2️⃣ Impedir login de administrador via SSH
-PermitRootLogin no
+Salve e reinicie o SSH:  
 
-# 3️⃣ Habilitar apenas chaves SSH
-PasswordAuthentication no
-PubkeyAuthentication yes
-
-Salve e reinicie o SSH:
-
-Restart-Service sshd
+**Restart-Service sshd**
 
 ✅ 3. Configurar Firewall
 
