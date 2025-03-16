@@ -17,7 +17,7 @@ Editar a Configuração do SSH
 
 Altere as seguintes configurações:
 
-* Desativar login como root  
+**Desativar login como root**  
     > **PermitRootLogin no**  
 *  Permitir apenas usuários específicos  
     > **AllowUsers usuario1 usuario2**  
@@ -31,10 +31,10 @@ Altere as seguintes configurações:
 * Definir tempo de timeout para desconectar sessões inativas  
     > **ClientAliveInterval 300**  
     > **ClientAliveCountMax 2**  
-* Restringir o uso de certos algoritmos inseguros
-    > **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384**  
-    > **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com**  
-    > **MACs hmac-sha2-512,hmac-sha2-256**  
+**Restringir o uso de certos algoritmos inseguros**
+     **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384**  
+     **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com**  
+     **MACs hmac-sha2-512,hmac-sha2-256**  
 
 2. Reiniciar o SSH para aplicar as mudanças  
     > **sudo systemctl restart ssh**  
