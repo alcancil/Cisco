@@ -15,26 +15,18 @@ Editar a Configuração do SSH
 
 **sudo nano /etc/ssh/sshd_config**
 
-1. Altere as seguintes configurações:  
-    >    
-🔹Desativar login como root  
-   > **PermitRootLogin no**  
-🔹Permitir apenas usuários específicos  
-   > **AllowUsers usuario1 usuario2**  
-🔹Alterar a porta padrão (evita scanners automatizados)  
-   > **Port 2222   # Escolha uma porta entre 1024-65535**  
-🔹Impedir autenticação por senha (usar apenas chaves)  
-   > **PasswordAuthentication no**  
-   > **PubkeyAuthentication yes**  
-🔹Habilitar apenas versões seguras do protocolo SSH  
-   > **Protocol 2**  
-🔹Definir tempo de timeout para desconectar sessões inativas  
-   > **ClientAliveInterval 300**  
-   > **ClientAliveCountMax 2**  
-🔹Restringir o uso de certos algoritmos inseguros  
-     **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384**  
-     **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com**  
-     **MACs hmac-sha2-512,hmac-sha2-256**  
+1. Altere as seguintes configurações:   
+   > **PermitRootLogin no** - Desativa login como root 
+   > **AllowUsers usuario1 usuario2** - Permite apenas usuários específicos    
+   > **Port 2222** - Alterar a porta padrão (evita scanners automatizados). Escolha uma porta entre 1024-65535  
+   > **PasswordAuthentication no** - Impedir autenticação por senha (usar apenas chaves)  
+   > **PubkeyAuthentication yes** - Impedir autenticação por senha (usar apenas chaves)      
+   > **Protocol 2** - Habilitar apenas versões seguras do protocolo SSH    
+   > **ClientAliveInterval 300** - Definir tempo de timeout para desconectar sessões inativas  
+   > **ClientAliveCountMax 2**    
+   > **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384** - Restringe o uso de certos algoritmos inseguros  
+   > **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com** - Restringe o uso de certos algoritmos inseguros    
+   > **MACs hmac-sha2-512,hmac-sha2-256** - Restringe o uso de certos algoritmos inseguros  
 
 2. Reiniciar o SSH para aplicar as mudanças  
     > **sudo systemctl restart ssh**  
