@@ -1,43 +1,46 @@
 # 03 - SSH (Secure Shell) - Configurações e Hardenering
 
-O que é Hardening?
+Agora vamos olhar os arquivos de configuração do ssh. Aqui podemos configurar quais usuários são permitidos, qual porta o ssh irá utilizar e etc. Aqui vou dar enfoque a segurança pois como é sabido, o ssh utiliza por padrão a porta 22. Com isso existem diversos tipos de de ataque, então a ideia é diminuir a superfície de ataque. <br> </br>
 
-Hardening é o processo de reforçar a segurança de um sistema, reduzindo vulnerabilidades e minimizando superfícies de ataque. No caso do SSH, isso significa configurar o serviço para ser mais seguro, prevenindo acessos não autorizados e protegendo contra ataques como brute force e MITM (Man-in-the-Middle).
-🔹 1. Hardening SSH no Linux
+
+Mas o que é Hardening (endurecer)? <br></br>
+
+Hardening é o processo de reforçar a segurança de um sistema, reduzindo vulnerabilidades e minimizando superfícies de ataque. No caso do SSH, isso significa configurar o serviço para ser mais seguro, prevenindo acessos não autorizados e protegendo contra ataques como brute force e MITM (Man-in-the-Middle). <br></br>
+
+## 🔹 1. Hardening SSH no Linux
  
-Passo a passo para reforçar a segurança do SSH no Linux (Debian, Ubuntu, CentOS, Rocky Linux, etc.)
-1. Editar a Configuração do SSH
+Passo a passo para reforçar a segurança do SSH no Linux (Debian, Ubuntu, CentOS, Rocky Linux, etc.) <br></br>
 
-Abra o arquivo de configuração:
+Editar a Configuração do SSH
 
-sudo nano /etc/ssh/sshd_config
+**sudo nano /etc/ssh/sshd_config**
 
 Altere as seguintes configurações:
 
-#  Desativar login como root
-PermitRootLogin no
+1. Desativar login como root
+    PermitRootLogin no
 
-#  Permitir apenas usuários específicos
-AllowUsers usuario1 usuario2
+2.  Permitir apenas usuários específicos
+    AllowUsers usuario1 usuario2
 
-#  Alterar a porta padrão (evita scanners automatizados)
+3. Alterar a porta padrão (evita scanners automatizados)
 Port 2222   # Escolha uma porta entre 1024-65535
 
-#  Impedir autenticação por senha (usar apenas chaves)
-PasswordAuthentication no
-PubkeyAuthentication yes
+4. Impedir autenticação por senha (usar apenas chaves)
+    PasswordAuthentication no 
+    PubkeyAuthentication yes
 
-# Habilitar apenas versões seguras do protocolo SSH
-Protocol 2
+5. Habilitar apenas versões seguras do protocolo SSH
+    Protocol 2
 
-# Definir tempo de timeout para desconectar sessões inativas
-ClientAliveInterval 300
-ClientAliveCountMax 2
+6. Definir tempo de timeout para desconectar sessões inativas
+    ClientAliveInterval 300
+    ClientAliveCountMax 2
 
-# Restringir o uso de certos algoritmos inseguros
-KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384
-Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com
-MACs hmac-sha2-512,hmac-sha2-256
+7. Restringir o uso de certos algoritmos inseguros
+    KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384
+    Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com
+    MACs hmac-sha2-512,hmac-sha2-256
 
 ✅ 2. Reiniciar o SSH para aplicar as mudanças
 
