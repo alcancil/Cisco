@@ -49,10 +49,10 @@ Permita apenas a porta do SSH:
             * **sudo nano /etc/fail2ban/jail.local**  
     Adicione:  
             * **[sshd]**  
-            * **enabled = true**
-            * **port = 2222**
-            * **maxretry = 3**
-            * **bantime = 600**
+            * **enabled = true**  
+            * **port = 2222**  
+            * **maxretry = 3**  
+            * **bantime = 600**  
 
 Reinicie o Fail2Ban:
 
