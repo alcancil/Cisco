@@ -26,7 +26,7 @@ Editar a Configuração do SSH
    > **AllowUsers usuario1 usuario2** - Permite apenas usuários específicos          
    > **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384** - Restringe o uso de certos algoritmos inseguros  
    > **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com** - Restringe o uso de certos algoritmos inseguros    
-   > **MACs hmac-sha2-512,hmac-sha2-256** - Restringe o uso de certos algoritmos inseguros
+   > **MACs hmac-sha2-512,hmac-sha2-256** - Restringe o uso de certos algoritmos inseguros  
    > **Protocol 2** - Habilitar apenas versões seguras do protocolo SSH   
 
 2. Reiniciar o SSH para aplicar as mudanças  
