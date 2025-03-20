@@ -16,7 +16,15 @@ Editar a Configuração do SSH
 **sudo nano /etc/ssh/sshd_config**
 
 1. Altere as seguintes configurações:   
-   > **Port 2222** - Alterar a porta padrão (evita scanners automatizados). Escolha uma porta entre 1024-65535
+   > **Port 2222** - Alterar a porta padrão (evita scanners automatizados). Escolha uma porta entre 1024-65535  
+   > **SyslogFacility AUTH** - Define o tipo de log (geralmente AUTH para logs de autenticação).  
+   > **LogLevel INFO** - aqui definimos os níveis de log que queremos obter.
+      * **QUIET:** Logs mínimos.  
+      * **FATAL:** Apenas erros fatais.  
+      * **ERROR:** Erros.  
+      * **INFO:** Informações gerais (recomendado).
+      * **VERBOSE:** Mais detalhes.  
+      * **DEBUG:** Logs detalhados (use apenas para depuração).  
    > **PermitRootLogin no** - Desativa login como root  
    > **PubkeyAuthentication yes** - Impedir autenticação por senha (usar apenas chaves)
    > **AuthorizedKeysFile .ssh/authorized_keys** - define o caminho e o nome do arquivo das chaves autorizadas 
