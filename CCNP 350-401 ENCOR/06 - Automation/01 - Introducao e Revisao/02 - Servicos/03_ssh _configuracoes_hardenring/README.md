@@ -31,15 +31,15 @@ Editar a Configuração do SSH
    > **MACs hmac-sha2-512,hmac-sha2-256** - Restringe o uso de certos algoritmos inseguros  
    > **Protocol 2** - Habilitar apenas versões seguras do protocolo SSH   
 
-**OBS:** para podermos ter logs do ssh, temos que ter instalado um serviço de logs no sistema. Geralmente o utilizado em linux é o **rsyslog**. Então verificar se ele está instalado e rodando.
-**OBS2:** o caminho dos logs em sistemas Debian / Ubuntu ficam em **/var/log/auth.log**. Já em distribuições baseadas em Red Hat/CentOS os logs ficam em **/var/log/secure**.   
-**OBS3:** Os possíveis níveis de log são:  
-> * **QUIET:** Logs mínimos.  
-> * **FATAL:** Apenas erros fatais.  
-> * **ERROR:** Erros.  
-> * **INFO:** Informações gerais (recomendado).
-> * **VERBOSE:** Mais detalhes.  
-> * **DEBUG:** Logs detalhados (use apenas para depuração).
+  **OBS:** para podermos ter logs do ssh, temos que ter instalado um serviço de logs no sistema. Geralmente o utilizado em linux é o **rsyslog**. Então verificar se ele está instalado e rodando.
+  **OBS2:** o caminho dos logs em sistemas Debian / Ubuntu ficam em **/var/log/auth.log**. Já em distribuições baseadas em Red Hat/CentOS os logs ficam em **/var/log/secure**.   
+  **OBS3:** Os possíveis níveis de log são:  
+  > * **QUIET:** Logs mínimos.  
+  > * **FATAL:** Apenas erros fatais.  
+  > * **ERROR:** Erros.  
+  > * **INFO:** Informações gerais (recomendado).
+  > * **VERBOSE:** Mais detalhes.  
+  > * **DEBUG:** Logs detalhados (use apenas para depuração).
 
 2. Reiniciar o SSH para aplicar as mudanças  
     > **sudo systemctl restart ssh**  
