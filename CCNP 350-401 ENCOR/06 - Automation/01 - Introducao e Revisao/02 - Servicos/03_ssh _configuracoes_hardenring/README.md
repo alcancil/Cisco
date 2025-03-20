@@ -56,8 +56,8 @@ Certo chegamos em um ponto em que já configuramos o daemon ssh e precisamos ent
 A palavra chave vem de uma analogia a portas que precisam de chaves para fechar e abrir. Esse é um conceito utilizado em criptografia assimétrica. Uma chave nada mais é o resultado de um algoritmo que retorna caracteres como números, letras e bytes por exemplo e fica armazenado dentro de um arquivo.  
 As chaves são geradas por algoritmos de criptografia assimétrica, como **RSA, ECDSA, ou Ed25519**. Esses algoritmos usam matemática avançada (como fatoração de números primos ou curvas elípticas) para criar um par de chaves que estão matematicamente relacionadas, mas não podem ser derivadas uma da outra de forma prática.  
 Entendido o conceito de chaves, precisamos notar que existem dois tipos de chaves: **Pública e Privada**  
-**Chave Pública:** Pode ser compartilhada livremente e é usada para criptografar dados ou verificar assinaturas.  
-**Chave Privada:** Deve ser mantida em segredo e é usada para descriptografar dados ou criar assinaturas.  
+  * **Chave Pública:** Pode ser compartilhada livremente e é usada para criptografar dados ou verificar assinaturas.  
+  * **Chave Privada:** Deve ser mantida em segredo e é usada para descriptografar dados ou criar assinaturas.  
 
 ![CHAVES](Imagens/chaves.png) 
 
