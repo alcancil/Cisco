@@ -58,7 +58,7 @@ As chaves são geradas por algoritmos de criptografia assimétrica, como **RSA, 
 
 |-------------------------------|
 | ![CHAVES](Imagens/chaves.png) |
-
+|                               |
 
 ## 🔹 2. Hardening SSH no Windows
 
