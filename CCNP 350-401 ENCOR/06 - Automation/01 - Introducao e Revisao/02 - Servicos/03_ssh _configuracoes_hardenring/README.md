@@ -61,7 +61,9 @@ Entendido o conceito de chaves, precisamos notar que existem dois tipos de chave
 
 <div style="text-align: center;">
   <img src="Imagens/chaves.png" alt="CHAVES">
-</div>  
+</div>
+
+<img src="Imagens/chaves.png" alt="CHAVES" style="display: block; margin-left: auto; margin-right: auto;">
 
 ## 🔹 2. Hardening SSH no Windows
 
