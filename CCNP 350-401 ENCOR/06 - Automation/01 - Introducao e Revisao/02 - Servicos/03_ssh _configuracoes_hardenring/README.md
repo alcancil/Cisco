@@ -73,7 +73,8 @@ Para gerarmos as chaves vamos ir no terminal do windows e devemos digitar:
 Isso cria:
 **id_rsa:** Chave privada (mantida no host Windows).  
 **id_rsa.pub:** Chave pública (enviada para o servidor Linux).  
-**OBS:** como enviamos o arquivo id_rsa para o linux devemos alterar o nome desse arquivo para **authorized_keys**. Esse é o arquivo que o sshd_config irá buscar para a autenticação conforme configuramos anteriormente.
+**OBS:** como enviamos o arquivo id_rsa para o linux devemos alterar o nome desse arquivo para **authorized_keys**. Esse é o arquivo que o sshd_config irá buscar para a autenticação conforme configuramos anteriormente.  
+**OBS2:** ao gerar as chaves, o ssh-keygen vai pedir uma senha. Pode-se deixar a chave sem senha mas o recomendado é se utilizar uma senha. Essa senha só ira ser utilizada uma única vez.  
 
 **Segurança**  
 A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.
