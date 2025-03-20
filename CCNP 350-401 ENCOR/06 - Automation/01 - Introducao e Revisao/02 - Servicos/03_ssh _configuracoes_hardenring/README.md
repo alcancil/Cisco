@@ -41,8 +41,7 @@ Editar a Configuração do SSH
   > * **VERBOSE:** Mais detalhes.  
   > * **DEBUG:** Logs detalhados (use apenas para depuração).  
   
-Deixo aqui um exemplo do arquivo **sshd_config** com as configurações aplicadas.  
-![sshd_config](arquivos/sshd_config)  
+Deixo aqui um exemplo do arquivo **sshd_config** com as configurações aplicadas. [sshd_config](Arquivos/sshd_config)  
 
 2. Reiniciar o SSH para aplicar as mudanças  
     > **sudo systemctl restart ssh**  
