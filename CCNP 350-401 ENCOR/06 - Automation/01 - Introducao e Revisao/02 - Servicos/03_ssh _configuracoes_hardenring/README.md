@@ -20,14 +20,14 @@ Editar a Configuração do SSH
    > **SyslogFacility AUTH** - Define o tipo de log (geralmente AUTH para logs de autenticação).  
    > **LogLevel INFO** - aqui definimos os níveis de log que queremos obter.  
    > **PermitRootLogin no** - Desativa login como root  
-   > **PubkeyAuthentication yes** - Impedir autenticação por senha (usar apenas chaves)
-   > **AuthorizedKeysFile .ssh/authorized_keys** - define o caminho e o nome do arquivo das chaves autorizadas 
-   > **PasswordAuthentication no** - Impedir autenticação por senha (usar apenas chaves)
+   > **PubkeyAuthentication yes** - Impedir autenticação por senha (usar apenas chaves)  
+   > **AuthorizedKeysFile .ssh/authorized_keys** - define o caminho e o nome do arquivo das chaves autorizadas  
+   > **PasswordAuthentication no** - Impedir autenticação por senha (usar apenas chaves)  
    > **ClientAliveInterval 300** - Define tempo de timeout. A cada 300 segundos (5 minutos), o servidor envia um pacote de keep-alive para verificar se o cliente ainda está ativo       
    > **ClientAliveCountMax 2** - Aqui é definido quantas vezes quantas vezes o servidor envia os pacotes keep-alive sem receber resposta, ou seja duas vezes seguidas. 
    > **AllowUsers usuario1 usuario2** - Permite apenas usuários específicos          
    > **KexAlgorithms curve25519-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384** - Restringe o uso de certos algoritmos inseguros  
-   > **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com** - Restringe o uso de certos algoritmos inseguros    
+   > **Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com** - Restringe o uso de certos algoritmos inseguros  
    > **MACs hmac-sha2-512,hmac-sha2-256** - Restringe o uso de certos algoritmos inseguros  
    > **Protocol 2** - Habilitar apenas versões seguras do protocolo SSH   
 
