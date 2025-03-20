@@ -39,7 +39,10 @@ Editar a Configuração do SSH
   > * **ERROR:** Erros.  
   > * **INFO:** Informações gerais (recomendado).
   > * **VERBOSE:** Mais detalhes.  
-  > * **DEBUG:** Logs detalhados (use apenas para depuração).
+  > * **DEBUG:** Logs detalhados (use apenas para depuração).  
+  
+Deixo aqui um exemplo do arquivo **sshd_config** com as configurações aplicadas.  
+[ssh_config](arquivos/sshd_config)  
 
 2. Reiniciar o SSH para aplicar as mudanças  
     > **sudo systemctl restart ssh**  
