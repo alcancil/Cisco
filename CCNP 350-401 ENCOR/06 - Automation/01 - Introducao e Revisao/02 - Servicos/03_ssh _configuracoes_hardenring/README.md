@@ -59,7 +59,8 @@ Entendido o conceito de chaves, precisamos notar que existem dois tipos de chave
   * **Chave Pública:** Pode ser compartilhada livremente e é usada para criptografar dados ou verificar assinaturas.  
   * **Chave Privada:** Deve ser mantida em segredo e é usada para descriptografar dados ou criar assinaturas.  
 
-![CHAVES](Imagens/chaves.png) 
+|---|------------------------------|---|
+|   | ![CHAVES](Imagens/chaves.png)|---| 
 
 ## 🔹 2. Hardening SSH no Windows
 
