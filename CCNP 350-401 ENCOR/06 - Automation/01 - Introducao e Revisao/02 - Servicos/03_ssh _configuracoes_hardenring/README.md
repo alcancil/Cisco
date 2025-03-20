@@ -59,11 +59,11 @@ Entendido o conceito de chaves, precisamos notar que existem dois tipos de chave
   * **Chave Pública:** Pode ser compartilhada livremente e é usada para criptografar dados ou verificar assinaturas.  
   * **Chave Privada:** Deve ser mantida em segredo e é usada para descriptografar dados ou criar assinaturas.  
 
-<div style="text-align: center;">
+![Chaves](Imagens/chaves.png)
+
+<div style="display: flex; justify-content: center;">
   <img src="Imagens/chaves.png" alt="CHAVES">
 </div>
-
-<img src="Imagens/chaves.png" alt="CHAVES" style="display: block; margin-left: auto; margin-right: auto;">
 
 ## 🔹 2. Hardening SSH no Windows
 
