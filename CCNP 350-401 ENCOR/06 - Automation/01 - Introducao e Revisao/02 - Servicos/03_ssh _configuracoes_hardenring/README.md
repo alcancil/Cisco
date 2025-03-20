@@ -61,9 +61,15 @@ Entendido o conceito de chaves, precisamos notar que existem dois tipos de chave
 
 ![Chaves](Imagens/chaves.png)
 
-<div style="display: flex; justify-content: center;">
-  <img src="Imagens/chaves.png" alt="CHAVES">
-</div>
+**Geração de Chaves**  
+Vamos imaginar que queremos acessar um servidor Linux a partir de um host Windows. Então, no host Windows, geramos um par de chaves (pública e privada). A chave privada fica no host Windows, e a chave pública é copiada para o servidor Linux.  
+
+**Autenticação**  
+
+Quando o host Windows tenta se conectar ao servidor Linux, ele usa sua chave privada para provar sua identidade. O servidor Linux verifica a identidade usando a chave pública armazenada no arquivo **~/.ssh/authorized_keys.**   
+
+**Segurança**  
+A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.
 
 ## 🔹 2. Hardening SSH no Windows
 
