@@ -49,19 +49,12 @@ Deixo aqui um exemplo do arquivo **sshd_config** com as configurações aplicada
 Permita apenas a porta do SSH:  
     > **sudo ufw allow 2222/tcp**  
     > **sudo ufw enable**  
-4. Ativar Fail2Ban para proteção contra brute-force  
-    > **sudo apt install fail2ban -y**  
 
-    Crie um arquivo de configuração:  
-      > **sudo nano /etc/fail2ban/jail.local**  
-    Adicione:  
-      > **[sshd]**  
-      > **enabled = true**  
-      > **port = 2222**  
-      > **maxretry = 3**  
-      > **bantime = 600**  
-   Reinicie o Fail2Ban:  
-      > **sudo systemctl restart fail2ban**
+## Chave Públicas x Chaves Privadas
+
+Certo chegamos em um ponto em que já configuramos o daemon ssh e precisamos entender como funcionam as chaves. Agora não iremos mais utilizar usuário e senha pois o acesso através de chaves é mais seguro e auxilia no processo de automação.  
+A palavra chave vem de uma analogia a portas que precisam de chaves para fechar e abrir. Esse é um conceito utilizado em criptografia assimétrica.
+
 
 ## 🔹 2. Hardening SSH no Windows
 
