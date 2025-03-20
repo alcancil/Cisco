@@ -66,7 +66,14 @@ Vamos imaginar que queremos acessar um servidor Linux a partir de um host Window
 
 **Autenticação**  
 
-Quando o host Windows tenta se conectar ao servidor Linux, ele usa sua chave privada para provar sua identidade. O servidor Linux verifica a identidade usando a chave pública armazenada no arquivo **~/.ssh/authorized_keys.**   
+Quando o host Windows tenta se conectar ao servidor Linux, ele usa sua chave privada para provar sua identidade. O servidor Linux verifica a identidade usando a chave pública armazenada no arquivo **~/.ssh/authorized_keys**  
+
+Para gerarmos as chaves vamos ir no terminal do windows e devemos digitar:  
+**ssh-keygen -t rsa -b 4096**  
+Isso cria:
+**id_rsa:** Chave privada (mantida no host Windows).  
+**id_rsa.pub:** Chave pública (enviada para o servidor Linux).  
+**OBS:** como enviamos o arquivo id_rsa para o linux devemos alterar o nome desse arquivo para **authorized_keys**. Esse é o arquivo que o sshd_config irá buscar para a autenticação conforme configuramos anteriormente.
 
 **Segurança**  
 A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.
