@@ -70,14 +70,25 @@ Quando o host Windows tenta se conectar ao servidor Linux, ele usa sua chave pri
 
 Para gerarmos as chaves vamos ir no terminal do windows e devemos digitar:  
 **ssh-keygen -t rsa -b 4096**  
-Isso cria:
+Esse comando cria:  
 **id_rsa:** Chave privada (mantida no host Windows).  
 **id_rsa.pub:** Chave pública (enviada para o servidor Linux).  
 **OBS:** como enviamos o arquivo id_rsa para o linux devemos alterar o nome desse arquivo para **authorized_keys**. Esse é o arquivo que o sshd_config irá buscar para a autenticação conforme configuramos anteriormente.  
 **OBS2:** ao gerar as chaves, o ssh-keygen vai pedir uma senha. Pode-se deixar a chave sem senha mas o recomendado é se utilizar uma senha. Essa senha só ira ser utilizada uma única vez.  
 
 **Segurança**  
-A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.
+A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.  
+
+Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e windos, porém onde as chaves são criadas é ligeiramente diferente:  
+  > **Linux**
+  > Por padrão, as chaves são salvas no diretório ~/.ssh/:  
+  > **Chave privada: ~/.ssh/id_rsa**  
+  > **Chave pública: ~/.ssh/id_rsa.pub**  <br</br>>
+
+  > **Windows**  
+  > Quando solicitado, escolha o local para salvar as chaves. O padrão é:
+  > Chave privada: C:\Users\<seu_usuario>\.ssh\id_rsa  
+  > Chave pública: C:\Users\<seu_usuario>\.ssh\id_rsa.pub  
 
 ## 🔹 2. Hardening SSH no Windows
 
