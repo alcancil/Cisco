@@ -94,6 +94,8 @@ Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e
 |-------------------------------------|---------------------------------------|
 | LINUX                               | WINDOWS                               |
 
+**OBS:** o processo irá pedir uma senha. Não é necessário digitar a senha, mas recomenda-se utilizar uma senha forte para as chaves.
+
 ## 🔹 2. Hardening SSH no Windows
 
 📍 Passo a passo para reforçar a segurança do OpenSSH no Windows 10/11 e Windows Server.
