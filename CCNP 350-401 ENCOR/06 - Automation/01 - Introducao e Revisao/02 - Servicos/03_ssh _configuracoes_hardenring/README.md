@@ -80,7 +80,7 @@ Esse comando cria:
 A chave privada nunca deve ser compartilhada com ninguém. A chave pública pode ser compartilhada livremente.  
 
 Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e windos, porém onde as chaves são criadas é ligeiramente diferente:  
-  > **Linux**
+  > **Linux**  
   > Por padrão, as chaves são salvas no diretório ~/.ssh/:  
   > **Chave privada: ~/.ssh/id_rsa**  
   > **Chave pública: ~/.ssh/id_rsa.pub**  <br></br>
