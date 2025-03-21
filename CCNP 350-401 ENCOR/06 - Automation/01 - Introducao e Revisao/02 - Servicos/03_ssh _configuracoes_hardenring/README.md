@@ -92,6 +92,8 @@ Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e
 
 |-------------------------------------|---------------------------------------|
 | ![CHAVES](Imagens/chaves_linux.png) | ![CHAVES](Imagens/chaves_windows.png) |
+|-------------------------------------|---------------------------------------|
+| LINUX                               | WINDOWS                               |
 
 ## 🔹 2. Hardening SSH no Windows
 
