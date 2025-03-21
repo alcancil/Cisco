@@ -83,7 +83,7 @@ Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e
   > **Linux**
   > Por padrão, as chaves são salvas no diretório ~/.ssh/:  
   > **Chave privada: ~/.ssh/id_rsa**  
-  > **Chave pública: ~/.ssh/id_rsa.pub**  <br</br>>
+  > **Chave pública: ~/.ssh/id_rsa.pub**  <br></br>
 
   > **Windows**  
   > Quando solicitado, escolha o local para salvar as chaves. O padrão é:
