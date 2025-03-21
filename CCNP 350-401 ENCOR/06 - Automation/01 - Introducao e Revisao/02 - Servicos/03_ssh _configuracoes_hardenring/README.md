@@ -90,7 +90,6 @@ Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e
   > Chave privada: C:\Users\<seu_usuario>\.ssh\id_rsa  
   > Chave pública: C:\Users\<seu_usuario>\.ssh\id_rsa.pub  
 
-|-------------------------------------|---------------------------------------|
 | ![CHAVES](Imagens/chaves_linux.png) | ![CHAVES](Imagens/chaves_windows.png) |
 |-------------------------------------|---------------------------------------|
 | LINUX                               | WINDOWS                               |
