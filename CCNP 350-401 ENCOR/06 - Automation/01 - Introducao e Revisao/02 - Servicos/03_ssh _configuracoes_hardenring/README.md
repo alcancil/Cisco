@@ -96,6 +96,22 @@ Aqui vale ressaltar que o comando para criar as chaves é igual tanto em linux e
 
 **OBS:** o processo irá pedir uma senha. Não é necessário digitar a senha, mas recomenda-se utilizar uma senha forte para as chaves.
 
+## Realizando acesso
+
+Agora para realizarmos o acesso ao dispositivo através do protocolo ssh, termos que indicar a porta e o usuário para realizar o acesso. Vale lembrar, que no nosso caso alteramos a porta do ssh para **22222** . Primeiro vamos verificar em nosso servidor ssh que não existem conexões ativas, ou seja somente o usuário root está logado. Para isso vamos no terminal do linux e digitamos **who** para verificar as conexões ativas.
+
+![SSH](Imagens/conexoes.png)
+
+Feito isso, vamos no terminal do dispositivo em que vamos realizar o ssh e digitamos o comando:  
+
+**ssh -l alexandre -p 2222 192.168.0.21**  
+
+![SSH](Imagens/ssh.png)  
+
+Para termos certeza, vamos voltar ao terminal do linux para verificarmos novamente as conexões.
+
+![SSH](Imagens/conexoes2.png)
+
 ## 🔹 2. Hardening SSH no Windows
 
 📍 Passo a passo para reforçar a segurança do OpenSSH no Windows 10/11 e Windows Server.
