@@ -114,83 +114,84 @@ Para termos certeza, vamos voltar ao terminal do linux para verificarmos novamen
 
 ## 🔹 2. Hardening SSH no Windows
 
-📍 Passo a passo para reforçar a segurança do OpenSSH no Windows 10/11 e Windows Server.
-✅ 1. Instalar o OpenSSH (caso não esteja instalado)
+O processo no Windows é bem parecido com o linux, mas com algumas poucas diferenças.  
 
-Add-WindowsCapability -Online -Name OpenSSH.Server
+Passo a passo para reforçar a segurança do OpenSSH no Windows 10/11 e Windows Server.
+1. Instalar o OpenSSH (caso não esteja instalado)
 
-Inicie o serviço:
+  > Abra a o powershell e digite 
+  > Add-WindowsCapability -Online -Name OpenSSH.Server  
 
-Start-Service sshd
-Set-Service -Name sshd -StartupType Automatic
+Inicie o serviço:  
 
-✅ 2. Editar Configuração do SSH no Windows
+  > Start-Service sshd  
+  > Set-Service -Name sshd -StartupType Automatic  
 
-Abra o arquivo:
+2. Editar Configuração do SSH no Windows  
 
-notepad C:\ProgramData\ssh\sshd_config
+Abra o arquivo:  
+  > **notepad C:\ProgramData\ssh\sshd_config**  
 
-Modifique estas linhas:
-
-1️⃣ Alterar a porta padrão  
-Port 2222  
-2️⃣ Impedir login de administrador via SSH
-PermitRootLogin no  
-3️⃣ Habilitar apenas chaves SSH  
-**PasswordAuthentication no**  
-**PubkeyAuthentication yes**  
+Modifique estas linhas:  
+   
+  > **Port 2222** - Alterar a porta padrão de 22 para 2222  
+  > **PermitRootLogin no** - Impedir login de administrador via SSH  
+  > **PasswordAuthentication no** - Habilitar apenas chaves SSH    
+  > **PubkeyAuthentication yes**  - Habilitar apenas chaves SSH  
 
 Salve e reinicie o SSH:  
 
-**Restart-Service sshd**
+  > **Restart-Service sshd**  
 
-✅ 3. Configurar Firewall
+3. Configurar Firewall  
 
-New-NetFirewallRule -DisplayName "SSH Custom" -Direction Inbound -Protocol TCP -LocalPort 2222 -Action Allow
+  > **New-NetFirewallRule -DisplayName "SSH Custom" -Direction Inbound -Protocol TCP -LocalPort 2222 -Action Allow **
 
-✅ 4. Auditar tentativas de login (Event Viewer)
+4. Auditar tentativas de login (Event Viewer)  
 
-Abra o Event Viewer e navegue até:
-📍 Applications and Services Logs > Microsoft > Windows > OpenSSH > Operational
+Abra o Event Viewer e navegue até:  
+  > **Applications and Services Logs > Microsoft > Windows > OpenSSH > Operational**
 
-Ative o log de auditoria para rastrear tentativas de login suspeitas.
-🔹 3. Hardening SSH em Equipamentos Cisco
+Ative o log de auditoria para rastrear tentativas de login suspeitas.  
 
-📍 Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.
-✅ 1. Habilitar apenas SSH (desativar Telnet)
+## 🔹 3. Hardening SSH em equipamentos CISCO
 
-conf t
- line vty 0 4
- transport input ssh
- exit
+Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.  
 
-✅ 2. Alterar a porta padrão do SSH
+1. Habilitar apenas SSH (desativar Telnet)
 
-ip ssh port 2222 rotary 1
-line vty 0 4
- rotary 1
- exit
+  > **conf t**  
+  >   **line vty 0 4**  
+  >   **transport input ssh**  
+  >   **exit**  
 
-✅ 3. Definir tempo máximo de inatividade
+2. Alterar a porta padrão do SSH  
 
-ip ssh time-out 300
+  > **ip ssh port 2222 rotary 1**
+  > **line vty 0 4**  
+  > **rotary 1**  
+  > **exit**  
 
-✅ 4. Restringir número de tentativas de login
+3. Definir tempo máximo de inatividade  
 
-ip ssh authentication-retries 3
+  > **ip ssh time-out 300**  
 
-✅ 5. Habilitar apenas SSH versão 2
+4. Restringir número de tentativas de login  
 
-ip ssh version 2
+  > **ip ssh authentication-retries 3**
 
-✅ 6. Criar um usuário com senha segura
+5. Habilitar apenas SSH versão 2  
 
-username admin privilege 15 secret SenhaForte123
+  > **ip ssh version 2**
 
-✅ 7. Definir algoritmos seguros
+6. Criar um usuário com senha segura
 
-ip ssh server algorithm encryption aes256-ctr
-ip ssh server algorithm mac hmac-sha2-256
+  **username admin privilege 15 secret SenhaForte123**
+
+7. Definir algoritmos seguros
+
+  **ip ssh server algorithm encryption aes256-ctr**
+  **ip ssh server algorithm mac hmac-sha2-256**
 
 
 
