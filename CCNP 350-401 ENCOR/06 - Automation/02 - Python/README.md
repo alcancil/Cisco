@@ -41,6 +41,6 @@ Então, vamos escrever o nosso primeiro código em Python, o tradicional Olá mu
 
 Então podemos ver que o Python é um interpretador simples e intuitivo.  O Python interpreta arquivos na extensão **.py**. Então para rodar o código desse arquivo basta digitar **python nome_do_arquivo.py**.  
 
-![PYTHON](Imagens/arquivo01)  
+![PYTHON](Imagens/arquivo01.png)  
 
 De inicio era assim que os programadores faziam. Eles utilizam editores de texto como o notapd.exe (Windows) ou mesmo o nano (linux). Mas com o passar do tempo, foram criadas as **IDEs** que nada mais são programas em interface gráfica que permitem integrar vários recursos para facilitar a digitação dos códigos. 
