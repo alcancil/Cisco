@@ -198,7 +198,22 @@ Para verificarmos os algoritmos ativos devemos digitar os seguinte comandos no t
 **ssh -Q kex** - Lista os algoritmos de troca de chaves disponíveis  
 **ssh -Q cipher**  - Lista os algoritmos de criptografia disponíveis  
 
-|-----------------------------------------|-----------------------------------------|
 | ![ALGORITMOS](Imagens/algoritmos01.png) | ![ALGORITMOS](Imagens/algoritmos02.png) |
 |-----------------------------------------|-----------------------------------------|
 | Algoritmos de trocas de chaves          | Algoritmos de cifra                     |
+
+Então precisamos realizar os ajustes de compatibilidade.  
+Em distribuições baseadas em **Red Hat (Rocky Linux, AlmaLinux,, Fedora e etc)**, devemos digitar o comando:  
+
+**sudo update-crypto-policies --set LEGACY**  
+
+Esse comando altera as políticas criptográficas do sistema para permitir o uso de algoritmos mais antigos e menos seguros.  
+* O que esse comando faz?
+
+Ele configura o sistema para usar a política LEGACY, que permite protocolos e algoritmos mais antigos, como:
+
+  > **TLS 1.0 e 1.1**  
+  > **Chaves RSA menores que 2048 bits**  
+  >**Algoritmos MD5 e SHA-1**  
+
+A ferramenta **update-crypto-policies** é usada para gerenciar essas configurações no Rocky Linux e outras distros baseadas em RHEL.
