@@ -11,7 +11,7 @@ Python é uma linguagem de programação de alto nível, ou seja, mais próxima 
 ✔ Multiplataforma: Funciona em Windows, Linux, macOS e outros sistemas.  
 ✔ Comunidade ativa: Muitos recursos, tutoriais e suporte online.  
 
-🔹 Para que o Python é usado?
+🔹 Para que o Python é usado?  
 ✔ Desenvolvimento Web (Django, Flask)  
 ✔ Ciência de Dados & Machine Learning (Pandas, TensorFlow, Scikit-learn)  
 ✔ **Automação/Scripts**  
