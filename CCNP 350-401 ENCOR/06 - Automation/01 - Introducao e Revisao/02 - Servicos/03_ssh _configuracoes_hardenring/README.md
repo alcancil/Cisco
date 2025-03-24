@@ -197,3 +197,8 @@ Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.
 Para verificarmos os algoritmos ativos devemos digitar os seguinte comandos no terminal do linux:  
 **ssh -Q kex** - Lista os algoritmos de troca de chaves disponíveis  
 **ssh -Q cipher**  - Lista os algoritmos de criptografia disponíveis  
+
+|-----------------------------------------|-----------------------------------------|
+| ![ALGORITMOS](Imagens/algoritmos01.png) | ![ALGORITMOS](Imagens/algoritmos02.png) |
+|-----------------------------------------|-----------------------------------------|
+| Algoritmos de trocas de chaves          | Algoritmos de cifra                     |
