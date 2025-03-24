@@ -29,9 +29,18 @@ Instalando o Python no Linux  - **https://python.org.br/instalacao-linux/**
 
 ## Editando Códigos.
 
-Agora que temos o Python instalado já podemos criar nossos códigos. Para isso basta abrir o terminal do sistema, entrar no python, digitar o código e salvar.  
+Agora que temos o Python instalado já podemos criar nossos códigos. Para isso basta abrir o terminal do sistema, entrar no python e digitar o código .  
 
 | ![PYTHON](Imagens/versao_w.png) | ![PYTHON](Imagens/versao_l.png) |
 |---------------------------------|---------------------------------|
 | Verificando versão em Windows   | Verificando versão em Linux     |
 
+Então, vamos escrever o nosso primeiro código em Python, o tradicional Olá mundo ! .  
+
+![PYTHON](Imagens/codigo01.png)  
+
+Então podemos ver que o Python é um interpretador simples e intuitivo.  O Python interpreta arquivos na extensão **.py**. Então para rodar o código desse arquivo basta digitar **python nome_do_arquivo.py**.  
+
+![PYTHON](Imagens/arquivo01)  
+
+De inicio era assim que os programadores faziam. Eles utilizam editores de texto como o notapd.exe (Windows) ou mesmo o nano (linux). Mas com o passar do tempo, foram criadas as **IDEs** que nada mais são programas em interface gráfica que permitem integrar vários recursos para facilitar a digitação dos códigos. 
