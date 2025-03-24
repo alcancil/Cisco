@@ -235,7 +235,7 @@ Edite o arquivo **/etc/ssh/ssh_config** (cliente SSH)
 
 Adicione as seguintes linhas no final do arquivo:  
 
-> **Host *** 
+> Host * 
     > **KexAlgorithms +diffie-hellman-group14-sha1,diffie-hellman-group1-sha1** - Habilita algoritmos antigos como diffie-hellman-group1-sha1, necessários para switches e roteadores Cisco mais antigos. 
     > **Ciphers +aes128-cbc,3des-cbc** - Ativa cifradores antigos, como aes128-cbc e 3des-cbc, compatíveis com versões antigas do SSH nos Cisco.  
     > **HostKeyAlgorithms +ssh-rsa** - Permite chaves RSA mais antigas, que foram removidas das versões mais recentes do OpenSSH.   
