@@ -186,7 +186,7 @@ Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.
 
 6. Criar um usuário com senha segura  
 
-  **username admin privilege 15 secret SenhaForte123**  
+  > **username admin privilege 15 secret SenhaForte123**  
 
 7. Definir algoritmos seguros
 
