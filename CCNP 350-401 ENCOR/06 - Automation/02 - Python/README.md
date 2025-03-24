@@ -27,3 +27,11 @@ O Python pode ser encontrado em : **https://www.python.org/** . Toda a documenta
 Instalando o Python no Windows - **https://python.org.br/instalacao-windows/**  
 Instalando o Python no Linux  - **https://python.org.br/instalacao-linux/**  
 
+## Editando Códigos.
+
+Agora que temos o Python instalado já podemos criar nossos códigos. Para isso basta abrir o terminal do sistema, entrar no python, digitar o código e salvar.  
+
+| ![PYTHON](Imagens/versao_w.png) | ![PYTHON](Imagens/versao_w.png) |
+|---------------------------------|---------------------------------|
+| Verificando versão em Windows   | Verificando versão em Linux     |
+
