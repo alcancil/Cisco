@@ -245,15 +245,15 @@ Configurar o Servidor SSH (sshd_config):
 
 Se você quiser permitir conexões SSH para o Debian de dispositivos antigos, edite:  
 
-**sudo nano /etc/ssh/sshd_config**
+> **sudo nano /etc/ssh/sshd_config**
 
 Adicione ou altere estas linhas:
 
-**KexAlgorithms +diffie-hellman-group1-sha1,diffie-hellman-group14-sha1**
-**Ciphers +aes128-cbc,3des-cbc**  
-**HostKeyAlgorithms +ssh-rsa**  
-**PubkeyAcceptedAlgorithms +ssh-rsa**  
+> **KexAlgorithms +diffie-hellman-group1-sha1,diffie-hellman-group14-sha1**
+> **Ciphers +aes128-cbc,3des-cbc**  
+> **HostKeyAlgorithms +ssh-rsa**  
+> **PubkeyAcceptedAlgorithms +ssh-rsa**  
 
 Depois reinicie o serviço SSH:
 
-**sudo systemctl restart sshd**
+> **sudo systemctl restart sshd**
