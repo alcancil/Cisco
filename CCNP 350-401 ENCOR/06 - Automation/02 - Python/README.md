@@ -31,7 +31,7 @@ Instalando o Python no Linux  - **https://python.org.br/instalacao-linux/**
 
 Agora que temos o Python instalado já podemos criar nossos códigos. Para isso basta abrir o terminal do sistema, entrar no python, digitar o código e salvar.  
 
-| ![PYTHON](Imagens/versao_w.png) | ![PYTHON](Imagens/versao_w.png) |
+| ![PYTHON](Imagens/versao_w.png) | ![PYTHON](Imagens/versao_l.png) |
 |---------------------------------|---------------------------------|
 | Verificando versão em Windows   | Verificando versão em Linux     |
 
