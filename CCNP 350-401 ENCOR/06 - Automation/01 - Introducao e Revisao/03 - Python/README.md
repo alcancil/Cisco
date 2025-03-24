@@ -20,15 +20,9 @@ Python é uma linguagem de programação de alto nível, ou seja, mais próxima 
 ✔ Jogos (com Pygame)  
 ✔ IoT (Internet das Coisas)  
 
-🔹 Exemplo de código Python:
-python
-Copy
-print("Olá, mundo!")  # Saída: Olá, mundo!
+## Instalação
 
-# Exemplo de função
-def soma(a, b):
-    return a + b
+O Python pode ser encontrado em : **https://www.python.org/** . Toda a documentação e todos os recursos da linguagem podem ser encontrados nesse site oficial do desenvolvedor.  
 
-resultado = soma(5, 3)
-print(resultado)  # Saída: 8
-Python é uma das linguagens mais populares do mundo, ideal para iniciantes e profissionais. Quer aprender mais sobre algo específico? 😊
+Instalando o Python no Windows - **https://python.org.br/instalacao-windows/**  
+Instalando o Python no Linux  - **https://python.org.br/instalacao-linux/**  
