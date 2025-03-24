@@ -216,4 +216,44 @@ Ele configura o sistema para usar a política LEGACY, que permite protocolos e a
   > **Chaves RSA menores que 2048 bits**  
   >**Algoritmos MD5 e SHA-1**  
 
-A ferramenta **update-crypto-policies** é usada para gerenciar essas configurações no Rocky Linux e outras distros baseadas em RHEL.
+A ferramenta **update-crypto-policies** é usada para gerenciar essas configurações no Rocky Linux e outras distribuições baseadas em RHEL.  
+
+Já em distribuições baseadas em Debian / Ubuntu, essa ferramenta não existe. Então é preciso alterar manualmente os arquivos de configuração.  
+
+Edite o arquivo de configuração do OpenSSL:  
+
+**sudo nano /etc/ssl/openssl.cnf**
+
+Adicione ou edite esta linha dentro da seção [system_default_sect]:  
+
+** MinProtocol = TLSv1  **
+** CipherString = DEFAULT:@SECLEVEL=1  **
+
+Edite o arquivo **/etc/ssh/ssh_config** (cliente SSH)  
+
+**sudo nano /etc/ssh/ssh_config**
+
+Adicione as seguintes linhas no final do arquivo:  
+
+> **Host *** 
+    > **KexAlgorithms +diffie-hellman-group14-sha1,diffie-hellman-group1-sha1** - Habilita algoritmos antigos como diffie-hellman-group1-sha1, necessários para switches e roteadores Cisco mais antigos. 
+    > **Ciphers +aes128-cbc,3des-cbc** - Ativa cifradores antigos, como aes128-cbc e 3des-cbc, compatíveis com versões antigas do SSH nos Cisco.  
+    > **HostKeyAlgorithms +ssh-rsa** - Permite chaves RSA mais antigas, que foram removidas das versões mais recentes do OpenSSH.   
+    > **PubkeyAcceptedAlgorithms +ssh-rsa** - Permite chaves RSA mais antigas, que foram removidas das versões mais recentes do OpenSSH.
+
+Configurar o Servidor SSH (sshd_config):  
+
+Se você quiser permitir conexões SSH para o Debian de dispositivos antigos, edite:  
+
+**sudo nano /etc/ssh/sshd_config**
+
+Adicione ou altere estas linhas:
+
+**KexAlgorithms +diffie-hellman-group1-sha1,diffie-hellman-group14-sha1**
+**Ciphers +aes128-cbc,3des-cbc**  
+**HostKeyAlgorithms +ssh-rsa**  
+**PubkeyAcceptedAlgorithms +ssh-rsa**  
+
+Depois reinicie o serviço SSH:
+
+**sudo systemctl restart sshd**
