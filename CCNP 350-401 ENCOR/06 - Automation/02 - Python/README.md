@@ -26,3 +26,4 @@ O Python pode ser encontrado em : **https://www.python.org/** . Toda a documenta
 
 Instalando o Python no Windows - **https://python.org.br/instalacao-windows/**  
 Instalando o Python no Linux  - **https://python.org.br/instalacao-linux/**  
+
