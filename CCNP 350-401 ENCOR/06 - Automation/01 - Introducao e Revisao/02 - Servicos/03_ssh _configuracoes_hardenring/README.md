@@ -154,11 +154,11 @@ Abra o Event Viewer e navegue até:
 
 Ative o log de auditoria para rastrear tentativas de login suspeitas.  
 
-## 🔹 3. Hardening SSH em equipamentos CISCO
+## 🔹 3. Hardening SSH em equipamentos CISCO  
 
 Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.  
 
-1. Habilitar apenas SSH (desativar Telnet)
+1. Habilitar apenas SSH (desativar Telnet)  
 
   > **conf t**  
   >   **line vty 0 4**  
@@ -167,7 +167,7 @@ Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.
 
 2. Alterar a porta padrão do SSH  
 
-  > **ip ssh port 2222 rotary 1**
+  > **ip ssh port 2222 rotary 1**  
   > **line vty 0 4**  
   > **rotary 1**  
   > **exit**  
@@ -178,23 +178,22 @@ Passo a passo para reforçar a segurança do SSH em roteadores e switches Cisco.
 
 4. Restringir número de tentativas de login  
 
-  > **ip ssh authentication-retries 3**
+  > **ip ssh authentication-retries 3**  
 
 5. Habilitar apenas SSH versão 2  
 
-  > **ip ssh version 2**
+  > **ip ssh version 2**  
 
-6. Criar um usuário com senha segura
+6. Criar um usuário com senha segura  
 
-  **username admin privilege 15 secret SenhaForte123**
+  **username admin privilege 15 secret SenhaForte123**  
 
 7. Definir algoritmos seguros
 
-  **ip ssh server algorithm encryption aes256-ctr**
-  **ip ssh server algorithm mac hmac-sha2-256**
+  **ip ssh server algorithm encryption aes256-ctr**  
+  **ip ssh server algorithm mac hmac-sha2-256**  
 
-
-
-
-
-
+**OBS:** pode ser que na rede existam equipamentos mais antigos e que não suportem os algoritmos de criptografia e troca de chaves mais novos e com isso, não tenhamos mais acesso via ssh. Para isso precisamos habilitar os algoritmos mais antigos por questões de compatibilidade.  
+Para verificarmos os algoritmos ativos devemos digitar os seguinte comandos no terminal do linux:  
+**ssh -Q kex** - Lista os algoritmos de troca de chaves disponíveis  
+**ssh -Q cipher**  - Lista os algoritmos de criptografia disponíveis  
