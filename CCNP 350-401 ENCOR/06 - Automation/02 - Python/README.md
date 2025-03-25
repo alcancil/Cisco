@@ -73,16 +73,16 @@ No Windows, normalmente o Pip já vem instalado. Já no linux é necessário se 
 
 ![PIP](Imagens/pip/pip_l.png)
 
-bash
-Copy
-pip --version
-# ou (para Python 3)
-pip3 --version
-Saída exemplo:
+**OBS:** normalmente quando se instala o Linux (Debian, Ubuntu, Red Hat, Fedora, etc), o Python já vem instalado. Porém, muitas vezes o Python em alguns equipamentos ou distribuições podem estar na versão 2.7 . Ai é preciso se atualizar o python para a versão mais nova. Com isso, o pip pode ser chamado através dos comandos **pip ou pip3**.  
 
-Copy
-pip 23.3.1 from /usr/local/lib/python3.10/site-packages/pip (python 3.10)
-⚠️ Se não estiver instalado, siga este guia oficial.
+Para instalarmos o pip no Debian basta digitar no terminal:  
+
+![PIP](Imagens/pip/pip_inst.png)  
+
+E depois é esperar o processo terminar, como qualquer pacote do linux.
+
+![PIP](Imagens/pip/pip_l_02.png)  
+
 
 2. Instalar um pacote
 bash
