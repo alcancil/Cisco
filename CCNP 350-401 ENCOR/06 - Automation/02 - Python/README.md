@@ -67,11 +67,11 @@ No Windows, normalmente o Pip já vem instalado. Já no linux é necessário se 
 
 **Windows**
 
-![PIP](Imagens/versao_w.png)  
+![PIP](Imagens/pip/pip_w.png)  
 
 **Linux**
 
-![PIP](Imagens/versao_l.png)
+![PIP](Imagens/pip/pip_l.png)
 
 bash
 Copy
