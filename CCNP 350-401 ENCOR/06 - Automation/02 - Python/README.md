@@ -101,3 +101,15 @@ Para mudar esse comportamento, devemos navegar até o caminho **/usr/lib/python3
 
 ![PIP](Imagens/pip/03.png)  
 
+3. Listar pacotes  
+
+Depois que vimos como instalar pacotes através do pip, é necessário entender como visualizar os pacotes instalados. Para listar todos os pacotes instalados no sistema devemos digitar:  
+
+    pip list
+
+![PIP](Imagens/pip/04.png)  
+
+Mas se queremos ter informação sobre um pacote em específico ou mesmo verificar se o mesmo está instalado então devemos digitar:  
+
+![PIP](Imagens/pip/05.png)  
+
