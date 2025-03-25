@@ -90,3 +90,14 @@ Como citado anteriormente, o PIP tem um repositório com vários pacotes. Então
     pip install iptables-tools  
 
 ![PIP](Imagens/pip/01.png)  
+
+No Linux, quando você digita o mesmo comando, o sistema irá retornar um aviso.  
+
+![PIP](Imagens/pip/01.png)  
+
+Esse aviso é o sistema avisando para não utilizar o PIP. Isso acontece pois o linux já utiliza um gerenciador de pacotes próprio. O Debian utiliza o **apt**. Em tese, se utilizarmos outro gerenciador de pacotes, poderemos causar alguns problemas de conflitos com pacotes utilizado pelo apt. O recomendado é se utilizar **ambientes virtuais**, o qual trataremos adiante.  
+
+Para mudar esse comportamento, devemos navegar até o caminho **/usr/lib/python3.11/** e apagar o arquivo **EXTERNALLY-MANAGED** . É esse arquivo que não permite que o sistema ulize o **PIP** junto com o gerenciador de pacotes padrão.  
+
+![PIP](Imagens/pip/02.png)  
+
