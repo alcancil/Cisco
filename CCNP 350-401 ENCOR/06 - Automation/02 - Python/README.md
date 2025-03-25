@@ -44,7 +44,13 @@ Então podemos ver que o Python é um interpretador simples e intuitivo.  O Pyth
 ![PYTHON](Imagens/arquivo01.png)  
 
 De inicio era assim que os programadores faziam. Eles utilizam editores de texto como o notapd.exe (Windows) ou mesmo o nano (linux). Mas com o passar do tempo, foram criadas as **IDEs** que nada mais são programas em interface gráfica que permitem integrar vários recursos para facilitar a digitação dos códigos.  
-As IDES mais populares são:  
+Algumas das IDES mais populares são:  
 * [Pycharm](https://www.jetbrains.com/pycharm/)  
 * [Vscode](https://code.visualstudio.com/)  
 * [Jupyter](https://jupyter.org/)  
+
+Existem outras IDES mas cada uma tem suas propriedades e vantagens. Então o usuário tem que escolher a que mais se adequa as suas necessidades.  
+
+## Gerenciador de pacotes - PIP
+
+O Python funciona com bibliotecas e pacotes e para gerenciar (instalar, remover ou atualizar) os pacotes e le utiliza um gerenciador de pacotes chamado **pip**. O pip por sua vez utiliza um repositório de pacotes o pypy (https://pypi.org/).  
