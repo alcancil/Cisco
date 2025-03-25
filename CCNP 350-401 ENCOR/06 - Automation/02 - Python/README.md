@@ -122,3 +122,5 @@ Se queremos remover um pacote, devemos digitar:
     pip uninstall nome_do_pacote
 
 ![PIP](Imagens/pip/06.png)  
+
+Bom, aqui vimos o principal do gerenciador de pacotes PIP. Se desejar obter mais informações eu recomenda a leitura da documentação oficial que fica em http://pip.pypa.io/en/stable/
