@@ -87,4 +87,4 @@ E depois é esperar o processo terminar, como qualquer pacote do linux.
 
 Como citado anteriormente, o PIP tem um repositório com vários pacotes. Então sempre que queremos instalar algum pacote, o certo é pesquisar no repositório para saber qual o pacote em questão queremos instalar. Vamos pegar o exemplo do pacote **iptables-tools** . Agora que já sabemos o nome do pacote, vamos digitar assim no terminal:  
     
-    pip install iptables-tools
+    **pip install iptables-tools**
