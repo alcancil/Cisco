@@ -111,5 +111,14 @@ Depois que vimos como instalar pacotes através do pip, é necessário entender 
 
 Mas se queremos ter informação sobre um pacote em específico ou mesmo verificar se o mesmo está instalado então devemos digitar:  
 
+    pip show nome_do_pacote
+
 ![PIP](Imagens/pip/05.png)  
 
+4. Removendo pacotes  
+
+Se queremos remover um pacote, devemos digitar:  
+
+    pip uninstall nome_do_pacote
+
+![PIP](Imagens/pip/06.png)  
