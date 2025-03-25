@@ -55,11 +55,23 @@ Existem outras IDES mas cada uma tem suas propriedades e vantagens. Então o usu
 
 O Python funciona com bibliotecas e pacotes e para gerenciar (instalar, remover ou atualizar) os pacotes e le utiliza um gerenciador de pacotes chamado **pip**. O pip por sua vez utiliza um repositório de pacotes o pypy (https://pypi.org/).  
 Então vamos supor que você precise de alguma biblioteca para manipular o **iptables** do linux. Como faríamos ?  
-Para isso, precisamos saber se existe algum pacote com essa finalidade. Para isso, basta navegar no site do repositório **pypi** e no campo de busca vamos digitar iptables. Como resultado, podemos notar que a pesquisa irá retornar vários resultados. Dentre eles, você ira encontrar o pacote **iptables-tools**.  Se navegarmos por esse resultado, vamos ter toda a documentação oficial que ensina desde como se instala o pacote até mesmo como se utiliza o mesmo. Mas como o pip funciona então ?  
+Para isso, precisamos saber se existe algum pacote com essa finalidade. Para isso, basta navegar no site do repositório **pypi** e no campo de busca vamos digitar iptables. Como resultado, podemos notar que a pesquisa irá retornar vários resultados. Dentre eles, você ira encontrar o pacote **iptables-tools**.  Se navegarmos por esse resultado, vamos ter toda a documentação oficial que ensina desde como se instala o pacote até mesmo como se utiliza o mesmo.  
 
-Como usar o PIP?
+Mas como o pip funciona então ?  
+
+Como usar o PIP?  
+
 1. Verificar se o PIP está instalado
-No terminal (Linux/macOS/Windows), execute:
+
+No Windows, normalmente o Pip já vem instalado. Já no linux é necessário se instalar o mesmo.  
+
+**Windows**
+
+![PIP](Imagens/versao_w.png)  
+
+**Linux**
+
+![PIP](Imagens/versao_l.png)
 
 bash
 Copy
