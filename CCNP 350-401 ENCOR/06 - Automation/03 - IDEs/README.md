@@ -35,5 +35,5 @@ O NOTEPAD++ fica instalado em **C:\Program Files\Notepad++** . Dentro dessa past
 
 É aqui que o Notepad++ vai gerenciar os plugins disponíveis. Então vamos selecionar o plugin nppexec e depois clicar em instalar.  
 
-| ![NOTEPAD++](Imagens/notepad++/12.png) | ![NOTEPAD++](Imagens/notepad++/12.png) |
+| ![NOTEPAD++](Imagens/notepad++/12.png) | ![NOTEPAD++](Imagens/notepad++/13.png) |
 |----------------------------------------|----------------------------------------|    
