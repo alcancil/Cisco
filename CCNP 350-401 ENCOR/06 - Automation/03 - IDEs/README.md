@@ -55,9 +55,9 @@ As linguagens definidas pelo usuário ficam em : **C:\Users\usuario\AppData\Roam
 | ![NOTEPAD++](Imagens/notepad++/16.png) | ![NOTEPAD++](Imagens/notepad++/17.png) |
 |----------------------------------------|----------------------------------------|
 
-Bom, como podemos perceber agora apareceram mais opções de linguagens. Vamos abrir um arquivo de configura de um equipamento cisco para podermos comparar depois que aplicarmos a linguagem.  
+Bom, como podemos perceber agora apareceram mais opções de linguagens. Vamos abrir um arquivo de configuração de um equipamento cisco para podermos comparar depois que aplicarmos a linguagem.  
 
-![NOTEPAD++](Imagens/notepad++/17.png)  
+![NOTEPAD++](Imagens/notepad++/18.png)  
 
 Como podemos notar, esse é um arquivo que abre como se fosse em um editor de texto comum. Agora vamos ativar a linguagem **cisco**. Vamos clicar no menu **linguagem** e depois **cisco**.  
 
