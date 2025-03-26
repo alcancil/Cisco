@@ -69,3 +69,4 @@ Vamos reparar como ficou o mesmo arquivo agora com a linguagem cisco ativada.
 |----------------------------------------|----------------------------------------|
 | Sem Linguagem cisco                    | Com linguagem cisco                    |
 
+Então agora fica claro que a linguagem adiciona cores aos comandos do cisco ios e também sugere comando para completar. Isso facilita e auxilia na análise arquivos de configuração.  
