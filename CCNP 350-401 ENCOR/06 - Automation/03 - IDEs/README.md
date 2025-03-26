@@ -29,4 +29,11 @@ Pronto, agora instalamos o software, mas por si só o NOTEPAD++ não consegue co
 | ![NOTEPAD++](Imagens/notepad++/09.png) | ![NOTEPAD++](Imagens/notepad++/10.png) | 
 |----------------------------------------|----------------------------------------|
 
-O NOTEPAD++ fica instalado em **C:\Program Files\Notepad++** . Dentro dessa pasta existe a pasta **plugins** onde ficam todos os plugins. Então vamos copiar o conteúdo da pasta que extraímos para dentro dessa pasta de plugins.
+O NOTEPAD++ fica instalado em **C:\Program Files\Notepad++** . Dentro dessa pasta existe a pasta **plugins** onde ficam todos os plugins. Então vamos copiar o conteúdo da pasta que extraímos para dentro dessa pasta de plugins. Depois disso vamos executar o notepad++ e clicar no menu plugins, gerenciar plugins.  
+
+![NOTEPAD++](Imagens/notepad++/11.png)  
+
+É aqui que o Notepad++ vai gerenciar os plugins disponíveis. Então vamos selecionar o plugin nppexec e depois clicar em instalar.  
+
+| ![NOTEPAD++](Imagens/notepad++/12.png) | ![NOTEPAD++](Imagens/notepad++/12.png) |
+|----------------------------------------|----------------------------------------|    
