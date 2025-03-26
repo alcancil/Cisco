@@ -65,7 +65,7 @@ Como podemos notar, esse é um arquivo que abre como se fosse em um editor de te
 
 Vamos reparar como ficou o mesmo arquivo agora com a linguagem cisco ativada.  
 
-| ![NOTEPAD++](Imagens/notepad++/16.png) | ![NOTEPAD++](Imagens/notepad++/20.png) |
+| ![NOTEPAD++](Imagens/notepad++/18.png) | ![NOTEPAD++](Imagens/notepad++/20.png) |
 |----------------------------------------|----------------------------------------|
 | Sem Linguagem cisco                    | Com linguagem cisco                    |
 
