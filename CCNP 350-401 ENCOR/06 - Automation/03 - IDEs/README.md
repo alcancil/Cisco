@@ -14,5 +14,15 @@ As IDEs ou Ambiente de Desenvolvimento Integrado são a evolução natural dos e
 
 Essa é uma IDE que ficou bastante popular em ambiente Windows. Essa não é uma ide completa e robusta pois não tem um depurador ou um gerenciador avançado de projetos. Mas mesmo assim vale a pena darmos uma atenção especial pois existem alguns recursos uteis para o nosso dia a dia.  
 
-Então para instalarmos a ide devemos ir até o site https://notepad-plus-plus.org/ , escolher a versão desejada e depois instalar a mesma.  
+Então para instalarmos a ide devemos ir até o site https://notepad-plus-plus.org/ , escolher a versão desejada e depois instalar a mesma. A instalação é bem simples, clicar em executar e ir avançando.  
+
+| ![NOTEPAD++](Imagens/notepad++/01.png) | ![NOTEPAD++](Imagens/notepad++/02.png) |
+|----------------------------------------|----------------------------------------|
+| ![NOTEPAD++](Imagens/notepad++/03.png) | ![NOTEPAD++](Imagens/notepad++/04.png) |
+|----------------------------------------|----------------------------------------|
+| ![NOTEPAD++](Imagens/notepad++/05.png) | ![NOTEPAD++](Imagens/notepad++/06.png) |
+|----------------------------------------|----------------------------------------|
+| ![NOTEPAD++](Imagens/notepad++/07.png) | ![NOTEPAD++](Imagens/notepad++/08.png) |  
+
+
 
