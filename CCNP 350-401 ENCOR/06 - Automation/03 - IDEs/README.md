@@ -55,3 +55,6 @@ As linguagens definidas pelo usuário ficam em : **C:\Users\usuario\AppData\Roam
 | ![NOTEPAD++](Imagens/notepad++/16.png) | ![NOTEPAD++](Imagens/notepad++/17.png) |
 |----------------------------------------|----------------------------------------|
 
+Bom, como podemos perceber agora apareceram mais opções de linguagens. Vamos abrir um arquivo de configura de um equipamento cisco para podermos comparar depois que aplicarmos a linguagem.  
+
+
