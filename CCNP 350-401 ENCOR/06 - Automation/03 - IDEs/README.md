@@ -37,3 +37,13 @@ O NOTEPAD++ fica instalado em **C:\Program Files\Notepad++** . Dentro dessa past
 
 | ![NOTEPAD++](Imagens/notepad++/12.png) | ![NOTEPAD++](Imagens/notepad++/13.png) |
 |----------------------------------------|----------------------------------------|    
+
+Após isso, o notpad++ irá reiniciar e podemos notar que ao clicar no menu plugins agora temos a opção **NppExec**, com todas as suas funções.  
+
+![NOTEPAD++](Imagens/notepad++/13.png)  
+
+Então repare que agora pode executar o atalho **F6** do teclado para executarmos os nosso scripts.  
+
+![NOTEPAD++](Imagens/notepad++/14.png)  
+
+Podemos reparar que ao pressionar o botão **F6**, é aberto uma janela e na parte inferior aparece uma nova janela, que é chamada de terminal. Então devemos copiar o nosso script em python e colocar na janela aberta, clicar em executar e vamos notar que o resultado sairá no terminal. Não é a forma mais prática de utilizarmos python, mas é uma maneira. Mas vamos em frente que agora que já vimos que podemos executar python de dentro do Notpad++, vamos instalar outros recursos interessantes nele que vão ajudar na produtividade do dia a dia.  
