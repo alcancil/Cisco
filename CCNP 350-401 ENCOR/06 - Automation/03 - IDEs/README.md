@@ -24,5 +24,6 @@ Então para instalarmos a ide devemos ir até o site https://notepad-plus-plus.o
 |----------------------------------------|----------------------------------------|
 | ![NOTEPAD++](Imagens/notepad++/07.png) | ![NOTEPAD++](Imagens/notepad++/08.png) |  
 
+Pronto, agora instalamos o software, mas por si só o NOTEPAD++ não consegue compilar códigos em python. Para isso, pode instalar o pluguin **nppexec** . O repositório oficial do plugin com a instrução de instalação fica em https://github.com/d0vgan/nppexec . Então vamos baixar o plugin em https://github.com/d0vgan/nppexec/releases e descompactar o mesmo.  
 
 
