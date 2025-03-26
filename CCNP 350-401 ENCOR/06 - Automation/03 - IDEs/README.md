@@ -52,6 +52,6 @@ Agora vamos adicionar uma funcionalidade bacana que é a de deixar a IDE interpr
 Então o que iremos fazer é instalar o arquivo de linguagens correspondente ao Cisco Ios. Esse arquivo deve estar no formato **.xml**. Pode se baixar o arquivo no fórum ou nesse link que disponibilizei aqui [userdefinelang.xml](Arquivos/userdefinelang.xml)  
 As linguagens definidas pelo usuário ficam em : **C:\Users\usuario\AppData\Roaming\Notepad++\userDefineLangs** , onde devemos substituir a palavra **usuário** pelo nome do seu usuário corrente. Vamos clicar em linguagens e vamos reparar que só existem a linguagens padrão que já vem com o instalador. Feito isso, vamos copiar o arquivo **userdefinelang.xml** para dentro dessa pasta e em seguida devemos reiniciar o Notepad++
 
-| ![NOTEPAD++](Imagens/notepad++/15.png) | ![NOTEPAD++](Imagens/notepad++/16.png) |
+| ![NOTEPAD++](Imagens/notepad++/16.png) | ![NOTEPAD++](Imagens/notepad++/17.png) |
 |----------------------------------------|----------------------------------------|
 
