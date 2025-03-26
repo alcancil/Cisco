@@ -47,3 +47,11 @@ Então repare que agora pode executar o atalho **F6** do teclado para executarmo
 ![NOTEPAD++](Imagens/notepad++/14.png)  
 
 Podemos reparar que ao pressionar o botão **F6**, é aberto uma janela e na parte inferior aparece uma nova janela, que é chamada de terminal. Então devemos copiar o nosso script em python e colocar na janela aberta, clicar em executar e vamos notar que o resultado sairá no terminal. Não é a forma mais prática de utilizarmos python, mas é uma maneira. Mas vamos em frente que agora que já vimos que podemos executar python de dentro do Notpad++, vamos instalar outros recursos interessantes nele que vão ajudar na produtividade do dia a dia.  
+
+Agora vamos adicionar uma funcionalidade bacana que é a de deixar a IDE interpretar as linguagens de equipamentos, no caso Cisco. Aqui ele ai colorir comando e reconhecer comandos do Cisco IOs. Essa dica foi tirada do fórum da cisco ( https://community.cisco.com/t5/technical-documentation-ideas/how-to-highlighting-cisco-sintax-with-notepad/td-p/2611914 ).  
+Então o que iremos fazer é instalar o arquivo de linguagens correspondente ao Cisco Ios. Esse arquivo deve estar no formato **.xml**. Pode se baixar o arquivo no fórum ou nesse link que disponibilizei aqui [userdefinelang.xml](Arquivos/userdefinelang.xml)  
+As linguagens definidas pelo usuário ficam em : **C:\Users\usuario\AppData\Roaming\Notepad++\userDefineLangs** , onde devemos substituir a palavra **usuário** pelo nome do seu usuário corrente. Vamos clicar em linguagens e vamos reparar que só existem a linguagens padrão que já vem com o instalador. Feito isso, vamos copiar o arquivo **userdefinelang.xml** para dentro dessa pasta e em seguida devemos reiniciar o Notepad++
+
+| ![NOTEPAD++](Imagens/notepad++/15.png) | ![NOTEPAD++](Imagens/notepad++/16.png) |
+|----------------------------------------|----------------------------------------|
+
