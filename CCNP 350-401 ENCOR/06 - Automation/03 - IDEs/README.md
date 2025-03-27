@@ -78,6 +78,6 @@ Feito isso, devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar
 |----------------------------------------|----------------------------------------|
 
 Aqui cabe uma observação: podemos configurar o modelo do ChatGpt porém ele funciona online e é pago. Cada caractere gerado é chamado de token e a cobrança é feita através dos tokens. Então como alternativa vamos utilizar o **olama** que tem modelos gratuitos e que funcionam localmente.  
-Mas o que é o **Olama** ?  
+Mas o que é o **Ollama** ?  
 O Ollama é uma ferramenta de código aberto que executa **large language models (LLMs)**, ou seja, os modelos de Inteligência Artificial diretamente em um computador. Isso a torna particularmente popular entre desenvolvedores de IA, pesquisadores e empresas que precisam focar em controle e privacidade dos dados.  
 
