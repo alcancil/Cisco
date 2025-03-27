@@ -74,5 +74,5 @@ Então agora fica claro que a linguagem adiciona cores aos comandos do cisco ios
 Agora, vamos instalar o plugin **NppOpenAI** para adicionar inteligência artificial com o modelo do **ChatGPt 4** da Open AI. O processo é praticamente o mesmo do plugin que instalamos anteriormente. O repositório oficial do plugin é https://github.com/Krazal/nppopenai . Então vamos baixar o plugin no endereço:  https://github.com/Krazal/nppopenai/releases/download/v0.4.2.2/NppOpenAI_x64.zip . **OBS:** estou utilizando a versão 64 bits. Depois que baixamos o plugin, vamos extrair para a pasta de plugins do Notepad++ que ficam em C:\Program Files (x86)\Notepad++\plugins\ .  
 Feito isso, devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar **ppOpenAI** como feito anteriormente e ai clicar em **Edit Config**.  
 
-![NOTEPAD++](Imagens/notepad++/21.png)  
+| ![NOTEPAD++](Imagens/notepad++/21.png) | ![NOTEPAD++](Imagens/notepad++/22.png) |  
 
