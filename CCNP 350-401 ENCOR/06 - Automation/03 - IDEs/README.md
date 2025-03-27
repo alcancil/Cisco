@@ -75,4 +75,4 @@ Agora, vamos instalar o plugin **NppOpenAI** para adicionar inteligência artifi
 Feito isso, devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar **ppOpenAI** como feito anteriormente e ai clicar em **Edit Config**.  
 
 | ![NOTEPAD++](Imagens/notepad++/21.png) | ![NOTEPAD++](Imagens/notepad++/22.png) |  
-
+|----------------------------------------|----------------------------------------|
