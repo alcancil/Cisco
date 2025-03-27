@@ -70,3 +70,6 @@ Vamos reparar como ficou o mesmo arquivo agora com a linguagem cisco ativada.
 | Sem Linguagem cisco                    | Com linguagem cisco                    |
 
 Então agora fica claro que a linguagem adiciona cores aos comandos do cisco ios e também sugere comando para completar. Isso facilita e auxilia na análise arquivos de configuração.  
+
+Agora, vamos instalar o plugin **NppOpenAI** para adicionar inteligência artificial com o modelo do **ChatGPt 4** da Open AI. O processo é praticamente o mesmo do plugin que instalamos anteriormente. O repositório oficil do plugin é https://github.com/Krazal/nppopenai . Então vamos baixar o plugin no endereço:  https://github.com/Krazal/nppopenai/releases/download/v0.4.2.2/NppOpenAI_x64.zip . **OBS:** estou utilizando a versão 64 bits. Depois que baixamos o plugin, vamos extrair para a pasta de plugins do Notepad++ que ficam em C:\Program Files (x86)\Notepad++\plugins\ .  
+Depois devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar **ppOpenAI** como feito anteriormente.  
