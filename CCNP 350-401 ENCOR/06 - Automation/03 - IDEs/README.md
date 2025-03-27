@@ -76,3 +76,9 @@ Feito isso, devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar
 
 | ![NOTEPAD++](Imagens/notepad++/21.png) | ![NOTEPAD++](Imagens/notepad++/22.png) |  
 |----------------------------------------|----------------------------------------|
+
+Então vemos que aqui vamos configurar o plugin. A primeira coisa necessária é acessar o site https://platform.openai.com/api-keys e fazer o login. Feito isso precisamos gerar uma chave de acesso. **OBS:** aqui vou utilizar uma chave "temporária" que depois irei apagar. Essa chave não deve ser passada para terceiros.  
+
+| ![NOTEPAD++](Imagens/notepad++/23.png) | ![NOTEPAD++](Imagens/notepad++/24.png) |  
+|----------------------------------------|----------------------------------------|
+
