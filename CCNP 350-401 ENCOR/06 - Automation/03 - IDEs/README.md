@@ -77,8 +77,7 @@ Feito isso, devemos iniciar o Notepad++ e clicar no menu plugins. Vamos procurar
 | ![NOTEPAD++](Imagens/notepad++/21.png) | ![NOTEPAD++](Imagens/notepad++/22.png) |  
 |----------------------------------------|----------------------------------------|
 
-Então vemos que aqui vamos configurar o plugin. A primeira coisa necessária é acessar o site https://platform.openai.com/api-keys e fazer o login. Feito isso precisamos gerar uma chave de acesso. **OBS:** aqui vou utilizar uma chave "temporária" que depois irei apagar. Essa chave não deve ser passada para terceiros.  
-
-| ![NOTEPAD++](Imagens/notepad++/23.png) | ![NOTEPAD++](Imagens/notepad++/24.png) |  
-|----------------------------------------|----------------------------------------|
+Aqui cabe uma observação: podemos configurar o modelo do ChatGpt porém ele funciona online e é pago. Cada caractere gerado é chamado de token e a cobrança é feita através dos tokens. Então como alternativa vamos utilizar o **olama** que tem modelos gratuitos e que funcionam localmente.  
+Mas o que é o **Olama** ?  
+O Ollama é uma ferramenta de código aberto que executa **large language models (LLMs)**, ou seja, os modelos de Inteligência Artificial diretamente em um computador. Isso a torna particularmente popular entre desenvolvedores de IA, pesquisadores e empresas que precisam focar em controle e privacidade dos dados.  
 
