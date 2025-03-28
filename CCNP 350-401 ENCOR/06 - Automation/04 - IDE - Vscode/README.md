@@ -50,6 +50,7 @@ Podemos notar que abriu uma caixa de pesquisa. Vamos digitar: **Portuguese**. Va
 
 **Obs2:** Aqui é interessante ressaltar que quando selecionamos uma extensão, podemos notar que ao lado se abre uma página que explica qual é o objetivo da extensão e como se utiliza e instala a mesma. Esse é um dos motivos dessa IDE ser tão popular. Existem muitas extensões que auxiliam no fluxo do desenvolvimento dos códigos aumentando a produtividade.  
 
-Agora vamos ver como instalar um corretor de textos. Vamos no menu extensões e vamos procurar por: **Code Spelll Checker** . Essa é uma extensão que depende de outras. A principal se chama Code Spell, que é o corretor ortográfico. Porém essa extensão precisa que instalemos os dicionários com as línguas que queremos corrigir. Então vamos instalar o Code Spell Checker, Brazilian Code Spell Checker e Portuguese Code Spell Checker.  
+Agora vamos ver como instalar um corretor de textos. Vamos no menu extensões e vamos procurar por: **Code Spelll Checker** . Essa é uma extensão que depende de outras. A principal se chama Code Spell, que é o corretor ortográfico. Porém essa extensão precisa que instalemos os dicionários com as línguas que queremos corrigir. Então vamos instalar o Code Spell Checker, Brazilian Code Spell Checker e Portuguese Code Spell Checker.  Se aparecer uma mensagem, clicar em **Confiar e Instalar**.  
 
-![VSCODE](Imagens/Windows/17.png)
+| ![VSCODE](Imagens/Windows/17.png) | ![VSCODE](Imagens/Windows/18.png) |  
+|-----------------------------------|-----------------------------------| 
