@@ -32,3 +32,9 @@ Agora vamos iniciar a aplicação. Quando iniciamos, ele irá pedir algumas conf
 | ![VSCODE](Imagens/Windows/07.png) | ![VSCODE](Imagens/Windows/08.png) |  
 |-----------------------------------|-----------------------------------|
 | ![VSCODE](Imagens/Windows/09.png) | ![VSCODE](Imagens/Windows/10.png) |  
+
+Clique em mark done. Ele irá retornar uma tela, mas com a opção do tem escolhida. Clique em mark done até terminar as configurações.
+
+| ![VSCODE](Imagens/Windows/11.png) | ![VSCODE](Imagens/Windows/12.png) |  
+|-----------------------------------|-----------------------------------| 
+
