@@ -42,3 +42,8 @@ Essa foi nossa primeira configuração. O modo escuro. Agora vamos colocar a lin
 
 | ![VSCODE](Imagens/Windows/13.png) | ![VSCODE](Imagens/Windows/14.png) |  
 |-----------------------------------|-----------------------------------|
+
+Podemos notar que abriu uma caixa de pesquisa. Vamos digitar: **Portuguese**. Vamos escolher a primeira, conforme mostro na imagem a seguir. **Obs:** clique em instalar e depois reinicie o vscode para aplicar as configurações.  
+
+![VSCODE](Imagens/Windows/15.png)  
+
