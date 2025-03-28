@@ -38,3 +38,7 @@ Clique em mark done. Ele irá retornar uma tela, mas com a opção do tem escolh
 | ![VSCODE](Imagens/Windows/11.png) | ![VSCODE](Imagens/Windows/12.png) |  
 |-----------------------------------|-----------------------------------| 
 
+Essa foi nossa primeira configuração. O modo escuro. Agora vamos colocar a linguagem Português do Brasil. Então vamos clicar em **extensões** ou o atalho **Ctrl + Shift + x**.  
+
+| ![VSCODE](Imagens/Windows/13.png) | ![VSCODE](Imagens/Windows/14.png) |  
+|-----------------------------------|-----------------------------------|
