@@ -65,3 +65,12 @@ Na tela que abrir devemos ir em extensões > Code Spell Checker. É aqui que ire
 | ![VSCODE](Imagens/Windows/21.png) | ![VSCODE](Imagens/Windows/22.png) |  
 |-----------------------------------|-----------------------------------|  
 
+Como dito, essa é uma extensão bem interessante que reconhece vários tipos de arquivos por extensão. Então vamos até a seção **Enabled File Eypes** e devemos clicar em adicionar. Então precisamos digitar as extensões que queremos e vamos marcar como true. Aqui vou selecionar as seguintes: **bat, dockerfile, git-commit, git-rebase, json, markdown, plaintext, python, xml e yaml**. **OBS:** se depois se desejar incluir algum outro tipo a mais, a lista completa pode ser obtida em: https://code.visualstudio.com/docs/languages/identifiers .  
+
+| ![VSCODE](Imagens/Windows/23.png) | ![VSCODE](Imagens/Windows/24.png) |  
+|-----------------------------------|-----------------------------------|  
+
+Infelizmente, nessa parte não existe nenhum botão de salvar. Então devemos fechar o vscode e reiniciar o mesmo. Ele irá abir do ponto onde paramos. Aproveitando que reiniciamos e acabamos de configurar o Code Spell Checker, mas configurar o auto salvamento. Então vamos clicar no menu **arquivo > auto salvamento** . Isso vai habilitar a função de salvar automaticamente. Então suponha que estejamos digitando algo editor e a energia acabe e desligue tudo. Em tese, vamos ter parte ou quase tudo salvo.  
+
+![VSCODE](Imagens/Windows/23.png)  
+
