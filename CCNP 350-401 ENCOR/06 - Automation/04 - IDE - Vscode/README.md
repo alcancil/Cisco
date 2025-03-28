@@ -53,4 +53,15 @@ Podemos notar que abriu uma caixa de pesquisa. Vamos digitar: **Portuguese**. Va
 Agora vamos ver como instalar um corretor de textos. Vamos no menu extensões e vamos procurar por: **Code Spelll Checker** . Essa é uma extensão que depende de outras. A principal se chama Code Spell, que é o corretor ortográfico. Porém essa extensão precisa que instalemos os dicionários com as línguas que queremos corrigir. Então vamos instalar o Code Spell Checker, Brazilian Code Spell Checker e Portuguese Code Spell Checker.  Se aparecer uma mensagem, clicar em **Confiar e Instalar**.  
 
 | ![VSCODE](Imagens/Windows/17.png) | ![VSCODE](Imagens/Windows/18.png) |  
-|-----------------------------------|-----------------------------------| 
+|-----------------------------------|-----------------------------------|   
+
+Agora precisamos configurar essa extensão. Aqui vou entrar em um caminho um pouco mais difícil. Pela própria documentação era para termos uma aba com as configurações onde iriamos clicando. Vamos pela configuração manual sugerida pela própria documentação. Então devemos ir no menu **Arquivos > Preferências > Configurações**  
+
+| ![VSCODE](Imagens/Windows/19.png) | ![VSCODE](Imagens/Windows/20.png) |  
+|-----------------------------------|-----------------------------------|  
+
+Na tela que abrir devemos ir em extensões > Code Spell Checker. É aqui que iremos realizar todas as configurações necessárias. A primeira opção que vamos marcar é **enabled**. Isso irá ativar o Corretor Ortográfico. **OBS:** as configurações apresentadas nessa tela são aplicadas no arquivo **settings.json**.  Logo em seguida vamos achar a seção: **Cspell.Language:**. E nessa seção que iremos indicar os dicionários pt e pt/br. Percebam que só tem selecionado en. Então devemos digitar: **en,pt,pt_BR** .  
+
+| ![VSCODE](Imagens/Windows/21.png) | ![VSCODE](Imagens/Windows/22.png) |  
+|-----------------------------------|-----------------------------------|  
+
