@@ -82,4 +82,8 @@ Feito isso vamos instalar agora o pacote notepadqq como o comando **sudo apt-get
 ![NOTEPADQQ](Imagens/notepadqq/03.png)  
 
 | ![NOTEPADQQ](Imagens/notepadqq/04.png) | ![NOTEPADQQ](Imagens/notepadqq/05.png) |
-|----------------------------------------|----------------------------------------|
+|----------------------------------------|----------------------------------------|  
+
+Como essa uma versão mais simples do notepad++, para realizar os códigos em python podemos utilizar o próprio terminal do python3.  
+
+![NOTEPADQQ](Imagens/notepadqq/06.png)
