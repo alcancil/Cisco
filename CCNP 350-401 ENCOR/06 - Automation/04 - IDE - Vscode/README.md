@@ -25,4 +25,10 @@ A instalação aqui é bem simples, comumente apelidada de "next, next, finish."
 |-----------------------------------|-----------------------------------|
 | ![VSCODE](Imagens/Windows/03.png) | ![VSCODE](Imagens/Windows/04.png) |  
 |-----------------------------------|-----------------------------------|
-| ![VSCODE](Imagens/Windows/05.png) | ![VSCODE](Imagens/Windows/06.png) |
+| ![VSCODE](Imagens/Windows/05.png) | ![VSCODE](Imagens/Windows/06.png) | 
+
+Agora vamos iniciar a aplicação. Quando iniciamos, ele irá pedir algumas configurações. Vamos somente escolher o tema escuro.  
+
+| ![VSCODE](Imagens/Windows/07.png) | ![VSCODE](Imagens/Windows/08.png) |  
+|-----------------------------------|-----------------------------------|
+| ![VSCODE](Imagens/Windows/09.png) | ![VSCODE](Imagens/Windows/10.png) |  
