@@ -52,4 +52,4 @@ Podemos notar que abriu uma caixa de pesquisa. Vamos digitar: **Portuguese**. Va
 
 Agora vamos ver como instalar um corretor de textos. Vamos no menu extensões e vamos procurar por: **Code Spelll Checker** . Essa é uma extensão que depende de outras. A principal se chama Code Spell, que é o corretor ortográfico. Porém essa extensão precisa que instalemos os dicionários com as línguas que queremos corrigir. Então vamos instalar o Code Spell Checker, Brazilian Code Spell Checker e Portuguese Code Spell Checker.  
 
-![VSCODE](Imagens/Windows/16.png)
+![VSCODE](Imagens/Windows/17.png)
