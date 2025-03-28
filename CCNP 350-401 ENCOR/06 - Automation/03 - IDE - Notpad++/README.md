@@ -8,7 +8,7 @@ As IDEs ou Ambiente de Desenvolvimento Integrado são a evolução natural dos e
 ✔ Verificação de bugs  
 ✔ Compilação  
 ✔ Teste  
-✔ Empacotamento  
+✔ Empacotamento
 
 ## NOTEPAD++
 
@@ -24,7 +24,7 @@ Então para instalarmos a ide devemos ir até o site https://notepad-plus-plus.o
 |----------------------------------------|----------------------------------------|
 | ![NOTEPAD++](Imagens/notepad++/07.png) | ![NOTEPAD++](Imagens/notepad++/08.png) |  
 
-Pronto, agora instalamos o software, mas por si só o NOTEPAD++ não consegue compilar códigos em python. Para isso, pode instalar o pluguin **nppexec** . O repositório oficial do plugin com a instrução de instalação fica em https://github.com/d0vgan/nppexec . Então vamos baixar o plugin em https://github.com/d0vgan/nppexec/releases e descompactar o mesmo.  
+Pronto, agora instalamos o software, mas por si só o NOTEPAD++ não consegue compilar códigos em python. Para isso, pode instalar o plugin **nppexec** . O repositório oficial do plugin com a instrução de instalação fica em https://github.com/d0vgan/nppexec . Então vamos baixar o plugin em https://github.com/d0vgan/nppexec/releases e descompactar o mesmo.  
 
 | ![NOTEPAD++](Imagens/notepad++/09.png) | ![NOTEPAD++](Imagens/notepad++/10.png) | 
 |----------------------------------------|----------------------------------------|
@@ -69,4 +69,17 @@ Vamos reparar como ficou o mesmo arquivo agora com a linguagem cisco ativada.
 |----------------------------------------|----------------------------------------|
 | Sem Linguagem cisco                    | Com linguagem cisco                    |
 
+## Linux
 
+Existe uma versão dessa IDE chamada **Notepadqq**. Ele é uma versão mais simplificada do Notepad++. Então vou mostrar a instalação dessa IDE utilizando o linux mint.  
+Então primeiro precisamos atualizar o sistema com os comandos: **sudo apt update** para atualizar a lista de pacotes e depois **sudo apt upgrade** para atualizar os pacotes.  
+
+| ![NOTEPADQQ](Imagens/notepadqq/01.png) | ![NOTEPADQQ](Imagens/notepadqq/02.png) |
+|----------------------------------------|----------------------------------------|
+
+Feito isso vamos instalar agora o pacote notepadqq como o comando **sudo apt-get install notepadqq**. **OBS:** se necessário, adicionar o repositório do projeto. **sudo add-apt-repository ppa:notepadqq-team/notepadqq**
+
+![NOTEPADQQ](Imagens/notepadqq/03.png)  
+
+| ![NOTEPADQQ](Imagens/notepadqq/04.png) | ![NOTEPADQQ](Imagens/notepadqq/05.png) |
+|----------------------------------------|----------------------------------------|
