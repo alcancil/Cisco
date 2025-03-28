@@ -72,5 +72,5 @@ Como dito, essa é uma extensão bem interessante que reconhece vários tipos de
 
 Infelizmente, nessa parte não existe nenhum botão de salvar. Então devemos fechar o vscode e reiniciar o mesmo. Ele irá abir do ponto onde paramos. Aproveitando que reiniciamos e acabamos de configurar o Code Spell Checker, mas configurar o auto salvamento. Então vamos clicar no menu **arquivo > auto salvamento** . Isso vai habilitar a função de salvar automaticamente. Então suponha que estejamos digitando algo editor e a energia acabe e desligue tudo. Em tese, vamos ter parte ou quase tudo salvo.  
 
-![VSCODE](Imagens/Windows/23.png)  
+![VSCODE](Imagens/Windows/25.png)  
 
