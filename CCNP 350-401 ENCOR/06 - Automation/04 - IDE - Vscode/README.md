@@ -45,5 +45,8 @@ Essa foi nossa primeira configuração. O modo escuro. Agora vamos colocar a lin
 
 Podemos notar que abriu uma caixa de pesquisa. Vamos digitar: **Portuguese**. Vamos escolher a primeira, conforme mostro na imagem a seguir. **Obs:** clique em instalar e depois reinicie o vscode para aplicar as configurações.  
 
-![VSCODE](Imagens/Windows/15.png)  
+| ![VSCODE](Imagens/Windows/15.png) | ![VSCODE](Imagens/Windows/16.png) |  
+|-----------------------------------|-----------------------------------|  
+
+**Obs2:** Aqui é interessante ressaltar que quando selecionamos uma extensão, podemos notar que ao lado se abre uma página que explica qual é o objetivo da extensão e como se utiliza e instala a mesma. Esse é um dos motivos dessa IDE ser tão popular. Existem muitas extensões que auxiliam no fluxo do desenvolvimento dos códigos aumentando a produtividade.  
 
