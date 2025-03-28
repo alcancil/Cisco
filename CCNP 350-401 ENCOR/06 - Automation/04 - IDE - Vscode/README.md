@@ -15,11 +15,14 @@ Pelo que podemos notar essa é uma IDE bem robusta. Então vamos começar com a 
 
 ## Windows
 
+A instalação aqui é bem simples, comumente apelidada de "next, next, finish." Então vamos baixar a aplicação no site e executar o arquivo.  
 
+| ![VSCODE](Imagens/Windows/01.png) |
+|-----------------------------------|   
+| Site do fabricante                |
 
-
-
-| ![NOTEPAD++](Imagens/notepad++/05.png) | ![NOTEPAD++](Imagens/notepad++/06.png) |
-|----------------------------------------|----------------------------------------|
-| ![NOTEPAD++](Imagens/notepad++/07.png) | ![NOTEPAD++](Imagens/notepad++/08.png) |  
-
+| ![VSCODE](Imagens/Windows/02.png) | ![VSCODE](Imagens/Windows/02.png) |
+|-----------------------------------|-----------------------------------|
+| ![VSCODE](Imagens/Windows/03.png) | ![VSCODE](Imagens/Windows/04.png) |  
+|-----------------------------------|-----------------------------------|
+| ![VSCODE](Imagens/Windows/05.png) | ![VSCODE](Imagens/Windows/06.png) |
