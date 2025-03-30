@@ -78,3 +78,6 @@ Vamos voltar a seção de extensões e vamos procurar por Python (Microsoft). Va
 
 ![VSCODE](Imagens/Windows/26.png)  
 
+Agora nosso vscode está quase pronto para podermos utilizar. Até aqui o vscode já consegue corrigir a linguagem em inglês e português e também reconhece arquivos Python. Vamos olhar mais algumas extensões interessantes. Então vamos novamente na seção extensões e vamos digitar cisco. Irão aparecer várias extensões. Vamos instalara a **Cisco Ios Syntax** (que é oficial da cisco) e também vamos instalar a **Cisco Config Highlight**.   
+
+![VSCODE](Imagens/Windows/27.png)
