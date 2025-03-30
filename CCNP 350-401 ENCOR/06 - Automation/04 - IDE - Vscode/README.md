@@ -109,8 +109,8 @@ Por último vamos instalar o aplicativo em si
 Agora vamos criar um ícone do aplicativo no desktop. Veja o passo a passo:  
 
 | ![VSCODE](Imagens/Linux/01.png) | ![VSCODE](Imagens/Linux/02.png) | 
-| 01                              | 02                              |
 |---------------------------------|---------------------------------|
+| 01                              | 02                              |
 | ![VSCODE](Imagens/Linux/03.png) | ![VSCODE](Imagens/Linux/04.png) |
 | 03                              | 04                              |
 |---------------------------------|---------------------------------|
