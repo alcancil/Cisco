@@ -80,4 +80,20 @@ Vamos voltar a seção de extensões e vamos procurar por Python (Microsoft). Va
 
 Agora nosso vscode está quase pronto para podermos utilizar. Até aqui o vscode já consegue corrigir a linguagem em inglês e português e também reconhece arquivos Python. Vamos olhar mais algumas extensões interessantes. Então vamos novamente na seção extensões e vamos digitar cisco. Irão aparecer várias extensões. Vamos instalara a **Cisco Ios Syntax** (que é oficial da cisco) e também vamos instalar a **Cisco Config Highlight**.   
 
-![VSCODE](Imagens/Windows/27.png)
+![VSCODE](Imagens/Windows/27.png)  
+
+Essas duas extensões não precisam de configuração. Porém para funcionarem devemos salvar os arquivos com extensões específicas para o nosso vscode já reconhecer os nosso arquivos. Então para a primeira extensão devemos salvar o nosso arquivo como **nome_do_arquivo.ios**. Já para a segunda extensão, devemos salvar o arquivo como **nom_do_arquivo.cisco** . Agora estamos prontos para poder utilizar nosso vscode.  
+
+## Linux
+
+Agora vou demonstrar como instalar o Vscode no linux. Estarei utilizando o linux Mint para isso, mas a instalação é semelhante para outras distribuições. A primeira coisa que vamos fazer é atualizar o linux. Então vamos abrir o terminal e digitar:  
+
+    **sudo apt update && sudo apt upgrade**  
+
+Agora temos que adicionar as chaves GPG de verificação para os repositórios da Microsoft:  
+
+    **cd /tmp && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && cd $HOME**  
+
+Agora vamos adicionar os repositórios da Microsoft  
+
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
