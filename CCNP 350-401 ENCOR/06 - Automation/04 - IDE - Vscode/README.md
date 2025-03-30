@@ -117,3 +117,5 @@ Agora vamos criar um ícone do aplicativo no desktop. Veja o passo a passo:
 | 05                              | 06                              |
 | ![VSCODE](Imagens/Linux/07.png) |                                 |
 | 07                              |                                 |
+
+Feito isso, o restante das otimizações e instalações de extensões é igual as realizadas em windows.  
