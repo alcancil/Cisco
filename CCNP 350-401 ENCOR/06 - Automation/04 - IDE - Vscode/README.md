@@ -113,9 +113,7 @@ Agora vamos criar um ícone do aplicativo no desktop. Veja o passo a passo:
 | 01                              | 02                              |
 | ![VSCODE](Imagens/Linux/03.png) | ![VSCODE](Imagens/Linux/04.png) |
 | 03                              | 04                              |
-|---------------------------------|---------------------------------|
 | ![VSCODE](Imagens/Linux/05.png) | ![VSCODE](Imagens/Linux/06.png) |
 | 05                              | 06                              |
-|---------------------------------|---------------------------------|
 | ![VSCODE](Imagens/Linux/07.png) |                                 |
 | 07                              |                                 |
