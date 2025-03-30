@@ -74,3 +74,7 @@ Infelizmente, nessa parte não existe nenhum botão de salvar. Então devemos fe
 
 ![VSCODE](Imagens/Windows/25.png)  
 
+Vamos voltar a seção de extensões e vamos procurar por Python (Microsoft). Vamos instalar o Python e o Debugger do Python. Faremos isso para o vscode reconhecer a linguagem Python.  
+
+![VSCODE](Imagens/Windows/26.png)  
+
