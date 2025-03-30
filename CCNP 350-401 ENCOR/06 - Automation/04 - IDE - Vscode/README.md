@@ -88,12 +88,21 @@ Essas duas extensões não precisam de configuração. Porém para funcionarem d
 
 Agora vou demonstrar como instalar o Vscode no linux. Estarei utilizando o linux Mint para isso, mas a instalação é semelhante para outras distribuições. A primeira coisa que vamos fazer é atualizar o linux. Então vamos abrir o terminal e digitar:  
 
-    **sudo apt update && sudo apt upgrade**  
+    sudo apt update && sudo apt upgrade  
 
-Agora temos que adicionar as chaves GPG de verificação para os repositórios da Microsoft:  
+Após isso, temos que adicionar as chaves GPG de verificação para os repositórios da Microsoft:  
 
-    **cd /tmp && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && cd $HOME**  
+    cd /tmp && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && cd $HOME  
 
-Agora vamos adicionar os repositórios da Microsoft  
+Então vamos adicionar os repositórios da Microsoft  
 
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list  
+
+Feito isso temos que atualizar os repositórios  
+
+    sudo apt update  
+
+Por último vamos instalar o aplicativo em si  
+
+    sudo apt install code  
+
