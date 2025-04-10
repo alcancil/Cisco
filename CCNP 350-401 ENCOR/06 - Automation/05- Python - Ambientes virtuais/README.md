@@ -40,7 +40,11 @@ Dentro da pasta com o nome do nosso projeto, existe uma pasta com os Scripts nec
 | ![VENV](Imagens/Windows/05.png) | ![VENV](Imagens/Windows/06.png) |
 |---------------------------------|---------------------------------|  
 
-Como podemos notar, agora nosso prompt mudou. Então sempre fica nesse padrão: **(nome_do_ambiente) C:\Pasta\_**
+Como podemos notar, agora nosso prompt mudou. Então sempre fica nesse padrão: **(nome_do_ambiente) C:\Pasta\_**  
+
+Antes de desativarmos nosso ambiente, vamos comparar agora para ver quais as bibliotecas que ele tem instalada.  
+
+![VENV](Imagens/Windows/07.png)
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
