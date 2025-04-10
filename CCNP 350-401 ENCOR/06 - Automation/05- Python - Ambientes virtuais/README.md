@@ -48,6 +48,9 @@ Antes de desativarmos nosso ambiente, vamos comparar agora para ver quais as bib
 
 Como podemos reparar não temos nenhuma biblioteca instalada. Então vamos instalar as bibliotecas: **telnetlib3, nornir, scapy, netmico, paramiko, napalm** 
 
+| ![VENV](Imagens/Windows/08.png) | ![VENV](Imagens/Windows/09.png) |
+|---------------------------------|---------------------------------|
+
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
 **Arrumar**  
