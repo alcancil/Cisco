@@ -64,6 +64,12 @@ Aqui tenho que citar que temos dois comando bem parecidos que são: **pip list**
 | ![VENV](Imagens/Windows/12.png) | ![VENV](Imagens/Windows/13.png) |
 |---------------------------------|---------------------------------| 
 
+Então, foi gerado um arquivo chamado de **requirements.txt**. Quando for instalar um novo ambiente virtual, esse arquivo deve ser utilizado.  
+
+8. Agora vamos instalar um novo ambiente virtual utilizando esse arquivo de requerimentos. **OBS:** pelas boas práticas, não é recomendado se ter vários ambientes virtuais num mesmo projeto. Isso pode gerar alguns problemas. Vou fazer isso agora para fins de demonstração.  
+
+
+
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
 **Arrumar**  
