@@ -58,6 +58,12 @@ Como podemos reparar não temos nenhuma biblioteca instalada. Então vamos insta
 
 Agora se repararmos, nosso prompt mudou e não tem mais o **(nome_do_ambiente)** antes do prompt o que indica que agora saímos do nosso ambiente virtual.  
 
+7. Agora vamos exportar os requisitos desse nosso ambiente virtual. Nós iremos fazer isso para que possamos enviar para outro computador e a pessoa que for utilizar esse projeto possa instalar o ambiente virtual com os mesmos requisitos (bibliotecas, pacotes, interpretador, etc) que foram utilizados.  
+Aqui tenho que citar que temos dois comando bem parecidos que são: **pip list** e **pip freeze**. A princípio, esses dois comando mostram os pacotes instalados através do pip. Mas existe uma diferença, o comando pip freeze além de mostrar as bibliotecas, ele também exporta os requisitos. Ex: **pip freeze > requerimentos.txt**  
+
+| ![VENV](Imagens/Windows/12.png) | ![VENV](Imagens/Windows/12.png) |
+|---------------------------------|---------------------------------| 
+
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
 **Arrumar**  
