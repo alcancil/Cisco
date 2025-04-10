@@ -12,9 +12,15 @@ Resumindo:
 Por Que Usar Ambientes Virtuais?  
     ✔**Isolar Dependências :** Evita que bibliotecas de um projeto (ex: telnetlib v1.0) conflitem com as de outro (ex: telnetlib v2.0).
     ✔**Reproducibilidade   :** Garante que seu código funcione em qualquer máquina (com as mesmas versões de bibliotecas).  
-    ✔**Sem Poluir o Python Global :** Instalações ficam restritas ao ambiente do projeto, sem afetar o sistema.
+    ✔**Sem Poluir o Python Global :** Instalações ficam restritas ao ambiente do projeto, sem afetar o sistema.  
 
+## Windows
 
+Agora vamos ver como criar, ativar, desativar e remover ambientes virtuais no Windows.  
+1. Vamos abrir o terminal do Windows. 
+2. Agora vamos listar os pacotes instalados pelo Pip no sistema operacional com o comando: **pip list**
+
+![VENV](Imagens/Windows/01.png)
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
