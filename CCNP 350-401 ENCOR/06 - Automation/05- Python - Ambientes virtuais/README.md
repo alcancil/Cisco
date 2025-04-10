@@ -44,7 +44,9 @@ Como podemos notar, agora nosso prompt mudou. Então sempre fica nesse padrão: 
 
 Antes de desativarmos nosso ambiente, vamos comparar agora para ver quais as bibliotecas que ele tem instalada.  
 
-![VENV](Imagens/Windows/07.png)
+![VENV](Imagens/Windows/07.png)  
+
+Como podemos reparar não temos nenhuma biblioteca instalada. Então vamos instalar as bibliotecas: **telnetlib3, nornir, scapy, netmico, paramiko, napalm** 
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
