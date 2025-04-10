@@ -198,17 +198,3 @@ meu_ambiente/
     Tutorial: Gerenciando Ambientes (Real Python)
 
 Pronto! Agora você pode criar ambientes isolados para testar scripts de automação como telnetlib sem medo. Quer um exemplo de como usar o ambiente virtual num projeto de automação de redes? 🚀
-New chat
-
-
-| ![VSCODE](Imagens/Linux/01.png) | ![VSCODE](Imagens/Linux/02.png) | 
-|---------------------------------|---------------------------------|
-| 01                              | 02                              |
-| ![VSCODE](Imagens/Linux/03.png) | ![VSCODE](Imagens/Linux/04.png) |
-| 03                              | 04                              |
-| ![VSCODE](Imagens/Linux/05.png) | ![VSCODE](Imagens/Linux/06.png) |
-| 05                              | 06                              |
-| ![VSCODE](Imagens/Linux/07.png) |                                 |
-| 07                              |                                 |
-
-Feito isso, o restante das otimizações e instalações de extensões é igual as realizadas em windows.  
