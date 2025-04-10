@@ -16,7 +16,7 @@ Por Que Usar Ambientes Virtuais?
 
 ## Windows
 
-Agora vamos ver como criar, ativar, desativar e remover ambientes virtuais no Windows.  
+Agora vamos ver como criar, ativar, desativar e remover ambientes virtuais no Windows. Obs: no windows podemos utilizar o cmd ou o Powershell. Eu recomendo se utilizar o cmd.  
 1. Vamos abrir o terminal do Windows. 
 2. Agora vamos listar os pacotes instalados pelo Pip no sistema operacional com o comando: **pip list**
 
@@ -33,7 +33,12 @@ Como podemos observar, temos várias bibliotecas e dependências instaladas no w
 Como podemos observar, após inserirmos o comando uma pasta é criada com o nome do ambiente fornecido, nesse caso **meu_ambiente**. Dentro dessa pasta ficam todas as bibliotecas e dependências do projeto que vamos criar.  
 Dentro da pasta com o nome do nosso projeto, existe uma pasta com os Scripts necessários para ativarmos e desativarmos nosso ambiente.  
 
-![VENV](Imagens/Windows/04.png)
+![VENV](Imagens/Windows/04.png)  
+
+5. Agora vamos ativar nosso ambiente virtual. Para isso vamos digitar : **meu_ambiente\Scripts\activate**
+
+| ![VENV](Imagens/Windows/04.png) | ![VENV](Imagens/Windows/06.png) |
+|---------------------------------|---------------------------------|  
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
