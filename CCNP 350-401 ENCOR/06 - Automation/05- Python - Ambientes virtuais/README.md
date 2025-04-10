@@ -28,7 +28,9 @@ Como podemos observar, temos várias bibliotecas e dependências instaladas no w
 4. Dentro da pasta vamos criar nosso ambiente virtual com o comando: **python -m venv meu_ambiente Obs:** é a biblioteca **venv** quem cria os ambientes virtuais.  
 
 | ![VENV](Imagens/Windows/02.png) | ![VENV](Imagens/Windows/03.png) |
-|---------------------------------|---------------------------------|
+|---------------------------------|---------------------------------|  
+
+Como podemos observar, após inserirmos o comando uma pasta é criada com o nome do ambiente fornecido, nesse caso **meu_ambiente**. Dentro dessa pasta ficam todas as bibliotecas e dependências do projeto que vamos criar.  
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
