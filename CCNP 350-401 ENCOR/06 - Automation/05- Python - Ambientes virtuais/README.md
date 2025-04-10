@@ -31,6 +31,9 @@ Como podemos observar, temos várias bibliotecas e dependências instaladas no w
 |---------------------------------|---------------------------------|  
 
 Como podemos observar, após inserirmos o comando uma pasta é criada com o nome do ambiente fornecido, nesse caso **meu_ambiente**. Dentro dessa pasta ficam todas as bibliotecas e dependências do projeto que vamos criar.  
+Dentro da pasta com o nome do nosso projeto, existe uma pasta com os Scripts necessários para ativarmos e desativarmos nosso ambiente.  
+
+![VENV](Imagens/Windows/04.png)
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
