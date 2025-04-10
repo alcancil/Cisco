@@ -37,8 +37,10 @@ Dentro da pasta com o nome do nosso projeto, existe uma pasta com os Scripts nec
 
 5. Agora vamos ativar nosso ambiente virtual. Para isso vamos digitar : **meu_ambiente\Scripts\activate**
 
-| ![VENV](Imagens/Windows/04.png) | ![VENV](Imagens/Windows/06.png) |
+| ![VENV](Imagens/Windows/05.png) | ![VENV](Imagens/Windows/06.png) |
 |---------------------------------|---------------------------------|  
+
+Como podemos notar, agora nosso prompt mudou. Então sempre fica nesse padrão: **(nome_do_ambiente) C:\Pasta\_**
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
