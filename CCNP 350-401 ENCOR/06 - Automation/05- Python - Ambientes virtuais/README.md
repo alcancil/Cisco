@@ -67,6 +67,14 @@ Aqui tenho que citar que temos dois comando bem parecidos que são: **pip list**
 Então, foi gerado um arquivo chamado de **requirements.txt**. Quando for instalar um novo ambiente virtual, esse arquivo deve ser utilizado.  
 
 8. Agora vamos instalar um novo ambiente virtual utilizando esse arquivo de requerimentos. **OBS:** pelas boas práticas, não é recomendado se ter vários ambientes virtuais num mesmo projeto. Isso pode gerar alguns problemas. Vou fazer isso agora para fins de demonstração.  
+Primeiro vamos criar o segundo ambiente virtual chamado de **meu_ambiente2**. Feito isso devemos entrar na pasta criada e vamos copiar o arquivo de requerimentos.  
+Após isso, devemos instalar os requerimentos através do pip: **pip install -r requirements.txt**  
+
+| ![VENV](Imagens/Windows/14.png) | ![VENV](Imagens/Windows/15.png) |
+|---------------------------------|---------------------------------| 
+
+
+## LINUX
 
 
 
