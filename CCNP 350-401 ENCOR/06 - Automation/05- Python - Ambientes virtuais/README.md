@@ -54,8 +54,9 @@ Como podemos reparar não temos nenhuma biblioteca instalada. Então vamos insta
 6. Agora que verificamos que temos bibliotecas instaladas no nosso ambiente virtual diferentes do sistema operacional, vamos desativar nosso ambiente com o comando: **meu_ambiente\Scripts\deactivate**
 
 | ![VENV](Imagens/Windows/10.png) | ![VENV](Imagens/Windows/11.png) |
-|---------------------------------|---------------------------------|
+|---------------------------------|---------------------------------|  
 
+Agora se repararmos, nosso prompt mudou e não tem mais o **(nome_do_ambiente)** antes do prompt o que indica que agora saímos do nosso ambiente virtual.  
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
