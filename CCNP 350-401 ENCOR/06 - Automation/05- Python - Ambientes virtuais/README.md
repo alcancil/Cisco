@@ -51,6 +51,12 @@ Como podemos reparar não temos nenhuma biblioteca instalada. Então vamos insta
 | ![VENV](Imagens/Windows/08.png) | ![VENV](Imagens/Windows/09.png) |
 |---------------------------------|---------------------------------|
 
+6. Agora que verificamos que temos bibliotecas instaladas no nosso ambiente virtual diferentes do sistema operacional, vamos desativar nosso ambiente com o comando: **meu_ambiente\Scripts\deactivate**
+
+| ![VENV](Imagens/Windows/10.png) | ![VENV](Imagens/Windows/11.png) |
+|---------------------------------|---------------------------------|
+
+
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
 
 **Arrumar**  
