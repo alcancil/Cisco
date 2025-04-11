@@ -82,6 +82,12 @@ A primeira coisa que precisamos fazer é abrir o terminal do linux e realizar um
     Digitar os seguintes comandos no prompt:  
     **sudo apt update && upgrade -y**  
 
-![VENV](Imagens/Linux/01.png)
+![VENV](Imagens/Linux/01.png)  
+
+Feito isso precisamos instalar o **venv** : **sudo apt install python3-venv**  
+
+![VENV](Imagens/Linux/01.png)  
+
+
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
