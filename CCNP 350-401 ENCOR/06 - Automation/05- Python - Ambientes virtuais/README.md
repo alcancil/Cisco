@@ -105,5 +105,8 @@ Como podemos notar, o nosso prompt muda. Além disso também podemos verificar q
 
 ![VENV](Imagens/Linux/07.png)
 
+Agora podemos desativar nosso ambiente com o comando **deactivate**  
+
+![VENV](Imagens/Linux/08.png)
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
