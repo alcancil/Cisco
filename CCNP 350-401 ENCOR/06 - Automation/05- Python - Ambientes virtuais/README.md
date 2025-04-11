@@ -88,6 +88,13 @@ Feito isso precisamos instalar o **venv** : **sudo apt install python3-venv**
 
 ![VENV](Imagens/Linux/02.png)  
 
+Após a instalação do venv, vamos criar uma pasta chamada **projetos** e dentro dela vamos criar nosso primeiro ambiente virtual com o comando: **sudo python3 -m venv meu_ambiente**  
+
+![VENV](Imagens/Linux/03.png)  
+
+E como mostrado em ambientes Windows, é criado uma pasta com o nome **meu_ambiente** contendo tudo o que é necessário para o nosso ambiente virtual funcionar.  
+
+![VENV](Imagens/Linux/04.png) 
 
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
