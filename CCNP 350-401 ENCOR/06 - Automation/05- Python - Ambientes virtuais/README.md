@@ -94,7 +94,16 @@ Após a instalação do venv, vamos criar uma pasta chamada **projetos** e dentr
 
 E como mostrado em ambientes Windows, é criado uma pasta com o nome **meu_ambiente** contendo tudo o que é necessário para o nosso ambiente virtual funcionar.  
 
-![VENV](Imagens/Linux/04.png) 
+![VENV](Imagens/Linux/04.png)  
+
+E agora vamos ativar o nosso ambiente. Para isso vamos executar o script para o bash **shell** que é o que estamos utilizando. Vamos executar o comando: **source meu_ambiente/bin/activate** .
+
+| ![VENV](Imagens/Linux/05.png) | ![VENV](Imagens/Linux/06.png) |
+|------------------------------|------------------------------|  
+
+Como podemos notar, o nosso prompt muda. Além disso também podemos verificar qual o comando do interpretador python que estamos utilizando agora. Percebam que ele deve retornar o caminho dentro da pasta de nosso ambiente virtual.  
+
+![VENV](Imagens/Linux/07.png)
 
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
