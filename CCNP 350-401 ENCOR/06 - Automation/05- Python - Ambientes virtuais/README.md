@@ -86,7 +86,7 @@ A primeira coisa que precisamos fazer é abrir o terminal do linux e realizar um
 
 Feito isso precisamos instalar o **venv** : **sudo apt install python3-venv**  
 
-![VENV](Imagens/Linux/01.png)  
+![VENV](Imagens/Linux/02.png)  
 
 
 
