@@ -96,7 +96,7 @@ E como mostrado em ambientes Windows, é criado uma pasta com o nome **meu_ambie
 E agora vamos ativar o nosso ambiente. Para isso vamos executar o script para o bash **shell** que é o que estamos utilizando. Vamos executar o comando: **source meu_ambiente/bin/activate** .
 
 | ![VENV](Imagens/Linux/05.png) | ![VENV](Imagens/Linux/06.png) |
-|------------------------------|------------------------------|  
+|------------------------------|--------------------------------|  
 
 Como podemos notar, o nosso prompt muda. Além disso também podemos verificar qual o comando do interpretador python que estamos utilizando agora. Percebam que ele deve retornar o caminho dentro da pasta de nosso ambiente virtual.  
 
@@ -109,5 +109,19 @@ Agora podemos desativar nosso ambiente com o comando **deactivate**
 Também pode exportar os requerimentos de nosso ambiente como fizemos anteriormente com o comando: **pip freeze > requerimentos**  
 
 ![VENV](Imagens/Linux/09.png)  
+
+## VSCODE
+
+Vamos entrar na pasta meu_ambiente e criar um arquivo em branco chamado **hello.py**  
+
+![VENV](Imagens/Linux/10.png)
+
+Feito isso, vamos abrir o vscode e abrir a pasta meu_ambiente. Aqui eu preciso fazer uma ressalva. Tanto podemos abrir um arquivo quanto podemos abrir uma pasta.  
+Quando abrimos uma pasta, o vscode consegue identificar nossos ambientes de trabalho. Nesse momento, por segurança ele vai identificar nosso ambiente e perguntar se confiamos nele ou não. Se marcarmos como não, o vscode restringe a edição e execução dos arquivos. Então vamos marcar nosso ambiente como confiável.  
+
+| ![VENV](Imagens/Linux/11.png) | ![VENV](Imagens/Linux/12.png) |
+|-------------------------------|-------------------------------|  
+
+
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
