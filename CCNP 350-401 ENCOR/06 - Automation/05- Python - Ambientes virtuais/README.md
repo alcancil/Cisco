@@ -104,6 +104,10 @@ Como podemos notar, o nosso prompt muda. Além disso também podemos verificar q
 
 Agora podemos desativar nosso ambiente com o comando **deactivate**  
 
-![VENV](Imagens/Linux/08.png)
+![VENV](Imagens/Linux/08.png)  
+
+Também pode exportar os requerimentos de nosso ambiente como fizemos anteriormente com o comando: **pip freeze > requerimentos**  
+
+![VENV](Imagens/Linux/09.png)  
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
