@@ -133,5 +133,9 @@ Temos que ir com o cursos do mouse na parte superior do Vscode no lado direito, 
 | ![VENV](Imagens/Linux/15.png) | ![VENV](Imagens/Linux/16.png) |
 |-------------------------------|-------------------------------|
 
+Agora vamos notar que na parte inferior vai se abrir o terminal e ai o processo é de ativação e desativação do nosso ambiente é o mesmo que utilizamos até aqui. Mas como estamos no Vscode, existe uma maneira mais fácil de se ativar / desativar os nossos ambientes. Então vamos clicar no botão **extensões** que fica no painel a esquerda e procurar por **Python Environments** que é da Microsoft e vamos instalá-la.  
+
+![VENV](Imagens/Linux/17.png)
+
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
