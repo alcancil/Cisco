@@ -127,4 +127,11 @@ Como podemos notar, o vscode tem um painel á esquerda chamado explorador. Nesse
 | ![VENV](Imagens/Linux/13.png) | ![VENV](Imagens/Linux/14.png) |
 |-------------------------------|-------------------------------| 
 
+Mas antes de começarmos a escrever o código, precisamos ativar nosso ambiente. E como faremos isso ?  
+Temos que ir com o cursos do mouse na parte superior do Vscode no lado direito, ao lado dos botões de **maximizar e fechar**. Vamos encontrar o botão **ativar ou desativar o painel**. Também podemos utilizar as teclas de atalho **Ctrl + J**.  
+
+| ![VENV](Imagens/Linux/15.png) | ![VENV](Imagens/Linux/16.png) |
+|-------------------------------|-------------------------------|
+
+
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
