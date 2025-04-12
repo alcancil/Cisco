@@ -142,6 +142,10 @@ Podemos notar que agora aparece um botão no painel a direita com o simbolo do P
 | ![VENV](Imagens/Linux/18.png) | ![VENV](Imagens/Linux/19.png) |
 |-------------------------------|-------------------------------|  
 
-Então, no painel que se abre na direita, nos é mostrado que estamos no ambiente **Global**. Ele também nos mostra todos os ambientes que foram criados e que são reconhecidos dentro do Vscode. Então vamos selecionar com o mouse a pasta **meu_ambiente** e depois clicar em  
+Então, no painel que se abre na direita, nos é mostrado que estamos no ambiente **Global**. Ele também nos mostra todos os ambientes que foram criados e que são reconhecidos dentro do Vscode. Então vamos selecionar com o mouse a pasta **meu_ambiente** e depois clicar em **Set as Workspace Environment**  
+
+![VENV](Imagens/Linux/20.png)  
+
+Para desativarmos nosso ambiente, é só clicar no ambiente **Global** e setar ele como o padrão.  
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
