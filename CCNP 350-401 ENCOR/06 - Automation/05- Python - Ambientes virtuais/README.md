@@ -122,6 +122,9 @@ Quando abrimos uma pasta, o vscode consegue identificar nossos ambientes de trab
 | ![VENV](Imagens/Linux/11.png) | ![VENV](Imagens/Linux/12.png) |
 |-------------------------------|-------------------------------|  
 
+Como podemos notar, o vscode tem um painel á esquerda chamado explorador. Nesse painel ele irá nos mostrar todos os arquivos que existem dentro da pasta **meu_ambiente**, ou seja vao nos mostrar tudo o que existe no nosso ambiente. Então vamos clicar no arquivo que criamos **hello.py** e vamos ver que ele será aberto na painel a direita onde podemos editar o mesmo.  
 
+| ![VENV](Imagens/Linux/13.png) | ![VENV](Imagens/Linux/14.png) |
+|-------------------------------|-------------------------------| 
 
 Vou deixar aqui a documentação oficial sobre ambientes virtuais em Python: https://docs.python.org/3/library/venv.html
