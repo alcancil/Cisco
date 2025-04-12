@@ -1,19 +1,16 @@
 # Python - Ambientes Virtuais
 
 Antes de começarmos a escrever nossos códigos, precisamos entender o que são os ambientes virtuais e porque devemos utilizá-los.  
-Bom se lembrarmos que na parte que passamos pelo gerenciador de pacotes PIP, quando vamos utilizá-lo recebemos uma mensagem de erro que por padrão nos impede de utilizar o PIP. Mas o que realmente é essa mensagem ? Na verdade isso não é um erro e sim um aviso de boas práticas, e sendo "boas práticas", podemos modificar ese comportamento e passar a utilizar o PIP direto no sistema. <br></br>
-No caso vimos que o Linux nos trouxe a mensagem, mas o Windows não. Mas a mensagem serve para qualquer um dos sistemas operacionais. O que acontece é que muitas vezes quando vamos desenvolver nossos código precisamos utilizar alguma biblioteca ou mesmo algum pacote. No caso de distribuições Linux Debian, o sistema utiliza o gerenciador de pacotes **apt**. Já no windows, recentemente foi introduzido o **winget**. <br></br>  
-Então se repararmos, temos dois gerenciadores de pacote: um oficial para o sistema e outro para o Python. Acontece que os gerenciadores de pacote utilizam as suas fontes oficiais onde armazenam seu pacotes e pode ser que existam pacotes do sistema que possa gerar conflitos com pacotes do Python. Obviamente não queremos esse tipo de comportamento.  
-Outro problema comum é que podemos escrever um código em uma máquina e depois queremos enviar para outra pessoa que irá utilizar em outra máquina para analisar, terminar ou mesmo completar esse mesmo código. Então é interessante que essa pessoa tenha também os mesmos pacotes necessários instalados no seu ambiente para que o código posso rodar sem problemas. Isso é chamado de requisitos do código. <br></br> 
-Então, os ambientes virtuais nada mais são do que a virtualização de um ambiente em que podemos explicitar os requisitos e depois enviar para outras pessoas com isso protegendo o sistema operacional e que não falte nada para se executar o código.  
+
+Vale lembrar que temos dois gerenciadores de pacotes quando instalamos o sistema e o python juntos. Um gerencia pacotes do sistema **(winget para sistemas windows e o apt ou semelhantes para sistemas linux)**. Acontece que o Python possui o **PIP**, como visto anteriormente.  
+Então o Pip serve para instalar bibliotecas e suas dependências para os projetos em Python enquanto que os outros gerenciadores como o winget e o apt vão gerenciar os pacotes do sistema operacional.  
+São duas coisas completamente diferentes, mas como visto, o PIP pode ser utilizado para se instalar pacotes **globalmente** e isso pode ocasionar que, pacotes que sejam instalados por ele entrem em conflito com algum pacote que seja instalado para o sistema. Isso faz que o sistema como um todo fique poluído e possa começar a ter problemas.  
+Outra situação que podemos ter é quando vamos ter mais de um projeto em Python e queremos isolar esse projeto. Com isso, se precisarmos gerar um arquivo executável, o Python irá colocar somente o necessário dentro desse arquivo tornando ele mais leve.  
+
+Mas e o que são ambientes virtuais ?  
+Ambiente virtual é uma forma de se isolar um ambiente de outro. Então quando executamos os comandos de criação do ambiente, ele cria uma pasta contendo tudo o que necessário para esse ambiente funcionar. Ou seja, isso seria uma espécie de virtualização do ambiente Python pois vai conter uma cópia do interpretador e o restante dos arquivos necessários para funcionar.  
+Outra vantagem que temos é que através dos ambientes virtuais podemos gerar uma lista de requisitos e enviar para outra máquina. Com isso, quando instalamos esse novo ambiente vamos conseguir obter os mesmos resultados.
   
-Resumindo:  
-
-Por Que Usar Ambientes Virtuais?  
-    ✔**Isolar Dependências :** Evita que bibliotecas de um projeto (ex: telnetlib v1.0) conflitem com as de outro (ex: telnetlib v2.0).
-    ✔**Reproducibilidade   :** Garante que seu código funcione em qualquer máquina (com as mesmas versões de bibliotecas).  
-    ✔**Sem Poluir o Python Global :** Instalações ficam restritas ao ambiente do projeto, sem afetar o sistema.  
-
 ## Windows
 
 Agora vamos ver como criar, ativar, desativar e remover ambientes virtuais no Windows. Obs: no windows podemos utilizar o cmd ou o Powershell. Eu recomendo se utilizar o cmd.  
