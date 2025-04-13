@@ -39,3 +39,15 @@ Para verificarmos a versão do python instalado, digite **python3 --version**
 **OBS:** para limpar a tela pressione **ctrl+l**  
 **OBS2:** como estamos no shell, o python interpreta o código linha a linha e já vai apresento resultado na tela. Um pouco diferente do resultado de uma IDE mais completa.  
 
+O Python segue o padrão REPL (Read-Eval-Print Loop):
+
+    Read: Lê a entrada (ex: 200).
+
+    Eval: Avalia a expressão (calcula o valor).
+
+    Print: Exibe o resultado (200).
+
+    Loop: Repete o processo.
+
+Isso é útil para testes rápidos e depuração.
+
