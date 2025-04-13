@@ -36,6 +36,6 @@ Para verificarmos a versão do python instalado, digite **python3 --version**
     Python 3.12.3
     alcancil@linux:~$
 ```  
-**OBS:** para limpar a tela pressione **ctrl+l**
-**OBS:** como estamos no shell, o python interpreta o código linha a linha e já vai apresento resultado na tela. Um pouco diferente do resultado de uma IDE mais completa.  
+**OBS:** para limpar a tela pressione **ctrl+l**  
+**OBS2:** como estamos no shell, o python interpreta o código linha a linha e já vai apresento resultado na tela. Um pouco diferente do resultado de uma IDE mais completa.  
 
