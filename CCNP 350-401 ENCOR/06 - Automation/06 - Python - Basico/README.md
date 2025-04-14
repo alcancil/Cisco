@@ -107,4 +107,7 @@ São os números racionais que são resultantes de frações. São os números "
     >>> print(type(a),type(b))
     <class 'float'> <class 'float'>
     >>>
-``` 
+```  
+Aqui eu aproveitei para demonstrar que ao utilizar o mesmo nome da **a** que foi utilizado para a variável do exemplo anterior, o valor que antes era 10 agora foi substituído por 1.48  
+
+
