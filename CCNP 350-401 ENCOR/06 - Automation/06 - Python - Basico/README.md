@@ -147,7 +147,7 @@ São os números complexos que são utilizados na sua grande maioria em cálculo
 
 É uma sequência de caracteres para armazenar texto em Python. São sempre inseridos entre aspas simples ' ' ou aspas duplas " ".
 
-    ```Python
+```Python
     >>> nome = 'Alexandre'
     >>> sobrenome = 'Silva'
     >>> print(nome)
@@ -158,7 +158,7 @@ São os números complexos que são utilizados na sua grande maioria em cálculo
     >>> print(senha)
     51Ab!2@c
     >>> 
-    ```
+```
 
 
 
