@@ -70,4 +70,41 @@ Para escrevermos algo na tela temos o comando **print** . Aqui preciso fazer uma
     >>> print("Hello World!!")
     Hello World!!
     >>> 
-```
+```  
+
+## Variáveis
+
+Agora que vimos como enviar dados para a saída padrão (tela), precisamos pensar no seguinte: e se quisermos armazenar esses valores para podermos utilizá-los depois ? Bom, para isso existem as **variáveis** que podem ser de vários tipos.  
+**OBS:** para passarmos um valar para alguma variável, devemos primeiro declarar a mesma. Exemplo: **variável = valor** 
+**Obs2:** para sabermos o tipo da variável podemos utilizar o comando **type**. Verifique os exemplos a seguir.
+
+### Tipo Inteiro (int)
+
+Essa é a variável do tipo inteiro, ou seja, são números decimais inteiros tanto positivos como negativos. 
+
+```Python
+    >>> a = 10
+    >>> print(a)
+    10
+    >>> print(type(a))
+    <class 'int'>
+    >>>
+```  
+
+Nesse exemplo lê-se a recebe 10, imprima na tela o valor de a e na última linha imprima a classe da variável a . Então podemos notar que o comando **pint()** precisa de dois parênteses, um que abre e um que fecha. O mesmo vale para o comando **type()**  
+
+### Tipo float - Ponto flutuante ou Decimal
+
+São os números racionais que são resultantes de frações. São os números "quebrados"  
+
+```Python
+    >>> a = 1.48
+    >>> b = 11.267
+    >>> print(a)
+    1.48
+    >>> print(b)
+    11.267
+    >>> print(type(a),type(b))
+    <class 'float'> <class 'float'>
+    >>>
+``` 
