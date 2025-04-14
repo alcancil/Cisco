@@ -55,5 +55,19 @@ O Python segue o padrão REPL (Read-Eval-Print Loop):
 
     Loop: Repete o processo.
 
-Isso é útil para testes rápidos e depuração.
+Isso é útil para testes rápidos e depuração.  
 
+Para escrevermos algo na tela temos o comando **print** . Aqui preciso fazer uma observação. O Python aceita que quando precisamos entrar com algum argumento em algum comando como o print, podemos utilizar as aspas ´ ´ ou mesmo as aspas duplas " " . Mas não podemos misturar essas duas aspas e precisamos ser consistentes, se começamos com aspas simples ´´, é importante que continuemos a utilizar aspas simples. Para aspas duplas devemos seguir o mesmo conceito.  
+
+´´´Python
+    >>> print('Hello World!!')
+    Hello World!!
+    >>>  
+ ´´´     
+      ou
+
+´´´Python
+    >>> print("Hello World!!")
+    Hello World!!
+    >>> 
+´´´
