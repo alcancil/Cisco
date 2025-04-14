@@ -76,7 +76,19 @@ Para escrevermos algo na tela temos o comando **print** . Aqui preciso fazer uma
 
 Agora que vimos como enviar dados para a saída padrão (tela), precisamos pensar no seguinte: e se quisermos armazenar esses valores para podermos utilizá-los depois ? Bom, para isso existem as **variáveis** que podem ser de vários tipos.  
 **OBS:** para passarmos um valar para alguma variável, devemos primeiro declarar a mesma. Exemplo: **variável = valor** 
-**Obs2:** para sabermos o tipo da variável podemos utilizar o comando **type**. Verifique os exemplos a seguir.
+**Obs2:** para sabermos o tipo da variável podemos utilizar o comando **type**.  
+
+### Regras para os nomes das variáveis
+
+Para criarmos variáveis precisamos segui algumas regras.  
+
+* A variável precisa iniciar com uma letra ou com um underscore ( _ )  
+* A variável não pode começar com um número  
+* A variável pode conter somente caracteres alfa numéricos e underscore (A-z, 0-9 e _ )  
+* A variável é do tipo "Case Sensitive", ou seja, ela diferencia letras maiúsculas de minúsculas
+* A variável não pode ser nenhum nome reservado para a linguagem Python (Ex: type)   
+
+Verifique os exemplos a seguir.
 
 ### Tipo Inteiro (int)
 
@@ -232,3 +244,15 @@ Podemos adicionar comentários ao nosso código e para isso basta utilizarmos o 
     '56j'
     >>> 
 ```  
+
+**Obs:** até verificamos como definir um valor a uma variável e depois realizar a saída na tela dessa informação. Mas podemos realizar a entrada de valor nas variáveis também. Para isso existe o comando **input**  
+
+```Python
+    >>> nome = input()
+    #Aqui o cursor fica piscando "esperando" que o usuário digite algum valor. A variável só irá receber o valor após o usuário digitar o valor e pressionar enter
+    Alexandre
+    >>> print(nome)
+    Alexandre
+    >>>
+```  
+
