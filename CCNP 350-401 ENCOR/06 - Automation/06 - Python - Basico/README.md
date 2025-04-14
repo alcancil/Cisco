@@ -143,6 +143,24 @@ São os números complexos que são utilizados na sua grande maioria em cálculo
     >>>  
 ```
 
+### Tipo String (Str)
+
+É uma sequência de caracteres para armazenar texto em Python. São sempre inseridos entre aspas simples ' ' ou aspas duplas " ".
+
+    ```Python
+    >>> nome = 'Alexandre'
+    >>> sobrenome = 'Silva'
+    >>> print(nome)
+    Alexandre
+    >>> print(type(sobrenome))
+    <class 'str'>
+    >>> senha = ('51Ab!2@c')
+    >>> print(senha)
+    51Ab!2@c
+    >>> 
+    ```
+
+
 
 # ARRUMAR
 
