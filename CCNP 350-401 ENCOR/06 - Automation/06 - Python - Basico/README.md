@@ -160,111 +160,33 @@ São os números complexos que são utilizados na sua grande maioria em cálculo
     >>> 
 ```
 
+## Tipo Boolean (bool)
+
+Tipo de dado lógico que pode assumir apenas dois valores: falso ou verdadeiro (False ou True em Python).  
+Na lógica computacional, podem ser considerados como 0 ou 1.  
+
+```Python
+    >>> up=True
+    >>> down=False
+    >>> type(up)
+    <class 'bool'>
+    >>> type(down)
+    <class 'bool'>
+    >>> 
+```
 
 
-# ARRUMAR
+Qualquer valor pode ser convertido em booleano.  
 
-String (str)
-
-É um conjunto de caracteres dispostos numa determinada ordem, geralmente utilizada para representar palavras, frases ou textos.
-
-Exemplos:
-
-
-1
-2
-3
-4
-5
-
-
-	
-
-nome = 'Guilherme'
-profissao = 'Engenheiro de Software'
-
-print(type(profissao))
-print(type(nome))
-
-
-Saída:
-
-
-
-<class 'str'>
-<class 'str'>
-
-
-Boolean (bool)
-
-Tipo de dado lógico que pode assumir apenas dois valores: falso ou verdadeiro (False ou True em Python).
-
-Na lógica computacional, podem ser considerados como 0 ou 1.
-
-Exemplos:
-
-
-1
-2
-3
-4
-5
-
-
-	
-
-fim_de_semana = True
-feriado = False
-
-print(type(fim_de_semana))
-print(type(feriado))
-
-
-Saída:
-
-
-
-<class 'bool'>
-<class 'bool'>
-
-
-Listas (list)
-
-Tipo de dado muito importante e que é muito utilizado no dia a dia do desenvolvedor Python!
-
-Listas agrupam um conjunto de elementos variados, podendo conter: inteiros, floats, strings, outras listas e outros tipos.
-
-Elas são definidas utilizando-se colchetes para delimitar a lista e vírgulas para separar os elementos, veja alguns exemplo abaixo:
-
-
-1
-2
-3
-4
-5
-
-
-	
-
-alunos = ['Amanda', 'Ana', 'Bruno', 'João']
-notas = [10, 8.5, 7.8, 8.0] 
-
-print(type(alunos))
-print(type(notas))
-
-
-Saída:
-
-
-
-<class 'list'>
-<class 'list'>
-
-
-Aqui na Python Academy temos muito conteúdo sobre Listas para você ficar craque!
-
-Para saber mais sobre Listas acesse nosso post sobre Listas, também nosso post sobre Manipulação de Listas, e nosso post completo sobre List Comprehensions.
-
-Está curtindo esse conteúdo? :thumbsup:
-
-Que tal receber 30 dias de conteúdo direto na sua Caixa de Entrada?
+```Python  
+    # Valores considerados "False" (Falsy)  
+    print(bool(0))         # False  
+    print(bool(""))        # False (string vazia)  
+    print(bool([]))        # False (lista vazia)  
+    print(bool(None))      # False  
+  
+    # Valores considerados "True" (Truthy)  
+    print(bool(1))         # True  
+    print(bool("Cisco"))   # True  
+    print(bool([1, 2]))    # True  
+```  
