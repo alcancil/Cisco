@@ -190,3 +190,45 @@ Qualquer valor pode ser convertido em booleano.
     print(bool("Cisco"))   # True  
     print(bool([1, 2]))    # True  
 ```  
+
+Agora que aprendemos sobre os tipos de variáveis pode aparecer uma questão interessante: mas e se eu tiver um tipo de variável e precisar converte-la para outro tipo ? Isso é possível ? Sim.  Vamos ver alguns exemplos.  
+
+**Exemplo 01**
+
+```Python
+    >>> x = 1
+    >>> y = 3.4
+    >>> z = 56j
+    >>> type(x)
+    <class 'int'>
+    >>> type(y)
+    <class 'float'>
+    >>> type(z)
+    <class 'complex'>
+    >>> 
+```  
+Então temos um tipo **int**, um **float** e um **complex** . Vamos convertê-los:  
+
+```Python
+    >>> float(x)
+    1.0
+    >>> complex(y)
+    (3.4+0j)
+    >>> str(z)
+    '56j'
+    >>> 
+```  
+Podemos adicionar comentários ao nosso código e para isso basta utilizarmos o sinal de **#** antes do que desejarmos comentar. Então veja o exemplo anterior comentado.  
+
+```Python
+    #Convertendo de int para float
+    >>> float(x)
+    1.0
+    #Convertendo de float para complex
+    >>> complex(y)
+    (3.4+0j)
+    #convertendo de complex para string
+    >>> str(z)
+    '56j'
+    >>> 
+```  
