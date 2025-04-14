@@ -110,4 +110,163 @@ São os números racionais que são resultantes de frações. São os números "
 ```  
 Aqui eu aproveitei para demonstrar que ao utilizar o mesmo nome da **a** que foi utilizado para a variável do exemplo anterior, o valor que antes era 10 agora foi substituído por 1.48  
 
+### Tipo Complexo
 
+São os números complexos que são utilizados na sua grande maioria em cálculos científicos e geométricos. É composto em duas partes: a parte real e a parte imaginária. Ele tem o formato:  
+
+```Python
+    a+bj  
+
+    a: Parte real (real).  
+
+    b: Parte imaginária (imag).  
+
+    j: Unidade imaginária (equivalente a −1−1).  
+```
+
+# ARRUMAR
+
+Complexo (complex)
+
+Tipo de dado usado para representar números complexos (isso mesmo, aquilo que provavelmente estudou no terceiro ano do ensino médio).
+
+Esse tipo normalmente é usado em cálculos geométricos e científicos.
+
+Um tipo complexo contem duas partes: a parte real e a parte imaginária, sendo que a parte imaginária contem um j no sufixo.
+
+A função complex(real[, imag]) do Python possibilita a criação de números imaginários passando como argumento: real, que é a parte Real do número complexo e o argumento opcional imag, representando a parte imaginária do número complexo.
+
+Exemplos:
+
+
+1
+2
+3
+4
+5
+6
+
+
+	
+
+a = 5+2j
+b = 20+6j
+
+print(type(a))
+print(type(b))
+print(complex(2, 5))
+
+
+Saída:
+
+
+
+<class 'complex'>
+<class 'complex'>
+(2+5j)
+
+
+String (str)
+
+É um conjunto de caracteres dispostos numa determinada ordem, geralmente utilizada para representar palavras, frases ou textos.
+
+Exemplos:
+
+
+1
+2
+3
+4
+5
+
+
+	
+
+nome = 'Guilherme'
+profissao = 'Engenheiro de Software'
+
+print(type(profissao))
+print(type(nome))
+
+
+Saída:
+
+
+
+<class 'str'>
+<class 'str'>
+
+
+Boolean (bool)
+
+Tipo de dado lógico que pode assumir apenas dois valores: falso ou verdadeiro (False ou True em Python).
+
+Na lógica computacional, podem ser considerados como 0 ou 1.
+
+Exemplos:
+
+
+1
+2
+3
+4
+5
+
+
+	
+
+fim_de_semana = True
+feriado = False
+
+print(type(fim_de_semana))
+print(type(feriado))
+
+
+Saída:
+
+
+
+<class 'bool'>
+<class 'bool'>
+
+
+Listas (list)
+
+Tipo de dado muito importante e que é muito utilizado no dia a dia do desenvolvedor Python!
+
+Listas agrupam um conjunto de elementos variados, podendo conter: inteiros, floats, strings, outras listas e outros tipos.
+
+Elas são definidas utilizando-se colchetes para delimitar a lista e vírgulas para separar os elementos, veja alguns exemplo abaixo:
+
+
+1
+2
+3
+4
+5
+
+
+	
+
+alunos = ['Amanda', 'Ana', 'Bruno', 'João']
+notas = [10, 8.5, 7.8, 8.0] 
+
+print(type(alunos))
+print(type(notas))
+
+
+Saída:
+
+
+
+<class 'list'>
+<class 'list'>
+
+
+Aqui na Python Academy temos muito conteúdo sobre Listas para você ficar craque!
+
+Para saber mais sobre Listas acesse nosso post sobre Listas, também nosso post sobre Manipulação de Listas, e nosso post completo sobre List Comprehensions.
+
+Está curtindo esse conteúdo? :thumbsup:
+
+Que tal receber 30 dias de conteúdo direto na sua Caixa de Entrada?
