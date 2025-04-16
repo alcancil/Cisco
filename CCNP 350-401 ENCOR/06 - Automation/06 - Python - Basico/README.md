@@ -312,3 +312,18 @@ Nesse exemplo realizamos as 4 operações básicas fundamentais: soma (+), subtr
     >>
 ```  
 
+## Interação com o usuário 
+
+Como demonstrado anteriormente, existe dentro do Python uma função chamada de **Input()** que é considerada built-in, ou seja, ela já vem pronta dentro do próprio Python. Essa função serve para ler os dados digitado pelo usuário no prompt.  Também podemos passar esses dados para alguma variável, por exemplo. Todos os dados que o usuário digitar são do tipo **string**.  
+
+```Python
+    >>> nome = input()
+    Alexandre
+    >>> Print(nome)
+    >>> print(nome)
+    Alexandre
+    >>>
+```  
+
+Então, como podemos notar, nesse exemplo, passamos o valor do input() para a variável nome. Então o cursor fica esperando o usuário digitar, para depois armazenar o valor.  
+
