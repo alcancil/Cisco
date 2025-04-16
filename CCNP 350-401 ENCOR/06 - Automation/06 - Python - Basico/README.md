@@ -294,4 +294,21 @@ Nesse exemplo realizamos as 4 operações básicas fundamentais: soma (+), subtr
     0.25
     >>> 5+(-5)
     0
-    >>> 
+    >>>
+```  
+
+**Exemplo 04**
+```Python
+    >>> a=1
+    >>> b=2
+    >>> a+b
+    3
+    >>> b-a
+    1
+    >>> a/b
+    0.5
+    >>> a*b
+    2
+    >>
+```  
+
