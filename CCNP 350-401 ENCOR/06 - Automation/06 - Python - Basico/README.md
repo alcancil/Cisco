@@ -256,3 +256,42 @@ Podemos adicionar comentários ao nosso código e para isso basta utilizarmos o 
     >>>
 ```  
 
+## Python como calculadora  
+
+O Python por si só realiza operações matemáticas. Então podemos dizer que ele funciona como uma espécie de calculadora rudimentar e não precisamos fazer muita coisa. Vamos a alguns exemplos:  
+
+**Exemplo 01**
+```Python
+    >>> 1+1
+    2
+    >>> 2-1
+    1
+    >>> 3*3
+    9
+    >>> 5/2
+    2.5
+    >>> 
+```  
+Nesse exemplo realizamos as 4 operações básicas fundamentais: soma (+), subtração (-), multiplicação (*) e divisão (/).  
+
+**Exemplo 02**
+```Python
+    # Realizando uma divisão por 0
+    >>> 10/0
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    ZeroDivisionError: division by zero
+    # Como não existe divisão por Zero, o Python irá retornar um erro
+```  
+
+**Exemplo 03**
+```Python
+    >>> 2-4
+    -2
+    >>> 5*-2
+    -10
+    >>> 3/12
+    0.25
+    >>> 5+(-5)
+    0
+    >>> 
