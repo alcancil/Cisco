@@ -344,7 +344,7 @@ Uma outra coisa interessante que podemos fazer com o "Python" é concatenar valo
     Seja bem vindo JoãoSilva
     >>> print('Seja bem vindo', nome, ' ' + sobrenome)
     Seja bem vindo João  Silva
->>>
+    >>>
 ```  
 Nesse exemplo podemos observar que as variáveis **nome** e **sobrenome** recebem o valor digitado pelo usuário porém quando queremos retornar os valores na tela utilizamos a função **print()** concatenando as duas variáveis, **nome** + **sobrenome**. Porém, dessa maneira, os valores saem unidos. Uma solução como mostrado foi adicionar um valor em branco entre as variáveis.  
 Agora, como citado, os valores que a função **input()** recebe são do tipo **str**. Veja o exemplo:  
@@ -367,4 +367,4 @@ Ora, sabemos que 2 * 2 é igual a 4. Mas então porque o resultado ai foi de 22 
     Se eu tenho  2  martelos, então seu peso será de  4  kgs
     >>>  
 ```  
- 
+
