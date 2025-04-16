@@ -327,3 +327,10 @@ Como demonstrado anteriormente, existe dentro do Python uma função chamada de 
 
 Então, como podemos notar, nesse exemplo, passamos o valor do input() para a variável nome. Então o cursor fica esperando o usuário digitar, para depois armazenar o valor.  
 
+```Python
+    >>> nome = input("Olá, qual é o seu nome: ")
+    Olá, qual é o seu nome: Alexandre
+    >>>
+```  
+Nesse exemplo podemos notar que agora inserimos uma frase antes para ser mostrada ao usuário para ele saber o que digitar.  
+
