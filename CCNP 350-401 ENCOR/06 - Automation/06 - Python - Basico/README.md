@@ -333,4 +333,38 @@ Então, como podemos notar, nesse exemplo, passamos o valor do input() para a va
     >>>
 ```  
 Nesse exemplo podemos notar que agora inserimos uma frase antes para ser mostrada ao usuário para ele saber o que digitar.  
+Uma outra coisa interessante que podemos fazer com o "Python" é concatenar valores com o sinal de **+** .
 
+```Python
+    >>> nome = input()
+    João
+    >>> sobrenome = input()
+    Silva
+    >>> print('Seja bem vindo', nome + sobrenome)
+    Seja bem vindo JoãoSilva
+    >>> print('Seja bem vindo', nome, ' ' + sobrenome)
+    Seja bem vindo João  Silva
+>>>
+```  
+Nesse exemplo podemos observar que as variáveis **nome** e **sobrenome** recebem o valor digitado pelo usuário porém quando queremos retornar os valores na tela utilizamos a função **print()** concatenando as duas variáveis, **nome** + **sobrenome**. Porém, dessa maneira, os valores saem unidos. Uma solução como mostrado foi adicionar um valor em branco entre as variáveis.  
+Agora, como citado, os valores que a função **input()** recebe são do tipo **str**. Veja o exemplo:  
+
+```Python
+    >>> peso = input()
+    2
+    >>> quantidade = 2
+    >>> print('Se eu tenho ', quantidade, ' martelos, então seu peso será de ', peso * quantidade , ' kgs')
+    Se eu tenho  2  martelos, então seu peso será de  22  kgs
+    >>>
+``` 
+Ora, sabemos que 2 * 2 é igual a 4. Mas então porque o resultado ai foi de 22 ? Simples. Como já vimos, toda a entrada em um **imput()** é uma **string**. Então temos dois tipos de variáveis nesse exemplo: uma **sting** e uma do tipo **integer**. Para resolver esse problema precisamos transformar a string em integer.  
+
+```Python
+    >>> peso = int(input())
+    2
+    >>> quantidade = 2
+    >>> print('Se eu tenho ', quantidade, ' martelos, então seu peso será de ', peso * quantidade , ' kgs')
+    Se eu tenho  2  martelos, então seu peso será de  4  kgs
+    >>>  
+```  
+ 
