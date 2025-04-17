@@ -89,25 +89,50 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```  
 
-3. Remover Itens
+2. Remover Itens
 
-    .remove(): Remove pelo valor.
-    python
-    Copy
+**.remove():** Remove pelo valor.
+    
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche', 'Jaguar']
+    >>> lista_produtos.remove("Porche")
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Jaguar']
+    >>>
+```
 
-    dispositivos.remove("SW1")  # Remove "SW1"
+**.pop():** Remove pelo índice (ou o último se não especificado).
 
-    .pop(): Remove pelo índice (ou o último se não especificado).
-    python
-    Copy
+### Exemplo 01
 
-    dispositivos.pop(0)  # Remove "R1"
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> lista_produtos.pop(0)
+    'Mercedes'
+    >>> print(lista_produtos)
+    ['Ferrari', 'Porche', 'Jaguar']
+    >>>
+```  
 
-    del: Remove por índice ou fatia.
-    python
-    Copy
+### Exemplo 02
 
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> lista_produtos.pop()
+    'Jaguar'
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche']
+    >>>  
+```
+
+**del:** Remove por índice ou fatia.
+    
+```Python
+    
     del dispositivos[1:3]  # Remove do índice 1 ao 2
+```  
 
 4. Ordenação
 
