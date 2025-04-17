@@ -61,7 +61,7 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
 
 1. Adicionar Itens  
 
-    **.append():** Adiciona ao final.  
+**.append():** Adiciona ao final.  
 
 ```Python
     >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
@@ -74,17 +74,20 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```
 
+ **.insert():** Adiciona em posição específica.
+
 ```Python
-
-```
-
-    dispositivos.append("R3")  # ["R1", "R2", "SW1", "FW1", "R3"]
-
-    .insert(): Adiciona em posição específica.
-    python
-    Copy
-
-    dispositivos.insert(1, "LB1")  # ["R1", "LB1", "R2", "SW1", "FW1"]
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche', 'Jaguar']
+    >>> lista_produtos.insert(2, "Caminhonete")
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Caminhonete', 'Porche', 'Jaguar']
+    >>> lista_produtos.insert(-1, "Lancha")
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Caminhonete', 'Porche', 'Lancha', 'Jaguar']
+    >>>  
+```  
 
 3. Remover Itens
 
