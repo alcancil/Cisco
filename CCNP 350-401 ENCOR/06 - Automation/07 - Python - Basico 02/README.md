@@ -29,7 +29,33 @@ Cada item da lista tem uma posição, ou seja, cada item recebe um índice que p
 
 #### Exemplo 01
 
+```Python
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche', 'Jaguar']
+    >>> print(lista_produtos[0])
+    Mercedes
+    >>> print(lista_produtos[2])
+    Porche
+    >>>
+```  
 
+Como podemos observar, os índices são representados entre [ ]. Os indices começam sempre em **0** e vão crescendo da esquerda para a direita. Mas se quisermos utilizar indices negativos, como -1 por exemplo, então os índices caminham da esquerda para  direita. 
+
+### Exemplo 02
+
+```Python
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche', 'Jaguar']
+    >>> print(lista_produtos[0])
+    Mercedes
+    >>> print(lista_produtos[2])
+    Porche
+    >>> print(lista_produtos[-1])
+    Jaguar
+    >>> print(lista_produtos[-2])
+    Porche
+    >>>  
+```
 
 ## Estruturas de controle (if, else, elif)
 
