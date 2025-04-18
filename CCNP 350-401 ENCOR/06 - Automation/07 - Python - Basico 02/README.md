@@ -21,7 +21,7 @@ Estas são estruturas capazes de armazenar dados.
     <class 'dict'>
     >>>  
 ```
-### Listas
+## Listas
 
 As listas são as estruturas mais flexíveis. Elas podem armazenários vários tipos de dados (strings, números, objetos, etc.). Elas podem ser manipuladas, ou seja, podem ser adicionados ou removidos itens da lista.  
 **OBS:** nas listas, os itens podem ser do mesmo tipo ou de tipos misturados.  
@@ -179,6 +179,104 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     4
     >>>
 ```  
+
+## Tuplas
+
+As tuplas são bem parecidas com listas. Então são estruturas que recebem valores que podem ser diferentes, repetidos, em ordem ou mesmo fora de ordem. A diferença é que são imutáveis, ou seja, não se pode alterar uma tupla. Ela funciona assim pois existem estruturas em Python que precisam retornar certas quantidades de valores, por exemplo, uma função. Imagine que você precise entrar somente dois valores nessa função e ela te retorne quatro valores. Nesse caso pode ser utilizada uma tupla para armazenar esses valores e garantir que não sejam alterados.  
+
+**Sintaxe Básica**
+
+Tuplas são definidas por parênteses () (ou sem parênteses, apenas com vírgulas):  
+
+# Tupla de interfaces de roteador
+interfaces = ("GigabitEthernet0/0", "GigabitEthernet0/1", "Serial0/0/0")  
+
+# Tupla sem parênteses (válido)  
+vlans = 10, 20, 30
+
+
+#### E o que não se pode fazer com TUPLAS ?  
+
+* Não se pode adicionar ou remover itens uma vez que ela é imutável
+* Não se pode fazer uma ordenação direta com **.sort()** . Para isso é necessário se utilizar **.sorted()** que irá te retornar uma lista ordenada.
+
+
+
+
+🔧 Operações com Tuplas
+1. Acessar Elementos
+
+Funciona como listas (índices começam em 0):
+python
+
+print(interfaces[0])  # Saída: "GigabitEthernet0/0"
+print(vlans[-1])      # Saída: 30 (último elemento)
+
+2. Fatiamento (Slicing)
+
+Extrai uma subtupla:
+python
+
+print(interfaces[1:3])  # Saída: ('GigabitEthernet0/1', 'Serial0/0/0')
+
+3. Concatenar Tuplas
+
+Cria uma nova tupla combinando outras:
+python
+
+combined = interfaces + ("Loopback0",)  # Vírgula é obrigatória para tupla unitária
+print(combined)  # Saída: ('GigabitEthernet0/0', 'GigabitEthernet0/1', 'Serial0/0/0', 'Loopback0')
+
+4. Verificar Existência
+python
+
+if "GigabitEthernet0/0" in interfaces:
+    print("Interface encontrada!")
+
+5. Desempacotamento
+
+Atribui elementos a variáveis:
+python
+
+interface1, interface2, interface3 = interfaces
+print(interface2)  # Saída: "GigabitEthernet0/1"
+
+6. Tamanho e Contagem
+python
+
+print(len(interfaces))  # Saída: 3 (número de elementos)
+print(vlans.count(20))  # Saída: 1 (quantas vezes o valor 20 aparece)
+
+7. Encontrar Índice de um Elemento
+python
+
+print(interfaces.index("Serial0/0/0"))  # Saída: 2
+
+🚫 O Que Não é Possível Fazer com Tuplas?
+
+    Adicionar/Remover Itens: Tuplas são imutáveis!
+    python
+
+interfaces.append("Loopback0")  # Erro: AttributeError
+interfaces[0] = "FastEthernet0/0"  # Erro: TypeError
+
+Ordenação Direta:
+Tuplas não têm método .sort(). Use sorted() para criar uma nova lista ordenada:
+python
+
+sorted_interfaces = sorted(interfaces)  # Retorna uma lista!
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Estruturas de controle (if, else, elif)
 
