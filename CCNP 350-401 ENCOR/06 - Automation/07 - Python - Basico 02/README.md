@@ -200,32 +200,45 @@ vlans = 10, 20, 30
 * Não se pode adicionar ou remover itens uma vez que ela é imutável
 * Não se pode fazer uma ordenação direta com **.sort()** . Para isso é necessário se utilizar **.sorted()** que irá te retornar uma lista ordenada.
 
+### Operações com Tuplas
 
-
-
-🔧 Operações com Tuplas
 1. Acessar Elementos
 
 Funciona como listas (índices começam em 0):
-python
 
-print(interfaces[0])  # Saída: "GigabitEthernet0/0"
-print(vlans[-1])      # Saída: 30 (último elemento)
+```Python
+    >>> interfaces = ("GigabitEthernet0/0","GigabitEthernet0/1","GigabitEthernet0/2","GigabitEthernet0/3")
+    >>> type(interfaces)
+    <class 'tuple'>        
+    >>> print(interfaces[0]) # Imprime o primeiro item
+    GigabitEthernet0/0
+    >>> print(interfaces[-1]) # Imprime o último item
+    GigabitEthernet0/3
+    >>>  
+```
 
 2. Fatiamento (Slicing)
 
-Extrai uma subtupla:
-python
+Extrai uma sub-tupla:
 
-print(interfaces[1:3])  # Saída: ('GigabitEthernet0/1', 'Serial0/0/0')
+```Python
+    >>> interfaces = ("GigabitEthernet0/0","GigabitEthernet0/1","GigabitEthernet0/2","GigabitEthernet0/3")
+    >>> print(interfaces[1:3])
+    ('GigabitEthernet0/1', 'GigabitEthernet0/2')
+    >>>
+```
 
 3. Concatenar Tuplas
 
 Cria uma nova tupla combinando outras:
-python
 
-combined = interfaces + ("Loopback0",)  # Vírgula é obrigatória para tupla unitária
-print(combined)  # Saída: ('GigabitEthernet0/0', 'GigabitEthernet0/1', 'Serial0/0/0', 'Loopback0')
+```Python
+    >>> interfaces = ("GigabitEthernet0/0","GigabitEthernet0/1","GigabitEthernet0/2","GigabitEthernet0/3")
+    >>> interfaces_log = ("Loopback01", "Loopback02", "Loopaback03", "Loopback04")
+    >>> print(interfaces + interfaces_log)
+    ('GigabitEthernet0/0', 'GigabitEthernet0/1', 'GigabitEthernet0/2', 'GigabitEthernet0/3', 'Loopback01', 'Loopback02', 'Loopaback03', 'Loopback04')
+    >>>
+```
 
 4. Verificar Existência
 python
