@@ -59,7 +59,7 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
 
 ### Operações Comuns em Listas
 
-1. Adicionar Itens  
+### 1. Adicionar Itens  
 
 **.append():** Adiciona ao final.  
 
@@ -89,7 +89,7 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```  
 
-2. Remover Itens
+### 2. Remover Itens
 
 **.remove():** Remove pelo valor.
     
@@ -159,7 +159,7 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```  
 
-3. Ordenação
+### 3. Ordenação
 
 **.sort():** Ordena a lista original.
     
@@ -171,7 +171,7 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```  
 
-4. Outras Operações Úteis
+### 4. Outras Operações Úteis
 
     Tamanho da lista:
     python
