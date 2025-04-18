@@ -171,28 +171,14 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
     >>>  
 ```  
 
-### 4. Outras Operações Úteis
-
-    Tamanho da lista:
-    python
-    Copy
-
-    len(dispositivos)  # Retorna 4
-
-    Verificar existência:
-    python
-    Copy
-
-    if "R1" in dispositivos:
-        print("R1 está na lista!")
-
-    Fatiamento (slicing):
-    python
-    Copy
-
-    print(dispositivos[1:3])  # ["R2", "SW1"]
-
-
+### 4. Tamanho da lista:
+    
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> len(lista_produtos)
+    4
+    >>>
+```  
 
 ## Estruturas de controle (if, else, elif)
 
