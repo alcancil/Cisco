@@ -128,27 +128,50 @@ Como podemos observar, os índices são representados entre [ ]. Os indices come
 ```
 
 **del:** Remove por índice ou fatia.
+
+### Exemplo 01
     
 ```Python
-    
-    del dispositivos[1:3]  # Remove do índice 1 ao 2
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> del lista_produtos[1] # Remove o item de índice 1
+    >>> print(lista_produtos)
+    ['Mercedes', 'Porche', 'Jaguar']
+    >>>  
 ```  
 
-4. Ordenação
+### Exemplo 02
 
-    .sort(): Ordena a lista original.
-    python
-    Copy
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> del lista_produtos[-1] # Remove o último item de índice -1 
+    >>> print(lista_produtos)
+    ['Mercedes', 'Ferrari', 'Porche']
+    >>>  
+```
 
-    dispositivos.sort()  # ["FW1", "LB1", "R1", "R2"]
+### Exemplo 03
 
-    sorted(): Retorna uma nova lista ordenada (sem alterar a original).
-    python
-    Copy
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> del lista_produtos[1:3] # Remove do índice 1 ao 2
+    >>> print(lista_produtos)
+    ['Mercedes', 'Jaguar']
+    >>>  
+```  
 
-    ordenados = sorted(dispositivos)
+3. Ordenação
 
-5. Outras Operações Úteis
+**.sort():** Ordena a lista original.
+    
+```Python
+    >>> lista_produtos = ["Mercedes", "Ferrari", "Porche", "Jaguar"]
+    >>> lista_produtos.sort()
+    >>> print(lista_produtos)
+    ['Ferrari', 'Jaguar', 'Mercedes', 'Porche']
+    >>>  
+```  
+
+4. Outras Operações Úteis
 
     Tamanho da lista:
     python
