@@ -354,6 +354,24 @@ Set ou conjuntos também são parecidos com as listas porém as lista iniciam co
     >>>
 ```
 
+## Dicionários
+
+São estruturas que se parecem com listas mas trabalham com a estrutura de chave e valor. São declarados entre { }. Exemplo:
+
+```Python
+    # Dicionário de dispositivos e seus IPs
+    dispositivos = {
+        "R1": "192.168.1.1",
+        "SW1": "10.0.0.2",
+        "FW1": "172.16.0.1" 
+    }
+```
+
+Agora quando vamos interagir com um dicionário, não vamos mais procurar um índice, e sim seu valor. Então podemos dizer que isso é uma especie bem reduzida de um banco de dados.  
+Um exemplo clássico de um dicionário é uma lista telefônica. Vamos supor que eu precise saber o telefone de Jão. Então eu navego na lista até o nome João e depois vou ter o telefone dele.  
+
+
+
 ## Estruturas de controle (if, else, elif)
 
 
