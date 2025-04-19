@@ -450,7 +450,18 @@ Um exemplo clássico de um dicionário é uma lista telefônica. Vamos supor que
 ```
 
 ##### Remove e retorna o valor
-ip_sw1 = dispositivos.pop("SW1")
+
+```Python
+    >>> dispositivos = {
+    ...             "SW1": "10.0.0.2",
+    ...             "R1": "192.168.1.1",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> ip_sw1 = dispositivos.pop("SW1")
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'FW1': '172.16.0.1'}
+    >>>
+```
 
 ##### Remove todos os itens
 dispositivos.clear()
