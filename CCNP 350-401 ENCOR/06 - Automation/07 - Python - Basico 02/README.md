@@ -202,7 +202,7 @@ vlans = 10, 20, 30
 
 ### Operações com Tuplas
 
-1. Acessar Elementos
+#### 1. Acessar Elementos
 
 Funciona como listas (índices começam em 0):
 
@@ -217,7 +217,7 @@ Funciona como listas (índices começam em 0):
     >>>  
 ```
 
-2. Fatiamento (Slicing)
+#### 2. Fatiamento (Slicing)
 
 Extrai uma sub-tupla:
 
@@ -228,7 +228,7 @@ Extrai uma sub-tupla:
     >>>
 ```
 
-3. Concatenar Tuplas
+#### 3. Concatenar Tuplas
 
 Cria uma nova tupla combinando outras:
 
@@ -240,44 +240,31 @@ Cria uma nova tupla combinando outras:
     >>>
 ```
 
-4. Verificar Existência
-python
+#### 4. Tamanho e Contagem
 
-if "GigabitEthernet0/0" in interfaces:
-    print("Interface encontrada!")
+```Python
+>>> interfaces = ("GigabitEthernet0/0","GigabitEthernet0/1","GigabitEthernet0/2","GigabitEthernet0/3")
+>>> vlans = ("10", "20", "30", "40", "50", "60","70", "80", "90", "100")
+>>> print(len(interfaces))
+4 # Retorna o número de itens dentro de interfaces
+>>> print(vlans.count(100))
+0 # Retornou 0 pois o valor precisar estar entre aspas
+>>> print(vlans.count("90"))
+1 # Retorna quantas vezes 90 está dentro da tupla vlans
+>>> vlans1 = ("10", "20", "30", "40", "50", "60","70", "80", "90", "90", "90", "90", "100")
+>>> print(vlans1.count("90"))
+4 # Aqui retorna 4 vezes pois achou 4 vezes o item 90 dentro de vlans1
+>>> 
+```  
 
-5. Desempacotamento
+#### 5. Encontrar Índice de um Elemento
 
-Atribui elementos a variáveis:
-python
-
-interface1, interface2, interface3 = interfaces
-print(interface2)  # Saída: "GigabitEthernet0/1"
-
-6. Tamanho e Contagem
-python
-
-print(len(interfaces))  # Saída: 3 (número de elementos)
-print(vlans.count(20))  # Saída: 1 (quantas vezes o valor 20 aparece)
-
-7. Encontrar Índice de um Elemento
-python
-
-print(interfaces.index("Serial0/0/0"))  # Saída: 2
-
-🚫 O Que Não é Possível Fazer com Tuplas?
-
-    Adicionar/Remover Itens: Tuplas são imutáveis!
-    python
-
-interfaces.append("Loopback0")  # Erro: AttributeError
-interfaces[0] = "FastEthernet0/0"  # Erro: TypeError
-
-Ordenação Direta:
-Tuplas não têm método .sort(). Use sorted() para criar uma nova lista ordenada:
-python
-
-sorted_interfaces = sorted(interfaces)  # Retorna uma lista!
+```Python
+    >>> interfaces = ("GigabitEthernet0/0","GigabitEthernet0/1","GigabitEthernet0/2","GigabitEthernet0/3")
+    >>> print(interfaces.index("GigabitEthernet0/2"))
+    2 # Retorna o número do índice do elemento GigabitEthernet0/2
+    >>>
+```  
 
 
 
