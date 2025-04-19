@@ -370,7 +370,92 @@ São estruturas que se parecem com listas mas trabalham com a estrutura de chave
 Agora quando vamos interagir com um dicionário, não vamos mais procurar um índice, e sim seu valor. Então podemos dizer que isso é uma especie bem reduzida de um banco de dados.  
 Um exemplo clássico de um dicionário é uma lista telefônica. Vamos supor que eu precise saber o telefone de Jão. Então eu navego na lista até o nome João e depois vou ter o telefone dele.  
 
+## Operações Principais com Dicionários
+#### 1. Acessando Valores
 
+```Python
+    >>> dispositivos = {
+...             "R1": "192.168.1.1",
+...             "SW1": "10.0.0.2",
+...             "FW1": "172.16.0.1" 
+...         }
+    >>> print(dispositivos["R1"])
+    192.168.1.1
+    >>>
+```
+
+##### Método seguro (evita KeyError se a chave não existir)
+
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1" 
+    ... }
+    >>> print(dispositivos.get("SW1", "Dispositivo não encontrado"))
+    10.0.0.2
+    >>> print(dispositivos.get("SW2", "Dispositivo não encontrado"))
+    Dispositivo não encontrado
+    >>>
+```
+
+#### 2. Adicionando/Atualizando Itens
+
+##### Adiciona novo item
+dispositivos["R2"] = "192.168.1.2"
+
+##### Atualiza valor existente
+dispositivos["R1"] = "10.0.0.1"
+
+3. Removendo Itens
+python
+Copy
+
+# Remove um item específico
+del dispositivos["FW1"]
+
+# Remove e retorna o valor
+ip_sw1 = dispositivos.pop("SW1")
+
+# Remove todos os itens
+dispositivos.clear()
+
+4. Iteração
+python
+Copy
+
+# Todas as chaves
+for nome in dispositivos.keys():
+    print(nome)
+
+# Todos os valores
+for ip in dispositivos.values():
+    print(ip)
+
+# Pares completos (recomendado)
+for dispositivo, ip in dispositivos.items():
+    print(f"{dispositivo}: {ip}")
+
+5. Métodos Úteis
+python
+Copy
+
+# Verifica se chave existe
+if "R1" in dispositivos:
+    print("R1 está no inventário")
+
+# Combina dois dicionários
+dispositivos.update({"LB1": "192.168.3.1", "DNS1": "8.8.8.8"})
+
+# Cria cópia segura
+copia_dispositivos = dispositivos.copy()
+
+5. Métodos Úteis
+python
+Copy
+
+chaves = dispositivos.keys()    # Lista de chaves
+valores = dispositivos.values() # Lista de valores
 
 ## Estruturas de controle (if, else, elif)
 
