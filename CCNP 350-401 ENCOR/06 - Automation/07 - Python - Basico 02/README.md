@@ -320,34 +320,39 @@ Set ou conjuntos também são parecidos com as listas porém as lista iniciam co
     >>>  
 ```
 
-Interseção (& ou .intersection()):
-python
+### 3. Interseção (& ou .intersection()):
 
-vlans_comuns = vlan_switch1 & vlan_switch2  # {20}
+```Python
+>>> vlan_switch1 = {10, 20, 30}
+>>> vlan_switch2 = {20, 40, 50}
+>>> vlans_comuns = vlan_switch1 & vlan_switch2
+>>> print(vlans_comuns)
+{20}
+>>>
+```
 
-Diferença (- ou .difference()):
-python
+#### 4. Diferença (- ou .difference()):
 
-    vlans_apenas_switch1 = vlan_switch1 - vlan_switch2  # {10, 30}
+```Python
+    >>> vlan_switch1 = {10, 20, 30}
+    >>> vlan_switch2 = {20, 40, 50}
+    >>> vlans_apenas_switch1 = vlan_switch1 - vlan_switch2
+    >>> print(vlans_apenas_switch1)
+    {10, 30}
+    >>>
+```
 
-3. Verificações Rápidas
+#### 5. Limpar o Set
 
-    Subconjunto (<= ou .issubset()):
-    python
-
-print({10, 20} <= vlan_switch1)  # True (está contido)
-
-Superconjunto (>= ou .issuperset()):
-python
-
-    print(vlan_switch1 >= {10, 20})  # True
-
-4. Limpar o Set
-python
-
-vlans.clear()  # vlans = set()
-
-
+```Python
+    >>> vlans = {10, 20, 30, 40, 50}
+    >>> print(vlans)
+    {50, 20, 40, 10, 30}
+    >>> vlans.clear()
+    >>> print(vlans)
+    set()
+    >>>
+```
 
 ## Estruturas de controle (if, else, elif)
 
