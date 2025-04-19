@@ -464,44 +464,72 @@ Um exemplo clássico de um dicionário é uma lista telefônica. Vamos supor que
 ```
 
 ##### Remove todos os itens
-dispositivos.clear()
 
-4. Iteração
-python
-Copy
+    ```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> dispositivos.clear()
+    >>> print(dispositivos)
+    {}
+    >>>
+```
 
-# Todas as chaves
-for nome in dispositivos.keys():
-    print(nome)
+### 5. Métodos Úteis
 
-# Todos os valores
-for ip in dispositivos.values():
-    print(ip)
+#### Combina dois dicionários
 
-# Pares completos (recomendado)
-for dispositivo, ip in dispositivos.items():
-    print(f"{dispositivo}: {ip}")
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1'}
+    >>> dispositivos.update({"LB1": "192.168.3.1", "DNS1": "8.8.8.8"})
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1', 'LB1': '192.168.3.1', 'DNS1': '8.8.8.8'}
+    >>> 
+```
 
-5. Métodos Úteis
-python
-Copy
+#### Cria cópia segura
 
-# Verifica se chave existe
-if "R1" in dispositivos:
-    print("R1 está no inventário")
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1'}
+    >>> dispositivos.update({"LB1": "192.168.3.1", "DNS1": "8.8.8.8"})
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1', 'LB1': '192.168.3.1', 'DNS1': '8.8.8.8'}
+    >>> copia_dispositivos = dispositivos.copy()
+    >>> print(copia_dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1', 'LB1': '192.168.3.1', 'DNS1': '8.8.8.8'}
+    >>>
+```
 
-# Combina dois dicionários
-dispositivos.update({"LB1": "192.168.3.1", "DNS1": "8.8.8.8"})
+#### Listar chaves
 
-# Cria cópia segura
-copia_dispositivos = dispositivos.copy()
+```Python
+>>> chaves = dispositivos.keys()
+>>> print(chaves)
+dict_keys(['R1', 'SW1', 'FW1', 'LB1', 'DNS1'])
+```
 
-5. Métodos Úteis
-python
-Copy
+#### Listar valores
 
-chaves = dispositivos.keys()    # Lista de chaves
-valores = dispositivos.values() # Lista de valores
+```Python
+    >>> valores = dispositivos.values() # Lista de valores
+    >>> print(valores)
+    dict_values(['192.168.1.1', '10.0.0.2', '172.16.0.1', '192.168.3.1', '8.8.8.8'])
+    >>>
+```
 
 ## Estruturas de controle (if, else, elif)
 
