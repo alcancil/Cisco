@@ -266,15 +266,86 @@ Cria uma nova tupla combinando outras:
     >>>
 ```  
 
+## Set
 
+Set ou conjuntos também são parecidos com as listas porém as lista iniciam com [ ] e os **sets com { }** . Uma das características do set é que ele aceita letras, números, etc, porém ele não possui uma ordem. Então vamos supor que tenhamos um set e mandamos listar os elementos. Na primeira vez sai em uma ordem, na segunda em outra ordem e assim por diante. Outra característica é que dentro de um set não podem existir elementos com valores duplicados. Em set, também não existe a indexação do elemento como nas listas e tuplas.  
 
+```Python
+    >>> # Conjunto de VLANs
+    >>> vlans = {10, 20, 30, 40}
+    >>> # Conjunto de endereços IP
+    >>> ips = set(["192.168.1.1", "10.0.0.1", "192.168.1.1"])  # Duplicado será removido
+    >>> print(ips)  # Saída: {'10.0.0.1', '192.168.1.1'}
+    {'10.0.0.1', '192.168.1.1'}
+    >>>
+```
 
+## Operações Principais com Sets
 
+#### 1. Adicionar e Remover Elementos
 
+**.add():** Adiciona um elemento.
 
+```Python
+    >>> vlans = {10, 20, 30, 40}
+    >>> vlans.add(50)
+    >>> print(vlans)
+    {40, 10, 50, 20, 30} # Adicionou a vlan 50 e imprimiu fora de ordem
+    >>>
+```
 
+**.remove() ou .discard():** Remove um elemento (.discard() não gera erro se o elemento não existir).
 
+```Python
+    >>> vlans = {10, 20, 30, 40, 50}
+    >>> vlans.remove(10)
+    >>> print(vlans)
+    {50, 20, 40, 30}
+    >>> vlans.discard(99) # Não faz nada (sem erro)
+    >>> print(vlans)
+    {50, 20, 40, 30} 
+    >>>
+```
 
+#### 2. Operações Matemáticas
+
+**União (| ou .union()):**
+
+```Python
+    >>> vlan_switch1 = {10, 20, 30}
+    >>> vlan_switch2 = {20, 40, 50}
+    >>> todas_vlans = vlan_switch1 | vlan_switch2
+    >>> print(todas_vlans)
+    {50, 20, 40, 10, 30}
+    >>>  
+```
+
+Interseção (& ou .intersection()):
+python
+
+vlans_comuns = vlan_switch1 & vlan_switch2  # {20}
+
+Diferença (- ou .difference()):
+python
+
+    vlans_apenas_switch1 = vlan_switch1 - vlan_switch2  # {10, 30}
+
+3. Verificações Rápidas
+
+    Subconjunto (<= ou .issubset()):
+    python
+
+print({10, 20} <= vlan_switch1)  # True (está contido)
+
+Superconjunto (>= ou .issuperset()):
+python
+
+    print(vlan_switch1 >= {10, 20})  # True
+
+4. Limpar o Set
+python
+
+vlans.clear()  # vlans = set()
 
 
 
