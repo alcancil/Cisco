@@ -402,22 +402,57 @@ Um exemplo clássico de um dicionário é uma lista telefônica. Vamos supor que
 #### 2. Adicionando/Atualizando Itens
 
 ##### Adiciona novo item
-dispositivos["R2"] = "192.168.1.2"
+
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...              "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1" 
+    ...         }
+    >>> print(dispositivos["R1"])
+    192.168.1.1
+    >>> dispositivos["R2"] = "192.168.1.2"
+    >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2', 'FW1': '172.16.0.1', 'R2': '192.168.1.2'}
+    >>>
+```
 
 ##### Atualiza valor existente
-dispositivos["R1"] = "10.0.0.1"
 
-3. Removendo Itens
-python
-Copy
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> print(dispositivos["R1"])
+    192.168.1.1
+    >>> dispositivos["R1"] = "10.0.0.1"
+    >>> print(dispositivos["R1"])
+    10.0.0.1
+    >>> 
+```
 
-# Remove um item específico
-del dispositivos["FW1"]
+#### 3. Removendo Itens
 
-# Remove e retorna o valor
+###### Remove um item específico
+
+```Python
+    >>> dispositivos = {
+    ...             "R1": "192.168.1.1",
+    ...             "SW1": "10.0.0.2",
+    ...             "FW1": "172.16.0.1"
+    ...         }
+    >>> del dispositivos["FW1"]
+   >>> print(dispositivos)
+    {'R1': '192.168.1.1', 'SW1': '10.0.0.2'}
+    >>> 
+```
+
+##### Remove e retorna o valor
 ip_sw1 = dispositivos.pop("SW1")
 
-# Remove todos os itens
+##### Remove todos os itens
 dispositivos.clear()
 
 4. Iteração
