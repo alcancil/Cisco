@@ -1,4 +1,37 @@
-# Python - Básico 03
+# Python - Básico 04
+
+Antes de avançarmos, precisamos ver um pouco sobre **Operadores Lógicos**
+
+## Operadores Lógicos
+
+Em Python, os operadores lógicos são usados para combinar ou inverter expressões condicionais, sendo essenciais para controle de fluxo (if, while, etc.) e automação de redes. Aqui estão os principais:
+📌 Operadores Lógicos Básicos
+
+| Operador	| Nome	| Exemplo	                 |  Descrição                                              |
+|-----------|-------|----------------------------|---------------------------------------------------------|
+|   and	    |  E    | x > 5 and x < 10           | Retorna True se ambas as condições forem verdadeiras.   |
+|   or      |  OU   | y == "up" or y == "active" | Retorna True se pelo menos uma condição for verdadeira. |
+|   not     |  NÃO  | not interface_down         | Inverte o valor booleano (True vira False e vice-versa).|
+
+
+
+
+
+
+## Estruturas de controle (if, else, elif)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Agora que vimos o básico, vamos avançar um pouco mais e dar sequência nos estudo de Python.  
 
@@ -285,5 +318,7 @@ dict_keys(['R1', 'SW1', 'FW1', 'LB1', 'DNS1'])
     dict_values(['192.168.1.1', '10.0.0.2', '172.16.0.1', '192.168.3.1', '8.8.8.8'])
     >>>
 ```
+
+
 
 
