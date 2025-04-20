@@ -5,15 +5,25 @@ Antes de avançarmos, precisamos ver um pouco sobre **Operadores Lógicos**
 ## Operadores Lógicos
 
 Em Python, os operadores lógicos são usados para combinar ou inverter expressões condicionais, sendo essenciais para controle de fluxo (if, while, etc.) e automação de redes. Aqui estão os principais:
-📌 Operadores Lógicos Básicos
+
+### Operadores Lógicos Básicos
 
 | Operador	| Nome	| Exemplo	                 |  Descrição                                              |
 |-----------|-------|----------------------------|---------------------------------------------------------|
+|   ==      | IGUAL | x == 100                   | A variável x é igual a 5
 |   and	    |  E    | x > 5 and x < 10           | Retorna True se ambas as condições forem verdadeiras.   |
 |   or      |  OU   | y == "up" or y == "active" | Retorna True se pelo menos uma condição for verdadeira. |
-|   not     |  NÃO  | not interface_down         | Inverte o valor booleano (True vira False e vice-versa).|
+|   not     |  NÃO  | not interface_down         | Inverte o valor booleano (True vira False e vice-versa).|  
 
+### Operadores Bit a Bit (Para Tarefas Avançadas)
 
+Embora não sejam estritamente "lógicos", são úteis em redes para manipulação de máscaras e flags:  
+
+| Operador | Nome  |  Exemplo	        |  Descrição                               |
+|----------|-------|--------------------|------------------------------------------|
+|    &     |  AND  |  flags & 0b1000    |  Comparação bit a bit (E).               |
+|    |     |  OR   |  flags | 0b0010	|  Comparação bit a bit (OU).              |
+|    ^     |  XOR  |  mask ^ 0b11110000	|  Retorna 1 onde os bits forem diferentes.|
 
 
 
