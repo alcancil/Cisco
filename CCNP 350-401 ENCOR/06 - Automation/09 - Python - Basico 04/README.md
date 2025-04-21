@@ -40,7 +40,7 @@ Podemos pensar assim, "Se condição 1 for atendida, execute ação 1 Senão exe
     # Código se condição1 for True
 ```   
 
-### Exemplo 01
+#### Exemplo 01
 
 ```Python
     >>> interface = "Serial0/0"
@@ -54,7 +54,7 @@ Podemos pensar assim, "Se condição 1 for atendida, execute ação 1 Senão exe
 Vamos analisar a estrutura. Nesse exemplo temos a primeira condição que podemos ler dessa maneira: "Se a variável **interface** for igual a **Serial0/0**" ai vem a ação: "Mostre o conteúdo da variável **Serial0/0".  
 Perceba que a ação, no nosso caso **print(interface)**, na está escrita na mesma direção de if. Ele tem espaço, um **tab**. Esse espaço se chama **indentação** que deve ser consistente. Então tudo o que estiver dentro desse espaço va estar dentro dessa condição. Quando a condição acaba, o código volta a ser escrito sem o tab. Então dentro das ações, podemos ter uma ou mais ações.  
 
-### Exemplo 02
+#### Exemplo 02
 
 ```Python
     >>> interface = "Serial0/0"
@@ -67,7 +67,7 @@ Perceba que a ação, no nosso caso **print(interface)**, na está escrita na me
     >>>
 ```  
 
-### Exemplo 03
+#### Exemplo 03
 
 ```Python
     >>> interface = "Serial0/1"
@@ -77,5 +77,34 @@ Perceba que a ação, no nosso caso **print(interface)**, na está escrita na me
     >>>
 ```
 
-Aqui podemos ver que o código não retorna nada. MAs o porque disso ?  
+Aqui podemos ver que o código não retorna nada. Mas o porque disso ?  
 Isso acontece pois agora a condição é **false** e depois da condição não temos mais nada no código. Então, nesse caso, o código não retorna nada.  
+
+### Escolha Binária - if + else
+
+Quando usar: Quando há apenas duas opções possíveis (True/False).
+
+#### Exemplo 01 
+    
+```Python
+    >>> login_sucesso = "verdade"
+    >>> if login_sucesso == "verdade":
+    ...     print("Login efetuado com sucesso!")
+    ... else:
+    ...     print("Login não efetuado!")
+    ... 
+    Login efetuado com sucesso!
+    >>> 
+```  
+
+#### Exemplo 02
+
+```Python
+    >>> if login_sucesso == "falso":
+    ...     print("Login efetuado com sucesso!")
+    ... else:
+    ...     print("Login não efetuado!")
+    ... 
+    Login não efetuado!
+    >>>
+```
