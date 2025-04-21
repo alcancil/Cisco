@@ -25,16 +25,33 @@ Embora não sejam estritamente "lógicos", são úteis em redes para manipulaç�
 |    \|    |  OR   |  flags \| 0b0010	|  Comparação bit a bit (OU).              |
 |    ^     |  XOR  |  mask ^ 0b11110000	|  Retorna 1 onde os bits forem diferentes.|
 
-
-
-
 ## Estruturas de controle (if, else, elif)
 
+Essas são estruturas que servem para realizar ações se passarem em algumas condições. Como assim ? Ao invés de realizarmos um código que vai executar tudo linha a linha de foma linear, o código testa uma condição e se atender essa condição ele executa uma, ou algumas ações.  
+Mas e o que o acontece se a condição não for atendida ? Bom, por padrão o código não faz nada, ou seja, ele passa por essa estrutura, testa a condição e ao terminar o teste ele volta exatamente para a próxima linha após os testes.  
+Agora se queremos que o código teste uma condição e se não passar na condição execute uma ação, ai devemos executar o else.   
+Podemos traduzir o "if" e o "else" como "se" e "senão". Então uma condição poderia ficar assim: " Se nome_interface é igual a Ethernet0/0 então escreva Interface encontrada ".  
+Podemos pensar assim, "Se condição 1 for atendida, execute ação 1 Senão execute ação 2". Vamos a alguns exemplos.
 
+### Sintaxe básica
 
+```Python
+    if condição1:
+    # Código se condição1 for True
+```   
 
+### Exemplo 01
 
+```Python
+    >>> interface = "Serial0/0"
+    >>> if interface == "Serial0/0" :
+    ...     print(interface)
+    ... 
+    Serial0/0
+    >>>
+```  
 
+Vamos analisar a estrutura. Nesse exemplo temos a primeira condição que podemos ler dessa maneira: "Se a variável **interface** for igual a **Serial0/0**" ai vem a ação: "Mostre o conteúdo da variável **Serial0/0".
 
 
 
