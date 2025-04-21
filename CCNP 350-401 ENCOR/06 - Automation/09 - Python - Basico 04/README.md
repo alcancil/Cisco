@@ -107,4 +107,24 @@ Quando usar: Quando há apenas duas opções possíveis (True/False).
     ... 
     Login não efetuado!
     >>>
+```  
+
+### Múltiplas Condições - if + elif + else
+
+Agora, imagine que queremos testar mais de uma condição. O que poderíamos fazer ?  
+Nesse caso existe o **elif** que serve para colocar mais de uma condição.  
+
+#### Exemplo 01
+
+```Python
+    tipo_trafego = "voice"
+    if tipo_trafego == "voice":
+        print("Prioridade: Alta (QoS 5).")
+    elif tipo_trafego == "video":
+        print("Prioridade: Média (QoS 4).")
+    elif tipo_trafego == "data":
+        print("Prioridade: Baixa (QoS 1).")
+    else:
+        print("Prioridade não definida.")
+    Prioridade: Alta (QoS 5).
 ```
