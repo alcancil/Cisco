@@ -22,7 +22,7 @@ Embora não sejam estritamente "lógicos", são úteis em redes para manipulaç�
 | Operador | Nome  |  Exemplo	        |  Descrição                               |
 |----------|-------|--------------------|------------------------------------------|
 |    &     |  AND  |  flags & 0b1000    |  Comparação bit a bit (E).               |
-|    \|    |  OR   |  flags | 0b0010	|  Comparação bit a bit (OU).              |
+|    \|    |  OR   |  flags \| 0b0010	|  Comparação bit a bit (OU).              |
 |    ^     |  XOR  |  mask ^ 0b11110000	|  Retorna 1 onde os bits forem diferentes.|
 
 
