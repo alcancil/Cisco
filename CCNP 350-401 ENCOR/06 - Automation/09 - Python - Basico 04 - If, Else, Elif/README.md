@@ -417,6 +417,22 @@ if dispositivo == "roteador" and protocolo == "OSPF" and interface == "Gig0/0":
     prioridade = prioridades.get(vlan, "Desconhecida")
 ```
 
+### 4. Comente Condições Complexas
+
+**Problema:** Condições críticas que dificultam a compreensão.
+
+**Solução:** Use comentários para explicar a intenção.
+
+```Python
+
+    # Verifica se o dispositivo é um roteador Cisco com OSPF ativo
+    if (
+        dispositivo["tipo"] == "roteador" 
+        and dispositivo["fabricante"] == "Cisco" 
+        and "OSPF" in dispositivo["protocolos"]
+    ):
+        configurar_ospf()
+```
 
 
 
