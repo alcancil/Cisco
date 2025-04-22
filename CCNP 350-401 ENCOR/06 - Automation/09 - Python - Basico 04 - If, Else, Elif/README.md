@@ -322,7 +322,7 @@ Ufa, terminamos o código. Mas ele está correto seguindo as boas práticas ? Va
 Dá pra perceber que este código está ruim, mas porquê ?  
 
 | 1. Uso excessivo de **if**. (Muitos **if** aninhados)                                                                                    |
-|--------------------------------------------------------------------------------------------------------------------------------------_---|
+|------------------------------------------------------------------------------------------------------------------------------------------|
 | 2. Dificuldade de manutenção. Uma simples alteração nesse código pode se tornar quase impossível de reverter até para quem o desenvolveu |
 | 3. Baixa legibilidade. Esse código está muito difícil de entender                                                                        |
 | 4. Como esse código está complexo, pode ser que ele não cubra todas as possibilidades.                                                   |
