@@ -117,14 +117,286 @@ Nesse caso existe o **elif** que serve para colocar mais de uma condição.
 #### Exemplo 01
 
 ```Python
-    tipo_trafego = "voice"
-    if tipo_trafego == "voice":
-        print("Prioridade: Alta (QoS 5).")
-    elif tipo_trafego == "video":
-        print("Prioridade: Média (QoS 4).")
-    elif tipo_trafego == "data":
-        print("Prioridade: Baixa (QoS 1).")
-    else:
-        print("Prioridade não definida.")
+    >>> tipo_trafego = "voice"
+    >>> if tipo_trafego == "voice":
+    ...     print("Prioridade: Alta (QoS 5).")
+    ... elif tipo_trafego == "video":
+    ...     print("Prioridade: Média (QoS 4).")
+    ... elif tipo_trafego == "data":
+    ...     print("Prioridade: Baixa (QoS 1).")
+    ... else:
+    ...     print("Prioridade não definida.")
+    ... 
     Prioridade: Alta (QoS 5).
+    >>>
 ```
+
+#### Exemplo 02
+
+```Python
+    >>> tipo_trafego = "video"
+    >>> if tipo_trafego == "voice":
+    ...     print("Prioridade: Alta (QoS 5).")
+    ... elif tipo_trafego == "video":
+    ...     print("Prioridade: Média (QoS 4).")
+    ... elif tipo_trafego == "data":
+    ...     print("Prioridade: Baixa (QoS 1).")
+    ... else:
+    ...     print("Prioridade não definida.")
+    ... 
+    Prioridade: Média (QoS 4).
+    >>>
+```
+
+### if com operadores lógicos
+
+#### Exemplo 01
+
+```Python
+    >>> interface = "Serial0/0"
+    >>> status = "UP"
+    >>> if interface == "Serial0/0" or status == "Down":
+    ...     print("Interface identificada !")
+    ... else:
+    ...     print("Interface não identificada!")
+    ... 
+    Interface identificada !
+    >>>
+```
+
+Nesse exemplo, utilizamos o **operador lógico or**. Nesse caso, **se (if)** uma condição ou outra for **True (Verdadeira)** então faça a ação, **senão (else)** tome a segunda opção. Então não precisamos que as duas condições sejam verdadeiras, basta que somente uma seja verdadeira.
+
+#### Exemplo 02
+
+```Python
+    >>> interface = "Serial0/0"
+    >>> if interface == "Serial0/0" or "Serial0/1" or "Serial0/2":
+    ...     print("Interface encontrada !")
+    ... else:
+    ...     print("Interface não encontrada !")
+    ... 
+    Interface encontrada !
+```
+
+```Python
+    >>> interface = "Serial0/0"
+    >>> if interface == "Serial1/0" or "Serial1/1" or "Serial1/2":
+    ...     print("Interface encontrada !")
+    ... else:
+    ...     print("Interface não encontrada !")
+    ... 
+    Interface encontrada !
+    >>>
+```
+
+Como esses dois exemplos distintos deu o mesmo resultado ?  
+Se analisarmos, os códigos são bem parecidos mas existe uma diferença importante. Aparentemente quando analisamos os dois códigos, quando vemos as linhas:  
+
+```Python
+    >>> if interface == "Serial0/0" or "Serial0/1" or "Serial0/2":  
+    ou
+    >>> if interface == "Serial1/0" or "Serial1/1" or "Serial1/2":
+```
+a nossa tendência é imaginar que o Python da seguinte maneira:  
+
+#### Primeira linha:
+"Se a interface **é igual a** "Serial1/0" ou **é igual a** "Serial0/1" ou **é igual a** "Serial0/2":
+    então imprima "Interface encontrada !"  
+uma vez que o valor de interface é Serial0/0.
+
+#### Segunda linha:
+Já nessa linha, a nossa tendencia é achar que a condição **if** não será atendida e já iremos cair em :
+```Python
+    ... else:
+        ...     print("Interface não encontrada !")
+```
+o que não acontece.  
+
+Isso se deve ao fato de que o Python pode receber um valor vazio ou cheio.
+
+### Condições if aninhadas
+
+
+
+
+
+
+
+Sintaxe Básica
+python
+Copy
+
+if condição1:
+    if condição2:
+        # Executa se condição1 E condição2 forem True
+    else:
+        # Executa se condição1 for True, mas condição2 for False
+else:
+    # Executa se condição1 for False
+
+🌐 Exemplo Prático (Automação de Redes)
+
+Suponha que você queira validar:
+
+    Se um dispositivo está acessível.
+
+    Se está executando OSPF.
+
+    Se a interface principal está ativa.
+
+python
+Copy
+
+dispositivo_acessivel = True
+ospf_ativado = True
+interface_up = False
+
+if dispositivo_acessivel:
+    if ospf_ativado:
+        if interface_up:
+            print("Dispositivo operacional com OSPF e interface ativa.")
+        else:
+            print("ALERTA: Interface principal inativa!")
+    else:
+        print("OSPF não está ativado.")
+else:
+    print("Dispositivo inacessível.")
+
+Saída:
+Copy
+
+ALERTA: Interface principal inativa!
+
+✅ Quando Usar If Aninhados?
+
+    Validações em Etapas: Quando uma condição depende da anterior (ex: só verifica OSPF se o dispositivo estiver acessível).
+
+    Hierarquia de Decisões: Em cenários com múltiplos níveis de condições (ex: redes, segurança, QoS).
+
+    Legibilidade Controlada: Se o aninhamento for limitado a 2-3 níveis e facilitar a compreensão.
+
+❌ Quando Evitar If Aninhados?
+
+    Muitos Níveis de Aninhamento:
+
+        Código fica difícil de ler e manter (conhecido como "Arrow Anti-Pattern" ou "efeito flecha").
+
+        Exemplo problemático:
+        python
+        Copy
+
+        if cond1:
+            if cond2:
+                if cond3:
+                    if cond4:  # <- Difícil de acompanhar!
+                        print("Ok")
+
+    Condições Independentes:
+
+        Se as condições não dependem umas das outras, use if separados.
+
+        ❌ Ruim:
+        python
+        Copy
+
+        if dispositivo == "R1":
+            if ip == "192.168.1.1":  # Condição não relacionada!
+                print("R1 com IP 192.168.1.1")
+
+        ✅ Melhor:
+        python
+        Copy
+
+        if dispositivo == "R1" and ip == "192.168.1.1":
+            print("R1 com IP 192.168.1.1")
+
+🛠 Alternativas a If Aninhados
+1. Operadores Lógicos (and, or)
+
+Use para condições simples e relacionadas:
+python
+Copy
+
+if dispositivo_acessivel and ospf_ativado and interface_up:
+    print("Dispositivo operacional.")
+elif dispositivo_acessivel and not ospf_ativado:
+    print("OSPF desativado.")
+
+2. Funções Separadas
+
+Encapsule lógicas complexas em funções para melhor legibilidade:
+python
+Copy
+
+def verificar_dispositivo(acessivel, ospf, interface):
+    if not acessivel:
+        return "Dispositivo inacessível."
+    if not ospf:
+        return "OSPF desativado."
+    if not interface:
+        return "Interface inativa."
+    return "Dispositivo operacional."
+
+print(verificar_dispositivo(True, True, False))
+
+3. Dicionários para Mapeamento
+
+Útil para substituir múltiplos elif:
+python
+Copy
+
+acoes = {
+    "up": "Interface ativa",
+    "down": "Interface inativa",
+    "shutdown": "Interface desligada"
+}
+
+status = "down"
+print(acoes.get(status, "Status desconhecido"))
+
+4. Early Returns
+
+Em funções, retorne cedo para evitar aninhamento:
+python
+Copy
+
+def backup_dispositivo(dispositivo):
+    if not dispositivo["acessivel"]:
+        return "Falha: dispositivo inacessível."
+    if not dispositivo["backup_habilitado"]:
+        return "Backup não habilitado."
+    # Lógica principal aqui...
+    return "Backup concluído."
+
+💡 Dicas para o CCNP ENCOR
+
+    Máximo de 2-3 Níveis: Se precisar de mais, refatore para funções ou lógicas booleanas.
+
+    Comente Condições Complexas: Explique o propósito de cada nível.
+
+    Teste Cada Condição Separadamente: Facilita a depuração.
+
+📚 Exemplo Refatorado (Sem Aninhamento Excessivo)
+python
+Copy
+
+# Versão legível com early returns e operadores lógicos
+def verificar_dispositivo(acessivel, ospf, interface):
+    if not acessivel:
+        return "Dispositivo inacessível."
+    if not ospf:
+        return "OSPF desativado."
+    return "Interface ativa." if interface else "Interface inativa."
+
+print(verificar_dispositivo(True, True, False))
+
+Saída:
+Copy
+
+Interface inativa.
+
+⚡ Quando Aninhar é Aceitável?
+
+    Em validações curtas (ex: verificar um JSON aninhado).
+
+    Quando a lógica é claramente hierárquica (ex: redes → dispositivo → interface).
