@@ -339,7 +339,7 @@ Mas e como é possível ajustar um código desses ?
 | 4. Use Estruturas de Dados para Substituir Múltiplos if |
 | 5. Comente Condições Complexas                          |
 
-1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)
+#### 1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)
 
 **Problema:**
 Múltiplos níveis de aninhamento tornam o código difícil de ler e manter ("Arrow Anti-Pattern").
