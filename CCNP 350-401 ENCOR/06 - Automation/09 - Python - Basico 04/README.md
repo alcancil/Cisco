@@ -212,7 +212,51 @@ Já nessa linha, a nossa tendencia é achar que a condição **if** não será a
 ```
 o que não acontece.  
 
-Isso se deve ao fato de que o Python pode receber um valor vazio ou cheio.
+Isso se deve ao fato de que o Python pode receber um valor vazio ou cheio. Como assim ? Vamos analisar um pequeno exemplo que vai clarear o erra cometido.  
+
+```Python
+    >>> interface = " "
+    >>> if interface == " ":
+    ...     print("Valor vazio!!!")
+    ... else:
+    ...     print("Valor cheio!!!")
+    ... 
+    Valor vazio!!!
+    >>>
+```
+
+Como podemos notar, o valor de **interface** é **" "**, ou seja, vazio. Como a condição if ficou verdadeira, pois o valor é vazio, então ele escreve **Valor vazio!!!**. Se a interface tivesse algum valor, a condição if seria **falsa** e a ação seria a que estava em **else:**.  
+Voltando no trecho:  
+```Python
+    >>> if interface == "Serial0/0" or "Serial0/1" or "Serial0/2":  
+    ou
+    >>> if interface == "Serial1/0" or "Serial1/1" or "Serial1/2":
+```
+a condição sempre será verdadeira. Veja só utilizamos o condicional **==** uma vez e depois **or "Serial0/1" or "Serial0/2"**, ou seja estamos dizendo variável **Serial0/0** ou variável **Serial0/2** e não estamos analisando mais o conteúdo da variável interface. Uma maneira de corrigir isso seria:
+
+```Python
+    >>> interface = "Serial0/0"
+    >>> if interface == "Serial1/0" or interface == "Serial1/1" or interface == "Serial1/2":
+    ...     print("Interface encontrada !")
+    ... else:
+    ...     print("Interface não encontrada !")
+    ... 
+    Interface não encontrada !
+    >>>
+```
+
+Porém, aqui podemos combinar o uso de listas para ficar mais claro o nosso código:  
+
+```Python
+    >>> interface = "Serial0/0"
+    >>> if interface == ("Serial1/0", "Serial1/1", "Serial1/2"):
+    ...     print("Interface encontrada !")
+    ... else:
+    ...     print("Interface não encontrada !")
+    ... 
+    Interface não encontrada !
+    >>>
+```
 
 ### Condições if aninhadas
 
