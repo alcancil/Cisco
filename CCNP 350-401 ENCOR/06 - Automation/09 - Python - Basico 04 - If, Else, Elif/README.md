@@ -331,6 +331,57 @@ Dá pra perceber que este código está ruim, mas porquê ?
 
 Mas e como é possível ajustar um código desses ?  
 
+| Boas Práticas                                           |
+|---------------------------------------------------------|
+| 1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)    |
+| 2. Use "Early Return" para Simplificar                  |
+| 3. Combine Condições com Operadores Lógicos (and, or)   |
+| 4. Use Estruturas de Dados para Substituir Múltiplos if |
+| 5. Comente Condições Complexas                          |
+
+1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)
+
+**Problema:**
+Múltiplos níveis de aninhamento tornam o código difícil de ler e manter ("Arrow Anti-Pattern").
+
+**Solução:**
+
+    Limite a 2-3 níveis de profundidade.
+    Use funções auxiliares para dividir a lógica.
+
+Exemplo Ruim (4+ níveis):
+
+```Python
+
+    if condição1:
+        if condição2:
+            if condição3:
+                if condição4:  
+                    print("Ok")
+```
+
+Exemplo Melhor (2 níveis):
+
+```Python
+
+    def validar_condição3(condição3, condição4):
+        if condição3 and condição4:
+            print("Ok")
+
+    if condição1 and condição2:
+        validar_condição3(condição3, condição4)
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
