@@ -334,22 +334,17 @@ Mas e como é possível ajustar um código desses ?
 | Boas Práticas                                           |
 |---------------------------------------------------------|
 | 1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)    |
-| 2. Use "Early Return" para Simplificar                  |
-| 3. Combine Condições com Operadores Lógicos (and, or)   |
-| 4. Use Estruturas de Dados para Substituir Múltiplos if |
-| 5. Comente Condições Complexas                          |
+| 2. Combine Condições com Operadores Lógicos (and, or)   |
+| 3. Use Estruturas de Dados para Substituir Múltiplos if |
+| 4. Comente Condições Complexas                          |
 
 #### 1. Evite Aninhamento Excessivo (Níveis Máximos: 2-3)
 
-**Problema:**
-Múltiplos níveis de aninhamento tornam o código difícil de ler e manter ("Arrow Anti-Pattern").
+**Problema:** Múltiplos níveis de aninhamento tornam o código difícil de ler e manter.
 
-**Solução:**
+**Solução:** Limite a 2-3 níveis de profundidade. Use funções auxiliares para dividir a lógica.
 
-    Limite a 2-3 níveis de profundidade.
-    Use funções auxiliares para dividir a lógica.
-
-Exemplo Ruim (4+ níveis):
+**Exemplo com problemas: 4 níveis ou mais.**
 
 ```Python
 
@@ -360,7 +355,7 @@ Exemplo Ruim (4+ níveis):
                     print("Ok")
 ```
 
-Exemplo Melhor (2 níveis):
+**Exemplo corrigido 2 níveis:**
 
 ```Python
 
@@ -372,13 +367,55 @@ Exemplo Melhor (2 níveis):
         validar_condição3(condição3, condição4)
 ```
 
+### 2. Combine Condições com Operadores Lógicos (and, or)
 
+**Problema:** Aninhar if para múltiplas condições relacionadas.
 
+**Solução:** Use operadores lógicos para unir condições.
 
+**Exemplo com problemas sem operadores lógicos:**
 
+```Python
 
+if dispositivo == "roteador":
+    if protocolo == "OSPF":
+        if interface == "Gig0/0":
+            print("Configurar OSPF")
+```
 
+**Exemplo corrigido com operadores lógicos:**
 
+```Python
+
+if dispositivo == "roteador" and protocolo == "OSPF" and interface == "Gig0/0":
+    print("Configurar OSPF")
+```
+
+### 3. Use Estruturas de Dados para Substituir Múltiplos if
+
+**Problema:** Vários if/elif para mapear valores.
+
+**Solução:** Use dicionários para mapear chaves e ações.
+
+**Exemplo com vários if:**
+
+```Python
+
+    if vlan == 10:
+        prioridade = "Alta"
+    elif vlan == 20:
+        prioridade = "Média"
+    elif vlan == 30:
+        prioridade = "Baixa"
+```
+
+**Exemplo corrigido:**
+
+```Python
+
+    prioridades = {10: "Alta", 20: "Média", 30: "Baixa"}
+    prioridade = prioridades.get(vlan, "Desconhecida")
+```
 
 
 
