@@ -260,8 +260,73 @@ Porém, aqui podemos combinar o uso de listas para ficar mais claro o nosso cód
 
 ### Condições if aninhadas
 
+Agora vamos imaginar a seguinte situação. Queremos validar algumas condições do tipo:  
 
+1. O equipamento está ativo ?
+2. O equipamento é um roteador ou um switch layer3 ?
+3. O protocolo OSPF está ativo ?
+4. A interface principal está ativa ?
+5. Existe uma interface Loopback ativa ?
 
+Certo, então vamos escrever um código somente utilizando o **if** e o **else**. Depois iremos analisar o código gerado.
+
+```Python
+    # Variáveis de exemplo (modifique para testar diferentes cenários)
+    equipamento_ativo = True
+    tipo_equipamento = "roteador"
+    ospf_ativo = True
+    interface_principal_ativa = False
+    loopback_ativa = True
+
+    # Validação ruim com ifs aninhados
+    if equipamento_ativo:
+      print("1. Equipamento está ativo")
+        if tipo_equipamento == "roteador":
+            print("2. É um roteador")
+            if ospf_ativo:
+                print("3. OSPF está ativo")
+                if interface_principal_ativa:
+                    print("4. Interface principal está ativa")
+                    if loopback_ativa:
+                        print("5. Loopback ativa encontrada")
+                    else:
+                        print("5. Nenhuma loopback ativa encontrada")
+                else:
+                    print("4. Interface principal inativa")
+                    if loopback_ativa:
+                        print("5. Loopback ativa encontrada")
+                    else:
+                        print("5. Nenhuma loopback ativa encontrada")
+            else:
+                print("3. OSPF inativo")
+                if interface_principal_ativa:
+                    print("4. Interface principal está ativa")
+                else:
+                    print("4. Interface principal inativa")
+        else:
+            if tipo_equipamento == "switch_layer3":
+                print("2. É switch layer3")
+                if ospf_ativo:
+                    print("3. OSPF está ativo")
+                else:
+                    print("3. OSPF inativo")
+    else:
+        print("1. Equipamento inativo")
+        if tipo_equipamento == "roteador":
+            print("2. É um roteador (mas está inativo)")
+        else:
+            print("2. É switch layer3 (mas está inativo)")
+```
+
+Ufa, terminamos o código. Mas ele está correto seguindo as boas práticas ? Vamos analisar.  
+Dá pra perceber que este código está ruim, mas porquê ?  
+1. Uso excessivo de **if**. (Muitos **if** aninhados)
+2. Dificuldade de manutenção. Uma simples alteração nesse código pode se tornar quase impossível de reverter até para quem o desenvolveu
+3. Baixa legibilidade. Esse código está muito difícil de entender
+4. Como esse código está complexo, pode ser que ele não cubra todas as possibilidades.
+5. Podem existir mais problemas não observados e descritos.  
+
+Mas e como é possível ajustar um código desses ?  
 
 
 
