@@ -30,5 +30,12 @@ Nesse exemplo, temos uma lista de interfaces de um equipamento e queremos imprim
 * <iterável> : são os dados que vão ver utilizados no loop. Podem ser palavras, listas, dicionários, etc.
 **OBS:**  existe uma convenção de que se a variável não vai ser utilizado em mais lugar algum do código utiliza-se **_** para demonstrar que a variável esta sendo utilizado somente nessa parte do código.  
 
-Então vamos voltar ao nosso exemplo. Aqui utilizamos uma lista como o **iterável** do nosso loop. Então a linha **for variavel in lista:** podemos ler da seguinte forma:  
+Então vamos voltar ao nosso exemplo. Aqui utilizamos uma lista como o **iterável** do nosso loop. Então na sintaxe podemos ler da seguinte forma:  
+
+```Python    
     para variavel em lista:     
+        faça a ação01
+        faça a ação02
+        ...
+    fim do loop
+```
