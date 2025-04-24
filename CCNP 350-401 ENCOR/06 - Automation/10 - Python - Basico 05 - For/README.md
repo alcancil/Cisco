@@ -32,7 +32,7 @@ Nesse exemplo, temos uma lista de interfaces de um equipamento e queremos imprim
 
 Então vamos voltar ao nosso exemplo. Aqui utilizamos uma lista como o **iterável** do nosso loop. Então na sintaxe podemos ler da seguinte forma:  
 
-```Python    
+```Go    
     para variavel em lista:     
         faça a ação01
         faça a ação02
