@@ -26,5 +26,9 @@ Nesse exemplo, temos uma lista de interfaces de um equipamento e queremos imprim
         ...
 ```
 
-* <nome variável> : aqui o Python precisa de uma variável que irá ser utilizada na Iteração (repetição). Essa variável pode ser qualquer nome. **OBS:**
-* <iterável>
+* <nome variável> : aqui o Python precisa de uma variável que irá ser utilizada na Iteração (repetição). Essa variável pode ser qualquer nome. 
+* <iterável> : são os dados que vão ver utilizados no loop. Podem ser palavras, listas, dicionários, etc.
+**OBS:**  existe uma convenção de que se a variável não vai ser utilizado em mais lugar algum do código utiliza-se **_** para demonstrar que a variável esta sendo utilizado somente nessa parte do código.  
+
+Então vamos voltar ao nosso exemplo. Aqui utilizamos uma lista como o **iterável** do nosso loop. Então a linha **for variavel in lista:** podemos ler da seguinte forma:  
+    para variavel em lista:     
