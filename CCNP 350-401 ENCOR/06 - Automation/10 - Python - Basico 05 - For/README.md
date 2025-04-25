@@ -43,9 +43,9 @@ Então vamos voltar ao nosso exemplo. Aqui utilizamos uma lista como o **iteráv
 Agora vamos imaginar a seguinte situação: queremos imprimir na tela 100 itens. Teríamos que ter uma lista com 200 itens ? Para isso existe a função **range**. 
 
 ```Python
->>> for interface in range(100):
-...     print("Ethernet0/",interface)
-... 
+    >>> for interface in range(100):
+    ...     print("Ethernet0/",interface)
+    ... 
     Ethernet0/ 0
     Ethernet0/ 1
     Ethernet0/ 2
@@ -108,39 +108,63 @@ Com esse novo método temos algumas vantagens.
     print(f"Total de VLANs: {len(vlans)}")
 ```
 
+2. Iterar em Dicionários (Exemplo: Dispositivos e IPs)
 
-1. Iterar em Dicionários (Exemplo: Dispositivos e IPs)
-python
-
-dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
-for nome, ip in dispositivos.items():  # .items() retorna chave e valor
-    print(f"{nome} -> IP: {ip}")
-
-# Saída:
-# R1 -> IP: 192.168.1.1
-# SW1 -> IP: 10.0.0.1
-# (...)
+```Python
+    >>> dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
+    >>> for nome, ip in dispositivos.items():
+    ...     print(f"{nome} -> IP: {ip}")
+    ... 
+    R1 -> IP: 192.168.1.1
+    SW1 -> IP: 10.0.0.1
+    FW1 -> IP: 172.16.0.1
+    >>>
+```
+Percebam que aqui no for foram utilizadas duas variáveis pois o dicionário trabalha com chave e valor.
 
 3. Iterar em Strings (Exemplo: Processar Comandos)
-python
 
-comando = "show ip interface brief"
-for caractere in comando:
-    if caractere == " ":
-        print("[ESPAÇO]")
-    else:
-        print(caractere)
+```Python
+    >>> comando = "show ip interface brief"
+    >>> for caractere in comando:
+    ...     if caractere == " ":
+    ...             print("[ESPAÇO]")
+    ...     else:
+    ...             print(caractere)
+    ... 
+    s
+    h
+    o
+    w
+    [ESPAÇO]
+    i
+    p
+    [ESPAÇO]
+    i
+    n
+    t
+    e
+    r
+    f
+    a
+    c
+    e
+    [ESPAÇO]
+```
 
 4. Usar range() para Repetições Numéricas
-python
 
-for i in range(5):  # 0 a 4
-    print(f"Enviando pacote ICMP {i + 1}/5")
-
-# Saída:
-# Enviando pacote ICMP 1/5
-# Enviando pacote ICMP 2/5
-# (...)
+```Python
+    >>> for i in range(5):
+    ...     print(f"Enviando pacote ICMP {i + 1}/5")
+    ... 
+    Enviando pacote ICMP 1/5
+    Enviando pacote ICMP 2/5
+    Enviando pacote ICMP 3/5
+    Enviando pacote ICMP 4/5
+    Enviando pacote ICMP 5/5
+    >>> 
+```
 
 5. Loop Aninhado (Exemplo: Interfaces por Dispositivo)
 python
