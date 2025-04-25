@@ -235,7 +235,9 @@ Parar ao Encontrar um Dispositivo Inacessível
     Ação corretiva deve ser tomada para a interface problemática.
     >>>
 ```
-
+Para nosso exemplo, aqui temos um código um pouco maior e podemos notar o uso de **for**, **if** e **else**. Então o interessante nesse caso é que vamos varrer dentro do nosso dicionario de interfaces com o comando **for** pelas interfaces atrás daquela que tenha o status **down**.  
+Mas o objetivo desse código é gerar um alerta se for encontrado alguma interface no status down. Então, ao encontrar a primeira interface com esse status, qual seria o sentido de continuarmos buscando mais interfaces com esse mesmo status se o nosso objetivo já foi atingido ?  
+Portanto utilizamos um **break** para pararmos essa busca imediatamente uma vez que essa condição for atingida. Então esse é o objetivo do uso de **break** em loops.
 
 
 
