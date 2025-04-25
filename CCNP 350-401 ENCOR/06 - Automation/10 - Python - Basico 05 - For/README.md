@@ -191,16 +191,52 @@ Percebam que aqui no for foram utilizadas duas variáveis pois o dicionário tra
 ```
 ### Métodos Break e Continue
 
-Esses métodos são utilizados para parar **(Break)** ou continuar **(continue)** um loop. 
+Esses métodos são utilizados para para **(Break)** ou continuar **(continue)** um loop. 
 
 **Break**
 
     Finaliza o loop antecipadamente quando uma condição é atendida.  
     Economiza recursos ao evitar iterações desnecessárias.  
 
+#### Exemplo 01
 
+Parar ao Encontrar um Dispositivo Inacessível  
 
+```Python
+    >>> interfaces = {
+    ...     "GigabitEthernet0/0": "up",
+    ...     "GigabitEthernet0/1": "down",
+    ...     "GigabitEthernet0/2": "up",
+    ...     "GigabitEthernet0/3": "down",
+    ...     "Serial0/0/0": "up"
+    ... }
+    >>> 
+    >>> print("Iniciando verificação de status das interfaces...\n")
+    Iniciando verificação de status das interfaces...
 
+    >>> 
+    >>> for interface, status in interfaces.items():
+    ...     print(f"Verificando interface {interface}... Status: {status}")
+    ...     
+    ...     if status == "down":
+    ...         print(f"\nALERTA: Interface {interface} está DOWN!")
+    ...         print("Enviando notificação para a equipe de rede...")
+    ...         print("Interrompendo verificação para priorizar esta interface.")
+    ...         break  # Sai do loop quando encontra a primeira interface down
+    ... else:
+    ...     print("\nTodas as interfaces estão operacionais (UP).")
+    ... 
+    Verificando interface GigabitEthernet0/0... Status: up
+    Verificando interface GigabitEthernet0/1... Status: down
+
+    ALERTA: Interface GigabitEthernet0/1 está DOWN!
+    Enviando notificação para a equipe de rede...
+    Interrompendo verificação para priorizar esta interface.
+    >>> print("\nAção corretiva deve ser tomada para a interface problemática.")
+
+    Ação corretiva deve ser tomada para a interface problemática.
+    >>>
+```
 
 
 
