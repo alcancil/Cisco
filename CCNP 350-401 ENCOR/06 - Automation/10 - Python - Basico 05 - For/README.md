@@ -213,7 +213,6 @@ Parar ao Encontrar um Dispositivo Inacessível
     >>> 
     >>> print("Iniciando verificação de status das interfaces...\n")
     Iniciando verificação de status das interfaces...
-
     >>> 
     >>> for interface, status in interfaces.items():
     ...     print(f"Verificando interface {interface}... Status: {status}")
@@ -228,7 +227,6 @@ Parar ao Encontrar um Dispositivo Inacessível
     ... 
     Verificando interface GigabitEthernet0/0... Status: up
     Verificando interface GigabitEthernet0/1... Status: down
-
     ALERTA: Interface GigabitEthernet0/1 está DOWN!
     Enviando notificação para a equipe de rede...
     Interrompendo verificação para priorizar esta interface.
