@@ -198,7 +198,7 @@ Esses métodos são utilizados para para **(Break)** ou continuar **(continue)**
     Finaliza o loop antecipadamente quando uma condição é atendida.  
     Economiza recursos ao evitar iterações desnecessárias.  
 
-#### Exemplo 01
+#### Exemplo 
 
 Parar ao Encontrar um Dispositivo Inacessível  
 
@@ -237,9 +237,60 @@ Parar ao Encontrar um Dispositivo Inacessível
 ```
 Para nosso exemplo, aqui temos um código um pouco maior e podemos notar o uso de **for**, **if** e **else**. Então o interessante nesse caso é que vamos varrer dentro do nosso dicionario de interfaces com o comando **for** pelas interfaces atrás daquela que tenha o status **down**.  
 Mas o objetivo desse código é gerar um alerta se for encontrado alguma interface no status down. Então, ao encontrar a primeira interface com esse status, qual seria o sentido de continuarmos buscando mais interfaces com esse mesmo status se o nosso objetivo já foi atingido ?  
-Portanto utilizamos um **break** para pararmos essa busca imediatamente uma vez que essa condição for atingida. Então esse é o objetivo do uso de **break** em loops.
+Portanto utilizamos um **break** para pararmos essa busca imediatamente uma vez que essa condição for atingida. Então esse é o objetivo do uso de **break** em loops.  
 
+**Continue**
 
+    Pula para a próxima iteração do loop (sem interromper).  
+
+#### Exemplo
+
+```Python
+    [01] # Declaração das interfaces e estados em um dicionário
+    [02] >>> interfaces = {
+    [03] ...     "GigabitEthernet0/0": {"status": "up", "config": "correct", "admin": "up"},
+    [04] ...     "GigabitEthernet0/1": {"status": "down", "config": "correct", "admin": "down"},
+    [05] ...     "GigabitEthernet0/2": {"status": "up", "config": "incorrect", "admin": "up"},
+    [06] ...     "GigabitEthernet0/3": {"status": "down", "config": "incorrect", "admin": "up"},
+    [07] ...     "Loopback0": {"status": "up", "config": "correct", "admin": "up"}
+    [08] ... }
+    [09] >>> 
+    [10] >>> print("Iniciando auditoria de configuração de interfaces...\n")
+    [11] Iniciando auditoria de configuração de interfaces...
+    [12]
+    [13] >>> 
+    [14] >>> for interface, data in interfaces.items():
+    [15] ...     # Pular interfaces administrativamente desabilitadas
+    [16] ...     if data["admin"] == "down":
+    [17] ...         print(f"Pulando {interface} (administrativamente down)")
+    [18] ...         continue  # Vai para a próxima iteração
+    [19] ...         
+    [20] ...     # Pular interfaces loopback (caso necessário)
+    [21] ...     if interface.startswith("Loopback"):
+    [22] ...         print(f"Pulando interface loopback {interface}")
+    [23] ...         continue
+    [24] ...             
+    [25] ...     # Verificar apenas interfaces ativas com problemas
+    [26] ...     if data["status"] == "up" and data["config"] == "incorrect":
+    [27] ...         print(f"\nProblema encontrado na {interface}:")
+    [29] ...         print(f" - Status: {data['status']}")
+    [30] ...         print(f" - Configuração: {data['config']}")
+    [31] ...         print("Aplicando configuração padrão...")
+    [32] ... 
+    [33] Pulando GigabitEthernet0/1 (administrativamente down)
+    [35]
+    [36] Problema encontrado na GigabitEthernet0/2:
+    [37] - Status: up
+    [38] - Configuração: incorrect
+    [39] Aplicando configuração padrão...
+    [40] Pulando interface loopback Loopback0
+    [41] >>> print("\nAuditoria concluída para interfaces relevantes.")
+    [42]
+    [43] Auditoria concluída para interfaces relevantes.
+    [44] >>>
+````
+
+Agora aqui o pensamento é o contrário do código anterior. Aqui queremos varrer nosso dicionário atrás das interfaces que estão no estado **down** e **admin**. Isso significa que essa interface está administrativamente desligada. Porém podemos reparar que se o segundo campo estiver como **correct** é porque essa interface foi definida para estar desligada no projeto.   
 
 
 ✅ Onde Aplicar o for em Automação de Redes?
