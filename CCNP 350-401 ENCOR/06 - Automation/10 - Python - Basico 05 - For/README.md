@@ -167,17 +167,44 @@ Percebam que aqui no for foram utilizadas duas variáveis pois o dicionário tra
 ```
 
 5. Loop Aninhado (Exemplo: Interfaces por Dispositivo)
-python
 
-dispositivos = {
-    "R1": ["Gig0/0", "Gig0/1", "Loopback0"],
-    "SW1": ["Vlan10", "Vlan20"]
-}
+```Python
+    >>> dispositivos = {
+    ...                     "R1": ["Gig0/0", "Gig0/1", "Loopback0"],
+    ...                     "SW1": ["Vlan10", "Vlan20"]
+    ... }
+    >>> for dispositivo, interfaces in dispositivos.items():
+    ...     print(f"\nInterfaces de {dispositivo}:")
+    ...     for interface in interfaces:
+    ...             print(f" - {interface}")
+    ... 
 
-for dispositivo, interfaces in dispositivos.items():
-    print(f"\nInterfaces de {dispositivo}:")
-    for interface in interfaces:
-        print(f" - {interface}")
+    Interfaces de R1:
+     - Gig0/0
+     - Gig0/1
+    - Loopback0
+
+    Interfaces de SW1:
+     - Vlan10
+     - Vlan20
+    >>>
+```
+### Métodos Break e Continue
+
+Esses métodos são utilizados para parar **(Break)** ou continuar **(continue)** um loop. 
+
+**Break**
+
+    Finaliza o loop antecipadamente quando uma condição é atendida.  
+    Economiza recursos ao evitar iterações desnecessárias.  
+
+
+
+
+
+
+
+
 
 ✅ Onde Aplicar o for em Automação de Redes?
 
