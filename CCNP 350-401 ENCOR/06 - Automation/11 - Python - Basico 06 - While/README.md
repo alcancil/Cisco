@@ -7,7 +7,7 @@ Agora vamos ver um pouco sobre **while**.
 Como visto no **for** onde tínhamos a ideia de tamanho (de x até y), no **while** nos iremos repetir uma ou mais instruções até que uma condição seja atendida. No while não temos mais a ideia de tamanho, tanto que quando colocamos o while, lemos: "execute até que:".  
 Então vamos analisar os exemplos anteriores transformando de **for** para **while**.
 
-´´´Python
+```Python
 
     >>> lista = ["Ethernet0/0", "Ethernet0/1", "Ethernet0/2", "Ethernet0/0"]
     >>> indice = 0
