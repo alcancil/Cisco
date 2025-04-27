@@ -23,6 +23,15 @@ Essa é uma outra estrutura de repetição. Semelhante ao **for**, ele repete um
 Nesse exemplo, tivemos que utilizar uma estrutura tradicional em programação, **o contador**. Na linha [01] iniciamos a variável indice em 0 para servir de contador. Ja na linha seguinte [03] temos a nossa condição. Então aqui lê-se : **"enquanto o contador indice for menor que o tamanho da lista faça:"** .  
 Logo após, nas linhas [04] e [05], vemos que essas são nossas ações. Antes delas começarem tem um espaço que precisa ser igual ao de todas as nossas ações. Isso se chama indentação.  
 Então vamos analisar a linha **[05] indice += 1**. Essa estrutura de **+=** é uma estrutura presente no python para representar soma. Podemos utilizar de outra forma: **indice = indece + 1**, que é a forma clássica. Porém isso foi introduzido no python para simplificar.
+A sintaxe é assim:  
+
+```Go
+    while variável condição faça:
+        ação01
+        ação02
+        ação03
+```
+Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **false**.
 
 
 Exemplo 2: Configuração de VLANs (original com for)
