@@ -158,83 +158,147 @@ Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **
      - Vlan20
     >>>
 ```
+### Métodos Break e Continue
 
+Esses métodos são utilizados para para (Break) ou continuar (continue) um loop.
+
+#### Break
+
+    Finaliza o loop antecipadamente quando uma condição é atendida.  
+    Economiza recursos ao evitar iterações desnecessárias.  
+
+### Exemplo
+
+Parar ao Encontrar um Dispositivo Inacessível
+
+```Python
+>>> interfaces = {
+...     "GigabitEthernet0/0": "up",
+...     "GigabitEthernet0/1": "down",
+...     "GigabitEthernet0/2": "up",
+...     "GigabitEthernet0/3": "down",
+...     "Serial0/0/0": "up"
+... }
+>>> 
+>>> print("Iniciando verificação de status das interfaces...\n")
+Iniciando verificação de status das interfaces...
+
+>>> 
+>>> # Convertendo os itens para lista e inicializando contador
+>>> itens = list(interfaces.items())
+>>> indice = 0
+>>> interface_problematica = False
+>>> 
+>>> while indice < len(itens) and not interface_problematica:
+...     interface, status = itens[indice]
+...     print(f"Verificando interface {interface}... Status: {status}")
+...     
+...     if status == "down":
+...         print(f"\nALERTA: Interface {interface} está DOWN!")
+...         print("Enviando notificação para a equipe de rede...")
+...         print("Interrompendo verificação para priorizar esta interface.")
+...         interface_problematica = True
+...     else:
+...         indice += 1  # Só incrementa se não encontrar problema
+... 
+Verificando interface GigabitEthernet0/0... Status: up
+Verificando interface GigabitEthernet0/1... Status: down
+
+ALERTA: Interface GigabitEthernet0/1 está DOWN!
+Enviando notificação para a equipe de rede...
+Interrompendo verificação para priorizar esta interface.
+>>> # Verifica se percorreu todas as interfaces sem problemas
+>>> if not interface_problematica and indice == len(itens):
+...     print("\nTodas as interfaces estão operacionais (UP).")
+... 
+>>> print("\nAção corretiva deve ser tomada para a interface problemática.")
+
+Ação corretiva deve ser tomada para a interface problemática.
+>>>
+```
+
+#### Continue
+
+    Pula para a próxima iteração do loop (sem interromper).  
+
+### Exemplo
+
+```Python
+    >>> interfaces = {
+    ...     "GigabitEthernet0/0": {"status": "up", "config": "correct", "admin": "up"},
+    ...     "GigabitEthernet0/1": {"status": "down", "config": "correct", "admin": "down"},
+    ...     "GigabitEthernet0/2": {"status": "up", "config": "incorrect", "admin": "up"},
+    ...     "GigabitEthernet0/3": {"status": "down", "config": "incorrect", "admin": "up"},
+    ...     "Loopback0": {"status": "up", "config": "correct", "admin": "up"}
+    ... }
+    >>> 
+    >>> print("Iniciando auditoria de configuração de interfaces...\n")
+    Iniciando auditoria de configuração de interfaces...
+
+    >>> 
+    >>> # Preparação para o loop while
+    >>> lista_interfaces = list(interfaces.items())
+    >>> indice = 0
+    >>> 
+    >>> while indice < len(lista_interfaces):
+    ...     interface, data = lista_interfaces[indice]
+    ...     indice += 1  # Incrementamos primeiro para simular o continue
+    ...     
+    ...     # Pular interfaces administrativamente desabilitadas
+    ...     if data["admin"] == "down":
+    ...         print(f"Pulando {interface} (administrativamente down)")
+    ...         continue
+    ...         
+    ...     # Pular interfaces loopback
+    ...     if interface.startswith("Loopback"):
+    ...         print(f"Pulando interface loopback {interface}")
+    ...         continue
+    ...         
+    ...     # Verificar apenas interfaces ativas com problemas
+    ...     if data["status"] == "up" and data["config"] == "incorrect":
+    ...         print(f"\nProblema encontrado na {interface}:")
+    ...         print(f" - Status: {data['status']}")
+    ...         print(f" - Configuração: {data['config']}")
+    ...         print("Aplicando configuração padrão...")
+    ... 
+    Pulando GigabitEthernet0/1 (administrativamente down)
+
+    Problema encontrado na GigabitEthernet0/2:
+    - Status: up
+    - Configuração: incorrect
+    Aplicando configuração padrão...
+    Pulando interface loopback Loopback0
+    >>> print("\nAuditoria concluída para interfaces relevantes.")
+
+    Auditoria concluída para interfaces relevantes.
+    >>>
+```
 
 
 Esses exemplos são uma "conversão" direta de **for** para **while** para podermos entender melhor a utilização do while. A lógica é bem parecida das utilizadas com os exemplos em for.
 
-Boas Práticas para Loops while:
+## Boas Práticas para Loops while:
+
 O que fazer:
 
     Inicialize o contador antes do loop: Sempre declare e inicialize a variável de controle antes do while
-
     Atualize a condição dentro do loop: Garanta que o loop terá um fim atualizando a variável de controle
-
     Use break para condições complexas: Quando a condição de parada não é simples
-
     Prefira for para iteráveis conhecidos: Use while principalmente quando o número de iterações é desconhecido
-
     Adicione timeout em loops infinitos: Para evitar loops eternos em monitoramentos contínuos
 
 O que evitar:
 
     Loops infinitos acidentais: Sempre garanta que a condição do while eventualmente será falsa
-
     Atualizações esquecidas do contador: Esquecer de incrementar o contador é causa comum de loops infinitos
-
     Condições complexas demais: Se precisar de muitas condições, considere usar for ou refatorar o código
-
     Uso desnecessário: Não use while quando um for seria mais claro e seguro
-
-Exemplo Completo com Boas Práticas:
-python
-
-# Monitoramento de interfaces com while (exemplo mais realista)
-interfaces = {
-    "GigabitEthernet0/0": "up",
-    "GigabitEthernet0/1": "down",
-    "GigabitEthernet0/2": "up"
-}
-
-print("Iniciando monitoramento...")
-contador = 0
-max_tentativas = 3
-problema_detectado = False
-
-while contador < max_tentativas and not problema_detectado:
-    chaves = list(interfaces.keys())
-    indice = 0
-    
-    while indice < len(chaves):
-        interface = chaves[indice]
-        status = interfaces[interface]
-        
-        print(f"Verificando {interface}... Status: {status}")
-        
-        if status == "down":
-            print(f"ALERTA: {interface} está DOWN!")
-            problema_detectado = True
-            break
-            
-        indice += 1
-    
-    if not problema_detectado:
-        contador += 1
-        print(f"Tentativa {contador}/{max_tentativas} concluída")
-        if contador < max_tentativas:
-            print("Aguardando 5 segundos para próxima verificação...")
-            # time.sleep(5)  # Descomente em código real
-
-print("Monitoramento encerrado.")
 
 Quando usar while ao invés de for:
 
     Monitoramento contínuo: Quando você quer executar até que uma condição externa mude
-
     Processamento com condição complexa: Quando a condição de parada não é baseada em um contador simples
-
     Leitura de streams: Quando lendo dados de uma fonte até que ela se esgote
-
     Tentativas repetidas: Quando tentando uma operação que pode falhar várias vezes
 
 Lembre-se: em Python, o for é geralmente mais pythonico para iterar sobre elementos conhecidos, enquanto o while é melhor para condições dinâmicas ou desconhecidas.
