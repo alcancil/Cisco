@@ -31,10 +31,9 @@ A sintaxe é assim:
         ação02
         ação03
 ```
-Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **false**.
+Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **false**. Então podemos notar que o **for** remete a mais condições com tamanho e o **while**, apesar de utilizarmos contador para tamanho, utilizamos mais para condições de verdadeiro ou falso.   
 
-
-### Exemplo 2: Configuração de VLANs
+### Exemplo 1: Configuração de VLANs
 
 ```Python
     >>> vlans = [10, 20, 30, 40]
@@ -50,7 +49,7 @@ Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **
     >>>
 ```
 
-### Exemplo 3: Dispositivos e IPs
+### Exemplo 2: Iterar em Dicionários (Exemplo: Dispositivos e IPs)
 
 ```Python
     >>> dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
@@ -67,14 +66,51 @@ Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **
     >>>
 ```
 
+### Exemplo 3: Iterar em Strings (Exemplo: Processar Comandos)
+
+```Python
+    >>> comando = "show ip interface brief"
+    >>> indice = 0  # Inicializa o contador
+    >>> 
+    >>> while indice < len(comando):  # Enquanto não chegarmos ao final da string
+    ...     caractere = comando[indice]  # Pega o caractere atual
+    ...     
+    ...     if caractere == " ":
+    ...         print("[ESPAÇO]")
+    ...     else:
+    ...         print(caractere)
+    ...     
+    ...     indice += 1  # Avança para o próximo caractere
+    ... 
+    s
+    h
+    o
+    w
+    [ESPAÇO]
+    i
+    p
+    [ESPAÇO]
+    i
+    n
+    t
+    e
+    r
+    f
+    a
+    c
+    e
+    [ESPAÇO]
+    b
+    r
+    i
+    e
+    f
+    >>>
+```
 
 
 
-
-
-
-
-
+Esses exemplos são uma "conversão" direta de **for** para **while** para podermos entender melhor a utilização do while. A lógica é bem parecida das utilizadas com os exemplos em for.
 
 Boas Práticas para Loops while:
 O que fazer:
