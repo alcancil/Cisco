@@ -108,6 +108,57 @@ Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **
     >>>
 ```
 
+### Exemplo 4: Usar range() para Repetições Numéricas
+
+```Python
+    >>> i = 0  # Inicializa o contador
+    >>> while i < 5:  # Condição equivalente ao range(5)
+    ...     print(f"Enviando pacote ICMP {i + 1}/5")
+    ...     i += 1  # Incrementa manualmente o contador
+    ... 
+    Enviando pacote ICMP 1/5
+    Enviando pacote ICMP 2/5
+    Enviando pacote ICMP 3/5
+    Enviando pacote ICMP 4/5
+    Enviando pacote ICMP 5/5
+    >>>
+```
+### Exemplo 5: Loop Aninhado (Exemplo: Interfaces por Dispositivo)
+
+```Python
+    >>> dispositivos = {
+    ...     "R1": ["Gig0/0", "Gig0/1", "Loopback0"],
+    ...     "SW1": ["Vlan10", "Vlan20"]
+    ... }
+    >>> 
+    >>> # Primeiro loop (dispositivos)
+    >>> chaves_dispositivos = list(dispositivos.keys())
+    >>> i = 0
+    >>> while i < len(chaves_dispositivos):
+    ...     dispositivo = chaves_dispositivos[i]
+    ...     print(f"\nInterfaces de {dispositivo}:")
+    ...     
+    ...     # Segundo loop (interfaces)
+    ...     interfaces = dispositivos[dispositivo]
+    ...     j = 0
+    ...     while j < len(interfaces):
+    ...         print(f" - {interfaces[j]}")
+    ...         j += 1  # Incrementa contador de interfaces
+    ...     
+    ...     i += 1  # Incrementa contador de dispositivos
+    ... 
+
+    Interfaces de R1:
+     - Gig0/0
+     - Gig0/1
+     - Loopback0
+
+    Interfaces de SW1:
+     - Vlan10
+     - Vlan20
+    >>>
+```
+
 
 
 Esses exemplos são uma "conversão" direta de **for** para **while** para podermos entender melhor a utilização do while. A lógica é bem parecida das utilizadas com os exemplos em for.
