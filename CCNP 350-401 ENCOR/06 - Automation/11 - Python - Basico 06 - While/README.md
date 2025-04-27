@@ -25,7 +25,7 @@ Logo após, nas linhas [04] e [05], vemos que essas são nossas ações. Antes d
 Então vamos analisar a linha **[05] indice += 1**. Essa estrutura de **+=** é uma estrutura presente no python para representar soma. Podemos utilizar de outra forma: **indice = indece + 1**, que é a forma clássica. Porém isso foi introduzido no python para simplificar.
 A sintaxe é assim:  
 
-```Go
+```Python
     while variável condição faça:
         ação01
         ação02
@@ -34,39 +34,47 @@ A sintaxe é assim:
 Aqui dizer que o while atende condições **booleanas**, ou seja, **true** ou **false**.
 
 
-Exemplo 2: Configuração de VLANs (original com for)
-python
+### Exemplo 2: Configuração de VLANs
 
-vlans = [10, 20, 30, 40]
-for vlan in vlans:
-    print(f"Configurando Vlan {vlan}")
+```Python
+    >>> vlans = [10, 20, 30, 40]
+    >>> contador = 0
+    >>> while contador < len(vlans):
+    ...     print(f"Configurando Vlan {vlans[contador]}")
+    ...     contador += 1
+    ... 
+    Configurando Vlan 10
+    Configurando Vlan 20
+    Configurando Vlan 30
+    Configurando Vlan 40
+    >>>
+```
 
-Versão com while:
-python
+### Exemplo 3: Dispositivos e IPs
 
-vlans = [10, 20, 30, 40]
-contador = 0
-while contador < len(vlans):
-    print(f"Configurando Vlan {vlans[contador]}")
-    contador += 1
+```Python
+    >>> dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
+    >>> chaves = list(dispositivos.keys())
+    >>> indice = 0
+    >>> while indice < len(chaves):
+    ...     chave = chaves[indice]
+    ...     print(f"{chave} -> IP: {dispositivos[chave]}")
+    ...     indice += 1
+    ... 
+    R1 -> IP: 192.168.1.1
+    SW1 -> IP: 10.0.0.1
+    FW1 -> IP: 172.16.0.1
+    >>>
+```
 
-Exemplo 3: Dispositivos e IPs (original com for)
-python
 
-dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
-for nome, ip in dispositivos.items():
-    print(f"{nome} -> IP: {ip}")
 
-Versão com while (mais complexo):
-python
 
-dispositivos = {"R1": "192.168.1.1", "SW1": "10.0.0.1", "FW1": "172.16.0.1"}
-chaves = list(dispositivos.keys())
-indice = 0
-while indice < len(chaves):
-    chave = chaves[indice]
-    print(f"{chave} -> IP: {dispositivos[chave]}")
-    indice += 1
+
+
+
+
+
 
 Boas Práticas para Loops while:
 O que fazer:
