@@ -4,23 +4,26 @@ Agora vamos ver um pouco sobre **while**.
 
 ## While
 
-Como visto no **for** onde tínhamos a ideia de tamanho (de x até y), no **while** nos iremos repetir uma ou mais instruções até que uma condição seja atendida. No while não temos mais a ideia de tamanho, tanto que quando colocamos o while, lemos: "execute até que:".  
-Então vamos analisar os exemplos anteriores transformando de **for** para **while**.
+Essa é uma outra estrutura de repetição. Semelhante ao **for**, ele repete uma ou mais instruções que estiverem dentro de uma certa condição especificada. Então vamos transformar os exemplos anteriores de **for** para **while**.
 
 ```Python
 
-    >>> lista = ["Ethernet0/0", "Ethernet0/1", "Ethernet0/2", "Ethernet0/0"]
-    >>> indice = 0
-    >>> while indice < len(lista):
-    ...     print(lista[indice])
-    ...     indice += 1
-    ... 
-    Ethernet0/0
-    Ethernet0/1
-    Ethernet0/2
-    Ethernet0/0
-    >>>
+   [01] >>> lista = ["Ethernet0/0", "Ethernet0/1", "Ethernet0/2", "Ethernet0/0"]
+   [02] >>> indice = 0
+   [03] >>> while indice < len(lista):
+   [04] ...     print(lista[indice])
+   [05] ...     indice += 1
+   [06] ... 
+   [07] Ethernet0/0
+   [08] Ethernet0/1
+   [09] Ethernet0/2
+   [10] Ethernet0/0
+   [11] >>>
 ```
+Nesse exemplo, tivemos que utilizar uma estrutura tradicional em programação, **o contador**. Na linha [01] iniciamos a variável indice em 0 para servir de contador. Ja na linha seguinte [03] temos a nossa condição. Então aqui lê-se : **"enquanto o contador indice for menor que o tamanho da lista faça:"** .  
+Logo após, nas linhas [04] e [05], vemos que essas são nossas ações. Antes delas começarem tem um espaço que precisa ser igual ao de todas as nossas ações. Isso se chama indentação.  
+Então vamos analisar a linha **[05] indice += 1**. Essa estrutura de **+=** é uma estrutura presente no python para representar soma. Podemos utilizar de outra forma: **indice = indece + 1**, que é a forma clássica. Porém isso foi introduzido no python para simplificar.
+
 
 Exemplo 2: Configuração de VLANs (original com for)
 python
