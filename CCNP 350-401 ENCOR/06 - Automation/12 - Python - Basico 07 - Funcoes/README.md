@@ -62,10 +62,7 @@ Será que não existe uma forma mais simples de simplesmente a gente ficar repet
         ...
         return valor (opcional)
 ```
-* **def**
-
-    O que é: Palavra-chave para definir uma função.
-
+* **def**: Palavra-chave para definir uma função.
 * **nome_da_funcao**
 
     Regras:
@@ -74,22 +71,11 @@ Será que não existe uma forma mais simples de simplesmente a gente ficar repet
         Use nomes descritivos.  
         Relacione com a ação (ex: backup_config, testar_ping).
         Não utilizar caracteres especiais.
-    
-* **(parametros)**
-
-    O que são: Variáveis de entrada.  
-
-* **Docstring (Opcional, mas recomendado)**
-
-    Finalidade: Documenta a função para outros desenvolvedores.
-
-* **Corpo da Função**
-
-    Onde a mágica acontece: Bloco de código indentado (4 espaços).
-
-* **return (Opcional)**
-
-    Finalidade: Existem casos que vamos ter que retornar algum valor em tela, então utiliza-se o **return**
+            
+* **(parametros)**: Variáveis de entrada.  
+* **Docstring (Opcional, mas recomendado)** Finalidade: Documenta a função para outros desenvolvedores.
+* **Corpo da Função**: Bloco de código indentado (4 espaços).
+* **return (Opcional)**: Existem casos que vamos ter que retornar algum valor em tela, então utiliza-se o **return**
 
 
 No exemplo anterior podemos notar alguns problemas.
