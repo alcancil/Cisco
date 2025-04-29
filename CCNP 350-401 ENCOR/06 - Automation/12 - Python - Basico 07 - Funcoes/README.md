@@ -7,6 +7,8 @@ Agora vamos ver um pouco sobre funções. **def**.
 Vamos imaginar que em nosso código precisamos repetir uma parte do código várias vezes.  
 
 ```Python
+    >>> # Verificação de status de interfaces COM funções
+    >>>
     >>> interfaces = {
     ...     "GigabitEthernet0/0": "up",
     ...     "GigabitEthernet0/1": "down",
@@ -77,47 +79,54 @@ Será que não existe uma forma mais simples de simplesmente a gente ficar repet
 * **Corpo da Função**: Bloco de código indentado (4 espaços).
 * **return (Opcional)**: Existem casos que vamos ter que retornar algum valor em tela, então utiliza-se o **return**
 
+No exemplo anterior podemos notar alguns problemas :
 
-No exemplo anterior podemos notar alguns problemas.
-
-Problemas:
-
-    O mesmo bloco de código é repetido para cada interface.
-
+    O mesmo bloco de código é repetido para cada interface. 
     Se precisar mudar a lógica (ex: adicionar um teste de ping), terá que alterar manualmente em todos os lugares.
-
     Dificuldade de manutenção.
+    Dificuldade de leitura e interpretação do código.
 
-Exemplo COM Funções (Código ORGANIZADO)
-python
+Agora vamos analisar o mesmo código com o uso de funções
 
-# Verificação de status de interfaces COM funções (código reutilizável)
+```Python
+    >>> # Verificação de status de interfaces COM funções (código reutilizável)
+    >>> 
+    >>> # Dados das interfaces (simulando saída de comando 'show interface')
+    >>> interfaces = {
+    ...     "GigabitEthernet0/0": "up",
+    ...     "GigabitEthernet0/1": "down",
+    ...     "GigabitEthernet0/2": "up"
+    ... }
+    >>> 
+    >>> # Função para verificar status e gerar alertas
+    >>> def verificar_status(interface, status):
+    ...     """Verifica o status de uma interface e gera alertas se necessário"""
+    ...     print(f"\nVerificando {interface}...")
+    ...     if status == "up":
+    ...         print("Status: UP - Operacional")
+    ...     else:
+    ...         print("Status: DOWN - Problema detectado!")
+    ...         print("Enviando alerta para a equipe de redes...")
+    ... 
+    >>> # Loop principal (código limpo e reutilizável)
+    >>> for interface, status in interfaces.items():
+    ...     verificar_status(interface, status)
+    ... 
 
-# Dados das interfaces (simulando saída de comando 'show interface')
-interfaces = {
-    "GigabitEthernet0/0": "up",
-    "GigabitEthernet0/1": "down",
-    "GigabitEthernet0/2": "up"
-}
+    Verificando GigabitEthernet0/0...
+    Status: UP - Operacional
 
-# Função para verificar status e gerar alertas
-def verificar_status(interface, status):
-    """Verifica o status de uma interface e gera alertas se necessário"""
-    print(f"\nVerificando {interface}...")
-    if status == "up":
-        print("Status: UP - Operacional")
-    else:
-        print("Status: DOWN - Problema detectado!")
-        print("Enviando alerta para a equipe de redes...")
+    Verificando GigabitEthernet0/1...
+    Status: DOWN - Problema detectado!
+    Enviando alerta para a equipe de redes...
 
-# Loop principal (código limpo e reutilizável)
-for interface, status in interfaces.items():
-    verificar_status(interface, status)
+    Verificando GigabitEthernet0/2...
+    Status: UP - Operacional
+    >>> 
+```
 
 Vantagens:
 
     Reutilização: A função verificar_status() é chamada para cada interface.
-
     Manutenção: Se precisar adicionar um teste de ping, basta modificar a função uma vez.
-
     Legibilidade: O código principal fica mais claro e objetivo.
