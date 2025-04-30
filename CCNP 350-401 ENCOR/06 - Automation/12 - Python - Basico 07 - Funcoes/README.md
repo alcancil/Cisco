@@ -130,3 +130,12 @@ Vantagens:
     Reutilização: A função verificar_status() é chamada para cada interface.
     Manutenção: Se precisar adicionar um teste de ping, basta modificar a função uma vez.
     Legibilidade: O código principal fica mais claro e objetivo.
+
+Como podemos notar, o uso de funções é extremamente útil. Porém existem algum tipos de funções dentro do Python.
+
+Tipos de Funções em Python (para redes)
+| Tipo                     | Exemplo                  | Uso em Redes                                       |
+|--------------------------|--------------------------|----------------------------------------------------|
+|Funções criadas com def   | def test_ping(ip):       | Criar comandos customizados para switches/routers  |
+|Funções built-in          | len() ou print()         | Verificar tamanho de listas de dispositivos ou logs|
+|Funções de bibliotecas    | netmiko.ConnectHandler() | Conectar a dispositivos via SSH                    |
