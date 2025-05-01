@@ -95,8 +95,8 @@ if __name__ == "__main__": é uma condição que verifica se o módulo (arquivo 
     O código dentro deste bloco só será executado quando o arquivo for rodado diretamente, não quando for importado.
 
 Passo 2: Criar o Arquivo Principal (main.py)
-python
 
+```Python
 # main.py
 from ping import testar_ping
 from ssh_utils import conectar_dispositivo, executar_comando
@@ -112,6 +112,7 @@ for ip in ips:
         print(f"Saída do dispositivo:\n{saida}")
     else:
         print(f"\n❌ {ip} inacessível")
+```
 
 Passo 3: Estrutura de Arquivos
 
