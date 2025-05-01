@@ -1,8 +1,8 @@
 # Python - Básico 09
 
-Agora vamos ver um pouco sobre módulos.
+Agora vamos ver um pouco sobre bibliotecas.
 
-## Módulos
+## Bibliotecas
 
 Agora que vimos o que são funções, então sabemos que elas servem para organizar nossos códigos e que podem facilitar a nossa vida uma vez que permitem que parte do nosso código seja reutilizado. Diante disso, vamos imaginar que tenhamos uma coleção de funções. Não seria legal se a gente conseguisse criar essas funções em arquivos separados e que depois, quando formos criar um projeto novo termos como importar essas funções de alguma maneira ? Então aqui podemos chamar isso de módulos.  
 Primeiro vamos criar nossas funções dentro de uma estrutura de diretórios que fica assim:  
