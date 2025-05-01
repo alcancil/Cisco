@@ -89,82 +89,56 @@ if __name__ == "__main__": é uma condição que verifica se o módulo (arquivo 
     __name__ é uma variável especial que Python define automaticamente para cada módulo:
 
         Quando um arquivo Python é executado diretamente, __name__ é definido como "__main__"
-
         Quando um arquivo é importado como módulo, __name__ recebe o nome do arquivo (sem a extensão .py)
 
-    O código dentro deste bloco só será executado quando o arquivo for rodado diretamente, não quando for importado.
+Ou seja, o código dentro deste bloco só será executado quando o arquivo for rodado diretamente, não quando for importado.  
 
-Passo 2: Criar o Arquivo Principal (main.py)
+**Criar o Arquivo Principal (main.py)**
+
+Agora que criamos nossos módulos, podemos importá-los dentro de um arquivo. Por convenção, temos o arquivo chamado de **main.py**. Esse é o arquivo principal. Então a ideia é que estamos desenvolvendo um programa / script e queremos utilizar algumas funções que já criamos antes. Porém essas funções estão nesses outros arquivos que criamos nos passos anteriores.  
+Percebam as vantagens, isso irá organizar nosso código e nos permite reutilizar essas funções em forma de módulos em outros programas.  
 
 ```Python
-# main.py
-from ping import testar_ping
-from ssh_utils import conectar_dispositivo, executar_comando
-
-# Usando as funções dos módulos
-ips = ["192.168.1.1", "8.8.8.8", "10.0.0.1"]
-
-for ip in ips:
-    if testar_ping(ip):
-        print(f"\n✅ {ip} está respondendo ao ping")
-        conexao = conectar_dispositivo(ip, "admin", "senha123")
-        saida = executar_comando(conexao, "show running-config")
-        print(f"Saída do dispositivo:\n{saida}")
-    else:
-        print(f"\n❌ {ip} inacessível")
+    [01] # main.py
+    [02] from ping import testar_ping
+    [03] from ssh import conectar_dispositivo, executar_comando
+    [04] 
+    [05] # Usando as funções dos módulos
+    [06] ips = ["192.168.1.1", "8.8.8.8", "10.0.0.1"]
+    [07]
+    [08] for ip in ips:
+    [08]    if testar_ping(ip):
+    [09]        print(f"\n{ip} está respondendo ao ping")
+    [10]        conexao = conectar_dispositivo(ip, "admin", "senha123")
+    [11]        saida = executar_comando(conexao, "show running-config")
+    [12]        print(f"Saída do dispositivo:\n{saida}")
+    [13]    else:
+    [15]        print(f"\n{ip} inacessível")
 ```
 
-Passo 3: Estrutura de Arquivos
+Agora para executarmos nossa aplicação, iremos executar somente o arquivo **main.py** . Esse arquivo que irá disparar as funções contidas em nossos módulos.  
 
-Certifique-se de que os arquivos estejam no mesmo diretório:
+```Bash
+    alcancil@linux:~/automacoes$ python3 main.py 
 
-/automatizacao_rede
-│── main.py
-│── ping_utils.py
-│── ssh_utils.py
+    192.168.1.1 inacessível
 
-Como Executar?
+    8.8.8.8 está respondendo ao ping
+    Conectando a 8.8.8.8 como admin... (simulação)
+    Executando: 'show running-config' no dispositivo 8.8.8.8
+    Saída do dispositivo:
+    Saída do comando 'show running-config'
 
-    Salve os 3 arquivos na mesma pasta.
+    10.0.0.1 inacessível
+    alcancil@linux:~/automacoes$
+```
 
-    Execute o arquivo principal:
-    bash
+Como podemos observar, essa abordagem traz várias vantagens:
 
-    python main.py
-
-Saída Esperada (Exemplo):
-
-❌ 192.168.1.1 inacessível
-
-✅ 8.8.8.8 está respondendo ao ping
-Conectando a 8.8.8.8 como admin... (simulação)
-Executando: 'show running-config' no dispositivo 8.8.8.8
-Saída do dispositivo:
-Saída do comando 'show running-config'
-
-❌ 10.0.0.1 inacessível
-
-Explicação Chave
-
-    Módulos:
-
-        São arquivos .py independentes com funções específicas.
-
-        Podem ser testados individualmente (veja os blocos if __name__ == "__main__").
-
-    Importação no main.py:
-
-        Use from modulo import função para trazer apenas o necessário.
-
-        Funções de diferentes módulos trabalham juntas no arquivo principal.
-
-    Vantagens para Automação de Redes:
-
-        Organização: Separa lógicas distintas (ping vs. SSH).
-
-        Reuso: Os mesmos módulos podem ser usados em outros scripts.
-
-        Manutenção: Corrija/atualize um módulo sem afetar os outros.
+* realizar testes individuais nos módulos
+* manutenção melhorada. Se mais de uma pessoa precisar trabalhar com essa estrutura, cada um pode ficar responsável por partes dos códigos.  
+* reaproveitamento dos módulos em outros projetos
+* clareza e organização do código principal 
 
 Próximo Passo (Opcional)
 
