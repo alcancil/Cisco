@@ -133,6 +133,14 @@ Agora para executarmos nossa aplicação, iremos executar somente o arquivo **ma
     alcancil@linux:~/automacoes$
 ```
 
+Lembram que na primeira parte fomos importar a biblioteca os ? Então utilizamos **import os**. Nesse caso importamos todas as funções da biblioteca os. Mas e nessas linhas:
+
+```Python
+    [02] from ping import testar_ping
+    [03] from ssh import conectar_dispositivo, executar_comando
+```
+Certo, aqui estamos dizendo assim: **do módulo x importe a função z**, ou sejam como no nosso caso do módulo ssh, temos mais de uma função. Aqui nós importamos todas as funções presentes nesse módulo. Mas e se formos utilizar uma função ? Dessa maneira podemos importar somente a(s) função(ões) que precisamos reduzindo o consumo de cpu.<br></br>
+
 Como podemos observar, essa abordagem traz várias vantagens:
 
 * realizar testes individuais nos módulos
