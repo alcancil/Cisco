@@ -2,7 +2,7 @@
 
 ## Bibliotecas
 
-Agora vamos ver um conceito parecido com os módulos. As bibliotecas. E o que seria uma biblioteca ?  
+Agora vamos ver um conceito parecido com os módulos. As bibliotecas. E o que seria uma biblioteca ?  <br></br>
 Basicamente uma biblioteca seria uma coleção de módulos organizados dentro de uma estrutura. Isso acontece pois conforme vamos crescendo os projetos, vamos criando cada vez mais módulos e vamos adicionando ao nosso projeto. Com isso, em projetos maiores e mais complexos acaba que ficamos com uma quantidade grande de módulos (ou funções dentro dos módulos). Então para organização e escalabilidade foram criadas as bibliotecas.  
 **OBS:** quando temos uma biblioteca, os nossos módulos passam a ser chamados de pacotes. Estes por sua vez podem ser distribuidos para serem instalados via **pip**  
 
