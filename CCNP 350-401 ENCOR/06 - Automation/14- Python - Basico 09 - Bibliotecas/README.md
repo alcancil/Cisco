@@ -78,18 +78,18 @@ Agora, importe os módulos como parte da biblioteca ferramentas_rede:
 Passo 4: (Opcional) Torne a Biblioteca Instalável
 
 Para usar ferramentas_rede em qualquer lugar do seu sistema (como o netmiko), crie um setup.py:
-python
 
-# setup.py
-from setuptools import setup
+```Python
+    # setup.py
+    from setuptools import setup
 
-setup(
-    name="ferramentas_rede",
-    version="0.1",
-    packages=["ferramentas_rede"],  # Nome da pasta da biblioteca
-    install_requires=[],            # Dependências (ex: "netmiko")
-)
-
+    setup(
+        name="ferramentas_rede",
+        version="0.1",
+        packages=["ferramentas_rede"],  # Nome da pasta da biblioteca
+        install_requires=[],            # Dependências (ex: "netmiko")
+    )
+```
 Instale a biblioteca em modo desenvolvimento:
 
 ```bash
