@@ -1,8 +1,116 @@
 # Python - Básico 09
 
-Agora vamos ver um pouco sobre bibliotecas.
-
 ## Bibliotecas
+
+Agora vamos ver um conceito parecido com os módulos. As bibliotecas. E o que seria uma biblioteca ?  
+Basicamente uma biblioteca seria uma coleção de módulos organizados dentro de uma estrutura. Isso acontece pois conforme vamos crescendo os projetos, vamos criando cada vez mais módulos e vamos adicionando ao nosso projeto. Com isso, em projetos maiores e mais complexos acaba que ficamos com uma quantidade grande de módulos (ou funções dentro dos módulos). Então para organização e escalabilidade foram criadas as bibliotecas.  
+**OBS:** quando temos uma biblioteca, os nossos módulos passam a ser chamados de pacotes. Estes por sua vez podem ser distribuidos para serem instalados via **pip**  
+
+Quando Usar cada Um?  <br></br>
+
+**1. Módulos (Seus Arquivos .py)**
+
+    Use quando:
+
+        * Quiser organizar seu próprio código (ex: separar funções de SSH, ping, backup em arquivos diferentes).
+
+        * Criar ferramentas específicas para sua rede (ex: scan_vlans.py, monitor_bgp.py).
+    
+
+**2. Bibliotecas (Pacotes da Comunidade)**
+
+    Use quando:
+
+        * Precisar de funcionalidades complexas já prontas (ex: SSH, APIs REST, parseamento de saídas de comandos Cisco).
+
+        * Quiser evitar reinventar a roda (ex: usar netmiko em vez de implementar SSH manualmente).
+
+
+
+
+Como Saber se é um Módulo ou Biblioteca?
+
+    Módulo: Um arquivo único (ex: meu_script.py).
+
+    Biblioteca: Uma pasta com vários módulos + __init__.py (ex: pasta netmiko/ no seu Python após instalação).
+
+Regras Práticas para Automação de Redes
+
+    Para tarefas simples:
+
+        Crie seus próprios módulos (ex: backup.py, ping.py).
+
+    Para tarefas complexas:
+
+        Use bibliotecas da comunidade (ex: netmiko para SSH, napalm para gerenciamento multi-vendor).
+
+    Para compartilhar código:
+
+        Transforme seus módulos em uma biblioteca local (crie uma pasta com __init__.py e importe como pacote).
+
+Exemplo de Fluxo em um Projeto de Automação
+
+    Bibliotecas externas:
+    python
+
+pip install netmiko requests
+
+Seus módulos locais:
+
+/projeto_rede
+│── main.py
+│── /minhas_ferramentas
+│   │── __init__.py
+│   │── ssh.py          # Seu módulo customizado
+│   │── vlans.py        # Outro módulo
+
+Uso no main.py:
+python
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Agora que vimos o que são funções, então sabemos que elas servem para organizar nossos códigos e que podem facilitar a nossa vida uma vez que permitem que parte do nosso código seja reutilizado. Diante disso, vamos imaginar que tenhamos uma coleção de funções. Não seria legal se a gente conseguisse criar essas funções em arquivos separados e que depois, quando formos criar um projeto novo termos como importar essas funções de alguma maneira ? Então aqui podemos chamar isso de módulos.  
 Primeiro vamos criar nossas funções dentro de uma estrutura de diretórios que fica assim:  
