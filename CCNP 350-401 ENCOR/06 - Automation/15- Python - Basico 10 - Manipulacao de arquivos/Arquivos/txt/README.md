@@ -109,31 +109,38 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
 &nbsp; &nbsp; &nbsp; &nbsp; - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
     
 
-
-
-
-📌 Exemplo 3: Adicionar Configurações a um Arquivo Existente (Intermediário)
+**Exemplo 3:** Adicionar Configurações a um Arquivo Existente (Intermediário)
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
-python
 
-# Nova configuração para adicionar
-nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
+```Python
+    # Nova configuração para adicionar
+    nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
 
-# Abre o arquivo em modo append ('a')
-with open('roteador.txt', 'a') as arquivo:
-    arquivo.write('\n' + nova_config)
+    # Abre o arquivo em modo append ('a')
+    with open('roteador.txt', 'a') as arquivo:
+        arquivo.write('\n' + nova_config)
 
-print("Configuração de VLAN adicionada ao arquivo!")
+    print("Configuração de VLAN adicionada ao arquivo!")
+```
 
 Saída no arquivo (atualizado):
 
-hostname R1
-interface GigabitEthernet0/1
-  description Link para Core
+```Bash
+    alcancil@linux:~/automacoes/arquivos/03$ python3 arquivo.py 
+    Configuração de VLAN adicionada ao arquivo!
+    alcancil@linux:~/automacoes/arquivos/03$ ls -la
+    total 16
+    drwxrwxr-x 2 alcancil alcancil 4096 mai  3 16:59 .
+    drwxrwxr-x 5 alcancil alcancil 4096 mai  3 16:58 ..
+    -rw-r--r-- 1 root     root      257 mai  3 16:59 arquivo.py
+    -rw-rw-r-- 1 alcancil alcancil   28 mai  3 16:59 roteador.txt
+    alcancil@linux:~/automacoes/arquivos/03$ cat roteador.txt 
 
-vlan 10
-  name VLAN_GESTAO
+    vlan 10
+      name VLAN_GESTAO
+    alcancil@linux:~/automacoes/arquivos/03$
+```
 
 Explicação:
 
