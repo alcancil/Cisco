@@ -40,6 +40,27 @@ Objetivo: Criar um arquivo chamado roteador.txt e salvar uma configuração simp
       description Link para Core
 ```
 
+Esse exemplo cria um arquivo **.txt** com textos dentro dele. Vamos analisar a linha: <br></br>
+     
+     [02] with open('roteador.txt', 'w') as arquivo: 
+
+Então temos a estrutura : **with open()**. Aqui cabe dizer que para criarmos o nosso arquivo somente é preciso o método **open()**. Mas vamos imaginar a seguinte situação, para criar o arquivo, ou mesmo para ler o arquivo, precisamos abrir o arquivo temporariamente. Mas e se algo acontece e nosso script encerra abruptamente no meio do processo ?  
+Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de erro. Isso ocorre porque o arquivo pode ter permanecido em estado de aberto e ao tentarmos abri-lo novamente vamos receber um erro. Então o método **with open()** pode ser lido: "com o arquivo aberto faça()", ou seja, isso garante que o arquivo seja sempre seja fechado. <br></br>
+
+**sintaxe: open(arquivo, modo)**  <br></br>
+
+| PARÂMETRO   | DESCRIÇÃO                                                                                                          |
+|----------------------------------------------------------------------------------------------------------------------------------|
+|**arquivo**  | Caminho e (ou) nome do arquivo                                                                                     | 
+| **modo**    | **r - Read** . Modo padrão. Abre um arquivo para leitura, porém irá dar um erro se o arquivo não existir           |
+|             | **a - Append** . Abre o arquivo no modo appending, ou seja, adiciona no arquivo. Cria o arquivo se ele não existir |
+|             | **w - Write** . Abre o arquivo no modo escrita. Também cria o arquivo se ele não existir                           |
+|             | **x - Create** . Cria o arquivo especificado. Retorna um erro se o arquivo existir                                 |
+|             | **t - Text** . Especifica o modo do arquivo como texto. Já é o modo padrão                                         |
+|             | **b - Binary** . Especifica o modo do arquivo como binário. Uso em imagens, por exemplo                            |
+
+
+
 Explicação:
 
     open('roteador.txt', 'w'): Abre o arquivo em modo escrita (se existir, será sobrescrito).
