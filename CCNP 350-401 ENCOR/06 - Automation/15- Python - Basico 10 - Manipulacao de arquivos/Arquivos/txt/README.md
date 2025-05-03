@@ -103,15 +103,15 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
 
 **Linha [01]:** abre o arquivo roteador.txt, no modo leitura e coloca o conteúdo a variável **arquivo**  
 **Linha [02]:** aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
-**Linha [06]:** aqui vamos quebrar a explicação em partes:
-            **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.
-            **for linha in linhas** aqui temos uma iteração, ou seja, vamos percorrer todas as linhas 
-            **if 'interface' in linha.lower()** isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.
+**Linha [06]:** aqui vamos quebrar a explicação em partes:  
+            **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.  
+            **for linha in linhas** aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
+            **if 'interface' in linha.lower()** isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
     
 
 
 
-    
+
 📌 Exemplo 3: Adicionar Configurações a um Arquivo Existente (Intermediário)
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
