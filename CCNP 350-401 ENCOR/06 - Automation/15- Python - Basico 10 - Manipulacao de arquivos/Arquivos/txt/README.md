@@ -49,7 +49,7 @@ Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de err
 
 **sintaxe: open(arquivo, modo)**  <br></br>
 
-|----------------------------------------------------------------------------------------------------------------------------------|
+|-------------|--------------------------------------------------------------------------------------------------------------------|
 | PARÂMETRO   | DESCRIÇÃO                                                                                                          |
 |**arquivo**  | Caminho e (ou) nome do arquivo                                                                                     | 
 | **modo**    | **r - Read** . Modo padrão. Abre um arquivo para leitura, porém irá dar um erro se o arquivo não existir           |
