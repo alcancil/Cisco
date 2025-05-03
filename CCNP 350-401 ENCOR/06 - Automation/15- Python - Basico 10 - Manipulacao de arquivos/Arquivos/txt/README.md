@@ -105,8 +105,8 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
 **Linha [02]:** aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
 **Linha [06]:** aqui vamos quebrar a explicação em partes:  
 &nbsp; &nbsp; &nbsp; &nbsp; - **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.  
-&nbsp; &nbsp; &nbsp; &nbsp; - **for linha in linhas** aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
-&nbsp; &nbsp; &nbsp; &nbsp; - **if 'interface' in linha.lower()** isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
+&nbsp; &nbsp; &nbsp; &nbsp; - **for linha in linhas**: aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
+&nbsp; &nbsp; &nbsp; &nbsp; - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
     
 
 
