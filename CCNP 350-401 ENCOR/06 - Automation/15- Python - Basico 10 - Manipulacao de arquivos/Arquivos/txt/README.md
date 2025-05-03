@@ -15,13 +15,13 @@ Então vamos olhar alguns exemplos práticos para ver como eles funcionam na pr�
 Objetivo: Criar um arquivo chamado roteador.txt e salvar uma configuração simples.
 
 ```Python
-    # Abre o arquivo em modo de escrita ('w')
-    with open('roteador.txt', 'w') as arquivo:
-        arquivo.write('hostname R1\n')
-        arquivo.write('interface GigabitEthernet0/1\n')
-        arquivo.write('  description Link para Core\n')
-
-    print("Arquivo 'roteador.txt' criado com sucesso!")
+    [01] # Abre o arquivo em modo de escrita ('w')
+    [02] with open('roteador.txt', 'w') as arquivo:
+    [03]    arquivo.write('hostname R1\n')
+    [04]    arquivo.write('interface GigabitEthernet0/1\n')
+    [05]    arquivo.write('  description Link para Core\n')
+    [06]
+    [07] print("Arquivo 'roteador.txt' criado com sucesso!")
 ```
 
 **Execução do script**
