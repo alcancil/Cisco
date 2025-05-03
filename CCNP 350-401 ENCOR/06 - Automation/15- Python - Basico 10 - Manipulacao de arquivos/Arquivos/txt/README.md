@@ -59,21 +59,22 @@ Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de err
 |             | **t - Text** . Especifica o modo do arquivo como texto. Já é o modo padrão                                         |
 |             | **b - Binary** . Especifica o modo do arquivo como binário. Uso em imagens, por exemplo                            |
 
+**OBS:** **\n** em Python significa Enter, ou manda pular uma linha. <br></br>
 
 **Exemplo 2:** Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
 ```Python
 
-    # Abre o arquivo em modo leitura ('r')
-    with open('roteador.txt', 'r') as arquivo:
-        linhas = arquivo.readlines()  # Lê todas as linhas
-
-    # Filtra linhas com "interface"
-    interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
-
-    print("Interfaces encontradas:")
-    for interface in interfaces:
-        print(interface)
+   [01] # Abre o arquivo em modo leitura ('r')
+   [02] with open('roteador.txt', 'r') as arquivo:
+   [03]     linhas = arquivo.readlines()  # Lê todas as linhas
+   [04]
+   [05] # Filtra linhas com "interface"
+   [06] interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
+   [07]
+   [08] print("Interfaces encontradas:")
+   [09] for interface in interfaces:
+   [10]     print(interface)
 ```
 
 Saída no terminal:
@@ -98,12 +99,19 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
     alcancil@linux:~/automacoes/arquivos/02$ 
 ```
 
-Explicação:
+**Explicação:**
 
-    readlines(): Retorna uma lista com todas as linhas do arquivo.
+**Linha [01]:** abre o arquivo roteador.txt, no modo leitura e coloca o conteúdo a variável **arquivo**  
+**Linha [02]:** aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
+**Linha [06]:** aqui vamos quebrar a explicação em partes:
+            **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.
+            **for linha in linhas** aqui temos uma iteração, ou seja, vamos percorrer todas as linhas 
+            **if 'interface' in linha.lower()** isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.
+    
 
-    List comprehension: Filtra linhas que contêm a palavra "interface".
 
+
+    
 📌 Exemplo 3: Adicionar Configurações a um Arquivo Existente (Intermediário)
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
