@@ -2,7 +2,7 @@
 
 ## 01 Manipulação de arquivos - .txt
 
-Bom vamos começar pelo básico. Arquivos .txt, em automação de redes, são utilizados para casos mais básicos como:  
+Bom, vamos começar pelo básico. Arquivos .txt, em automação de redes, são utilizados para casos mais básicos como:  
 
 1. Para Configurações Simples de Dispositivos
 2. Logs de Sistemas ou Dispositivos
@@ -109,7 +109,7 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
 &nbsp; &nbsp; &nbsp; &nbsp; - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
     
 
-**Exemplo 3:** Adicionar Configurações a um Arquivo Existente (Intermediário)
+**Exemplo 3:** Adicionar Configurações a um Arquivo Existente.
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
 
@@ -144,4 +144,124 @@ Saída no arquivo (atualizado):
 
 **Explicação:**
 
-    open(..., 'a'): Modo append adiciona conteúdo ao final do arquivo sem sobrescrever.
+    open(..., 'a'): Modo append adiciona conteúdo ao final do arquivo sem sobrescrever.  
+
+**Exemplo 3:** Caminhos Locais, Identificando o SO (Sistema Operacional)
+
+```Python
+
+    [01] import os
+    [02] import platform
+    [03]
+    [04] # Identifica o SO
+    [05] sistema = platform.system()
+    [06]
+    [07] # Exemplo de caminhos locais
+    [08] if sistema == "Windows":
+    [09]    caminho = r"C:\Users\alcancil\Documents\roteador.txt"  # Raw string (evita conflitos com \)
+    [10] elif sistema == "Linux":
+    [11]    caminho = "/home/seuusuario/automacao/roteador.txt"
+    [12] else:
+    [13]    print("Sistema não suportado!")
+    [14]    exit()
+    [15]
+    [16] print(f"Caminho no {sistema}: {caminho}")
+    [17]
+    [18] # Verifica se o arquivo existe
+    [19] if os.path.exists(caminho):
+    [20]    print("Arquivo encontrado!")
+    [21] else:
+    [22]    print("Arquivo não existe.")
+
+Saída no Linux:  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/04$ python3 arquivo.py 
+    Caminho no Linux: /home/alcancil/automacoes/arquivos/04
+    Arquivo encontrado!
+    alcancil@linux:~/automacoes/arquivos/04$ 
+```
+
+Saída no Windows:
+
+```Bash
+    Caminho no Windows: C:\Users\alcancil\Documents\roteador.txt
+    Arquivo encontrado!
+```
+
+**Explicação:**
+
+**Linha [01]:** Aqui importamos a biblioteca **os** para podermos utilizar a função **path()** e outras funções de sistema.  
+**Linha [02]:** Aqui importamos a biblioteca **plataform** para podermos utilizar suas funções e identificar os sistemas.  
+**Linha [06]:** A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos os sistemas, portanto a variável recebe o nome do sistema operacional.  
+**
+
+**Exemplo04:**
+1. Caminhos de Rede (Windows/Linux)
+Para Windows (Compartilhamento SMB):
+python
+
+caminho_rede_windows = r"\\servidor\pasta_compartilhada\configs\switch.txt"
+
+    Requisitos:
+
+        Acesso à rede com permissões.
+
+        Usar r antes da string para evitar conflitos com \.
+
+Para Linux (Montagem SMB/NFS):
+python
+
+caminho_rede_linux = "/mnt/servidor/pasta_compartilhada/configs/switch.txt"
+
+    Requisitos:
+
+        Pasta de rede montada (ex.: sudo mount -t cifs //servidor/pasta_compartilhada /mnt/servidor).
+
+3. Exemplo Completo (Lendo um Arquivo em Rede)
+python
+
+import os
+import platform
+
+sistema = platform.system()
+
+# Define o caminho conforme o SO
+if sistema == "Windows":
+    caminho = r"\\servidor\pasta_compartilhada\roteador.txt"
+elif sistema == "Linux":
+    caminho = "/mnt/servidor/pasta_compartilhada/roteador.txt"
+else:
+    print("SO não suportado.")
+    exit()
+
+# Lê o arquivo se existir
+try:
+    with open(caminho, 'r') as arquivo:
+        print(arquivo.read())
+except FileNotFoundError:
+    print(f"Erro: Arquivo não encontrado em {caminho}")
+except PermissionError:
+    print("Erro: Sem permissão para acessar o arquivo!")
+
+4. Dicas Cruciais:
+
+    Windows:
+
+        Use \\ no início para caminhos de rede (ex.: \\servidor\pasta).
+
+        Caminhos locais usam C:\pasta\arquivo.txt.
+
+    Linux:
+
+        Caminhos de rede exigem montagem prévia (ex.: NFS/SMB).
+
+        Caminhos locais usam /home/usuario/arquivo.txt.
+
+    Identificação do SO:
+
+        Sempre use platform.system() para evitar erros cruzados.
+
+    Tratamento de Erros:
+
+        Verifique os.path.exists() antes de operações críticas.
