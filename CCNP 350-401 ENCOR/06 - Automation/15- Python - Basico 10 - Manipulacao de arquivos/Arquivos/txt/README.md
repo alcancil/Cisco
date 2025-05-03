@@ -142,22 +142,6 @@ Saída no arquivo (atualizado):
     alcancil@linux:~/automacoes/arquivos/03$
 ```
 
-Explicação:
+**Explicação:**
 
     open(..., 'a'): Modo append adiciona conteúdo ao final do arquivo sem sobrescrever.
-
-🎯 Como Isso se Aplica à Automação de Redes?
-
-    Backup de Configurações: Salvar o output de show running-config em .txt.
-
-    Processamento de Logs: Filtrar linhas de arquivos de log (ex.: %LINK-3-UPDOWN).
-
-    Atualização Incremental: Adicionar novas configurações a arquivos existentes.
-
-Próximo Passo (Desafio Opcional)
-
-Que tal modificar o Exemplo 2 para ler um log de switch e extrair todas as mensagens de erro? Exemplo:
-python
-
-with open('switch_log.txt', 'r') as arquivo:
-    erros = [linha.strip() for linha in arquivo if '%ERROR' in linha]
