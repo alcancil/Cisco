@@ -60,33 +60,43 @@ Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de err
 |             | **b - Binary** . Especifica o modo do arquivo como binário. Uso em imagens, por exemplo                            |
 
 
+**Exemplo 2:** Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
-Explicação:
+```Python
 
-    open('roteador.txt', 'w'): Abre o arquivo em modo escrita (se existir, será sobrescrito).
+    # Abre o arquivo em modo leitura ('r')
+    with open('roteador.txt', 'r') as arquivo:
+        linhas = arquivo.readlines()  # Lê todas as linhas
 
-    with: Garante que o arquivo seja fechado automaticamente.
+    # Filtra linhas com "interface"
+    interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
 
-📌 Exemplo 2: Ler um Arquivo .txt e Filtrar Linhas (Intermediário)
-
-Objetivo: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
-python
-
-# Abre o arquivo em modo leitura ('r')
-with open('roteador.txt', 'r') as arquivo:
-    linhas = arquivo.readlines()  # Lê todas as linhas
-
-# Filtra linhas com "interface"
-interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
-
-print("Interfaces encontradas:")
-for interface in interfaces:
-    print(interface)
+    print("Interfaces encontradas:")
+    for interface in interfaces:
+        print(interface)
+```
 
 Saída no terminal:
 
-Interfaces encontradas:
-interface GigabitEthernet0/1
+```Bash
+    alcancil@linux:~/automacoes/arquivos/02$ python3 arquivo.py 
+    Traceback (most recent call last):
+      File "/home/alcancil/automacoes/arquivos/02/arquivo.py", line 2, in <module>
+        with open('roteador.txt', 'r') as arquivo:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+    FileNotFoundError: [Errno 2] No such file or directory: 'roteador.txt'
+    alcancil@linux:~/automacoes/arquivos/02$ 
+```
+Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois não temos o arquivo **"roteador.txt"** . Então vamos criar o arquivo com conteúdo dentro e depois executar o script para ver a diferença. <br></br>
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/02$ python3 arquivo.py 
+    Interfaces encontradas:
+    interface GigabitEthernet0/1
+    interface GigabitEthernet0/2
+    interface GigabitEthernet0/3
+    alcancil@linux:~/automacoes/arquivos/02$ 
+```
 
 Explicação:
 
