@@ -193,8 +193,19 @@ Saída no Windows:
 
 **Linha [01]:** Aqui importamos a biblioteca **os** para podermos utilizar a função **path()** e outras funções de sistema.  
 **Linha [02]:** Aqui importamos a biblioteca **plataform** para podermos utilizar suas funções e identificar os sistemas.  
-**Linha [06]:** A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos os sistemas, portanto a variável recebe o nome do sistema operacional.  
-**
+**Linha [05]:** A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos o sistema operacional.  
+**Linha [08]:** Aqui começamos a lógica do if, se o sistema operacional for **Windows** então:  
+**Linha [09]:** a variável **caminho** recebe o caminho. Isso mesmo, nessa abordagem temos que indicar o caminho aqui.  
+**Linha [10]:** Se a variável **sistema** for **Linux**  
+**Linha [11]:** a variável **caminho** recebe o caminho. Digite o caminho aqui.  
+**Linha [12]:** senão  
+**Linha [13]:** imprima : "Sistema não suportado!"  
+**Linha [14]:** sai do script  
+**Linha [16]:** Imprime o nome do sistema e o caminho do arquivo  
+**Linha [19]:** Aqui iniciamos a lógica se o caminho do os existir  
+**Linha [20]:** Imprima "Arquivo encontrado!"  
+**Linha [21]:** senão  
+**Linha [22]:** Imprima "Arquivo não existe!"  
 
 **Exemplo04:**
 1. Caminhos de Rede (Windows/Linux)
