@@ -146,7 +146,7 @@ Saída no arquivo (atualizado):
 
     open(..., 'a'): Modo append adiciona conteúdo ao final do arquivo sem sobrescrever.  
 
-**Exemplo 3:** Caminhos Locais, Identificando o SO (Sistema Operacional)
+**Exemplo 3:** Caminhos locais, identificando o SO (Sistema Operacional)
 
 ```Python
 
@@ -206,73 +206,3 @@ Saída no Windows:
 **Linha [20]:** Imprima "Arquivo encontrado!"  
 **Linha [21]:** senão  
 **Linha [22]:** Imprima "Arquivo não existe!"  
-
-**Exemplo04:**
-1. Caminhos de Rede (Windows/Linux)
-Para Windows (Compartilhamento SMB):
-python
-
-caminho_rede_windows = r"\\servidor\pasta_compartilhada\configs\switch.txt"
-
-    Requisitos:
-
-        Acesso à rede com permissões.
-
-        Usar r antes da string para evitar conflitos com \.
-
-Para Linux (Montagem SMB/NFS):
-python
-
-caminho_rede_linux = "/mnt/servidor/pasta_compartilhada/configs/switch.txt"
-
-    Requisitos:
-
-        Pasta de rede montada (ex.: sudo mount -t cifs //servidor/pasta_compartilhada /mnt/servidor).
-
-3. Exemplo Completo (Lendo um Arquivo em Rede)
-python
-
-import os
-import platform
-
-sistema = platform.system()
-
-# Define o caminho conforme o SO
-if sistema == "Windows":
-    caminho = r"\\servidor\pasta_compartilhada\roteador.txt"
-elif sistema == "Linux":
-    caminho = "/mnt/servidor/pasta_compartilhada/roteador.txt"
-else:
-    print("SO não suportado.")
-    exit()
-
-# Lê o arquivo se existir
-try:
-    with open(caminho, 'r') as arquivo:
-        print(arquivo.read())
-except FileNotFoundError:
-    print(f"Erro: Arquivo não encontrado em {caminho}")
-except PermissionError:
-    print("Erro: Sem permissão para acessar o arquivo!")
-
-4. Dicas Cruciais:
-
-    Windows:
-
-        Use \\ no início para caminhos de rede (ex.: \\servidor\pasta).
-
-        Caminhos locais usam C:\pasta\arquivo.txt.
-
-    Linux:
-
-        Caminhos de rede exigem montagem prévia (ex.: NFS/SMB).
-
-        Caminhos locais usam /home/usuario/arquivo.txt.
-
-    Identificação do SO:
-
-        Sempre use platform.system() para evitar erros cruzados.
-
-    Tratamento de Erros:
-
-        Verifique os.path.exists() antes de operações críticas.
