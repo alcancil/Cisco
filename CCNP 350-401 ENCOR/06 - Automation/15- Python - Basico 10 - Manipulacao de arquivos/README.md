@@ -12,7 +12,7 @@ A resposta é não. Para que a máquina interprete corretamente os dados, ela pr
 
 Então, o Python consegue trabalhar com vários tipos de arquivos. Vamos dar uma olhada em alguns tipos de arquivos.  
 
-* [txt](/Arquivos/txt/README.md) - Comece com .txt para entender o básico de I/O (Input/Output) em Python.
+* [txt](Arquivos/txt/README.md) - Comece com .txt para entender o básico de I/O (Input/Output) em Python.
 * **.csv**  - para dados tabulares (inventários).
 * **.json** - para APIs e automação.
 * **.yaml** - para playbooks do Ansible.
