@@ -44,3 +44,41 @@ Explicação:
     modelo: Tipo do dispositivo.
 
     localizacao: Onde o dispositivo está "fisicamente".
+
+
+**Script ler_inventario.py**
+
+```Python
+    [01] import csv
+    [02]
+    [04] # Lê o arquivo CSV
+    [05] with open('inventario.csv', 'r') as arquivo_csv:
+    [06]    leitor = csv.DictReader(arquivo_csv)
+    [07]    for dispositivo in leitor:
+    [08]        print(f"Dispositivo: {dispositivo['hostname']}")
+    [09]        print(f"IP: {dispositivo['ip']}")
+    [10]        print(f"Modelo: {dispositivo['modelo']}")
+    [11]        print(f"Localização: {dispositivo['localizacao']}\n")
+```
+
+**Saída**
+
+```Python
+    alcancil@linux:~/automacoes/arquivos/csv/01$ python3 ler_inventario.csv
+    Dispositivo: linux-server
+    IP: 192.168.1.100
+    Modelo: Ubuntu 22.04
+    Localização: Sala de Servidores
+
+    Dispositivo: switch01
+    IP: 192.168.1.1
+    Modelo: Cisco Catalyst 2960
+    Localização: Rack Principal
+
+    Dispositivo: router01
+    IP: 192.168.1.254
+    Modelo: Cisco ISR 4331
+    Localização: Rack Principal
+
+    alcancil@linux:~/automacoes/arquivos/csv/01$
+```
