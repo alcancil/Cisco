@@ -2,11 +2,43 @@
 
 ## 01 Manipulação de arquivos - .csv
 
-Arquivos **.csv**  
+Arquivos **.csv** são utilizados em diversos casos como:  
 
-1. Para Configurações Simples de Dispositivos
-2. Logs de Sistemas ou Dispositivos
-3. Armazenar Saídas de Comandos para Análise
+1. Inventário de dispositivos de rede  
+2. Backup de configurações em massa  
+3. Processamento de Logs estruturados  
+4. Integração com ferramentas de automação  
+5. Exportação de dados de APIs  
+6. Comparação de dados (Antes/Depois)  
+
+Quando Escolher CSV em vez de TXT?  
+
+| Vantagens do CSV                                                  | Use TXT quando                                     |
+|-------------------------------------------------------------------|----------------------------------------------------|
+| Estrutura clara (colunas/linhas).                                 | Os dados são não estruturados (ex.: logs brutos).  |
+| Facilidade de importação em Excel, bancos de dados e ferramentas. |  Não há necessidade de divisão por colunas.        |
+| Suporte nativo em linguagens (Python, PowerShell).                |                                                    |
+       
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Então vamos olhar alguns exemplos práticos para ver como eles funcionam na prática. <br></br>
 
