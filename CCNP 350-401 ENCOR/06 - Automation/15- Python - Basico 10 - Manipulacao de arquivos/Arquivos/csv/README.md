@@ -264,4 +264,4 @@ As outras linhas foram omitidas por questões de clareza e redundância.
 **Linha [08] :** a variável logs_filtrados recebe o valor da lista ( começa com [ )  
 **Linha [09] :** percorra cada ítem (log) dentro do arquivo logs.csv  
 **Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO e ALERTA  
-**Linha [11] :** finaliza a lista  
+**Linha [11] :** finaliza a lista ( ])  
