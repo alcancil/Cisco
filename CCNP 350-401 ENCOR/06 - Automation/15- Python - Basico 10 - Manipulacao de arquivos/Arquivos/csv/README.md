@@ -20,7 +20,8 @@ Quando Escolher CSV em vez de TXT?
 | Facilidade de importação em Excel, bancos de dados e ferramentas. |  Não há necessidade de divisão por colunas.        |
 | Suporte nativo em linguagens (Python, PowerShell).                |                                                    |
        
-Antes de começarmos nossos exemplos, vamos criar uma pasta chamada **automacoes** onde vamos deixar nossos arquivos.
+Antes de começarmos nossos exemplos, vamos criar uma pasta chamada **automacoes** onde vamos deixar nossos arquivos.  
+Nas explicações, algumas linhas serão omitidas por questões de clareza e redundância.  
 
 **Exemplo 01:** Inventário de dispositivos de rede  
 
@@ -85,14 +86,16 @@ Explicação:
 
 **Explicação**  
 
-**Linha [01] :** importando o módulo csv para poder utilizar as funções de arquivos csv  
-**Linha [05] :** com o arquivo inventario.csv aberto em modo leitura, onde o conteúdo vai para avariável **arquivo_csv** faça:  
-**Linha [06] :** a variável leitor recebe o conteúdo de arquivo_csv em forma de dicionário. O método csv.DictReader mapeia cada linha para um dicionário ao invés de colocar como índice  
-**Linha [07] :** para cada dispositivo dentro do conteúdo da variável leitor faça :  
-**Linha [08] :** imprima **Dispositivo {nome do dispositivo}**  
-**Linha [09] :** imprima **IP: {número do ip}**  
-**Linha [10] :** imprima **Modelo: {tipo do modelo}**  
-**Linha [11] :** imprima **Localização: {localização}**  
+```Bash
+    Linha [01] : importando o módulo csv para poder utilizar as funções de arquivos csv  
+    Linha [05] : com o arquivo inventario.csv aberto em modo leitura, onde o conteúdo vai para avariável **arquivo_csv** faça:  
+    Linha [06] : a variável leitor recebe o conteúdo de arquivo_csv em forma de dicionário. O método csv.DictReader mapeia cada linha para um dicionário ao invés de colocar como índice  
+    Linha [07] : para cada dispositivo dentro do conteúdo da variável leitor faça :  
+    Linha [08] : imprima **Dispositivo {nome do dispositivo}**  
+    Linha [09] : imprima **IP: {número do ip}**  
+    Linha [10] : imprima **Modelo: {tipo do modelo}**  
+    Linha [11] : imprima **Localização: {localização}**  
+```
 
 **Exemplo 02:** Backup de configurações em massa  
 
@@ -258,8 +261,6 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
 ```  
 
 **Explicação**
-
-Algumas linhas foram omitidas por questões de clareza e redundância.
 
 - Filtro dos logs com nível **CRÍTICO ou ALERTA**
 
