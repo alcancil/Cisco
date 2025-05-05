@@ -291,3 +291,51 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
     Linha [21] : acessa o valor da chave 'dispositivo' no dicionário log atual e o armazena na variável dispositivo.  
     Linha [22] : inicia o dicionário contagem como contador. O método get() busca o número atual de logs de um dispositivo e, se não houver ainda, começa com 0. A cada log, ele soma 1.
 ```
+
+### Exemplo 04: Comparação de dados (Antes/Depois)  
+
+Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenados em um arquivo csv. Então vamos realizar a comparação do estados das portas armazenados nesse arquivo csv com um outro. Esse tipo de situação é útil quando fazemos algum tipo de interação automática com o equipamento e queremos realizar o antes / depois para comparar se a automação está funcionando corretamente.  
+
+**Conteúdo do arquivo portas_antes**
+
+```Bash
+    interface,estado
+    GigabitEthernet0/0,up
+    GigabitEthernet0/1,down
+    GigabitEthernet0/2,up
+```
+
+**Conteúdo do arquivo portas_depois**
+
+```Bash
+    interface,estado
+    GigabitEthernet0/0,up
+    GigabitEthernet0/1,up
+    GigabitEthernet0/2,up
+```
+
+**Script comparar.py**
+
+```Python
+import csv
+
+def ler_csv(caminho):
+    dados = {}
+    with open(caminho, newline='') as arquivo:
+        leitor = csv.DictReader(arquivo)
+        for linha in leitor:
+            interface = linha['interface']
+            estado = linha['estado']
+            dados[interface] = estado
+    return dados
+
+# Leitura dos arquivos
+antes = ler_csv("portas_antes.csv")
+depois = ler_csv("portas_depois.csv")
+
+# Comparação
+print("🔍 Mudanças detectadas:")
+for interface in antes:
+    if antes[interface] != depois.get(interface):
+        print(f"- {interface}: {antes[interface]} ➡️ {depois.get(interface)}")
+```
