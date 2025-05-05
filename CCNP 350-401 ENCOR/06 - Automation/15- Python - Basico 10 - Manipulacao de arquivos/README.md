@@ -14,6 +14,6 @@ Então, o Python consegue trabalhar com vários tipos de arquivos. Vamos dar uma
 
 * [txt](Arquivos/txt/README.md) - Comece com .txt para entender o básico de I/O (Input/Output) em Python.
 * [csv](Arquivos/csv/README.md)  - para dados tabulares (inventários).
-* **.json** - para APIs e automação.
+* [json](Arquivos/json/README.md) - para APIs e automação.
 * **.yaml** - para playbooks do Ansible.
 * **.j2**   - Combine tudo com .j2 para templates dinâmicos.
