@@ -185,12 +185,11 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [07] :** com o arquivo dispositivos.csv aberto em modo leitura (envie o conteúdo para a variável **arquivo_csv**) faça:  
 **Linha [08] :** a variável **leitor** recebe o conteúdo da variável arquivo.csv em forma de dicionário.  
 **Linha [09] :** para cada dispositivo dentro da variável leitor faça:  
-**Linha [10] :** 
-**Linha [11] :**
-**Linha [12] :**
-**Linha [13] :**
-**Linha [14] :**
-**Linha [17] :**
-**Linha [18] :**
-**Linha [19] :**
-**Linha [21] :**
+**Linha [11] :** se o tipo do dispositivo for **linux**  
+**Linha [12] :**  
+**Linha [13] :**  
+**Linha [14] :**  
+**Linha [17] :**  
+**Linha [18] :**  
+**Linha [19] :**  
+**Linha [21] :**  
