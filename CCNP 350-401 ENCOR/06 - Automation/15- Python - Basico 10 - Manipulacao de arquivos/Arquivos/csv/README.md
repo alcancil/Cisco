@@ -264,13 +264,13 @@ Algumas linhas foram omitidas por questões de clareza e redundância.
 Filtro dos logs com nível **CRÍTICO ou ALERTA**
 
 **Linha [08] :** a variável logs_filtrados recebe o valor da lista ( começa com [ )  
-**Linha [09] :** percorra cada ítem (log) dentro do arquivo logs.csv  
+**Linha [09] :** percorra cada item (log) dentro do arquivo logs.csv  
 **Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO ou ALERTA  
 **Linha [11] :** finaliza a lista ( ])  
 
 Contagem por dispositivo (opcional)  
 
-**Linha [19] :**  
-**Linha [20] :**  
-**Linha [21] :**  
-**Linha [22] :**
+**Linha [19] :** cria um dicionário chamado contagem  
+**Linha [20] :** inicia um loop for que percorre cada item da lista logs_filtrados ( Logs filtrados no passo anterior )
+**Linha [21] :** acessa o valor da chave 'dispositivo' no dicionário log atual e o armazena na variável dispositivo.  
+**Linha [22] :** inicia o dicionário contagem como contador. O método get() busca o número atual de logs de um dispositivo e, se não houver ainda, começa com 0. A cada log, ele soma 1.
