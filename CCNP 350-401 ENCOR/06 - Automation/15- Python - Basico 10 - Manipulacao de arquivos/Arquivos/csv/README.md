@@ -263,10 +263,12 @@ Algumas linhas foram omitidas por questões de clareza e redundância.
 
 - Filtro dos logs com nível **CRÍTICO ou ALERTA**
 
+```Bash
 **Linha [08] :** a variável logs_filtrados recebe o valor da lista ( começa com [ )  
 **Linha [09] :** percorra cada item (log) dentro do arquivo logs.csv  
 **Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO ou ALERTA  
 **Linha [11] :** finaliza a lista ( ])  
+``` 
 
 - Contagem por dispositivo (opcional)  
 
