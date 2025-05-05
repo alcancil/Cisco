@@ -194,13 +194,13 @@ Saída no Windows:
 
 ```Bash
 
-    Linha [01]: Aqui importamos a biblioteca **os** para podermos utilizar a função **path()** e outras funções de sistema.  
-    Linha [02]: Aqui importamos a biblioteca **plataform** para podermos utilizar suas funções e identificar os sistemas.  
-    Linha [05]: A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos o sistema operacional.  
-    Linha [08]: Aqui começamos a lógica do if, se o sistema operacional for **Windows** então:  
+    Linha [01]: Aqui importamos a biblioteca os para podermos utilizar a função path() e outras funções de sistema.  
+    Linha [02]: Aqui importamos a biblioteca plataform para podermos utilizar suas funções e identificar os sistemas.  
+    Linha [05]: A variável **sistema** recebe a função plataform.system(). Aqui é que reconhecemos o sistema operacional.  
+    Linha [08]: Aqui começamos a lógica do if, se o sistema operacional for Windows então:  
     Linha [09]: a variável **caminho** recebe o caminho. Isso mesmo, nessa abordagem temos que indicar o caminho aqui.  
-    Linha [10]: Se a variável **sistema** for **Linux**  
-    Linha [11]: a variável **caminho** recebe o caminho. Digite o caminho aqui.  
+    Linha [10]: Se a variável sistema for Linux  
+    Linha [11]: a variável caminho recebe o caminho. Digite o caminho aqui.  
     Linha [12]: senão  
     Linha [13]: imprima : "Sistema não suportado!"  
     Linha [14]: sai do script  
