@@ -187,10 +187,11 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [09] :** para cada dispositivo dentro da variável leitor faça:  
 **Linha [11] :** se o tipo do dispositivo for **linux**  
 **Linha [12] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Linux, usando os valores lidos do arquivo 
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**  
-**Linha [13] :**  
-**Linha [14] :**  
-**Linha [17] :**  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**  
+**Linha [13] :** se o tipo do dispositivo for **cisco**  
+**Linha [14] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Cisco, usando os valores lidos do arquivo  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname roteador-simulado\ninterface GigabitEthernet0/1\nIP: endereço ip 255.255.255.0")**
+**Linha [17] :** Esta linha define o caminho (path) completo onde o arquivo de backup será salvo, usando f-strings para inserir dinamicamente o nome do dispositivo   
 **Linha [18] :**  
 **Linha [19] :**  
 **Linha [21] :**  
