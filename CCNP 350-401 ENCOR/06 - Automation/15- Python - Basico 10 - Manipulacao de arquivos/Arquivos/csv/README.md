@@ -367,6 +367,13 @@ Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenad
 
 - Leitura dos arquivos  
 
+```Bash
+    Linha [14] : variável antes recebe o valor do arquivo portas_antes.csv em forma de dicionário
+    Linha [15] : variável antes recebe o valor do arquivo portas_depois.csv em forma de dicionário
+```
 
+- Comparação  
 
-- Comparação
+```Bash
+
+```
