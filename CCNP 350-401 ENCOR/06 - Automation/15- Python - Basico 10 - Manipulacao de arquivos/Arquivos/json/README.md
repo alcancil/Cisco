@@ -1,6 +1,6 @@
 # Python - Básico 10
 
-## 01 Manipulação de arquivos - .csv
+## 03 Manipulação de arquivos - .json
 
 Arquivos **.csv** são utilizados em diversos casos como:  
 
@@ -12,13 +12,29 @@ Arquivos **.csv** são utilizados em diversos casos como:
 6. Exportação de dados de APIs  
   
 
-Quando Escolher CSV em vez de TXT?  
+Quando Escolher JSON 
 
-| Vantagens do CSV                                                  | Use TXT quando                                     |
-|-------------------------------------------------------------------|----------------------------------------------------|
-| Estrutura clara (colunas/linhas).                                 | Os dados são não estruturados (ex.: logs brutos).  |
-| Facilidade de importação em Excel, bancos de dados e ferramentas. |  Não há necessidade de divisão por colunas.        |
-| Suporte nativo em linguagens (Python, PowerShell).                |                                                    |
+| Quando escolher formato JSON                                                     | Quando evitar formato JSON                                           |
+|----------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| Estruturas de dados aninhadas (ex.: configurações hierárquicas de dispositivos). | Dados tabulares simples (ex.: lista de IPs → CSV é mais eficiente).  |
+| Integração com APIs REST (a maioria das APIs de redes usam JSON).                | Arquivos muito grandes (JSON consome mais memória que CSV/binário).  |
+| Troca de dados entre sistemas (mais legível que XML/binário).                    | Configurações locais de baixa complexidade (arquivos .ini ou .env).  |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
        
 Antes de começarmos nossos exemplos, vamos criar uma pasta chamada **automacoes** onde vamos deixar nossos arquivos.  
 Nas explicações, algumas linhas serão omitidas por questões de clareza e redundância.  
