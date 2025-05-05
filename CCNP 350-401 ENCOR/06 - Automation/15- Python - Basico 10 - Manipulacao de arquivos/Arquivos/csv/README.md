@@ -196,3 +196,67 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [19] :** escreve o conteúdo da variável config (que contém as configurações simuladas do dispositivo) no arquivo de backup que foi aberto anteriormente.  
 **Linha [21] :** Esta linha imprime uma mensagem no terminal para informar que o backup de um dispositivo foi salvo com sucesso, incluindo dinamicamente: **nome do dispositivo** e **caminho completo**  
 
+**Exemplo 03:** Processamento de Logs estruturados  
+
+Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco mais estruturados. Então vamos criar um script que leia esse log armazenado em um arquivo csv e consigo separar o tipo de equipamento e o grau de severidade do log.  
+
+**Conteúdo do arquivo log.csv**  
+
+```Bash
+    timestamp,dispositivo,nivel,mensagem
+    2024-05-10 09:15:23,switch01,ALERTA,Interface GigabitEthernet0/1 down
+    2024-05-10 09:16:45,router01,CRITICO,CPU usage 95%
+    2024-05-10 09:20:12,switch01,INFO,Interface GigabitEthernet0/1 up
+    2024-05-10 09:25:34,firewall01,ALERTA,Blocked 10 SSH attempts
+```
+
+**Script processar_log.py**
+
+```Python
+    [01] import csv
+    [02]
+    [03 # Lê o arquivo CSV
+    [04] with open('logs.csv', 'r') as arquivo_csv:
+    [05]    leitor = csv.DictReader(arquivo_csv)
+    [06]   
+    [07]    # Filtra logs com nível "CRITICO" ou "ALERTA"
+    [08]    logs_filtrados = [
+    [09]        log for log in leitor 
+    [10]        if log['nivel'] in ['CRITICO', 'ALERTA']
+    [11]    ]
+    [12]
+    [13] # Exibe os logs filtrados
+    [14] print("===== LOGS CRÍTICOS/ALERTAS =====")
+    [15] for log in logs_filtrados:
+    [16]    print(f"{log['timestamp']} | {log['dispositivo']} | {log['nivel']}: {log['mensagem']}")
+    [17]
+    [18] # Contagem por dispositivo (opcional)
+    [19] contagem = {}
+    [20] for log in logs_filtrados:
+    [21]    dispositivo = log['dispositivo']
+    [22]    contagem[dispositivo] = contagem.get(dispositivo, 0) + 1
+    [23]
+    [24] print("\n===== RESUMO =====")
+    [25] for dispositivo, total in contagem.items():
+    [26]    print(f"{dispositivo}: {total} alerta(s)")
+```  
+
+**Saída**  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/csv/03$ python3 processar_logo.py 
+    ===== LOGS CRÍTICOS/ALERTAS =====
+    2024-05-10 09:15:23 | switch01 | ALERTA: Interface GigabitEthernet0/1 down
+    2024-05-10 09:16:45 | router01 | CRITICO: CPU usage 95%
+    2024-05-10 09:25:34 | firewall01 | ALERTA: Blocked 10 SSH attempts
+
+    ===== RESUMO =====
+    switch01: 1 alerta(s)
+    router01: 1 alerta(s)
+    firewall01: 1 alerta(s)
+    alcancil@linux:~/automacoes/arquivos/csv/03$ 
+```  
+
+**Explicação**
+
+**Linha [01] :**  
