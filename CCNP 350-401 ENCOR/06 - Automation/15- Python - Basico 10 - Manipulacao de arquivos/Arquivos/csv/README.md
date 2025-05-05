@@ -215,7 +215,7 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
 ```Python
     [01] import csv
     [02]
-    [03 # Lê o arquivo CSV
+    [03] # Lê o arquivo CSV
     [04] with open('logs.csv', 'r') as arquivo_csv:
     [05]    leitor = csv.DictReader(arquivo_csv)
     [06]   
@@ -259,4 +259,9 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
 
 **Explicação**
 
-**Linha [01] :**  
+As outras linhas foram omitidas por questões de clareza e redundância.
+
+**Linha [08] :** a variável logs_filtrados recebe o valor da lista ( começa com [ )  
+**Linha [09] :** percorra cada ítem (log) dentro do arquivo logs.csv  
+**Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO e ALERTA  
+**Linha [11] :** finaliza a lista  
