@@ -375,5 +375,11 @@ Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenad
 - Comparação  
 
 ```Bash
-
+    Linha [18] : imprime a mensagem fixa: "Mudanças detectadas:"  
+    Linha [19] : verifica o estado das interfaces antes das mudanças uma, a uma
+    Linha [20] : verifica se o valor da interface no dicionário antes é diferente do valor correspondente no dicionário depois.
+                OBS: O método .get(interface) é usado para evitar erro se a interface não existir no depois. Retorna None se não encontrar.
+                OBS2: Ou seja, compara o estado da interface antes e depois.
+    Linha [21]: Se houver diferença, imprime a interface e o valor de antes e depois, no formato:  
+                - GigabitEthernet0/1: down >>> up
 ```
