@@ -177,9 +177,11 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 
 **Explicação**
 
-**Linha [01] :**  
-**Linha [02] :**   
-**Linha [05] :**
+**Linha [01] :** importando o módulo csv para poder utilizar as funções de arquivos csv  
+**Linha [02] :** importando o módulo os para poder utilizar as funções relativa a sistemas operacionais  
+**Linha [05] :** Função que cria diretórios recursivamente (ou seja, pode criar várias pastas de uma vez, como pasta/subpasta). 
+&nbsp; &nbsp; &nbsp; **exist_ok=True:**
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se True, evita que o Python lance um erro (FileExistsError) se o diretório já existir.
 **Linha [07] :**
 **Linha [08] :**
 **Linha [09] :**
