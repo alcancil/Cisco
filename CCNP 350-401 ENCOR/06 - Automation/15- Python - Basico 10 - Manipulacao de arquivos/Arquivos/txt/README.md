@@ -10,7 +10,7 @@ Bom, vamos começar pelo básico. Arquivos .txt, em automação de redes, são u
 
 Então vamos olhar alguns exemplos práticos para ver como eles funcionam na prática. <br></br>
 
-**Exemplo 1:** Criar e Escrever em um Arquivo .txt (Básico)
+### Exemplo 1: Criar e Escrever em um Arquivo .txt (Básico)
 
 Objetivo: Criar um arquivo chamado roteador.txt e salvar uma configuração simples.
 
@@ -24,7 +24,7 @@ Objetivo: Criar um arquivo chamado roteador.txt e salvar uma configuração simp
     [07] print("Arquivo 'roteador.txt' criado com sucesso!")
 ```
 
-**Execução do script**
+**Saída**
 
 ```Bash
     alcancil@linux:~/automacoes/arquivos$ python3 arquivos01.py 
@@ -61,7 +61,7 @@ Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de err
 
 **OBS:** **\n** em Python significa Enter, ou manda pular uma linha. <br></br>
 
-**Exemplo 2:** Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
+### Exemplo 2: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
 ```Python
 
@@ -77,7 +77,7 @@ Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de err
    [10]     print(interface)
 ```
 
-Saída no terminal:
+**Saída no terminal:**
 
 ```Bash
     alcancil@linux:~/automacoes/arquivos/02$ python3 arquivo.py 
@@ -101,13 +101,14 @@ Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois
 
 **Explicação:**
 
-**Linha [01]:** abre o arquivo roteador.txt, no modo leitura e coloca o conteúdo a variável **arquivo**  
-**Linha [02]:** aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
-**Linha [06]:** aqui vamos quebrar a explicação em partes:  
-&nbsp; &nbsp; &nbsp; &nbsp; - **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.  
-&nbsp; &nbsp; &nbsp; &nbsp; - **for linha in linhas**: aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
-&nbsp; &nbsp; &nbsp; &nbsp; - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
-    
+```Bash
+    Linha [01]: abre o arquivo roteador.txt, no modo leitura e coloca o conteúdo a variável **arquivo**  
+    Linha [02]: aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
+    Linha [06]: aqui vamos quebrar a explicação em partes:  
+                - **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.  
+                - **for linha in linhas**: aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
+                - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
+```
 
 **Exemplo 3:** Adicionar Configurações a um Arquivo Existente.
 
@@ -124,7 +125,7 @@ Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo
     print("Configuração de VLAN adicionada ao arquivo!")
 ```
 
-Saída no arquivo (atualizado):
+**Saída no arquivo (atualizado):**
 
 ```Bash
     alcancil@linux:~/automacoes/arquivos/03$ python3 arquivo.py 
@@ -173,7 +174,7 @@ Saída no arquivo (atualizado):
     [21] else:
     [22]    print("Arquivo não existe.")
 
-Saída no Linux:  
+Saída no Linux: 
 
 ```Bash
     alcancil@linux:~/automacoes/arquivos/04$ python3 arquivo.py 
@@ -191,18 +192,21 @@ Saída no Windows:
 
 **Explicação:**
 
-**Linha [01]:** Aqui importamos a biblioteca **os** para podermos utilizar a função **path()** e outras funções de sistema.  
-**Linha [02]:** Aqui importamos a biblioteca **plataform** para podermos utilizar suas funções e identificar os sistemas.  
-**Linha [05]:** A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos o sistema operacional.  
-**Linha [08]:** Aqui começamos a lógica do if, se o sistema operacional for **Windows** então:  
-**Linha [09]:** a variável **caminho** recebe o caminho. Isso mesmo, nessa abordagem temos que indicar o caminho aqui.  
-**Linha [10]:** Se a variável **sistema** for **Linux**  
-**Linha [11]:** a variável **caminho** recebe o caminho. Digite o caminho aqui.  
-**Linha [12]:** senão  
-**Linha [13]:** imprima : "Sistema não suportado!"  
-**Linha [14]:** sai do script  
-**Linha [16]:** Imprime o nome do sistema e o caminho do arquivo  
-**Linha [19]:** Aqui iniciamos a lógica se o caminho do os existir  
-**Linha [20]:** Imprima "Arquivo encontrado!"  
-**Linha [21]:** senão  
-**Linha [22]:** Imprima "Arquivo não existe!"  
+```Bash
+
+    Linha [01]: Aqui importamos a biblioteca **os** para podermos utilizar a função **path()** e outras funções de sistema.  
+    Linha [02]: Aqui importamos a biblioteca **plataform** para podermos utilizar suas funções e identificar os sistemas.  
+    Linha [05]: A variável **sistema** recebe a função **plataform.system()**. Aqui é que reconhecemos o sistema operacional.  
+    Linha [08]: Aqui começamos a lógica do if, se o sistema operacional for **Windows** então:  
+    Linha [09]: a variável **caminho** recebe o caminho. Isso mesmo, nessa abordagem temos que indicar o caminho aqui.  
+    Linha [10]: Se a variável **sistema** for **Linux**  
+    Linha [11]: a variável **caminho** recebe o caminho. Digite o caminho aqui.  
+    Linha [12]: senão  
+    Linha [13]: imprima : "Sistema não suportado!"  
+    Linha [14]: sai do script  
+    Linha [16]: Imprime o nome do sistema e o caminho do arquivo  
+    Linha [19]: Aqui iniciamos a lógica se o caminho do os existir  
+    Linha [20]: Imprima "Arquivo encontrado!"  
+    Linha [21]: senão  
+    Linha [22]: Imprima "Arquivo não existe!"  
+```
