@@ -187,7 +187,7 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [09] :** para cada dispositivo dentro da variável leitor faça:  
 **Linha [11] :** se o tipo do dispositivo for **linux**  
 **Linha [12] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Linux, usando os valores lidos do arquivo 
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**  
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**  
 **Linha [13] :**  
 **Linha [14] :**  
 **Linha [17] :**  
