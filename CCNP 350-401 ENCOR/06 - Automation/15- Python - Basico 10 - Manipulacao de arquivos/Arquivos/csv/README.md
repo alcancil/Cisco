@@ -186,8 +186,8 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [08] :** a variável **leitor** recebe o conteúdo da variável arquivo.csv em forma de dicionário.  
 **Linha [09] :** para cada dispositivo dentro da variável leitor faça:  
 **Linha [11] :** se o tipo do dispositivo for **linux**  
-**Linha [12] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Linux, usando os valores lidos do arquivo CSV. 
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**
+**Linha [12] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Linux, usando os valores lidos do arquivo 
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname servidor-linux\nIP: endereço ip\nSO: Ubuntu 22.04")**  
 **Linha [13] :**  
 **Linha [14] :**  
 **Linha [17] :**  
