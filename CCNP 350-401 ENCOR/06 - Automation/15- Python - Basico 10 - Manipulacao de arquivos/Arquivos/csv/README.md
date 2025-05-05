@@ -4,7 +4,7 @@
 
 Arquivos **.csv** são utilizados em diversos casos como:  
 
- 
+1. Inventário de dispositivos de rede 
 2. Backup de configurações em massa  
 3. Processamento de Logs estruturados  
 4. Comparação de dados (Antes/Depois)
@@ -63,7 +63,7 @@ Explicação:
 
 **Saída**
 
-```Python
+```Bash
     alcancil@linux:~/automacoes/arquivos/csv/01$ python3 ler_inventario.csv
     Dispositivo: linux-server
     IP: 192.168.1.100
@@ -94,3 +94,101 @@ Explicação:
 **Linha [10] :** imprima **Modelo: {tipo do modelo}**  
 **Linha [11] :** imprima **Localização: {localização}**  
 
+**Exemplo 02:** Backup de configurações em massa  
+
+Nesse exemplo vamos ler o conteúdo do arquivo dispositivos.csv Depois precisamos identificar o tipo de dispositivo. Feito isso, iremos criar um diretório chamado backups, se não existir, e dentro desse diretório vamos gravar o backup das configurações de cada dispositivo.  Os arquivos de backup será armazenado em arquivos separados por tipo de dispositivo.  
+
+**Conteúdo do arquivo dispositivos.csv**
+
+```Python
+    hostname,ip,usuario,senha,tipo
+    servidor-linux,192.168.1.100,admin,senha123,linux
+    roteador-simulado,10.0.0.1,cisco,cisco123,cisco_ios
+    switch-simulado,192.168.1.2,admin,admin123,cisco_ios
+```
+
+**Script backups.config**
+
+```Python
+    [01] import csv
+    [02] import os
+    [03]
+    [04] # Diretório para salvar os backups
+    [05] os.makedirs("backups", exist_ok=True)
+    [06]
+    [07] with open('dispositivos.csv', 'r') as arquivo_csv:
+    [08]    leitor = csv.DictReader(arquivo_csv)
+    [09]    for dispositivo in leitor:
+    [10]        # Simula a "configuração" baseada no tipo do dispositivo
+    [11]        if dispositivo['tipo'] == "linux":
+    [12]            config = f"hostname {dispositivo['hostname']}\nIP: {dispositivo['ip']}\nSO: Ubuntu 22.04"
+    [13]        elif "cisco" in dispositivo['tipo']:
+    [14]            config = f"hostname {dispositivo['hostname']}\ninterface GigabitEthernet0/1\n  ip address {dispositivo['ip']} 255.255.255.0"
+    [15]        
+    [16]        # Salva o "backup" em um arquivo .txt
+    [17]        caminho_backup = f"backups/{dispositivo['hostname']}_backup.txt"
+    [18]        with open(caminho_backup, 'w') as arquivo_backup:
+    [19]            arquivo_backup.write(config)
+    [20]        
+    [21]        print(f"Backup do {dispositivo['hostname']} salvo em: {caminho_backup}")
+```
+
+**Saída**
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/csv/02$ ls -la
+    total 16
+    drwxrwxr-x 2 alcancil alcancil 4096 mai  4 20:56 .
+    drwxrwxr-x 4 alcancil alcancil 4096 mai  4 20:42 ..
+    -rw-r--r-- 1 root     root      931 mai  4 20:45 backup.py
+    -rw-r--r-- 1 root     root      186 mai  4 20:43 dispositivos.csv
+```
+
+Podemos notar que só temos o arquivo .csv e nosso script. Então vamos executar nosso script e ver o resultado.  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/csv/02$ python3 backup.py
+    Backup do servidor-linux salvo em: backups/servidor-linux_backup.txt
+    Backup do roteador-simulado salvo em: backups/roteador-simulado_backup.txt
+    Backup do switch-simulado salvo em: backups/switch-simulado_backup.txt
+    alcancil@linux:~/automacoes/arquivos/csv/02$ ls -lah
+    total 20K
+    drwxrwxr-x 3 alcancil alcancil 4,0K mai  4 20:56 .
+    drwxrwxr-x 4 alcancil alcancil 4,0K mai  4 20:42 ..
+    -rw-r--r-- 1 root     root      931 mai  4 20:45 backup.py
+    drwxrwxr-x 2 alcancil alcancil 4,0K mai  4 20:56 backups
+    -rw-r--r-- 1 root     root      186 mai  4 20:43 dispositivos.csv
+    alcancil@linux:~/automacoes/arquivos/csv/02$
+```
+
+Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo desse diretório.  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/csv/02$ cd backups/
+    alcancil@linux:~/automacoes/arquivos/csv/02/backups$ ls -la
+    total 20
+    drwxrwxr-x 2 alcancil alcancil 4096 mai  4 20:56 .
+    drwxrwxr-x 3 alcancil alcancil 4096 mai  4 20:56 ..
+    -rw-rw-r-- 1 alcancil alcancil   91 mai  4 20:56 roteador-simulado_backup.txt
+    -rw-rw-r-- 1 alcancil alcancil   58 mai  4 20:56 servidor-linux_backup.txt
+    -rw-rw-r-- 1 alcancil alcancil   92 mai  4 20:56 switch-simulado_backup.txt
+    alcancil@linux:~/automacoes/arquivos/csv/02/backups$
+```
+
+**Explicação**
+
+**Linha [01] :**  
+**Linha [02] :**   
+**Linha [05] :**
+**Linha [07] :**
+**Linha [08] :**
+**Linha [09] :**
+**Linha [10] :**
+**Linha [11] :**
+**Linha [12] :**
+**Linha [13] :**
+**Linha [14] :**
+**Linha [17] :**
+**Linha [18] :**
+**Linha [19] :**
+**Linha [21] :**
