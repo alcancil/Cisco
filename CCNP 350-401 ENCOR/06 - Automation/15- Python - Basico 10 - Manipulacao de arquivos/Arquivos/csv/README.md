@@ -192,6 +192,7 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
 **Linha [14] :** cria uma string formatada (um texto) que simula uma "configuração" de um dispositivo Cisco, usando os valores lidos do arquivo  
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **("hostname roteador-simulado\ninterface GigabitEthernet0/1\nIP: endereço ip 255.255.255.0")**  
 **Linha [17] :** Esta linha define o caminho (path) completo onde o arquivo de backup será salvo, usando f-strings para inserir dinamicamente o nome do dispositivo   
-**Linha [18] :**  
-**Linha [19] :**  
-**Linha [21] :**  
+**Linha [18] :** com a variável caminho_backup aberta em modo leitura (envie o conteúdo para a variável arquivo_backup) faça:   
+**Linha [19] :** escreve o conteúdo da variável config (que contém as configurações simuladas do dispositivo) no arquivo de backup que foi aberto anteriormente.  
+**Linha [21] :** Esta linha imprime uma mensagem no terminal para informar que o backup de um dispositivo foi salvo com sucesso, incluindo dinamicamente: **nome do dispositivo ** e **caminho completo**  
+
