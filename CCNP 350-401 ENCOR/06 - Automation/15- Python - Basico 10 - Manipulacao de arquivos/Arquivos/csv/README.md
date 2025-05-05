@@ -259,7 +259,7 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
 
 **Explicação**
 
-As outras linhas foram omitidas por questões de clareza e redundância.
+Algumas linhas foram omitidas por questões de clareza e redundância.
 
 Filtro dos logs com nível **CRÍTICO ou ALERTA**
 
@@ -267,3 +267,10 @@ Filtro dos logs com nível **CRÍTICO ou ALERTA**
 **Linha [09] :** percorra cada ítem (log) dentro do arquivo logs.csv  
 **Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO ou ALERTA  
 **Linha [11] :** finaliza a lista ( ])  
+
+Contagem por dispositivo (opcional)  
+
+**Linha [19] :**  
+**Linha [20] :**  
+**Linha [21] :**  
+**Linha [22] :**
