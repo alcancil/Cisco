@@ -23,7 +23,7 @@ Quando Escolher CSV em vez de TXT?
 Antes de começarmos nossos exemplos, vamos criar uma pasta chamada **automacoes** onde vamos deixar nossos arquivos.  
 Nas explicações, algumas linhas serão omitidas por questões de clareza e redundância.  
 
-**Exemplo 01:** Inventário de dispositivos de rede  
+### Exemplo 01: Inventário de dispositivos de rede  
 
 Nesse exemplo, vamos criar um arquivo chamado **inventario.csv**.  Esse arquivo vai conter as informações de nosso inventário. Percebam como ele vem estruturado: são informações separadas por vírgulas. Olhando somente seu conteúdo fica difícil de entendermos. Então nosso objetivo vai ser criar um arquivo em python que leia o conteúdo desse arquivo e depois nos exiba na tela de forma legível nosso conteúdo. <br></br>
 
@@ -97,7 +97,7 @@ Explicação:
     Linha [11] : imprima **Localização: {localização}**  
 ```
 
-**Exemplo 02:** Backup de configurações em massa  
+### Exemplo 02: Backup de configurações em massa  
 
 Nesse exemplo vamos ler o conteúdo do arquivo dispositivos.csv Depois precisamos identificar o tipo de dispositivo. Feito isso, iremos criar um diretório chamado backups, se não existir, e dentro desse diretório vamos gravar o backup das configurações de cada dispositivo.  Os arquivos de backup será armazenado em arquivos separados por tipo de dispositivo.  
 
@@ -211,7 +211,7 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
     Linha [21] : Esta linha imprime uma mensagem no terminal para informar que o backup de um dispositivo foi salvo com sucesso, incluindo dinamicamente: **nome do dispositivo** e **caminho completo**  
 ```
 
-**Exemplo 03:** Processamento de Logs estruturados  
+### Exemplo 03: Processamento de Logs estruturados  
 
 Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco mais estruturados. Então vamos criar um script que leia esse log armazenado em um arquivo csv e consigo separar o tipo de equipamento e o grau de severidade do log.  
 
