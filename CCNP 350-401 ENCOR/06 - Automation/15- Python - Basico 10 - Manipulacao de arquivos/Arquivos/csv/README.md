@@ -272,7 +272,7 @@ Algumas linhas foram omitidas por questões de clareza e redundância.
 
 - Contagem por dispositivo (opcional)  
 
-**Linha [19] :** cria um dicionário chamado contagem  
-**Linha [20] :** inicia um loop for que percorre cada item da lista logs_filtrados ( Logs filtrados no passo anterior )
-**Linha [21] :** acessa o valor da chave 'dispositivo' no dicionário log atual e o armazena na variável dispositivo.  
-**Linha [22] :** inicia o dicionário contagem como contador. O método get() busca o número atual de logs de um dispositivo e, se não houver ainda, começa com 0. A cada log, ele soma 1.
+    **Linha [19] :** cria um dicionário chamado contagem  
+    **Linha [20] :** inicia um loop for que percorre cada item da lista logs_filtrados ( Logs filtrados no passo anterior )
+    **Linha [21] :** acessa o valor da chave 'dispositivo' no dicionário log atual e o armazena na variável dispositivo.  
+    **Linha [22] :** inicia o dicionário contagem como contador. O método get() busca o número atual de logs de um dispositivo e, se não houver ainda, começa com 0. A cada log, ele soma 1.
