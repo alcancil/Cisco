@@ -261,14 +261,14 @@ Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco
 
 Algumas linhas foram omitidas por questões de clareza e redundância.
 
-Filtro dos logs com nível **CRÍTICO ou ALERTA**
+- Filtro dos logs com nível **CRÍTICO ou ALERTA**
 
 **Linha [08] :** a variável logs_filtrados recebe o valor da lista ( começa com [ )  
 **Linha [09] :** percorra cada item (log) dentro do arquivo logs.csv  
 **Linha [10] :** armazene o valor na variável log se no campo nível conter os valores CRÍTICO ou ALERTA  
 **Linha [11] :** finaliza a lista ( ])  
 
-Contagem por dispositivo (opcional)  
+- Contagem por dispositivo (opcional)  
 
 **Linha [19] :** cria um dicionário chamado contagem  
 **Linha [20] :** inicia um loop for que percorre cada item da lista logs_filtrados ( Logs filtrados no passo anterior )
