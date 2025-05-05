@@ -184,8 +184,8 @@ Podemos notar que o diretório **backups** foi criado. Vamos analisa o conteúdo
     Linha [01] : importando o módulo csv para poder utilizar as funções de arquivos csv  
     Linha [02] : importando o módulo os para poder utilizar as funções relativa a sistemas operacionais  
     Linha [05] : Função que cria diretórios recursivamente (ou seja, pode criar várias pastas de uma vez, como pasta/subpasta).  
-    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **exist_ok=True:**  
-    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se True, evita que o Python lance um erro (FileExistsError) se o diretório já existir.  
+                **exist_ok=True:**  
+                    Se True, evita que o Python lance um erro (FileExistsError) se o diretório já existir.  
     Linha [07] : com o arquivo dispositivos.csv aberto em modo leitura (envie o conteúdo para a variável **arquivo_csv**) faça:  
     Linha [08] : a variável **leitor** recebe o conteúdo da variável arquivo.csv em forma de dicionário.  
     Linha [09] : para cada dispositivo dentro da variável leitor faça:  
