@@ -317,25 +317,56 @@ Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenad
 **Script comparar.py**
 
 ```Python
-import csv
-
-def ler_csv(caminho):
-    dados = {}
-    with open(caminho, newline='') as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            interface = linha['interface']
-            estado = linha['estado']
-            dados[interface] = estado
-    return dados
-
-# Leitura dos arquivos
-antes = ler_csv("portas_antes.csv")
-depois = ler_csv("portas_depois.csv")
-
-# Comparação
-print("🔍 Mudanças detectadas:")
-for interface in antes:
-    if antes[interface] != depois.get(interface):
-        print(f"- {interface}: {antes[interface]} ➡️ {depois.get(interface)}")
+    [01] import csv
+    [02]
+    [03] def ler_csv(caminho):
+    [04]    dados = {}
+    [05]    with open(caminho, newline='') as arquivo:
+    [06]        leitor = csv.DictReader(arquivo)
+    [07]        for linha in leitor:
+    [08]            interface = linha['interface']
+    [09]            estado = linha['estado']
+    [10]            dados[interface] = estado
+    [11]    return dados
+    [12]
+    [13] # Leitura dos arquivos
+    [14] antes = ler_csv("portas_antes.csv")
+    [15] depois = ler_csv("portas_depois.csv")
+    [16]
+    [17] # Comparação
+    [18] print("Mudanças detectadas:")
+    [19] for interface in antes:
+    [20]    if antes[interface] != depois.get(interface):
+    [21]        print(f"- {interface}: {antes[interface]} >>> {depois.get(interface)}")
 ```
+
+**Saída**
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/csv/04$ python3 comparar.py 
+    Mudanças detectadas:
+    - GigabitEthernet0/1: down >>> up
+    alcancil@linux:~/automacoes/arquivos/csv/04$
+```
+
+**Explicação**  
+
+- Criação de um dicionário que irá receber os dados das interfaces contidas nos arquivos csv
+
+```Bash
+    Linha [03] : criando a função ler_csv() que recebe o parâmetro caminho  
+    Linha [04] : cria um dicionário vazio chamado dados para armazenar os pares interface: estado  
+    Linha [05] : com o arquivo caminho adicione newline=''. Obs: newline é utilizado para se evitar problemas no Windows
+    Linha [06] : Usa csv.DictReader para ler o conteúdo do arquivo CSV. Essa função converte automaticamente cada linha do CSV em um dicionário, onde os nomes das colunas viram  chaves (como 'interface' e 'estado').
+    Linha [07] : inicia o loop for que percorre cada linha do arquivo
+    Linha [08] : extrai da linha o valor da coluna interface, que é usado como chave no dicionário dados  
+    Linha [09] : extrai da linha o valor da coluna estado, que será o valor associado à interface no dicionário.
+    Linha [10] : adiciona uma nova entrada no dicionário dados, com a interface como chave e o estado como valor.
+    Linha [11] : retorna o dicionário completo com todas as interfaces e seus respectivos estados.
+```
+
+- Leitura dos arquivos  
+
+
+
+- Comparação
