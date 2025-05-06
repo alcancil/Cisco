@@ -100,7 +100,9 @@ Sim. Se pararmos para verificar bem de perto, podemos notar que ele é praticame
     }
 ```
 
-- **Diferença:** JSON é um formato de texto padronizado, enquanto dicionários são estruturas de dados nativas do Python.
+- **Diferença:** JSON é um formato de texto padronizado, enquanto dicionários são estruturas de dados nativas do Python.  
+
+Como podemos notar, os dois arquivos tem a estrutura de **chave: valor** . Isso em python é um dicionário.
 
 
 
