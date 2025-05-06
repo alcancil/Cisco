@@ -4,23 +4,12 @@
 
 Arquivos **.json** são amplamente utilizados em automação de redes para:
 
-1. **Inventário de dispositivos**  
-   - Armazenar atributos complexos como VLANs, interfaces e políticas de QoS.
-
-2. **Backup de configurações**  
-   - Salvar configurações com metadados (timestamp, usuário que fez o backup).
-
-3. **Processamento de logs estruturados**  
-   - Registrar eventos com múltiplos níveis de detalhe (ex.: interface, severidade, timestamp).
-
-4. **Comparação de configurações**  
-   - Identificar diferenças entre versões de configs (antes/depois de mudanças).
-
-5. **Integração com APIs**  
-   - 99% das APIs modernas (Cisco DNA Center, Meraki, ACI) usam JSON.
-
-6. **Troca de dados entre sistemas**  
-   - Comunicação entre Ansible/Nornir e dispositivos de rede.
+1. **Inventário de dispositivos**: armazenar atributos complexos como VLANs, interfaces e políticas de QoS.  
+2. **Backup de configurações**: salvar configurações com metadados (timestamp, usuário que fez o backup).  
+3. **Processamento de logs estruturados**: registrar eventos com múltiplos níveis de detalhe (ex.: interface, severidade, timestamp).  
+4. **Comparação de configurações**: identificar diferenças entre versões de configs (antes/depois de mudanças).  
+5. **Integração com APIs**: 99% das APIs modernas (Cisco DNA Center, Meraki, ACI) usam JSON.  
+6. **Troca de dados entre sistemas**: comunicação entre Ansible/Nornir e dispositivos de rede.  
 
 ### Quando Usar JSON vs Outros Formatos
 
@@ -36,8 +25,9 @@ Antes de começarmos com os exemplos precisamos entender como é a estrutura de 
 Com o crescimento da automação de redes, os fabricantes precisaram criar formas padronizadas para sistemas e dispositivos se comunicarem. Surgiram então dois formatos principais:
 
 1. **XML** (Extensible Markup Language):  
-   - Primeiro formato amplamente adotado para APIs.  
-   - Problema: Verbosidade excessiva e difícil leitura humana.  
+- Primeiro formato amplamente adotado para APIs.  
+- Problema: Verbosidade excessiva e difícil leitura humana.  
+
    ```xml
    <device>
        <hostname>R1</hostname>
@@ -45,7 +35,7 @@ Com o crescimento da automação de redes, os fabricantes precisaram criar forma
    </device>
    ```
 
-    JSON (JavaScript Object Notation):
+    **JSON (JavaScript Object Notation):**
 
         Desenvolvido como parte do JavaScript, mas tornou-se independente.
 
