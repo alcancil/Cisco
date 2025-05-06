@@ -43,13 +43,13 @@ Desenvolvido como parte do JavaScript, mas tornou-se independente.
 - Estrutura leve e fácil de ler/escrever.  
 - Mapeamento direto para estruturas de dados em linguagens modernas.  
 
-       ```json
+```json
 
         {
             "hostname": "R1",
             "ip": "10.0.0.1"
         }
-        ```
+```
 
 Por que JSON domina na automação de redes?
 
