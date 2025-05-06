@@ -2,23 +2,34 @@
 
 ## 03 Manipulação de arquivos - .json
 
-Arquivos **.csv** são utilizados em diversos casos como:  
+Arquivos **.json** são amplamente utilizados em automação de redes para:
 
-1. Inventário de dispositivos de rede 
-2. Backup de configurações em massa  
-3. Processamento de Logs estruturados  
-4. Comparação de dados (Antes/Depois)
-5. Integração com ferramentas de automação  
-6. Exportação de dados de APIs  
-  
+1. **Inventário de dispositivos**  
+   - Armazenar atributos complexos como VLANs, interfaces e políticas de QoS.
 
-Quando Escolher JSON 
+2. **Backup de configurações**  
+   - Salvar configurações com metadados (timestamp, usuário que fez o backup).
 
-| Quando escolher formato JSON                                                     | Quando evitar formato JSON                                           |
-|----------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| Estruturas de dados aninhadas (ex.: configurações hierárquicas de dispositivos). | Dados tabulares simples (ex.: lista de IPs → CSV é mais eficiente).  |
-| Integração com APIs REST (a maioria das APIs de redes usam JSON).                | Arquivos muito grandes (JSON consome mais memória que CSV/binário).  |
-| Troca de dados entre sistemas (mais legível que XML/binário).                    | Configurações locais de baixa complexidade (arquivos .ini ou .env).  |
+3. **Processamento de logs estruturados**  
+   - Registrar eventos com múltiplos níveis de detalhe (ex.: interface, severidade, timestamp).
+
+4. **Comparação de configurações**  
+   - Identificar diferenças entre versões de configs (antes/depois de mudanças).
+
+5. **Integração com APIs**  
+   - 99% das APIs modernas (Cisco DNA Center, Meraki, ACI) usam JSON.
+
+6. **Troca de dados entre sistemas**  
+   - Comunicação entre Ansible/Nornir e dispositivos de rede.
+
+### Quando Usar JSON vs Outros Formatos
+
+| ✅ **Escolha JSON quando...**                | ❌ **Evite JSON quando...**               |
+|---------------------------------------------|------------------------------------------|
+| Dados têm estrutura hierárquica/aninhada    | Dados são tabulares simples (ex.: CSV)   |
+| Necessidade de interoperabilidade com APIs  | Arquivos muito grandes (>100MB)          |
+| Legibilidade humana é importante           | Configurações ultra-simples (ex.: .env) |
+| Metadados complexos (ex.: timestamp, tags) | Performance crítica (use binário/protobuf) |
 
 
 
