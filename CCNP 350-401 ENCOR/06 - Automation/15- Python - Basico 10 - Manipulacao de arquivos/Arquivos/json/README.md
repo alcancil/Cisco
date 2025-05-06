@@ -53,15 +53,12 @@ Desenvolvido como parte do JavaScript, mas tornou-se independente.
 
 Por que JSON domina na automação de redes?
 
-    Legibilidade: Facilita debugging e manutenção.
-
-    Interoperabilidade: Suporte nativo em Python, JavaScript, APIs Cisco/Meraki/etc.
-
-    Eficiência: Menos overhead que XML (em tamanho e processamento).
-
-    Hierarquia: Representa naturalmente configurações complexas de redes:
+- **Legibilidade:** Facilita debugging e manutenção.
+- **Interoperabilidade:** Suporte nativo em Python, JavaScript, APIs Cisco/Meraki/etc.
+- **Eficiência:** Menos overhead que XML (em tamanho e processamento).
+- **Hierarquia:** Representa naturalmente configurações complexas de redes:
     
-    ```json
+```json
     {
         "device": {
             "hostname": "switch01",
@@ -71,7 +68,7 @@ Por que JSON domina na automação de redes?
             ]
         }
     }
-    ```
+```
 
 
 
