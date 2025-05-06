@@ -35,15 +35,14 @@ Com o crescimento da automação de redes, os fabricantes precisaram criar forma
    </device>
    ```
 
-    **JSON (JavaScript Object Notation):**
+**JSON (JavaScript Object Notation):**
 
-        Desenvolvido como parte do JavaScript, mas tornou-se independente.
+Desenvolvido como parte do JavaScript, mas tornou-se independente.
 
-        Vantagens:
+**Vantagens:**
+- Estrutura leve e fácil de ler/escrever.  
+- Mapeamento direto para estruturas de dados em linguagens modernas.  
 
-            Estrutura leve e fácil de ler/escrever.
-
-            Mapeamento direto para estruturas de dados em linguagens modernas.
        ```json
 
         {
