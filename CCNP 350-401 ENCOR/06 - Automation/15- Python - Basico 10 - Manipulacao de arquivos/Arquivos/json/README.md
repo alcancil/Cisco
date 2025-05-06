@@ -70,9 +70,23 @@ Por que JSON domina na automação de redes?
     }
 ```
 
+Certo, mas vamos analisar de perto a estrutura do arquivos json. Ele  não lembra algo que já vimos ?  
+Sim. Se pararmos para verificar bem de perto, podemos notar que ele é praticamente um dicionário aninhado de python. Ele também aceita uma lista dentro dentro dele.  
 
+**Exemplo .json**  
 
+```json
+    {
+        "hostname": "R1",
+        "ip": "10.0.0.1",
+        "interfaces": ["Gig0/1", "Gig0/2"],
+        "ativo": true
+    }
+```
 
+- **Chaves ({}):** Delimitam objetos (equivalente a dicionários em Python).  
+- **Colchetes ([]):** Delimitam arrays (listas).  
+- **Tipos de dados suportados:** Strings (" "), números, booleanos (true/false), null, objetos e arrays.  
 
 
 
