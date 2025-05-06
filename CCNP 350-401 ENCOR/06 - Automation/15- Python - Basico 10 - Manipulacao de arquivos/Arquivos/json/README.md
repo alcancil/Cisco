@@ -24,16 +24,65 @@ Arquivos **.json** são amplamente utilizados em automação de redes para:
 
 ### Quando Usar JSON vs Outros Formatos
 
-| ✅ **Escolha JSON quando...**                | ❌ **Evite JSON quando...**               |
-|---------------------------------------------|------------------------------------------|
-| Dados têm estrutura hierárquica/aninhada    | Dados são tabulares simples (ex.: CSV)   |
-| Necessidade de interoperabilidade com APIs  | Arquivos muito grandes (>100MB)          |
-| Legibilidade humana é importante           | Configurações ultra-simples (ex.: .env) |
-| Metadados complexos (ex.: timestamp, tags) | Performance crítica (use binário/protobuf) |
+| **Escolha JSON quando...**                  |   **Evite JSON quando...**                 |
+|---------------------------------------------|--------------------------------------------|
+| Dados têm estrutura hierárquica/aninhada    | Dados são tabulares simples (ex.: CSV)     |
+| Necessidade de interoperabilidade com APIs  | Arquivos muito grandes (>100MB)            |
+| Legibilidade humana é importante            | Configurações ultra-simples (ex.: .env)    |
+| Metadados complexos (ex.: timestamp, tags)  | Performance crítica (use binário/protobuf) |
 
+Antes de começarmos com os exemplos precisamos entender como é a estrutura de um arquivo .json e porquê ele é bastante utilizado hoje em dia. Com o aumento da automação no mercado, as empresas passaram a ter que liberar uma maneira dos usuários / técnicos poderem interagir com seus produtos. Como exemplo temos os sites, redes sociais e ai também temos os equipamentos de rede. Mas por questões de segurança, os fabricantes começaram a disponibilizar parte do seu conteúdo para os usuários poderem interagir. <br></br>
+ 
+Com o crescimento da automação de redes, os fabricantes precisaram criar formas padronizadas para sistemas e dispositivos se comunicarem. Surgiram então dois formatos principais:
 
+1. **XML** (Extensible Markup Language):  
+   - Primeiro formato amplamente adotado para APIs.  
+   - Problema: Verbosidade excessiva e difícil leitura humana.  
+   ```xml
+   <device>
+       <hostname>R1</hostname>
+       <ip>10.0.0.1</ip>
+   </device>
+   ```
 
+    JSON (JavaScript Object Notation):
 
+        Desenvolvido como parte do JavaScript, mas tornou-se independente.
+
+        Vantagens:
+
+            Estrutura leve e fácil de ler/escrever.
+
+            Mapeamento direto para estruturas de dados em linguagens modernas.
+       ```json
+
+        {
+            "hostname": "R1",
+            "ip": "10.0.0.1"
+        }
+        ```
+
+Por que JSON domina na automação de redes?
+
+    Legibilidade: Facilita debugging e manutenção.
+
+    Interoperabilidade: Suporte nativo em Python, JavaScript, APIs Cisco/Meraki/etc.
+
+    Eficiência: Menos overhead que XML (em tamanho e processamento).
+
+    Hierarquia: Representa naturalmente configurações complexas de redes:
+    
+    ```json
+    {
+        "device": {
+            "hostname": "switch01",
+            "vlans": [
+                {"id": 10, "name": "VLAN_GESTAO"},
+                {"id": 20, "name": "VLAN_VOIP"}
+            ]
+        }
+    }
+    ```
 
 
 
