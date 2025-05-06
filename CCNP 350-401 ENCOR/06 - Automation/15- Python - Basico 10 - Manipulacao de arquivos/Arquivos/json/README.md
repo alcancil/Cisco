@@ -79,14 +79,30 @@ Sim. Se pararmos para verificar bem de perto, podemos notar que ele é praticame
     {
         "hostname": "R1",
         "ip": "10.0.0.1",
-        "interfaces": ["Gig0/1", "Gig0/2"],
-        "ativo": true
+        "interfaces": ["Gig0/1", "Gig0/2"], # [ ] é uma lista
+        "ativo": true # Note o 'T' minusculo em json
     }
 ```
 
 - **Chaves ({}):** Delimitam objetos (equivalente a dicionários em Python).  
 - **Colchetes ([]):** Delimitam arrays (listas).  
 - **Tipos de dados suportados:** Strings (" "), números, booleanos (true/false), null, objetos e arrays.  
+
+**Exemplo dicionário python**
+
+```Python
+    # Equivalente em Python:
+    dispositivo = {
+        "hostname": "R1",
+        "ip": "10.0.0.1",
+        "interfaces": ["Gig0/1", "Gig0/2"], # [ ] é uma lista
+        "ativo": True  # Note o 'T' maiúsculo em Python
+    }
+```
+
+- **Diferença:** JSON é um formato de texto padronizado, enquanto dicionários são estruturas de dados nativas do Python.
+
+
 
 
 
