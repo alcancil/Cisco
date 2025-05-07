@@ -237,3 +237,31 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
     [34]
     [35] print(f"Backup salvo em: {nome_arquivo}")
 ```
+
+**Saída**  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/json/02$ python3 baclup_config.py 
+    Backup salvo em: backup_R1_20250507.json
+    alcancil@linux:~/automacoes/arquivos/json/02$ cat backup_R1_20250507.json 
+    {
+        "dispositivo": {
+            "hostname": "R1",
+            "ip": "192.168.1.1",
+            "tipo": "Cisco IOS"
+        },
+        "backup": {
+            "config": [
+               "hostname R1",
+                "interface GigabitEthernet0/1",
+                " ip address 192.168.1.1 255.255.255.0",
+                "!",
+                "vlan 10",
+                " name VLAN_GESTAO"
+            ],
+            "timestamp": "2025-05-07 18:12:42",
+            "usuario": "alcancil",
+            "versao_script": "1.0"
+        }
+    }alcancil@linux:~/automacoes/arquivos/json/02$
+```
