@@ -89,4 +89,88 @@ Sim. Se pararmos para verificar bem de perto, podemos notar que ele é praticame
 
 - **Diferença:** JSON é um formato de texto padronizado, enquanto dicionários são estruturas de dados nativas do Python.  
 
-Como podemos notar, os dois arquivos tem a estrutura de **chave: valor** . Isso em python é um dicionário.
+Como podemos notar, os dois arquivos tem a estrutura de **chave: valor** . Isso em python é um dicionário.  
+
+
+### Exemplo01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)
+
+Certo, primeiro vamos criar um arquivo chamado **inventario.json** com o conteúdo:  
+
+```json
+    {
+        "dispositivos": [
+            {
+                "hostname": "SW1",
+                "ip": "192.168.1.1",
+                "modelo": "Cisco Catalyst 2960",
+                "ios": "16.12.4",
+                "interfaces": ["Gig0/1", "Gig0/2"],
+                "vlans": [10, 20, 30]
+            },
+            {
+                "hostname": "R1",  
+                "ip": "10.0.0.1",
+                "modelo": "Cisco ISR 4331",
+                "ios": "17.03.02",
+                "interfaces": ["Gig0/0", "Gig0/1"],
+                "vlans": [10, 40]
+            }
+        ]
+    }
+```
+
+Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipamento Cisco.  
+
+**Script ler_invetario.py**  
+
+```Python
+    [01] import json
+    [02]
+    [03] # Lê o arquivo JSON
+    [04] with open('inventario.json', 'r') as arquivo:
+    [05]    inventario = json.load(arquivo)
+    [06]
+    [07] # Processa os dispositivos
+    [08] print("=== INVENTÁRIO DE REDE ===")
+    [09] for dispositivo in inventario['dispositivos']:
+    [10]    print(f"\nDispositivo: {dispositivo['hostname']}")
+    [11]    print(f"IP: {dispositivo['ip']}")
+    [12]    print(f"Modelo: {dispositivo['modelo']}")
+    [13]    print(f"IOS: {dispositivo['ios']}")
+    [14]    print(f"Interfaces: {', '.join(dispositivo['interfaces'])}")
+    [15]    print(f"VLANs: {dispositivo['vlans']}")
+```
+
+**Saída**
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/json/01$ ls -la
+    total 16
+    drwxrwxr-x 2 alcancil alcancil 4096 mai  7 16:53 .
+    drwxrwxr-x 3 alcancil alcancil 4096 mai  7 16:48 ..
+    -rw-r--r-- 1 root     root      503 mai  7 16:50 inventario.json
+    -rw-r--r-- 1 root     root      516 mai  7 16:53 ler_inventario.py
+    alcancil@linux:~/automacoes/arquivos/json/01$ python3 ler_inventario.py 
+    === INVENTÁRIO DE REDE ===
+
+    Dispositivo: SW1
+    IP: 192.168.1.1
+    Modelo: Cisco Catalyst 2960
+    IOS: 16.12.4
+    Interfaces: Gig0/1, Gig0/2
+    VLANs: [10, 20, 30]
+
+    Dispositivo: R1
+    IP: 10.0.0.1
+    Modelo: Cisco ISR 4331
+    IOS: 17.03.02
+    Interfaces: Gig0/0, Gig0/1
+    VLANs: [10, 40]
+    alcancil@linux:~/automacoes/arquivos/json/01$
+```
+
+**Explicação**  
+
+```Bash
+    Linha[01] :  
+```
