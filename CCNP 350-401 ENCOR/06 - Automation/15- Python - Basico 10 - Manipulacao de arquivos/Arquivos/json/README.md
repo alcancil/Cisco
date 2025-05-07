@@ -265,3 +265,47 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
         }
     }alcancil@linux:~/automacoes/arquivos/json/02$
 ```
+
+**Explicação**  
+
+**Linhas 1-3:** Importação de Bibliotecas
+
+```Bash
+    Linha[01] : import json                     # Manipulação de arquivos JSON
+    Linha[02] : from datetime import datetime   # Operações com data/hora (para timestamp)
+    Linha[03] : import getpass                  # Captura o usuário do sistema
+```  
+
+**Linhas 6-13:** Configuração do Dispositivo  
+
+```Bash
+    Linha[06] : configuracao = """              # String multilinha
+    Linha[07] : hostname R1                     # Configuração Cisco típica
+    Linha[08] : interface GigabitEthernet0/1    # Exemplo de interface
+    Linha[09] : ip address 192.168.1.1 255.255.255.0  # Configuração de IP
+    Linha[10] : !                               # Delimitador Cisco
+    Linha[11] : vlan 10                         # Configuração de VLAN
+    Linha[12] : name VLAN_GESTAO                # Nomeando VLAN
+    Linha[13] : """                             # Fecha String multilinha
+```
+
+- Simula a saída de um comando show running-config.  
+
+**Linhas 16-28:** Estrutura de Metadados  
+
+```Bash
+    Linha[16] : backup_data = {                 # Dicionário principal
+    Linha[17] :   "dispositivo": {             # Seção de identificação
+    Linha[18] :        "hostname": "R1",        # Hostname do dispositivo
+    Linha[19] :        "ip": "192.168.1.1",     # IP de gerenciamento
+    Linha[20] :        "tipo": "Cisco IOS"      # Plataforma do dispositivo
+    Linha[21] :   },
+    Linha[22] :   "backup": {                  # Seção de metadados
+    Linha[23] :       "config": configuracao.strip().split('\n'),  # Divide a configuração em linhas
+    Linha[24] :       "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Data/hora formatada
+    Linha[25] :       "usuario": getpass.getuser(),  # Usuário que executou o backup
+    Linha[26] :       "versao_script": "1.0"   # Controle de versão
+    Linha[27] :   }
+    Linha[28] : }  
+```
+
