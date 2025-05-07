@@ -178,5 +178,8 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
                 O conteúdo do arquivo é associado à variável arquivo. 
     Linha[05] : Faz o parsing do conteúdo do arquivo JSON.
                 json.load(): Converte o texto JSON em uma estrutura de dados Python (normalmente dicionários e listas).
-                O resultado é armazenado na variável inventario.
+                O resultado é armazenado na variável inventario.  
+    Linha[08] : Imprime um cabeçalho para organizar a saída no terminal.  
+    Linha[09] : Inicia um loop que itera sobre cada item da lista dispositivos contida no dicionário inventario.
+                inventario['dispositivos']: Acessa a lista de dispositivos armazenada no JSON.
 ```
