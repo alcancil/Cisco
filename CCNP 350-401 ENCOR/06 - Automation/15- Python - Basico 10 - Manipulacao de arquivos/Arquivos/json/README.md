@@ -181,5 +181,16 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
                 O resultado é armazenado na variável inventario.  
     Linha[08] : Imprime um cabeçalho para organizar a saída no terminal.  
     Linha[09] : Inicia um loop que itera sobre cada item da lista dispositivos contida no dicionário inventario.
-                inventario['dispositivos']: Acessa a lista de dispositivos armazenada no JSON.
-```
+                inventario['dispositivos']: Acessa a lista de dispositivos armazenada no JSON.  
+    Linha[10] : Imprime o hostname do dispositivo atual.
+                \n: Insere uma linha vazia antes de cada dispositivo para melhorar a legibilidade.
+                dispositivo['hostname']: Acessa o valor da chave hostname no dicionário do dispositivo atual. 
+    Linha[11] : Imprime o endereço IP do dispositivo.   
+    Linha[12] : Imprime o modelo do equipamento (ex: Cisco Catalyst 2960).   
+    Linha[13] : Imprime a versão do IOS/XE do dispositivo.   
+    Linha[14] : Converte a lista de interfaces em uma string formatada.
+                ', '.join(): Une os elementos da lista com vírgula e espaço (ex: "Gig0/1, Gig0/2").
+                dispositivo['interfaces']: Acessa a lista de interfaces do dispositivo.
+    Linha[15] : Imprime a lista de VLANs do dispositivo.   
+```  
+
