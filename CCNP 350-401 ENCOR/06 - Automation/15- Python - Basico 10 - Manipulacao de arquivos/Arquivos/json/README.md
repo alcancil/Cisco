@@ -279,14 +279,14 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
 **Linhas 6-13:** Configuração do Dispositivo  
 
 ```Bash
-    Linha[06] : configuracao = """              # String multilinha
-    Linha[07] : hostname R1                     # Configuração Cisco típica
-    Linha[08] : interface GigabitEthernet0/1    # Exemplo de interface
+    Linha[06] : configuracao = """                    # String multilinha
+    Linha[07] : hostname R1                           # Configuração Cisco típica
+    Linha[08] : interface GigabitEthernet0/1          # Exemplo de interface
     Linha[09] : ip address 192.168.1.1 255.255.255.0  # Configuração de IP
-    Linha[10] : !                               # Delimitador Cisco
-    Linha[11] : vlan 10                         # Configuração de VLAN
-    Linha[12] : name VLAN_GESTAO                # Nomeando VLAN
-    Linha[13] : """                             # Fecha String multilinha
+    Linha[10] : !                                     # Delimitador Cisco
+    Linha[11] : vlan 10                               # Configuração de VLAN
+    Linha[12] : name VLAN_GESTAO                      # Nomeando VLAN
+    Linha[13] : """                                   # Fecha String multilinha
 ```
 
 - Simula a saída de um comando show running-config.  
@@ -294,18 +294,22 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
 **Linhas 16-28:** Estrutura de Metadados  
 
 ```Bash
-    Linha[16] : backup_data = {                 # Dicionário principal
-    Linha[17] :   "dispositivo": {             # Seção de identificação
-    Linha[18] :        "hostname": "R1",        # Hostname do dispositivo
-    Linha[19] :        "ip": "192.168.1.1",     # IP de gerenciamento
-    Linha[20] :        "tipo": "Cisco IOS"      # Plataforma do dispositivo
-    Linha[21] :   },
-    Linha[22] :   "backup": {                  # Seção de metadados
-    Linha[23] :       "config": configuracao.strip().split('\n'),  # Divide a configuração em linhas
+    Linha[16] : backup_data = {                                                   # Dicionário principal
+    Linha[17] :   "dispositivo": {                                                # Seção de identificação
+    Linha[18] :        "hostname": "R1",                                          # Hostname do dispositivo
+    Linha[19] :        "ip": "192.168.1.1",                                       # IP de gerenciamento
+    Linha[20] :        "tipo": "Cisco IOS"                                        # Plataforma do dispositivo
+    Linha[21] :   },                                                              # Fim do dicionário dispositivo 
+    Linha[22] :   "backup": {                                                     # Seção de metadados
+    Linha[23] :       "config": configuracao.strip().split('\n'),                 # Divide a configuração em linhas
     Linha[24] :       "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Data/hora formatada
-    Linha[25] :       "usuario": getpass.getuser(),  # Usuário que executou o backup
-    Linha[26] :       "versao_script": "1.0"   # Controle de versão
-    Linha[27] :   }
-    Linha[28] : }  
+    Linha[25] :       "usuario": getpass.getuser(),                               # Usuário que executou o backup
+    Linha[26] :       "versao_script": "1.0"                                      # Controle de versão
+    Linha[27] :   }                                                               # Fim do dicionário backup
+    Linha[28] : }                                                                 # Fim do dicionário principal
 ```
+**Componentes chave:**
 
+        strip().split('\n') (Linha 23): Converte a configuração em lista removendo espaços extras
+        datetime.now() (Linha 24):      Boa prática para registro de mudanças (exigido em ambientes enterprise)
+        getpass.getuser() (Linha 25):   Auditoria de quem executou o backup
