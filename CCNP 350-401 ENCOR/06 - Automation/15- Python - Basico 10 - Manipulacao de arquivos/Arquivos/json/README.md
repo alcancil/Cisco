@@ -172,5 +172,11 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
 **Explicação**  
 
 ```Bash
-    Linha[01] :  
+    Linha[01] : Importa o módulo json do Python, que contém todas as funções necessárias para trabalhar com arquivos JSON. 
+    Linha[04] : Abre o arquivo inventario.json em modo leitura ('r').
+                with: Garante que o arquivo será fechado automaticamente após o uso (gerenciamento de recursos).
+                O conteúdo do arquivo é associado à variável arquivo. 
+    Linha[05] : Faz o parsing do conteúdo do arquivo JSON.
+                json.load(): Converte o texto JSON em uma estrutura de dados Python (normalmente dicionários e listas).
+                O resultado é armazenado na variável inventario.
 ```
