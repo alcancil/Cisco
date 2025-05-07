@@ -92,7 +92,7 @@ Sim. Se pararmos para verificar bem de perto, podemos notar que ele é praticame
 Como podemos notar, os dois arquivos tem a estrutura de **chave: valor** . Isso em python é um dicionário.  
 
 
-### Exemplo01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)
+### Exemplo 01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)
 
 Certo, primeiro vamos criar um arquivo chamado **inventario.json** com o conteúdo:  
 
@@ -195,3 +195,45 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
 ```  
 
 **OBS:** aqui eu citei o conceito de **Parsing**. Mas por hora vou falar que **Parsing** é o processo de ler uma string JSON e convertê-la em uma estrutura de dados nativa da linguagem (no Python, um dicionário ou lista). Falaremos mais sobre o tema em um novo tópico.  
+
+### Exemplo 02: Backup de Configurações com Metadados
+
+**Script backup_config.py**
+
+```Python
+    [01] import json
+    [02] from datetime import datetime
+    [03] import getpass
+    [04]
+    [05] # 1. Dados do dispositivo e configuração
+    [06] configuracao = """
+    [07] hostname R1
+    [08] interface GigabitEthernet0/1
+    [09] ip address 192.168.1.1 255.255.255.0
+    [10] !
+    [11] vlan 10
+    [12] name VLAN_GESTAO
+    [13] """
+    [14]
+    [15] # 2. Metadados do backup
+    [16] backup_data = {
+    [17]    "dispositivo": {
+    [18]        "hostname": "R1",
+    [19]        "ip": "192.168.1.1",
+    [20]        "tipo": "Cisco IOS"
+    [21]    },
+    [22]    "backup": {
+    [23]        "config": configuracao.strip().split('\n'),  # Convertendo para lista
+    [24]        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    [25]        "usuario": getpass.getuser(),  # Pega o usuário atual do Linux
+    [26]        "versao_script": "1.0"
+    [27]    }
+    [28] }
+    [29]
+    [30] # 3. Salvar em arquivo JSON
+    [31] nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"
+    [32] with open(nome_arquivo, 'w') as f:
+    [33]    json.dump(backup_data, f, indent=4)  # indent=4 para formatação legível
+    [34]
+    [35] print(f"Backup salvo em: {nome_arquivo}")
+```
