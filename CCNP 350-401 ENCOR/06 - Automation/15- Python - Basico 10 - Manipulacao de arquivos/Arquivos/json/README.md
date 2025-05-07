@@ -308,8 +308,23 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
     Linha[27] :   }                                                               # Fim do dicionário backup
     Linha[28] : }                                                                 # Fim do dicionário principal
 ```
-**Componentes chave:**
+**Pontos chave:**
 
         strip().split('\n') (Linha 23): Converte a configuração em lista removendo espaços extras
         datetime.now() (Linha 24):      Boa prática para registro de mudanças (exigido em ambientes enterprise)
-        getpass.getuser() (Linha 25):   Auditoria de quem executou o backup
+        getpass.getuser() (Linha 25):   Auditoria de quem executou o backup  
+
+**Linhas 31-35:** Persistência do Backup  
+
+```Bash
+    Linha[31] : nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"  # f-string Formato do nome: backup_<hostname>_<data>.json
+    Linha[32] : with open(nome_arquivo, 'w') as f:                                                                          # Cria/sobrescreve arquivo
+    Linha[33] :   json.dump(backup_data, f, indent=4)                                                                       # Escreve com formatação
+    Linha[35] : print(f"Backup salvo em: {nome_arquivo}")                                                                   # Feedback para o usuário
+```
+
+**Pontos chave:**  
+
+    Nome dinâmico do arquivo (Linha 31): Padrão backup_R1_20240515.json
+    indent=4 (Linha 33): Formatação legível para humanos (útil para debugging)
+    Gerenciamento seguro de arquivos com with (Linha 32)
