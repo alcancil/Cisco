@@ -194,3 +194,4 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
     Linha[15] : Imprime a lista de VLANs do dispositivo.   
 ```  
 
+**OBS:** aqui eu citei o conceito de **Parsing**. Mas por hora vou falar que **Parsing** é o processo de ler uma string JSON e convertê-la em uma estrutura de dados nativa da linguagem (no Python, um dicionário ou lista). Falaremos mais sobre o tema em um novo tópico.  
