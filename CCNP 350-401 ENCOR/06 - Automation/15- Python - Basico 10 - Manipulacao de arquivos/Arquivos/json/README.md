@@ -474,7 +474,9 @@ alcancil@linux:~/automacoes/arquivos/json/03$
     [18]            print(f"    - {chave.replace('_', ' ').title()}: {valor}")  # Formatação automática (ex: "acao" → "Acao")
 ```
    
-    Advanced Technique:
+ **Pontos Chave :**
+
+    Técnica avançada:
 
         Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos  
                  
@@ -501,18 +503,8 @@ alcancil@linux:~/automacoes/arquivos/json/03$
     [25] print(f"Eventos críticos: {criticos}")                                        # Exemplo: 1
 ```
 
-    CCNP Troubleshooting Skills:
+**Pontos Chave**
 
-        sum() com generator expression: Técnica pythonica para contagem
+        sum() com generator expression: Técnica python para contagem
 
         Estatísticas similares às geradas por show logging summary em IOS-XE
-
-Por Que Isso é Importante para o CCNP?
-
-    Parseamento de Logs: Habilidade essencial para automação (teste 350-401)
-
-    Filtragem Inteligente: Similar a comandos Cisco avançados
-
-    Processamento Dinâmico: Prepara para trabalhar com diferentes tipos de eventos
-
-    Estatísticas: Base para monitoramento proativo (ex: limite de eventos críticos)
