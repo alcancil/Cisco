@@ -476,7 +476,8 @@ alcancil@linux:~/automacoes/arquivos/json/03$
    
     Advanced Technique:
 
-        Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos
+        Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos  
+                 OBS: hardcoding: em desenvolvimento de software, "hard code" (ou "codificação rígida") refere-se à prática de inserir dados diretamente no código-fonte do programa, em vez de obtê-los de fontes externas ou gerá-los em tempo de execução. Isso significa que se precisar alterar esses dados, é necessário modificar o código e recompilar o programa
 
         replace('_', ' '): Converte snake_case para texto legível
 
