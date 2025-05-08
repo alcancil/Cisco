@@ -429,3 +429,81 @@ Total de eventos: 3
 Eventos críticos: 1
 alcancil@linux:~/automacoes/arquivos/json/03$ 
 ```
+
+**Explicação**
+
+**Linhas 1-2:** Importação de Bibliotecas
+
+```Python
+    [01] import json                      # Manipulação de arquivos JSON
+    [02] from datetime import datetime    # Para cálculo de duração de eventos (não usado aqui, mas preparado para expansão)
+```
+   
+**Linhas 5-6:** Carregamento do Arquivo JSON
+
+```Python
+    [05] with open('logs_switch.json', 'r') as f:  # Abre o arquivo no modo leitura
+    [06]    dados = json.load(f)                   # Faz o parsing do JSON para dicionário Python
+```
+
+**Pontos Chave:**
+    
+    O with garante que o arquivo será fechado automaticamente.
+
+**Linhas 9-14:** Cabeçalho e Filtragem de Eventos
+
+```Python
+    [09] print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")   # Cabeçalho personalizado
+    [10] for log in dados['logs']:                                                          # Itera sobre cada entrada de log
+    [11]    if log['severidade'] in ['ALERTA', 'CRITICO']:                                  # Filtra por severidade (equivalente a "show logging | include CRITICAL")
+    [12]        print(f"\n[!] Evento: {log['evento'].upper()}")                             # Formata o nome do evento
+    [13]        print(f"    - Hora: {log['timestamp']}")                                    # Exibe timestamp 
+    [14]        print(f"    - Severidade: {log['severidade']}")                             # Nível de severidade
+```
+
+**Pontos Chave:**
+
+        Filtro por severidade simula comandos Cisco como show logging | include ALERTA
+
+        Timestamp no formato ISO 8601 (padrão para ferramentas Cisco)
+
+**Linhas 17-18:** Processamento Dinâmico de Detalhes
+
+```Python
+    [17]        for chave, valor in log['detalhes'].items():                    # Itera sobre todos os pares chave-valor
+    [18]            print(f"    - {chave.replace('_', ' ').title()}: {valor}")  # Formatação automática (ex: "acao" → "Acao")
+```
+   
+    Advanced Technique:
+
+        Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos
+
+        replace('_', ' '): Converte snake_case para texto legível
+
+        title(): Capitaliza a primeira letra (ex: "interface" → "Interface")
+
+**Linhas 21-25:** Estatísticas (Troubleshooting)
+
+```Python
+    [21] total_eventos = len(dados['logs'])                                            # Conta todos os logs
+    [22] criticos = sum(1 for log in dados['logs'] if log['severidade'] == 'CRITICO')  # Conta eventos críticos
+    [23] print(f"\n=== RESUMO ===")                                                    # Imprime cabeçalho === RESUMO ===
+    [24] print(f"Total de eventos: {total_eventos}")                                   # Exemplo: 3
+    [25] print(f"Eventos críticos: {criticos}")                                        # Exemplo: 1
+```
+
+    CCNP Troubleshooting Skills:
+
+        sum() com generator expression: Técnica pythonica para contagem
+
+        Estatísticas similares às geradas por show logging summary em IOS-XE
+
+Por Que Isso é Importante para o CCNP?
+
+    Parseamento de Logs: Habilidade essencial para automação (teste 350-401)
+
+    Filtragem Inteligente: Similar a comandos Cisco avançados
+
+    Processamento Dinâmico: Prepara para trabalhar com diferentes tipos de eventos
+
+    Estatísticas: Base para monitoramento proativo (ex: limite de eventos críticos)
