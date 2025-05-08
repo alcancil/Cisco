@@ -328,3 +328,104 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
     Nome dinâmico do arquivo (Linha 31): Padrão backup_R1_20240515.json
     indent=4 (Linha 33): Formatação legível para humanos (útil para debugging)
     Gerenciamento seguro de arquivos com with (Linha 32)
+
+## Exemplo 03: Processamento de logs estruturados
+
+Crie o arquivo **logs_switch.json** com o conteúdo:  
+
+```json
+{
+    "dispositivo": "SW1",
+    "tipo": "Cisco Catalyst 2960",
+    "logs": [
+        {
+            "timestamp": "2024-05-15 09:15:23",
+            "severidade": "ALERTA",
+            "evento": "interface_down",
+            "detalhes": {
+                "interface": "GigabitEthernet0/1",
+                "acao": "Enviar ticket para equipe NOC"
+            }
+        },
+        {
+            "timestamp": "2024-05-15 09:20:12",
+            "severidade": "INFO",
+            "evento": "interface_up",
+            "detalhes": {
+                "interface": "GigabitEthernet0/1",
+                "acao": "Registrar no sistema"
+            }
+        },
+        {
+            "timestamp": "2024-05-15 10:05:34",
+            "severidade": "CRITICO",
+            "evento": "cpu_overload",
+            "detalhes": {
+                "utilizacao": "95%",
+                "limite": "80%"
+            }
+        }
+    ]
+}
+```
+
+**Script processar_logs.py**
+
+```Python
+    [01] import json
+    [02] from datetime import datetime
+    [03]
+    [04] # 1. Carregar logs
+    [05] with open('logs_switch.json', 'r') as f:
+    [06]    dados = json.load(f)
+    [07]
+    [08] # 2. Filtrar eventos críticos
+    [09] print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")
+    [10] for log in dados['logs']:
+    [11]    if log['severidade'] in ['ALERTA', 'CRITICO']:  # Filtro CCNP-relevante
+    [12]        print(f"\n[!] Evento: {log['evento'].upper()}")
+    [13]        print(f"    - Hora: {log['timestamp']}")
+    [14]        print(f"    - Severidade: {log['severidade']}")
+    [15]        
+    [16]        # 3. Detalhes específicos (dinâmico para qualquer evento)
+    [17]        for chave, valor in log['detalhes'].items():
+    [18]            print(f"    - {chave.replace('_', ' ').title()}: {valor}")
+    [19]
+    [20] # 4. Estatísticas (útil para troubleshooting)
+    [21] total_eventos = len(dados['logs'])
+    [22] criticos = sum(1 for log in dados['logs'] if log['severidade'] == 'CRITICO')
+    [23] print(f"\n=== RESUMO ===")
+    [24] print(f"Total de eventos: {total_eventos}")
+    [25] print(f"Eventos críticos: {criticos}")
+```
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/arquivos/json/03$ ls -la
+total 12
+drwxrwxr-x 2 alcancil alcancil 4096 mai  8 11:11 .
+drwxrwxr-x 5 alcancil alcancil 4096 mai  8 11:10 ..
+-rw-r--r-- 1 root     root      908 mai  8 11:11 logs_switch.json
+alcancil@linux:~/automacoes/arquivos/json/03$ sudo nano processar_logs.py
+alcancil@linux:~/automacoes/arquivos/json/03$ python3 processar_logs.py 
+
+=== LOGS DO DISPOSITIVO SW1 (Cisco Catalyst 2960) ===
+
+[!] Evento: INTERFACE_DOWN
+    - Hora: 2024-05-15 09:15:23
+    - Severidade: ALERTA
+    - Interface: GigabitEthernet0/1
+    - Acao: Enviar ticket para equipe NOC
+
+[!] Evento: CPU_OVERLOAD
+    - Hora: 2024-05-15 10:05:34
+    - Severidade: CRITICO
+    - Utilizacao: 95%
+    - Limite: 80%
+
+=== RESUMO ===
+Total de eventos: 3
+Eventos críticos: 1
+alcancil@linux:~/automacoes/arquivos/json/03$ 
+```
