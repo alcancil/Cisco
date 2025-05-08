@@ -477,11 +477,19 @@ alcancil@linux:~/automacoes/arquivos/json/03$
     Advanced Technique:
 
         Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos  
-                 OBS: hardcoding: em desenvolvimento de software, "hard code" (ou "codificação rígida") refere-se à prática de inserir dados diretamente no código-fonte do programa, em vez de obtê-los de fontes externas ou gerá-los em tempo de execução. Isso significa que se precisar alterar esses dados, é necessário modificar o código e recompilar o programa
-
+                 
         replace('_', ' '): Converte snake_case para texto legível
 
         title(): Capitaliza a primeira letra (ex: "interface" → "Interface")
+
+
+**OBS:** hardcoding: em desenvolvimento de software, "hard code" (ou "codificação rígida") refere-se à prática de inserir dados diretamente no código-fonte do programa, em vez de obtê-los de fontes externas ou gerá-los em tempo de execução. Isso significa que se precisar alterar esses dados, é necessário modificar o código e recompilar o programa
+
+**OBS2:** Snake case é uma convenção de nomenclatura em programação onde as palavras de um nome (variável, função, etc.) são separadas por um sublinhado ( _ ), e todas as letras são minúsculas. É usado em várias linguagens, principalmente em Python, para melhorar a legibilidade do código. 
+Exemplo:
+snake_case (um nome de variável em snake case)
+funcao_importante (uma função em snake case)
+tabela_de_usuarios (nome de uma tabela em snake case) 
 
 **Linhas 21-25:** Estatísticas (Troubleshooting)
 
