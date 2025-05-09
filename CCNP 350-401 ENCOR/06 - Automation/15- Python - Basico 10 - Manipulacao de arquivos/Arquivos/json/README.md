@@ -507,4 +507,53 @@ alcancil@linux:~/automacoes/arquivos/json/03$
 
         sum() com generator expression: Técnica python para contagem
 
-        Estatísticas similares às geradas por show logging summary em IOS-XE
+        Estatísticas similares às geradas por show logging summary em IOS-XE  
+
+### Exemplo04 : Comparação de configurações  
+
+- Criar Arquivos de Configuração  
+
+Criar o arquivo **config_antes.json** com o conteúdo:  
+
+```json
+{
+    "hostname": "SW1",
+    "interfaces": {
+        "GigabitEthernet0/1": {
+            "status": "up",
+            "vlan": 10,
+            "ip": "192.168.1.1/24"
+        },
+        "GigabitEthernet0/2": {
+            "status": "down",
+            "vlan": 20,
+            "ip": null
+        }
+    },
+    "vlans": [10, 20],
+    "last_change": "2024-05-10 09:00:00"
+}
+```
+
+Criar o arquivo **config_depois.json** com o conteúdo: 
+
+```json
+{
+    "hostname": "SW1",
+    "interfaces": {
+        "GigabitEthernet0/1": {
+            "status": "up",
+            "vlan": 100,  # VLAN alterada
+            "ip": "192.168.1.1/24"
+        },
+        "GigabitEthernet0/2": {
+            "status": "up",  # Status alterado
+            "vlan": 20,
+            "ip": "192.168.2.1/24"  # IP adicionado
+        }
+    },
+    "vlans": [10, 20, 100],  # Nova VLAN
+    "last_change": "2024-05-15 14:30:00"
+}
+```
+
