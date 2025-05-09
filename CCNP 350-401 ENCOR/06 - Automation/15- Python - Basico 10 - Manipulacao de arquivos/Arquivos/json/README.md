@@ -688,4 +688,36 @@ Seção 4: Comparação Estruturada (Análise Específica)
     Linha [33]        for chave in antes['interfaces'][interface]:                                                                              # Itera sobre cada propriedade da interface
     Linha [34]            if antes['interfaces'][interface][chave] != depois['interfaces'][interface][chave]:
     Linha [35]                print(f"[!] Interface {interface}: {chave} alterado de '{antes['interfaces'][interface][chave]}' para '{depois['interfaces'][interface][chave]}'")
-```
+```  
+
+## Resumo do Aprendizado 
+
+1. JSON é o padrão para automação Cisco
+
+    Substitui XML em APIs modernas (DNA Center, Meraki)
+
+    Estrutura ideal para configurações de rede (VLANs, ACLs, interfaces)
+
+2. Mapeamento direto entre JSON e Python
+
+    Objetos JSON → Dicionários Python
+
+    Arrays JSON → Listas Python
+
+    Facilita manipulação de configurações
+
+3. Casos de uso essenciais:
+
+    Backup de configurações com metadados (timestamp, usuário)  
+
+    Comparação de configs (diff textual e análise estruturada)  
+    
+    Processamento de logs com filtros por severidade
+
+4. Técnicas CCNP-relevantes:
+
+    Simular show running-config e diff via Python
+
+    Identificar mudanças em VLANs/interfaces
+
+    Extrair eventos críticos de logs (como show logging | include CRITICAL)
