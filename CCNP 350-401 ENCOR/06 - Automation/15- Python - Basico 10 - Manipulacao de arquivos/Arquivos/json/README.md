@@ -509,7 +509,7 @@ alcancil@linux:~/automacoes/arquivos/json/03$
 
         Estatísticas similares às geradas por show logging summary em IOS-XE  
 
-### Exemplo04 : Comparação de configurações  
+### Exemplo 04 : Comparação de configurações  
 
 - Criar Arquivos de Configuração  
 
@@ -639,4 +639,53 @@ Criar o arquivo **config_depois.json** com o conteúdo:
     [!] Interface GigabitEthernet0/2: status alterado de 'down' para 'up'
     [!] Interface GigabitEthernet0/2: ip alterado de 'None' para '192.168.2.1/24'
     alcancil@linux:~/automacoes/arquivos/json/04$ 
+```  
+
+**Explicação**  
+
+Seção 1: Importação de Bibliotecas
+```Python
+    Linha [01] import json                      # Importa o módulo para trabalhar com JSON
+    Linha [02] from difflib import unified_diff # Importa a função para comparação de diferenças
+```
+
+Seção 2: Carregamento dos Arquivos de Configuração
+
+```Python
+    Linha [04]                                       # 1. Carregar configurações
+    Linha [05] with open('config_antes.json') as f:  # Abre o arquivo de configuração "antes"
+    Linha [06]    antes = json.load(f)               # Carrega o conteúdo JSON para a variável 'antes'
+    Linha [08] with open('config_depois.json') as f: # Abre o arquivo de configuração "depois"
+    Linha [09]    depois = json.load(f)              # Carrega o conteúdo JSON para a variável 'depois'
+```
+
+Seção 3: Comparação Textual (Diff)
+
+```Python
+    Linha [11]                                                                                                        # 2. Comparação textual (simulando 'diff' do Cisco)
+    Linha [12] print("=== DIFF ENTRE CONFIGURAÇÕES ===")
+    Linha [13] config_antes_str = json.dumps(antes, indent=2).splitlines()                                            # Converte JSON para string formatada e divide em linhas
+    Linha [14] config_depois_str = json.dumps(depois, indent=2).splitlines()                                          # Mesmo para a configuração "depois"
+    Linha [16] for line in unified_diff(config_antes_str, config_depois_str, fromfile='ANTES', tofile='DEPOIS', n=2):
+    Linha [17]    print(line)                                                                                         # Imprime cada linha das diferenças no formato unificado
+```
+
+Seção 4: Comparação Estruturada (Análise Específica)
+
+```Python
+    Linha [19] # 3. Comparação estruturada (CCNP-relevante)
+    Linha [20] print("\n=== MUDANÇAS DETECTADAS ===")
+    Linha [22] # 3.1 Comparar VLANs
+    Linha [23] vlan_removidas = set(antes['vlans']) - set(depois['vlans'])                                                                      # VLANs que existiam antes mas não depois
+    Linha [24] vlan_adicionadas = set(depois['vlans']) - set(antes['vlans'])                                                                    # VLANs que existem depois mas não antes
+    Linha [26] if vlan_adicionadas:
+    Linha [27]    print(f"[+] VLANs adicionadas: {vlan_adicionadas}")                                                                           # Mostra VLANs adicionadas
+    Linha [28] if vlan_removidas:
+    Linha [29]    print(f"[-] VLANs removidas: {vlan_removidas}")                                                                               # Mostra VLANs removidas
+    Linha [31] # 3.2 Comparar interfaces
+    Linha [31] for interface in antes['interfaces']:                                                                                            # Itera sobre cada interface da configuração "antes"
+    Linha [32]    if interface in depois['interfaces']:                                                                                         # Verifica se a interface também existe na configuração "depois"
+    Linha [33]        for chave in antes['interfaces'][interface]:                                                                              # Itera sobre cada propriedade da interface
+    Linha [34]            if antes['interfaces'][interface][chave] != depois['interfaces'][interface][chave]:
+    Linha [35]                print(f"[!] Interface {interface}: {chave} alterado de '{antes['interfaces'][interface][chave]}' para '{depois['interfaces'][interface][chave]}'")
 ```
