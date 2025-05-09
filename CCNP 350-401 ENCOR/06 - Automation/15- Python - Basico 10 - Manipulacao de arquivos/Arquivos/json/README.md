@@ -692,6 +692,7 @@ Seção 4: Comparação Estruturada (Análise Específica)
 
 ## Resumo do Aprendizado 
 
+```Bash
 1. JSON é o padrão para automação Cisco
 
     Substitui XML em APIs modernas (DNA Center, Meraki)
@@ -711,7 +712,7 @@ Seção 4: Comparação Estruturada (Análise Específica)
     Backup de configurações com metadados (timestamp, usuário)  
 
     Comparação de configs (diff textual e análise estruturada)  
-    
+
     Processamento de logs com filtros por severidade
 
 4. Técnicas CCNP-relevantes:
@@ -721,3 +722,4 @@ Seção 4: Comparação Estruturada (Análise Específica)
     Identificar mudanças em VLANs/interfaces
 
     Extrair eventos críticos de logs (como show logging | include CRITICAL)
+```
