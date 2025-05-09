@@ -543,17 +543,100 @@ Criar o arquivo **config_depois.json** com o conteúdo:
     "interfaces": {
         "GigabitEthernet0/1": {
             "status": "up",
-            "vlan": 100,  # VLAN alterada
+            "vlan": 100,
             "ip": "192.168.1.1/24"
         },
         "GigabitEthernet0/2": {
-            "status": "up",  # Status alterado
+            "status": "up",
             "vlan": 20,
-            "ip": "192.168.2.1/24"  # IP adicionado
+            "ip": "192.168.2.1/24"
         }
     },
-    "vlans": [10, 20, 100],  # Nova VLAN
+    "vlans": [10, 20, 100],
     "last_change": "2024-05-15 14:30:00"
 }
 ```
 
+**Script comparar_configs.py**
+
+```Python
+    [01] import json
+    [02] from difflib import unified_diff
+    [03]
+    [04] # 1. Carregar configurações
+    [05] with open('config_antes.json') as f:
+    [06]    antes = json.load(f)
+    [07]
+    [08] with open('config_depois.json') as f:
+    [09]    depois = json.load(f)
+    [10]
+    [11] # 2. Comparação textual (simulando 'diff' do Cisco)
+    [12] print("=== DIFF ENTRE CONFIGURAÇÕES ===")
+    [13] config_antes_str = json.dumps(antes, indent=2).splitlines()
+    [14] config_depois_str = json.dumps(depois, indent=2).splitlines()
+    [15]
+    [16] for line in unified_diff(config_antes_str, config_depois_str, fromfile='ANTES', tofile='DEPOIS', n=2):
+    [17]    print(line)
+    [18]
+    [19] # 3. Comparação estruturada (CCNP-relevante)
+    [20] print("\n=== MUDANÇAS DETECTADAS ===")
+    [21]
+    [22] # 3.1 Comparar VLANs
+    [23] vlan_removidas = set(antes['vlans']) - set(depois['vlans'])
+    [24] vlan_adicionadas = set(depois['vlans']) - set(antes['vlans'])
+    [25]
+    [26] if vlan_adicionadas:
+    [27]    print(f"[+] VLANs adicionadas: {vlan_adicionadas}")
+    [28] if vlan_removidas:
+    [29]    print(f"[-] VLANs removidas: {vlan_removidas}")
+    [30]
+    [31] # 3.2 Comparar interfaces
+    [31] for interface in antes['interfaces']:
+    [32]    if interface in depois['interfaces']:
+    [33]        for chave in antes['interfaces'][interface]:
+    [34]            if antes['interfaces'][interface][chave] != depois['interfaces'][interface][chave]:
+    [35]                print(f"[!] Interface {interface}: {chave} alterado de '{antes['interfaces'][interface][chave]}' para '{depois['interfaces'][interface][chave]}'")
+```
+
+**Saída:**  
+
+```Bash
+    alcancil@linux:~/automacoes/arquivos/json/04$ python3 comparar_configs.py 
+    === DIFF ENTRE CONFIGURAÇÕES ===
+    --- ANTES
+
+    +++ DEPOIS
+
+    @@ -4,17 +4,18 @@
+
+         "GigabitEthernet0/1": {
+           "status": "up",
+    -      "vlan": 10,
+    +      "vlan": 100,
+           "ip": "192.168.1.1/24"
+         },
+         "GigabitEthernet0/2": {
+    -      "status": "down",
+    +      "status": "up",
+           "vlan": 20,
+    -      "ip": null
+    +      "ip": "192.168.2.1/24"
+         }
+       },
+       "vlans": [
+         10,
+    -    20
+    +    20,
+    +    100
+       ],
+    -  "last_change": "2024-05-10 09:00:00"
+    +  "last_change": "2024-05-15 14:30:00"
+     }
+
+    === MUDANÇAS DETECTADAS ===
+    [+] VLANs adicionadas: {100}
+    [!] Interface GigabitEthernet0/1: vlan alterado de '10' para '100'
+    [!] Interface GigabitEthernet0/2: status alterado de 'down' para 'up'
+    [!] Interface GigabitEthernet0/2: ip alterado de 'None' para '192.168.2.1/24'
+    alcancil@linux:~/automacoes/arquivos/json/04$ 
+```
