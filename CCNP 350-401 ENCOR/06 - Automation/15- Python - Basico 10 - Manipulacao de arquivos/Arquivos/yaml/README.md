@@ -102,17 +102,15 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
 
 **Por que isso existe?**
 
-```Bash
-    
-    Separação lógica: Permite armazenar configurações diferentes (ex.: switches e roteadores) no mesmo arquivo.
-    Processamento individual: Ferramentas como Ansible podem ler cada documento separadamente.
-    Reuso em pipelines: Útil para ferramentas que processam fluxos de dados (ex.: Kubernetes).
+- **Separação lógica:** Permite armazenar configurações diferentes (ex.: switches e roteadores) no mesmo arquivo.  
+- **Processamento individual:** Ferramentas como Ansible podem ler cada documento separadamente.  
+- **Reuso em pipelines:** Útil para ferramentas que processam fluxos de dados (ex.: Kubernetes).  
 
-    Uso Prático no CCNP
+**Uso Prático no CCNP**  
 
-    Ansible: Você pode definir múltiplos playbooks em um único arquivo YAML (cada um iniciado com ---).
-    Inventários de dispositivos: Agrupar switches, roteadores e firewalls em um só arquivo.
-```
+- **Ansible:** Você pode definir múltiplos playbooks em um único arquivo YAML (cada um iniciado com ---).  
+- **Inventários de dispositivos:** Agrupar switches, roteadores e firewalls em um só arquivo.  
+
 
 **Exemplo com Ansible:**
 
@@ -141,6 +139,12 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
 ```yaml
     # Inicia um comentário
     OBS: o yaml não aceita comentários de múltiplas linhas. Portanto, se quiser que várias linhas tenham comentários, iniciar cada linha com #
+    Exemplo:  
+    
+    vlans:
+    - 10  # VLAN_GESTAO (apenas uma linha por comentário)
+    - 20  # VLAN_VOIP
+    # Não existe /* ... */ como em outras linguagens!
 ```
 
 - **Chave: Valor**
@@ -165,4 +169,53 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
         local: adm
 
     Nesse exemplo temos um objeto chamado equipamentos: com suas características definidas em chave: valor
+```
+
+- **Listas**
+
+    Vamos atualizar o exemplo anterior  
+    - o caractere - indica uma lista
+  
+```yaml
+  equipamentos:
+        - nome: sw01
+          portas: 24
+          local: adm
+        - nome: sw02
+          portas: 16
+          local: rh
+        - nome: sw03
+          portas: 8
+          local: mkt
+```
+
+Agora, nesse exemplo temos um objeto chamado **equipamentos** com 3 listas  
+
+- **Multilinhas**
+
+    **|**: Utilizado para blocos com mais de uma linha.  
+    **Uso ideal:** Comandos Cisco que exigem formatação exata (ex.: configurações de interface, ACLs).
+
+```yaml
+cisco_switch:
+  hostname: "SW1"
+  config: |
+    interface GigabitEthernet0/1
+     description Link para Roteador
+     ip address 192.168.1.1 255.255.255.0
+     no shutdown
+    !
+    vlan 10
+     name VLAN_GESTAO
+```
+
+Resultado (Python):
+
+```python
+    {
+      'cisco_switch': {
+        'hostname': 'SW1',
+        'config': 'interface GigabitEthernet0/1\n description Link para Roteador\n ip address 192.168.1.1 255.255.255.0\n no shutdown\n!\nvlan 10\n name VLAN_GESTAO\n'
+      }
+    }
 ```
