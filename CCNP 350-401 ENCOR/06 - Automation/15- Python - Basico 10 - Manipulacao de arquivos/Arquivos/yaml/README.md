@@ -242,3 +242,9 @@ Resultado (Python):
 
 **OBS:** o caractere **>** deixa escrever em múltiplas linhas porém ele não interpreta o **Enter** e o resultado é que o texto sai todo em uma única linha.
 **OBS2:** em python, para pularmos uma linha podemos utilizar **\n** e nesse nosso caso, no bloco **>** se quisermos puar linhas devemos usar **\n**
+
+| Característica     | Pipe (|)                 | Greater Than (>)           |
+|--------------------|--------------------------|----------------------------|
+| Quebras de linha   | Preservadas              | Convertidas em espaços     |
+| Uso típico no CCNP | Configurações Cisco      | Relatórios/documentação    |
+| Exemplo            | Comandos interface, vlan | Descrições de dispositivos |
