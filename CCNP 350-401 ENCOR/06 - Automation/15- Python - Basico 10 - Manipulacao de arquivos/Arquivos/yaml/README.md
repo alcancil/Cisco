@@ -81,7 +81,7 @@ Os arquivos **.yaml (ou .yml)** são amplamente utilizados em automação de red
 
 Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é bem rígida com esse requisito.
 
-**Inicio e fim de um arquivo**  
+- **Inicio e fim de um arquivo**  
 
 ```yaml
    YAML é uma linguagem baseada em indentação (espaços, **nunca tabs**).  
@@ -134,4 +134,35 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
           cisco.ios.ios_interface:
             name: GigabitEthernet0/0
             state: up
+```
+
+- **Comentários**
+
+```yaml
+    # Inicia um comentário
+    OBS: o yaml não aceita comentários de múltiplas linhas. Portanto, se quiser que várias linhas tenham comentários, iniciar cada linha com #
+```
+
+- **Chave: Valor**
+
+```yaml
+    Os arquivos yaml praticamente funcionam com chave: valor
+    - chave: valor                   # pode estar entre " " ou não. O uso de aspas não é obrigatório
+    - Interface: Serial0/0 Serial0/2 # pode conter vários elementos
+    - Número: 3                      # Valores numéricos
+    - Status: true                   # Valores booleanos
+    - Date: 2025-05-01               # Data em formato americano
+```
+
+- **Objetos**
+
+    Como já citado, o yaml trabalha com espaços nunca tabs. Ele também é hierárquico. Então vamos criar um objeto.
+
+```yaml
+    equipamentos:
+        nome: sw01
+        portas: 24
+        local: adm
+
+    Nesse exemplo temos um objeto chamado equipamentos: com suas características definidas em chave: valor
 ```
