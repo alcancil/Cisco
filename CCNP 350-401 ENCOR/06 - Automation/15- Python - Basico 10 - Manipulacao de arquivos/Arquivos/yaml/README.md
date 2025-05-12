@@ -193,7 +193,7 @@ Agora, nesse exemplo temos um objeto chamado **equipamentos** com 3 listas
 
 - **Multilinhas**
 
-    **|**: Utilizado para blocos com mais de uma linha.  
+    **Pipe (|)**: Utilizado para blocos com mais de uma linha.  
     **Uso ideal:** Comandos Cisco que exigem formatação exata (ex.: configurações de interface, ACLs).
 
 ```yaml
@@ -219,3 +219,26 @@ Resultado (Python):
       }
     }
 ```
+
+    **Maior que (>)** - Dobra Linhas em Espaços  
+    **Uso ideal:** Textos longos sem formatação crítica (ex.: descrições, documentação).
+
+```yaml
+backup_report: >
+  Este é um relatório de backup automático
+  do switch SW1 em 2024-05-20.
+  VLANs configuradas: 10, 20, 30.
+  Interfaces ativas: Gig0/1, Gig0/2.
+```
+
+Resultado (Python):
+
+```python
+
+{
+  'backup_report': 'Este é um relatório de backup automático do switch SW1 em 2024-05-20. VLANs configuradas: 10, 20, 30. Interfaces ativas: Gig0/1, Gig0/2.\n'
+}
+```
+
+**OBS:** o caractere **>** deixa escrever em múltiplas linhas porém ele não interpreta o **Enter** e o resultado é que o texto sai todo em uma única linha.
+**OBS2:** em python, para pularmos uma linha podemos utilizar **\n** e nesse nosso caso, no bloco **>** se quisermos puar linhas devemos usar **\n**
