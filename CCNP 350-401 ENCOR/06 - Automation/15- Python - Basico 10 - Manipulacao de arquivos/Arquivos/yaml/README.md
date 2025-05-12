@@ -88,28 +88,29 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
     - `---` (opcional): Indica o início de um documento.  
     - `...` (opcional): Indica o fim (usado apenas em arquivos com múltiplos documentos).
     Obs: dentro de um arquivo yaml ou yml pode existir 1 ou mais arquivos
-
-    **Exemplo:**  
-    ```yaml
+```
+**Exemplo:**  
+    
+```yaml
     ---  # Documento 1
     switch:
       hostname: SW1
     ---  # Documento 2
     router:
       hostname: R1
-    ```
-    Por que isso existe?
+```
 
+**Por que isso existe?**
+
+```Bash
+    
     Separação lógica: Permite armazenar configurações diferentes (ex.: switches e roteadores) no mesmo arquivo.
-
     Processamento individual: Ferramentas como Ansible podem ler cada documento separadamente.
-
     Reuso em pipelines: Útil para ferramentas que processam fluxos de dados (ex.: Kubernetes).
 
     Uso Prático no CCNP
 
     Ansible: Você pode definir múltiplos playbooks em um único arquivo YAML (cada um iniciado com ---).
-
     Inventários de dispositivos: Agrupar switches, roteadores e firewalls em um só arquivo.
 ```
 
