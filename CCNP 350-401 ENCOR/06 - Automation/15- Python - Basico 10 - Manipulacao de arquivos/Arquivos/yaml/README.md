@@ -4,11 +4,13 @@
 
 Os arquivos **.yaml (ou .yml)** são amplamente utilizados em automação de redes para:
 
+```Bash
 1. **Definição de Playbooks no Ansible**: Automatizar configurações em dispositivos Cisco (VLANs, ACLs, interfaces) de forma legível.
 2. **Inventários de Dispositivos**: Estruturar listas de equipamentos (hostname, IP, credenciais) para ferramentas como Ansible e Nornir.
 3. **Modelagem de Dados para APIs**: Descrever configurações complexas em ferramentas Cisco (DNA Center, ACI) antes de converter para JSON.
 4. **Documentação de Topologias**: Descrever topologias de rede (links, dispositivos, VLANs) para ferramentas como ContainerLab ou Nautobot.
 5. **Integração com Kubernetes (K8s)**: Gerenciar configurações de redes em containers (CNI, políticas de rede).
+```
 
 ### Quando Usar YAML vs Outros Formatos
 
