@@ -97,7 +97,7 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
     ---  # Documento 2
     router:
       hostname: R1
-
+    ```
     Por que isso existe?
 
     Separação lógica: Permite armazenar configurações diferentes (ex.: switches e roteadores) no mesmo arquivo.
