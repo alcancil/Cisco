@@ -290,6 +290,8 @@ Resultado (Python):
 
 **Exemplo 02:** Modelagem de Dados para APIs  
 
+- Criar o arquivo **aci_config.yml**
+
 ```yaml
 ---
 # Modelo de configuração para Cisco ACI API
@@ -323,3 +325,31 @@ policies:
       gateway: "10.20.20.1/24"
 ...
 ```
+
+**Explicação**  
+
+Como visto, yaml é mais próximo da linguagem humana. Então esse modelo de configuração funciona como se fosse um rascunho. Ele é dividido por blocos.
+
+    Seção tenant:
+
+        Define o container lógico no ACI
+
+        Atribui descrição para documentação
+
+    Seção vrfs:
+
+        Configura Virtual Routing & Forwarding
+
+        enforce_routing ativa políticas de roteamento
+
+    Seção application_profiles:
+
+        Modela EPGs (grupos de endpoints)
+
+        Associa contracts (políticas de comunicação)
+
+        Exemplo típico de frontend/database
+
+    Seção policies:
+
+        Bridge Domains com sub-redes IP
