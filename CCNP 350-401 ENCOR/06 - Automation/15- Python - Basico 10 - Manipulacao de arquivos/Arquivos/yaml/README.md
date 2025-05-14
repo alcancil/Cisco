@@ -349,3 +349,15 @@ Como visto, yaml é mais próximo da linguagem humana. Então esse modelo de con
     - Seção policies:
 
         Bridge Domains com sub-redes IP
+
+**Script converter_json.py**  
+
+```Python
+  [01] import yaml, json
+  [02]
+  [03] with open('aci_config.yml') as f:
+  [04]    aci_data = yaml.safe_load(f)
+  [05]    print(json.dumps(aci_data, indent=2)) 
+```
+
+***Explicação**
