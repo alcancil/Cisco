@@ -411,3 +411,21 @@ alcancil@linux:~/automacoes/arquivos/yaml/02$ python3 converter_json.py
 ```
 
 **Explicação**
+
+```Bash
+Linha[01]: importa as bibliotecas yaml (ler/escrever arquivos yml) e json (nativa do python)
+           OBS: para instalar a biblioteca yaml >>> pip install pyyaml  
+Linha[03]: - with: Garante que o arquivo será fechado automaticamente após o uso
+           - aci_config.yml: Nome do arquivo YAML de entrada (seu arquivo de configuração)
+           - Modo padrão: 'r' (leitura) é assumido quando não especificado
+Linha[04]: Carregamento do YAML ( aci_data = yaml.safe_load(f) )
+           - yaml.safe_load(): Método seguro para converter YAML → Dicionário Python
+             Evita execução de código malicioso (ao contrário de yaml.load())
+             f: Objeto do arquivo aberto na linha 3
+             Saída: aci_data vira um dicionário Python com a estrutura do YAML
+Linha[05]: Conversão e Impressão do JSON ( Conversão e Impressão do JSON )
+           - json.dumps(): Converte o dicionário Python → String JSON formatada
+           Parâmetros:
+            aci_data: Dicionário convertido do YAML
+            indent=2: Formatação com 2 espaços (para legibilidade)
+```
