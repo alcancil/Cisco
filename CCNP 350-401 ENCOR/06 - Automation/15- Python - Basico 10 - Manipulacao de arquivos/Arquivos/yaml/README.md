@@ -330,26 +330,22 @@ policies:
 
 Como visto, yaml é mais próximo da linguagem humana. Então esse modelo de configuração funciona como se fosse um rascunho. Ele é dividido por blocos.
 
-    Seção tenant:
+    - Seção tenant:
 
         Define o container lógico no ACI
-
         Atribui descrição para documentação
 
-    Seção vrfs:
+    - Seção vrfs:
 
         Configura Virtual Routing & Forwarding
-
         enforce_routing ativa políticas de roteamento
 
-    Seção application_profiles:
+    - Seção application_profiles:
 
         Modela EPGs (grupos de endpoints)
-
         Associa contracts (políticas de comunicação)
-
         Exemplo típico de frontend/database
 
-    Seção policies:
+    - Seção policies:
 
         Bridge Domains com sub-redes IP
