@@ -288,3 +288,38 @@ Resultado (Python):
   ...
 ```
 
+**Exemplo 02:** Modelagem de Dados para APIs  
+
+```yaml
+---
+# Modelo de configuração para Cisco ACI API
+# Foco: Tenant e EPGs (Endpoint Groups)
+
+tenant: "TENANT_WEB"
+description: "Ambiente para aplicações web"
+
+vrfs:
+  - name: "VRF_WEB"
+    enforce_routing: true
+
+application_profiles:
+  - name: "AP_WEB_APP"
+    epgs:
+      - name: "EPG_FRONTEND"
+        bridge_domain: "BD_WEB"
+        contracts:
+          - provider: "HTTP-CONTRACT"
+          - consumer: "DB-CONTRACT"
+      - name: "EPG_DATABASE"
+        bridge_domain: "BD_DB"
+        physical_domain: "PHYS_DB_SERVERS"
+
+policies:
+  bd:
+    - name: "BD_WEB"
+      gateway: "10.10.10.1/24"
+      vrf: "VRF_WEB"
+    - name: "BD_DB"
+      gateway: "10.20.20.1/24"
+...
+```
