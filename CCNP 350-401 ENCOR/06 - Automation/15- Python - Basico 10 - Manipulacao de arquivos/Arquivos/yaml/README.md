@@ -26,8 +26,8 @@ Os arquivos **.yaml (ou .yml)** são amplamente utilizados em automação de red
 | **Escolha YAML quando...**                            |   **Evite YAML quando...**                          |
 |-------------------------------------------------------|-----------------------------------------------------|
 | Automação com Ansible/Nornir	Playbooks, inventários  | APIs que exigem JSON	DNA Center, Meraki            |
-| Configurações legíveis	Templates de VLANs/ACLs     | Dados tabulares simples	Use CSV                   |
-| Dados hierárquicos	Políticas de QoS                | Performance crítica	JSON é mais rápido no parsing |
+| Configurações legíveis	Templates de VLANs/ACLs       | Dados tabulares simples	Use CSV                     |
+| Dados hierárquicos	Políticas de QoS                  | Performance crítica	JSON é mais rápido no parsing |
 
 ### Por que YAML é essencial para o CCNP?
 
@@ -248,3 +248,43 @@ Resultado (Python):
 | Quebras de linha   | Preservadas              | Convertidas em espaços     |
 | Uso típico no CCNP | Configurações Cisco      | Relatórios/documentação    |
 | Exemplo            | Comandos interface, vlan | Descrições de dispositivos |
+
+### Exemplos
+
+**Exemplo 01:** Automação com Ansible/Nornir	Playbooks, inventários
+
+**Ansible**
+
+```yaml
+  ---
+  # Inventário de dispositivos Cisco para Ansible
+  all:
+    children:
+      switches:
+        hosts:
+          sw01:
+            ansible_host: 192.168.1.1
+            ansible_user: admin
+            ansible_network_os: ios
+            vlans:
+             - id: 10
+                name: VLAN_GESTAO
+              - id: 20
+                name: VLAN_VOIP
+          sw02:
+            ansible_host: 192.168.1.2
+            ansible_user: admin
+            ansible_network_os: ios
+
+      routers:
+        hosts:
+          rtr01:
+            ansible_host: 10.0.0.1
+            ansible_user: cisco
+            ansible_network_os: iosxe
+            interfaces:
+              - GigabitEthernet0/0
+              - GigabitEthernet0/1
+  ...
+```
+
