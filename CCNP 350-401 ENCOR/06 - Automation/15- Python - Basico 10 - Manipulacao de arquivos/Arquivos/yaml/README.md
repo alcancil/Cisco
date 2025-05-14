@@ -429,3 +429,28 @@ Linha[05]: Conversão e Impressão do JSON ( Conversão e Impressão do JSON )
             aci_data: Dicionário convertido do YAML
             indent=2: Formatação com 2 espaços (para legibilidade)
 ```
+
+[Fluxo](Imagens/fluxo.png)
+
+Por Que Usar safe_load?
+
+    Segurança: APIs Cisco manipulam configurações críticas
+
+    Boas Práticas: Nunca use yaml.load() com fontes não confiáveis
+
+Exemplo de Uso no CCNP
+
+    Crie aci_config.yml com configurações de tenant/VRF
+
+    Execute o script:
+    bash
+
+python3 converter.py > config.json
+
+Envie para a API Cisco:
+bash
+
+    curl -X POST -H "Content-Type: application/json" -d @config.json https://<DNA-Center-IP>/api/v1/...
+
+Este script é a ponte essencial entre sua automação legível (YAML) e as APIs Cisco que exigem JSON!
+New chat
