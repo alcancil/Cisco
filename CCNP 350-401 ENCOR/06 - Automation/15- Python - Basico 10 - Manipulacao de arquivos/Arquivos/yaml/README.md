@@ -360,4 +360,54 @@ Como visto, yaml é mais próximo da linguagem humana. Então esse modelo de con
   [05]    print(json.dumps(aci_data, indent=2)) 
 ```
 
-***Explicação**
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/arquivos/yaml/02$ ls
+aci_config.yml  converter_json.py
+alcancil@linux:~/automacoes/arquivos/yaml/02$ python3 converter_json.py 
+{
+  "tenant": "TENANT_WEB",
+  "description": "Ambiente para aplica\u00e7\u00f5es web",
+  "vrfs": [
+    {
+      "name": "VRF_WEB",
+      "enforce_routing": true
+    }
+  ],
+  "application_profiles": [
+    {
+      "name": "AP_WEB_APP",
+      "epgs": [
+        {
+          "name": "EPG_FRONTEND",
+          "bridge_domain": "BD_WEB",
+          "contracts": [
+            {
+              "provider": "HTTP-CONTRACT"
+            },
+            {
+              "consumer": "DB-CONTRACT"
+            }
+          ]
+        },
+        {
+          "name": "EPG_DATABASE",
+          "bridge_domain": "BD_DB",
+          "physical_domain": "PHYS_DB_SERVERS"
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "bd": [
+      {
+        "name": "BD_WEB",
+        "gateway": "10.10.10.1/24",
+        "vrf": "VRF_WEB"
+      },
+      {
+        "name": "BD_DB",
+```
+
+**Explicação**
