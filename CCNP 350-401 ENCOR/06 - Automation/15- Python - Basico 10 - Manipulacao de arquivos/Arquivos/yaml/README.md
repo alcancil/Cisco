@@ -430,7 +430,7 @@ Linha[05]: Conversão e Impressão do JSON ( Conversão e Impressão do JSON )
             indent=2: Formatação com 2 espaços (para legibilidade)
 ```
 
-[Fluxo](Imagens/fluxo.png)
+![Fluxo](Imagens/fluxo.png)
 
 Por Que Usar safe_load?
 
