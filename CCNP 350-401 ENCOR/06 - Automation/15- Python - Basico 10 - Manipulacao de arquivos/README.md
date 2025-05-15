@@ -43,10 +43,20 @@ Explore os formatos essenciais:
 - **Caso Cisco:** Templates de VLANs/ACLs legíveis  
 - `yaml.safe_load('vlan.yml')`
 
+### [Arquivos XML](Arquivos/xml/README.md)
+- **Para que serve:** APIs legadas (NETCONF/SOAP) e ACI  
+- **Caso Cisco:** Configuração de dispositivos via NETCONF em IOS-XE e consulta de políticas no Cisco ACI  
+- `xmltodict.parse(config.xml)`
+
 ### [Templates J2](Arquivos/j2/README.md)
 - **Para que serve:** Configurações dinâmicas multi-dispositivo  
 - **Caso Cisco:** Gerar unique configs para 50 switches  
 - `Template(open('template.j2').read())`
+
+### [Arquivos ENV](Arquivos/env/README.md)
+- **Para que serve:** Gerenciar credenciais e variáveis de ambiente  
+- **Caso Cisco:** Armazenar chaves de API do DNA Center e credenciais de dispositivos de forma segura  
+- `load_dotenv('.env')`
 
 ---
 
