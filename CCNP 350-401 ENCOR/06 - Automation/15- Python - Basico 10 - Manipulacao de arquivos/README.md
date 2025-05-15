@@ -10,6 +10,7 @@ A escolha do formato de arquivo correto determina:
 
 ### Fluxo de Automação
 
+```mermaid
 graph TB
     A[Inventário CSV] --> B(API DNA Center/JSON)
     B --> C[Playbook Ansible/YAML]
@@ -18,6 +19,7 @@ graph TB
     D -->|Logs| F[Arquivos TXT/JSON]
     A --> G[Variáveis .env]
     B -.-> H[XML se NETCONF]
+```
 
 Explore os formatos essenciais:
 
