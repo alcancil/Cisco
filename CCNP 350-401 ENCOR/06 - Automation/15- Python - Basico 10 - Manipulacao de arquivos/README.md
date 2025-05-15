@@ -8,6 +8,17 @@ A escolha do formato de arquivo correto determina:
 - **Legibilidade** das configurações
 - **Compatibilidade** com dispositivos Cisco
 
+### Fluxo de Automação
+
+graph TB
+    A[Inventário CSV] --> B(API DNA Center/JSON)
+    B --> C[Playbook Ansible/YAML]
+    C --> D{Dispositivo}
+    D -->|Config| E[Jinja2 Template/J2]
+    D -->|Logs| F[Arquivos TXT/JSON]
+    A --> G[Variáveis .env]
+    B -.-> H[XML se NETCONF]
+
 Explore os formatos essenciais:
 
 ### [Arquivos TXT](Arquivos/txt/README.md)
