@@ -115,23 +115,23 @@ Essa é uma linguagem que utiliza espaços e não tabulações, porém ela é be
 **Exemplo com Ansible:**
 
 ```yaml
-    ---  # Playbook 1: Configurar VLANs
-    - name: Configurar VLANs
-      hosts: switches
-      tasks:
-        - name: Adicionar VLAN 10
-          cisco.ios.ios_vlan:
-            vlan_id: 10
-            name: VLAN_GESTAO
+---  # Playbook 1: Configurar VLANs
+- name: Configurar VLANs
+  hosts: switches
+  tasks:
+   - name: Adicionar VLAN 10
+     cisco.ios.ios_vlan:
+       vlan_id: 10
+       name: VLAN_GESTAO
 
-    ---  # Playbook 2: Configurar Interfaces
-    - name: Configurar Interfaces
-      hosts: routers
-      tasks:
-        - name: Ativar Gig0/0
-          cisco.ios.ios_interface:
-            name: GigabitEthernet0/0
-            state: up
+---  # Playbook 2: Configurar Interfaces
+- name: Configurar Interfaces
+  hosts: routers
+  tasks:
+    - name: Ativar Gig0/0
+      cisco.ios.ios_interface:
+        name: GigabitEthernet0/0
+        state: up
 ```
 
 - **Comentários**
@@ -476,7 +476,9 @@ Converta este JSON para YAML e envie para a API DNA Center:
   }
 }
 ```
-Utilize a ferramente de validação de arquivos YAML https://www.yamllint.com/
+Utilize ferramentas de validação de arquivos YAML  
+- https://www.yamllint.com/
+- https://www.site24x7.com/pt/tools/yaml-validator.html
 
 ### Recursos Adicionais
 - [Documentação YAML](https://yaml.org/spec/)
