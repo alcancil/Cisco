@@ -17,3 +17,56 @@ Então, o Python consegue trabalhar com vários tipos de arquivos. Vamos dar uma
 * [json](Arquivos/json/README.md) - para APIs e automação.
 * [yaml](Arquivos/yaml/README.md) - para playbooks do Ansible.
 * **.j2**   - Combine tudo com .j2 para templates dinâmicos.
+
+# Python - Básico 10
+
+## 📁 Manipulação de Arquivos em Automação de Redes
+
+### Por Que Isso Importa?
+A escolha do formato de arquivo correto determina:
+- **Eficiência** da automação
+- **Legibilidade** das configurações
+- **Compatibilidade** com dispositivos Cisco
+
+Explore os formatos essenciais:
+
+### 🔤 [Arquivos TXT](Arquivos/txt/README.md)
+- **Para que serve:** Logs brutos e saída de comandos CLI  
+- **Caso Cisco:** `show running-config` → análise básica  
+- `with open('log.txt') as f: print(f.read())`
+
+### 📊 [Arquivos CSV](Arquivos/csv/README.md)
+- **Para que serve:** Inventários de dispositivos em massa  
+- **Caso Cisco:** Importar 100+ switches para Nornir/Ansible  
+- `import csv; csv.DictReader('inventario.csv')`
+
+### 🗃️ [Arquivos JSON](Arquivos/json/README.md)
+- **Para que serve:** APIs Cisco (DNA Center/Meraki)  
+- **Caso Cisco:** `POST /restconf/data/` com configurações  
+- `json.loads(response.text)`
+
+### 📝 [Arquivos YAML](Arquivos/yaml/README.md)
+- **Para que serve:** Playbooks Ansible e Nornir  
+- **Caso Cisco:** Templates de VLANs/ACLs legíveis  
+- `yaml.safe_load('vlan.yml')`
+
+### 🧩 [Templates J2](Arquivos/j2/README.md)
+- **Para que serve:** Configurações dinâmicas multi-dispositivo  
+- **Caso Cisco:** Gerar unique configs para 50 switches  
+- `Template(open('template.j2').read())`
+
+---
+
+### Como Navegar
+1. Clique em qualquer formato acima para ver:
+   - 📌 Exemplos práticos Cisco
+   - 🛠️ Bibliotecas Python relacionadas
+   - ⚠️ Armadilhas comuns em redes
+
+2. Fluxo de Aprendizado Recomendado:
+   ```mermaid
+   graph LR
+     A[TXT-Básico] --> B[CSV-Inventários]
+     B --> C[JSON-APIs]
+     C --> D[YAML-Ansible]
+     D --> E[J2-Templates]
