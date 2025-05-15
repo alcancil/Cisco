@@ -463,6 +463,21 @@ Envie para a API Cisco
 
 Este script é a ponte essencial entre sua automação legível (YAML) e as APIs Cisco que exigem JSON!
 
+## Exercício Prático
+
+Converta este JSON para YAML e envie para a API DNA Center:  
+
+```json
+{
+  "interface": {
+    "name": "Gig0/1",
+    "ip": "10.0.0.1/24",
+    "status": "up"
+  }
+}
+```
+Utilize a ferramente de validação de arquivos YAML https://www.yamllint.com/
+
 ### Recursos Adicionais
 - [Documentação YAML](https://yaml.org/spec/)
 - [API Cisco DNA Center](https://developer.cisco.com/docs/dna-center/)
