@@ -11,6 +11,7 @@
   - [Sintaxe do YAML](#sintaxe-do-yaml)
     - [Exemplos](#exemplos)
   - [Exercício Prático](#exercício-prático)
+  - [Resumo do Aprendizado](#resumo-do-aprendizado)
     - [Recursos Adicionais](#recursos-adicionais)
 
 ## 03 Manipulação de arquivos - .yaml ou .yml
@@ -492,6 +493,38 @@ Converta este JSON para YAML.
 Utilize ferramentas de validação de arquivos YAML  
 - https://www.yamllint.com/
 - https://www.site24x7.com/pt/tools/yaml-validator.html
+
+## Resumo do Aprendizado
+
+```bash
+1. YAML vs JSON vs XML
+   - YAML: Ideal para automação legível (Ansible/Nornir)
+   - JSON: Melhor para APIs Cisco (DNA Center, Meraki)
+   - XML: Formato antigo, menos eficiente para redes modernas
+
+2. Sintaxe Essencial
+   - Hierarquia por indentação (espaços, nunca tabs)
+   - Tipos de dados: strings, números, booleanos, listas (-), objetos (chave: valor)
+   - Comentários com # (apenas linha única)
+   - Multilinhas: | (preserva quebras) vs > (converte em espaços)
+
+3. Casos de Uso em Redes
+   - Playbooks Ansible
+   - Inventários de dispositivos
+   - Modelagem para APIs (YAML → JSON)
+   - Documentação de topologias
+   - Configurações Kubernetes
+
+4. Boas Práticas CCNP
+   - Sempre usar yaml.safe_load() por segurança
+   - Validar arquivos com yamllint antes de usar
+   - Converter para JSON quando integrar com APIs Cisco
+   - Usar pipe (|) para comandos Cisco multilinha
+
+5. Fluxo de Trabalho Típico
+   Editor → YAML → Validação → Conversão JSON → API Cisco
+   (VS Code)  (yamllint)  (json.dumps)  (requests)
+```
 
 ### Recursos Adicionais
 - [Documentação YAML](https://yaml.org/spec/)
