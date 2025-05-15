@@ -40,7 +40,7 @@ Os arquivos **.yaml (ou .yml)** são amplamente utilizados em automação de red
 |-------------------------------------------------------|-----------------------------------------------------|
 | Automação com Ansible/Nornir	Playbooks, inventários  | APIs que exigem JSON	DNA Center, Meraki            |
 | Configurações legíveis	Templates de VLANs/ACLs       | Dados tabulares simples	Use CSV                     |
-| Dados hierárquicos	Políticas de QoS                  | Performance crítica	JSON é mais rápido no parsing |
+| Dados hierárquicos	Políticas de QoS                  | Performance crítica	JSON é mais rápido no parsing   |
 
 ### Por que YAML é essencial para o CCNP?
 
@@ -261,6 +261,12 @@ Resultado (Python):
 | Quebras de linha   | Preservadas              | Convertidas em espaços     |
 | Uso típico no CCNP | Configurações Cisco      | Relatórios/documentação    |
 | Exemplo            | Comandos interface, vlan | Descrições de dispositivos |
+
+| Característica        | Pipe (`\|`)               | Greater Than (`>`)         |
+|-----------------------|---------------------------|----------------------------|
+| **Quebras de linha**  | Preservadas               | Convertidas em espaços     |
+| **Uso típico**        | Configurações Cisco       | Relatórios/documentação    |
+| **Exemplo**           | `interface Gig0/1`        | `Descrição do switch SW1`  |
 
 ### Exemplos
 
