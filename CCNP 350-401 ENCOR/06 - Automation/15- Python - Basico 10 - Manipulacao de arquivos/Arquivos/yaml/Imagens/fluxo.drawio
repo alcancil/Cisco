@@ -47,7 +47,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="X5HH1Tl0bPug6Kl7a2SG-11" value="&lt;div align=&quot;center&quot;&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;CONVERSÂO EM PYTHON PARA JSON&lt;/font&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="400" y="120" width="120" height="60" as="geometry" />
+          <mxGeometry x="640" y="220" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="X5HH1Tl0bPug6Kl7a2SG-12" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;&lt;font&gt;post / put&lt;/font&gt;&lt;/b&gt;&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="910" y="160" width="80" height="30" as="geometry" />
@@ -56,7 +56,7 @@
           <mxGeometry x="170" y="150" width="70" height="50" as="geometry" />
         </mxCell>
         <mxCell id="L7BG2Ehc3fDWZeo9WnkU-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;safe_load()&lt;/font&gt;&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="415" y="220" width="90" height="30" as="geometry" />
+          <mxGeometry x="415" y="160" width="90" height="30" as="geometry" />
         </mxCell>
         <mxCell id="L7BG2Ehc3fDWZeo9WnkU-3" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;deploy&lt;/font&gt;&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;" vertex="1" parent="1">
           <mxGeometry x="910" y="210" width="80" height="30" as="geometry" />
