@@ -430,27 +430,39 @@ Linha[05]: Conversão e Impressão do JSON ( Conversão e Impressão do JSON )
             indent=2: Formatação com 2 espaços (para legibilidade)
 ```
 
+**Fluxo de trabalho**  
+
 ![Fluxo](Imagens/fluxo.png)
+
+  1. Escolher um bom editor para códigos .yml. Exemplo: VSCODE
+  2. Escrever primeiro em YAML que serve como uma espécie de resumos e evita erros
+         - Erros comuns: Esquecer , ou {} em JSON grandes
+         - Sem comentários: Não pode explicar o que cada campo faz
+         - Hierarquia confusa: Difícil enxergar aninhamentos complexos
+  3. Converter o arquivo YAML para JASON (`json.dumps`)
+  4. Enviar ou Receber dados para os equipamentos como o Cisco Dna Center através de APIs (`curl`/`requests`) 
+  
 
 Por Que Usar safe_load?
 
-    Segurança: APIs Cisco manipulam configurações críticas
+    - Segurança: APIs Cisco manipulam configurações críticas
 
-    Boas Práticas: Nunca use yaml.load() com fontes não confiáveis
+    - Boas Práticas: Nunca use yaml.load() com fontes não confiáveis
 
 Exemplo de Uso no CCNP
 
     Crie aci_config.yml com configurações de tenant/VRF
 
     Execute o script:
-    bash
-
+    
+```bash
 python3 converter.py > config.json
+```
 
-Envie para a API Cisco:
-bash
-
-    curl -X POST -H "Content-Type: application/json" -d @config.json https://<DNA-Center-IP>/api/v1/...
+Envie para a API Cisco
 
 Este script é a ponte essencial entre sua automação legível (YAML) e as APIs Cisco que exigem JSON!
-New chat
+
+### Recursos Adicionais
+- [Documentação YAML](https://yaml.org/spec/)
+- [API Cisco DNA Center](https://developer.cisco.com/docs/dna-center/)
