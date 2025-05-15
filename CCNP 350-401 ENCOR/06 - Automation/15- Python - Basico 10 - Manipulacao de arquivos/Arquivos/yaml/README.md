@@ -1,5 +1,18 @@
 # Python - Básico 10
 
+## Sumário
+- [Python - Básico 10](#python---básico-10)
+  - [Sumário](#sumário)
+  - [03 Manipulação de arquivos - .yaml ou .yml](#03-manipulação-de-arquivos---yaml-ou-yml)
+    - [O que é YAML?](#o-que-é-yaml)
+    - [Quando Usar YAML vs Outros Formatos](#quando-usar-yaml-vs-outros-formatos)
+    - [Por que YAML é essencial para o CCNP?](#por-que-yaml-é-essencial-para-o-ccnp)
+    - [YAML (YAML Ain't Markup Language)](#yaml-yaml-aint-markup-language)
+  - [Sintaxe do YAML](#sintaxe-do-yaml)
+    - [Exemplos](#exemplos)
+  - [Exercício Prático](#exercício-prático)
+    - [Recursos Adicionais](#recursos-adicionais)
+
 ## 03 Manipulação de arquivos - .yaml ou .yml
 
 ### O que é YAML? 
@@ -256,36 +269,36 @@ Resultado (Python):
 **Ansible**
 
 ```yaml
-  ---
-  # Inventário de dispositivos Cisco para Ansible
-  all:
-    children:
-      switches:
-        hosts:
-          sw01:
-            ansible_host: 192.168.1.1
-            ansible_user: admin
-            ansible_network_os: ios
-            vlans:
-             - id: 10
-                name: VLAN_GESTAO
-              - id: 20
-                name: VLAN_VOIP
-          sw02:
-            ansible_host: 192.168.1.2
-            ansible_user: admin
-            ansible_network_os: ios
+---
+# Inventário de dispositivos Cisco para Ansible
+all:
+  children:
+    switches:
+      hosts:
+        sw01:
+          ansible_host: 192.168.1.1
+          ansible_user: admin
+          ansible_network_os: ios
+          vlans:
+            - id: 10
+              name: VLAN_GESTAO
+            - id: 20
+              name: VLAN_VOIP
+        sw02:
+          ansible_host: 192.168.1.2
+          ansible_user: admin
+          ansible_network_os: ios
 
-      routers:
-        hosts:
-          rtr01:
-            ansible_host: 10.0.0.1
-            ansible_user: cisco
-            ansible_network_os: iosxe
-            interfaces:
-              - GigabitEthernet0/0
-              - GigabitEthernet0/1
-  ...
+    routers:
+      hosts:
+        rtr01:
+          ansible_host: 10.0.0.1
+          ansible_user: cisco
+          ansible_network_os: iosxe
+          interfaces:
+            - GigabitEthernet0/0
+            - GigabitEthernet0/1
+...
 ```
 
 **Exemplo 02:** Modelagem de Dados para APIs  
@@ -465,7 +478,7 @@ Este script é a ponte essencial entre sua automação legível (YAML) e as APIs
 
 ## Exercício Prático
 
-Converta este JSON para YAML e envie para a API DNA Center:  
+Converta este JSON para YAML. 
 
 ```json
 {
