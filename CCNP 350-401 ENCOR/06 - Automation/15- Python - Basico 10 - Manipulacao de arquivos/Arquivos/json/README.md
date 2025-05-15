@@ -4,7 +4,6 @@
 - [Python - Básico 10](#python---básico-10)
   - [Índice](#índice)
   - [03 Manipulação de arquivos - .json](#03-manipulação-de-arquivos---json)
-  - [03 Manipulação de arquivos - .json](#03-manipulação-de-arquivos---json-1)
     - [Quando Usar JSON vs Outros Formatos](#quando-usar-json-vs-outros-formatos)
     - [**Por que JSON é essencial para o CCNP?**](#por-que-json-é-essencial-para-o-ccnp)
     - [Exemplo 01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)](#exemplo-01-inventário-de-dispositivos-armazenar-atributos-complexos-como-vlans-interfaces-e-políticas-de-qos)
@@ -12,9 +11,6 @@
   - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
     - [Exemplo 04 : Comparação de configurações](#exemplo-04--comparação-de-configurações)
   - [Resumo do Aprendizado](#resumo-do-aprendizado)
-
-## 03 Manipulação de arquivos - .json
-[... restante do conteúdo ...]
 
 ## 03 Manipulação de arquivos - .json
 
