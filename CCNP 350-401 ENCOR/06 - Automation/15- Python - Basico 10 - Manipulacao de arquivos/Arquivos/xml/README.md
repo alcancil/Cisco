@@ -105,19 +105,17 @@ Exemplo XML vs JSON em Cisco DNA Center:
 </rpc>
 ```
 
-Processamento em Python
+### Processamento em Python
 
 Bibliotecas essenciais:
 
-    xml.etree.ElementTree (nativa)
+    - xml.etree.ElementTree (nativa)
+    - xmltodict (para conversão JSON <> XML)
+    - lxml (para XSD validation)
 
-    xmltodict (para conversão JSON ↔ XML)
+**Exemplo de parsing:**  
 
-    lxml (para XSD validation)
-
-Exemplo de parsing:
-python
-
+```python
 import xml.etree.ElementTree as ET
 
 xml_data = """
@@ -133,13 +131,15 @@ xml_data = """
 
 root = ET.fromstring(xml_data)
 print(root.find('hostname').text)  # Saída: R1
+```
 
-Exemplos Práticos
-Exemplo 01: Configuração via NETCONF
+### Exemplos Práticos
 
-Cenário: Ativar interface em IOS-XE
-xml
+**Exemplo 01:** Configuração via NETCONF  
 
+- Cenário: Ativar interface em IOS-XE  
+
+```xml
 <rpc message-id="101">
     <edit-config>
         <target>
@@ -153,9 +153,11 @@ xml
         </config>
     </edit-config>
 </rpc>
+```
 
-Script Python:
-python
+**Script Python**
+
+```python
 
 from ncclient import manager
 
@@ -176,11 +178,13 @@ with manager.connect(
         </interfaces>
     </config>"""
     m.edit_config(target='running', config=config)
+```
 
-Exemplo 02: Processamento de Logs
+**Exemplo 02:** Processamento de Logs  
 
-Entrada XML (show interface):
-xml
+- Entrada XML (show interface):
+
+```xml
 
 <interface>
     <name>Gig0/1</name>
@@ -188,20 +192,24 @@ xml
     <ip-address>192.168.1.1</ip-address>
     <speed>1000</speed>
 </interface>
+```
 
-Conversão para JSON:
-python
+- Conversão para JSON:
+
+```python
 
 import xmltodict, json
 
 xml_data = open('interface.xml').read()
 json_data = json.dumps(xmltodict.parse(xml_data), indent=2)
 print(json_data)
+```
 
-Exercício Prático
+**Exercício Prático**
 
 Converta este JSON para XML e valide com https://www.xmlvalidation.com/
-json
+
+```json
 
 {
     "vlan": {
@@ -210,9 +218,11 @@ json
         "ports": ["Gig0/1", "Gig0/2"]
     }
 }
+```
 
-Resumo do Aprendizado
-bash
+### Resumo do Aprendizado
+
+```bash
 
 1. XML no Ecossistema Cisco  
    - NETCONF: Principal protocolo para IOS-XE antigos  
@@ -234,7 +244,9 @@ bash
    - Usar xmltodict para integração com APIs modernas
    - Preferir JSON/YAML para novos projetos
 
-Recursos Adicionais
+```
+
+### Recursos Adicionais
 
 - [NETCONF/YANG Developer Guide](https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-installation-and-configuration-guides-list.html#!netconf-yang-and-restconf-guide)
 - [Python XML Processing](https://docs.python.org/3/library/xml.html)
