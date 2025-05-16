@@ -235,10 +235,8 @@ bash
 
 Recursos Adicionais
 
-    [NETCONF/YANG Developer Guide](https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-installation-and-configuration-guides-list.html#!netconf-yang-and-restconf-guide)
-
-    XML Schema for Cisco ACI
-
-    Python XML Processing
+- [NETCONF/YANG Developer Guide](https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-installation-and-configuration-guides-list.html#!netconf-yang-and-restconf-guide)
+- [XML Schema for Cisco ACI]()
+- [Python XML Processing]()
 
 
