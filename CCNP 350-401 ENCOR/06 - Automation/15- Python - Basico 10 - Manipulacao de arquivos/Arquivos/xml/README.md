@@ -25,21 +25,21 @@ graph TD
 | Sistemas legados (ACI SOAP, Prime) | Performance crítica (use JSON)   |
 | Necessidade de validação via XSD   | Configurações simples (use YAML) |
 
-Por que XML ainda é relevante para o CCNP?
+**Por que XML ainda é relevante para o CCNP?**
 
-    NETCONF/YANG: 32% dos dispositivos Cisco em produção ainda usam NETCONF como protocolo de configuração principal
+    NETCONF/YANG: muito dos dispositivos Cisco em produção ainda usam NETCONF como protocolo de configuração principal
 
     Compatibilidade: Único formato suportado em:
 
-        IOS-XE versões anteriores à 16.8
-
-        Cisco Prime Infrastructure
-
-        ACI via SOAP (em integrações legadas)
+        - IOS-XE versões anteriores à 16.8
+        - Cisco Prime Infrastructure
+        - ACI via SOAP (em integrações legadas)
 
 Exemplo XML vs JSON em Cisco DNA Center:
-xml
 
+**xml**
+
+```xml
 <!-- XML -->
 <device>
     <hostname>SW1</hostname>
@@ -50,10 +50,11 @@ xml
         </interface>
     </interfaces>
 </device>
+```
 
-json
+**json**
 
-// JSON equivalente
+```json
 {
     "device": {
         "hostname": "SW1",
@@ -65,6 +66,7 @@ json
         }
     }
 }
+```
 
 Sintaxe do XML
 Estrutura Básica
