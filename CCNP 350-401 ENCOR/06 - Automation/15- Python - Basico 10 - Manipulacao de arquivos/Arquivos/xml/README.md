@@ -213,20 +213,20 @@ json
 Resumo do Aprendizado
 bash
 
-1. XML no Ecossistema Cisco
-   - NETCONF: Principal protocolo para IOS-XE antigos
-   - ACI: Integração via SOAP em sistemas legados
-   - Prime Infrastructure: Configuração via XML-RPC
+1. XML no Ecossistema Cisco  
+   - NETCONF: Principal protocolo para IOS-XE antigos  
+   - ACI: Integração via SOAP em sistemas legados  
+   - Prime Infrastructure: Configuração via XML-RPC  
 
-2. Bibliotecas Python
-   - xml.etree.ElementTree: Parsing básico
-   - xmltodict: Conversão para dicionários Python
-   - ncclient: Cliente NETCONF para Cisco
+2. Bibliotecas Python  
+   - xml.etree.ElementTree: Parsing básico  
+   - xmltodict: Conversão para dicionários Python  
+   - ncclient: Cliente NETCONF para Cisco  
 
-3. Casos de Uso
-   ✅ Configuração via NETCONF/YANG
-   ✅ Processamento de saídas "show" em XML
-   ✅ Integração com sistemas OSS/BSS legados
+3. Casos de Uso  
+   - Configuração via NETCONF/YANG  
+   - Processamento de saídas "show" em XML  
+   - Integração com sistemas OSS/BSS legados  
 
 4. Boas Práticas
    - Sempre validar com XSD em sistemas críticos
@@ -235,7 +235,7 @@ bash
 
 Recursos Adicionais
 
-    NETCONF/YANG Developer Guide
+    [NETCONF/YANG Developer Guide](https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-installation-and-configuration-guides-list.html#!netconf-yang-and-restconf-guide)
 
     XML Schema for Cisco ACI
 
