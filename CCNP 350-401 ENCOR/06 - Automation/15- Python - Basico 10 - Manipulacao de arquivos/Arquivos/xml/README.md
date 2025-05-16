@@ -68,28 +68,28 @@ Exemplo XML vs JSON em Cisco DNA Center:
 }
 ```
 
-Sintaxe do XML
-Estrutura Básica
-xml
+### Sintaxe do XML
 
+**Estrutura Básica**
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
     <element attribute="value">
         <child>Conteúdo</child>
     </element>
 </root>
+```
 
-Componentes:
+**Componentes:**  
 
-    Tags: <tag> (abertura) e </tag> (fechamento)
+    - Tags: <tag> (abertura) e </tag> (fechamento)
+    - Atributos: name="value" dentro da tag de abertura
+    - Conteúdo: Texto entre tags
 
-    Atributos: name="value" dentro da tag de abertura
+### Exemplo Cisco NETCONF
 
-    Conteúdo: Texto entre tags
-
-Exemplo Cisco NETCONF
-xml
-
+```xml
 <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
     <edit-config>
         <target>
@@ -103,6 +103,7 @@ xml
         </config>
     </edit-config>
 </rpc>
+```
 
 Processamento em Python
 
@@ -236,7 +237,6 @@ bash
 Recursos Adicionais
 
 - [NETCONF/YANG Developer Guide](https://www.cisco.com/c/en/us/support/ios-nx-os-software/ios-xe-17/products-installation-and-configuration-guides-list.html#!netconf-yang-and-restconf-guide)
-- [XML Schema for Cisco ACI]()
-- [Python XML Processing]()
+- [Python XML Processing](https://docs.python.org/3/library/xml.html)
 
 
