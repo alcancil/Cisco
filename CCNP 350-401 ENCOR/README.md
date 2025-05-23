@@ -19,7 +19,7 @@ Cada pasta representa um domínio do exame (blueprint Cisco):
 - `05-Security`
 - `06-Automation`
 
-> Dentro de cada pasta, os temas são subdivididos em arquivos com foco nos principais tópicos e subtemas cobrados.
+> Dentro de cada pasta, os temas são subdivididos em arquivos com foco nos principais tópicos e subtemas cobrados. 2
 
 ---
 
