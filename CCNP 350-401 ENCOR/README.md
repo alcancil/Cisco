@@ -4,6 +4,8 @@ Este repositório é parte dos meus estudos para a certificação **Cisco CCNP E
 Organizei o conteúdo com base nos tópicos do **blueprint oficial da Cisco**, divididos em pastas e subpastas.  
 Embora este não seja um curso, acredito que pode ser útil para outros profissionais que também estão se preparando para a certificação ou que desejam revisar conceitos avançados de redes.
 
+odos os tópicos irão seguir o blueprint do exame disponível em : **https://learningnetwork.cisco.com/s/encor-exam-topics**.  
+
 > Todo o conteúdo está sendo desenvolvido com base em laboratórios práticos usando o **Cisco Packet Tracer**, **EVE-NG** e também simulações com outros fabricantes quando aplicável.
 
 ---
@@ -52,19 +54,3 @@ Fique à vontade para acompanhar, sugerir melhorias ou utilizar como base para s
 Caso queira trocar ideias ou colaborar:
 
 - GitHub: [@alcancil](https://github.com/alcancil)
-
-
-
-
-# Cisco
-
-Este repositório é destinado a laboratórios CISCO para o exame CCNP 350-401 ENCOR. <br> </br>
-Todos os tópicos irão seguir o blueprint do exame disponível em : **https://learningnetwork.cisco.com/s/encor-exam-topics**. <br> </br>
-Todos os laboratórios serão feitos no Cisco Packt Tracer ou no Eve Ng
-
-**Fontes:**
-* https://www.cisco.com
-* https://www.cisco.com.br
-* https://www.netacadlearnathon.com/
-* https://www.netacad.com/pt-br/courses/packet-tracer
-* https://www.eve-ng.net/
