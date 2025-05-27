@@ -39,7 +39,8 @@ Além dos meus próprios laboratórios e anotações, utilizei os seguintes recu
 - [RFC Editor](https://www.rfc-editor.org/)
 - Livros como:
   - [*CCNP and CCIE Enterprise Core ENCOR 350-401 Official Cert Guide* – David Hucaby](https://www.ciscopress.com/store/ccnp-and-ccie-enterprise-core-encor-350-401-official-9780138216764)
-  - *Cisco Press* materiais complementares
+  - [*Cisco Press* materiais complementares](https://www.ciscopress.com/)
+  - [*Programação de Redes com Python* - Rhodes Goerzen - Atualmente esgotado - Sebos](https://www.novatec.com.br/livros/programacao-redes-com-python/)
 
 ---
 
