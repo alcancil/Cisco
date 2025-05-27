@@ -4,7 +4,7 @@ Este repositório é parte dos meus estudos para a certificação **Cisco CCNP E
 Organizei o conteúdo com base nos tópicos do **blueprint oficial da Cisco**, divididos em pastas e subpastas.  
 Embora este não seja um curso, acredito que pode ser útil para outros profissionais que também estão se preparando para a certificação ou que desejam revisar conceitos avançados de redes.
 
-odos os tópicos irão seguir o blueprint do exame disponível em : **https://learningnetwork.cisco.com/s/encor-exam-topics**.  
+Todos os tópicos irão seguir o blueprint do exame disponível em : **https://learningnetwork.cisco.com/s/encor-exam-topics**.  
 
 > Todo o conteúdo está sendo desenvolvido com base em laboratórios práticos usando o **Cisco Packet Tracer**, **EVE-NG** e também simulações com outros fabricantes quando aplicável.
 
@@ -32,10 +32,11 @@ Além dos meus próprios laboratórios e anotações, utilizei os seguintes recu
 - [Cisco - Documentação oficial](https://www.cisco.com)
 - [Cisco Brasil](https://www.cisco.com.br)
 - [Cisco Networking Academy](https://www.netacad.com/pt-br)
+- [Cisco Learning Network](https://learningnetwork.cisco.com/)
 - [Curso Cisco Packet Tracer](https://www.netacad.com/pt-br/courses/packet-tracer)
 - [EVE-NG - Emulador de redes](https://www.eve-ng.net/)
+- [Python](https://pythoninstitute.org/)
 - [RFC Editor](https://www.rfc-editor.org/)
-- [Cisco Learning Network](https://learningnetwork.cisco.com/)
 - Livros como:
   - *CCNP and CCIE Enterprise Core ENCOR 350-401 Official Cert Guide* – David Hucaby
   - *Cisco Press* materiais complementares
