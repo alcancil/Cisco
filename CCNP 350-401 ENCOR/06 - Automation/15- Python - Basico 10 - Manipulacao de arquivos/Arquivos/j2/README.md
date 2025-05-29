@@ -161,7 +161,7 @@ with open('vlan_config.txt', 'w') as f:
 print("Arquivo de configuração gerado: vlan_config.txt")
 ```
 
-**Saída**
+**Criando ambiente virtual e instalando o jinja2**
 
 ```bash
 alcancil@linux:~/automacoes/arquivos/j2/01$ python3 -m venv venv
@@ -175,6 +175,11 @@ Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
 Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
 Installing collected packages: MarkupSafe, jinja2
 Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6
+```
+
+**Saída**
+
+```bash
 (venv) alcancil@linux:~/automacoes/arquivos/j2/01$ python3 gerar_vlans.py 
 Arquivo de configuração gerado: vlan_config.txt
 (venv) alcancil@linux:~/automacoes/arquivos/j2/01$ 
