@@ -73,7 +73,7 @@ flowchart TB
     M --> N[Log ou rollback]
 
     %% Cores atualizadas
-    style A fill:#ffffff,stroke:#2e7d32,stroke-width:2px
+    style A fill:#4682B4,stroke:#2e7d32,stroke-width:2px
     style B fill:#eeeeee,stroke:#555
     style C fill:#eeeeee,stroke:#555
     style C1 fill:#f1f1f1,stroke:#333
