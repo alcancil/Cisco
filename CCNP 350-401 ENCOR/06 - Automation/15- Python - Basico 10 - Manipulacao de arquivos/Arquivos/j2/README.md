@@ -8,8 +8,7 @@
     - [Quando Usar Jinja2 vs Outras Abordagens](#quando-usar-jinja2-vs-outras-abordagens)
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
     - [Fluxo do uso do Jinja2 com Python puro e com Ansible](#fluxo-do-uso-do-jinja2-com-python-puro-e-com-ansible)
-    - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
-      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
+    - [Requisitos antes de começarmos os exemplos](#requisitos-antes-de-começarmos-os-exemplos)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -75,21 +74,44 @@ flowchart TB
     M --> N[Log ou rollback]
 ```
 
-**OBS:** estaremos utilizando somente scripts python puro por enquanto.
+**OBS:** estaremos utilizando somente scripts python puro por enquanto. Todas as saídas serão locais e não serão enviadas para nenhum equipamento por questões de boas práticas. Depois irei adicionar tópicos para acesso dos equipamentos.
+
+### Requisitos antes de começarmos os exemplos
+
+Antes de rodar o script Python, certifique-se de que a biblioteca Jinja2 está instalada no seu ambiente.
+Se não estiver, instale com o seguinte comando:
+
+```python
+pip install jinja2
+```
+
+**Dica:** se estiver usando Python 3 e o pip estiver vinculado ao Python 2, use pip3:
+
+```python
+pip3 install jinja2
+```
+
+- **Verificação**
+
+Para garantir que está tudo certo, você pode executar:
+
+```` python
+python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
+```
 
 ### Exemplo 1: Geração de configuração de VLANs
 
 #### Estrutura de arquivos usada no exemplo
 
 ```bash
-vlan_generator/
+01/
 ├── gerar_vlans.py              # Script principal em Python
 ├── vlans.json                  # Dados das VLANs
 ├── vlan_template.j2            # Template Jinja2
 └── vlan_config.txt             # Saída gerada após a execução
 ```
 
-Arquivo **vlans.json**  
+**Arquivo vlans.json**  
 
 ```json
 {
@@ -101,7 +123,7 @@ Arquivo **vlans.json**
 }
 ```
 
-Arquivo **vlan_template.j2**  
+**Arquivo vlan_template.j2**  
 
 ```j2
 ! Configuração de VLANs
@@ -113,7 +135,7 @@ vlan {{ vlan.id }}
 {% endfor %}
 ```
 
-Script Python **gerar_vlans.py2**  
+**Script Python gerar_vlans.py2**  
 
 ```python
 import json
@@ -135,4 +157,23 @@ with open('vlan_config.txt', 'w') as f:
     f.write(saida)
 
 print("Arquivo de configuração gerado: vlan_config.txt")
+```
+
+**Saída**
+
+```bash
+alcancil@linux:~/automacoes/arquivos/j2/01$ python3 -m venv venv
+source venv/bin/activate
+pip install jinja2
+Collecting jinja2
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting MarkupSafe>=2.0 (from jinja2)
+  Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Installing collected packages: MarkupSafe, jinja2
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6
+(venv) alcancil@linux:~/automacoes/arquivos/j2/01$ python3 gerar_vlans.py 
+Arquivo de configuração gerado: vlan_config.txt
+(venv) alcancil@linux:~/automacoes/arquivos/j2/01$ 
 ```
