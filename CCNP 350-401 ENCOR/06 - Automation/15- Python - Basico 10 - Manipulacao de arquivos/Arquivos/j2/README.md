@@ -50,28 +50,30 @@ Também pode ser usado em scripts Python puros, sem depender do Ansible, o que �
 ```mermaid
 flowchart TD
 
-    A[Inicio] --> B[Criação do Template Jinja2 (.j2)]
-    B --> C[Criação dos Dados de Entrada]
-    
-    C --> C1[Arquivo .json<br>ou]
-    C --> C2[Arquivo .yaml<br>ou dicionário Python]
+    A[Inicio] --> B[Template Jinja2 (.j2)]
+    B --> C[Dados de Entrada]
 
-    %% Caminho Python Puro
-    C1 & C2 --> D[Uso de Script Python]
-    D --> E[Carregamento dos Dados (json/yaml)]
-    E --> F[Renderização do Template com Jinja2]
-    F --> G[Geração do arquivo final (.cfg ou .txt)]
-    G --> H[Revisão manual da configuração]
-    H --> I[Envio ao dispositivo com Netmiko/Paramiko (opcional)]
+    C --> C1[Arquivo JSON]
+    C --> C2[Arquivo YAML]
+    C --> C3[Dicionário Python]
 
-    %% Caminho Ansible
-    C1 & C2 --> J[Uso de Ansible Playbook]
-    J --> K[Ansible carrega o template Jinja2]
-    K --> L[Renderização com os dados YAML/Inventário]
-    L --> M[Aplicação automática da configuração via SSH]
-    M --> N[Log/Sucesso/Rollback (se necessário)]
+    %% Caminho com Python puro
+    C1 & C2 & C3 --> D[Script Python]
+    D --> E[Carrega dados JSON/YAML]
+    E --> F[Renderiza template Jinja2]
+    F --> G[Gera arquivo de configuração (.cfg ou .txt)]
+    G --> H[Revisão manual]
+    H --> I[Envio opcional com Netmiko/Paramiko]
 
+    %% Caminho com Ansible
+    C1 & C2 --> J[Playbook Ansible]
+    J --> K[Ansible carrega template .j2]
+    K --> L[Renderiza usando variáveis/inventário YAML]
+    L --> M[Aplica configuração via SSH]
+    M --> N[Log / rollback se necessário]
+
+    style A fill:#d3ffd3,stroke:#006600
     style J fill:#d9f0ff,stroke:#1c75bc
     style D fill:#f0f0f0,stroke:#666
-    style A fill:#d3ffd3,stroke:#006600
+
 ```
