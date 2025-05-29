@@ -5,6 +5,7 @@
   - [Índice](#índice)
 - [05 Manipulação de arquivos – .j2](#05-manipulação-de-arquivos--j2)
     - [Casos de uso do Jinja2 na automação de redes:](#casos-de-uso-do-jinja2-na-automação-de-redes)
+    - [Quando Usar Jinja2 vs Outras Abordagens](#quando-usar-jinja2-vs-outras-abordagens)
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
     - [Arrumar ---](#arrumar----)
     - [Exemplo 01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)](#exemplo-01-inventário-de-dispositivos-armazenar-atributos-complexos-como-vlans-interfaces-e-políticas-de-qos)
@@ -30,7 +31,7 @@ Também pode ser usado em scripts Python puros, sem depender do Ansible, o que �
 - Automação controlada via scripts Python: ideal para criar ferramentas internas.
 - Padronização de configurações: manter consistência entre equipes e ambientes.
 
-###Quando Usar Jinja2 vs Outras Abordagens
+### Quando Usar Jinja2 vs Outras Abordagens
 
 | Escolha Jinja2 quando...	                         | Evite Jinja2 quando...                             |
 |----------------------------------------------------|----------------------------------------------------|
