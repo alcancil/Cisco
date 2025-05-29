@@ -112,3 +112,27 @@ vlan {{ vlan.id }}
 !
 {% endfor %}
 ```
+
+Script Python **gerar_vlans.py2**  
+
+```python
+import json
+from jinja2 import Environment, FileSystemLoader
+
+# Carrega os dados das VLANs
+with open('vlans.json') as f:
+    dados = json.load(f)
+
+# Carrega o template Jinja2
+env = Environment(loader=FileSystemLoader('.'))
+template = env.get_template('vlan_template.j2')
+
+# Renderiza a configuração
+saida = template.render(dados)
+
+# Salva a saída em um arquivo
+with open('vlan_config.txt', 'w') as f:
+    f.write(saida)
+
+print("Arquivo de configuração gerado: vlan_config.txt")
+```
