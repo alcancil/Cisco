@@ -72,8 +72,14 @@ flowchart TB
     L --> M[Aplica via SSH]
     M --> N[Log ou rollback]
 
-    style A fill:#d3ffd3,stroke:#006600
-    style D fill:#f0f0f0,stroke:#666
-    style J fill:#d9f0ff,stroke:#1c75bc
+    %% Cores atualizadas
+    style A fill:#ffffff,stroke:#2e7d32,stroke-width:2px
+    style B fill:#eeeeee,stroke:#555
+    style C fill:#eeeeee,stroke:#555
+    style C1 fill:#f1f1f1,stroke:#333
+    style C2 fill:#f1f1f1,stroke:#333
+    style C3 fill:#f1f1f1,stroke:#333
+    style D fill:#ffffff,stroke:#333
+    style J fill:#ffffff,stroke:#333
 
 ```
