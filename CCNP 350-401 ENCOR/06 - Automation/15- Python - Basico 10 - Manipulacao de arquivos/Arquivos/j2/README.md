@@ -9,6 +9,8 @@
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
     - [Fluxo do uso do Jinja2 com Python puro e com Ansible](#fluxo-do-uso-do-jinja2-com-python-puro-e-com-ansible)
     - [Requisitos antes de começarmos os exemplos](#requisitos-antes-de-começarmos-os-exemplos)
+    - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
+      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -95,7 +97,7 @@ pip3 install jinja2
 
 Para garantir que está tudo certo, você pode executar:
 
-```` python
+``` python
 python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 ```
 
