@@ -41,9 +41,9 @@ Também pode ser usado em scripts Python puros, sem depender do Ansible, o que �
 - Automação real de configurações: você aplica o mesmo modelo para N switches, apenas mudando os dados.
 - Integração nativa com Ansible: 100% das tarefas no Ansible suportam variáveis com Jinja2.
 - Escalabilidade e consistência: evita erros manuais e acelera a entrega de ambientes padronizados.
-- Adoção em ambientes reais: é o padrão em equipes de redes que adotam infraestrutura como código.
+- Adoção em ambientes reais: é o padrão em equipes de redes que adotam infraestrutura como código.  
  
-    > Antes de ver exemplos práticos com Jinja2, é fundamental entender o fluxo de como os templates e os dados estruturados (JSON ou YAML) se combinam para gerar configurações prontas.O fluxograma abaixo mostra dois cenários: uso com Python puro e uso com Ansible.
+**OBS:** Antes de ver exemplos práticos com Jinja2, é fundamental entender o fluxo de como os templates e os dados estruturados (JSON ou YAML) se combinam para gerar configurações prontas.O fluxograma abaixo mostra dois cenários: uso com Python puro e uso com Ansible.
 
 ### Fluxo do uso do Jinja2 com Python puro e com Ansible
 
