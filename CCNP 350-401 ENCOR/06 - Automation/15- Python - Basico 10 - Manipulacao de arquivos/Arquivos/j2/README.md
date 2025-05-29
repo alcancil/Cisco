@@ -47,6 +47,7 @@ Também pode ser usado em scripts Python puros, sem depender do Ansible, o que �
 
 ### Fluxo do uso do Jinja2 com Python puro e com Ansible
 
+```mermaid
 flowchart TD
 
     A[Inicio] --> B[Criação do Template Jinja2 (.j2)]
@@ -73,3 +74,4 @@ flowchart TD
     style J fill:#d9f0ff,stroke:#1c75bc
     style D fill:#f0f0f0,stroke:#666
     style A fill:#d3ffd3,stroke:#006600
+```
