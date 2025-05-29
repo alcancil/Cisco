@@ -48,7 +48,7 @@ TambÃ©m pode ser usado em scripts Python puros, sem depender do Ansible, o que Ã
 ### Fluxo do uso do Jinja2 com Python puro e com Ansible
 
 ```mermaid
-flowchart TD
+graph TB
 
     A[Inicio] --> B[Template Jinja2 (.j2)]
     B --> C[Dados de Entrada]
