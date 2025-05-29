@@ -178,4 +178,21 @@ Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6
 (venv) alcancil@linux:~/automacoes/arquivos/j2/01$ python3 gerar_vlans.py 
 Arquivo de configuração gerado: vlan_config.txt
 (venv) alcancil@linux:~/automacoes/arquivos/j2/01$ 
+
+(venv) alcancil@linux:~/automacoes/arquivos/j2/01$ cat vlan_config.txt 
+! Configuração de VLANs
+
+
+vlan 10
+ name Users
+!
+
+vlan 20
+ name Servers
+!
+
+vlan 30
+ name VoIP
+!
+(venv) alcancil@linux:~/automacoes/arquivos/j2/01$ 
 ```
