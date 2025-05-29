@@ -89,7 +89,7 @@ vlan_generator/
 └── vlan_config.txt             # Saída gerada após a execução
 ```
 
-Arquivo **vlans.py**  
+Arquivo **vlans.json**  
 
 ```json
 {
@@ -99,4 +99,16 @@ Arquivo **vlans.py**
     {"id": 30, "name": "VoIP"}
   ]
 }
+```
+
+Arquivo **vlan_template.j2**  
+
+```j2
+! Configuração de VLANs
+
+{% for vlan in vlans %}
+vlan {{ vlan.id }}
+ name {{ vlan.name }}
+!
+{% endfor %}
 ```
