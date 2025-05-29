@@ -8,6 +8,8 @@
     - [Quando Usar Jinja2 vs Outras Abordagens](#quando-usar-jinja2-vs-outras-abordagens)
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
     - [Fluxo do uso do Jinja2 com Python puro e com Ansible](#fluxo-do-uso-do-jinja2-com-python-puro-e-com-ansible)
+    - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
+      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -71,4 +73,30 @@ flowchart TB
     K --> L[Renderiza com variaveis YAML]
     L --> M[Aplica via SSH]
     M --> N[Log ou rollback]
+```
+
+**OBS:** estaremos utilizando somente scripts python puro por enquanto.
+
+### Exemplo 1: Geração de configuração de VLANs
+
+#### Estrutura de arquivos usada no exemplo
+
+```bash
+vlan_generator/
+├── gerar_vlans.py              # Script principal em Python
+├── vlans.json                  # Dados das VLANs
+├── vlan_template.j2            # Template Jinja2
+└── vlan_config.txt             # Saída gerada após a execução
+```
+
+Arquivo **vlans.py**  
+
+```json
+{
+  "vlans": [
+    {"id": 10, "name": "Users"},
+    {"id": 20, "name": "Servers"},
+    {"id": 30, "name": "VoIP"}
+  ]
+}
 ```
