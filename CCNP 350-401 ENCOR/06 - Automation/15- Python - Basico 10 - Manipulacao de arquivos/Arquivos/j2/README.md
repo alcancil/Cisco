@@ -128,37 +128,37 @@ python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 **Arquivo vlan_template.j2**  
 
 ```j2
-! Configuração de VLANs
-
-{% for vlan in vlans %}
-vlan {{ vlan.id }}
- name {{ vlan.name }}
-!
-{% endfor %}
+[01] ! Configuração de VLANs
+[02]
+[03] {% for vlan in vlans %}
+[04] vlan {{ vlan.id }}
+[05] name {{ vlan.name }}
+[06] !
+[07] {% endfor %}
 ```
 
 **Script Python gerar_vlans.py2**  
 
 ```python
-import json
-from jinja2 import Environment, FileSystemLoader
-
-# Carrega os dados das VLANs
-with open('vlans.json') as f:
-    dados = json.load(f)
-
-# Carrega o template Jinja2
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template('vlan_template.j2')
-
-# Renderiza a configuração
-saida = template.render(dados)
-
-# Salva a saída em um arquivo
-with open('vlan_config.txt', 'w') as f:
-    f.write(saida)
-
-print("Arquivo de configuração gerado: vlan_config.txt")
+[01] import json
+[02] from jinja2 import Environment, FileSystemLoader
+[03]
+[04] # Carrega os dados das VLANs
+[05] with open('vlans.json') as f:
+[06]    dados = json.load(f)
+[07]
+[08] # Carrega o template Jinja2
+[09] env = Environment(loader=FileSystemLoader('.'))
+[10] template = env.get_template('vlan_template.j2')
+[11]
+[12] # Renderiza a configuração
+[13] saida = template.render(dados)
+[14]
+[15] # Salva a saída em um arquivo
+[16] with open('vlan_config.txt', 'w') as f:
+[17]    f.write(saida)
+[18]
+[19] print("Arquivo de configuração gerado: vlan_config.txt")
 ```
 
 **Criando ambiente virtual e instalando o jinja2**
