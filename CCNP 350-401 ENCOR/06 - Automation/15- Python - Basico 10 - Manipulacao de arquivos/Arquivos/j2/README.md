@@ -74,7 +74,7 @@ flowchart TB
 
     %% Cores atualizadas
     style A fill:#4682B4,stroke:#2e7d32,stroke-width:2px
-    style B fill:#eeeeee,stroke:#555
+    style B fill:#B0C4DE,stroke:#555
     style C fill:#eeeeee,stroke:#555
     style C1 fill:#f1f1f1,stroke:#333
     style C2 fill:#f1f1f1,stroke:#333
