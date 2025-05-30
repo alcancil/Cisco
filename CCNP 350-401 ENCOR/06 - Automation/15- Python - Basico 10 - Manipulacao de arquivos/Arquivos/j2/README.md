@@ -12,6 +12,7 @@
     - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
     - [Exemplo:](#exemplo)
+    - [Exemplo:](#exemplo-1)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -255,27 +256,31 @@ Ele não imprime nada sozinho — ele controla o fluxo.
   
   > Uso de {{ ... }}
 
-Essas são chamadas de "delimitadores de expressão" no Jinja2.
-✅ O que fazem?
+Essas são chamadas de "delimitadores de expressão" no Jinja2.  
 
-    São usadas para imprimir valores ou expressões na saída final.
+O que fazem?  
 
-    Tudo o que estiver entre {{ ... }} será avaliado e substituído por seu valor.
+São usadas para imprimir valores ou expressões na saída final.  
+Tudo o que estiver entre {{ ... }} será avaliado e substituído por seu valor.
 
-🧠 Exemplo:
+### Exemplo:
 
-vlan {{ vlan.id }}
+**vlan {{ vlan.id }}**
 
     Se vlan.id = 10, a saída será:
 
     vlan 10
 
-📌 Resumo rápido:
-Símbolo	Função	Gera saída?
-{% ... %}	Instruções de controle/lógica (laços, if)	❌ Não
-{{ ... }}	Expressões para imprimir valores	✅ Sim
-{# ... #}	Comentário (não aparece no resultado final)	❌ Não
-🧠 Analogia simples:
-Tipo	Como se fosse em Python
-{% for x in y %}	for x in y: (estrutura de controle)
-{{ x }}	print(x) (imprimir na tela)
+**Resumo rápido:**  
+
+| Símbolo   | Função                                      | Gera saída? |
+|-----------|---------------------------------------------|-------------|
+| {% ... %} | Instruções de controle/lógica (laços, if)   | ❌ Não      |
+| {{ ... }} | Expressões para imprimir valores            | ✅ Sim      |
+| {# ... #} | Comentário (não aparece no resultado final) | ❌ Não      |
+
+**Analogia simples:**
+| Tipo	           | Como se fosse em Python               |
+|------------------|---------------------------------------|
+| {% for x in y %} | for x in y: (estrutura de controle)   |
+| {{ x }}	         | print(x) (imprimir na tela)           |
