@@ -20,6 +20,8 @@ Jinja2 é amplamente utilizado em automação de redes — especialmente com Ans
 
 Também pode ser usado em scripts Python puros, sem depender do Ansible, o que é útil para engenheiros que desejam controlar totalmente o processo de automação.
 
+Site oficial: https://jinja.palletsprojects.com/en/stable/
+
 ### Casos de uso do Jinja2 na automação de redes:
 
 - Geração de configurações: VLANs, interfaces, ACLs, rotas, usuários, etc.
