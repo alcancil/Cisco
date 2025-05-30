@@ -621,43 +621,58 @@ ip access-list extended {{ acl.nome }}
 
 **Saída gerada (R1_acls.txt)**
 
+```bash
+venv) alcancil@linux:~/automacoes/arquivos/j2/03$ python3 -m venv venv
+source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/j2/03$ pip3 install jinja2
+Collecting jinja2
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting MarkupSafe>=2.0 (from jinja2)
+  Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Installing collected packages: MarkupSafe, jinja2
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6
+(venv) alcancil@linux:~/automacoes/arquivos/j2/03$ python3 gerar_vlans.py 
+✅ ACLs geradas: R1_acls.txt
+(venv) alcancil@linux:~/automacoes/arquivos/j2/03$ cat R1_acls.txt 
+
 hostname R1
 
+
 ip access-list extended ACL_INTERNET
+
  10 permit ip 192.168.1.0 0.0.0.255 any
+
  20 deny ip any any
+
 !
 
 ip access-list extended ACL_VOIP
+
  10 permit udp 10.0.0.0 0.0.0.255 any
+
 !
+(venv) alcancil@linux:~/automacoes/arquivos/j2/03$ 
+```
 
 **Explicação linha a linha – template_acl.j2
 
-[01] hostname {{ hostname }}                             # Define o hostname da configuração com base no JSON
+```jinja
+[01] hostname {{ hostname }}                                                                            # Define o hostname da configuração com base no JSON
+[02] {% for acl in acls %}                                                                              # Loop externo para cada ACL na lista
+[03] ip access-list extended {{ acl.nome }}                                                             # Cria o bloco de ACL com o nome definido
+[04] {% for regra in acl.regras %}                                                                      # Loop interno para cada regra dentro da ACL
+[05]  {{ regra.seq }} {{ regra.acao }} {{ regra.protocolo }} {{ regra.origem }} {{ regra.destino }}     # Gera a linha da regra da ACL com os campos definidos
+[06] {% endfor %}                                                                                       # Fim do loop de regras
+[07] !                                                                                                  # Separador entre ACLs
+[08] {% endfor %}                                                                                       # Fim do loop de ACLs
+```
 
-[02] {% for acl in acls %}                               # Loop externo para cada ACL na lista
+**Aprendizados principais desse exemplo:**
 
-[03] ip access-list extended {{ acl.nome }}              # Cria o bloco de ACL com o nome definido
-
-[04] {% for regra in acl.regras %}                       # Loop interno para cada regra dentro da ACL
-
-[05]  {{ regra.seq }} {{ regra.acao }} {{ regra.protocolo }} {{ regra.origem }} {{ regra.destino }}  
-                                                         # Gera a linha da regra da ACL com os campos definidos
-
-[06] {% endfor %}                                        # Fim do loop de regras
-
-[07] !                                                   # Separador entre ACLs
-
-[08] {% endfor %}                                        # Fim do loop de ACLs
-
-🎯 Aprendizados principais desse exemplo:
-
-    Uso de loops aninhados (for dentro de for).
-
-    Como gerar ACLs com múltiplas regras e nomes diferentes.
-
-    Aplicação direta a roteadores Cisco com comandos realistas.
-
-    Mantém a lógica de separação entre dados, template e execução.
+- Uso de loops aninhados (for dentro de for).
+- Como gerar ACLs com múltiplas regras e nomes diferentes.
+- Aplicação direta a roteadores Cisco com comandos realistas.
+- Mantém a lógica de separação entre dados, template e execução.
 
