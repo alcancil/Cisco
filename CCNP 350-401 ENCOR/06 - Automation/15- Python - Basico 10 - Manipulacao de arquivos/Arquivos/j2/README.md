@@ -11,6 +11,7 @@
     - [Requisitos antes de começarmos os exemplos](#requisitos-antes-de-começarmos-os-exemplos)
     - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
+    - [Exemplo:](#exemplo)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -203,3 +204,78 @@ vlan 30
 !
 (venv) alcancil@linux:~/automacoes/arquivos/j2/01$ 
 ```
+
+**Explicação**  
+
+**Arquivo vlan_template.j2**  
+
+```j2
+Seção 1: Cabeçalho
+
+Linha [01] ! Configuração de VLANs              # Comentário fixo — aparece na saída final como marcação
+Linha [02]                                      # Linha em branco para separar o cabeçalho do bloco de repetição
+
+Seção 2: Laço de geração de VLANs
+
+Linha [03] {% for vlan in vlans %}              # Início do laço — repete o bloco para cada VLAN na lista `vlans`
+Linha [04] vlan {{ vlan.id }}                   # Substitui com o ID da VLAN — ex: "vlan 10"
+Linha [05] name {{ vlan.name }}                 # Substitui com o nome da VLAN — ex: "name VLAN_GESTAO"
+Linha [06] !                                    # Adiciona separador entre blocos de VLAN — estilo comum em configs Cisco
+Linha [07] {% endfor %}                         # Finaliza o laço — encerra a repetição dos comandos acima
+```
+
+Cabe aqui uma explicação um pouco mais detalhada sobre esse template jinja. Aqui começamos a ver alguns elementos novos que são utilizados em tipos de arquivos assim, então vamos analisar:  
+
+- **Linha 03: {% for vlan in vlans %}**  
+  
+  > Uso de {% ... %}  
+
+Essas são chamadas de "delimitadores de instrução" no Jinja2.  
+
+O que fazem?  
+
+São usadas para:
+
+    Comandos de controle de fluxo:
+
+        for, if, elif, else, endfor, endif, etc.
+
+    Blocos de lógica, mas que não produzem saída direta no texto.
+
+### Exemplo:
+
+**{% for vlan in vlans %}**
+
+    Esse comando diz:
+    "Para cada item da lista vlans, execute o que está dentro deste bloco."
+
+Ele não imprime nada sozinho — ele controla o fluxo.  
+
+- **Linhas 04 e 05: {{ vlan.id }} e {{ vlan.name }}**
+  
+  > Uso de {{ ... }}
+
+Essas são chamadas de "delimitadores de expressão" no Jinja2.
+✅ O que fazem?
+
+    São usadas para imprimir valores ou expressões na saída final.
+
+    Tudo o que estiver entre {{ ... }} será avaliado e substituído por seu valor.
+
+🧠 Exemplo:
+
+vlan {{ vlan.id }}
+
+    Se vlan.id = 10, a saída será:
+
+    vlan 10
+
+📌 Resumo rápido:
+Símbolo	Função	Gera saída?
+{% ... %}	Instruções de controle/lógica (laços, if)	❌ Não
+{{ ... }}	Expressões para imprimir valores	✅ Sim
+{# ... #}	Comentário (não aparece no resultado final)	❌ Não
+🧠 Analogia simples:
+Tipo	Como se fosse em Python
+{% for x in y %}	for x in y: (estrutura de controle)
+{{ x }}	print(x) (imprimir na tela)
