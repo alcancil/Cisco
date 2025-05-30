@@ -456,9 +456,6 @@ drwxrwxr-x 4 alcancil alcancil 4096 mai 30 16:17 ..
 drwxrwxr-x 5 alcancil alcancil 4096 mai 30 16:21 venv
 (venv) alcancil@linux:~/automacoes/arquivos/j2/02$ cat SW01_interfaces.txt 
 hostname SW01
-```
-
-```text
 interface GigabitEthernet0/1
  description Link para roteador
  switchport mode access
