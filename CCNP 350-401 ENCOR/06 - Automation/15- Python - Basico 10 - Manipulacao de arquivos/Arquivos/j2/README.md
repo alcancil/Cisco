@@ -555,7 +555,7 @@ O que esse exemplo ensina:
 03/
 ├── dados_acls.json         # Dados das acls
 ├── template_acl.j2         # Template Jinja2
-├── gerar_acls.py           # # Script principal em Python
+├── gerar_acls.py           # Script principal em Python
 └── R1_acls.txt             # Saída gerada após a execução
 
 **dados_acls.json**
