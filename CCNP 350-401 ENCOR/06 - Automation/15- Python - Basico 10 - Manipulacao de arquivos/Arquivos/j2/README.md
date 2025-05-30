@@ -9,10 +9,10 @@
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
     - [Fluxo do uso do Jinja2 com Python puro e com Ansible](#fluxo-do-uso-do-jinja2-com-python-puro-e-com-ansible)
     - [Requisitos antes de começarmos os exemplos](#requisitos-antes-de-começarmos-os-exemplos)
-    - [Exemplo 1: Geração de configuração de VLANs](#exemplo-1-geração-de-configuração-de-vlans)
+    - [Exemplo 01: Geração de configuração de VLANs](#exemplo-01-geração-de-configuração-de-vlans)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
-    - [Exemplo:](#exemplo)
-    - [Exemplo:](#exemplo-1)
+    - [Exemplo de uso:](#exemplo-de-uso)
+    - [Exemplo de uso:](#exemplo-de-uso-1)
     - [Exemplo 02: Geração de configurações de interfaces com Jinja2](#exemplo-02-geração-de-configurações-de-interfaces-com-jinja2)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-1)
 
@@ -107,7 +107,7 @@ Para garantir que está tudo certo, você pode executar:
 python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 ```
 
-### Exemplo 1: Geração de configuração de VLANs
+### Exemplo 01: Geração de configuração de VLANs
 
 #### Estrutura de arquivos usada no exemplo
 
@@ -119,7 +119,7 @@ python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 └── vlan_config.txt             # Saída gerada após a execução
 ```
 
-Porquê nesse exemplo temos esses arquivos? 
+Por que essa estrutura?? 
 
 A ideia é passar os dados contidos no arquivo .json, que pode ser gerado manualmente ou pode ser obtido através de alguma fonte, para o template (vlan_template.j2) de forma dinâmica. Isso se torna interessante e útil pois no caso de um ambiente que temos que realizar várias mudanças, somente é necessário ou obter novos dados no arquivo .json, ou realizar algumas mudanças pontuais nesse arquivo de dados  
 
@@ -231,7 +231,7 @@ Linha [06] !                                    # Adiciona separador entre bloco
 Linha [07] {% endfor %}                         # Finaliza o laço — encerra a repetição dos comandos acima
 ```
 
-Cabe aqui uma explicação um pouco mais detalhada sobre esse template jinja. Aqui começamos a ver alguns elementos novos que são utilizados em tipos de arquivos assim, então vamos analisar:  
+A seguir, explicamos com mais detalhes sobre esse template jinja2. Aqui começamos a ver alguns elementos novos que são utilizados em tipos de arquivos assim, então vamos analisar:  
 
 - **Linha 03: {% for vlan in vlans %}**  
   
@@ -249,7 +249,7 @@ São usadas para:
 
     Blocos de lógica, mas que não produzem saída direta no texto.
 
-### Exemplo:
+### Exemplo de uso:
 
 **{% for vlan in vlans %}**
 
@@ -269,7 +269,7 @@ O que fazem?
 São usadas para imprimir valores ou expressões na saída final.  
 Tudo o que estiver entre {{ ... }} será avaliado e substituído por seu valor.
 
-### Exemplo:
+### Exemplo de uso:
 
 **vlan {{ vlan.id }}**
 
@@ -325,7 +325,7 @@ Seção 5: Salvamento da saída gerada
 
 Linha [14]                                           
 Linha [15]                                                    # Salva a saída em um arquivo             
-Linha [16] with open('vlan_config.txt', 'w') as f:            # Abre (ou cria) o arquivo 'vlan_config.txt' no modo escrita
+Linha [16] with open('vlan_config.txt', 'w') as f:            # Abre (ou cria) o arquivo 'vlan_config.txt' no modo "escrita"
 Linha [17]    f.write(saida)                                  # Escreve o conteúdo gerado (a configuração final) no arquivo
 
 Seção 6: Mensagem de confirmação
