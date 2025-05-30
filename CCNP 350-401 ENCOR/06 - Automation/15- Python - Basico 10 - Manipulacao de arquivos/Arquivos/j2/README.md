@@ -362,9 +362,9 @@ Etapa	Ferramenta
 
 Esse ciclo é feito por boas práticas e segurança.
 
-- [ciscofparse](https://github.com/mpenning/ciscoconfparse)
-- [jinjalint](https://pypi.org/project/jinjalint/)
-- [yamllint](https://yamllint.readthedocs.io/en/stable/)
+- [ciscofparse](https://github.com/mpenning/ciscoconfparse) - Valida configurações Cisco.
+- [jinjalint](https://pypi.org/project/jinjalint/) - Verifica sintaxe de templates Jinja2.
+- [yamllint](https://yamllint.readthedocs.io/en/stable/) - Valida arquivos YAML.
 
 ### Exemplo 02: Geração de configurações de interfaces com Jinja2
 
@@ -544,7 +544,7 @@ Seção 6: Confirmação no terminal
 
 O que esse exemplo ensina:  
 
-- Uso de for para gerar várias interfaces.
+- Uso de for para gerar várias interfaces. 
 - Uso de if para aplicar lógica condicional.
 - Separação completa entre dados (.json) e lógica (.j2).
 - Como salvar um arquivo .txt com a configuração final.
