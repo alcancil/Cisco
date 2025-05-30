@@ -141,7 +141,7 @@ python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 [07] {% endfor %}
 ```
 
-**Script Python gerar_vlans.py2**  
+**Script Python gerar_vlans.py**  
 
 ```python
 [01] import json
@@ -284,3 +284,46 @@ Tudo o que estiver entre {{ ... }} será avaliado e substituído por seu valor.
 |------------------|---------------------------------------|
 | {% for x in y %} | for x in y: (estrutura de controle)   |
 | {{ x }}	         | print(x) (imprimir na tela)           |
+
+**Explicação**
+
+**Script Python gerar_vlans.py**
+
+```Python
+Seção 1: Importação de Bibliotecas
+
+Linha [01] import json                                       # Importa o módulo para ler e manipular arquivos JSON
+Linha [02] from jinja2 import Environment, FileSystemLoader  # Importa o mecanismo de template e o carregador de arquivos do Jinja2
+
+Seção 2: Leitura dos dados JSON
+
+Linha [03]                                           
+Linha [04]                                                    # Carrega os dados das VLANs             
+Linha [05] with open('vlans.json') as f:                      # Abre o arquivo 'vlans.json' no modo leitura
+Linha [06]    dados = json.load(f)                            # Carrega o conteúdo JSON e armazena na variável 'dados' (tipo: dicionário)
+
+Seção 3: Carregamento do Template Jinja2
+
+Linha [07]                                           
+Linha [08]                                                    # Carrega o template Jinja2              
+Linha [09] env = Environment(loader=FileSystemLoader('.'))    # Cria um ambiente Jinja2 e define que os templates estão no diretório atual ('.')
+Linha [10] template = env.get_template('vlan_template.j2')    # Carrega o template chamado 'vlan_template.j2'
+
+Seção 4: Renderização da configuração
+
+Linha [11]                                           
+Linha [12]                                                    # Renderiza a configuração                
+Linha [13] saida = template.render(dados)                     # Usa os dados carregados do JSON para preencher o template Jinja2
+
+Seção 5: Salvamento da saída gerada
+
+Linha [14]                                           
+Linha [15]                                                    # Salva a saída em um arquivo             
+Linha [16] with open('vlan_config.txt', 'w') as f:            # Abre (ou cria) o arquivo 'vlan_config.txt' no modo escrita
+Linha [17]    f.write(saida)                                  # Escreve o conteúdo gerado (a configuração final) no arquivo
+
+Seção 6: Mensagem de confirmação
+
+Linha [18]                                           
+Linha [19] print("Arquivo de configuração gerado: vlan_config.txt")  # Exibe mensagem indicando sucesso da operação
+```
