@@ -18,7 +18,7 @@
 
 Jinja2 é uma biblioteca de template engine para Python, usada para gerar arquivos de forma dinâmica com base em dados estruturados. Os arquivos de modelo geralmente usam a extensão .j2 e contêm variáveis e estruturas de controle (como for, if, etc.).
 
-Jinja2 é amplamente utilizado em automação de redes — especialmente com Ansible — para gerar configurações de roteadores, switches e firewalls de forma escalável, a partir de dados em formatos como YAML, JSON ou dicionários Python.
+É amplamente utilizado em automação de redes — especialmente com Ansible — para gerar configurações de roteadores, switches e firewalls de forma escalável, a partir de dados em formatos como YAML, JSON ou dicionários Python.
 
 Também pode ser usado em scripts Python puros, sem depender do Ansible, o que é útil para engenheiros que desejam controlar totalmente o processo de automação.
 
@@ -37,9 +37,9 @@ Site oficial: https://jinja.palletsprojects.com/en/stable/
 
 | Escolha Jinja2 quando...	                         | Evite Jinja2 quando...                             |
 |----------------------------------------------------|----------------------------------------------------|
-| Você precisa gerar configurações personalizadas	 |  O ambiente é extremamente simples e fixo          |
-| Há muitos dispositivos com estruturas parecidas	 |  A mudança será aplicada uma única vez apenas      |
-| Você já tem dados em JSON/YAML	                 |  Não há controle sobre os dados de entrada         |
+| Você precisa gerar configurações personalizadas	   |  O ambiente é extremamente simples e fixo          |
+| Há muitos dispositivos com estruturas parecidas	   |  A mudança será aplicada uma única vez apenas      |
+| Você já tem dados em JSON/YAML	                   |  Não há controle sobre os dados de entrada         |
 | Você quer usar Ansible, Nornir ou criar interfaces |  A automação é feita com scripts shell simples     | 
 
 ### Por que Jinja2 é essencial para o CCNP?
@@ -50,7 +50,7 @@ Site oficial: https://jinja.palletsprojects.com/en/stable/
 - Escalabilidade e consistência: evita erros manuais e acelera a entrega de ambientes padronizados.
 - Adoção em ambientes reais: é o padrão em equipes de redes que adotam infraestrutura como código.  
  
-**OBS:** Antes de ver exemplos práticos com Jinja2, é fundamental entender o fluxo de como os templates e os dados estruturados (JSON ou YAML) se combinam para gerar configurações prontas.O fluxograma abaixo mostra dois cenários: uso com Python puro e uso com Ansible.
+**OBS:** Antes de ver exemplos práticos com Jinja2, é fundamental entender o fluxo de como os templates e os dados estruturados (JSON ou YAML) se combinam para gerar configurações prontas. O fluxograma abaixo mostra dois cenários: uso com Python puro e uso com Ansible.
 
 ### Fluxo do uso do Jinja2 com Python puro e com Ansible
 
@@ -116,6 +116,10 @@ python3 -c "import jinja2; print('Jinja2 instalado com sucesso!')"
 ├── vlan_template.j2            # Template Jinja2
 └── vlan_config.txt             # Saída gerada após a execução
 ```
+
+Porquê nesse exemplo temos esses arquivos? 
+
+A ideia é passar os dados contidos no arquivo .json, que pode ser gerado manualmente ou pode ser obtido através de alguma fonte, para o template (vlan_template.j2) de forma dinâmica. Isso se torna interessante e útil pois no caso de um ambiente que temos que realizar várias mudanças, somente é necessário ou obter novos dados no arquivo .json, ou realizar algumas mudanças pontuais nesse arquivo de dados  
 
 **Arquivo vlans.json**  
 
@@ -328,7 +332,7 @@ Linha [18]
 Linha [19] print("Arquivo de configuração gerado: vlan_config.txt")  # Exibe mensagem indicando sucesso da operação
 ```
 
-**Resumo**  
+**Etapas do ciclo de automação com Jinja2**  
 
 O que esse script faz?  
 
@@ -355,3 +359,7 @@ Etapa	Ferramenta
 | Templates Jinja2 | jinjalint, ou execução de renderização |	Verifica sintaxe de template                            |
 
 Esse ciclo é feito por boas práticas e segurança.
+
+- [ciscofparse](https://github.com/mpenning/ciscoconfparse)
+- [jinjalint](https://pypi.org/project/jinjalint/)
+- [yamllint](https://yamllint.readthedocs.io/en/stable/)
