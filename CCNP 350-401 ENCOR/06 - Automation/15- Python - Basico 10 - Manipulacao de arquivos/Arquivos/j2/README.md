@@ -327,3 +327,12 @@ Seção 6: Mensagem de confirmação
 Linha [18]                                           
 Linha [19] print("Arquivo de configuração gerado: vlan_config.txt")  # Exibe mensagem indicando sucesso da operação
 ```
+
+**Resumo**  
+
+O que esse script faz?  
+
+- Lê dados de um JSON com informações de VLANs.
+- Usa um template .j2 para transformar esses dados em uma configuração Cisco.
+- Salva o resultado em um arquivo .txt.
+- Exibe uma mensagem de confirmação.
