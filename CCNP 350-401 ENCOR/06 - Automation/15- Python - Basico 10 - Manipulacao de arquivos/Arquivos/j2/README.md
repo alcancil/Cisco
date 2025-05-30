@@ -15,6 +15,8 @@
     - [Exemplo de uso:](#exemplo-de-uso-1)
     - [Exemplo 02: Geração de configurações de interfaces com Jinja2](#exemplo-02-geração-de-configurações-de-interfaces-com-jinja2)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-1)
+    - [Exemplo 03: Geração de Listas de Acesso (ACL)](#exemplo-03-geração-de-listas-de-acesso-acl)
+      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-2)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -545,4 +547,117 @@ O que esse exemplo ensina:
 - Uso de if para aplicar lógica condicional.
 - Separação completa entre dados (.json) e lógica (.j2).
 - Como salvar um arquivo .txt com a configuração final.
+
+### Exemplo 03: Geração de Listas de Acesso (ACL)
+
+#### Estrutura de arquivos usada no exemplo
+
+03
+├── dados_acls.json         # Dados das acls
+├── template_acl.j2         # Template Jinja2
+├── gerar_acls.py           # # Script principal em Python
+└── R1_acls.txt             # Saída gerada após a execução
+
+**dados_acls.json**
+
+```json
+{
+  "hostname": "R1",
+  "acls": [
+    {
+      "nome": "ACL_INTERNET",
+      "regras": [
+        { "seq": 10, "acao": "permit", "protocolo": "ip", "origem": "192.168.1.0 0.0.0.255", "destino": "any" },
+        { "seq": 20, "acao": "deny", "protocolo": "ip", "origem": "any", "destino": "any" }
+      ]
+    },
+    {
+      "nome": "ACL_VOIP",
+      "regras": [
+        { "seq": 10, "acao": "permit", "protocolo": "udp", "origem": "10.0.0.0 0.0.0.255", "destino": "any" }
+      ]
+    }
+  ]
+}
+```
+
+**template_acl.j2**
+
+```jinja
+hostname {{ hostname }}
+
+{% for acl in acls %}
+ip access-list extended {{ acl.nome }}
+{% for regra in acl.regras %}
+ {{ regra.seq }} {{ regra.acao }} {{ regra.protocolo }} {{ regra.origem }} {{ regra.destino }}
+{% endfor %}
+!
+{% endfor %}
+```
+
+**gerar_acls.py**
+
+```python
+[01] import json
+[02] from jinja2 import Environment, FileSystemLoader
+[03]
+[04] # 1. Leitura dos dados
+[05] with open("dados_acls.json") as f:
+[06]     dados = json.load(f)
+[07]
+[08] # 2. Carregamento do template
+[09] env = Environment(loader=FileSystemLoader('.'))
+[10] template = env.get_template("template_acl.j2")
+[11]
+[12] # 3. Renderização
+[13] saida = template.render(dados)
+[14]
+[16] # 4. Salvamento
+[17] with open(f"{dados['hostname']}_acls.txt", "w") as f:
+[18]     f.write(saida)
+[19]
+[20] print(f"✅ ACLs geradas: {dados['hostname']}_acls.txt")
+```
+
+**Saída gerada (R1_acls.txt)**
+
+hostname R1
+
+ip access-list extended ACL_INTERNET
+ 10 permit ip 192.168.1.0 0.0.0.255 any
+ 20 deny ip any any
+!
+
+ip access-list extended ACL_VOIP
+ 10 permit udp 10.0.0.0 0.0.0.255 any
+!
+
+**Explicação linha a linha – template_acl.j2
+
+[01] hostname {{ hostname }}                             # Define o hostname da configuração com base no JSON
+
+[02] {% for acl in acls %}                               # Loop externo para cada ACL na lista
+
+[03] ip access-list extended {{ acl.nome }}              # Cria o bloco de ACL com o nome definido
+
+[04] {% for regra in acl.regras %}                       # Loop interno para cada regra dentro da ACL
+
+[05]  {{ regra.seq }} {{ regra.acao }} {{ regra.protocolo }} {{ regra.origem }} {{ regra.destino }}  
+                                                         # Gera a linha da regra da ACL com os campos definidos
+
+[06] {% endfor %}                                        # Fim do loop de regras
+
+[07] !                                                   # Separador entre ACLs
+
+[08] {% endfor %}                                        # Fim do loop de ACLs
+
+🎯 Aprendizados principais desse exemplo:
+
+    Uso de loops aninhados (for dentro de for).
+
+    Como gerar ACLs com múltiplas regras e nomes diferentes.
+
+    Aplicação direta a roteadores Cisco com comandos realistas.
+
+    Mantém a lógica de separação entre dados, template e execução.
 
