@@ -552,7 +552,7 @@ O que esse exemplo ensina:
 
 #### Estrutura de arquivos usada no exemplo
 
-03
+03/
 ├── dados_acls.json         # Dados das acls
 ├── template_acl.j2         # Template Jinja2
 ├── gerar_acls.py           # # Script principal em Python
