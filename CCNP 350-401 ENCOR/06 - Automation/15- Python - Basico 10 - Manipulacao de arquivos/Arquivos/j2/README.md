@@ -376,8 +376,7 @@ O exemplo a seguir vai gerar configurações de interfaces com base em dados for
 j2_interfaces/
 ├── template_interfaces.j2
 ├── dados_interfaces.json
-├── gerar_interfaces.py
-└── README.md
+└── gerar_interfaces.py
 ```
 
 **dados_interfaces.json**
@@ -404,17 +403,17 @@ j2_interfaces/
 **template_interfaces.j2**
 
 ```jinja
-hostname {{ hostname }}
-
-{% for intf in interfaces %}
-interface {{ intf.nome }}
- description {{ intf.descricao }}
- switchport mode {{ intf.modo }}
-{% if intf.modo == "access" %}
- switchport access vlan {{ intf.vlan }}
-{% endif %}
-!
-{% endfor %}
+[01] hostname {{ hostname }}
+[02]
+[03] {% for intf in interfaces %}
+[04] interface {{ intf.nome }}
+[05] description {{ intf.descricao }}
+[06] switchport mode {{ intf.modo }}
+[07] {% if intf.modo == "access" %}
+[08] switchport access vlan {{ intf.vlan }}
+[09] {% endif %}
+[10] !
+[11] {% endfor %}
 ```
 **gerar_interfaces.py**
 
@@ -440,7 +439,7 @@ interface {{ intf.nome }}
 [19] print(f"✅ Configuração gerada: {dados['hostname']}_interfaces.txt")
 ```
 
-**Exemplo de saída (SW01_interfaces.txt)
+**Saída (SW01_interfaces.txt)**
 
 hostname SW01
 
@@ -455,8 +454,11 @@ interface GigabitEthernet0/2
  switchport mode trunk
 !
 
-**Explicação** linha a linha do template .j2
+**Explicação**  
 
+**template_interfaces.j2**
+
+```jinja
 [01] hostname {{ hostname }}                             # Define o hostname com base na entrada JSON
 
 [02] {% for intf in interfaces %}                        # Início do loop: para cada interface na lista
@@ -470,6 +472,54 @@ interface GigabitEthernet0/2
 
 [09] !                                                   # Separador entre interfaces
 [10] {% endfor %}                                        # Fim do loop
+```
+
+**gerar_interfaces.py**
+
+```Python
+Seção 1: Importação de bibliotecas
+
+[01] import json                                                # Importa o módulo 'json' da biblioteca padrão do Python, usado para ler o arquivo de dados (dados_interfaces.json)
+[02] from jinja2 import Environment, FileSystemLoader           # Importa as classes necessárias do Jinja2 para carregar e renderizar templates armazenados em arquivos
+
+[03]
+
+Seção 2: Leitura dos dados de entrada
+
+[04]                                                            # 1. Leitura dos dados                                
+[05] with open("dados_interfaces.json") as f:                   # Abre o arquivo 'dados_interfaces.json' no modo leitura
+[06]     dados = json.load(f)                                   # Converte o conteúdo do arquivo JSON em um dicionário Python e armazena na variável 'dados'
+
+[07]
+
+Seção 3: Carregamento do template Jinja2
+
+[08]                                                            # 2. Carregamento do template                         
+[09] env = Environment(loader=FileSystemLoader('.'))            # Cria um ambiente Jinja2 e define que os templates estão no diretório atual ('.')
+[10] template = env.get_template("template_interfaces.j2")      # Carrega o arquivo de template chamado 'template_interfaces.j2'
+
+[11]
+
+Seção 4: Renderização do template com os dados
+
+[12]                                                             # 3. Renderização    
+[13] saida = template.render(dados)                              # Executa a renderização: preenche o template com os dados e salva o resultado em 'saida'
+
+[14]
+
+Seção 5: Salvamento da saída gerada em um arquivo
+
+[15]                                                              # 4. Salvamento                                       
+[16] with open(f"{dados['hostname']}_interfaces.txt", 'w') as f:  # Abre ou cria um novo arquivo de saída com base no hostname (ex: SW01_interfaces.txt)
+[17]     f.write(saida)                                           # Escreve o conteúdo gerado no arquivo
+
+[18]
+
+Seção 6: Confirmação no terminal
+
+[19] print(f"✅ Configuração gerada: {dados['hostname']}_interfaces.txt")  # Exibe mensagem no terminal informando o nome do arquivo gerado com sucesso
+
+```
 
 O que esse exemplo ensina:  
 
