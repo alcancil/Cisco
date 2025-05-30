@@ -335,4 +335,23 @@ O que esse script faz?
 - Lê dados de um JSON com informações de VLANs.
 - Usa um template .j2 para transformar esses dados em uma configuração Cisco.
 - Salva o resultado em um arquivo .txt.
-- Exibe uma mensagem de confirmação.
+- Exibe uma mensagem de confirmação.  
+
+**Fluxo**  
+
+Etapa	Ferramenta
+1. Geração do template	Python + Jinja2
+2. Validação opcional	Visual / Linter*
+3. Armazenamento	.txt local ou Git (Ferramenta de versionamento)
+4. Aplicação nos dispositivos	Netmiko / Paramiko / Ansible
+
+**OBS:** Um linter é uma ferramenta que analisa automaticamente um arquivo em busca de erros, problemas de formatação ou boas práticas.
+
+| Tipo de dado     | Ferramenta/Linter                      | O que valida                                            |
+|------------------|----------------------------------------|---------------------------------------------------------|
+| Config Cisco     | ciscoconfparse	                        | Verifica presença de comandos, subcomandos, e estrutura |
+| YAML             | yamllint	                              | Verifica identação e estrutura                          |
+| JSON             | json.tool, jq	                        | Valida sintaxe                                          | 
+| Templates Jinja2 | jinjalint, ou execução de renderização |	Verifica sintaxe de template                            |
+
+Esse ciclo é feito por boas práticas e segurança.
