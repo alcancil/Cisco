@@ -13,6 +13,8 @@
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
     - [Exemplo:](#exemplo)
     - [Exemplo:](#exemplo-1)
+    - [Exemplo 02: Geração de configurações de interfaces com Jinja2](#exemplo-02-geração-de-configurações-de-interfaces-com-jinja2)
+      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-1)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -363,3 +365,116 @@ Esse ciclo é feito por boas práticas e segurança.
 - [ciscofparse](https://github.com/mpenning/ciscoconfparse)
 - [jinjalint](https://pypi.org/project/jinjalint/)
 - [yamllint](https://yamllint.readthedocs.io/en/stable/)
+
+### Exemplo 02: Geração de configurações de interfaces com Jinja2
+
+O exemplo a seguir vai gerar configurações de interfaces com base em dados fornecidos em JSON.
+
+#### Estrutura de arquivos usada no exemplo
+
+```bash
+j2_interfaces/
+├── template_interfaces.j2
+├── dados_interfaces.json
+├── gerar_interfaces.py
+└── README.md
+```
+
+**dados_interfaces.json**
+
+```json
+{
+  "hostname": "SW01",
+  "interfaces": [
+    {
+      "nome": "GigabitEthernet0/1",
+      "descricao": "Link para roteador",
+      "modo": "access",
+      "vlan": 10
+    },
+    {
+      "nome": "GigabitEthernet0/2",
+      "descricao": "Ligação com AP",
+      "modo": "trunk"
+    }
+  ]
+}
+```
+
+**template_interfaces.j2**
+
+```jinja
+hostname {{ hostname }}
+
+{% for intf in interfaces %}
+interface {{ intf.nome }}
+ description {{ intf.descricao }}
+ switchport mode {{ intf.modo }}
+{% if intf.modo == "access" %}
+ switchport access vlan {{ intf.vlan }}
+{% endif %}
+!
+{% endfor %}
+```
+**gerar_interfaces.py**
+
+```python
+[01] import json
+[02] from jinja2 import Environment, FileSystemLoader
+[03]
+[04] # 1. Leitura dos dados
+[05] with open("dados_interfaces.json") as f:
+[06]     dados = json.load(f)
+[07]
+[08] # 2. Carregamento do template
+[09] env = Environment(loader=FileSystemLoader('.'))
+[10] template = env.get_template("template_interfaces.j2")
+[11]
+[12] # 3. Renderização
+[13] saida = template.render(dados)
+[14]
+[15] # 4. Salvamento
+[16] with open(f"{dados['hostname']}_interfaces.txt", 'w') as f:
+[17]     f.write(saida)
+[18]
+[19] print(f"✅ Configuração gerada: {dados['hostname']}_interfaces.txt")
+```
+
+**Exemplo de saída (SW01_interfaces.txt)
+
+hostname SW01
+
+interface GigabitEthernet0/1
+ description Link para roteador
+ switchport mode access
+ switchport access vlan 10
+!
+
+interface GigabitEthernet0/2
+ description Ligação com AP
+ switchport mode trunk
+!
+
+**Explicação** linha a linha do template .j2
+
+[01] hostname {{ hostname }}                             # Define o hostname com base na entrada JSON
+
+[02] {% for intf in interfaces %}                        # Início do loop: para cada interface na lista
+[03] interface {{ intf.nome }}                           # Comando "interface" seguido do nome da interface
+[04]  description {{ intf.descricao }}                   # Define a descrição fornecida no JSON
+[05]  switchport mode {{ intf.modo }}                    # Define o modo da porta: access ou trunk
+
+[06] {% if intf.modo == "access" %}                      # Verifica se o modo é "access"
+[07]  switchport access vlan {{ intf.vlan }}             # Se for access, aplica a VLAN de acesso
+[08] {% endif %}                                         # Fim do condicional
+
+[09] !                                                   # Separador entre interfaces
+[10] {% endfor %}                                        # Fim do loop
+
+O que esse exemplo ensina:  
+
+- Uso de for para gerar várias interfaces.
+- Uso de if para aplicar lógica condicional.
+- Separação completa entre dados (.json) e lógica (.j2).
+- Como salvar um arquivo .txt com a configuração final.
+
