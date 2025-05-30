@@ -441,18 +441,39 @@ j2_interfaces/
 
 **Saída (SW01_interfaces.txt)**
 
+```bash
+(venv) alcancil@linux:~/automacoes/arquivos/j2/02$ python3 gerar_interfaces.py 
+✅ Configuração gerada: SW01_interfaces.txt
+(venv) alcancil@linux:~/automacoes/arquivos/j2/02$ 
+(venv) alcancil@linux:~/automacoes/arquivos/j2/02$ ls -la
+total 28
+drwxrwxr-x 3 alcancil alcancil 4096 mai 30 16:23 .
+drwxrwxr-x 4 alcancil alcancil 4096 mai 30 16:17 ..
+-rw-r--r-- 1 root     root      288 mai 30 16:18 dados_interfaces.json
+-rw-r--r-- 1 root     root      505 mai 30 16:19 gerar_interfaces.py
+-rw-rw-r-- 1 alcancil alcancil  218 mai 30 16:23 SW01_interfaces.txt
+-rw-r--r-- 1 root     root      245 mai 30 16:18 template_interfaces.j2
+drwxrwxr-x 5 alcancil alcancil 4096 mai 30 16:21 venv
+(venv) alcancil@linux:~/automacoes/arquivos/j2/02$ cat SW01_interfaces.txt 
 hostname SW01
+```
 
+```text
 interface GigabitEthernet0/1
  description Link para roteador
  switchport mode access
+
  switchport access vlan 10
+
 !
 
 interface GigabitEthernet0/2
  description Ligação com AP
  switchport mode trunk
+
 !
+(venv) alcancil@linux:~/automacoes/arquivos/j2/02$
+```
 
 **Explicação**  
 
