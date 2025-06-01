@@ -18,6 +18,7 @@
     - [Exemplo 03: Geração de Listas de Acesso (ACL)](#exemplo-03-geração-de-listas-de-acesso-acl)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-2)
     - [Exemplo 04: banner + Hostname com informações reais](#exemplo-04-banner--hostname-com-informações-reais)
+      - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-3)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -727,4 +728,44 @@ Seção 6: Mensagem de confirmação
 - Mantém a lógica de separação entre dados, template e execução.
 
 ### Exemplo 04: banner + Hostname com informações reais
+
+O que esse script faz ?   
+
+- Banner de acesso (banner login) com:
+
+  > Mensagem padrão de segurança,
+  > Endereço de contato,
+  > Data atual (gerada automaticamente).
+
+- Banner de motd (banner motd) com:
+
+  > Mensagem rotativa, instrução ou alerta curto.
+
+Tudo isso será gerado dinamicamente, com dados fornecidos via terminal e reutilizando o mesmo script.
+
+#### Estrutura de arquivos usada no exemplo
+
+```bash
+04-/
+├── template_banner.j2
+├── gerar_config.py
+└── (arquivos .txt gerados automaticamente)
+```
+
+**template_banner.j2**  
+
+```jinja2
+hostname {{ hostname }}
+
+banner login ^C
+Acesso somente pessoal autorizado.
+Acesso monitorado.
+Qualquer dúvida entrar em contato com suporte@empresa.com
+Data de acesso: {{ data }}
+^C
+
+banner motd ^C
+{{ motd }}
+^C
+```
 
