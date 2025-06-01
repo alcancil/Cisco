@@ -769,3 +769,108 @@ banner motd ^C
 ^C
 ```
 
+**gerar_config.py**
+
+```Python
+from jinja2 import Environment, FileSystemLoader
+from datetime import datetime
+
+# 1. Prepara o ambiente Jinja2
+env = Environment(loader=FileSystemLoader('.'))
+template = env.get_template("template_banner.j2")
+
+# 2. Define quantos dispositivos o usuário deseja gerar
+qtd = int(input("Quantos dispositivos deseja configurar? "))
+
+# 3. Loop para entrada e geração de cada equipamento
+for i in range(1, qtd + 1):
+    print(f"\n➡️ Dispositivo {i}")
+    hostname = input("Hostname: ")
+    motd = input("Mensagem MOTD (curta): ")
+
+    dados = {
+        "hostname": hostname,
+        "motd": motd,
+        "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    }
+
+    saida = template.render(dados)
+    nome_arquivo = f"{hostname}_banner.txt"
+
+    with open(nome_arquivo, "w") as f:
+        f.write(saida)
+
+    print(f"✅ Configuração gerada: {nome_arquivo}")
+```
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/arquivos/j2/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/arquivos/j2/04$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/j2/04$ pip3 install jinja2
+Collecting jinja2
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting MarkupSafe>=2.0 (from jinja2)
+  Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Installing collected packages: MarkupSafe, jinja2
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6
+(venv) alcancil@linux:~/automacoes/arquivos/j2/04$ python3 gerar_config.py 
+Quantos dispositivos deseja configurar? 4
+
+➡️ Dispositivo 1
+Hostname: Sw01
+Mensagem MOTD (curta): Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
+✅ Configuração gerada: Sw01_banner.txt
+
+➡️ Dispositivo 2
+Hostname: Sw02
+Mensagem MOTD (curta): Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
+✅ Configuração gerada: Sw02_banner.txt
+
+➡️ Dispositivo 3
+Hostname: Sw03
+Mensagem MOTD (curta): Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
+✅ Configuração gerada: Sw03_banner.txt
+
+➡️ Dispositivo 4
+Hostname: Sw04
+Mensagem MOTD (curta): Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
+✅ Configuração gerada: Sw04_banner.txt
+(venv) alcancil@linux:~/automacoes/arquivos/j2/04$ ls -la
+total 36
+drwxrwxr-x 3 alcancil alcancil 4096 jun  1 19:52 .
+drwxrwxr-x 6 alcancil alcancil 4096 jun  1 18:14 ..
+-rw-r--r-- 1 root     root      864 jun  1 19:46 gerar_config.py
+-rw-rw-r-- 1 alcancil alcancil  259 jun  1 19:51 Sw01_banner.txt
+-rw-rw-r-- 1 alcancil alcancil  259 jun  1 19:51 Sw02_banner.txt
+-rw-rw-r-- 1 alcancil alcancil  259 jun  1 19:52 Sw03_banner.txt
+-rw-rw-r-- 1 alcancil alcancil  259 jun  1 19:52 Sw04_banner.txt
+-rw-r--r-- 1 root     root      214 jun  1 18:15 template_banner.j2
+drwxrwxr-x 5 alcancil alcancil 4096 jun  1 19:47 venv
+(venv) alcancil@linux:~/automacoes/arquivos/j2/04$ cat Sw01_banner.txt 
+hostname Sw01
+
+banner login ^C
+Acesso somente pessoal autorizado.
+Acesso monitorado.
+Qualquer dúvida entrar em contato com suporte@empresa.com
+Data de acesso: 01/06/2025 19:51:15
+^C
+
+banner motd ^C
+Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
+^C(venv) alcancil@linux:~/automacoes/arquivos/j2/04$ 
+
+```
+
+**Benefícios dessa abordagem**  
+
+| Recurso           | Benefício prático                                   |
+|-------------------|-----------------------------------------------------|
+| hostname          | Identifica o equipamento automaticamente            |
+| banner login      | Cumpre normas de auditoria/segurança                |
+| data gerada       | dinamicamente	Log visual do momento da configuração | 
+| banner motd       | Avisos de manutenção, boas-vindas, alertas          |
+| Script interativo | Pode ser usado mesmo sem JSON, direto via CLI       |
