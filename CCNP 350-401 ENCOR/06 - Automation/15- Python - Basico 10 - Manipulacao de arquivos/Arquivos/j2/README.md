@@ -17,6 +17,7 @@
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-1)
     - [Exemplo 03: Geração de Listas de Acesso (ACL)](#exemplo-03-geração-de-listas-de-acesso-acl)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-2)
+    - [Exemplo 04: banner + Hostname com informações reais](#exemplo-04-banner--hostname-com-informações-reais)
 
 # 05 Manipulação de arquivos – .j2
 
@@ -552,11 +553,13 @@ O que esse exemplo ensina:
 
 #### Estrutura de arquivos usada no exemplo
 
+```bash
 03/
 ├── dados_acls.json         # Dados das acls
 ├── template_acl.j2         # Template Jinja2
 ├── gerar_acls.py           # Script principal em Python
 └── R1_acls.txt             # Saída gerada após a execução
+```
 
 **dados_acls.json**
 
@@ -722,4 +725,6 @@ Seção 6: Mensagem de confirmação
 - Como gerar ACLs com múltiplas regras e nomes diferentes.
 - Aplicação direta a roteadores Cisco com comandos realistas.
 - Mantém a lógica de separação entre dados, template e execução.
+
+### Exemplo 04: banner + Hostname com informações reais
 
