@@ -669,6 +669,53 @@ ip access-list extended ACL_VOIP
 [08] {% endfor %}                                                                                       # Fim do loop de ACLs
 ```
 
+**gerar_acls.py**
+
+```Python
+Seção 1: Importação de bibliotecas
+
+[01] import json                                           # Importa o módulo JSON da biblioteca padrão do Python para leitura dos dados do arquivo .json
+[02] from jinja2 import Environment, FileSystemLoader      # Importa as classes necessárias do Jinja2: o ambiente de template e o carregador de arquivos
+
+[03]
+
+Seção 2: Leitura dos dados de entrada
+
+[04]                                                       # 1. Leitura dos dados        
+[05] with open("dados_acls.json") as f:                    # Abre o arquivo "dados_acls.json" no modo leitura
+[06]     dados = json.load(f)                              # Converte o conteúdo JSON em um dicionário Python e armazena na variável 'dados'
+
+[07]
+
+Seção 3: Carregamento do template Jinja2
+
+[08]                                                       # 2. Carregamento do template                        
+[09] env = Environment(loader=FileSystemLoader('.'))       # Cria um ambiente Jinja2, indicando que os templates estão no diretório atual (ponto final)
+[10] template = env.get_template("template_acl.j2")        # Carrega o template chamado 'template_acl.j2' para ser processado
+
+[11]
+
+Seção 4: Renderização do template com os dados
+
+[12]                                                       # 3. Renderização 
+[13] saida = template.render(dados)                        # Renderiza o template usando os dados lidos do JSON e armazena o resultado em 'saida'
+
+[14]
+
+Seção 5: Salvamento da configuração gerada
+
+[16]                                                       # 4. Salvamento      
+[17] with open(f"{dados['hostname']}_acls.txt", "w") as f: # Abre ou cria um arquivo de saída baseado no hostname (ex: R1_acls.txt)
+[18]     f.write(saida)                                    # Escreve o conteúdo gerado no arquivo de saída
+
+[19]
+
+Seção 6: Mensagem de confirmação
+
+[20] print(f"✅ ACLs geradas: {dados['hostname']}_acls.txt")  # Imprime no terminal a confirmação de que o arquivo foi gerado com sucesso
+
+```
+
 **Aprendizados principais desse exemplo:**
 
 - Uso de loops aninhados (for dentro de for).
