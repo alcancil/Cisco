@@ -6,10 +6,10 @@
 - [05 Manipulação de arquivos – .env](#05-manipulação-de-arquivos--env)
   - [Vantagens de usar arquivos `.env`](#vantagens-de-usar-arquivos-env)
   - [Como usar](#como-usar)
-    - [Casos de uso do Jinja2 na automação de redes:](#casos-de-uso-do-jinja2-na-automação-de-redes)
-    - [Quando Usar Jinja2 vs Outras Abordagens](#quando-usar-jinja2-vs-outras-abordagens)
+    - [Casos de uso de arquivos .env na automação de redes:](#casos-de-uso-de-arquivos-env-na-automação-de-redes)
+    - [Quando usar .env vs outras abordagens](#quando-usar-env-vs-outras-abordagens)
     - [Por que Jinja2 é essencial para o CCNP?](#por-que-jinja2-é-essencial-para-o-ccnp)
-    - [Fluxo do uso do Jinja2 com Python puro e com Ansible](#fluxo-do-uso-do-jinja2-com-python-puro-e-com-ansible)
+    - [Fluxo do uso de .env com Python puro e com Ansible](#fluxo-do-uso-de-env-com-python-puro-e-com-ansible)
     - [Requisitos antes de começarmos os exemplos](#requisitos-antes-de-começarmos-os-exemplos)
     - [Exemplo 01: Geração de configuração de VLANs](#exemplo-01-geração-de-configuração-de-vlans)
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
@@ -56,23 +56,24 @@ Site oficial: https://pypi.org/project/python-dotenv/
 pip install python-dotenv
 ```
 
-### Casos de uso do Jinja2 na automação de redes:
+### Casos de uso de arquivos .env na automação de redes:
 
-- Geração de configurações: VLANs, interfaces, ACLs, rotas, usuários, etc.
-- Customização por dispositivo: mudar hostname, IP, SNMP, etc., com base em variáveis.
-- Ambientes multi-site: templates reutilizáveis para dezenas ou centenas de switches.
-- Integração com Ansible: geração de arquivos de configuração e comandos dinâmicos.
-- Automação controlada via scripts Python: ideal para criar ferramentas internas.
-- Padronização de configurações: manter consistência entre equipes e ambientes.
+- Armazenamento seguro de credenciais: usuário, senha, token de API, chaves privadas.  
+- Separação entre lógica e dados sensíveis: o script não precisa conter IPs ou senhas diretamente.  
+- Criação de ambientes reutilizáveis: troca-se o .env e o mesmo script pode ser usado em sites diferentes.  
+- Facilidade para testes e simulações: carregar configurações diferentes sem editar o código.  
+- Integração com bibliotecas Python: como Netmiko, Paramiko, Napalm, requests, pyATS, etc.  
+- Organização e padronização de projetos: cada projeto possui seu próprio .env, facilitando o versionamento.  
 
-### Quando Usar Jinja2 vs Outras Abordagens
+### Quando usar .env vs outras abordagens
 
-| Escolha Jinja2 quando...	                         | Evite Jinja2 quando...                             |
-|----------------------------------------------------|----------------------------------------------------|
-| Você precisa gerar configurações personalizadas	   |  O ambiente é extremamente simples e fixo          |
-| Há muitos dispositivos com estruturas parecidas	   |  A mudança será aplicada uma única vez apenas      |
-| Você já tem dados em JSON/YAML	                   |  Não há controle sobre os dados de entrada         |
-| Você quer usar Ansible, Nornir ou criar interfaces |  A automação é feita com scripts shell simples     | 
+| Use .env quando...                                  | Evite .env quando...                                 |  
+|-----------------------------------------------------|------------------------------------------------------|
+| Você precisa manter dados sensíveis fora do código	| Os dados são públicos ou não sensíveis               |
+| O script será usado em ambientes diferentes	        | O projeto é totalmente fixo, para uso único          |
+| Trabalha em equipe ou múltiplos ambientes           | Não há variações de configuração entre ambientes     |
+| Vai usar Git/GitHub e quer manter segurança	        | O projeto será executado localmente, sem versionar   |
+| Deseja facilitar integração com CI/CD, Ansible      | Precisa de criptografia real (use cofres nesse caso) |
 
 ### Por que Jinja2 é essencial para o CCNP?
 
@@ -82,34 +83,33 @@ pip install python-dotenv
 - Escalabilidade e consistência: evita erros manuais e acelera a entrega de ambientes padronizados.
 - Adoção em ambientes reais: é o padrão em equipes de redes que adotam infraestrutura como código.  
  
-**OBS:** Antes de ver exemplos práticos com Jinja2, é fundamental entender o fluxo de como os templates e os dados estruturados (JSON ou YAML) se combinam para gerar configurações prontas. O fluxograma abaixo mostra dois cenários: uso com Python puro e uso com Ansible.
+**OBS:** Antes de ver exemplos práticos com .env, é fundamental entender o fluxo de como variáveis de ambiente (armazenadas em .env) se integram aos scripts de automação.
+O fluxograma a seguir mostra dois cenários comuns: uso com Python puro e uso com ferramentas como Ansible, que podem consumir variáveis externas ou cofres de forma segura.
 
-### Fluxo do uso do Jinja2 com Python puro e com Ansible
+### Fluxo do uso de .env com Python puro e com Ansible
 
 ```mermaid
 flowchart TB
 
-    A[Inicio] --> B[Template Jinja2]
-    B --> C[Dados de Entrada]
+    A[Início] --> B[Arquivo .env]
 
-    C --> C1[Arquivo JSON]
-    C --> C2[Arquivo YAML]
-    C --> C3[Dict Python]
+    B --> C[Variáveis de ambiente]
+    C --> C1[IP do dispositivo]
+    C --> C2[Usuário/Senha]
+    C --> C3[Token/API Key]
 
     %% Caminho com Python puro
-    C1 & C2 & C3 --> D[Script Python]
-    D --> E[Carrega dados JSON ou YAML]
-    E --> F[Renderiza template com Jinja2]
-    F --> G[Gera configuracao local]
-    G --> H[Revisao manual]
-    H --> I[Envio com Netmiko ou Paramiko]
+    C --> D[Script Python]
+    D --> E[Usa python-dotenv]
+    E --> F[Carrega as variáveis]
+    F --> G[Utiliza com Netmiko / Paramiko / API]
+    G --> H[Aplica ou consulta dispositivo]
 
-    %% Caminho com Ansible
-    C1 & C2 --> J[Playbook Ansible]
-    J --> K[Carrega template com Ansible]
-    K --> L[Renderiza com variaveis YAML]
-    L --> M[Aplica via SSH]
-    M --> N[Log ou rollback]
+    %% Caminho com Ansible ou outros
+    C --> J[Integração com Cofres (Vault, AWS Secrets)]
+    J --> K[Playbook ou pipeline]
+    K --> L[Substitui variáveis no momento da execução]
+    L --> M[Aplica a configuração]
 ```
 
 **OBS:** estaremos utilizando somente scripts python puro por enquanto. Todas as saídas serão locais e não serão enviadas para nenhum equipamento por questões de boas práticas. Depois irei adicionar tópicos para acesso dos equipamentos.
