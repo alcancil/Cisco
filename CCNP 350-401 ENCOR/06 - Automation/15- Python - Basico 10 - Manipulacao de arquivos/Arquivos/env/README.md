@@ -106,7 +106,7 @@ flowchart TB
     G --> H[Aplica ou consulta dispositivo]
 
     %% Caminho com Ansible ou outros
-    C --> J[Integração com Cofres ((Vault, AWS Secrets))]
+    C --> J[Integração com Cofres - Vault, AWS Secrets]
     J --> K[Playbook ou pipeline]
     K --> L[Substitui variáveis no momento da execução]
     L --> M[Aplica a configuração]
