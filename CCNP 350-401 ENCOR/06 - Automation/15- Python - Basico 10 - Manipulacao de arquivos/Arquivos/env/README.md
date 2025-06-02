@@ -10,6 +10,10 @@
     - [Quando usar .env vs outras abordagens](#quando-usar-env-vs-outras-abordagens)
     - [Por que .env é essencial para o CCNP e para automação de redes?](#por-que-env-é-essencial-para-o-ccnp-e-para-automação-de-redes)
     - [Fluxo do uso de .env com Python puro e com Ansible](#fluxo-do-uso-de-env-com-python-puro-e-com-ansible)
+    - [Exemplo 01 – Leitura básica do .env com python-dotenv](#exemplo-01--leitura-básica-do-env-com-python-dotenv)
+    - [Exemplo 02 – Integração com template Jinja2 usando variáveis do .env](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
+    - [Exemplo 03 – Simulação de login via .env (sem aplicar)](#exemplo-03--simulação-de-login-via-env-sem-aplicar)
+    - [Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-04--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
 
 # 05 Manipulação de arquivos – .env
 
@@ -102,3 +106,11 @@ flowchart TB
 ```
 
 **OBS:** estaremos utilizando somente scripts python puro por enquanto. Todas as saídas serão locais e não serão enviadas para nenhum equipamento por questões de boas práticas. Depois irei adicionar tópicos para acesso dos equipamentos.
+
+### Exemplo 01 – Leitura básica do .env com python-dotenv
+
+### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
+
+### Exemplo 03 – Simulação de login via .env (sem aplicar)
+
+### Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
