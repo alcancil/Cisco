@@ -660,7 +660,9 @@ ip access-list extended ACL_VOIP
 (venv) alcancil@linux:~/automacoes/arquivos/j2/03$ 
 ```
 
-**Explicação linha a linha – template_acl.j2
+**Explicação**  
+
+**template_acl.j2**
 
 ```jinja
 [01] hostname {{ hostname }}                                                                            # Define o hostname da configuração com base no JSON
@@ -755,52 +757,52 @@ Tudo isso será gerado dinamicamente, com dados fornecidos via terminal e reutil
 **template_banner.j2**  
 
 ```jinja2
-hostname {{ hostname }}
-
-banner login ^C
-Acesso somente pessoal autorizado.
-Acesso monitorado.
-Qualquer dúvida entrar em contato com suporte@empresa.com
-Data de acesso: {{ data }}
-^C
-
-banner motd ^C
-{{ motd }}
-^C
+[01] hostname {{ hostname }}
+[02]
+[03] banner login ^C
+[04] Acesso somente pessoal autorizado.
+[05] Acesso monitorado.
+[06] Qualquer dúvida entrar em contato com suporte@empresa.com
+[07] Data de acesso: {{ data }}
+[08] ^C
+[09]
+[11] banner motd ^C
+[12] {{ motd }}
+[13] ^C
 ```
 
 **gerar_config.py**
 
 ```Python
-from jinja2 import Environment, FileSystemLoader
-from datetime import datetime
-
-# 1. Prepara o ambiente Jinja2
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template("template_banner.j2")
-
-# 2. Define quantos dispositivos o usuário deseja gerar
-qtd = int(input("Quantos dispositivos deseja configurar? "))
-
-# 3. Loop para entrada e geração de cada equipamento
-for i in range(1, qtd + 1):
-    print(f"\n➡️ Dispositivo {i}")
-    hostname = input("Hostname: ")
-    motd = input("Mensagem MOTD (curta): ")
-
-    dados = {
-        "hostname": hostname,
-        "motd": motd,
-        "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    }
-
-    saida = template.render(dados)
-    nome_arquivo = f"{hostname}_banner.txt"
-
-    with open(nome_arquivo, "w") as f:
-        f.write(saida)
-
-    print(f"✅ Configuração gerada: {nome_arquivo}")
+[01] from jinja2 import Environment, FileSystemLoader
+[02] from datetime import datetime
+[03]
+[04] # 1. Prepara o ambiente Jinja2
+[05] env = Environment(loader=FileSystemLoader('.'))
+[06] template = env.get_template("template_banner.j2")
+[07] 
+[08] # 2. Define quantos dispositivos o usuário deseja gerar
+[09] qtd = int(input("Quantos dispositivos deseja configurar? "))
+[10]
+[11] # 3. Loop para entrada e geração de cada equipamento
+[12] for i in range(1, qtd + 1):
+[13]     print(f"\n➡️ Dispositivo {i}")
+[14]     hostname = input("Hostname: ")
+[15]     motd = input("Mensagem MOTD (curta): ")
+[16]
+[17]     dados = {
+[18]         "hostname": hostname,
+[19]         "motd": motd,
+[20]         "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+[21]     }
+[22]
+[23]     saida = template.render(dados)
+[24]     nome_arquivo = f"{hostname}_banner.txt"
+[25]
+[26]     with open(nome_arquivo, "w") as f:
+[27]         f.write(saida)
+[28]
+[29]     print(f"✅ Configuração gerada: {nome_arquivo}")
 ```
 **Saída**
 
@@ -874,3 +876,83 @@ Manutenção agendada as 11:00 Horas ! Fiquem atentos !!!
 | data gerada       | dinamicamente	Log visual do momento da configuração | 
 | banner motd       | Avisos de manutenção, boas-vindas, alertas          |
 | Script interativo | Pode ser usado mesmo sem JSON, direto via CLI       |
+
+**Explicação**  
+
+**template_banner.j2**  
+
+```Python
+[01] hostname {{ hostname }}                                    # Define o nome do dispositivo com base na variável 'hostname' recebida do script
+
+[02]                                                            # Linha em branco para separar visualmente seções da configuração
+
+[03] banner login ^C                                            # Início da configuração do banner de login (mensagem apresentada ANTES do login)
+[04] Acesso somente pessoal autorizado.                         # Linha fixa com aviso de restrição de acesso (mensagem de segurança)
+[05] Acesso monitorado.                                         # Complemento que indica rastreamento (importante para compliance)
+[06] Qualquer dúvida entrar em contato com suporte@empresa.com  # Linha com e-mail de suporte para questões administrativas
+[07] Data de acesso: {{ data }}                                 # Insere dinamicamente a data e hora da geração da configuração
+[08] ^C                                                         # Finaliza o bloco do banner login (delimitador usado no Cisco IOS)
+
+[09]                                                            # Linha em branco para separar os banners
+
+[11] banner motd ^C                                             # Início do banner MOTD ("Message of the Day") — exibido APÓS o login
+[12] {{ motd }}                                                 # Inserção do conteúdo do MOTD definido pelo usuário (curto, rotativo, informativo)
+[13] ^C                                                         # Finaliza o bloco do banner MOTD
+```
+
+**gerar_config.py**  
+
+```Python
+Seção 1: Importações
+
+[01] from jinja2 import Environment, FileSystemLoader              # Importa classes do Jinja2: Environment cria o motor de template, FileSystemLoader define onde os templates estão
+[02] from datetime import datetime                                 # Importa a classe datetime para obter a data e hora atual
+[03]
+
+Seção 2: Preparação do ambiente Jinja2
+
+[04]                                                               # 1. Prepara o ambiente Jinja2                       
+[05] env = Environment(loader=FileSystemLoader('.'))               # Cria um ambiente Jinja2 e define que os templates estão na pasta atual ('.')
+[06] template = env.get_template("template_banner.j2")             # Carrega o template 'template_banner.j2' para ser usado com renderização
+[07]
+
+Seção 3: Quantidade de dispositivos
+
+[08]                                                               # 2. Define quantos dispositivos o usuário deseja gerar
+[09] qtd = int(input("Quantos dispositivos deseja configurar? "))  # Pergunta ao usuário quantos dispositivos deseja gerar e converte o valor para inteiro
+[10]
+
+Seção 4: Loop para geração por equipamento
+
+[11]                                                                # 3. Loop para entrada e geração de cada equipamento   
+[12] for i in range(1, qtd + 1):                                    # Cria um loop que vai de 1 até a quantidade informada (inclusive)
+[13]     print(f"\n➡️ Dispositivo {i}")                            # Exibe no terminal qual dispositivo está sendo configurado
+[14]     hostname = input("Hostname: ")                             # Solicita o nome do equipamento
+[15]     motd = input("Mensagem MOTD (curta): ")                    # Solicita uma mensagem curta para o banner MOTD
+[16]
+
+Seção 5: Criação do dicionário de dados
+
+[17]     dados = {                                                  # Cria um dicionário com os dados que serão passados ao template
+[18]         "hostname": hostname,                                  # Adiciona o nome do dispositivo
+[19]         "motd": motd,                                          # Adiciona a mensagem MOTD
+[20]         "data": datetime.now().strftime("%d/%m/%Y %H:%M:%S")   # Gera a data e hora atual formatada e insere no dicionário
+[21]     }
+[22]
+
+Seção 6: Renderização do template com os dados
+
+[23]     saida = template.render(dados)                              # Renderiza o template com os dados coletados (preenche {{ variáveis }})
+[24]     nome_arquivo = f"{hostname}_banner.txt"                     # Define o nome do arquivo de saída baseado no hostname
+[25]
+
+Seção 7: Salvamento em arquivo
+
+[26]     with open(nome_arquivo, "w") as f:                          # Abre o arquivo para escrita (ou cria, se não existir)
+[27]         f.write(saida)                                          # Escreve o conteúdo gerado no arquivo de saída
+[28]
+
+Seção 8: Confirmação no terminal
+
+[29]     print(f"✅ Configuração gerada: {nome_arquivo}")           # Exibe mensagem de sucesso com o nome do
+```
