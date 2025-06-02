@@ -4,7 +4,6 @@
 - [Python - Básico 10](#python---básico-10)
   - [Índice](#índice)
 - [05 Manipulação de arquivos – .env](#05-manipulação-de-arquivos--env)
-- [06 Manipulação de arquivos – .env](#06-manipulação-de-arquivos--env)
   - [Vantagens de usar arquivos `.env`](#vantagens-de-usar-arquivos-env)
   - [Como usar](#como-usar)
     - [Casos de uso do Jinja2 na automação de redes:](#casos-de-uso-do-jinja2-na-automação-de-redes)
@@ -24,7 +23,6 @@
       - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo-3)
 
 # 05 Manipulação de arquivos – .env
-# 06 Manipulação de arquivos – .env
 
 Arquivos `.env` são amplamente utilizados para armazenar **variáveis de ambiente sensíveis**, como:
 
@@ -32,7 +30,9 @@ Arquivos `.env` são amplamente utilizados para armazenar **variáveis de ambien
 - Endereço IP de dispositivos
 - Tokens de APIs
 
-O objetivo é **separar os dados sensíveis do código-fonte**, permitindo que os scripts sejam mais seguros, reutilizáveis e organizados.
+O objetivo é **separar os dados sensíveis do código-fonte**, permitindo que os scripts sejam mais seguros, reutilizáveis e organizados.  
+
+Site oficial: https://pypi.org/project/python-dotenv/  
 
 ---
 
