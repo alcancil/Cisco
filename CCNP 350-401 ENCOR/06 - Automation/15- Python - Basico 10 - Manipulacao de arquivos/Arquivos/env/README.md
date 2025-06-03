@@ -11,8 +11,8 @@
     - [Por que .env é essencial para o CCNP e para automação de redes?](#por-que-env-é-essencial-para-o-ccnp-e-para-automação-de-redes)
     - [Fluxo do uso de .env com Python puro e com Ansible](#fluxo-do-uso-de-env-com-python-puro-e-com-ansible)
     - [Exemplo 01 – Leitura básica do .env com python-dotenv](#exemplo-01--leitura-básica-do-env-com-python-dotenv)
-    - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
     - [Exemplo 02 – Integração com template Jinja2 usando variáveis do .env](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
+- [Exemplo 02 – Integração com Jinja2 usando variáveis do `.env`](#exemplo-02--integração-com-jinja2-usando-variáveis-do-env)
     - [Exemplo 03 – Simulação de login via .env (sem aplicar)](#exemplo-03--simulação-de-login-via-env-sem-aplicar)
     - [Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-04--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
 
@@ -112,7 +112,7 @@ flowchart TB
 
 Este exemplo demonstra como **carregar variáveis de ambiente** armazenadas em um arquivo `.env` usando a biblioteca `python-dotenv`. Isso é útil para separar **dados sensíveis (como IPs e senhas)** do código-fonte.  
 
-### Estrutura de arquivos usada no exemplo
+**Estrutura de arquivos usada no exemplo**  
 
 ```Bash
 01/
@@ -223,6 +223,81 @@ Seção 4: Exibição dos dados simulando uma conexão
 ```
 
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
+
+# Exemplo 02 – Integração com Jinja2 usando variáveis do `.env`
+
+Este exemplo demonstra como **integrar variáveis carregadas de um arquivo `.env`** com um **template Jinja2**, para gerar um banner de login Cisco de forma dinâmica e segura.  
+
+**Estrutura de arquivos usada no exemplo**
+
+```Bash
+02-env-com-jinja2/
+├── .env
+├── .env.example
+├── template_banner.j2
+├── gerar_banner.py
+├── requirements.txt
+└── README.md
+```
+
+**.env**
+
+```dotenv
+HOSTNAME=SW01
+BANNER=Mantenha-se autorizado. Este equipamento está sendo monitorado.
+```
+
+**.env.example**
+
+```dotenv
+HOSTNAME=
+BANNER=
+```
+
+**template_banner.j2**
+
+```jinja2
+hostname {{ hostname }}
+
+banner login ^C
+{{ banner }}
+^C
+```
+
+**gerar_banner.py**
+
+```Python
+from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
+import os
+
+# 1. Carrega variáveis do arquivo .env
+load_dotenv()
+
+# 2. Lê as variáveis de ambiente
+hostname = os.getenv("HOSTNAME")
+banner = os.getenv("BANNER")
+
+# 3. Prepara o ambiente do Jinja2
+env = Environment(loader=FileSystemLoader('.'))
+template = env.get_template("template_banner.j2")
+
+# 4. Renderiza o template com os dados do .env
+saida = template.render(hostname=hostname, banner=banner)
+
+# 5. Salva o resultado em um arquivo .txt
+with open(f"{hostname}_banner.txt", "w") as f:
+    f.write(saida)
+
+print(f"✅ Configuração gerada: {hostname}_banner.txt")
+```
+
+**requirements.txt**
+
+```text
+python-dotenv
+jinja2
+```
 
 ### Exemplo 03 – Simulação de login via .env (sem aplicar)
 
