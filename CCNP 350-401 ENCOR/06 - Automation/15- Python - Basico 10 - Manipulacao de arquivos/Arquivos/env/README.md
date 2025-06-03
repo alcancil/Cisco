@@ -11,6 +11,7 @@
     - [Por que .env é essencial para o CCNP e para automação de redes?](#por-que-env-é-essencial-para-o-ccnp-e-para-automação-de-redes)
     - [Fluxo do uso de .env com Python puro e com Ansible](#fluxo-do-uso-de-env-com-python-puro-e-com-ansible)
     - [Exemplo 01 – Leitura básica do .env com python-dotenv](#exemplo-01--leitura-básica-do-env-com-python-dotenv)
+    - [Estrutura de arquivos usada no exemplo](#estrutura-de-arquivos-usada-no-exemplo)
     - [Exemplo 02 – Integração com template Jinja2 usando variáveis do .env](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
     - [Exemplo 03 – Simulação de login via .env (sem aplicar)](#exemplo-03--simulação-de-login-via-env-sem-aplicar)
     - [Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-04--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
@@ -109,7 +110,60 @@ flowchart TB
 
 ### Exemplo 01 – Leitura básica do .env com python-dotenv
 
-Este exemplo demonstra como **carregar variáveis de ambiente** armazenadas em um arquivo `.env` usando a biblioteca `python-dotenv`. Isso é útil para separar **dados sensíveis (como IPs e senhas)** do código-fonte.
+Este exemplo demonstra como **carregar variáveis de ambiente** armazenadas em um arquivo `.env` usando a biblioteca `python-dotenv`. Isso é útil para separar **dados sensíveis (como IPs e senhas)** do código-fonte.  
+
+### Estrutura de arquivos usada no exemplo
+
+```Bash
+01/
+├── .env # Arquivo com as variáveis reais
+├── .env.example # Modelo para distribuição segura
+├── script.py # Script Python que lê as variáveis
+└── requirements.txt
+```
+
+**.env**
+
+```dotenv
+DISPOSITIVO_IP=192.168.100.10
+USERNAME=admin
+PASSWORD=cisco123
+```
+
+**.env.example**  
+
+```dotenv
+DISPOSITIVO_IP=
+USERNAME=
+PASSWORD=
+```
+
+**script.py**
+
+```Python
+from dotenv import load_dotenv
+import os
+
+# 1. Carrega variáveis do arquivo .env
+load_dotenv()
+
+# 2. Lê as variáveis de ambiente
+ip = os.getenv("DISPOSITIVO_IP")
+usuario = os.getenv("USERNAME")
+senha = os.getenv("PASSWORD")
+
+# 3. Imprime as informações (simulando uso)
+print("📡 Conectando ao dispositivo:")
+print(f"IP: {ip}")
+print(f"Usuário: {usuario}")
+print("Senha: ********")  # Nunca exiba senhas reais
+```
+
+**requirements.txt**
+
+```txt
+python-dotenv
+```
 
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
 
