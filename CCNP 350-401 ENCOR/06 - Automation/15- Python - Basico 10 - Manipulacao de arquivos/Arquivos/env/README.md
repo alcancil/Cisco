@@ -141,22 +141,22 @@ PASSWORD=
 **script.py**
 
 ```Python
-from dotenv import load_dotenv
-import os
-
-# 1. Carrega variáveis do arquivo .env
-load_dotenv()
-
-# 2. Lê as variáveis de ambiente
-ip = os.getenv("DISPOSITIVO_IP")
-usuario = os.getenv("USERNAME")
-senha = os.getenv("PASSWORD")
-
-# 3. Imprime as informações (simulando uso)
-print("📡 Conectando ao dispositivo:")
-print(f"IP: {ip}")
-print(f"Usuário: {usuario}")
-print("Senha: ********")  # Nunca exiba senhas reais
+[01] from dotenv import load_dotenv
+[02] import os
+[03]
+[04] # 1. Carrega variáveis do arquivo .env
+[05] load_dotenv()
+[06]
+[07] # 2. Lê as variáveis de ambiente
+[08] ip = os.getenv("DISPOSITIVO_IP")
+[09] usuario = os.getenv("USERNAME")
+[10] senha = os.getenv("PASSWORD")
+[11]
+[12] # 3. Imprime as informações (simulando uso)
+[13] print("📡 Conectando ao dispositivo:")
+[14] print(f"IP: {ip}")
+[15] print(f"Usuário: {usuario}")
+[16] print("Senha: ********")  # Nunca exiba senhas reais
 ```
 
 **requirements.txt**
@@ -189,6 +189,38 @@ Senha: ********
 - O arquivo .env.example é um modelo seguro para ser compartilhado com a equipe.
 - O .env não deve ser versionado (adicione ao .gitignore).
 - Este é um passo essencial para tornar seus scripts modulares, seguros e reutilizáveis.
+
+**Explicação**  
+
+**script.py**  
+
+```Python
+Seção 1: Importações  
+
+[01] from dotenv import load_dotenv           # Importa a função 'load_dotenv' para carregar as variáveis do arquivo .env
+[02] import os                                # Importa o módulo 'os' para acessar variáveis de ambiente com os.getenv()
+
+Seção 2: Carregamento do arquivo .env  
+
+[04]                                           # 1. Carrega variáveis do arquivo .env    
+[05] load_dotenv()                             # Lê o arquivo .env e carrega suas variáveis para o ambiente do Python
+
+Seção 3: Leitura das variáveis de ambiente
+
+[07]                                           # 2. Lê as variáveis de ambiente          
+[08] ip = os.getenv("DISPOSITIVO_IP")          # Lê a variável 'DISPOSITIVO_IP' do ambiente e armazena na variável 'ip'
+[09] usuario = os.getenv("USERNAME")           # Lê a variável 'USERNAME' e armazena na variável 'usuario'
+[10] senha = os.getenv("PASSWORD")             # Lê a variável 'PASSWORD' e armazena na variável 'senha'
+
+Seção 4: Exibição dos dados simulando uma conexão
+
+[12]                                               # 3. Imprime as informações (simulando uso)  
+[13] print("📡 Conectando ao dispositivo:")        # Mensagem indicando o início da conexão (simulada)
+[14] print(f"IP: {ip}")                            # Exibe o IP capturado do .env
+[15] print(f"Usuário: {usuario}")                  # Exibe o nome de usuário capturado do .env
+[16] print("Senha: ********")                      # Máscara a senha na saída (boa prática de segurança)
+
+```
 
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
 
