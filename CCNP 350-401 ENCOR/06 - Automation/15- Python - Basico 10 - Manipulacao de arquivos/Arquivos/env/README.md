@@ -231,9 +231,9 @@ Este exemplo demonstra como **integrar variáveis carregadas de um arquivo `.env
 **Estrutura de arquivos usada no exemplo**
 
 ```Bash
-02-env-com-jinja2/
+02/
 ├── .env
-├── .env.example
+├── .env.exemplo
 ├── template_banner.j2
 ├── gerar_banner.py
 ├── requirements.txt
@@ -257,39 +257,39 @@ BANNER=
 **template_banner.j2**
 
 ```jinja2
-hostname {{ hostname }}
-
-banner login ^C
-{{ banner }}
-^C
+[01] hostname {{ hostname }}
+[02] 
+[03] banner login ^C
+[04] {{ banner }}
+[05] ^C
 ```
 
 **gerar_banner.py**
 
 ```Python
-from dotenv import load_dotenv
-from jinja2 import Environment, FileSystemLoader
-import os
-
-# 1. Carrega variáveis do arquivo .env
-load_dotenv()
-
-# 2. Lê as variáveis de ambiente
-hostname = os.getenv("HOSTNAME")
-banner = os.getenv("BANNER")
-
-# 3. Prepara o ambiente do Jinja2
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template("template_banner.j2")
-
-# 4. Renderiza o template com os dados do .env
-saida = template.render(hostname=hostname, banner=banner)
-
-# 5. Salva o resultado em um arquivo .txt
-with open(f"{hostname}_banner.txt", "w") as f:
-    f.write(saida)
-
-print(f"✅ Configuração gerada: {hostname}_banner.txt")
+[01] from dotenv import load_dotenv
+[02] from jinja2 import Environment, FileSystemLoader
+[03] import os
+[04]
+[05] # 1. Carrega variáveis do arquivo .env
+[06] load_dotenv()
+[07] 
+[08] # 2. Lê as variáveis de ambiente
+[09] hostname = os.getenv("HOSTNAME")
+[10] banner = os.getenv("BANNER")
+[11]
+[12] # 3. Prepara o ambiente do Jinja2
+[13] env = Environment(loader=FileSystemLoader('.'))
+[14] template = env.get_template("template_banner.j2")
+[15]
+[16] # 4. Renderiza o template com os dados do .env
+[17] saida = template.render(hostname=hostname, banner=banner)
+[18]
+[19] # 5. Salva o resultado em um arquivo .txt
+[20] with open(f"{hostname}_banner.txt", "w") as f:
+[21]     f.write(saida)
+[22]
+[23] print(f"✅ Configuração gerada: {hostname}_banner.txt")
 ```
 
 **requirements.txt**
@@ -297,6 +297,102 @@ print(f"✅ Configuração gerada: {hostname}_banner.txt")
 ```text
 python-dotenv
 jinja2
+```
+
+**saída**
+
+```bash
+alcancil@linux:~/automacoes/arquivos/env/01/02$ python3 -m venv venv
+alcancil@linux:~/automacoes/arquivos/env/01/02$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/env/01/02$ pip install -r requirements.txt 
+Collecting python-dotenv (from -r requirements.txt (line 1))
+  Using cached python_dotenv-1.1.0-py3-none-any.whl.metadata (24 kB)
+Collecting jinja2 (from -r requirements.txt (line 2))
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->-r requirements.txt (line 2))
+  Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Using cached python_dotenv-1.1.0-py3-none-any.whl (20 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Installing collected packages: python-dotenv, MarkupSafe, jinja2
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6 python-dotenv-1.1.0
+(venv) alcancil@linux:~/automacoes/arquivos/env/01/02$ python3 gerar_banner.py 
+✅ Configuração gerada: SW01_banner.txt
+(venv) alcancil@linux:~/automacoes/arquivos/env/01/02$ 
+(venv) alcancil@linux:~/automacoes/arquivos/env/01/02$ cat SW01_banner.txt 
+hostname SW01
+
+banner login ^C
+Mantenha-se autorizado. Este equipamento está sendo monitorado.
+^C(venv) alcancil@linux:~/automacoes/arquivos/env/01/02$ 
+
+```
+
+**Boas práticas**  
+
+| Prática         | Por quê                                              |
+|-----------------|------------------------------------------------------|
+| .env.exemplo	  | Para compartilhar o formato sem os valores           |
+| .gitignore com  | .env	Evita expor dados reais em repositórios        |
+| .txt de saída	  | Permite validar antes de aplicar no equipamento      |
+| Separação .env	| Facilita reutilizar o mesmo script para vários sites |
+
+**Explicação**
+
+**template_banner.j2**
+
+```jinja2
+Bloco 1 – Hostname
+
+[01] hostname {{ hostname }}       # Gera a linha de configuração 'hostname' usando o valor da variável 'hostname'
+
+Bloco 2 – Espaço visual
+
+[02]                               # Linha em branco apenas para separar visualmente as seções do arquivo gerado
+
+Bloco 3 – Banner de login
+
+[03] banner login ^C               # Inicia o bloco de banner de login (mensagem que aparece antes do login em dispositivos Cisco)
+[04] {{ banner }}                  # Insere a mensagem personalizada de banner, vinda da variável 'banner' (vinda do .env)
+[05] ^C                            # Fecha o bloco do banner com o delimitador ^C (recomendado para IOS)
+```
+
+**gerar_banner.py**
+
+```Python
+Bloco 1 – Importações
+
+[01] from dotenv import load_dotenv                             # Importa a função 'load_dotenv' para carregar variáveis do arquivo .env
+[02] from jinja2 import Environment, FileSystemLoader           # Importa o ambiente de template Jinja2 e o carregador de arquivos
+[03] import os                                                  # Importa o módulo 'os' para acessar variáveis de ambiente via os.getenv()
+
+Bloco 2 – Carrega o arquivo .env
+
+[05] load_dotenv()                                              # Lê o arquivo .env do diretório atual e carrega suas variáveis no ambiente Python
+
+Bloco 3 – Lê as variáveis do ambiente
+
+[08] hostname = os.getenv("HOSTNAME")                           # Recupera o valor da variável HOSTNAME do .env
+[09] banner = os.getenv("BANNER")                               # Recupera o valor da variável BANNER do .env
+
+Bloco 4 – Prepara o ambiente Jinja2
+
+[12] env = Environment(loader=FileSystemLoader('.'))            # Cria o ambiente Jinja2 e define que os templates estão na pasta atual
+[13] template = env.get_template("template_banner.j2")          # Carrega o template 'template_banner.j2'
+
+Bloco 5 – Renderiza o template com os dados
+
+[16] saida = template.render(hostname=hostname, banner=banner)  # Renderiza o template com os valores fornecidos pelas variáveis
+  > Isso substitui {{ hostname }} e {{ banner }} no arquivo .j2.
+
+Bloco 6 – Salva o resultado em um arquivo
+
+[19] with open(f"{hostname}_banner.txt", "w") as f:             # Abre ou cria um arquivo com o nome baseado no hostname (ex.: SW01_banner.txt)
+[20]     f.write(saida)                                         # Escreve o conteúdo gerado (configuração final) no arquivo
+
+Bloco 7 – Confirmação no terminal
+
+[22] print(f"✅ Configuração gerada: {hostname}_banner.txt")  # Mensagem de sucesso exibida ao final
 ```
 
 ### Exemplo 03 – Simulação de login via .env (sem aplicar)
