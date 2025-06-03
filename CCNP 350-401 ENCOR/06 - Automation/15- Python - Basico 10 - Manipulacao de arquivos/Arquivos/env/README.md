@@ -117,7 +117,7 @@ Este exemplo demonstra como **carregar variáveis de ambiente** armazenadas em u
 ```Bash
 01/
 ├── .env # Arquivo com as variáveis reais
-├── .env.example # Modelo para distribuição segura
+├── .env.exemplo # Modelo para distribuição segura
 ├── script.py # Script Python que lê as variáveis
 └── requirements.txt
 ```
@@ -130,7 +130,7 @@ USERNAME=admin
 PASSWORD=cisco123
 ```
 
-**.env.example**  
+**.env.exemplo**  
 
 ```dotenv
 DISPOSITIVO_IP=
@@ -163,6 +163,25 @@ print("Senha: ********")  # Nunca exiba senhas reais
 
 ```txt
 python-dotenv
+```
+
+**saída**
+
+```bash
+alcancil@linux:~/automacoes/arquivos/env/01$ python3 -m venv venv
+alcancil@linux:~/automacoes/arquivos/env/01$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/env/01$ pip install -r requirements.txt
+Collecting python-dotenv (from -r requirements.txt (line 1))
+  Downloading python_dotenv-1.1.0-py3-none-any.whl.metadata (24 kB)
+Downloading python_dotenv-1.1.0-py3-none-any.whl (20 kB)
+Installing collected packages: python-dotenv
+Successfully installed python-dotenv-1.1.0
+(venv) alcancil@linux:~/automacoes/arquivos/env/01$ python3 script.py 
+📡 Conectando ao dispositivo:
+IP: 192.168.100.10
+Usuário: admin
+Senha: ********
+(venv) alcancil@linux:~/automacoes/arquivos/env/01$ 
 ```
 
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
