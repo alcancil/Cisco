@@ -109,6 +109,8 @@ flowchart TB
 
 ### Exemplo 01 – Leitura básica do .env com python-dotenv
 
+Este exemplo demonstra como **carregar variáveis de ambiente** armazenadas em um arquivo `.env` usando a biblioteca `python-dotenv`. Isso é útil para separar **dados sensíveis (como IPs e senhas)** do código-fonte.
+
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
 
 ### Exemplo 03 – Simulação de login via .env (sem aplicar)
