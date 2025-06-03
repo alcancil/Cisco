@@ -184,6 +184,12 @@ Senha: ********
 (venv) alcancil@linux:~/automacoes/arquivos/env/01$ 
 ```
 
+**Observações**
+
+- O arquivo .env.example é um modelo seguro para ser compartilhado com a equipe.
+- O .env não deve ser versionado (adicione ao .gitignore).
+- Este é um passo essencial para tornar seus scripts modulares, seguros e reutilizáveis.
+
 ### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
 
 ### Exemplo 03 – Simulação de login via .env (sem aplicar)
