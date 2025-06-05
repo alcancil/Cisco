@@ -426,45 +426,45 @@ BANNER=
 **template_banner.j2**
 
 ```jinja2
-hostname {{ hostname }}
-
-banner login ^C
-{{ banner }}
-^C
+[01] hostname {{ hostname }}
+[02]
+[03] banner login ^C
+[04] {{ banner }}
+[05] ^C
 ```
 
 **gerar_banner_validado.py**
 
 ```Python
-from dotenv import load_dotenv
-from jinja2 import Environment, FileSystemLoader
-import os
-import sys
-
-# 1. Carrega variáveis do .env
-load_dotenv()
-
-# 2. Lê as variáveis obrigatórias
-hostname = os.getenv("HOSTNAME")
-banner = os.getenv("BANNER")
-
-# 3. Validação: verifica se as variáveis foram preenchidas
-if not hostname or not banner:
-    print("❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.")
-    sys.exit(1)  # Encerra o programa com erro
-
-# 4. Prepara o template Jinja2
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template("template_banner.j2")
-
-# 5. Renderiza o template
-saida = template.render(hostname=hostname, banner=banner)
-
-# 6. Salva o resultado
-with open(f"{hostname}_banner.txt", "w") as f:
-    f.write(saida)
-
-print(f"✅ Configuração gerada: {hostname}_banner.txt")
+[01] from dotenv import load_dotenv
+[02] from jinja2 import Environment, FileSystemLoader
+[03] import os
+[04] import sys
+[05]
+[06] # 1. Carrega variáveis do .env
+[08] load_dotenv()
+[09]
+[10] # 2. Lê as variáveis obrigatórias
+[11] hostname = os.getenv("HOSTNAME")
+[12] banner = os.getenv("BANNER")
+[13]
+[14] # 3. Validação: verifica se as variáveis foram preenchidas
+[15] if not hostname or not banner:
+[16]     print("❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.")
+[17]    sys.exit(1)  # Encerra o programa com erro
+[18]
+[19] # 4. Prepara o template Jinja2
+[20] env = Environment(loader=FileSystemLoader('.'))
+[21] template = env.get_template("template_banner.j2")
+[22]
+[23] # 5. Renderiza o template
+[24] saida = template.render(hostname=hostname, banner=banner)
+[25]
+[26] # 6. Salva o resultado
+[27] with open(f"{hostname}_banner.txt", "w") as f:
+[28]     f.write(saida)
+[29]
+[30] print(f"✅ Configuração gerada: {hostname}_banner.txt")
 ```
 
 **requirements.txt**
@@ -508,6 +508,23 @@ Somente pessoal autorizado.
 (venv) alcancil@linux:~/automacoes/arquivos/env/03$ python3 gerar_banner_validado.py 
 ❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.
 (venv) alcancil@linux:~/automacoes/arquivos/env/03$ 
+```
+**explicação**  
+
+**template_banner.j2**  
+
+```jinja2
+[01] hostname {{ hostname }}          # Define o nome do dispositivo usando a variável 'hostname'
+[02]                                  # Linha vazia para organização do arquivo de configuração
+[03] banner login ^C                  # Inicia o banner de login, usando ^C como delimitador
+[04] {{ banner }}                     # Insere o conteúdo dinâmico do banner a partir da variável
+[05] ^C                               # Fecha o bloco do banner usando o mesmo delimitador
+``` 
+
+**gerar_banner_validado.py**
+
+```Python
+
 ```
 
 ### Exemplo 04 – Simulação de login via .env (sem aplicar)
