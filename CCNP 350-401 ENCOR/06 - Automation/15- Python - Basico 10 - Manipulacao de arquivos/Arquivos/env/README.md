@@ -13,8 +13,9 @@
     - [Exemplo 01 – Leitura básica do .env com python-dotenv](#exemplo-01--leitura-básica-do-env-com-python-dotenv)
     - [Exemplo 02 – Integração com template Jinja2 usando variáveis do .env](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
 - [Exemplo 02 – Integração com Jinja2 usando variáveis do `.env`](#exemplo-02--integração-com-jinja2-usando-variáveis-do-env)
-    - [Exemplo 03 – Simulação de login via .env (sem aplicar)](#exemplo-03--simulação-de-login-via-env-sem-aplicar)
-    - [Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-04--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
+    - [Exemplo 03 – Verificação de variáveis obrigatórias no .env](#exemplo-03--verificação-de-variáveis-obrigatórias-no-env)
+    - [Exemplo 04 – Simulação de login via .env (sem aplicar)](#exemplo-04--simulação-de-login-via-env-sem-aplicar)
+    - [Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-05--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
 
 # 05 Manipulação de arquivos – .env
 
@@ -394,7 +395,121 @@ Bloco 7 – Confirmação no terminal
 
 [22] print(f"✅ Configuração gerada: {hostname}_banner.txt")  # Mensagem de sucesso exibida ao final
 ```
+### Exemplo 03 – Verificação de variáveis obrigatórias no .env
 
-### Exemplo 03 – Simulação de login via .env (sem aplicar)
+**Estrutura de arquivos usada no exemplo**
 
-### Exemplo 04 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
+```Bah
+03/
+├── .env
+├── .env.example
+├── template_banner.j2
+├── gerar_banner_validado.py
+├── requirements.txt
+└── README.md
+```
+
+**.env (exemplo funcional)**
+
+```dotenv
+HOSTNAME=SW02
+BANNER=Somente pessoal autorizado.
+```
+
+**.env.example**  
+
+```dotenv
+HOSTNAME=
+BANNER=
+```
+
+**template_banner.j2**
+
+```jinja2
+hostname {{ hostname }}
+
+banner login ^C
+{{ banner }}
+^C
+```
+
+**gerar_banner_validado.py**
+
+```Python
+from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
+import os
+import sys
+
+# 1. Carrega variáveis do .env
+load_dotenv()
+
+# 2. Lê as variáveis obrigatórias
+hostname = os.getenv("HOSTNAME")
+banner = os.getenv("BANNER")
+
+# 3. Validação: verifica se as variáveis foram preenchidas
+if not hostname or not banner:
+    print("❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.")
+    sys.exit(1)  # Encerra o programa com erro
+
+# 4. Prepara o template Jinja2
+env = Environment(loader=FileSystemLoader('.'))
+template = env.get_template("template_banner.j2")
+
+# 5. Renderiza o template
+saida = template.render(hostname=hostname, banner=banner)
+
+# 6. Salva o resultado
+with open(f"{hostname}_banner.txt", "w") as f:
+    f.write(saida)
+
+print(f"✅ Configuração gerada: {hostname}_banner.txt")
+```
+
+**requirements.txt**
+
+```text
+python-dotenv
+jinja2
+```
+
+**saída 01 - Com variáveis .env**
+
+```Bash
+alcancil@linux:~/automacoes/arquivos/env/03$ python3 -m venv venv
+alcancil@linux:~/automacoes/arquivos/env/03$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ pip install -r requirements.txt 
+Collecting python-dotenv (from -r requirements.txt (line 1))
+  Using cached python_dotenv-1.1.0-py3-none-any.whl.metadata (24 kB)
+Collecting jinja2 (from -r requirements.txt (line 2))
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->-r requirements.txt (line 2))
+  Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Using cached python_dotenv-1.1.0-py3-none-any.whl (20 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23 kB)
+Installing collected packages: python-dotenv, MarkupSafe, jinja2
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6 python-dotenv-1.1.0
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ python3 gerar_banner_validado.py 
+✅ Configuração gerada: SW02_banner.txt
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ cat SW02_banner.txt 
+hostname SW02
+
+banner login ^C
+Somente pessoal autorizado.
+^C(venv) alcancil@linux:~/automacoes/arquivos/env/03$ 
+```
+
+**saída 01 - Sem variáveis .env**  
+
+```Bash
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ mv .env .env01
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ python3 gerar_banner_validado.py 
+❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.
+(venv) alcancil@linux:~/automacoes/arquivos/env/03$ 
+```
+
+### Exemplo 04 – Simulação de login via .env (sem aplicar)
+
+### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
