@@ -524,7 +524,50 @@ Somente pessoal autorizado.
 **gerar_banner_validado.py**
 
 ```Python
+Seção 1: Importação de Bibliotecas
 
+[01] from dotenv import load_dotenv                                                               # Carrega variáveis de ambiente do arquivo .env
+[02] from jinja2 import Environment, FileSystemLoader                                             # Framework para processamento de templates
+[03] import os                                                                                    # Interação com sistema operacional e variáveis de ambiente
+[04] import sys                                                                                   # Controle do sistema (encerramento do programa)
+
+Seção 2: Configuração Inicial
+
+[06]                                                                                              # 1. Carrega variáveis do .env
+[08] load_dotenv()                                                                                # Lê e interpreta o arquivo .env na raiz do projeto
+
+Seção 3: Leitura de Variáveis
+
+[10]                                                                                              # 2. Lê as variáveis obrigatórias
+[11] hostname = os.getenv("HOSTNAME")                                                             # Obtém o nome do dispositivo (ex: "SW1-CORE")
+[12] banner = os.getenv("BANNER")                                                                 # Obtém o texto do banner (ex: "ACESSO RESTRITO")
+
+Seção 4: Validação de Dados
+
+[14]                                                                                              # 3. Validação: verifica se as variáveis foram preenchidas
+[15] if not hostname or not banner:                                                               # Checa se alguma variável está vazia/inexistente
+[16]     print("❌ Erro: Variáveis HOSTNAME e BANNER devem estar definidas no arquivo .env.")    # Exibe menssagem de erro se não encontrar as variáveis
+[17]    sys.exit(1)                                                                               # Finaliza o programa com código de erro (1)
+
+Seção 5: Processamento do Template
+
+[19]                                                                                               # 4. Prepara o template Jinja2
+[20] env = Environment(loader=FileSystemLoader('.'))                                               # Configura o ambiente para ler templates do diretório atual
+[21] template = env.get_template("template_banner.j2")                                             # Carrega o arquivo de template especificado
+
+Seção 6: Renderização
+
+
+[23]                                                                                               # 5. Renderiza o template
+[24] saida = template.render(hostname=hostname, banner=banner)                                     # Substitui variáveis no template pelos valores reais
+
+Seção 7: Saída dos Resultados
+
+[26]                                                                                               # 6. Salva o resultado
+[27] with open(f"{hostname}_banner.txt", "w") as f:                                                # Cria/Abre arquivo para escrita (nome dinâmico)
+[28]     f.write(saida)                                                                            # Escreve a configuração gerada no arquivo
+[29]
+[30] print(f"✅ Configuração gerada: {hostname}_banner.txt")                                       # Feedback visual para o usuário
 ```
 
 ### Exemplo 04 – Simulação de login via .env (sem aplicar)
