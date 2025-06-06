@@ -744,4 +744,24 @@ python-dotenv
 
 **saída**
 
+```bash
+alcancil@linux:~/automacoes/arquivos/env/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/arquivos/env/04$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/arquivos/env/04$ pip3 install -r requirements.txt 
+Collecting python-dotenv (from -r requirements.txt (line 1))
+  Using cached python_dotenv-1.1.0-py3-none-any.whl.metadata (24 kB)
+Using cached python_dotenv-1.1.0-py3-none-any.whl (20 kB)
+Installing collected packages: python-dotenv
+Successfully installed python-dotenv-1.1.0
+(venv) alcancil@linux:~/automacoes/arquivos/env/04$ python3 simular_login.py 
+🔐 Tentando conectar a 192.168.1.100:22
+👤 Usuário: admin
+🔒 Senha: ********
+⏳ Aguardando resposta...
+✅ Conexão simulada com sucesso! (Nenhuma ação real foi executada)
+(venv) alcancil@linux:~/automacoes/arquivos/env/04$ ls
+requirements.txt  simular_login.py  venv
+(venv) alcancil@linux:~/automacoes/arquivos/env/04$ 
+```
+
 ### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
