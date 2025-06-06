@@ -109,7 +109,7 @@ SSH_PASSWORD=nova_senha_complexa_123
 ```mermaid
 flowchart TB
     A[Início] --> B[.env.example]
-    B --> C[Contribuidor faz cp .env.example .env]
+    B --> C[Contribuidor faz cópia do .env.example para .env]
     C --> D[Preenche .env com SEUS dados]
     D --> E[Adiciona .env ao .gitignore]
     E --> F[Scripts usam variáveis locais]
@@ -121,7 +121,7 @@ flowchart TB
 
 7. **Boas Práticas para Equipes**
 
-| Ação	Por quê?
+| Ação	                            | Por quê?                                    |
 |-----------------------------------|---------------------------------------------|
 | .env.example sempre atualizado    | Todos sabem quais variáveis são necessárias |
 | Nunca compartilhar .env real      | Evita vazamentos                            |
