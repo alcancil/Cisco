@@ -698,42 +698,42 @@ TIMEOUT=
 **simular_login.py**  
 
 ```Python
-from dotenv import load_dotenv  
-import os  
-import sys  
-from time import sleep  
-
-# 1. Carrega variáveis do .env  
-load_dotenv()  
-
-# 2. Validação das variáveis  
-required_vars = ["DEVICE_IP", "SSH_USERNAME", "SSH_PASSWORD"]  
-missing_vars = [var for var in required_vars if not os.getenv(var)]  
-
-if missing_vars:  
-    print(f"❌ Erro: Variáveis obrigatórias faltando no .env: {', '.join(missing_vars)}")  
-    sys.exit(1)  
-
-# 3. Simulação de conexão  
-def simular_ssh():  
-    print(f"🔐 Tentando conectar a {os.getenv('DEVICE_IP')}:{os.getenv('SSH_PORT', '22')}")  
-    print(f"👤 Usuário: {os.getenv('SSH_USERNAME')}")  
-    print("🔒 Senha: ********")  
-    print("⏳ Aguardando resposta...")  
-    
-    sleep(int(os.getenv("TIMEOUT", 3)))  # Simula delay de conexão  
-    
-    # Validação fictícia (sem conexão real)  
-    if os.getenv("SSH_PASSWORD") == "senha_incorreta":  
-        print("❌ Falha: Senha incorreta!")  
-        return False  
-    else:  
-        print("✅ Conexão simulada com sucesso! (Nenhuma ação real foi executada)")  
-        return True  
-
-# 4. Executa a simulação  
-if __name__ == "__main__":  
-    simular_ssh()  
+[01] from dotenv import load_dotenv  
+[02] import os  
+[03] import sys  
+[04] from time import sleep  
+[05] 
+[06] # 1. Carrega variáveis do .env  
+[07] load_dotenv()  
+[08]
+[09] # 2. Validação das variáveis  
+[10] required_vars = ["DEVICE_IP", "SSH_USERNAME", "SSH_PASSWORD"]  
+[11] missing_vars = [var for var in required_vars if not os.getenv(var)]  
+[12]
+[13] if missing_vars:  
+[14]     print(f"❌ Erro: Variáveis obrigatórias faltando no .env: {', '.join(missing_vars)}")  
+[15]     sys.exit(1)  
+[16]
+[17] # 3. Simulação de conexão  
+[18] def simular_ssh():  
+[19]     print(f"🔐 Tentando conectar a {os.getenv('DEVICE_IP')}:{os.getenv('SSH_PORT', '22')}")  
+[20]     print(f"👤 Usuário: {os.getenv('SSH_USERNAME')}")  
+[21]     print("🔒 Senha: ********")  
+[22]     print("⏳ Aguardando resposta...")  
+[23]    
+[24]     sleep(int(os.getenv("TIMEOUT", 3)))  # Simula delay de conexão  
+[25]    
+[26]     # Validação fictícia (sem conexão real)  
+[27]     if os.getenv("SSH_PASSWORD") == "senha_incorreta":  
+[28]         print("❌ Falha: Senha incorreta!")  
+[29]         return False  
+[30]     else:  
+[31]         print("✅ Conexão simulada com sucesso! (Nenhuma ação real foi executada)")  
+[32]         return True  
+[33]
+[34] # 4. Executa a simulação  
+[35] if __name__ == "__main__":  
+[36]     simular_ssh()  
 ```
 
 **requirements.txt**  
