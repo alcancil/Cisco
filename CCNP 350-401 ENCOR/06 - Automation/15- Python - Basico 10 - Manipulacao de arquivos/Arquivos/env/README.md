@@ -45,12 +45,12 @@ Site oficial: https://pypi.org/project/python-dotenv/
 
 ## Como usar - Fluxo Profissional
 
-1. **Crie um arquivo `.env` com suas variáveis (NUNCA versionado)**
-2. Instale a biblioteca:
+1. Instale a biblioteca:
 
 ```bash
 pip install python-dotenv
 ```
+2. **Crie um arquivo `.env` com suas variáveis (NUNCA versionado)**  
 
 3. **Preencha o .env com SUAS credenciais (não use as do exemplo!)**
 
@@ -68,7 +68,7 @@ SSH_PASSWORD=sua_senha_secreta
   
 Por quê?
 
-- Evita que credenciais sejam commitadas acidentalmente.
+- Evita que credenciais sejam "commitadas" acidentalmente.
 - O .env.example é versionado, mas sem dados reais.
 
 5. **Trabalho em Equipe (Exemplo: 10 Pessoas)**
@@ -103,6 +103,30 @@ SSH_PASSWORD=senha_antiga
 # e avisa a equipe para atualizar seus .env locais
 SSH_PASSWORD=nova_senha_complexa_123
 ```
+
+6. **Fluxo de trabalho**
+
+```mermaid
+flowchart TB
+    A[Início] --> B[.env.example]
+    B --> C[Contribuidor faz cp .env.example .env]
+    C --> D[Preenche .env com SEUS dados]
+    D --> E[Adiciona .env ao .gitignore]
+    E --> F[Scripts usam variáveis locais]
+    F --> G[Segurança garantida]
+
+    H[Pessoa sai] --> I[Revoga credenciais]
+    I --> J[Equipe atualiza .env locais se necessário]
+```
+
+7. **Boas Práticas para Equipes**
+
+| Ação	Por quê?
+|-----------------------------------|---------------------------------------------|
+| .env.example sempre atualizado    | Todos sabem quais variáveis são necessárias |
+| Nunca compartilhar .env real      | Evita vazamentos                            |
+| Credenciais pessoais por ambiente | Isola acessos (dev, lab, prod)              |
+| Revogar acessos ao sair           | Mitiga riscos de segurança                  |
 
 ### Casos de uso de arquivos .env na automação de redes:
 
