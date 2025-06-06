@@ -663,4 +663,85 @@ Seção 7: Saída dos Resultados
 
 ### Exemplo 04 – Simulação de login via .env (sem aplicar)
 
+Este exemplo demonstra como simular uma conexão SSH com um dispositivo de rede usando credenciais armazenadas em .env, sem aplicar configurações reais (apenas validação local). Ideal para testes seguros em scripts de automação.
+
+**Estrutura de arquivos**
+
+```bash
+04/  
+├── .env                  # Credenciais locais (não versionado)  
+├── .env.example          # Template seguro  
+├── simular_login.py      # Script principal  
+└── requirements.txt  
+```
+**.env (não versionado)**  
+
+```dotenv
+# Credenciais do SEU ambiente de teste  
+DEVICE_IP=192.168.1.100  
+SSH_USERNAME=admin  
+SSH_PASSWORD=senha_secreta_123  
+SSH_PORT=22  
+TIMEOUT=5  # Tempo máximo de espera (segundos)  
+```
+
+**.env.example (versionado)**  
+
+```dotenv
+DEVICE_IP=  
+SSH_USERNAME=  
+SSH_PASSWORD=  
+SSH_PORT=  
+TIMEOUT=  
+```
+
+**simular_login.py**  
+
+```Python
+from dotenv import load_dotenv  
+import os  
+import sys  
+from time import sleep  
+
+# 1. Carrega variáveis do .env  
+load_dotenv()  
+
+# 2. Validação das variáveis  
+required_vars = ["DEVICE_IP", "SSH_USERNAME", "SSH_PASSWORD"]  
+missing_vars = [var for var in required_vars if not os.getenv(var)]  
+
+if missing_vars:  
+    print(f"❌ Erro: Variáveis obrigatórias faltando no .env: {', '.join(missing_vars)}")  
+    sys.exit(1)  
+
+# 3. Simulação de conexão  
+def simular_ssh():  
+    print(f"🔐 Tentando conectar a {os.getenv('DEVICE_IP')}:{os.getenv('SSH_PORT', '22')}")  
+    print(f"👤 Usuário: {os.getenv('SSH_USERNAME')}")  
+    print("🔒 Senha: ********")  
+    print("⏳ Aguardando resposta...")  
+    
+    sleep(int(os.getenv("TIMEOUT", 3)))  # Simula delay de conexão  
+    
+    # Validação fictícia (sem conexão real)  
+    if os.getenv("SSH_PASSWORD") == "senha_incorreta":  
+        print("❌ Falha: Senha incorreta!")  
+        return False  
+    else:  
+        print("✅ Conexão simulada com sucesso! (Nenhuma ação real foi executada)")  
+        return True  
+
+# 4. Executa a simulação  
+if __name__ == "__main__":  
+    simular_ssh()  
+```
+
+**requirements.txt**  
+
+```text
+python-dotenv  
+```
+
+**saída**
+
 ### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
