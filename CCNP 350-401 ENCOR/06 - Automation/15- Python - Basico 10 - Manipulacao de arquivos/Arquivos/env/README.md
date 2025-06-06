@@ -50,7 +50,12 @@ Site oficial: https://pypi.org/project/python-dotenv/
 ```bash
 pip install python-dotenv
 ```
-2. **Crie um arquivo `.env` com suas variáveis (NUNCA versionado)**  
+2. **Crie um arquivo `.env` com suas variáveis (NUNCA versionado) e um arquivo `.env.exemplo` de template**
+
+> "O `.env.exemplo` é um **template seguro** que deve ser versionado. Ele serve como:  
+> - Documentação das variáveis necessárias.  
+> - Modelo para novos contribuidores criarem seu próprio `.env`.  
+> - Referência para atualizações (ex.: adicionar novas variáveis)."  
 
 3. **Preencha o .env com SUAS credenciais (não use as do exemplo!)**
 
@@ -71,7 +76,7 @@ Por quê?
 - Evita que credenciais sejam "commitadas" acidentalmente.
 - O .env.example é versionado, mas sem dados reais.
 
-5. **Trabalho em Equipe (Exemplo: 10 Pessoas)**
+5. **Trabalho em Equipe (Melhores Práticas)**
 
 > Cenário Normal:  
 >  
@@ -123,7 +128,7 @@ flowchart TB
 ```markdown
 ## 🔐 Checklist de Segurança
 - [ ] Nunca commit `.env` no Git.
-- [ ] Use `chmod 600 .env` para restringir permissões.
+- [ ] Use `chmod 600 .env` para restringir permissões (ou equivalente para o Windows).
 - [ ] Rotacione credenciais a cada 90 dias.
 - [ ] Revogue acessos imediatamente ao sair da equipe.
 ```
