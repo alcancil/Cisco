@@ -5,7 +5,8 @@
   - [Índice](#índice)
 - [05 Manipulação de arquivos – .env](#05-manipulação-de-arquivos--env)
   - [Vantagens de usar arquivos `.env`](#vantagens-de-usar-arquivos-env)
-  - [Como usar](#como-usar)
+  - [Como usar - Fluxo Profissional](#como-usar---fluxo-profissional)
+- [Adicione ao .gitignore](#adicione-ao-gitignore)
     - [Casos de uso de arquivos .env na automação de redes:](#casos-de-uso-de-arquivos-env-na-automação-de-redes)
     - [Quando usar .env vs outras abordagens](#quando-usar-env-vs-outras-abordagens)
     - [Por que .env é essencial para o CCNP e para automação de redes?](#por-que-env-é-essencial-para-o-ccnp-e-para-automação-de-redes)
@@ -42,13 +43,65 @@ Site oficial: https://pypi.org/project/python-dotenv/
 
 ---
 
-## Como usar
+## Como usar - Fluxo Profissional
 
-1. **Crie um arquivo `.env` com suas variáveis**
+1. **Crie um arquivo `.env` com suas variáveis (NUNCA versionado)**
 2. Instale a biblioteca:
 
 ```bash
 pip install python-dotenv
+```
+
+3. **Preencha o .env com SUAS credenciais (não use as do exemplo!)**
+
+```dotenv
+# Credenciais do SEU ambiente (não compartilhe!)
+DEVICE_IP=192.168.1.100
+SSH_USERNAME=seu_usuario
+SSH_PASSWORD=sua_senha_secreta
+```
+
+4. **Segurança com Git (Não falarei da ferramenta aqui, é só um exemplo para completar o fluxo de trabalho)**
+
+# Adicione ao .gitignore  
+> echo ".env" >> .gitignore  
+  
+Por quê?
+
+- Evita que credenciais sejam commitadas acidentalmente.
+- O .env.example é versionado, mas sem dados reais.
+
+5. **Trabalho em Equipe (Exemplo: 10 Pessoas)**
+
+> Cenário Normal:  
+>  
+>  - Cada integrante tem seu próprio .env com credenciais individuais.
+>  - O .env.example é atualizado centralmente se novas variáveis forem adicionadas.  
+>
+> Se uma Pessoa Sai da Equipe:  
+>  
+>  - Remova o acesso físico/logico:  
+>
+>        A pessoa perde acesso ao repositório (revogar no GitHub/GitLab).  
+>  
+>  - Rotação de Credenciais:  
+>  
+>        Atualize as senhas/tokens que ela tinha acesso (ex.: SSH, API Keys).  
+>  
+>  - Não há impacto no código:  
+>  
+>        Como cada um tinha seu .env local, não é necessário alterar scripts.  
+
+**Exemplo Prático:**
+
+```bash
+# Antes: pessoa usava no seu .env local
+SSH_USERNAME=fulano
+SSH_PASSWORD=senha_antiga
+
+# Depois: administrador atualiza credenciais no servidor
+# e avisa a equipe para atualizar seus .env locais
+SSH_PASSWORD=nova_senha_complexa_123
 ```
 
 ### Casos de uso de arquivos .env na automação de redes:
