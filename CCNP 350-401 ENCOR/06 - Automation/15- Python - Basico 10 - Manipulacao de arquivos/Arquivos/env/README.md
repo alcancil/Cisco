@@ -12,8 +12,7 @@
     - [Por que .env é essencial para o CCNP e para automação de redes?](#por-que-env-é-essencial-para-o-ccnp-e-para-automação-de-redes)
     - [Fluxo do uso de .env com Python puro e com Ansible](#fluxo-do-uso-de-env-com-python-puro-e-com-ansible)
     - [Exemplo 01 – Leitura básica do .env com python-dotenv](#exemplo-01--leitura-básica-do-env-com-python-dotenv)
-    - [Exemplo 02 – Integração com template Jinja2 usando variáveis do .env](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
-- [Exemplo 02 – Integração com Jinja2 usando variáveis do `.env`](#exemplo-02--integração-com-jinja2-usando-variáveis-do-env)
+    - [Exemplo 02 – Integração com template Jinja2 usando variáveis do `.env`](#exemplo-02--integração-com-template-jinja2-usando-variáveis-do-env)
     - [Exemplo 03 – Verificação de variáveis obrigatórias no .env](#exemplo-03--verificação-de-variáveis-obrigatórias-no-env)
     - [Exemplo 04 – Simulação de login via .env (sem aplicar)](#exemplo-04--simulação-de-login-via-env-sem-aplicar)
     - [Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-05--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
@@ -314,9 +313,7 @@ Seção 4: Exibição dos dados simulando uma conexão
 
 ```
 
-### Exemplo 02 – Integração com template Jinja2 usando variáveis do .env
-
-# Exemplo 02 – Integração com Jinja2 usando variáveis do `.env`
+### Exemplo 02 – Integração com template Jinja2 usando variáveis do `.env`
 
 Este exemplo demonstra como **integrar variáveis carregadas de um arquivo `.env`** com um **template Jinja2**, para gerar um banner de login Cisco de forma dinâmica e segura.  
 
