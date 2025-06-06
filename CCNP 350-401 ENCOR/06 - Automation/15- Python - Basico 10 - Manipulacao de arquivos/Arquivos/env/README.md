@@ -820,4 +820,106 @@ python
 
 ```
 
-### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
+### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))  
+
+Este exemplo demonstra como:
+
+  1. Validar variáveis com fallback para valores padrão.
+
+  2. Gerar configurações dinâmicas usando Jinja2.
+
+  3. Simular um fluxo de trabalho real de automação de redes.
+   
+**Estrutura de arquivos**
+
+```bash
+05/  
+├── .env                      # Variáveis locais (não versionado)  
+├── .env.example              # Template com variáveis obrigatórias  
+├── template_interface.j2     # Template Jinja2 para configuração  
+├── gerar_config.py           # Script principal  
+└── requirements.txt  
+```
+
+**.env**  
+
+```dotenv
+
+# Configurações do dispositivo (preencha com SEUS valores)  
+DEVICE_NAME=ROUTER_01  
+INTERFACE=GigabitEthernet0/1  
+IP_ADDRESS=192.168.1.1  
+SUBNET_MASK=255.255.255.0  
+# DESCrição opcional - pode ser omitida  
+```
+
+**.env.example**  
+
+```dotenv
+
+# Variáveis obrigatórias  
+DEVICE_NAME=  
+INTERFACE=  
+IP_ADDRESS=  
+SUBNET_MASK=  
+
+# Opcionais  
+DESCrição=  
+```
+
+**template_interface.j2 (Jinja2)**  
+
+```jinja2
+
+! Configuração gerada automaticamente via Python  
+hostname {{ device_name }}  
+
+interface {{ interface }}  
+ {% if description %}description {{ description }}{% endif %}  
+ ip address {{ ip_address }} {{ subnet_mask }}  
+ no shutdown  
+```
+
+**gerar_config.py**  
+
+```python
+
+from dotenv import load_dotenv  
+import os  
+from jinja2 import Environment, FileSystemLoader  
+
+# 1. Carrega variáveis com valores padrão  
+load_dotenv()  
+config = {  
+    "device_name": os.getenv("DEVICE_NAME", "DEVICE_PADRAO"),  
+    "interface": os.getenv("INTERFACE", "GigabitEthernet0/0"),  
+    "ip_address": os.getenv("IP_ADDRESS", "10.0.0.1"),  
+    "subnet_mask": os.getenv("SUBNET_MASK", "255.255.255.0"),  
+    "description": os.getenv("DESCRICAO", "")  # Opcional  
+}  
+
+# 2. Valida variáveis críticas  
+required_vars = ["DEVICE_NAME", "INTERFACE", "IP_ADDRESS"]  
+for var in required_vars:  
+    if not os.getenv(var):  
+        print(f"⚠️ Aviso: {var} não definido. Usando valor padrão: {config[var.lower()]}")  
+
+# 3. Renderiza o template Jinja2  
+env = Environment(loader=FileSystemLoader('.'), trim_blocks=True)  
+template = env.get_template("template_interface.j2")  
+output = template.render(**config)  
+
+# 4. Salva a configuração  
+with open(f"{config['device_name']}_config.txt", "w") as f:  
+    f.write(output)  
+
+print(f"✅ Configuração gerada: {config['device_name']}_config.txt")  
+```
+
+**requirements.txt**  
+
+```text
+
+python-dotenv  
+jinja2  
+```
