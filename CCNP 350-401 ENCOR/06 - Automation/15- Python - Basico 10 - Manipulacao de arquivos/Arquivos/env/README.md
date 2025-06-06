@@ -118,8 +118,17 @@ flowchart TB
     H[Pessoa sai] --> I[Revoga credenciais]
     I --> J[Equipe atualiza .env locais se necessário]
 ```
+7. **Checklist de Segurança**
 
-7. **Boas Práticas para Equipes**
+```markdown
+## 🔐 Checklist de Segurança
+- [ ] Nunca commit `.env` no Git.
+- [ ] Use `chmod 600 .env` para restringir permissões.
+- [ ] Rotacione credenciais a cada 90 dias.
+- [ ] Revogue acessos imediatamente ao sair da equipe.
+```
+
+8. **Boas Práticas para Equipes**
 
 | Ação	                            | Por quê?                                    |
 |-----------------------------------|---------------------------------------------|
