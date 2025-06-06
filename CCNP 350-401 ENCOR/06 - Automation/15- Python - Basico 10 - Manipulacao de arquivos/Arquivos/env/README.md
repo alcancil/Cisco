@@ -764,4 +764,63 @@ requirements.txt  simular_login.py  venv
 (venv) alcancil@linux:~/automacoes/arquivos/env/04$ 
 ```
 
+**Explicação**  
+
+**simular_login.py**
+
+```Python
+Bloco 1: Importações de Bibliotecas
+python
+
+[01] from dotenv import load_dotenv                                                              # Importa a função para carregar variáveis do arquivo .env  
+[02] import os                                                                                   # Fornece acesso às variáveis de ambiente do sistema  
+[03] import sys                                                                                  # Permite encerrar o programa com códigos de erro  
+[04] from time import sleep                                                                      # Usado para simular delays (atrasos de conexão)  
+
+Bloco 2: Carregamento do Arquivo .env
+python
+
+[06]                                                                                             # 1. Carrega variáveis do .env  
+[07] load_dotenv()                                                                               # Lê o arquivo .env no diretório atual e carrega suas variáveis  
+
+Bloco 3: Validação das Variáveis Obrigatórias
+python
+
+[09]                                                                                             # 2. Validação das variáveis  
+[10] required_vars = ["DEVICE_IP", "SSH_USERNAME", "SSH_PASSWORD"]                               # Lista de variáveis que DEVEM existir no .env  
+[11] missing_vars = [var for var in required_vars if not os.getenv(var)]                         # Verifica quais variáveis estão faltando ou vazias  
+[12]  
+[13] if missing_vars:                                                                            # Se houver variáveis faltando...  
+[14]     print(f"❌ Erro: Variáveis obrigatórias faltando no .env: {', '.join(missing_vars)}")   # Exibe erro detalhado  
+[15]     sys.exit(1)                                                                             # Encerra o programa com código de erro (1)  
+
+Bloco 4: Simulação de Conexão SSH
+python
+
+[17]                                                                                              # 3. Simulação de conexão  
+[18] def simular_ssh():                                                                           # Define a função principal de simulação  
+[19]     print(f"🔐 Tentando conectar a {os.getenv('DEVICE_IP')}:{os.getenv('SSH_PORT', '22')}")  # Exibe IP e porta (default: 22)  
+[20]     print(f"👤 Usuário: {os.getenv('SSH_USERNAME')}")                                        # Exibe o nome de usuário  
+[21]     print("🔒 Senha: ********")                                                              # Máscara a senha (boa prática de segurança)  
+[22]     print("⏳ Aguardando resposta...")                                                       # Feedback visual  
+[23]    
+[24]     sleep(int(os.getenv("TIMEOUT", 3)))                                                      # Simula delay de rede (usa 3 segundos se TIMEOUT não existir)  
+[25]    
+[26]                                                                                              # Validação fictícia (sem conexão real)  
+[27]     if os.getenv("SSH_PASSWORD") == "senha_incorreta":                                       # Exemplo: verificação fictícia de senha  
+[28]         print("❌ Falha: Senha incorreta!")                                                  # Mensagem de erro simulada  
+[29]         return False                                                                         # Retorna falha  
+[30]     else:  
+[31]         print("✅ Conexão simulada com sucesso! (Nenhuma ação real foi executada)")          # Mensagem de sucesso  
+[32]         return True                                                                          # Retorna sucesso  
+
+Bloco 5: Execução Principal
+python
+
+[34]                                                                                               # 4. Executa a simulação  
+[35] if __name__ == "__main__":                                                                    # Garante que o código só execute se o arquivo for rodado diretamente  
+[36]     simular_ssh()                                                                             # Chama a função de simulação  
+
+```
+
 ### Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))
