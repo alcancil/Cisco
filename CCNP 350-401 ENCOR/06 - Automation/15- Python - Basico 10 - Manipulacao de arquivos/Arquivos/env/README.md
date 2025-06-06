@@ -923,3 +923,7 @@ print(f"✅ Configuração gerada: {config['device_name']}_config.txt")
 python-dotenv  
 jinja2  
 ```
+
+**Saída**  
+
+**Explicação**
