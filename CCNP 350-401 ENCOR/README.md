@@ -33,6 +33,7 @@ Além dos meus próprios laboratórios e anotações, utilizei os seguintes recu
 - [Cisco Brasil](https://www.cisco.com.br)
 - [Cisco Networking Academy](https://www.netacad.com/pt-br)
 - [Cisco Learning Network](https://learningnetwork.cisco.com/)
+- [Cisco CML - Cisco Modeling Labs](https://www.cisco.com/c/en/us/td/docs/cloud_services/cisco_modeling_labs/v200/quick/start/b_cml_quick_start_2-0/m_whats_new.html)
 - [Curso Cisco Packet Tracer](https://www.netacad.com/pt-br/courses/packet-tracer)
 - [EVE-NG - Emulador de redes](https://www.eve-ng.net/)
 - [Python](https://pythoninstitute.org/)
