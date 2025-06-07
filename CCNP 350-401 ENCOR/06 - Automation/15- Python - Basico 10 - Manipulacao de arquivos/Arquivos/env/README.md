@@ -871,49 +871,49 @@ DESCrição=
 
 ```jinja2
 
-! Configuração gerada automaticamente via Python  
-hostname {{ device_name }}  
-
-interface {{ interface }}  
- {% if description %}description {{ description }}{% endif %}  
- ip address {{ ip_address }} {{ subnet_mask }}  
- no shutdown  
+[01] ! Configuração gerada automaticamente via Python  
+[02] hostname {{ device_name }}  
+[03]
+[04] interface {{ interface }}  
+[05] {% if description %}description {{ description }}{% endif %}  
+[06] ip address {{ ip_address }} {{ subnet_mask }}  
+[07] no shutdown  
 ```
 
 **gerar_config.py**  
 
 ```python
 
-from dotenv import load_dotenv  
-import os  
-from jinja2 import Environment, FileSystemLoader  
-
-# 1. Carrega variáveis com valores padrão  
-load_dotenv()  
-config = {  
-    "device_name": os.getenv("DEVICE_NAME", "DEVICE_PADRAO"),  
-    "interface": os.getenv("INTERFACE", "GigabitEthernet0/0"),  
-    "ip_address": os.getenv("IP_ADDRESS", "10.0.0.1"),  
-    "subnet_mask": os.getenv("SUBNET_MASK", "255.255.255.0"),  
-    "description": os.getenv("DESCRICAO", "")  # Opcional  
-}  
-
-# 2. Valida variáveis críticas  
-required_vars = ["DEVICE_NAME", "INTERFACE", "IP_ADDRESS"]  
-for var in required_vars:  
-    if not os.getenv(var):  
-        print(f"⚠️ Aviso: {var} não definido. Usando valor padrão: {config[var.lower()]}")  
-
-# 3. Renderiza o template Jinja2  
-env = Environment(loader=FileSystemLoader('.'), trim_blocks=True)  
-template = env.get_template("template_interface.j2")  
-output = template.render(**config)  
-
-# 4. Salva a configuração  
-with open(f"{config['device_name']}_config.txt", "w") as f:  
-    f.write(output)  
-
-print(f"✅ Configuração gerada: {config['device_name']}_config.txt")  
+[01] from dotenv import load_dotenv  
+[02] import os  
+[03] from jinja2 import Environment, FileSystemLoader  
+[04]
+[05] # 1. Carrega variáveis com valores padrão  
+[06] load_dotenv()  
+[08] config = {  
+[09]     "device_name": os.getenv("DEVICE_NAME", "DEVICE_PADRAO"),  
+[10]     "interface": os.getenv("INTERFACE", "GigabitEthernet0/0"),  
+[11]     "ip_address": os.getenv("IP_ADDRESS", "10.0.0.1"),  
+[12]     "subnet_mask": os.getenv("SUBNET_MASK", "255.255.255.0"),  
+[13]     "description": os.getenv("DESCRICAO", "")  # Opcional  
+[14] }  
+[15]
+[16] # 2. Valida variáveis críticas  
+[17] required_vars = ["DEVICE_NAME", "INTERFACE", "IP_ADDRESS"]  
+[18] for var in required_vars:  
+[19]    if not os.getenv(var):  
+[20]         print(f"⚠️ Aviso: {var} não definido. Usando valor padrão: {config[var.lower()]}")  
+[21]
+[22] # 3. Renderiza o template Jinja2  
+[23] env = Environment(loader=FileSystemLoader('.'), trim_blocks=True)  
+[24] template = env.get_template("template_interface.j2")  
+[25] output = template.render(**config)  
+[26]
+[27] # 4. Salva a configuração  
+[28] with open(f"{config['device_name']}_config.txt", "w") as f:  
+[29]     f.write(output)  
+[30]
+[31] print(f"✅ Configuração gerada: {config['device_name']}_config.txt")  
 ```
 
 **requirements.txt**  
@@ -926,4 +926,78 @@ jinja2
 
 **Saída**  
 
-**Explicação**
+**Explicação**  
+
+
+**template_interface.j2 (Jinja2)** 
+
+```jinja2
+Bloco 1: Metadados  
+
+[01] ! Configuração gerada automaticamente via Python               # Cabeçalho estático (não processado pelo Jinja2)
+
+Bloco 2: Configuração Global
+
+[02] hostname {{ device_name }}                                    # Insere o nome do dispositivo (variável obrigatória)
+[03]                                                               # Linha vazia para formatação
+
+Bloco 3: Configuração de Interface
+
+[04] interface {{ interface }}                                     # Define a interface a ser configurada (ex: Gig0/1)
+[05] {% if description %}description {{ description }}{% endif %}  # CONDICIONAL: Adiciona descrição apenas se a variável existir
+[06] ip address {{ ip_address }} {{ subnet_mask }}                 # Configuração do IP e máscara (variáveis obrigatórias)
+[07] no shutdown                                                   # Comando fixo para ativar a interface
+```
+
+**gerar_config.py**
+
+```Python
+Seção 1: Importação de Bibliotecas
+
+[01] from dotenv import load_dotenv                                                              # Importa a função para carregar variáveis de ambiente do arquivo .env
+[02] import os                                                                                   # Fornece acesso às variáveis de ambiente do sistema
+[03] from jinja2 import Environment, FileSystemLoader                                            # Framework para processamento de templates Jinja2
+[04]                                                                                             # Linha em branco para separação visual
+
+Seção 2: Carregamento de Variáveis
+
+[05]                                                                                             # 1. Carrega variáveis com valores padrão
+[06] load_dotenv()                                                                               # Lê e carrega as variáveis do arquivo .env no diretório atual
+[07] 
+[08] config = {                                                                                  # Dicionário com variáveis de configuração
+[09]     "device_name": os.getenv("DEVICE_NAME", "DEVICE_PADRAO"),                               # Nome do dispositivo (valor padrão se não existir)
+[10]     "interface": os.getenv("INTERFACE", "GigabitEthernet0/0"),                              # Interface de rede (valor padrão)
+[11]     "ip_address": os.getenv("IP_ADDRESS", "10.0.0.1"),                                      # Endereço IP (valor padrão)
+[12]     "subnet_mask": os.getenv("SUBNET_MASK", "255.255.255.0"),                               # Máscara de sub-rede (valor padrão)
+[13]     "description": os.getenv("DESCRICAO", "")                                               # Descrição opcional (vazia por padrão)
+[14] }                                                                                           # Fim do dicionário
+[15]                                                                                             # Linha em branco para separação visual
+
+Seção 3: Validação de Variáveis Críticas
+python
+
+[16]                                                                                             # 2. Valida variáveis críticas
+[17] required_vars = ["DEVICE_NAME", "INTERFACE", "IP_ADDRESS"]                                  # Lista de variáveis obrigatórias
+[18] for var in required_vars:                                                                   # Itera sobre cada variável obrigatória
+[19]    if not os.getenv(var):                                                                   # Verifica se a variável não está definida no .env
+[20]         print(f"⚠️ Aviso: {var} não definido. Usando valor padrão: {config[var.lower()]}")  # Alerta visual
+[21]                                                                                             # Linha em branco para separação visual
+
+Seção 4: Renderização do Template
+python
+
+[22]                                                                                              # 3. Renderiza o template Jinja2
+[23] env = Environment(loader=FileSystemLoader('.'), trim_blocks=True)                            # Configura o ambiente Jinja2 (remove espaços extras)
+[24] template = env.get_template("template_interface.j2")                                         # Carrega o arquivo de template
+[25] output = template.render(**config)                                                           # Renderiza o template com as variáveis do dicionário 'config'
+[26]                                                                                              # Linha em branco para separação visual
+
+Seção 5: Salvamento e Confirmação
+python
+
+[27]                                                                                              # 4. Salva a configuração
+[28] with open(f"{config['device_name']}_config.txt", "w") as f:                                  # Abre arquivo com nome baseado no device_name
+[29]     f.write(output)                                                                          # Escreve a configuração renderizada no arquivo
+[30]                                                                                              # Linha em branco para separação visual
+[31] print(f"✅ Configuração gerada: {config['device_name']}_config.txt")                         # Confirmação de sucesso
+```
