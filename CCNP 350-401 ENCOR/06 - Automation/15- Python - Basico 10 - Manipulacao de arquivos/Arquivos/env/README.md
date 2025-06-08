@@ -16,6 +16,8 @@
     - [Exemplo 03 – Verificação de variáveis obrigatórias no .env](#exemplo-03--verificação-de-variáveis-obrigatórias-no-env)
     - [Exemplo 04 – Simulação de login via .env (sem aplicar)](#exemplo-04--simulação-de-login-via-env-sem-aplicar)
     - [Exemplo 05 – Validação de variáveis faltantes no .env (com os.getenv(..., default))](#exemplo-05--validação-de-variáveis-faltantes-no-env-com-osgetenv-default)
+    - [Considerações Finais: Segurança](#considerações-finais-segurança)
+      - [Protegendo Arquivos de Configuração: Segurança Básica](#protegendo-arquivos-de-configuração-segurança-básica)
 
 # 05 Manipulação de arquivos – .env
 
@@ -1001,3 +1003,46 @@ python
 [30]                                                                                              # Linha em branco para separação visual
 [31] print(f"✅ Configuração gerada: {config['device_name']}_config.txt")                         # Confirmação de sucesso
 ```
+
+### Considerações Finais: Segurança  
+
+#### Protegendo Arquivos de Configuração: Segurança Básica
+
+**No Linux/macOS (Terminal)**  
+
+Para proteger seu .env e chaves:
+
+```bash
+chmod 600 .env chave.key  # Restringe a leitura/escrita apenas ao dono  
+chown $USER:$USER .env    # Garante propriedade correta (opcional)  
+```  
+
+Por quê?
+
+  - 600: Nenhum outro usuário do sistema pode acessar.
+  - Útil para ambientes multi-usuário ou servidores compartilhados.
+
+**No Windows (PowerShell)**
+
+```powershell
+icacls .env /reset /Q /C                    # Remove permissões herdadas  
+icacls .env /grant:r "$env:USERNAME:(R,W)"  # Só o usuário atual tem acesso  
+```
+
+**Evoluindo para Métodos Profissionais**
+
+Essa proteção básica é suficiente para desenvolvimento local, mas em produção considere:  
+
+01. Criptografia (ex.: cryptography):  
+
+  - Arquivos .env criptografados com chaves AES.  
+  - Chave armazenada em local seguro (ex.: pendrive criptografado).  
+
+02. Cofres de Senhas:  
+
+  - HashiCorp Vault ou AWS Secrets Manager para ambientes cloud.
+  - Ansible Vault para automação em redes.  
+
+**Regra de Ouro:**  
+
+  > "Seu arquivo .env deve ser tão protegido quanto suas senhas de administrador de rede."
