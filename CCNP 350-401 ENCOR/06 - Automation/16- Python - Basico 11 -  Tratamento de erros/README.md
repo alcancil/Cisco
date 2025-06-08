@@ -25,11 +25,55 @@ graph TB
     A --> G[Variáveis .env]
     B -.-> H[XML se NETCONF]
 
+    style A fill:#fff3cd,stroke:#f0ad4e,color:#000
+    style F fill:#f8d7da,stroke:#dc3545,color:#000
+    style G fill:#d1ecf1,stroke:#17a2b8,color:#000
+    style E fill:#d4edda,stroke:#28a745,color:#000
+```
     style A fill:#fff3cd,stroke:#f0ad4e
     style F fill:#f8d7da,stroke:#dc3545
     style G fill:#d1ecf1,stroke:#17a2b8
     style E fill:#d4edda,stroke:#28a745
-```
+
+
+    As caixas coloridas representam pontos onde erros são comuns:
+
+        🟨 Arquivo não encontrado
+
+        🟥 Formato malformado (ex: JSON inválido)
+
+        🟦 Variável de ambiente ausente
+
+        🟩 Renderização de template com erro
+
+📂 Tipos de arquivos abordados e erros comuns
+Tipo de arquivo	Erros comuns tratados com try/except
+TXT	Arquivo não encontrado, permissões negadas
+CSV	Delimitadores errados, colunas ausentes
+JSON	JSON malformado, chave inexistente
+YAML	Erros de indentação ou estrutura
+XML	Tags não fechadas, parse quebrado
+J2	Variável indefinida, erro de sintaxe no template
+ENV	Variáveis ausentes ou arquivo não encontrado
+
+📌 Como navegar
+
+Clique em qualquer formato acima para ver:
+
+    Exemplos práticos com tratamento de erro
+
+    Bibliotecas Python relacionadas
+
+    Erros específicos que ocorrem em redes Cisco
+
+    Estratégias para garantir resiliência na automação
+
+
+
+
+
+---
+ARRUMAR
 
 Explore os formatos essenciais:
 
