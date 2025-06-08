@@ -42,15 +42,91 @@ graph TB
         🟩 Renderização de template com erro
 
 📂 Tipos de arquivos abordados e erros comuns
-Tipo de arquivo	Erros comuns tratados com try/except
-TXT	Arquivo não encontrado, permissões negadas
-CSV	Delimitadores errados, colunas ausentes
-JSON	JSON malformado, chave inexistente
-YAML	Erros de indentação ou estrutura
-XML	Tags não fechadas, parse quebrado
-J2	Variável indefinida, erro de sintaxe no template
-ENV	Variáveis ausentes ou arquivo não encontrado
 
+📄 Arquivos TXT
+
+    Para que serve: Armazenar logs brutos, saídas de comandos (como show running-config) e relatórios simples.
+
+    Erros comuns tratados:
+
+        Arquivo não encontrado
+
+        Permissão negada
+
+    Quando usar: Quando você precisa armazenar ou analisar saídas de CLI simples ou logs sequenciais.
+
+📑 Arquivos CSV
+
+    Para que serve: Gerenciar inventários de dispositivos, listas de portas, VLANs, IPs ou usuários de forma tabular.
+
+    Erros comuns tratados:
+
+        Colunas ausentes
+
+        Delimitadores incorretos
+
+    Quando usar: Quando a estrutura dos dados é tabular (linhas e colunas), e você precisa importar ou exportar para planilhas.
+
+🧾 Arquivos JSON
+
+    Para que serve: Representar dados estruturados, como inventários hierárquicos ou configurações vindas de APIs (ex: DNA Center, Meraki).
+
+    Erros comuns tratados:
+
+        JSON malformado
+
+        Chaves ausentes
+
+    Quando usar: Quando os dados têm estrutura de dicionário/lista e precisam de integração com APIs modernas ou manipulação no Python.
+
+📘 Arquivos YAML
+
+    Para que serve: Configurar playbooks no Ansible, inventários do Nornir e dados hierárquicos legíveis por humanos.
+
+    Erros comuns tratados:
+
+        Identação incorreta
+
+        Estrutura malformada
+
+    Quando usar: Quando legibilidade e compatibilidade com ferramentas como Ansible e Nornir são prioridades.
+
+🧮 Arquivos XML
+
+    Para que serve: Troca de dados com APIs legadas (NETCONF, ACI, SOAP).
+
+    Erros comuns tratados:
+
+        Tags malformadas
+
+        Falhas de parsing
+
+    Quando usar: Quando a plataforma exige XML, como Cisco ACI, IOS-XE com NETCONF ou equipamentos que seguem YANG.
+
+🧩 Templates J2
+
+    Para que serve: Gerar configurações dinâmicas em massa com base em dados variáveis (como VLANs, interfaces, ACLs).
+
+    Erros comuns tratados:
+
+        Variáveis indefinidas
+
+        Sintaxe incorreta nos templates
+
+    Quando usar: Quando você precisa aplicar o mesmo modelo para dezenas de equipamentos, mudando apenas os dados.
+
+🔐 Arquivos ENV
+
+    Para que serve: Armazenar credenciais, IPs, senhas, tokens de API e outras variáveis sensíveis fora do código-fonte.
+
+    Erros comuns tratados:
+
+        Variáveis ausentes
+
+        Arquivo .env não encontrado
+
+    Quando usar: Sempre que você quiser manter o código limpo, seguro e reutilizável entre diferentes ambientes (ex: LAB, produção, nuvem).
+    
 📌 Como navegar
 
 Clique em qualquer formato acima para ver:
