@@ -30,12 +30,7 @@ graph TB
     style G fill:#d1ecf1,stroke:#17a2b8,color:#000
     style E fill:#d4edda,stroke:#28a745,color:#000
 ```
-    style A fill:#fff3cd,stroke:#f0ad4e
-    style F fill:#f8d7da,stroke:#dc3545
-    style G fill:#d1ecf1,stroke:#17a2b8
-    style E fill:#d4edda,stroke:#28a745
-
-
+  
     As caixas coloridas representam pontos onde erros são comuns:
 
         🟨 Arquivo não encontrado
