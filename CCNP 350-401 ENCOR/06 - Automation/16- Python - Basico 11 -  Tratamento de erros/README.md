@@ -87,6 +87,111 @@ Passo 2: Se der erro, pula para cá.
 Passo 4: Roda SEMPRE, mesmo com erro.
 ```
 
+### Posso Usar Mais de Um try no Mesmo Código?
+
+> Sim! Você pode aninhar try/except ou usá-los sequencialmente
+
+**Exemplo 1:** *try* Aninhados (para erros em etapas diferentes)
+
+```python
+
+try:
+    arquivo = open("dados.json", "r")  # Pode dar FileNotFoundError
+    try:
+        dados = json.load(arquivo)  # Pode dar JSONDecodeError
+    except json.JSONDecodeError:
+        print("Erro: JSON inválido!")
+    finally:
+        arquivo.close()  # Fecha o arquivo, mesmo com erro no JSON
+except FileNotFoundError:
+    print("Erro: Arquivo não encontrado!")
+```
+
+**Exemplo 2:** *try* Sequenciais (para ações independentes)
+
+```python
+
+try:
+    conectar_ao_switch("192.168.1.1")
+except NetmikoTimeoutException:
+    print("Falha na conexão ao switch.")
+
+try:
+    enviar_comando("show run")
+except NetmikoCommandError:
+    print("Falha no comando.")
+```
+
+### Posso Usar Mais de Um finally?
+
+> Não diretamente. Cada try pode ter apenas um finally, mas você pode aninhar blocos try/finally:
+
+```python
+
+try:
+    arquivo = open("config.txt", "r")
+    try:
+        conteudo = arquivo.read()
+    finally:
+        arquivo.close()  # Fecha o arquivo, mesmo se houver erro na leitura
+except IOError:
+    print("Erro ao abrir o arquivo.")
+```
+
+### Posso Ter Vários except para o Mesmo try?
+
+> Sim! Capture erros diferentes com ações específicas
+
+```python
+
+try:
+    resposta = requests.get("https://api.cisco.com/data", timeout=5)
+    resposta.raise_for_status()  # Gera HTTPError para status 4xx/5xx
+except requests.Timeout:
+    print("API não respondeu a tempo.")
+except requests.HTTPError as e:
+    print(f"Erro HTTP: {e.response.status_code}")
+except Exception as e:  # Genérico (só use se necessário)
+    print(f"Erro inesperado: {e}")
+```
+
+### Quando Usar else?
+
+> Use para código que só deve rodar se o try for bem-sucedido:
+
+```python
+
+try:
+    conexao = Netmiko(**device)
+except NetmikoTimeoutException:
+    print("Falha na conexão.")
+else:  # Só executa se não houver erro no try
+    print("Conexão OK! Enviando comandos...")
+    conexao.send_command("show run")
+finally:
+    if 'conexao' in locals():
+        conexao.disconnect()
+```
+
+### Regras de Ouro
+
+Seja específico nos **except**
+
+   - **Evite except:** sem especificar o erro (captura até KeyboardInterrupt!).
+   - **Prefira** except ZeroDivisionError em vez de except Exception.
+
+Use **finally** para limpeza:
+
+   - Conexões de rede (SSH), arquivos abertos (open()), etc.
+
+**else** é opcional, mas útil:
+
+   - Separa o código de "tentativa" do código de "sucesso".
+
+**Não abuse de try/except:**
+
+   - Erros esperados (ex.: usuário digitar letra em campo numérico) devem ser validados antes com if/else.
+
 ARRUMAR
 ---
 
