@@ -1,65 +1,111 @@
 # Python - Básico 10
 
-## 01 Manipulação de arquivos - .txt
+## 01 Tratamento de erros (try/excepet/else/finnaly) - arquivos .txt  
 
-Bom, vamos começar pelo básico. Arquivos .txt, em automação de redes, são utilizados para casos mais básicos como:  
+A manipulação de arquivos em automação de redes é crítica, e erros podem ocorrer por diversos motivos (arquivo não encontrado, permissões negadas, disco cheio, etc.). Vamos adaptar os exemplos anteriores com try/except/finally/else para torná-los robustos.
 
-1. Para Configurações Simples de Dispositivos
-2. Logs de Sistemas ou Dispositivos
-3. Armazenar Saídas de Comandos para Análise
+1. Tratamento de Erros Comuns em Arquivos
 
-Então vamos olhar alguns exemplos práticos para ver como eles funcionam na prática. <br></br>
+| Erro (Exception)  | Causa Típica                      | Boa Prática de Tratamento            |
+|-------------------|-----------------------------------|--------------------------------------|
+| FileNotFoundError | Arquivo não existe.               | Verificar caminho ou criar arquivo.  |
+| PermissionError   | Sem permissão para ler/escrever.  | Solicitar permissões ou mudar local. |
+| IsADirectoryError | Tentativa de abrir uma pasta.     | Validar se o caminho é um arquivo.   |
+| IOError           | Disco cheio ou problema genérico. | Logar o erro e abortar operação.     |
 
-### Exemplo 1: Criar e Escrever em um Arquivo .txt (Básico)
+Agora vamos olhar alguns exemplos. <br></br>
 
-Objetivo: Criar um arquivo chamado roteador.txt e salvar uma configuração simples.
+### Exemplo 01: Criar/Escrever em Arquivo (Modo 'w')
 
-```Python
-    [01] # Abre o arquivo em modo de escrita ('w')
-    [02] with open('roteador.txt', 'w') as arquivo:
-    [03]    arquivo.write('hostname R1\n')
-    [04]    arquivo.write('interface GigabitEthernet0/1\n')
-    [05]    arquivo.write('  description Link para Core\n')
-    [06]
-    [07] print("Arquivo 'roteador.txt' criado com sucesso!")
+```python
+[01] try:
+[02]     with open('roteador.txt', 'w') as arquivo:
+[03]         arquivo.write('hostname R1\n')
+[04]         arquivo.write('interface GigabitEthernet0/1\n')
+[05]         arquivo.write('  description Link para Core\n')
+[06] except PermissionError:
+[08]     print("Erro: Sem permissão para escrever no arquivo!")
+[09] except IOError as e:
+[10]     print(f"Erro de E/S: {e}")
+[11] else:
+[12]     print("Arquivo criado com sucesso!")
+[13] finally:
+[14 ]    print("Operação finalizada (com ou sem erros).")
 ```
 
 **Saída**
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos$ python3 arquivos01.py 
-    Arquivo 'roteador.txt' criado com sucesso!
-    alcancil@linux:~/automacoes/arquivos$ 
+alcancil@linux:~/automacoes/erros/txt/01$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/txt/01$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ python3 gerar_arquivo.py 
+Arquivo criado com sucesso!
+Operação finalizada (com ou sem erros).
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ ls -la
+total 20
+drwxrwxr-x 3 alcancil alcancil 4096 jun  9 09:13 .
+drwxrwxr-x 3 alcancil alcancil 4096 jun  9 09:11 ..
+-rw-r--r-- 1 root     root      450 jun  9 09:13 gerar_arquivo.py
+-rw-rw-r-- 1 alcancil alcancil   70 jun  9 09:13 roteador.txt
+drwxrwxr-x 5 alcancil alcancil 4096 jun  9 09:13 venv
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ cat roteador.txt 
+hostname R1
+interface GigabitEthernet0/1
+  description Link para Core
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ 
 ```
 
-**Conteúdo no arquivo**
+**OBS:** agora vou remover as permissões de escrita no arquivo e vamos rodar novamente o scipt para analisar o comportamento.
 
-```Bash
-    hostname R1
-    interface GigabitEthernet0/1
-      description Link para Core
+```bash
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ chmod -ww roteador.txt 
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ ls -la
+total 20
+drwxrwxr-x 3 alcancil alcancil 4096 jun  9 09:13 .
+drwxrwxr-x 3 alcancil alcancil 4096 jun  9 09:11 ..
+-rw-r--r-- 1 root     root      450 jun  9 09:13 gerar_arquivo.py
+-r--r--r-- 1 alcancil alcancil   70 jun  9 09:13 roteador.txt
+drwxrwxr-x 5 alcancil alcancil 4096 jun  9 09:13 venv
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ python3 gerar_arquivo.py 
+Erro: Sem permissão para escrever no arquivo!
+Operação finalizada (com ou sem erros).
+(venv) alcancil@linux:~/automacoes/erros/txt/01$ 
 ```
 
-Esse exemplo cria um arquivo **.txt** com textos dentro dele. Vamos analisar a linha: <br></br>
-     
-     [02] with open('roteador.txt', 'w') as arquivo: 
+Perceba agora a mensagem de erro gerado.
 
-Então temos a estrutura : **with open()**. Aqui cabe dizer que para criarmos o nosso arquivo somente é preciso o método **open()**. Mas vamos imaginar a seguinte situação, para criar o arquivo, ou mesmo para ler o arquivo, precisamos abrir o arquivo temporariamente. Mas e se algo acontece e nosso script encerra abruptamente no meio do processo ?  
-Ocorre que se executarmos o nosso script novamente podemos ter algum tipo de erro. Isso ocorre porque o arquivo pode ter permanecido em estado de aberto e ao tentarmos abri-lo novamente vamos receber um erro. Então o método **with open()** pode ser lido: "com o arquivo aberto faça()", ou seja, isso garante que o arquivo seja sempre seja fechado. <br></br>
+**Explicação**
 
-**sintaxe: open(arquivo, modo)**  <br></br>
+```Python
+Bloco 1: Tentativa de Execução (try)
 
-| PARÂMETRO   | DESCRIÇÃO                                                                                                          |
-|-------------|:-------------------------------------------------------------------------------------------------------------------|
-|**arquivo**  | Caminho e (ou) nome do arquivo                                                                                     | 
-| **modo**    | **r - Read** . Modo padrão. Abre um arquivo para leitura, porém irá dar um erro se o arquivo não existir           |
-|             | **a - Append** . Abre o arquivo no modo appending, ou seja, adiciona no arquivo. Cria o arquivo se ele não existir |
-|             | **w - Write** . Abre o arquivo no modo escrita. Também cria o arquivo se ele não existir                           |
-|             | **x - Create** . Cria o arquivo especificado. Retorna um erro se o arquivo existir                                 |
-|             | **t - Text** . Especifica o modo do arquivo como texto. Já é o modo padrão                                         |
-|             | **b - Binary** . Especifica o modo do arquivo como binário. Uso em imagens, por exemplo                            |
+[01] try:                                                        # Inicia o bloco de tentativa (onde erros podem ocorrer)
+[02]     with open('roteador.txt', 'w') as arquivo:              # Abre o arquivo em modo escrita ('w')
+[03]         arquivo.write('hostname R1\n')                      # Escreve a linha 1 no arquivo
+[04]         arquivo.write('interface GigabitEthernet0/1\n')     # Escreve a linha 2
+[05]         arquivo.write('  description Link para Core\n')     # Escreve a linha 3
 
-**OBS:** **\n** em Python significa Enter, ou manda pular uma linha. <br></br>
+Bloco 2: Tratamento de Erros (except)
+
+
+[06] except PermissionError:                                     # Captura erros de permissão (ex.: arquivo só-leitura)
+[07]     print("Erro: Sem permissão para escrever no arquivo!")  # Mensagem amigável
+[08] except IOError as e:                                        # Captura outros erros de E/S (ex.: disco cheio)
+[09]     print(f"Erro de E/S: {e}")                              # Exibe detalhes do erro (armazenado em 'e')
+
+Bloco 3: Execução em Caso de Sucesso (else)
+
+[10] else:                                                       # Executa apenas se NÃO houver erros no 'try'
+[11]     print("Arquivo criado com sucesso!")                    # Confirmação de sucesso
+
+Bloco 4: Finalização Obrigatória (finally)
+
+[12] finally:                                                    # Sempre executa, com ou sem erros
+[13]     print("Operação finalizada (com ou sem erros).")        # Mensagem final
+```
+
+---
+ARRUMAR
 
 ### Exemplo 2: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
