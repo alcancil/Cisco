@@ -47,7 +47,7 @@ ARRUMAR
 ### Como funciona ?
 
 Para o tratamento de erros, existem as estruturas **try, except, else e finally**. 
- 
+
 O tratamento de erros (try/except/finally) é essencial em automação de redes porque:
 
     Evita que scripts falhem silenciosamente (ex.: um erro em um roteador não deve parar toda a automação).
@@ -64,6 +64,28 @@ O tratamento de erros (try/except/finally) é essencial em automação de redes 
 | except  | Apenas se ocorrer um erro no try. | Trata erros específicos (ex.: conexão falhou, arquivo não existe). |
 | else	  | Apenas se NÃO houver erro no try. | Executa código que depende do sucesso do try (opcional).           |
 | finally | Sempre, com ou sem erros.         | Garante ações finais (ex.: fechar arquivos, conexões).             |
+
+2. Funcionamento Passo a Passo
+
+```python
+try:
+    print("Passo 1: Tenta executar este código.")
+    resultado = 10 / 0  # Isso causa um erro (ZeroDivisionError)
+except ZeroDivisionError:
+    print("Passo 2: Se der erro, pula para cá.")
+else:
+    print("Passo 3: Só roda se NÃO houver erro.")
+finally:
+    print("Passo 4: Roda SEMPRE, mesmo com erro.")
+```
+
+**Saída:**  
+
+```markdown
+Passo 1: Tenta executar este código.
+Passo 2: Se der erro, pula para cá.
+Passo 4: Roda SEMPRE, mesmo com erro.
+```
 
 ARRUMAR
 ---
