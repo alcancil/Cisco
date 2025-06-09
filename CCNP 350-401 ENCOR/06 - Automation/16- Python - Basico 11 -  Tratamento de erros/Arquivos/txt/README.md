@@ -184,12 +184,13 @@ Bloco 4: Finalização Obrigatória (finally)
 
 [13] finally:                                                                               # Sempre executa, com ou sem erros
 [14]     print("Leitura concluída.")                                                        # Mensagem final (útil para logs)
+```
 
 Por Que Usar else e finally Juntos?
 
-- else: Separa a lógica de sucesso do tratamento de erros (código mais limpo).
+   - else: Separa a lógica de sucesso do tratamento de erros (código mais limpo).
 
-- finally: Garante ações finais (ex.: logs, fechar conexões externas).
+   - finally: Garante ações finais (ex.: logs, fechar conexões externas).
 ---
 Arrumar
 
@@ -372,7 +373,7 @@ except OSError as e:
 else:
     print("Pronto para manipular o arquivo!")
 
-3. Boas Práticas
+1. Boas Práticas
 
     Seja Específico nos except:
 
