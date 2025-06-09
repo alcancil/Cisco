@@ -191,36 +191,31 @@ Por Que Usar else e finally Juntos?
    - else: Separa a lógica de sucesso do tratamento de erros (código mais limpo).
 
    - finally: Garante ações finais (ex.: logs, fechar conexões externas).
----
-Arrumar
-
-**Explicação:**
-
-```Bash
-    Linha [01]: abre o arquivo roteador.txt, no modo leitura e coloca o conteúdo a variável **arquivo**  
-    Linha [02]: aqui utilizamos o método **arquivo.readlines()** . Isso é feito para ler todas as linhas do arquivo.  
-    Linha [06]: aqui vamos quebrar a explicação em partes:  
-                - **linha.strip():** Remove espaços em branco e quebras de linha (\n) do início/fim de cada linha.  
-                - **for linha in linhas**: aqui temos uma iteração, ou seja, vamos percorrer todas as linhas  
-                - **if 'interface' in linha.lower()**: isso torna a busca da palavra interface em Case-Sensitive, ou seja, **linha.lower()** transforma a palavra interfaces em minusculas.  
-```
 
 **Exemplo 3:** Adicionar Configurações a um Arquivo Existente.
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
 
 ```Python
-    # Nova configuração para adicionar
-    nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
-
-    # Abre o arquivo em modo append ('a')
+nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
+try:
     with open('roteador.txt', 'a') as arquivo:
         arquivo.write('\n' + nova_config)
-
-    print("Configuração de VLAN adicionada ao arquivo!")
+except PermissionError:
+    print("Erro: Sem permissão para modificar o arquivo!")
+except IOError as e:
+    print(f"Erro ao escrever no arquivo: {e}")
+else:
+    print("Configuração adicionada com sucesso!")
+finally:
+    print("Processo finalizado.")
 ```
 
 **Saída no arquivo (atualizado):**
+
+---
+Arrumar
+
 
 ```Bash
     alcancil@linux:~/automacoes/arquivos/03$ python3 arquivo.py 
