@@ -43,17 +43,11 @@ graph TB
 
 📂 Tipos de arquivos abordados e erros comuns
 
-[Arquivos TXT](/Arquivos/txt/README.md)
+### [Arquivos TXT](Arquivos/txt/README.md)
 
-    Para que serve: Armazenar logs brutos, saídas de comandos (como show running-config) e relatórios simples.
-
-    Erros comuns tratados:
-
-        Arquivo não encontrado
-
-        Permissão negada
-
-    Quando usar: Quando você precisa armazenar ou analisar saídas de CLI simples ou logs sequenciais.
+- **Para que serve:** Armazenar logs brutos, saídas de comandos (como show running-config) e relatórios simples.
+- **Erros comuns tratados:** Arquivo não encontrado, Permissão negada, etc.
+- **Quando usar:** Quando você precisa armazenar ou analisar saídas de CLI simples ou logs sequenciais.
 
 📑 Arquivos CSV
 
