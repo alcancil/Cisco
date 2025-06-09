@@ -153,7 +153,43 @@ Leitura concluída.
 (venv) alcancil@linux:~/automacoes/erros/txt/02$
 ```
 
+**Explicação**
 
+```Python
+Bloco 1: Tentativa de Leitura (try)
+
+[01] try:                                                                                 # Inicia o bloco de tentativa (onde erros podem ocorrer)
+[02]     with open('roteador.txt', 'r') as arquivo:                                       # Abre o arquivo em modo leitura ('r')
+[03]         linhas = arquivo.readlines()                                                 # Lê TODAS as linhas do arquivo
+
+Bloco 2: Tratamento de Erros (except)
+
+[04] except FileNotFoundError:                                                            # Captura erro se o arquivo não existir
+[05]     print("Erro: Arquivo 'roteador.txt' não encontrado!")                            # Mensagem amigável
+[06] except UnicodeDecodeError:                                                           # Captura erro se o arquivo não for texto válido
+[07]     print("Erro: Arquivo não está em formato texto válido.")                         # Ex: arquivo binário
+
+Bloco 3: Execução em Caso de Sucesso (else)
+
+[08] else:                                                                                 # Executa apenas se NÃO houver erros no 'try'
+[09]     interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]  # Cria uma lista chamada 'interfaces'
+                                                                                           # linha.strip() - Remove espaços/quebras de linha (\n) de cada linha
+                                                                                           # for linha in linhas - Itera sobre cada linha do arquivo (armazenada em 'linhas')
+[10]     print("Interfaces encontradas:")                                                  # Imprime cabeçalho para organizar a saída
+[11]     for interface in interfaces:                                                      # Loop para processar cada item da lista 'interfaces':
+[12]         print(interface)                                                              # print(interface) - Imprime cada configuração de interface encontrada
+
+Bloco 4: Finalização Obrigatória (finally)
+
+
+[13] finally:                                                                               # Sempre executa, com ou sem erros
+[14]     print("Leitura concluída.")                                                        # Mensagem final (útil para logs)
+
+Por Que Usar else e finally Juntos?
+
+- else: Separa a lógica de sucesso do tratamento de erros (código mais limpo).
+
+- finally: Garante ações finais (ex.: logs, fechar conexões externas).
 ---
 Arrumar
 
@@ -268,3 +304,89 @@ Saída no Windows:
     Linha [21]: senão  
     Linha [22]: Imprima "Arquivo não existe!"  
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+ARRUMAR
+
+Exemplo 3: Adicionar Configurações (Modo 'a')
+python
+
+nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
+try:
+    with open('roteador.txt', 'a') as arquivo:
+        arquivo.write('\n' + nova_config)
+except PermissionError:
+    print("Erro: Sem permissão para modificar o arquivo!")
+except IOError as e:
+    print(f"Erro ao escrever no arquivo: {e}")
+else:
+    print("Configuração adicionada com sucesso!")
+finally:
+    print("Processo finalizado.")
+
+Exemplo 4: Verificar Caminhos Multiplataforma
+python
+
+import os
+import platform
+
+try:
+    sistema = platform.system()
+    if sistema == "Windows":
+        caminho = r"C:\Users\alcancil\Documents\roteador.txt"
+    elif sistema == "Linux":
+        caminho = "/home/alcancil/automacao/roteador.txt"
+    else:
+        raise OSError("Sistema operacional não suportado.")
+
+    if not os.path.exists(caminho):
+        raise FileNotFoundError(f"Arquivo {caminho} não existe.")
+
+    print(f"Caminho válido no {sistema}: {caminho}")
+
+except (FileNotFoundError, PermissionError) as e:
+    print(f"Erro de acesso: {e}")
+except OSError as e:
+    print(f"Erro de sistema: {e}")
+else:
+    print("Pronto para manipular o arquivo!")
+
+3. Boas Práticas
+
+    Seja Específico nos except:
+
+        Evite except: genérico. Capture FileNotFoundError, PermissionError, etc.
+
+    Use else para Código de Sucesso:
+
+        Separe a lógica principal (que depende do try) no bloco else.
+
+    finally para Limpeza:
+
+        Mesmo que não haja erros, garanta que recursos sejam liberados (ex.: fechar conexões).
+
+    Log de Erros:
+
+        Em scripts reais, use logging em vez de print para registrar falhas.
+
