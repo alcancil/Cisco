@@ -8,7 +8,7 @@
     - [Exemplo 01: Criar/Escrever em Arquivo (Modo 'w')](#exemplo-01-criarescrever-em-arquivo-modo-w)
     - [Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".](#exemplo-02-ler-o-arquivo-roteadortxt-e-extrair-apenas-as-linhas-que-contêm-interface)
     - [Exemplo 03: Adicionar Configurações a um Arquivo Existente.](#exemplo-03-adicionar-configurações-a-um-arquivo-existente)
-    - [Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)](#exemplo-4-caminhos-locais-identificando-o-so-sistema-operacional)
+    - [Exemplo 04: Caminhos locais, identificando o SO (Sistema Operacional)](#exemplo-04-caminhos-locais-identificando-o-so-sistema-operacional)
     - [Boas Práticas](#boas-práticas)
   
 
@@ -275,7 +275,7 @@ Bloco 5: Finalização Obrigatória (finally)
 [12]     print("Processo finalizado.")                           # Mensagem final (útil para logs)
 ```
  
-### Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)
+### Exemplo 04: Caminhos locais, identificando o SO (Sistema Operacional)
 
 **caminho.py**
 
@@ -368,19 +368,19 @@ Bloco 6 – Bloco else (sem erros)
 
 ### Boas Práticas
 
-Seja Específico nos **except**:
+Seja Específico nos **except**
 
    - **Evite except**: genérico. Capture FileNotFoundError, PermissionError, etc.
 
-Use **else** para Código de Sucesso:
+Use **else** para Código de Sucesso
 
    - Separe a lógica principal (que depende do try) no bloco else.
 
-   - **finally** para Limpeza:
+   - **finally** para Limpeza
 
    - Mesmo que não haja erros, garanta que recursos sejam liberados (ex.: fechar conexões).
 
-Log de Erros:
+Log de Erros
 
    - Em scripts reais, use logging em vez de print para registrar falhas.
 
