@@ -41,9 +41,6 @@ graph TB
 
         🟩 Renderização de template com erro
 
----
-ARRUMAR
-
 ### Como funciona ?
 
 Para o tratamento de erros, existem as estruturas **try, except, else e finally**. 
@@ -192,8 +189,6 @@ Use **finally** para limpeza:
 
    - Erros esperados (ex.: usuário digitar letra em campo numérico) devem ser validados antes com if/else.
 
-ARRUMAR
----
 
 📂 Tipos de arquivos abordados e erros comuns
 
