@@ -196,22 +196,45 @@ Por Que Usar else e finally Juntos?
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
 
+**adicionar_vlan.py**  
+
 ```Python
-nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
-try:
-    with open('roteador.txt', 'a') as arquivo:
-        arquivo.write('\n' + nova_config)
-except PermissionError:
-    print("Erro: Sem permissão para modificar o arquivo!")
-except IOError as e:
-    print(f"Erro ao escrever no arquivo: {e}")
-else:
-    print("Configuração adicionada com sucesso!")
-finally:
-    print("Processo finalizado.")
+[01] nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
+[02] try:
+[03]    with open('roteador.txt', 'a') as arquivo:
+[04]        arquivo.write('\n' + nova_config)
+[05] except PermissionError:
+[06]     print("Erro: Sem permissão para modificar o arquivo!")
+[07] except IOError as e:
+[08]     print(f"Erro ao escrever no arquivo: {e}")
+[09] else:
+[10]     print("Configuração adicionada com sucesso!")
+[11] finally:
+[12]     print("Processo finalizado.")
 ```
 
 **Saída no arquivo (atualizado):**
+
+```Bash
+alcancil@linux:~/automacoes/erros/txt/03$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/txt/03$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/txt/03$ python3 
+adicionar_vlan.py  venv/              
+(venv) alcancil@linux:~/automacoes/erros/txt/03$ python3 adicionar_vlan.py 
+Configuração adicionada com sucesso!
+Processo finalizado.
+```
+
+**Saída com erro**
+
+```Bash
+(venv) alcancil@linux:~/automacoes/erros/txt/03$ sudo chmod -wrwr roteador.txt 
+chmod: roteador.txt: as novas permissões são ----w----, e não ---------
+(venv) alcancil@linux:~/automacoes/erros/txt/03$ python3 adicionar_vlan.py 
+Erro: Sem permissão para modificar o arquivo!
+Processo finalizado.
+(venv) alcancil@linux:~/automacoes/erros/txt/03$ 
+```
 
 ---
 Arrumar
