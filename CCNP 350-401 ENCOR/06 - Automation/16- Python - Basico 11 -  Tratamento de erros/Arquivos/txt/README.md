@@ -327,6 +327,44 @@ Arrumar
 
 **Explicação:**
 
+```Python
+Bloco 1 – Importações
+
+[01] import os                                                                  # Importa o módulo 'os' para interagir com o sistema de arquivos
+[02] import platform                                                            # Importa 'platform' para detectar o sistema operacional
+
+Bloco 2 – Bloco try: identificação do sistema e definição do caminho
+
+[04] try:                                                                       # Inicia o bloco de tratamento de erros
+[05]     sistema = platform.system()                                            # Detecta o sistema operacional atual (ex: "Windows", "Linux", "Darwin")
+[06]     if sistema == "Windows":                                               # Se o sistema for Windows...
+[07]         caminho = r"C:\Users\alcancil\Documents\roteador.txt"              # Define o caminho com sintaxe Windows (raw string)
+[08]     elif sistema == "Linux":                                               # Se for Linux...
+[09]         caminho = "/home/alcancil/automacoes/erros/txt/04/roteador.txt"    # Define caminho no padrão de arquivos do Linux
+[10]     else:                                                                  # Qualquer outro sistema (ex: macOS, Unix, etc.)
+[11]         raise OSError("Sistema operacional não suportado.")                # Lança exceção se o sistema não for suportado
+
+Bloco 3 – Verifica se o arquivo existe
+
+[13]     if not os.path.exists(caminho):                                        # Verifica se o caminho existe no sistema de arquivos
+[14]         raise FileNotFoundError(f"Arquivo {caminho} não existe.")          # Lança erro se o arquivo não for encontrado
+
+Bloco 4 – Confirmação de sucesso
+
+[16]     print(f"Caminho válido no {sistema}: {caminho}")                       # Mostra que o caminho foi localizado com sucesso
+
+Bloco 5 – Tratamento de exceções
+
+[19] except (FileNotFoundError, PermissionError) as e:                          # Captura erros de arquivo não encontrado ou sem permissão
+[20]     print(f"Erro de acesso: {e}")                                          # Exibe o erro encontrado
+[21] except OSError as e:                                                       # Captura erro de sistema operacional
+[22]     print(f"Erro de sistema: {e}")                                         # Exibe mensagem de erro relacionada ao SO
+
+Bloco 6 – Bloco else (sem erros)
+
+[23] else:                                                                      # Executa se nenhum erro tiver ocorrido no bloco try
+[24]     print("Pronto para manipular o arquivo!")                              # Confirma que o script pode prosseguir
+```
 
 ### Boas Práticas
 
