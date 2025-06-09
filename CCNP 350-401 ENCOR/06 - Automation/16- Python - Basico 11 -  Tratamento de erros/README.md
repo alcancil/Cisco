@@ -198,37 +198,37 @@ Use **finally** para limpeza:
 - **Erros comuns tratados:** Arquivo não encontrado, Permissão negada, etc.
 - **Quando usar:** Quando você precisa armazenar ou analisar saídas de CLI simples ou logs sequenciais.
 
-### [Arquivos CSV](Arquivos/csv/README.md)
+### [Arquivos CSV](Arquivos/csv/README.md) Arrumar
 
 - **Para que serve:** Gerenciar inventários de dispositivos, listas de portas, VLANs, IPs ou usuários de forma tabular.
 - **Erros comuns tratados:** Colunas ausentes, Delimitadores incorretos, etc.
 - **Quando usar:** Quando a estrutura dos dados é tabular (linhas e colunas), e você precisa importar ou exportar para planilhas.
 
-### [Arquivos JSON](Arquivos/json/README.md)
+### [Arquivos JSON](Arquivos/json/README.md) Arrumar
 
 - **Para que serve:** Representar dados estruturados, como inventários hierárquicos ou configurações vindas de APIs (ex: DNA Center, Meraki).
 - **Erros comuns tratados:** JSON malformado, Chaves ausentes, etc.
 - **Quando usar:** Quando os dados têm estrutura de dicionário/lista e precisam de integração com APIs modernas ou manipulação no Python.
  
-### [Arquivos YAML](Arquivos/yaml/README.md)
+### [Arquivos YAML](Arquivos/yaml/README.md) Arrumar
 
 - **Para que serve:** Configurar playbooks no Ansible, inventários do Nornir e dados hierárquicos legíveis por humanos.
 - **Erros comuns tratados:** Identação incorreta, Estrutura malformada, etc.
 - **Quando usar:** Quando legibilidade e compatibilidade com ferramentas como Ansible e Nornir são prioridades.
 
-### [Arquivos XML](Arquivos/xml/README.md)
+### [Arquivos XML](Arquivos/xml/README.md) Arrumar
 
 - **Para que serve:** Troca de dados com APIs legadas (NETCONF, ACI, SOAP).
 - **Erros comuns tratados:** Tags malformadas, Falhas de parsing, etc.
 - **Quando usar:** Quando a plataforma exige XML, como Cisco ACI, IOS-XE com NETCONF ou equipamentos que seguem YANG.
 
-### [Templates J2](Arquivos/j2/README.md)
+### [Templates J2](Arquivos/j2/README.md) Arrumar
 
 - **Para que serve:** Gerar configurações dinâmicas em massa com base em dados variáveis (como VLANs, interfaces, ACLs).
 - **Erros comuns tratados:** Variáveis indefinidas, Sintaxe incorreta nos templates, etc.
 - **Quando usar:** Quando você precisa aplicar o mesmo modelo para dezenas de equipamentos, mudando apenas os dados.
 
-### [Arquivos ENV](Arquivos/env/README.md)
+### [Arquivos ENV](Arquivos/env/README.md) Arrumar
 
 - **Para que serve:** Armazenar credenciais, IPs, senhas, tokens de API e outras variáveis sensíveis fora do código-fonte.
 - **Erros comuns tratados:** Variáveis ausentes, Arquivo .env não encontrado, etc.
