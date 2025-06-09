@@ -117,9 +117,6 @@ Bloco 4: Finalização Obrigatória (finally)
 [13]     print("Operação finalizada (com ou sem erros).")        # Mensagem final
 ```
 
----
-ARRUMAR
-
 ### Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
 **ler_arquivo.py**
@@ -276,9 +273,6 @@ Bloco 5: Finalização Obrigatória (finally)
 [11] finally:                                                    # Sempre executa, com ou sem erros
 [12]     print("Processo finalizado.")                           # Mensagem final (útil para logs)
 ```
-
----
-Arrumar
  
 ### Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)
 
@@ -326,6 +320,9 @@ alcancil@linux:~/automacoes/erros/txt/04$
 alcancil@linux:~/automacoes/erros/txt/04$ python3 caminho.py 
 Erro de acesso: Arquivo /home/alcancil/automacao/roteador.txt não existe.
 ```
+
+---
+Arrumar
 
 **Explicação:**
 
