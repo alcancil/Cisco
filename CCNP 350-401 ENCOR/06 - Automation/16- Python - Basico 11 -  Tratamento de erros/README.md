@@ -41,6 +41,32 @@ graph TB
 
         🟩 Renderização de template com erro
 
+---
+ARRUMAR
+
+### Como funciona ?
+
+Para o tratamento de erros, existem as estruturas **try, except, else e finally**.  
+O tratamento de erros (try/except/finally) é essencial em automação de redes porque:
+
+    Evita que scripts falhem silenciosamente (ex.: um erro em um roteador não deve parar toda a automação).
+
+    Facilita a depuração (logs claros sobre o que deu errado).
+
+    Garante limpeza de recursos (fechar conexões SSH, liberar memória).
+
+1. Estrutura Básica e Propósito
+
+| Bloco	  | Quando é Executado?	              | Para que Serve?                                                    |
+|---------|-----------------------------------|--------------------------------------------------------------------|
+| try	  | Sempre primeiro.	              | Delimita o código que pode gerar erros.                            |
+| except  | Apenas se ocorrer um erro no try. | Trata erros específicos (ex.: conexão falhou, arquivo não existe). |
+| else	  | Apenas se NÃO houver erro no try. | Executa código que depende do sucesso do try (opcional).           |
+| finally | Sempre, com ou sem erros.         | Garante ações finais (ex.: fechar arquivos, conexões).             |
+
+ARRUMAR
+---
+
 📂 Tipos de arquivos abordados e erros comuns
 
 ### [Arquivos TXT](Arquivos/txt/README.md)
