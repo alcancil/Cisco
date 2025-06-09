@@ -81,7 +81,7 @@ finally:
 
 **Saída:**  
 
-```markdown
+```bash
 Passo 1: Tenta executar este código.
 Passo 2: Se der erro, pula para cá.
 Passo 4: Roda SEMPRE, mesmo com erro.
