@@ -55,31 +55,31 @@ graph TB
 - **Erros comuns tratados:** Colunas ausentes, Delimitadores incorretos, etc.
 - **Quando usar:** Quando a estrutura dos dados é tabular (linhas e colunas), e você precisa importar ou exportar para planilhas.
 
-🧾 Arquivos JSON
+### [Arquivos JSON](Arquivos/json/README.md)
 
 - **Para que serve:** Representar dados estruturados, como inventários hierárquicos ou configurações vindas de APIs (ex: DNA Center, Meraki).
 - **Erros comuns tratados:** JSON malformado, Chaves ausentes, etc.
 - **Quando usar:** Quando os dados têm estrutura de dicionário/lista e precisam de integração com APIs modernas ou manipulação no Python.
-
-📘 Arquivos YAML
+- 
+### [Arquivos YAML](Arquivos/yaml/README.md)
 
 - **Para que serve:** Configurar playbooks no Ansible, inventários do Nornir e dados hierárquicos legíveis por humanos.
 - **Erros comuns tratados:** Identação incorreta, Estrutura malformada, etc.
 - **Quando usar:** Quando legibilidade e compatibilidade com ferramentas como Ansible e Nornir são prioridades.
 
-🧮 Arquivos XML
+### [Arquivos XML](Arquivos/xml/README.md)
 
 - **Para que serve:** Troca de dados com APIs legadas (NETCONF, ACI, SOAP).
 - **Erros comuns tratados:** Tags malformadas, Falhas de parsing, etc.
 - **Quando usar:** Quando a plataforma exige XML, como Cisco ACI, IOS-XE com NETCONF ou equipamentos que seguem YANG.
 
-🧩 Templates J2
+### [Templates J2](Arquivos/j2/README.md)
 
 - **Para que serve:** Gerar configurações dinâmicas em massa com base em dados variáveis (como VLANs, interfaces, ACLs).
 - **Erros comuns tratados:** Variáveis indefinidas, Sintaxe incorreta nos templates, etc.
 - **Quando usar:** Quando você precisa aplicar o mesmo modelo para dezenas de equipamentos, mudando apenas os dados.
 
-🔐 Arquivos ENV
+### [Arquivos ENV](Arquivos/env/README.md)
 
 - **Para que serve:** Armazenar credenciais, IPs, senhas, tokens de API e outras variáveis sensíveis fora do código-fonte.
 - **Erros comuns tratados:** Variáveis ausentes, Arquivo .env não encontrado, etc.
