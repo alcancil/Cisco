@@ -17,6 +17,8 @@ Agora vamos olhar alguns exemplos. <br></br>
 
 ### Exemplo 01: Criar/Escrever em Arquivo (Modo 'w')
 
+**gerar_arquivo.py**
+
 ```python
 [01] try:
 [02]     with open('roteador.txt', 'w') as arquivo:
@@ -109,41 +111,51 @@ ARRUMAR
 
 ### Exemplo 2: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
-```Python
+**ler_arquivo.py**
 
-   [01] # Abre o arquivo em modo leitura ('r')
-   [02] with open('roteador.txt', 'r') as arquivo:
-   [03]     linhas = arquivo.readlines()  # Lê todas as linhas
-   [04]
-   [05] # Filtra linhas com "interface"
-   [06] interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
-   [07]
-   [08] print("Interfaces encontradas:")
-   [09] for interface in interfaces:
-   [10]     print(interface)
+```python
+
+[01] try:
+[02]     with open('roteador.txt', 'r') as arquivo:
+[03]         linhas = arquivo.readlines()
+[04] except FileNotFoundError:
+[05]     print("Erro: Arquivo 'roteador.txt' não encontrado!")
+[06] except UnicodeDecodeError:
+[07]     print("Erro: Arquivo não está em formato texto válido.")
+[08] else:
+[09]     interfaces = [linha.strip() for linha in linhas if 'interface' in linha.lower()]
+[10]     print("Interfaces encontradas:")
+[11]     for interface in interfaces:
+[12]         print(interface)
+[13] finally:
+[14]     print("Leitura concluída.")
 ```
 
-**Saída no terminal:**
+**Saída**
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/02$ python3 arquivo.py 
-    Traceback (most recent call last):
-      File "/home/alcancil/automacoes/arquivos/02/arquivo.py", line 2, in <module>
-        with open('roteador.txt', 'r') as arquivo:
-             ^^^^^^^^^^^^^^^^^^^^^^^^^
-    FileNotFoundError: [Errno 2] No such file or directory: 'roteador.txt'
-    alcancil@linux:~/automacoes/arquivos/02$ 
+alcancil@linux:~/automacoes/erros/txt/02$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/txt/02$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/txt/02$ python3 ler_arquivo.py 
+Interfaces encontradas:
+interface GigabitEthernet0/1
+Leitura concluída.
+(venv) alcancil@linux:~/automacoes/erros/txt/02$ 
 ```
-Podemos perceber que ao executar o arquivo recebemos um erro. Isso acontece pois não temos o arquivo **"roteador.txt"** . Então vamos criar o arquivo com conteúdo dentro e depois executar o script para ver a diferença. <br></br>
+
+**Saída com erro**
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/02$ python3 arquivo.py 
-    Interfaces encontradas:
-    interface GigabitEthernet0/1
-    interface GigabitEthernet0/2
-    interface GigabitEthernet0/3
-    alcancil@linux:~/automacoes/arquivos/02$ 
+(venv) alcancil@linux:~/automacoes/erros/txt/02$ mv roteador.txt roteador01.txt 
+(venv) alcancil@linux:~/automacoes/erros/txt/02$ python3 ler_arquivo.py 
+Erro: Arquivo 'roteador.txt' não encontrado!
+Leitura concluída.
+(venv) alcancil@linux:~/automacoes/erros/txt/02$
 ```
+
+
+---
+Arrumar
 
 **Explicação:**
 
