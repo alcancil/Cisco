@@ -46,7 +46,8 @@ ARRUMAR
 
 ### Como funciona ?
 
-Para o tratamento de erros, existem as estruturas **try, except, else e finally**.  
+Para o tratamento de erros, existem as estruturas **try, except, else e finally**. 
+ 
 O tratamento de erros (try/except/finally) é essencial em automação de redes porque:
 
     Evita que scripts falhem silenciosamente (ex.: um erro em um roteador não deve parar toda a automação).
