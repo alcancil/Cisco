@@ -1,5 +1,15 @@
 # Python - Básico 10
 
+## Índice
+
+- [Python - Básico 10](#python---básico-10)
+  - [Índice](#índice)
+  - [01 Tratamento de erros (try/excepet/else/finnaly) - arquivos .txt](#01-tratamento-de-erros-tryexcepetelsefinnaly---arquivos-txt)
+    - [Exemplo 01: Criar/Escrever em Arquivo (Modo 'w')](#exemplo-01-criarescrever-em-arquivo-modo-w)
+    - [Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".](#exemplo-02-ler-o-arquivo-roteadortxt-e-extrair-apenas-as-linhas-que-contêm-interface)
+    - [Exemplo 03: Adicionar Configurações a um Arquivo Existente.](#exemplo-03-adicionar-configurações-a-um-arquivo-existente)
+  
+
 ## 01 Tratamento de erros (try/excepet/else/finnaly) - arquivos .txt  
 
 A manipulação de arquivos em automação de redes é crítica, e erros podem ocorrer por diversos motivos (arquivo não encontrado, permissões negadas, disco cheio, etc.). Vamos adaptar os exemplos anteriores com try/except/finally/else para torná-los robustos.
@@ -109,7 +119,7 @@ Bloco 4: Finalização Obrigatória (finally)
 ---
 ARRUMAR
 
-### Exemplo 2: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
+### Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".
 
 **ler_arquivo.py**
 
@@ -192,7 +202,7 @@ Por Que Usar else e finally Juntos?
 
    - finally: Garante ações finais (ex.: logs, fechar conexões externas).
 
-**Exemplo 3:** Adicionar Configurações a um Arquivo Existente.
+### Exemplo 03: Adicionar Configurações a um Arquivo Existente.
 
 Objetivo: Adicionar uma nova VLAN ao arquivo roteador.txt sem apagar o conteúdo atual.
 
@@ -236,30 +246,39 @@ Processo finalizado.
 (venv) alcancil@linux:~/automacoes/erros/txt/03$ 
 ```
 
----
-Arrumar
+**Explicação:**  
+```Python
+Bloco 1: Preparação da Configuração
 
+[01] nova_config = 'vlan 10\n  name VLAN_GESTAO\n'              # Define a configuração da VLAN (10) em formato texto. \n = quebra de linha (formatação Cisco)
+                                                    
+Bloco 2: Tentativa de Escrita no Arquivo (try)
 
-```Bash
-    alcancil@linux:~/automacoes/arquivos/03$ python3 arquivo.py 
-    Configuração de VLAN adicionada ao arquivo!
-    alcancil@linux:~/automacoes/arquivos/03$ ls -la
-    total 16
-    drwxrwxr-x 2 alcancil alcancil 4096 mai  3 16:59 .
-    drwxrwxr-x 5 alcancil alcancil 4096 mai  3 16:58 ..
-    -rw-r--r-- 1 root     root      257 mai  3 16:59 arquivo.py
-    -rw-rw-r-- 1 alcancil alcancil   28 mai  3 16:59 roteador.txt
-    alcancil@linux:~/automacoes/arquivos/03$ cat roteador.txt 
+[02] try:                                                       # Inicia o bloco de tratamento de erros
+[03]    with open('roteador.txt', 'a') as arquivo:              # Abre o arquivo em modo APPEND ('a')
+[04]        arquivo.write('\n' + nova_config)                   # Adiciona a nova_config após uma quebra de linha
 
-    vlan 10
-      name VLAN_GESTAO
-    alcancil@linux:~/automacoes/arquivos/03$
+Bloco 3: Tratamento de Erros (except)
+
+[05] except PermissionError:                                     # Captura erro de permissão (ex.: arquivo só-leitura)
+[06]     print("Erro: Sem permissão para modificar o arquivo!")  # Mensagem amigável
+[07] except IOError as e:                                        # Captura outros erros de E/S (ex.: disco cheio)
+[08]     print(f"Erro ao escrever no arquivo: {e}")              # Exibe detalhes do erro (armazenado em 'e')
+
+Bloco 4: Execução em Caso de Sucesso (else)
+
+[09] else:                                                       # Executa apenas se NÃO houver erros no 'try'
+[10]     print("Configuração adicionada com sucesso!")           # Confirmação de sucesso
+
+Bloco 5: Finalização Obrigatória (finally)
+
+[11] finally:                                                    # Sempre executa, com ou sem erros
+[12]     print("Processo finalizado.")                           # Mensagem final (útil para logs)
 ```
 
-**Explicação:**
-
-    open(..., 'a'): Modo append adiciona conteúdo ao final do arquivo sem sobrescrever.  
-
+---
+Arrumar
+ 
 **Exemplo 3:** Caminhos locais, identificando o SO (Sistema Operacional)
 
 ```Python
@@ -348,21 +367,6 @@ Saída no Windows:
 ---
 ARRUMAR
 
-Exemplo 3: Adicionar Configurações (Modo 'a')
-python
-
-nova_config = 'vlan 10\n  name VLAN_GESTAO\n'
-try:
-    with open('roteador.txt', 'a') as arquivo:
-        arquivo.write('\n' + nova_config)
-except PermissionError:
-    print("Erro: Sem permissão para modificar o arquivo!")
-except IOError as e:
-    print(f"Erro ao escrever no arquivo: {e}")
-else:
-    print("Configuração adicionada com sucesso!")
-finally:
-    print("Processo finalizado.")
 
 Exemplo 4: Verificar Caminhos Multiplataforma
 python
