@@ -8,6 +8,7 @@
     - [Exemplo 01: Criar/Escrever em Arquivo (Modo 'w')](#exemplo-01-criarescrever-em-arquivo-modo-w)
     - [Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".](#exemplo-02-ler-o-arquivo-roteadortxt-e-extrair-apenas-as-linhas-que-contêm-interface)
     - [Exemplo 03: Adicionar Configurações a um Arquivo Existente.](#exemplo-03-adicionar-configurações-a-um-arquivo-existente)
+    - [Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)](#exemplo-4-caminhos-locais-identificando-o-so-sistema-operacional)
   
 
 ## 01 Tratamento de erros (try/excepet/else/finnaly) - arquivos .txt  
@@ -279,47 +280,51 @@ Bloco 5: Finalização Obrigatória (finally)
 ---
 Arrumar
  
-**Exemplo 3:** Caminhos locais, identificando o SO (Sistema Operacional)
+### Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)
+
+**caminho.py**
 
 ```Python
-
-    [01] import os
-    [02] import platform
-    [03]
-    [04] # Identifica o SO
-    [05] sistema = platform.system()
-    [06]
-    [07] # Exemplo de caminhos locais
-    [08] if sistema == "Windows":
-    [09]    caminho = r"C:\Users\alcancil\Documents\roteador.txt"  # Raw string (evita conflitos com \)
-    [10] elif sistema == "Linux":
-    [11]    caminho = "/home/seuusuario/automacao/roteador.txt"
-    [12] else:
-    [13]    print("Sistema não suportado!")
-    [14]    exit()
-    [15]
-    [16] print(f"Caminho no {sistema}: {caminho}")
-    [17]
-    [18] # Verifica se o arquivo existe
-    [19] if os.path.exists(caminho):
-    [20]    print("Arquivo encontrado!")
-    [21] else:
-    [22]    print("Arquivo não existe.")
-
-Saída no Linux: 
-
-```Bash
-    alcancil@linux:~/automacoes/arquivos/04$ python3 arquivo.py 
-    Caminho no Linux: /home/alcancil/automacoes/arquivos/04
-    Arquivo encontrado!
-    alcancil@linux:~/automacoes/arquivos/04$ 
+[01] import os
+[02] import platform
+[03]
+[04] try:
+[05]     sistema = platform.system()
+[06]     if sistema == "Windows":
+[07]         caminho = r"C:\Users\alcancil\Documents\roteador.txt"
+[08]     elif sistema == "Linux":
+[09]         caminho = "/home/alcancil/automacao/roteador.txt"
+[10]     else:
+[11]         raise OSError("Sistema operacional não suportado.")
+[12] 
+[13]     if not os.path.exists(caminho):
+[14]         raise FileNotFoundError(f"Arquivo {caminho} não existe.")
+[15]
+[16]     print(f"Caminho válido no {sistema}: {caminho}")
+[18]
+[19] except (FileNotFoundError, PermissionError) as e:
+[20]     print(f"Erro de acesso: {e}")
+[21] except OSError as e:
+[22]     print(f"Erro de sistema: {e}")
+[23] else:
+[24]     print("Pronto para manipular o arquivo!")
 ```
 
-Saída no Windows:
+**Saída**  
 
 ```Bash
-    Caminho no Windows: C:\Users\alcancil\Documents\roteador.txt
-    Arquivo encontrado!
+alcancil@linux:~/automacoes/erros/txt/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/txt/04$ python3 caminho.py 
+Caminho válido no Linux: /home/alcancil/automacoes/erros/txt/04/roteador.txt
+Pronto para manipular o arquivo!
+alcancil@linux:~/automacoes/erros/txt/04$ 
+```
+
+**Saída com erro**
+
+```Bash
+alcancil@linux:~/automacoes/erros/txt/04$ python3 caminho.py 
+Erro de acesso: Arquivo /home/alcancil/automacao/roteador.txt não existe.
 ```
 
 **Explicação:**
@@ -365,35 +370,7 @@ Saída no Windows:
 
 
 ---
-ARRUMAR
 
-
-Exemplo 4: Verificar Caminhos Multiplataforma
-python
-
-import os
-import platform
-
-try:
-    sistema = platform.system()
-    if sistema == "Windows":
-        caminho = r"C:\Users\alcancil\Documents\roteador.txt"
-    elif sistema == "Linux":
-        caminho = "/home/alcancil/automacao/roteador.txt"
-    else:
-        raise OSError("Sistema operacional não suportado.")
-
-    if not os.path.exists(caminho):
-        raise FileNotFoundError(f"Arquivo {caminho} não existe.")
-
-    print(f"Caminho válido no {sistema}: {caminho}")
-
-except (FileNotFoundError, PermissionError) as e:
-    print(f"Erro de acesso: {e}")
-except OSError as e:
-    print(f"Erro de sistema: {e}")
-else:
-    print("Pronto para manipular o arquivo!")
 
 1. Boas Práticas
 
