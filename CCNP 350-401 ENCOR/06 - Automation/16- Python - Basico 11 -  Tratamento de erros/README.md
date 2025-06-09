@@ -43,7 +43,7 @@ graph TB
 
 📂 Tipos de arquivos abordados e erros comuns
 
-📄 Arquivos TXT
+[Arquivos TXT](/Arquivos/txt/README.md)
 
     Para que serve: Armazenar logs brutos, saídas de comandos (como show running-config) e relatórios simples.
 
@@ -126,7 +126,7 @@ graph TB
         Arquivo .env não encontrado
 
     Quando usar: Sempre que você quiser manter o código limpo, seguro e reutilizável entre diferentes ambientes (ex: LAB, produção, nuvem).
-    
+
 📌 Como navegar
 
 Clique em qualquer formato acima para ver:
