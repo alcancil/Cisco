@@ -9,6 +9,7 @@
     - [Exemplo 02: Ler o arquivo roteador.txt e extrair apenas as linhas que contêm "interface".](#exemplo-02-ler-o-arquivo-roteadortxt-e-extrair-apenas-as-linhas-que-contêm-interface)
     - [Exemplo 03: Adicionar Configurações a um Arquivo Existente.](#exemplo-03-adicionar-configurações-a-um-arquivo-existente)
     - [Exemplo 4: Caminhos locais, identificando o SO (Sistema Operacional)](#exemplo-4-caminhos-locais-identificando-o-so-sistema-operacional)
+    - [Boas Práticas](#boas-práticas)
   
 
 ## 01 Tratamento de erros (try/excepet/else/finnaly) - arquivos .txt  
@@ -326,64 +327,22 @@ Arrumar
 
 **Explicação:**
 
-```Bash
 
-    Linha [01]: Aqui importamos a biblioteca os para podermos utilizar a função path() e outras funções de sistema.  
-    Linha [02]: Aqui importamos a biblioteca plataform para podermos utilizar suas funções e identificar os sistemas.  
-    Linha [05]: A variável sistema recebe a função plataform.system(). Aqui é que reconhecemos o sistema operacional.  
-    Linha [08]: Aqui começamos a lógica do if, se o sistema operacional for Windows então:  
-    Linha [09]: a variável caminho recebe o caminho. Isso mesmo, nessa abordagem temos que indicar o caminho aqui.  
-    Linha [10]: Se a variável sistema for Linux  
-    Linha [11]: a variável caminho recebe o caminho. Digite o caminho aqui.  
-    Linha [12]: senão  
-    Linha [13]: imprima : "Sistema não suportado!"  
-    Linha [14]: sai do script  
-    Linha [16]: Imprime o nome do sistema e o caminho do arquivo  
-    Linha [19]: Aqui iniciamos a lógica se o caminho do os existir  
-    Linha [20]: Imprima "Arquivo encontrado!"  
-    Linha [21]: senão  
-    Linha [22]: Imprima "Arquivo não existe!"  
-```
+### Boas Práticas
 
+Seja Específico nos **except**:
 
+   - **Evite except**: genérico. Capture FileNotFoundError, PermissionError, etc.
 
+Use **else** para Código de Sucesso:
 
+   - Separe a lógica principal (que depende do try) no bloco else.
 
+   - **finally** para Limpeza:
 
+   - Mesmo que não haja erros, garanta que recursos sejam liberados (ex.: fechar conexões).
 
+Log de Erros:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-
-1. Boas Práticas
-
-    Seja Específico nos except:
-
-        Evite except: genérico. Capture FileNotFoundError, PermissionError, etc.
-
-    Use else para Código de Sucesso:
-
-        Separe a lógica principal (que depende do try) no bloco else.
-
-    finally para Limpeza:
-
-        Mesmo que não haja erros, garanta que recursos sejam liberados (ex.: fechar conexões).
-
-    Log de Erros:
-
-        Em scripts reais, use logging em vez de print para registrar falhas.
+   - Em scripts reais, use logging em vez de print para registrar falhas.
 
