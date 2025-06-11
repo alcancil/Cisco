@@ -92,19 +92,44 @@ finally:
     print("🔁 Fim do processamento.\n")
 ```
 
-🖥️ Saída esperada (com sucesso)
+**Saída**
+
+```bash
+alcancil@linux:~/automacoes/erros/csv/01$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/csv/01$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ python3 ler_inventario_seguro.py 
 
 📦 Inventário de Dispositivos:
 - switch01 | IP: 192.168.1.1 | Modelo: Catalyst 9200 | Local: Rack 1
 - router01 | IP: 192.168.1.254 | Modelo: ISR 4331 | Local: Rack Central
+- linux-server | IP: 192.168.1.100 | Modelo: Ubuntu 22.04 | Local: Sala de Servidores
 
 ✅ Leitura finalizada com sucesso.
 🔁 Fim do processamento.
 
-⚠️ Possível saída com erro
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ 
+```
 
+**Saída com erro**
+
+```Bash
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ ls -la
+total 20
+drwxrwxr-x 3 alcancil alcancil 4096 jun 11 16:10 .
+drwxrwxr-x 3 alcancil alcancil 4096 jun 11 16:08 ..
+-rw-r--r-- 1 root     root      177 jun 11 16:09 inventario.csv
+-rw-r--r-- 1 root     root      867 jun 11 16:10 ler_inventario_seguro.py
+drwxrwxr-x 5 alcancil alcancil 4096 jun 11 16:10 venv
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ mv inventario.csv inventario1.csv 
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ python3 ler_inventario_seguro.py 
 ❌ Erro: O arquivo inventario.csv não foi encontrado.
 🔁 Fim do processamento.
+
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ 
+```
+
+---
+Arrumar
 
 🧩 Explicação por blocos
 🔹 Bloco de verificação de existência
