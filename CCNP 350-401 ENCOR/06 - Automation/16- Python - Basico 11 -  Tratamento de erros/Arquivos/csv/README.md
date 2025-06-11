@@ -144,20 +144,17 @@ drwxrwxr-x 5 alcancil alcancil 4096 jun 11 16:10 venv
 ```python
 
 Bloco 1: Importação de Bibliotecas
-python
 
 [01] import csv                                                                                                                  # Biblioteca para manipulação de arquivos CSV
 [02] import os                                                                                                                   # Biblioteca para interação com sistema operacional
 [03]                                                                                                                             # Espaço para melhorar legibilidade
 
 Bloco 2: Definição do Caminho do Arquivo
-python
 
 [04] caminho = "inventario.csv"                                                                                                  # Define o caminho relativo do arquivo CSV
 [05]                                                                                                                             # Espaço entre declarações e lógica principal
 
 Bloco 3: Verificação e Leitura do Arquivo
-python
 
 [06] try:                                                                                                                         # Início do bloco para tratamento de erros
 [07]     if not os.path.exists(caminho):                                                                                          # Verifica se o arquivo existe no sistema
@@ -167,14 +164,12 @@ python
 [11]         leitor = csv.DictReader(arquivo_csv)                                                                                 # Cria um leitor de CSV como dicionário
 
 Bloco 4: Processamento dos Dados
-python
 
 [13]         print("\n📦 Inventário de Dispositivos:")                                                                            # Cabeçalho para organização da saída
 [14]         for linha in leitor:                                                                                                 # Itera sobre cada linha do CSV
 [15]             print(f"- {linha['hostname']} | IP: {linha['ip']} | Modelo: {linha['modelo']} | Local: {linha['localizacao']}")  # Formata os dados
 
 Bloco 5: Tratamento de Exceções Específicas
-python
 
 [17] except FileNotFoundError as e:                                                                                                # Captura erro de arquivo não encontrado
 [18]     print(f"❌ Erro: {e}")                                                                                                   # Mensagem amigável com detalhes do erro
@@ -184,7 +179,6 @@ python
 [22]     print("❌ Permissão negada para abrir o arquivo.")                                                                        # Comum em sistemas Linux/Windows
 
 Bloco 6: Tratamento Genérico e Finalização
-python
 
 [23] except Exception as e:                                                                                                         # Captura qualquer outro erro não previsto
 [24]     print(f"❌ Erro inesperado: {e}")                                                                                         # Mensagem genérica para debug
