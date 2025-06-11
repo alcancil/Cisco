@@ -1,8 +1,20 @@
 
 # Python - Básico 11
 
-## Tratamento de Erros com Arquivos `.csv`
+## Índice
 
+- [Python - Básico 11](#python---básico-11)
+  - [Índice](#índice)
+  - [Tratamento de Erros com Arquivos `.csv`](#tratamento-de-erros-com-arquivos-csv)
+  - [Erros comuns com arquivos .csv](#erros-comuns-com-arquivos-csv)
+  - [Contexto de uso em redes](#contexto-de-uso-em-redes)
+    - [Exemplo 01 – Leitura segura de inventario.csv](#exemplo-01--leitura-segura-de-inventariocsv)
+    - [Exemplo 02 – Backup de configurações em massa com tratamento de erros](#exemplo-02--backup-de-configurações-em-massa-com-tratamento-de-erros)
+    - [Exemplo 02: Backup de configurações em massa](#exemplo-02-backup-de-configurações-em-massa)
+    - [Exemplo 03: Processamento de Logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
+    - [Exemplo 04: Comparação de dados (Antes/Depois)](#exemplo-04-comparação-de-dados-antesdepois)
+
+## Tratamento de Erros com Arquivos `.csv`
 
 Arquivos .csv (Comma-Separated Values) são amplamente utilizados em automação de redes para representar dados tabulares, como inventário de dispositivos, interfaces, VLANs e localização física de equipamentos.
 
@@ -188,8 +200,103 @@ Bloco 6: Tratamento Genérico e Finalização
 [28]     print("🔁 Fim do processamento.\n")                                                                                       # Mensagem final de status
 ```
 
+### Exemplo 02 – Backup de configurações em massa com tratamento de erros
+
+**Objetivo**
+
+Ler um arquivo dispositivos.csv, identificar o tipo de dispositivo e simular a criação de um backup de configuração, salvando o conteúdo em arquivos .txt dentro da pasta backups. O script deve:
+
+  - Criar a pasta backups se não existir
+
+  - Tratar erros como:
+
+        * Arquivo ausente
+
+        * Permissão negada
+
+        * Colunas ausentes no CSV
+
+        * Falhas ao criar ou escrever arquivos
+
+**dispositivos.csv**  
+
+```csv
+hostname,ip,usuario,senha,tipo
+servidor-linux,192.168.1.100,admin,senha123,linux
+roteador-simulado,10.0.0.1,cisco,cisco123,cisco_ios
+switch-simulado,192.168.1.2,admin,admin123,cisco_ios
+```
+
+**Script: backup_config.py**  
+
+```Python
+[01] import csv
+[02] import os
+[03]
+[04] caminho_csv = "dispositivos.csv"
+[05] pasta_backup = "backups"
+[06]
+[07] try:
+[08]     if not os.path.exists(caminho_csv):
+[09]         raise FileNotFoundError("Arquivo dispositivos.csv não encontrado.")
+[10]
+[11]     os.makedirs(pasta_backup, exist_ok=True)
+[12]
+[13]     with open(caminho_csv, 'r') as arquivo_csv:
+[14]         leitor = csv.DictReader(arquivo_csv)
+[15]
+[16]         for dispositivo in leitor:
+[17]             tipo = dispositivo.get("tipo", "").lower()
+[18]
+[19]             if tipo == "linux":
+[20]                 config = f"hostname {dispositivo['hostname']}\nIP: {dispositivo['ip']}\nSO: Ubuntu 22.04"
+[21]             elif "cisco" in tipo:
+[22]                 config = f"hostname {dispositivo['hostname']}\ninterface GigabitEthernet0/1\n  ip address {dispositivo['ip']} 255.255.255.0"
+[23]             else:
+[24]                 raise ValueError(f"Tipo de dispositivo não reconhecido: {tipo}")
+[25]
+[26]             caminho_saida = os.path.join(pasta_backup, f"{dispositivo['hostname']}_backup.txt")
+[27]             with open(caminho_saida, 'w') as saida:
+[28]                 saida.write(config)
+[29]
+[30]             print(f"✅ Backup de {dispositivo['hostname']} salvo em: {caminho_saida}")
+[31]
+[32] except FileNotFoundError as e:
+[33]     print(f"❌ Erro: {e}")
+[34] except PermissionError:
+[35]     print("❌ Permissão negada para criar arquivos ou ler o CSV.")
+[36] except KeyError as e:
+[37]     print(f"❌ Coluna ausente no CSV: {e}")
+[38] except ValueError as e:
+[39]     print(f"❌ Erro de valor: {e}")
+[40] except Exception as e:
+[41]     print(f"❌ Erro inesperado: {e}")
+[42] else:
+[43]     print("\n✅ Todos os backups foram gerados com sucesso.")
+[44] finally:
+[45]     print("🔁 Fim do processamento.")
+```
+
 ---
 Arrumar
+
+🖥️ Saída esperada (com sucesso)
+
+✅ Backup de servidor-linux salvo em: backups/servidor-linux_backup.txt
+✅ Backup de roteador-simulado salvo em: backups/roteador-simulado_backup.txt
+✅ Backup de switch-simulado salvo em: backups/switch-simulado_backup.txt
+
+✅ Todos os backups foram gerados com sucesso.
+🔁 Fim do processamento.
+
+🖥️ Saída esperada (com erro: CSV ausente)
+
+❌ Erro: Arquivo dispositivos.csv não encontrado.
+🔁 Fim do processamento.
+
+
+
+
 
 ### Exemplo 02: Backup de configurações em massa  
 
