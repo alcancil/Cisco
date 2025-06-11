@@ -62,34 +62,34 @@ linux-server,192.168.1.100,Ubuntu 22.04,Sala de Servidores
 **script ler_inventario_seguro.py**  
 
 ```Python
-import csv
-import os
-
-caminho = "inventario.csv"
-
-try:
-    if not os.path.exists(caminho):
-        raise FileNotFoundError(f"O arquivo {caminho} não foi encontrado.")
-
-    with open(caminho, 'r') as arquivo_csv:
-        leitor = csv.DictReader(arquivo_csv)
-
-        print("\n📦 Inventário de Dispositivos:")
-        for linha in leitor:
-            print(f"- {linha['hostname']} | IP: {linha['ip']} | Modelo: {linha['modelo']} | Local: {linha['localizacao']}")
-
-except FileNotFoundError as e:
-    print(f"❌ Erro: {e}")
-except KeyError as e:
-    print(f"❌ Erro: Coluna esperada não encontrada no CSV ({e})")
-except PermissionError:
-    print("❌ Permissão negada para abrir o arquivo.")
-except Exception as e:
-    print(f"❌ Erro inesperado: {e}")
-else:
-    print("\n✅ Leitura finalizada com sucesso.")
-finally:
-    print("🔁 Fim do processamento.\n")
+[01] import csv
+[02] import os
+[03]
+[04] caminho = "inventario.csv"
+[05]
+[06] try:
+[07]     if not os.path.exists(caminho):
+[08]         raise FileNotFoundError(f"O arquivo {caminho} não foi encontrado.")
+[09] 
+[10]     with open(caminho, 'r') as arquivo_csv:
+[11]         leitor = csv.DictReader(arquivo_csv)
+[12] 
+[13]         print("\n📦 Inventário de Dispositivos:")
+[14]         for linha in leitor:
+[15]             print(f"- {linha['hostname']} | IP: {linha['ip']} | Modelo: {linha['modelo']} | Local: {linha['localizacao']}")
+[16] 
+[17] except FileNotFoundError as e:
+[18]     print(f"❌ Erro: {e}")
+[19] except KeyError as e:
+[20]     print(f"❌ Erro: Coluna esperada não encontrada no CSV ({e})")
+[21] except PermissionError:
+[22]     print("❌ Permissão negada para abrir o arquivo.")
+[23] except Exception as e:
+[24]     print(f"❌ Erro inesperado: {e}")
+[25] else:
+[26]     print("\n✅ Leitura finalizada com sucesso.")
+[27] finally:
+[28]     print("🔁 Fim do processamento.\n")
 ```
 
 **Saída**
@@ -128,136 +128,74 @@ drwxrwxr-x 5 alcancil alcancil 4096 jun 11 16:10 venv
 (venv) alcancil@linux:~/automacoes/erros/csv/01$ 
 ```
 
----
-Arrumar
+**saída com erro 02**
 
-🧩 Explicação por blocos
-🔹 Bloco de verificação de existência
+```bash
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ sudo chmod -rwrr inventario.csv 
+(venv) alcancil@linux:~/automacoes/erros/csv/01$ python3 ler_inventario_seguro.py 
+❌ Permissão negada para abrir o arquivo.
+🔁 Fim do processamento.
 
-    Garante que o arquivo existe antes de tentar abri-lo
-
-    Evita que o script quebre com FileNotFoundError
-
-🔹 Bloco de leitura e formatação
-
-    Usa csv.DictReader para tratar o CSV como uma lista de dicionários
-
-    Facilita o acesso aos campos por nome (ex: linha['ip'])
-
-🔹 Blocos de exceção
-
-    Captura erros previsíveis de forma clara
-
-    Exibe mensagens informativas ao operador
-
-🔹 Blocos else e finally
-
-    O else só roda se tudo ocorrer bem
-
-    O finally roda sempre, sendo ideal para encerrar logs, limpar variáveis, etc.
-
-----
-
-
-
-
-
-## 01 Manipulação de arquivos - .csv
-
-Arquivos **.csv** são utilizados em diversos casos como:  
-
-1. Inventário de dispositivos de rede 
-2. Backup de configurações em massa  
-3. Processamento de Logs estruturados  
-4. Comparação de dados (Antes/Depois)
-5. Integração com ferramentas de automação  
-6. Exportação de dados de APIs  
-  
-
-Quando Escolher CSV em vez de TXT?  
-
-| Vantagens do CSV                                                  | Use TXT quando                                     |
-|-------------------------------------------------------------------|----------------------------------------------------|
-| Estrutura clara (colunas/linhas).                                 | Os dados são não estruturados (ex.: logs brutos).  |
-| Facilidade de importação em Excel, bancos de dados e ferramentas. |  Não há necessidade de divisão por colunas.        |
-| Suporte nativo em linguagens (Python, PowerShell).                |                                                    |
-       
-Antes de começarmos nossos exemplos, vamos criar uma pasta chamada **automacoes** onde vamos deixar nossos arquivos.  
-Nas explicações, algumas linhas serão omitidas por questões de clareza e redundância.  
-
-### Exemplo 01: Inventário de dispositivos de rede  
-
-Nesse exemplo, vamos criar um arquivo chamado **inventario.csv**.  Esse arquivo vai conter as informações de nosso inventário. Percebam como ele vem estruturado: são informações separadas por vírgulas. Olhando somente seu conteúdo fica difícil de entendermos. Então nosso objetivo vai ser criar um arquivo em python que leia o conteúdo desse arquivo e depois nos exiba na tela de forma legível nosso conteúdo. <br></br>
-
-**Conteúdo do arquivo inventario.csv**
-
-```Python
-    hostname,ip,modelo,localizacao
-    linux-server,192.168.1.100,Ubuntu 22.04,Sala de Servidores
-    switch01,192.168.1.1,Cisco Catalyst 2960,Rack Principal
-    router01,192.168.1.254,Cisco ISR 4331,Rack Principal
-``` 
-
-Explicação:
-
-    hostname: Nome do dispositivo.
-
-    ip: Endereço IP (simulado).
-
-    modelo: Tipo do dispositivo.
-
-    localizacao: Onde o dispositivo está "fisicamente".
-
-
-**Script ler_inventario.py**
-
-```Python
-    [01] import csv
-    [02]
-    [04] # Lê o arquivo CSV
-    [05] with open('inventario.csv', 'r') as arquivo_csv:
-    [06]    leitor = csv.DictReader(arquivo_csv)
-    [07]    for dispositivo in leitor:
-    [08]        print(f"Dispositivo: {dispositivo['hostname']}")
-    [09]        print(f"IP: {dispositivo['ip']}")
-    [10]        print(f"Modelo: {dispositivo['modelo']}")
-    [11]        print(f"Localização: {dispositivo['localizacao']}\n")
-```
-
-**Saída**
-
-```Bash
-    alcancil@linux:~/automacoes/arquivos/csv/01$ python3 ler_inventario.csv
-    Dispositivo: linux-server
-    IP: 192.168.1.100
-    Modelo: Ubuntu 22.04
-    Localização: Sala de Servidores
-
-    Dispositivo: switch01
-    IP: 192.168.1.1
-    Modelo: Cisco Catalyst 2960
-    Localização: Rack Principal
-
-    Dispositivo: router01
-    IP: 192.168.1.254
-    Modelo: Cisco ISR 4331
-    Localização: Rack Principal
-
-    alcancil@linux:~/automacoes/arquivos/csv/01$
+(venv) alcancil@linux:~/automacoes/erros/csv/01$
 ```
 
 **Explicação**  
 
-```Bash
-    Linha [01] : importando o módulo csv para poder utilizar as funções de arquivos csv  
-    Linha [05] : com o arquivo inventario.csv aberto em modo leitura, onde o conteúdo vai para avariável **arquivo_csv** faça:  
-    Linha [06] : a variável leitor recebe o conteúdo de arquivo_csv em forma de dicionário. O método csv.DictReader mapeia cada linha para um dicionário ao invés de colocar como índice  
-    Linha [07] : para cada dispositivo dentro do conteúdo da variável leitor faça :  
-    Linha [08] : imprima **Dispositivo {nome do dispositivo}**  
-    Linha [09] : imprima **IP: {número do ip}**  
-    Linha [10] : imprima **Modelo: {tipo do modelo}**  
-    Linha [11] : imprima **Localização: {localização}**  
+```python
+
+Bloco 1: Importação de Bibliotecas
+python
+
+[01] import csv                                                                                                                  # Biblioteca para manipulação de arquivos CSV
+[02] import os                                                                                                                   # Biblioteca para interação com sistema operacional
+[03]                                                                                                                             # Espaço para melhorar legibilidade
+
+Bloco 2: Definição do Caminho do Arquivo
+python
+
+[04] caminho = "inventario.csv"                                                                                                  # Define o caminho relativo do arquivo CSV
+[05]                                                                                                                             # Espaço entre declarações e lógica principal
+
+Bloco 3: Verificação e Leitura do Arquivo
+python
+
+[06] try:                                                                                                                         # Início do bloco para tratamento de erros
+[07]     if not os.path.exists(caminho):                                                                                          # Verifica se o arquivo existe no sistema
+[08]         raise FileNotFoundError(f"O arquivo {caminho} não foi encontrado.")                                                  # Força um erro específico
+[09] 
+[10]     with open(caminho, 'r') as arquivo_csv:                                                                                  # Abre o arquivo no modo leitura (seguro)
+[11]         leitor = csv.DictReader(arquivo_csv)                                                                                 # Cria um leitor de CSV como dicionário
+
+Bloco 4: Processamento dos Dados
+python
+
+[13]         print("\n📦 Inventário de Dispositivos:")                                                                            # Cabeçalho para organização da saída
+[14]         for linha in leitor:                                                                                                 # Itera sobre cada linha do CSV
+[15]             print(f"- {linha['hostname']} | IP: {linha['ip']} | Modelo: {linha['modelo']} | Local: {linha['localizacao']}")  # Formata os dados
+
+Bloco 5: Tratamento de Exceções Específicas
+python
+
+[17] except FileNotFoundError as e:                                                                                                # Captura erro de arquivo não encontrado
+[18]     print(f"❌ Erro: {e}")                                                                                                   # Mensagem amigável com detalhes do erro
+[19] except KeyError as e:                                                                                                         # Captura erro de coluna faltante no CSV
+[20]     print(f"❌ Erro: Coluna esperada não encontrada no CSV ({e})")                                                           # Indica qual coluna está faltando
+[21] except PermissionError:                                                                                                       # Captura erro de permissão
+[22]     print("❌ Permissão negada para abrir o arquivo.")                                                                        # Comum em sistemas Linux/Windows
+
+Bloco 6: Tratamento Genérico e Finalização
+python
+
+[23] except Exception as e:                                                                                                         # Captura qualquer outro erro não previsto
+[24]     print(f"❌ Erro inesperado: {e}")                                                                                         # Mensagem genérica para debug
+[25] else:                                                                                                                          # Executa apenas se não ocorrerem erros
+[26]     print("\n✅ Leitura finalizada com sucesso.")                                                                             # Confirmação de sucesso
+[27] finally:                                                                                                                       # Sempre executa, independente de erros
+[28]     print("🔁 Fim do processamento.\n")                                                                                       # Mensagem final de status
 ```
+
+---
+Arrumar
 
 ### Exemplo 02: Backup de configurações em massa  
 
