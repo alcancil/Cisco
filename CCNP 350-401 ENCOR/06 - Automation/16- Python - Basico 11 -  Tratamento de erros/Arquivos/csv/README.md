@@ -50,7 +50,16 @@ Ler um inventário e exibir os dados formatados, garantindo que:
 
   - O processo não quebre caso algo esteja errado
 
-**script ler_inventario_seguro.py**
+**inventario.csv**  
+
+```csv
+hostname,ip,modelo,localizacao
+switch01,192.168.1.1,Catalyst 9200,Rack 1
+router01,192.168.1.254,ISR 4331,Rack Central
+linux-server,192.168.1.100,Ubuntu 22.04,Sala de Servidores
+```
+
+**script ler_inventario_seguro.py**  
 
 ```Python
 import csv
