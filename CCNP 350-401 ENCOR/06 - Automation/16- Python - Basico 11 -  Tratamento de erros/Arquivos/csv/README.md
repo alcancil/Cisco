@@ -1,4 +1,132 @@
-# Python - Básico 10
+
+# Python - Básico 11
+
+## Tratamento de Erros com Arquivos `.csv`
+
+
+Arquivos .csv (Comma-Separated Values) são amplamente utilizados em automação de redes para representar dados tabulares, como inventário de dispositivos, interfaces, VLANs e localização física de equipamentos.
+
+Mas ao automatizar a leitura desses arquivos, podem ocorrer diversos problemas, como:
+
+- Arquivo inexistente
+
+- Falta de permissões
+
+- Colunas obrigatórias ausentes
+
+- Codificação inválida
+
+A seguir, aprenderemos como usar **try, except, else e finally** para tornar scripts com **.csv** mais robustos e confiáveis.
+
+## Erros comuns com arquivos .csv
+
+| Tipo de erro	              | Exceção Python     | Situação típica                       |
+|-----------------------------|--------------------|---------------------------------------| 
+| Arquivo não encontrado	  | FileNotFoundError  | Caminho incorreto ou arquivo movido   |
+| Permissão negada            | PermissionError    | Tentativa de leitura sem permissão    |
+| Coluna ausente no cabeçalho | KeyError           | Cabeçalho incompleto ou mal formatado |
+| Delimitador incorreto       | csv.Error	       | Arquivo com separadores errados       |
+| Problemas gerais de leitura |	UnicodeDecodeError | Arquivo com codificação inválida      |
+
+## Contexto de uso em redes
+
+Arquivos .csv são úteis para:
+
+- Inventário de switches, roteadores e servidores
+
+- Geração de configurações em massa com base em planilhas
+
+- Alimentar scripts Jinja2 ou Ansible com dados externos
+
+### Exemplo 01 – Leitura segura de inventario.csv
+
+**Objetivo**
+
+Ler um inventário e exibir os dados formatados, garantindo que:
+
+  - O arquivo existe
+
+  - As colunas obrigatórias estão presentes
+
+  - O processo não quebre caso algo esteja errado
+
+**script ler_inventario_seguro.py**
+
+```Python
+import csv
+import os
+
+caminho = "inventario.csv"
+
+try:
+    if not os.path.exists(caminho):
+        raise FileNotFoundError(f"O arquivo {caminho} não foi encontrado.")
+
+    with open(caminho, 'r') as arquivo_csv:
+        leitor = csv.DictReader(arquivo_csv)
+
+        print("\n📦 Inventário de Dispositivos:")
+        for linha in leitor:
+            print(f"- {linha['hostname']} | IP: {linha['ip']} | Modelo: {linha['modelo']} | Local: {linha['localizacao']}")
+
+except FileNotFoundError as e:
+    print(f"❌ Erro: {e}")
+except KeyError as e:
+    print(f"❌ Erro: Coluna esperada não encontrada no CSV ({e})")
+except PermissionError:
+    print("❌ Permissão negada para abrir o arquivo.")
+except Exception as e:
+    print(f"❌ Erro inesperado: {e}")
+else:
+    print("\n✅ Leitura finalizada com sucesso.")
+finally:
+    print("🔁 Fim do processamento.\n")
+```
+
+🖥️ Saída esperada (com sucesso)
+
+📦 Inventário de Dispositivos:
+- switch01 | IP: 192.168.1.1 | Modelo: Catalyst 9200 | Local: Rack 1
+- router01 | IP: 192.168.1.254 | Modelo: ISR 4331 | Local: Rack Central
+
+✅ Leitura finalizada com sucesso.
+🔁 Fim do processamento.
+
+⚠️ Possível saída com erro
+
+❌ Erro: O arquivo inventario.csv não foi encontrado.
+🔁 Fim do processamento.
+
+🧩 Explicação por blocos
+🔹 Bloco de verificação de existência
+
+    Garante que o arquivo existe antes de tentar abri-lo
+
+    Evita que o script quebre com FileNotFoundError
+
+🔹 Bloco de leitura e formatação
+
+    Usa csv.DictReader para tratar o CSV como uma lista de dicionários
+
+    Facilita o acesso aos campos por nome (ex: linha['ip'])
+
+🔹 Blocos de exceção
+
+    Captura erros previsíveis de forma clara
+
+    Exibe mensagens informativas ao operador
+
+🔹 Blocos else e finally
+
+    O else só roda se tudo ocorrer bem
+
+    O finally roda sempre, sendo ideal para encerrar logs, limpar variáveis, etc.
+
+----
+
+
+
+
 
 ## 01 Manipulação de arquivos - .csv
 
