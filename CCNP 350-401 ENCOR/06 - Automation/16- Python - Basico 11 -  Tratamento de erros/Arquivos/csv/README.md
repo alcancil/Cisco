@@ -277,24 +277,106 @@ switch-simulado,192.168.1.2,admin,admin123,cisco_ios
 [45]     print("🔁 Fim do processamento.")
 ```
 
----
-Arrumar
+**Saída**
 
-🖥️ Saída esperada (com sucesso)
-
+```Bash
+(venv) alcancil@linux:~/automacoes/erros/csv/02$ python3 backup_config.py 
 ✅ Backup de servidor-linux salvo em: backups/servidor-linux_backup.txt
 ✅ Backup de roteador-simulado salvo em: backups/roteador-simulado_backup.txt
 ✅ Backup de switch-simulado salvo em: backups/switch-simulado_backup.txt
 
 ✅ Todos os backups foram gerados com sucesso.
 🔁 Fim do processamento.
+(venv) alcancil@linux:~/automacoes/erros/csv/02$ ls -r backups
+switch-simulado_backup.txt  servidor-linux_backup.txt  roteador-simulado_backup.txt
+(venv) alcancil@linux:~/automacoes/erros/csv/02$ 
+```
 
-🖥️ Saída esperada (com erro: CSV ausente)
+**Saída com erro**
 
+```Bash
+(venv) alcancil@linux:~/automacoes/erros/csv/02$ mv dispositivos.csv dispositivos1.csv 
+(venv) alcancil@linux:~/automacoes/erros/csv/02$ python3 backup_config.py 
 ❌ Erro: Arquivo dispositivos.csv não encontrado.
 🔁 Fim do processamento.
+```
 
+**Explicação**
 
+```Python
+Importações e variáveis iniciais
+
+import csv                                                                                                 # Importa o módulo para manipulação de arquivos CSV
+import os                                                                                                  # Importa o módulo para interagir com o sistema de arquivos
+
+caminho_csv = "dispositivos.csv"                                                                           # Define o caminho do arquivo de entrada CSV
+pasta_backup = "backups"                                                                                   # Define o nome da pasta onde os backups serão salvos
+
+Início do tratamento de erros
+
+try:                                                                                                       # Inicia o bloco de tratamento de exceções
+    if not os.path.exists(caminho_csv):                                                                    # Verifica se o arquivo CSV existe no sistema
+        raise FileNotFoundError("Arquivo dispositivos.csv não encontrado.")                                # Lança exceção personalizada se não existir
+
+Criação do diretório de saída
+
+    os.makedirs(pasta_backup, exist_ok=True)                                                               # Cria a pasta "backups" se ela ainda não existir
+
+Leitura do CSV e processamento linha a linha
+
+    with open(caminho_csv, 'r') as arquivo_csv:                                                            # Abre o arquivo CSV em modo leitura
+        leitor = csv.DictReader(arquivo_csv)                                                               # Lê o conteúdo como dicionário (coluna → valor)
+
+        for dispositivo in leitor:                                                                         # Itera sobre cada linha do CSV
+            tipo = dispositivo.get("tipo", "").lower()                                                     # Obtém o tipo do dispositivo e converte para minúsculas
+
+Geração do conteúdo de backup por tipo
+
+            if tipo == "linux":                                                                            # Se o dispositivo for do tipo "linux"
+                config = f"hostname {dispositivo['hostname']}\nIP: {dispositivo['ip']}\nSO: Ubuntu 22.04"  # Gera uma "configuração" simulada
+
+            elif "cisco" in tipo:                                                                          # Se o tipo contiver "cisco" (ex: cisco_ios)
+                config = f"hostname {dispositivo['hostname']}\ninterface GigabitEthernet0/1\n  ip address {dispositivo['ip']} 255.255.255.0"  # Gera config Cisco simulada
+
+            else:
+                raise ValueError(f"Tipo de dispositivo não reconhecido: {tipo}")                           # Lança erro se o tipo for desconhecido
+
+Escrita do backup em arquivo
+
+            caminho_saida = os.path.join(pasta_backup, f"{dispositivo['hostname']}_backup.txt")            # Define o caminho de saída do arquivo de backup
+            with open(caminho_saida, 'w') as saida:                                                        # Abre o arquivo em modo escrita
+                saida.write(config)                                                                        # Escreve a configuração no arquivo
+
+            print(f"✅ Backup de {dispositivo['hostname']} salvo em: {caminho_saida}")                    # Mensagem de sucesso
+
+🔹 Bloco 7 – Tratamento de exceções específicas
+
+except FileNotFoundError as e:                                                                            # Captura erro se o arquivo CSV não existir
+    print(f"❌ Erro: {e}")
+
+except PermissionError:                                                                                   # Captura erro se não houver permissão para ler ou gravar
+    print("❌ Permissão negada para criar arquivos ou ler o CSV.")
+
+except KeyError as e:                                                                                     # Captura erro se alguma coluna obrigatória estiver ausente
+    print(f"❌ Coluna ausente no CSV: {e}")
+
+except ValueError as e:                                                                                   # Captura erro se o tipo do dispositivo for inválido
+    print(f"❌ Erro de valor: {e}")
+
+except Exception as e:                                                                                    # Captura qualquer outro erro não tratado acima
+    print(f"❌ Erro inesperado: {e}")
+
+🔹 Bloco 8 – Finalização
+
+else:                                                                                                    # Executa somente se nenhum erro ocorreu no try
+    print("\n✅ Todos os backups foram gerados com sucesso.")
+
+finally:                                                                                                 # Sempre executado, com ou sem erro
+    print("🔁 Fim do processamento.")
+```
+
+---
+Arrumar
 
 
 
