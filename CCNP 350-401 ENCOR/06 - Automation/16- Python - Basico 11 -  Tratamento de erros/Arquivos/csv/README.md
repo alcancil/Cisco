@@ -478,6 +478,27 @@ drwxrwxr-x 5 alcancil alcancil 4096 jun 12 15:07 venv
 
 **Explicação**
 
+**OBS:** antes de seguir a explicação vale citar o uso do comando `exit()`  
+
+**Comando exit( )**
+
+O que faz exit(1)?
+
+  - exit(): É uma função do Python que encerra imediatamente a execução do script.
+
+  - 1: É um código de status (também chamado de "código de saída" ou "exit code"). Indica que o script terminou com um erro.
+
+Significado dos Códigos de Saída
+
+Os códigos de saída são convenções universais em sistemas Unix/Linux e Windows:  
+
+| Código | Significado              | Uso Comum                                                           |
+|--------|------------------------------------------------------------------------------------------------|
+| 0      | Sucesso	                | Script concluído sem erros. Ex.: exit(0) (implícito se omitido).    |
+| 1	     | Erro genéric             | Falha não especificada. Ex.: exit(1) em tratamentos de erro simples.|
+| 2	     | Uso incorreto do comando	| Argumentos inválidos (ex.: falta de arquivo obrigatório).           |
+| 3+	 | Erros personalizados     | Podem ser definidos pelo desenvolvedor para casos específicos.      |
+
 ```Python
 Bloco 1: Importação de Bibliotecas
 
