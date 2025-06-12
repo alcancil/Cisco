@@ -493,7 +493,7 @@ Significado dos Códigos de Saída
 Os códigos de saída são convenções universais em sistemas Unix/Linux e Windows:  
 
 | Código | Significado              | Uso Comum                                                           |
-|--------|------------------------------------------------------------------------------------------------|
+|--------|--------------------------|---------------------------------------------------------------------|
 | 0      | Sucesso	                | Script concluído sem erros. Ex.: exit(0) (implícito se omitido).    |
 | 1	     | Erro genéric             | Falha não especificada. Ex.: exit(1) em tratamentos de erro simples.|
 | 2	     | Uso incorreto do comando	| Argumentos inválidos (ex.: falta de arquivo obrigatório).           |
