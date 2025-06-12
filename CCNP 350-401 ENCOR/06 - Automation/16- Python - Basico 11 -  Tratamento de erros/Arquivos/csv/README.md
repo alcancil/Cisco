@@ -10,7 +10,7 @@
   - [Contexto de uso em redes](#contexto-de-uso-em-redes)
     - [Exemplo 01 – Leitura segura de inventario.csv](#exemplo-01--leitura-segura-de-inventariocsv)
     - [Exemplo 02 – Backup de configurações em massa com tratamento de erros](#exemplo-02--backup-de-configurações-em-massa-com-tratamento-de-erros)
-    - [Exemplo 03: Processamento de Logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
+    - [Exemplo 03: Processamento de Logs Estruturados com Tratamento de Erros](#exemplo-03-processamento-de-logs-estruturados-com-tratamento-de-erros)
     - [Exemplo 04: Comparação de dados (Antes/Depois)](#exemplo-04-comparação-de-dados-antesdepois)
 
 ## Tratamento de Erros com Arquivos `.csv`
@@ -377,87 +377,201 @@ finally:                                                                        
 ---
 Arrumar
 
+### Exemplo 03: Processamento de Logs Estruturados com Tratamento de Erros
 
-### Exemplo 03: Processamento de Logs estruturados  
+**Objetivo:**  
 
-Esse é um caso onde temos arquivos de log de equipamentos que já são um pouco mais estruturados. Então vamos criar um script que leia esse log armazenado em um arquivo csv e consigo separar o tipo de equipamento e o grau de severidade do log.  
+Ler um arquivo CSV de logs, filtrar entradas críticas e exibir um resumo, com tratamento robusto para erros (arquivo não encontrado, formato inválido, etc.).
 
-**Conteúdo do arquivo log.csv**  
+**logs.csv**  
 
-```Bash
-    timestamp,dispositivo,nivel,mensagem
-    2024-05-10 09:15:23,switch01,ALERTA,Interface GigabitEthernet0/1 down
-    2024-05-10 09:16:45,router01,CRITICO,CPU usage 95%
-    2024-05-10 09:20:12,switch01,INFO,Interface GigabitEthernet0/1 up
-    2024-05-10 09:25:34,firewall01,ALERTA,Blocked 10 SSH attempts
+```csv
+timestamp,dispositivo,nivel,mensagem
+2024-05-10 09:15:23,switch01,ALERTA,Interface GigabitEthernet0/1 down
+2024-05-10 09:16:45,router01,CRITICO,CPU usage 95%
+2024-05-10 09:20:12,switch01,INFO,Interface GigabitEthernet0/1 up
+2024-05-10 09:25:34,firewall01,ALERTA,Blocked 10 SSH attempts
 ```
 
 **Script processar_log.py**
 
-```Python
-    [01] import csv
-    [02]
-    [03] # Lê o arquivo CSV
-    [04] with open('logs.csv', 'r') as arquivo_csv:
-    [05]    leitor = csv.DictReader(arquivo_csv)
-    [06]   
-    [07]    # Filtra logs com nível "CRITICO" ou "ALERTA"
-    [08]    logs_filtrados = [
-    [09]        log for log in leitor 
-    [10]        if log['nivel'] in ['CRITICO', 'ALERTA']
-    [11]    ]
-    [12]
-    [13] # Exibe os logs filtrados
-    [14] print("===== LOGS CRÍTICOS/ALERTAS =====")
-    [15] for log in logs_filtrados:
-    [16]    print(f"{log['timestamp']} | {log['dispositivo']} | {log['nivel']}: {log['mensagem']}")
-    [17]
-    [18] # Contagem por dispositivo (opcional)
-    [19] contagem = {}
-    [20] for log in logs_filtrados:
-    [21]    dispositivo = log['dispositivo']
-    [22]    contagem[dispositivo] = contagem.get(dispositivo, 0) + 1
-    [23]
-    [24] print("\n===== RESUMO =====")
-    [25] for dispositivo, total in contagem.items():
-    [26]    print(f"{dispositivo}: {total} alerta(s)")
-```  
+```python
+[01] import csv
+[02]
+[03] try:
+[04]     # Tenta abrir e processar o arquivo
+[05]     with open('logs.csv', 'r') as arquivo_csv:
+[06]         leitor = csv.DictReader(arquivo_csv)
+[07]         
+[08]         # Filtra logs com nível "CRITICO" ou "ALERTA"
+[09]         logs_filtrados = [
+[10]             log for log in leitor 
+[11]             if log['nivel'] in ['CRITICO', 'ALERTA']
+[12]         ]
+[13]
+[14] except FileNotFoundError:
+[15]     print("❌ Erro: Arquivo 'logs.csv' não encontrado!")
+[16]     exit(1)
+[17]
+[18] except KeyError as e:
+[19]     print(f"❌ Erro: Campo inválido no CSV - {e} (verifique o cabeçalho)")
+[20]     exit(1)
+[21]
+[22] except Exception as e:
+[23]     print(f"❌ Erro inesperado: {e}")
+[24]     exit(1)
+[25]
+[26] else:
+[27]     # Executa apenas se não houver erros
+[28]     print("===== LOGS CRÍTICOS/ALERTAS =====")
+[29]     for log in logs_filtrados:
+[30]         print(f"{log['timestamp']} | {log['dispositivo']} | {log['nivel']}: {log['mensagem']}")
+[31]
+[32]     # Contagem por dispositivo
+[33]     contagem = {}
+[34]     for log in logs_filtrados:
+[35]         dispositivo = log['dispositivo']
+[36]         contagem[dispositivo] = contagem.get(dispositivo, 0) + 1
+[37]
+[38]     print("\n===== RESUMO =====")
+[39]     for dispositivo, total in contagem.items():
+[40]         print(f"{dispositivo}: {total} alerta(s)")
+[41]
+[42] finally:
+[43]     print("\n✅ Processamento concluído (com ou sem erros).")
+```
 
-**Saída**  
+**Saída**
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/csv/03$ python3 processar_logo.py 
-    ===== LOGS CRÍTICOS/ALERTAS =====
-    2024-05-10 09:15:23 | switch01 | ALERTA: Interface GigabitEthernet0/1 down
-    2024-05-10 09:16:45 | router01 | CRITICO: CPU usage 95%
-    2024-05-10 09:25:34 | firewall01 | ALERTA: Blocked 10 SSH attempts
+alcancil@linux:~/automacoes/erros/csv/03$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/csv/03$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/csv/03$ python processar_log.py 
+===== LOGS CRÍTICOS/ALERTAS =====
+2024-05-10 09:15:23 | switch01 | ALERTA: Interface GigabitEthernet0/1 down
+2024-05-10 09:16:45 | router01 | CRITICO: CPU usage 95%
+2024-05-10 09:25:34 | firewall01 | ALERTA: Blocked 10 SSH attempts
 
-    ===== RESUMO =====
-    switch01: 1 alerta(s)
-    router01: 1 alerta(s)
-    firewall01: 1 alerta(s)
-    alcancil@linux:~/automacoes/arquivos/csv/03$ 
-```  
+===== RESUMO =====
+switch01: 1 alerta(s)
+router01: 1 alerta(s)
+firewall01: 1 alerta(s)
+
+✅ Processamento concluído (com ou sem erros).
+(venv) alcancil@linux:~/automacoes/erros/csv/03$
+```
+
+**Saída com de Erro (Arquivo Não Encontrado)**
+
+```bash
+(venv) alcancil@linux:~/automacoes/erros/csv/03$ ls -la
+total 20
+drwxrwxr-x 3 alcancil alcancil 4096 jun 12 15:07 .
+drwxrwxr-x 5 alcancil alcancil 4096 jun 12 14:46 ..
+-rw-r--r-- 1 root     root      286 jun 12 14:48 logs.csv
+-rw-r--r-- 1 root     root     1243 jun 12 14:59 processar_log.py
+drwxrwxr-x 5 alcancil alcancil 4096 jun 12 15:07 venv
+(venv) alcancil@linux:~/automacoes/erros/csv/03$ mv logs.csv logs1.csv 
+(venv) alcancil@linux:~/automacoes/erros/csv/03$ python processar_log.py 
+❌ Erro: Arquivo 'logs.csv' não encontrado!
+
+✅ Processamento concluído (com ou sem erros).
+(venv) alcancil@linux:~/automacoes/erros/csv/03$ 
+```
 
 **Explicação**
 
-- Filtro dos logs com nível **CRÍTICO ou ALERTA**
+```Python
+Bloco 1: Importação de Bibliotecas
 
-```Bash
-    Linha [08] : a variável logs_filtrados recebe o valor da lista ( começa com [ )  
-    Linha [09] : percorra cada item (log) dentro do arquivo logs.csv  
-    Linha [10] : armazene o valor na variável log se no campo nível conter os valores CRÍTICO ou ALERTA  
-    Linha [11] : finaliza a lista ( ])  
-``` 
+[01] import csv                                                                # Importa o módulo 'csv' para manipulação de arquivos CSV.
 
-- Contagem por dispositivo (opcional)  
+Bloco 2: Tratamento de Erros Principal (try)
 
-```Bash
-    Linha [19] : cria um dicionário chamado contagem  
-    Linha [20] : inicia um loop for que percorre cada item da lista logs_filtrados ( Logs filtrados no passo anterior )
-    Linha [21] : acessa o valor da chave 'dispositivo' no dicionário log atual e o armazena na variável dispositivo.  
-    Linha [22] : inicia o dicionário contagem como contador. O método get() busca o número atual de logs de um dispositivo e, se não houver ainda, começa com 0. A cada log, ele soma 1.
+[03] try:                                                                      # Inicia um bloco de código protegido para capturar erros.
+[04]                                                                           # Tenta abrir e processar o arquivo
+[05]     with open('logs.csv', 'r') as arquivo_csv:                            # Abre o arquivo 'logs.csv' em modo leitura.
+[06]         leitor = csv.DictReader(arquivo_csv)                              # Cria um leitor de CSV que mapeia linhas para dicionários.
+[07]         
+[08]                                                                           # Filtra logs com nível "CRITICO" ou "ALERTA"
+[09]         logs_filtrados = [                                                # List comprehension para filtrar logs.
+[10]             log for log in leitor                                         # Itera sobre cada linha (log) do CSV.
+[11]             if log['nivel'] in ['CRITICO', 'ALERTA']                      # Filtra logs com nível CRITICO ou ALERTA.
+[12]         ]
+
+Explicação:
+
+    - O bloco try tenta executar operações críticas (abrir arquivo, ler CSV, filtrar dados).
+
+    - DictReader converte cada linha do CSV em um dicionário (ex.: log['nivel']).
+
+    - As linhas 9-12 filtram apenas logs relevantes.
+
+Bloco 3: Tratamento de Erros Específicos (except)
+
+[14] except FileNotFoundError:                                                  # Captura erro se o arquivo não existir.
+[15]     print("❌ Erro: Arquivo 'logs.csv' não encontrado!")                   # Mensagem amigável.
+[16]     exit(1)                                                                 # Encerra o script com código de erro (1).
+[17]
+[18] except KeyError as e:                                                       # Captura erro se uma chave (ex.: 'nivel') não existir no CSV.
+[19]     print(f"❌ Erro: Campo inválido no CSV - {e} (verifique o cabeçalho)")  # Indica o campo problemático.
+[20]     exit(1)
+[21]
+[22] except Exception as e:                                                       # Captura qualquer outro erro não previsto.
+[23]     print(f"❌ Erro inesperado: {e}")                                       # Exibe detalhes do erro.
+[24]     exit(1)
+
+Explicação:
+
+    - FileNotFoundError: Falha se o arquivo não existir.
+
+    - KeyError: Falha se o CSV não tiver a coluna esperada (ex.: nivel).
+
+    - Exception: "Pega" qualquer outro erro genérico (ex.: permissão negada).
+
+    - exit(1) encerra o script imediatamente após o erro.
+
+Bloco 4: Execução em Caso de Sucesso (else)
+
+[26] else:                                                                        # Executa apenas se NENHUM erro ocorrer no bloco 'try'.
+[27]                                                                              # Executa apenas se não houver erros
+[28]     print("===== LOGS CRÍTICOS/ALERTAS =====")                               # Cabeçalho para a saída.
+[29]     for log in logs_filtrados:                                               # Itera sobre os logs filtrados.
+[30]         print(f"{log['timestamp']} | {log['dispositivo']} | {log['nivel']}: {log['mensagem']}")  # Formata e exibe cada log.
+[31]
+[32]                                                                              # Contagem por dispositivo
+[33]     contagem = {}                                                            # Inicializa um dicionário para contagem.
+[34]     for log in logs_filtrados:                                               # Itera novamente para contar ocorrências.
+[35]         dispositivo = log['dispositivo']                                     # Obtém o nome do dispositivo.
+[36]         contagem[dispositivo] = contagem.get(dispositivo, 0) + 1             # Incrementa a contagem.
+[37]
+[38]     print("\n===== RESUMO =====")                                            # Cabeçalho do resumo.
+[39]     for dispositivo, total in contagem.items():                              # Itera sobre o dicionário de contagem.
+[40]         print(f"{dispositivo}: {total} alerta(s)")                           # Exibe o total por dispositivo.
+
+Explicação:
+
+    - O bloco else só roda se o try for bem-sucedido.
+
+    - Exibe os logs filtrados (linhas 28-30) e um resumo por dispositivo (linhas 33-40).
+
+    - contagem.get(dispositivo, 0) retorna 0 se a chave não existir (evita KeyError).
+
+Bloco 5: Finalização (finally)
+
+[42] finally:                                                                     # Sempre executa, independentemente de erros.
+[43]     print("\n✅ Processamento concluído (com ou sem erros).")               # Mensagem final.
+
+Explicação:
+
+    - O bloco finally é sempre executado, mesmo que ocorra um erro.
+
+    - Útil para ações de limpeza (ex.: fechar conexões) ou mensagens finais.
+
 ```
+
+---
+ARRUMAR
 
 ### Exemplo 04: Comparação de dados (Antes/Depois)  
 
