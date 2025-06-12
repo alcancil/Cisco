@@ -606,9 +606,6 @@ Explicação:
 
     Mostra mensagem de conclusão.
 
----
-ARRUMAR
-
 ### Exemplo 04: Comparação de Dados (Antes/Depois) com Tratamento de Erros
 
 **Objetivo:**  
