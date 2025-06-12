@@ -11,7 +11,7 @@
     - [Exemplo 01 – Leitura segura de inventario.csv](#exemplo-01--leitura-segura-de-inventariocsv)
     - [Exemplo 02 – Backup de configurações em massa com tratamento de erros](#exemplo-02--backup-de-configurações-em-massa-com-tratamento-de-erros)
     - [Exemplo 03: Processamento de Logs Estruturados com Tratamento de Erros](#exemplo-03-processamento-de-logs-estruturados-com-tratamento-de-erros)
-    - [Exemplo 04: Comparação de dados (Antes/Depois)](#exemplo-04-comparação-de-dados-antesdepois)
+    - [Exemplo 04: Comparação de Dados (Antes/Depois) com Tratamento de Erros](#exemplo-04-comparação-de-dados-antesdepois-com-tratamento-de-erros)
 
 ## Tratamento de Erros com Arquivos `.csv`
 
@@ -609,7 +609,93 @@ Explicação:
 ---
 ARRUMAR
 
-### Exemplo 04: Comparação de dados (Antes/Depois)  
+### Exemplo 04: Comparação de Dados (Antes/Depois) com Tratamento de Erros
+
+**Objetivo:**  
+
+Comparar o estado das portas de um switch antes e depois de uma automação, com tratamento robusto para erros (arquivos ausentes, formato inválido, etc.).
+
+**portas_antes.csv**
+
+```csv
+interface,estado
+GigabitEthernet0/0,up
+GigabitEthernet0/1,down
+GigabitEthernet0/2,up
+```
+
+**portas_depois.csv:**
+
+```csv
+    interface,estado
+    GigabitEthernet0/0,up
+    GigabitEthernet0/1,up
+    GigabitEthernet0/2,up
+```
+
+**Script comparar.py**
+
+```python
+
+[01] import csv
+[02] import sys
+[03]
+[04] def ler_csv(caminho):
+[05]     try:
+[06]         dados = {}
+[07]         with open(caminho, newline='') as arquivo:
+[08]             leitor = csv.DictReader(arquivo)
+[09]             for linha in leitor:
+[10]                 interface = linha['interface']
+[11]                 estado = linha['estado']
+[12]                 dados[interface] = estado
+[13]         return dados
+[14]     except FileNotFoundError:
+[15]         print(f"❌ Erro: Arquivo '{caminho}' não encontrado!")
+[16]         sys.exit(1)
+[17]     except KeyError as e:
+[18]         print(f"❌ Erro: Campo '{e}' faltando no arquivo '{caminho}'!")
+[19]         sys.exit(2)
+[20]     except Exception as e:
+[21]         print(f"❌ Erro inesperado ao ler '{caminho}': {e}")
+[22]         sys.exit(3)
+[23]
+[24] try:
+[25]     # Leitura dos arquivos
+[26]     print("🔍 Lendo arquivos...")
+[27]     antes = ler_csv("portas_antes.csv")
+[28]     depois = ler_csv("portas_depois.csv")
+[29]
+[30] except SystemExit:
+[31]     print("⛔ Comparação interrompida devido a erros.")
+[32]     sys.exit(1)
+[33]
+[34] else:
+[35]     # Comparação
+[36]     print("\n🔄 Mudanças detectadas:")
+[37]     mudancas = False
+[38]     for interface in antes:
+[39]         if antes[interface] != depois.get(interface):
+[40]             print(f"  - {interface}: {antes[interface]} >>> {depois.get(interface)}")
+[41]             mudancas = True
+[42]     if not mudancas:
+[43]         print("  ✅ Nenhuma mudança detectada.")
+[44]
+[45] finally:
+[46]     print("\n🏁 Análise concluída.")
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenados em um arquivo csv. Então vamos realizar a comparação do estados das portas armazenados nesse arquivo csv com um outro. Esse tipo de situação é útil quando fazemos algum tipo de interação automática com o equipamento e queremos realizar o antes / depois para comparar se a automação está funcionando corretamente.  
 
