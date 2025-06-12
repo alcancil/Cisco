@@ -567,6 +567,24 @@ Explicação:
 
 ```
 
+**Fluxo do Script**
+
+- Tenta (try):
+
+    Abrir arquivo → Ler CSV → Filtrar logs.
+
+- Se falhar (except):
+
+    Trata erros específicos e exibe mensagens claras.
+
+- Se der certo (else):
+
+    Exibe logs filtrados e resumo.
+
+- Sempre (finally):
+
+    Mostra mensagem de conclusão.
+
 ---
 ARRUMAR
 
