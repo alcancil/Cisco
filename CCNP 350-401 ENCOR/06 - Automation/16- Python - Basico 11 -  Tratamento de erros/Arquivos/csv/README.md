@@ -374,9 +374,6 @@ finally:                                                                        
     print("🔁 Fim do processamento.")
 ```
 
----
-Arrumar
-
 ### Exemplo 03: Processamento de Logs Estruturados com Tratamento de Erros
 
 **Objetivo:**  
