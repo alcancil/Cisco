@@ -685,61 +685,81 @@ GigabitEthernet0/2,up
 [46]     print("\n🏁 Análise concluída.")
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
----
-Arrumar
-
 **Saída**
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/csv/04$ python3 comparar.py 
-    Mudanças detectadas:
-    - GigabitEthernet0/1: down >>> up
-    alcancil@linux:~/automacoes/arquivos/csv/04$
+alcancil@linux:~/automacoes/erros/csv/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/csv/04$ python3 comparar.py 
+🔍 Lendo arquivos...
+❌ Erro: Campo ''interface'' faltando no arquivo 'portas_depois.csv'!
+⛔ Comparação interrompida devido a erros.
+
+🏁 Análise concluída.
+alcancil@linux:~/automacoes/erros/csv/04$ 
 ```
 
 **Explicação**  
 
-- Criação de um dicionário que irá receber os dados das interfaces contidas nos arquivos csv
+Bloco 1: Importação de Bibliotecas
 
-```Bash
-    Linha [03] : criando a função ler_csv() que recebe o parâmetro caminho  
-    Linha [04] : cria um dicionário vazio chamado dados para armazenar os pares interface: estado  
-    Linha [05] : com o arquivo caminho adicione newline=''. Obs: newline é utilizado para se evitar problemas no Windows
-    Linha [06] : Usa csv.DictReader para ler o conteúdo do arquivo CSV. Essa função converte automaticamente cada linha do CSV em um dicionário, onde os nomes das colunas viram  chaves (como 'interface' e 'estado').
-    Linha [07] : inicia o loop for que percorre cada linha do arquivo
-    Linha [08] : extrai da linha o valor da coluna interface, que é usado como chave no dicionário dados  
-    Linha [09] : extrai da linha o valor da coluna estado, que será o valor associado à interface no dicionário.
-    Linha [10] : adiciona uma nova entrada no dicionário dados, com a interface como chave e o estado como valor.
-    Linha [11] : retorna o dicionário completo com todas as interfaces e seus respectivos estados.
-```
+```python
 
-- Leitura dos arquivos  
+[01] import csv                                                               # Importa o módulo para manipulação de arquivos CSV
+[02] import sys                                                               # Importa o módulo para interação com o sistema (ex: encerrar script com código de erro)
 
-```Bash
-    Linha [14] : variável antes recebe o valor do arquivo portas_antes.csv em forma de dicionário
-    Linha [15] : variável antes recebe o valor do arquivo portas_depois.csv em forma de dicionário
-```
+Bloco 2: Função ler_csv (Leitura Segura de Arquivos CSV)
+python
 
-- Comparação  
+[04] def ler_csv(caminho):                                                    # Define função para ler arquivo CSV e retornar dicionário
+[05]     try:                                                                 # Inicia bloco de tratamento de erros
+[06]         dados = {}                                                       # Inicializa dicionário vazio para armazenar interfaces e estados
+[07]         with open(caminho, newline='') as arquivo:                       # Abre arquivo de forma segura (fecha automaticamente)
+[08]             leitor = csv.DictReader(arquivo)                             # Cria leitor que mapeia linhas para dicionários
+[09]             for linha in leitor:                                         # Itera sobre cada linha do CSV
+[10]                 interface = linha['interface']                           # Obtém nome da interface
+[11]                 estado = linha['estado']                                 # Obtém estado da interface
+[12]                 dados[interface] = estado                                # Armazena no dicionário (ex: {'Gi0/0': 'up'})
+[13]         return dados                                                     # Retorna dicionário completo
 
-```Bash
-    Linha [18] : imprime a mensagem fixa: "Mudanças detectadas:"  
-    Linha [19] : verifica o estado das interfaces antes das mudanças uma, a uma
-    Linha [20] : verifica se o valor da interface no dicionário antes é diferente do valor correspondente no dicionário depois.
-                OBS: O método .get(interface) é usado para evitar erro se a interface não existir no depois. Retorna None se não encontrar.
-                OBS2: Ou seja, compara o estado da interface antes e depois.
-    Linha [21]: Se houver diferença, imprime a interface e o valor de antes e depois, no formato:  
-                - GigabitEthernet0/1: down >>> up
+Tratamento de Erros na Função:
+
+[14]     except FileNotFoundError:                                             # Se arquivo não existir
+[15]         print(f"❌ Erro: Arquivo '{caminho}' não encontrado!")           # Feedback claro
+[16]         sys.exit(1)                                                       # Encerra script com código de erro 1
+[17]     except KeyError as e:                                                 # Se faltar coluna no CSV (ex: 'interface')
+[18]         print(f"❌ Erro: Campo '{e}' faltando no arquivo '{caminho}'!")   # Menssagem de erro indicando o campo que falta 
+[19]         sys.exit(2)                                                       # Código de erro 2
+[20]     except Exception as e:                                                # Erro genérico (ex: permissão negada)
+[21]         print(f"❌ Erro inesperado ao ler '{caminho}': {e}")             # Menssagem de erro no arquivo
+[22]         sys.exit(3)                                                       # Código de erro 3
+
+Bloco 3: Leitura dos Arquivos (Bloco Principal)
+
+[24] try:                                                                      # Inicia bloco principal
+[25]                                                                           # Leitura dos arquivos
+[26]     print("🔍 Lendo arquivos...")                                         # Feedback visual
+[27]     antes = ler_csv("portas_antes.csv")                                   # Lê estado inicial das portas
+[28]     depois = ler_csv("portas_depois.csv")                                 # Lê estado pós-automação
+[29]
+[30] except SystemExit:                                                        # Captura se ler_csv() encerrou com sys.exit()
+[31]     print("⛔ Comparação interrompida devido a erros.")                  # Mensagem amigável
+[32]     sys.exit(1)                                                           # Propaga código de erro
+
+Bloco 4: Comparação (Executado se Não Houver Erros)
+
+[34] else:                                                                     # Executa apenas se não ocorrerem erros no try
+[35]                                                                           # Comparação
+[36]     print("\n🔄 Mudanças detectadas:")                                   # Cabeçalho
+[37]     mudancas = False                                                      # Flag para controlar se houve alterações
+[38]     for interface in antes:                                               # Itera sobre interfaces do estado "antes"
+[39]         if antes[interface] != depois.get(interface):                     # Compara estados
+[40]             print(f"  - {interface}: {antes[interface]} >>> {depois.get(interface)}")  # Detalha mudança
+[41]             mudancas = True                                               # Indica que houve alteração
+[42]     if not mudancas:                                                      # Se nenhuma mudança foi encontrada
+[43]         print("  ✅ Nenhuma mudança detectada.")                          # Feedback positivo
+
+Bloco 5: Finalização (Sempre Executado)
+
+[45] finally:                                                                  # Executa independentemente de erros
+[46]     print("\n🏁 Análise concluída.")                                      # Mensagem final de status
 ```
