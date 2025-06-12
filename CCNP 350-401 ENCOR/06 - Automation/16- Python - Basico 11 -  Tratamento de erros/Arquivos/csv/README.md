@@ -697,51 +697,8 @@ GigabitEthernet0/2,up
 
 
 
-Nesse exemplo, vamos supor que temos o estados das portas de um Switch armazenados em um arquivo csv. Então vamos realizar a comparação do estados das portas armazenados nesse arquivo csv com um outro. Esse tipo de situação é útil quando fazemos algum tipo de interação automática com o equipamento e queremos realizar o antes / depois para comparar se a automação está funcionando corretamente.  
-
-**Conteúdo do arquivo portas_antes**
-
-```Bash
-    interface,estado
-    GigabitEthernet0/0,up
-    GigabitEthernet0/1,down
-    GigabitEthernet0/2,up
-```
-
-**Conteúdo do arquivo portas_depois**
-
-```Bash
-    interface,estado
-    GigabitEthernet0/0,up
-    GigabitEthernet0/1,up
-    GigabitEthernet0/2,up
-```
-
-**Script comparar.py**
-
-```Python
-    [01] import csv
-    [02]
-    [03] def ler_csv(caminho):
-    [04]    dados = {}
-    [05]    with open(caminho, newline='') as arquivo:
-    [06]        leitor = csv.DictReader(arquivo)
-    [07]        for linha in leitor:
-    [08]            interface = linha['interface']
-    [09]            estado = linha['estado']
-    [10]            dados[interface] = estado
-    [11]    return dados
-    [12]
-    [13] # Leitura dos arquivos
-    [14] antes = ler_csv("portas_antes.csv")
-    [15] depois = ler_csv("portas_depois.csv")
-    [16]
-    [17] # Comparação
-    [18] print("Mudanças detectadas:")
-    [19] for interface in antes:
-    [20]    if antes[interface] != depois.get(interface):
-    [21]        print(f"- {interface}: {antes[interface]} >>> {depois.get(interface)}")
-```
+---
+Arrumar
 
 **Saída**
 
