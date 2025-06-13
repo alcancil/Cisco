@@ -58,29 +58,29 @@ Esse é um arquivo bem semelhante a um arquivo de respostas obtido de um equipam
 **Script ler_invetario.py**  
 
 ```Python
-import json
-
-try:
-    with open('inventario.json', 'r') as arquivo:
-        inventario = json.load(arquivo)
-    
-    print("=== INVENTÁRIO DE REDE ===")
-    for dispositivo in inventario['dispositivos']:
-        print(f"\nHostname: {dispositivo['hostname']}")
-        print(f"IP: {dispositivo['ip']}")
-        print(f"Modelo: {dispositivo['modelo']}")
-        print(f"IOS: {dispositivo['ios']}")
-        print(f"Interfaces: {', '.join(dispositivo['interfaces'])}")
-        print(f"VLANs: {dispositivo['vlans']}")
-
-except FileNotFoundError:
-    print("Erro: Arquivo 'inventario.json' não encontrado!")
-except json.JSONDecodeError:
-    print("Erro: JSON inválido!")
-except KeyError as e:
-    print(f"Erro: Campo faltando - {str(e)}")
-except Exception:
-    print("Erro desconhecido!")
+[01] import json
+[02]
+[03] try:
+[04]     with open('inventario.json', 'r') as arquivo:
+[05]         inventario = json.load(arquivo)
+[07]    
+[08]     print("=== INVENTÁRIO DE REDE ===")
+[09]     for dispositivo in inventario['dispositivos']:
+[10]         print(f"\nHostname: {dispositivo['hostname']}")
+[11]         print(f"IP: {dispositivo['ip']}")
+[12]         print(f"Modelo: {dispositivo['modelo']}")
+[13]         print(f"IOS: {dispositivo['ios']}")
+[14]         print(f"Interfaces: {', '.join(dispositivo['interfaces'])}")
+[15]         print(f"VLANs: {dispositivo['vlans']}")
+[16]
+[17] except FileNotFoundError:
+[18]     print("Erro: Arquivo 'inventario.json' não encontrado!")
+[19] except json.JSONDecodeError:
+[20]     print("Erro: JSON inválido!")
+[21] except KeyError as e:
+[22]     print(f"Erro: Campo faltando - {str(e)}")
+[23] except Exception:
+[24]     print("Erro desconhecido!")
 ```
 
 **Explicação dos erros tratados**
@@ -117,35 +117,40 @@ VLANs: [10, 40]
 (venv) alcancil@linux:~/automacoes/erros/json/01$ 
 ```
 
----
-ARRUMAR
-
 **Explicação**  
 
-```Bash
-    Linha[01] : Importa o módulo json do Python, que contém todas as funções necessárias para trabalhar com arquivos JSON. 
-    Linha[04] : Abre o arquivo inventario.json em modo leitura ('r').
-                with: Garante que o arquivo será fechado automaticamente após o uso (gerenciamento de recursos).
-                O conteúdo do arquivo é associado à variável arquivo. 
-    Linha[05] : Faz o parsing do conteúdo do arquivo JSON.
-                json.load(): Converte o texto JSON em uma estrutura de dados Python (normalmente dicionários e listas).
-                O resultado é armazenado na variável inventario.  
-    Linha[08] : Imprime um cabeçalho para organizar a saída no terminal.  
-    Linha[09] : Inicia um loop que itera sobre cada item da lista dispositivos contida no dicionário inventario.
-                inventario['dispositivos']: Acessa a lista de dispositivos armazenada no JSON.  
-    Linha[10] : Imprime o hostname do dispositivo atual.
-                \n: Insere uma linha vazia antes de cada dispositivo para melhorar a legibilidade.
-                dispositivo['hostname']: Acessa o valor da chave hostname no dicionário do dispositivo atual. 
-    Linha[11] : Imprime o endereço IP do dispositivo.   
-    Linha[12] : Imprime o modelo do equipamento (ex: Cisco Catalyst 2960).   
-    Linha[13] : Imprime a versão do IOS/XE do dispositivo.   
-    Linha[14] : Converte a lista de interfaces em uma string formatada.
-                ', '.join(): Une os elementos da lista com vírgula e espaço (ex: "Gig0/1, Gig0/2").
-                dispositivo['interfaces']: Acessa a lista de interfaces do dispositivo.
-    Linha[15] : Imprime a lista de VLANs do dispositivo.   
+```Python
+# Bloco 1: Importação de bibliotecas
+[01] import json                                                           # Importa o módulo json para trabalhar com arquivos JSON
+
+# Bloco 2: Tentativa de leitura e processamento do arquivo
+[03] try:                                                                  # Inicia o bloco de tratamento de erros
+[04]     with open('inventario.json', 'r') as arquivo:                     # Abre o arquivo no modo leitura
+[05]         inventario = json.load(arquivo)                               # Carrega e converte o JSON para dicionário Python
+
+# Bloco 3: Exibição do inventário
+[08]     print("=== INVENTÁRIO DE REDE ===")                               # Cabeçalho
+[09]     for dispositivo in inventario['dispositivos']:                    # Loop pelos dispositivos
+[10]         print(f"\nHostname: {dispositivo['hostname']}")               # Nome do dispositivo
+[11]         print(f"IP: {dispositivo['ip']}")                             # Endereço IP
+[12]         print(f"Modelo: {dispositivo['modelo']}")                     # Modelo do equipamento
+[13]         print(f"IOS: {dispositivo['ios']}")                           # Versão do sistema operacional
+[14]         print(f"Interfaces: {', '.join(dispositivo['interfaces'])}")  # Lista de interfaces
+[15]         print(f"VLANs: {dispositivo['vlans']}")                       # VLANs configuradas
+
+# Bloco 4: Tratamento de erros específicos
+[17] except FileNotFoundError:                                             # Se arquivo não existir
+[18]     print("Erro: Arquivo 'inventario.json' não encontrado!")          # Mensagem informando o erro
+[19] except json.JSONDecodeError:                                          # Se JSON estiver mal formatado
+[20]     print("Erro: JSON inválido!")                                     # Mensagem informando o erro
+[21] except KeyError as e:                                                 # Se faltar chave obrigatória
+[22]     print(f"Erro: Campo faltando - {str(e)}")                         # Mensagem informando o erro - Informa o campo que falta no arquivo .json
+[23] except Exception:                                                     # Para qualquer outro erro não previsto
+[24]     print("Erro desconhecido!")                                       # Mensagem informando o erro 
 ```  
 
-**OBS:** aqui eu citei o conceito de **Parsing**. Mas por hora vou falar que **Parsing** é o processo de ler uma string JSON e convertê-la em uma estrutura de dados nativa da linguagem (no Python, um dicionário ou lista). Falaremos mais sobre o tema em um novo tópico.  
+---
+ARRUMAR
 
 ### Exemplo 02: Backup de Configurações com Metadados
 
