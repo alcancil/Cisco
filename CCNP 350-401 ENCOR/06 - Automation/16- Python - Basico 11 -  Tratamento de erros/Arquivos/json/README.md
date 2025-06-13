@@ -3,6 +3,7 @@
 ## Índice
 - [Python - Básico 10](#python---básico-10)
   - [Índice](#índice)
+  - [04 Tratamento de Erros com Arquivos JSON](#04-tratamento-de-erros-com-arquivos-json)
   - [03 Manipulação de arquivos - .json](#03-manipulação-de-arquivos---json)
     - [Quando Usar JSON vs Outros Formatos](#quando-usar-json-vs-outros-formatos)
     - [**Por que JSON é essencial para o CCNP?**](#por-que-json-é-essencial-para-o-ccnp)
@@ -11,6 +12,23 @@
   - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
     - [Exemplo 04 : Comparação de configurações](#exemplo-04--comparação-de-configurações)
   - [Resumo do Aprendizado](#resumo-do-aprendizado)
+
+## 04 Tratamento de Erros com Arquivos JSON
+
+Em automação de redes, erros em arquivos JSON podem causar falhas em scripts críticos (backups, provisionamento, etc.). Veja como lidar com eles:
+
+**Principais Erros e Soluções**
+
+| Cenário de Erro            | Causa                               | Prevenção	                        | Tratamento                               |
+|----------------------------|-------------------------------------|------------------------------------|------------------------------------------|
+| Arquivo não encontrado     | Caminho incorreto ou permissões     | Verificar existência com os.path   | Criar arquivo padrão ou abortar          |
+| JSON malformado            | Chaves sem aspas, vírgulas faltando | Validar com ferramentas online	    | Usar try-except com json.JSONDecodeError |
+| Tipo de dado incorreto     | Número onde era string, etc.        | Esquema de validação (JSON Schema) | Converter tipos ou rejeitar entrada      |
+| Chave ausente              | Campo obrigatório não presente      | Verificar chaves antes de acessar  | Usar .get() ou valores padrão            | 
+| Acesso a arquivo bloqueado | Arquivo em uso por outro processo   | Implementar retry com timeout      | Esperar ou notificar usuário             |
+
+
+
 
 ## 03 Manipulação de arquivos - .json
 
