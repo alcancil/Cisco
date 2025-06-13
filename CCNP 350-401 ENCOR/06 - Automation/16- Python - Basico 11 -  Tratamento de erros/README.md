@@ -198,7 +198,7 @@ Use **finally** para limpeza:
 - **Erros comuns tratados:** Arquivo não encontrado, Permissão negada, etc.
 - **Quando usar:** Quando você precisa armazenar ou analisar saídas de CLI simples ou logs sequenciais.
 
-### [Arquivos CSV](Arquivos/csv/README.md) Arrumar
+### [Arquivos CSV](Arquivos/csv/README.md) 
 
 - **Para que serve:** Gerenciar inventários de dispositivos, listas de portas, VLANs, IPs ou usuários de forma tabular.
 - **Erros comuns tratados:** Colunas ausentes, Delimitadores incorretos, etc.
