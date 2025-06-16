@@ -246,71 +246,98 @@ Operação de backup concluída.
 
 ```
 
----
-ARRUMAR
-
 **Explicação**  
 
-**Linhas 1-3:** Importação de Bibliotecas
+```Python
+Bloco 1: Importação de bibliotecas
+python
 
-```Bash
-    Linha[01] : import json                     # Manipulação de arquivos JSON
-    Linha[02] : from datetime import datetime   # Operações com data/hora (para timestamp)
-    Linha[03] : import getpass                  # Captura o usuário do sistema
-```  
+[01] import json                                                                     # Biblioteca para manipulação de arquivos JSON
+[02] from datetime import datetime                                                   # Para obter data/hora atual
+[03] import getpass                                                                  # Para obter o nome do usuário do sistema
+[04] import sys                                                                      # Para manipulação de sistema (saída de erros)
 
-**Linhas 6-13:** Configuração do Dispositivo  
+Bloco 2: Definição da função principal
 
-```Bash
-    Linha[06] : configuracao = """                    # String multilinha
-    Linha[07] : hostname R1                           # Configuração Cisco típica
-    Linha[08] : interface GigabitEthernet0/1          # Exemplo de interface
-    Linha[09] : ip address 192.168.1.1 255.255.255.0  # Configuração de IP
-    Linha[10] : !                                     # Delimitador Cisco
-    Linha[11] : vlan 10                               # Configuração de VLAN
-    Linha[12] : name VLAN_GESTAO                      # Nomeando VLAN
-    Linha[13] : """                                   # Fecha String multilinha
+[06] def main():                                                                     # Define a função principal do script
+[07]     try:                                                                        # Início do bloco try para tratamento de erros global
+
+Bloco 3: Dados de configuração do dispositivo
+
+[08]                                                                                 # 1. Dados do dispositivo e configuração
+[09]         configuracao = """                                                      # Início da string multilinha com a configuração
+[10]         hostname R1                                                             # Configuração do hostname do dispositivo
+[11]         interface GigabitEthernet0/1                                            # Configuração de interface
+[12]         ip address 192.168.1.1 255.255.255.0                                    # Configuração de IP
+[13]         !                                                                       # Delimitador comum em configurações Cisco
+[14]         vlan 10                                                                 # Configuração de VLAN
+[15]         name VLAN_GESTAO                                                        # Nome da VLAN
+[16]         """                                                                     # Fim da string de configuração
+
+Bloco 4: Construção dos metadados
+
+[18]                                                                                 # 2. Metadados do backup
+[19]         backup_data = {                                                         # Dicionário principal para armazenar todos os dados
+[20]             "dispositivo": {                                                    # Metadados sobre o dispositivo
+[21]                 "hostname": "R1",                                               # Nome do dispositivo
+[22]                 "ip": "192.168.1.1",                                            # Endereço IP
+[23]                 "tipo": "Cisco IOS"                                             # Tipo de dispositivo
+[24]             },
+[25]             "backup": {                                                         # Metadados sobre o backup
+[26]                 "config": configuracao.strip().split('\n'),                     # Config convertida para lista
+[27]                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),      # Data/hora
+[28]                 "usuario": getpass.getuser(),                                   # Usuário que executou o backup
+[29]                 "versao_script": "1.0"                                          # Versão do script
+[30]             }
+[31]         }
+
+Bloco 5: Operação de salvamento do arquivo
+
+[33]                                                                                 # 3. Salvar em arquivo JSON
+[34]         nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"  # Gera nome do arquivo
+[35]         
+[36]         try:                                                                    # Bloco try para operações de arquivo/JSON
+[37]             with open(nome_arquivo, 'w') as f:                                  # Abre arquivo para escrita
+[38]                 json.dump(backup_data, f, indent=4)                             # Escreve dados formatados
+
+Bloco 6: Tratamento de erros específicos
+python
+
+[39]         except IOError as e:                                                    # Erros de entrada/saída (arquivo)
+[40]             print(f"Erro ao escrever no arquivo: {e}", file=sys.stderr)         # Mensagem de erro
+[41]             raise                                                               # Re-lança a exceção para tratamento externo
+[42]         except json.JSONEncodeError as e:                                       # Erros de serialização JSON
+[43]             print(f"Erro ao serializar dados para JSON: {e}", file=sys.stderr)  # Mensagem formatada (f-string) que inclui:
+                                                                                            # - Texto fixo de erro
+                                                                                            # - Variável {e} que contém a exceção capturada
+                                                                                            # file=sys.stderr - Redireciona a saída para o fluxo de erro padrão (stderr)
+                                                                                            # em vez da saída padrão (stdout), seguindo boas práticas para:
+                                                                                            # 1. Separar mensagens de erro de saídas normais
+                                                                                            # 2. Permitir redirecionamento adequado em pipelines
+                                                                                            # 3. Facilitar filtragem de logs
+[44]             raise                                                               # Re-lança a exceção
+
+Bloco 7: Fluxo alternativo e finalização
+python
+
+[46]         else:                                                                   # Executa se não ocorrerem erros
+[47]             print(f"Backup salvo com sucesso em: {nome_arquivo}")               # Mensagem de sucesso
+[48]             
+[49]     except Exception as e:                                                      # Captura qualquer exceção não tratada
+[50]         print(f"Erro inesperado durante o backup: {e}", file=sys.stderr)        # Mensagem de erro no estilo da anterior
+[51]         sys.exit(1)                                                             # Termina o programa com código de erro
+[52]     finally:                                                                    # Sempre executa, com ou sem erros
+[53]         print("Operação de backup concluída.")                                  # Mensagem final
+
+Bloco 8: Execução do script
+python
+
+[55] if __name__ == "__main__":                                                      # Verifica se o script está sendo executado diretamente
+[56]     main()                                                                      # Chama a função principal
 ```
 
-- Simula a saída de um comando show running-config.  
-
-**Linhas 16-28:** Estrutura de Metadados  
-
-```Bash
-    Linha[16] : backup_data = {                                                   # Dicionário principal
-    Linha[17] :   "dispositivo": {                                                # Seção de identificação
-    Linha[18] :        "hostname": "R1",                                          # Hostname do dispositivo
-    Linha[19] :        "ip": "192.168.1.1",                                       # IP de gerenciamento
-    Linha[20] :        "tipo": "Cisco IOS"                                        # Plataforma do dispositivo
-    Linha[21] :   },                                                              # Fim do dicionário dispositivo 
-    Linha[22] :   "backup": {                                                     # Seção de metadados
-    Linha[23] :       "config": configuracao.strip().split('\n'),                 # Divide a configuração em linhas
-    Linha[24] :       "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Data/hora formatada
-    Linha[25] :       "usuario": getpass.getuser(),                               # Usuário que executou o backup
-    Linha[26] :       "versao_script": "1.0"                                      # Controle de versão
-    Linha[27] :   }                                                               # Fim do dicionário backup
-    Linha[28] : }                                                                 # Fim do dicionário principal
-```
-**Pontos chave:**
-
-        strip().split('\n') (Linha 23): Converte a configuração em lista removendo espaços extras
-        datetime.now() (Linha 24):      Boa prática para registro de mudanças (exigido em ambientes enterprise)
-        getpass.getuser() (Linha 25):   Auditoria de quem executou o backup  
-
-**Linhas 31-35:** Persistência do Backup  
-
-```Bash
-    Linha[31] : nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"  # f-string Formato do nome: backup_<hostname>_<data>.json
-    Linha[32] : with open(nome_arquivo, 'w') as f:                                                                          # Cria/sobrescreve arquivo
-    Linha[33] :   json.dump(backup_data, f, indent=4)                                                                       # Escreve com formatação
-    Linha[35] : print(f"Backup salvo em: {nome_arquivo}")                                                                   # Feedback para o usuário
-```
-
-**Pontos chave:**  
-
-    Nome dinâmico do arquivo (Linha 31): Padrão backup_R1_20240515.json
-    indent=4 (Linha 33): Formatação legível para humanos (útil para debugging)
-    Gerenciamento seguro de arquivos com with (Linha 32)
+---
+ARRUMAR
 
 ## Exemplo 03: Processamento de logs estruturados
 
