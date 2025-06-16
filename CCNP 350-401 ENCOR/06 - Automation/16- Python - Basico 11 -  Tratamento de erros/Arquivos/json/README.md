@@ -149,78 +149,105 @@ VLANs: [10, 40]
 [24]     print("Erro desconhecido!")                                       # Mensagem informando o erro 
 ```  
 
----
-ARRUMAR
-
 ### Exemplo 02: Backup de Configurações com Metadados
+
+**Objetivo:** Realizar backup de configurações de dispositivos de rede em formato JSON, incluindo metadados como data/hora, usuário que executou o backup e informações do dispositivo. O script gera um arquivo organizado e legível que pode ser usado para auditoria, restore ou versionamento de configurações.  
+
 
 **Script backup_config.py**
 
 ```Python
-    [01] import json
-    [02] from datetime import datetime
-    [03] import getpass
-    [04]
-    [05] # 1. Dados do dispositivo e configuração
-    [06] configuracao = """
-    [07] hostname R1
-    [08] interface GigabitEthernet0/1
-    [09] ip address 192.168.1.1 255.255.255.0
-    [10] !
-    [11] vlan 10
-    [12] name VLAN_GESTAO
-    [13] """
-    [14]
-    [15] # 2. Metadados do backup
-    [16] backup_data = {
-    [17]    "dispositivo": {
-    [18]        "hostname": "R1",
-    [19]        "ip": "192.168.1.1",
-    [20]        "tipo": "Cisco IOS"
-    [21]    },
-    [22]    "backup": {
-    [23]        "config": configuracao.strip().split('\n'),  # Convertendo para lista
-    [24]        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    [25]        "usuario": getpass.getuser(),  # Pega o usuário atual do Linux
-    [26]        "versao_script": "1.0"
-    [27]    }
-    [28] }
-    [29]
-    [30] # 3. Salvar em arquivo JSON
-    [31] nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"
-    [32] with open(nome_arquivo, 'w') as f:
-    [33]    json.dump(backup_data, f, indent=4)  # indent=4 para formatação legível
-    [34]
-    [35] print(f"Backup salvo em: {nome_arquivo}")
+[01] import json
+[02] from datetime import datetime
+[03] import getpass
+[04] import sys
+[05]
+[06] def main():
+[07]     try:
+[08]         # 1. Dados do dispositivo e configuração
+[09]         configuracao = """
+[10]         hostname R1
+[11]         interface GigabitEthernet0/1
+[12]         ip address 192.168.1.1 255.255.255.0
+[13]         !
+[14]         vlan 10
+[15]         name VLAN_GESTAO
+[16]         """
+[17] 
+[18]         # 2. Metadados do backup
+[19]         backup_data = {
+[20]             "dispositivo": {
+[21]                 "hostname": "R1",
+[22]                 "ip": "192.168.1.1",
+[23]                 "tipo": "Cisco IOS"
+[24]             },
+[25]             "backup": {
+[26]                 "config": configuracao.strip().split('\n'),  # Convertendo para lista
+[27]                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+[28]                 "usuario": getpass.getuser(),  # Pega o usuário atual do Linux
+[29]                 "versao_script": "1.0"
+[30]             }
+[31]         }
+[32] 
+[33]         # 3. Salvar em arquivo JSON
+[34]         nome_arquivo = f"backup_{backup_data['dispositivo']['hostname']}_{datetime.now().strftime('%Y%m%d')}.json"
+[35]         
+[36]         try:
+[37]             with open(nome_arquivo, 'w') as f:
+[38]                 json.dump(backup_data, f, indent=4)  # indent=4 para formatação legível
+[39]         except IOError as e:
+[40]             print(f"Erro ao escrever no arquivo: {e}", file=sys.stderr)
+[41]             raise
+[42]         except json.JSONEncodeError as e:
+[43]             print(f"Erro ao serializar dados para JSON: {e}", file=sys.stderr)
+[44]             raise
+[46]         else:
+[47]             print(f"Backup salvo com sucesso em: {nome_arquivo}")
+[48]             
+[49]     except Exception as e:
+[50]         print(f"Erro inesperado durante o backup: {e}", file=sys.stderr)
+[51]         sys.exit(1)
+[52]     finally:
+[53]         print("Operação de backup concluída.")
+[54] 
+[55] if __name__ == "__main__":
+[56]     main()
 ```
 
 **Saída**  
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/json/02$ python3 baclup_config.py 
-    Backup salvo em: backup_R1_20250507.json
-    alcancil@linux:~/automacoes/arquivos/json/02$ cat backup_R1_20250507.json 
-    {
-        "dispositivo": {
-            "hostname": "R1",
-            "ip": "192.168.1.1",
-            "tipo": "Cisco IOS"
-        },
-        "backup": {
-            "config": [
-               "hostname R1",
-                "interface GigabitEthernet0/1",
-                " ip address 192.168.1.1 255.255.255.0",
-                "!",
-                "vlan 10",
-                " name VLAN_GESTAO"
-            ],
-            "timestamp": "2025-05-07 18:12:42",
-            "usuario": "alcancil",
-            "versao_script": "1.0"
-        }
-    }alcancil@linux:~/automacoes/arquivos/json/02$
+alcancil@linux:~/automacoes/erros/json/02$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/json/02$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/json/02$ python3 backup_config.py 
+Backup salvo com sucesso em: backup_R1_20250615.json
+Operação de backup concluída.
+(venv) alcancil@linux:~/automacoes/erros/json/02$ cat backup_R1_20250615.json 
+{
+    "dispositivo": {
+        "hostname": "R1",
+        "ip": "192.168.1.1",
+        "tipo": "Cisco IOS"
+    },
+    "backup": {
+        "config": [
+            "hostname R1",
+            "        interface GigabitEthernet0/1",
+            "        ip address 192.168.1.1 255.255.255.0",
+            "        !",
+            "        vlan 10",
+            "        name VLAN_GESTAO"
+        ],
+        "timestamp": "2025-06-15 21:21:29",
+        "usuario": "alcancil",
+        "versao_script": "1.0"
+    }
+}(venv) alcancil@linux:~/automacoes/erros/json/02$ 
+
 ```
+
+---
+ARRUMAR
 
 **Explicação**  
 
