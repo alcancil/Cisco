@@ -386,82 +386,82 @@ python
 **Script processar_logs.py**
 
 ```Python
-import json
-from datetime import datetime
-import sys
-
-def main():
-    try:
-        # 1. Carregar logs com tratamento de erros de arquivo/JSON
-        try:
-            with open('logs_switch.json', 'r') as f:
-                dados = json.load(f)
-        except FileNotFoundError:
-            print("[ERRO] Arquivo 'logs_switch.json' não encontrado", file=sys.stderr)
-            sys.exit(1)
-        except json.JSONDecodeError as e:
-            print(f"[ERRO] Arquivo JSON inválido: {e}", file=sys.stderr)
-            sys.exit(1)
-        except PermissionError:
-            print("[ERRO] Sem permissão para ler o arquivo", file=sys.stderr)
-            sys.exit(1)
-
-        # 2. Validar estrutura básica do JSON
-        try:
-            required_keys = ['dispositivo', 'tipo', 'logs']
-            if not all(key in dados for key in required_keys):
-                raise ValueError("Estrutura do JSON inválida - chaves obrigatórias ausentes")
-                
-            if not isinstance(dados['logs'], list):
-                raise ValueError("Campo 'logs' deve ser uma lista")
-        except ValueError as e:
-            print(f"[ERRO] {e}", file=sys.stderr)
-            sys.exit(1)
-
-        # 3. Processar logs com tratamento de erros de estrutura
-        try:
-            print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")
-            
-            for log in dados['logs']:
-                if log.get('severidade') in ['ALERTA', 'CRITICO']:
-                    print(f"\n[!] Evento: {log.get('evento', 'DESCONHECIDO').upper()}")
-                    print(f"    - Hora: {log.get('timestamp', 'N/A')}")
-                    print(f"    - Severidade: {log.get('severidade', 'N/A')}")
-                    
-                    # Detalhes dinâmicos com tratamento seguro
-                    detalhes = log.get('detalhes', {})
-                    for chave, valor in detalhes.items():
-                        print(f"    - {chave.replace('_', ' ').title()}: {valor}")
-
-        except AttributeError as e:
-            print(f"[ERRO] Estrutura de log inválida: {e}", file=sys.stderr)
-            sys.exit(1)
-
-        # 4. Gerar estatísticas (com tratamento de possíveis erros)
-        try:
-            total_eventos = len(dados['logs'])
-            criticos = sum(1 for log in dados['logs'] 
-                        if isinstance(log, dict) and 
-                        log.get('severidade') == 'CRITICO')
-            
-            print(f"\n=== RESUMO ===")
-            print(f"Total de eventos: {total_eventos}")
-            print(f"Eventos críticos: {criticos}")
-
-        except Exception as e:
-            print(f"[ERRO] Ao gerar estatísticas: {e}", file=sys.stderr)
-
-    except KeyboardInterrupt:
-        print("\n[INFO] Processamento interrompido pelo usuário", file=sys.stderr)
-        sys.exit(0)
-    except Exception as e:
-        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
-        sys.exit(1)
-    finally:
-        print("\nProcessamento concluído.")
-
-if __name__ == "__main__":
-    main()
+[01] import json
+[02] from datetime import datetime
+[03] import sys
+[04]
+[05] def main():
+[06]     try:
+[07]         # 1. Carregar logs com tratamento de erros de arquivo/JSON
+[08]         try:
+[09]             with open('logs_switch.json', 'r') as f:
+[10]                 dados = json.load(f)
+[11]         except FileNotFoundError:
+[12]             print("[ERRO] Arquivo 'logs_switch.json' não encontrado", file=sys.stderr)
+[13]             sys.exit(1)
+[14]         except json.JSONDecodeError as e:
+[15]             print(f"[ERRO] Arquivo JSON inválido: {e}", file=sys.stderr)
+[16]             sys.exit(1)
+[17]         except PermissionError:
+[18]             print("[ERRO] Sem permissão para ler o arquivo", file=sys.stderr)
+[19]             sys.exit(1)
+[20] 
+[21]         # 2. Validar estrutura básica do JSON
+[22]         try:
+[23]             required_keys = ['dispositivo', 'tipo', 'logs']
+[24]             if not all(key in dados for key in required_keys):
+[25]                 raise ValueError("Estrutura do JSON inválida - chaves obrigatórias ausentes")
+[26]                 
+[27]             if not isinstance(dados['logs'], list):
+[28]                 raise ValueError("Campo 'logs' deve ser uma lista")
+[29]         except ValueError as e:
+[30]             print(f"[ERRO] {e}", file=sys.stderr)
+[31]             sys.exit(1)
+[32] 
+[33]         # 3. Processar logs com tratamento de erros de estrutura
+[34]         try:
+[35]             print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")
+[36]             
+[37]             for log in dados['logs']:
+[38]                 if log.get('severidade') in ['ALERTA', 'CRITICO']:
+[39]                     print(f"\n[!] Evento: {log.get('evento', 'DESCONHECIDO').upper()}")
+[40]                     print(f"    - Hora: {log.get('timestamp', 'N/A')}")
+[41]                     print(f"    - Severidade: {log.get('severidade', 'N/A')}")
+[42]                     
+[43]                     # Detalhes dinâmicos com tratamento seguro
+[44]                     detalhes = log.get('detalhes', {})
+[45]                     for chave, valor in detalhes.items():
+[46]                         print(f"    - {chave.replace('_', ' ').title()}: {valor}")
+[47]
+[48]         except AttributeError as e:
+[49]             print(f"[ERRO] Estrutura de log inválida: {e}", file=sys.stderr)
+[50]             sys.exit(1)
+[51]
+[52]         # 4. Gerar estatísticas (com tratamento de possíveis erros)
+[53]         try:
+[54]            total_eventos = len(dados['logs'])
+[55]            criticos = sum(1 for log in dados['logs'] 
+[56]                         if isinstance(log, dict) and 
+[57]                         log.get('severidade') == 'CRITICO')
+[58]             
+[59]             print(f"\n=== RESUMO ===")
+[60]             print(f"Total de eventos: {total_eventos}")
+[61]             print(f"Eventos críticos: {criticos}")
+[62] 
+[63]         except Exception as e:
+[64]             print(f"[ERRO] Ao gerar estatísticas: {e}", file=sys.stderr)
+[65] 
+[66]     except KeyboardInterrupt:
+[67]         print("\n[INFO] Processamento interrompido pelo usuário", file=sys.stderr)
+[68]         sys.exit(0)
+[69]     except Exception as e:
+[70]         print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+[71]         sys.exit(1)
+[72]     finally:
+[73]         print("\nProcessamento concluído.")
+[74]
+[75] if __name__ == "__main__":
+[76]     main()
 ```
 
 **Saída**
@@ -496,39 +496,149 @@ Processamento concluído.
 (venv) alcancil@linux:~/automacoes/erros/json/03$
 ```
 
+**Explicação**
+
+```Python
+
+Bloco 1: Importações
+
+[01] import json                                                                                  # Manipulação de arquivos JSON
+[02] from datetime import datetime                                                                # Trabalhar com datas/horas (não usado diretamente, mas útil para extensões)
+[03] import sys                                                                                   # Acesso ao stderr e sys.exit()
+
+Bloco 2: Definição da Função Principal
+
+[05] def main():                                                                                  # Função principal encapsulando toda a lógica
+[06]     try:                                                                                     # Bloco principal de tratamento de erros
+
+Bloco 3: Carregamento do Arquivo JSON
+
+[07]                                                                                              # 1. Carregar logs com tratamento de erros de arquivo/JSON
+[08]         try:                                                                                 # Bloco específico para operações de arquivo
+[09]             with open('logs_switch.json', 'r') as f:                                         # Abre o arquivo no modo leitura
+[10]                 dados = json.load(f)                                                         # Carrega e parseia o JSON
+[11]         except FileNotFoundError:                                                            # Erro se arquivo não existe
+[12]             print("[ERRO] Arquivo 'logs_switch.json' não encontrado", file=sys.stderr)       # Função de impressão de mensagens
+                                                                                                    # "[ERRO] Arquivo 'logs_switch.json' não encontrado",  Mensagem de erro descritiva:
+                                                                                                       # - Prefixo [ERRO] para identificação visual
+                                                                                                       # - Nome exato do arquivo procurado
+                                                                                                       # file=sys.stderr - Redirecionamento para o fluxo de erro padrão:
+                                                                                                       # 1. Segregação de saídas (erros vs dados normais)
+                                                                                                       # 2. Permite redirecionamento seletivo (ex: 2> erros.log)
+                                                                                                       # 3. Melhor prática para ferramentas CLI
+              )
+[13]             sys.exit(1)                                                                      # Sai com código de erro
+[14]         except json.JSONDecodeError as e:                                                    # Erro se JSON inválido
+[15]             print(f"[ERRO] Arquivo JSON inválido: {e}", file=sys.stderr)                     # Mensagem de erro - Mesmo estilo da anterior
+[16]             sys.exit(1)
+[17]         except PermissionError:                                                              # Erro de permissão
+[18]             print("[ERRO] Sem permissão para ler o arquivo", file=sys.stderr)                # Mensagem de erro - Mesmo estilo das anteriores
+[19]             sys.exit(1)
+
+Bloco 4: Validação da Estrutura do JSON
+
+[21]                                                                                               # 2. Validar estrutura básica do JSON
+[22]         try:                                                                                  # Bloco de tratamento de erro
+[23]             required_keys = ['dispositivo', 'tipo', 'logs']                                   # Chaves obrigatórias
+[24]             if not all(key in dados for key in required_keys):                                # Verifica presença
+[25]                 raise ValueError("Estrutura do JSON inválida - chaves obrigatórias ausentes") # Instrução para lançar uma exceção manualmente
+                    ValueError(                                                                       # Tipo de exceção específica para valores inválidos:
+                                                                                                      # - Mais específico que Exception genérico
+                                                                                                      # - Adequado para problemas de validação
+                                                                                                      # "Estrutura do JSON inválida - chaves obrigatórias ausentes"  # Mensagem detalhada:
+                                                                                                                     # 1. Contexto do erro (estrutura JSON)
+                                                                                                                     # 2. Natureza do problema (chaves ausentes)
+                                                                                                                     # 3. Autoexplicativo para logs/troubleshooting
+                    )
+              )
+[26]                 
+[27]             if not isinstance(dados['logs'], list):                                           # Verifica tipo da lista de logs
+[28]                 raise ValueError("Campo 'logs' deve ser uma lista")                           # Instrução para lançar uma exceção manualmente no mesmo estilo da anterior
+[29]         except ValueError as e:                                                               # Captura erros de validação
+[30]             print(f"[ERRO] {e}", file=sys.stderr)
+[31]             sys.exit(1)
+
+Bloco 5: Processamento dos Logs
+
+[33]                                                                                                # 3. Processar logs com tratamento de erros de estrutura
+[34]         try:                                                                                   # Bloco de tratamento de erro
+[35]             print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")   # Cabeçalho
+[36]             
+[37]             for log in dados['logs']:                                                          # Itera sobre cada log
+[38]                 if log.get('severidade') in ['ALERTA', 'CRITICO']:                             # Filtra severidade
+[39]                     print(f"\n[!] Evento: {log.get('evento', 'DESCONHECIDO').upper()}")        # Nome do evento
+[40]                     print(f"    - Hora: {log.get('timestamp', 'N/A')}")                        # Timestamp
+[41]                     print(f"    - Severidade: {log.get('severidade', 'N/A')}")                 # Nível severidade
+[42]                     
+[43]                     # Detalhes dinâmicos com tratamento seguro
+[44]                     detalhes = log.get('detalhes', {})                                         # Dicionário vazio se não existir
+[45]                     for chave, valor in detalhes.items():                                      # Itera sobre detalhes
+[46]                         print(f"    - {chave.replace('_', ' ').title()}: {valor}")             # Formata chaves
+[47]
+[48]         except AttributeError as e:                                                            # Erro se estrutura inválida
+[49]             print(f"[ERRO] Estrutura de log inválida: {e}", file=sys.stderr)                   # Mensagem de erro no estilo das anteriores
+[50]             sys.exit(1)                                                                        # Função para encerramento imediato do programa
+                                                                                                         # Código de status de saída:
+                                                                                                         # - Convenção Unix: 0 = sucesso, ≠0 = erro
+                                                                                                         # - 1 indica falha genérica (valores comuns:)
+                                                                                                         #   1: Erro geral
+                                                                                                         #   2: Uso incorreto do comando
+                                                                                                         #   126: Permissão negada
+                                                                                                         #   127: Comando não encontrado
+
+Bloco 6: Geração de Estatísticas
+
+[52]                                                                                                # 4. Gerar estatísticas (com tratamento de possíveis erros)
+[53]         try:                                                                                   # Bloco de tratamento de erro
+[54]            total_eventos = len(dados['logs'])                                                  # Conta total de logs
+[55]            criticos = sum(1 for log in dados['logs']                                           # Conta eventos críticos
+[56]                         if isinstance(log, dict) and                                           # Verifica se é dicionário
+[57]                         log.get('severidade') == 'CRITICO')
+[58]             
+[59]             print(f"\n=== RESUMO ===")                                                         # Seção de resumo
+[60]             print(f"Total de eventos: {total_eventos}")                                        # Função built-in de saída padrão
+                                                                                                    # f"Total de eventos: {total_eventos}" # String formatada (f-string) contendo:
+                                                                                                                                           # - Texto descritivo fixo "Total de eventos: "
+                                                                                                                                           # - Variável {total_eventos} com:
+                                                                                                                                           #   * Valor calculado na linha 54 (len(dados['logs']))
+                                                                                                                                           #   * Representação automática como string
+              )
+[61]             print(f"Eventos críticos: {criticos}")
+[62] 
+[63]         except Exception as e:                                                                 # Erro genérico em estatísticas
+[64]             print(f"[ERRO] Ao gerar estatísticas: {e}", file=sys.stderr)                       # Função de saída de mensagens
+                                                                                                    # f"[ERRO] Ao gerar estatísticas: {e}", # Mensagem de erro formatada:
+                                                                                                                                            # - Prefixo [ERRO] para identificação visual
+                                                                                                                                            # - Contexto claro ("Ao gerar estatísticas")
+                                                                                                                                            # - Detalhe do erro via {e} (exception capturada)
+                                                                                                     # file=sys.stderr                       # Redirecionamento para saída de erros:
+                                                                                                                                             # 1. Separação lógica de fluxos (erros vs dados)
+                                                                                                                                             # 2. Permite tratamento diferenciado em:
+                                                                                                                                             #    - Logs de sistema
+                                                                                                                                             #    - Pipelines Unix (2> erros.log)
+                                                                                                                                             # 3. Melho
+
+Bloco 7: Tratamento Global de Exceções
+
+[66]     except KeyboardInterrupt:                                                                  # Captura CTRL+C
+[67]         print("\n[INFO] Processamento interrompido pelo usuário", file=sys.stderr)
+[68]         sys.exit(0)                                                                            # Sai com código de sucesso
+[69]     except Exception as e:                                                                     # Captura qualquer erro não tratado
+[70]         print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+[71]         sys.exit(1)                                                                            # Sai com código de erro
+[72]     finally:                                                                                   # Sempre executa
+[73]         print("\nProcessamento concluído.")                                                    # Mensagem final
+
+Bloco 8: Execução do Script
+
+[75] if __name__ == "__main__":                                                                     # Verifica se é o módulo principal
+[76]     main()                                                                                     # Chama a função principal
+```
+
+
 ---
 ARRUMAR
 
-**Explicação**
-
-**Linhas 1-2:** Importação de Bibliotecas
-
-```Python
-    [01] import json                      # Manipulação de arquivos JSON
-    [02] from datetime import datetime    # Para cálculo de duração de eventos (não usado aqui, mas preparado para expansão)
-```
-   
-**Linhas 5-6:** Carregamento do Arquivo JSON
-
-```Python
-    [05] with open('logs_switch.json', 'r') as f:  # Abre o arquivo no modo leitura
-    [06]    dados = json.load(f)                   # Faz o parsing do JSON para dicionário Python
-```
-
-**Pontos Chave:**
-    
-    O with garante que o arquivo será fechado automaticamente.
-
-**Linhas 9-14:** Cabeçalho e Filtragem de Eventos
-
-```Python
-    [09] print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")   # Cabeçalho personalizado
-    [10] for log in dados['logs']:                                                          # Itera sobre cada entrada de log
-    [11]    if log['severidade'] in ['ALERTA', 'CRITICO']:                                  # Filtra por severidade (equivalente a "show logging | include CRITICAL")
-    [12]        print(f"\n[!] Evento: {log['evento'].upper()}")                             # Formata o nome do evento
-    [13]        print(f"    - Hora: {log['timestamp']}")                                    # Exibe timestamp 
-    [14]        print(f"    - Severidade: {log['severidade']}")                             # Nível de severidade
-```
 
 **Pontos Chave:**
 
