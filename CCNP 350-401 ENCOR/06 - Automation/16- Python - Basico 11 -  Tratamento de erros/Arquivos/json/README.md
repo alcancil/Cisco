@@ -6,7 +6,7 @@
   - [04 Tratamento de Erros com Arquivos JSON](#04-tratamento-de-erros-com-arquivos-json)
     - [Exemplo 01: Inventário de dispositivos (armazenar atributos complexos como VLANs, interfaces e políticas de QoS.)](#exemplo-01-inventário-de-dispositivos-armazenar-atributos-complexos-como-vlans-interfaces-e-políticas-de-qos)
     - [Exemplo 02: Backup de Configurações com Metadados](#exemplo-02-backup-de-configurações-com-metadados)
-  - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
+    - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
     - [Exemplo 04 : Comparação de configurações](#exemplo-04--comparação-de-configurações)
   - [Resumo do Aprendizado](#resumo-do-aprendizado)
 
@@ -336,12 +336,16 @@ python
 [56]     main()                                                                      # Chama a função principal
 ```
 
----
-ARRUMAR
+### Exemplo 03: Processamento de logs estruturados
 
-## Exemplo 03: Processamento de logs estruturados
+**Objetivo:**  
+  - Ler e processar logs de dispositivos de rede em formato JSON
+  - Filtrar eventos relevantes (ALERTA e CRITICO)
+  - Exibir detalhes técnicos para troubleshooting
+  - Gerar estatísticas de eventos
+  - Tratar possíveis erros durante a execução
 
-Crie o arquivo **logs_switch.json** com o conteúdo:  
+**logs_switch.json**   
 
 ```json
 {
@@ -382,43 +386,93 @@ Crie o arquivo **logs_switch.json** com o conteúdo:
 **Script processar_logs.py**
 
 ```Python
-    [01] import json
-    [02] from datetime import datetime
-    [03]
-    [04] # 1. Carregar logs
-    [05] with open('logs_switch.json', 'r') as f:
-    [06]    dados = json.load(f)
-    [07]
-    [08] # 2. Filtrar eventos críticos
-    [09] print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")
-    [10] for log in dados['logs']:
-    [11]    if log['severidade'] in ['ALERTA', 'CRITICO']:  # Filtro CCNP-relevante
-    [12]        print(f"\n[!] Evento: {log['evento'].upper()}")
-    [13]        print(f"    - Hora: {log['timestamp']}")
-    [14]        print(f"    - Severidade: {log['severidade']}")
-    [15]        
-    [16]        # 3. Detalhes específicos (dinâmico para qualquer evento)
-    [17]        for chave, valor in log['detalhes'].items():
-    [18]            print(f"    - {chave.replace('_', ' ').title()}: {valor}")
-    [19]
-    [20] # 4. Estatísticas (útil para troubleshooting)
-    [21] total_eventos = len(dados['logs'])
-    [22] criticos = sum(1 for log in dados['logs'] if log['severidade'] == 'CRITICO')
-    [23] print(f"\n=== RESUMO ===")
-    [24] print(f"Total de eventos: {total_eventos}")
-    [25] print(f"Eventos críticos: {criticos}")
+import json
+from datetime import datetime
+import sys
+
+def main():
+    try:
+        # 1. Carregar logs com tratamento de erros de arquivo/JSON
+        try:
+            with open('logs_switch.json', 'r') as f:
+                dados = json.load(f)
+        except FileNotFoundError:
+            print("[ERRO] Arquivo 'logs_switch.json' não encontrado", file=sys.stderr)
+            sys.exit(1)
+        except json.JSONDecodeError as e:
+            print(f"[ERRO] Arquivo JSON inválido: {e}", file=sys.stderr)
+            sys.exit(1)
+        except PermissionError:
+            print("[ERRO] Sem permissão para ler o arquivo", file=sys.stderr)
+            sys.exit(1)
+
+        # 2. Validar estrutura básica do JSON
+        try:
+            required_keys = ['dispositivo', 'tipo', 'logs']
+            if not all(key in dados for key in required_keys):
+                raise ValueError("Estrutura do JSON inválida - chaves obrigatórias ausentes")
+                
+            if not isinstance(dados['logs'], list):
+                raise ValueError("Campo 'logs' deve ser uma lista")
+        except ValueError as e:
+            print(f"[ERRO] {e}", file=sys.stderr)
+            sys.exit(1)
+
+        # 3. Processar logs com tratamento de erros de estrutura
+        try:
+            print(f"\n=== LOGS DO DISPOSITIVO {dados['dispositivo']} ({dados['tipo']}) ===")
+            
+            for log in dados['logs']:
+                if log.get('severidade') in ['ALERTA', 'CRITICO']:
+                    print(f"\n[!] Evento: {log.get('evento', 'DESCONHECIDO').upper()}")
+                    print(f"    - Hora: {log.get('timestamp', 'N/A')}")
+                    print(f"    - Severidade: {log.get('severidade', 'N/A')}")
+                    
+                    # Detalhes dinâmicos com tratamento seguro
+                    detalhes = log.get('detalhes', {})
+                    for chave, valor in detalhes.items():
+                        print(f"    - {chave.replace('_', ' ').title()}: {valor}")
+
+        except AttributeError as e:
+            print(f"[ERRO] Estrutura de log inválida: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        # 4. Gerar estatísticas (com tratamento de possíveis erros)
+        try:
+            total_eventos = len(dados['logs'])
+            criticos = sum(1 for log in dados['logs'] 
+                        if isinstance(log, dict) and 
+                        log.get('severidade') == 'CRITICO')
+            
+            print(f"\n=== RESUMO ===")
+            print(f"Total de eventos: {total_eventos}")
+            print(f"Eventos críticos: {criticos}")
+
+        except Exception as e:
+            print(f"[ERRO] Ao gerar estatísticas: {e}", file=sys.stderr)
+
+    except KeyboardInterrupt:
+        print("\n[INFO] Processamento interrompido pelo usuário", file=sys.stderr)
+        sys.exit(0)
+    except Exception as e:
+        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        print("\nProcessamento concluído.")
+
+if __name__ == "__main__":
+    main()
 ```
 
 **Saída**
 
 ```Bash
-alcancil@linux:~/automacoes/arquivos/json/03$ ls -la
-total 12
-drwxrwxr-x 2 alcancil alcancil 4096 mai  8 11:11 .
-drwxrwxr-x 5 alcancil alcancil 4096 mai  8 11:10 ..
--rw-r--r-- 1 root     root      908 mai  8 11:11 logs_switch.json
-alcancil@linux:~/automacoes/arquivos/json/03$ sudo nano processar_logs.py
-alcancil@linux:~/automacoes/arquivos/json/03$ python3 processar_logs.py 
+alcancil@linux:~/automacoes/erros/json/03$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/json/03$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/json/03$ ls
+logs_switch.json  processar_log.json  venv
+(venv) alcancil@linux:~/automacoes/erros/json/03$ mv processar_log.json processar_log.py
+(venv) alcancil@linux:~/automacoes/erros/json/03$ python3 processar_log.py 
 
 === LOGS DO DISPOSITIVO SW1 (Cisco Catalyst 2960) ===
 
@@ -437,8 +491,13 @@ alcancil@linux:~/automacoes/arquivos/json/03$ python3 processar_logs.py
 === RESUMO ===
 Total de eventos: 3
 Eventos críticos: 1
-alcancil@linux:~/automacoes/arquivos/json/03$ 
+
+Processamento concluído.
+(venv) alcancil@linux:~/automacoes/erros/json/03$
 ```
+
+---
+ARRUMAR
 
 **Explicação**
 
