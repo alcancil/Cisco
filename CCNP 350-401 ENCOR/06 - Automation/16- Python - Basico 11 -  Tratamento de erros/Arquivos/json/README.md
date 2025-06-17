@@ -8,6 +8,7 @@
     - [Exemplo 02: Backup de Configurações com Metadados](#exemplo-02-backup-de-configurações-com-metadados)
     - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
     - [Exemplo 04 : Comparação de configurações](#exemplo-04--comparação-de-configurações)
+    - [Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes](#resumo-de-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
   - [Resumo do Aprendizado](#resumo-do-aprendizado)
 
 ## 04 Tratamento de Erros com Arquivos JSON
@@ -963,10 +964,40 @@ if __name__ == "__main__":                                                      
     main()                                                                                   # Chama a função principal
 ```
 
+### Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
 
----
-ARRUMAR
+| Categoria           | Boa Prática                                               | Exemplo no Código                            | Benefício                                  |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tratamento de Erros | Usar blocos try-except específicos para cada tipo de erro | except json.JSONDecodeError, except KeyError | Detecta problemas precisos e evita falhas catastróficas |
+| Capturar Exception como último recurso	except Exception as e:	Garante que nenhum erro passe despercebido
+| Manipulação de Dados	Usar .get() com valor padrão para acessar chaves	dados.get('vlans', [])	Evita KeyError e define fallbacks seguros
+| Converter listas para set() quando necessário	set(antes.get('vlans', []))	Permite operações de comparação eficientes (diferença, união)
+Saída e Logs	Redirecionar erros para sys.stderr	print("[ERRO]", file=sys.stderr)	Separa mensagens de erro de saídas normais para pipelines
+	Padronizar prefixos em mensagens ([ERRO], [AVISO])	print("[!] Interface alterada...")	Facilita filtragem e troubleshooting
+Estrutura de Código	Modularizar funções por responsabilidade	carregar_configuracao(), comparar_textualmente()	Código mais legível e testável
+	Usar if __name__ == "__main__": para execução controlada	Bloco final do script	Permite reutilização como módulo
+Controle de Fluxo	Usar sys.exit() com códigos padronizados (0=sucesso, 1=erro)	sys.exit(1)	Integração com scripts shell e sistemas de monitoramento
+	Implementar finally para ações obrigatórias	print("Processamento concluído")	Garante execução mesmo com falhas
+Validação	Verificar estrutura do JSON antes de processar	if not all(key in dados for key in required_keys):	Evita erros em dados incompletos ou malformados
+	Validar tipos de dados (isinstance(dados['logs'], list))	Linha 27 do Exemplo 03	Previne erros de tipo em operações subsequentes
 
+**Tabela de Códigos de Saída Recomendados**
+Código	Significado	Uso Típico
+0	Sucesso	Execução normal
+1	Erro geral	Falha genérica (arquivo não encontrado, JSON inválido)
+2	Erro de sintaxe/argumentos	Uso incorreto do script
+3	Erro de permissão	Falha ao acessar arquivos
+4	Erro de dados	Validação de schema falhou
+
+Essas práticas são diretamente aplicáveis aos exemplos do arquivo, especialmente:
+
+    Exemplo 01: Demonstra tratamento hierárquico de erros
+
+    Exemplo 02: Ilustra padrões de metadados e saída estruturada
+
+    Exemplo 03: Mostra validação de estrutura e filtragem segura
+
+    Exemplo 04: Exemplifica comparação robusta entre configurações
 
 ## Resumo do Aprendizado 
 
