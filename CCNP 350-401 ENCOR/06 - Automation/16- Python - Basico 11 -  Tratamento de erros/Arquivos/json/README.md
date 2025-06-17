@@ -1007,4 +1007,8 @@ Essas práticas são diretamente aplicáveis aos exemplos do arquivo, especialme
 
     Exemplo 03: Mostra validação de estrutura e filtragem segura
 
-    Exemplo 04: Exemplifica comparação robusta entre configurações
+    Exemplo 04: Exemplifica comparação robusta entre configurações  
+
+**Links para documentação Oficial**  
+
+[!jsonschema](https://pypi.org/project/jsonschema/)
