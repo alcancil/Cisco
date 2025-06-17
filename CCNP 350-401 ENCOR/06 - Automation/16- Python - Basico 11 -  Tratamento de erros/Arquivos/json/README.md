@@ -1011,4 +1011,5 @@ Essas práticas são diretamente aplicáveis aos exemplos do arquivo, especialme
 
 **Links para documentação Oficial**  
 
-[!jsonschema](https://pypi.org/project/jsonschema/)
+* jsonschema   - https://pypi.org/project/jsonschema/
+* unified_diff - https://docs.python.org/3/library/difflib.html
