@@ -8,7 +8,9 @@
     - [Exemplo 02: Backup de Configurações com Metadados](#exemplo-02-backup-de-configurações-com-metadados)
     - [Exemplo 03: Processamento de logs estruturados](#exemplo-03-processamento-de-logs-estruturados)
     - [Exemplo 04 : Comparação de configurações](#exemplo-04--comparação-de-configurações)
-    - [Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes](#resumo-de-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
+  - [Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes](#resumo-de-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
+  - [📌 Boas Práticas para Tratamento de JSON em Automação de Redes](#-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
+  - [🏷️ Códigos de Saída Padrão (Unix)](#️-códigos-de-saída-padrão-unix)
   - [Resumo do Aprendizado](#resumo-do-aprendizado)
 
 ## 04 Tratamento de Erros com Arquivos JSON
@@ -964,22 +966,38 @@ if __name__ == "__main__":                                                      
     main()                                                                                   # Chama a função principal
 ```
 
-### Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
+## Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
+## 📌 Boas Práticas para Tratamento de JSON em Automação de Redes
 
-| Categoria           | Boa Prática                                               | Exemplo no Código                            | Benefício                                  |
-|---------------------|-----------------------------------------------------------|----------------------------------------------|--------------------------------------------|
-| Tratamento de Erros | Usar blocos try-except específicos para cada tipo de erro | except json.JSONDecodeError, except KeyError | Detecta problemas precisos e evita falhas catastróficas |
-| Capturar Exception como último recurso	except Exception as e:	Garante que nenhum erro passe despercebido
-| Manipulação de Dados	Usar .get() com valor padrão para acessar chaves	dados.get('vlans', [])	Evita KeyError e define fallbacks seguros
-| Converter listas para set() quando necessário	set(antes.get('vlans', []))	Permite operações de comparação eficientes (diferença, união)
-Saída e Logs	Redirecionar erros para sys.stderr	print("[ERRO]", file=sys.stderr)	Separa mensagens de erro de saídas normais para pipelines
-	Padronizar prefixos em mensagens ([ERRO], [AVISO])	print("[!] Interface alterada...")	Facilita filtragem e troubleshooting
-Estrutura de Código	Modularizar funções por responsabilidade	carregar_configuracao(), comparar_textualmente()	Código mais legível e testável
-	Usar if __name__ == "__main__": para execução controlada	Bloco final do script	Permite reutilização como módulo
-Controle de Fluxo	Usar sys.exit() com códigos padronizados (0=sucesso, 1=erro)	sys.exit(1)	Integração com scripts shell e sistemas de monitoramento
-	Implementar finally para ações obrigatórias	print("Processamento concluído")	Garante execução mesmo com falhas
-Validação	Verificar estrutura do JSON antes de processar	if not all(key in dados for key in required_keys):	Evita erros em dados incompletos ou malformados
-	Validar tipos de dados (isinstance(dados['logs'], list))	Linha 27 do Exemplo 03	Previne erros de tipo em operações subsequentes
+| Categoria          | Boa Prática                                                                 | Exemplo de Implementação                  | Impacto                                                                 |
+|--------------------|-----------------------------------------------------------------------------|-------------------------------------------|-------------------------------------------------------------------------|
+| **🛡️ Tratamento de Erros**  |                                                                             |                                           |                                                                         |
+|                    | `try-except` específico por tipo de erro                                    | `except json.JSONDecodeError as e:`       | Diagnóstico preciso de falhas                                           |
+|                    | `Exception` como último recurso                                             | `except Exception:`                       | Prevenção contra erros não mapeados                                     |
+| **📊 Manipulação de Dados** |                                                                             |                                           |                                                                         |
+|                    | Uso de `.get()` com valor padrão                                            | `dados.get('vlans', [])`                  | Resiliência contra chaves faltantes                                     |
+|                    | Conversão para `set()` em comparações                                       | `set(config.get('interfaces', {}))`       | Eficiência em operações de conjunto                                     |
+| **📝 Saída e Logs**       |                                                                             |                                           |                                                                         |
+|                    | Erros em `sys.stderr`                                                       | `print("[ERRO]", file=sys.stderr)`        | Separação clara de logs vs. output                                      |
+|                    | Prefixos padronizados (`[+]`, `[-]`, `[!]`)                                | `print("[+] VLAN adicionada")`            | Rastreabilidade de eventos                                              |
+| **⚙️ Estrutura de Código** |                                                                             |                                           |                                                                         |
+|                    | Funções por responsabilidade                                                | `def carregar_config():`                  | Manutenção simplificada                                                 |
+|                    | Bloco `if __name__ == "__main__":`                                          | Uso em todos os exemplos                  | Reusabilidade como módulo                                               |
+| **🔀 Controle de Fluxo**  |                                                                             |                                           |                                                                         |
+|                    | `sys.exit()` com códigos padronizados                                       | `sys.exit(1)` (erro)                      | Integração com sistemas externos                                        |
+|                    | Bloco `finally` para ações obrigatórias                                     | `finally: print("Concluído")`             | Garantia de execução pós-processamento                                  |
+| **✔️ Validação**         |                                                                             |                                           |                                                                         |
+|                    | Verificação de chaves obrigatórias                                          | `if 'hostname' not in config:`            | Prevenção contra dados incompletos                                      |
+|                    | Checagem de tipos com `isinstance()`                                        | `isinstance(vlans, list)`                 | Consistência de estruturas de dados                                     |
+
+## 🏷️ Códigos de Saída Padrão (Unix)
+
+| Código | Símbolo      | Quando Usar                                  |
+|--------|--------------|---------------------------------------------|
+| 0      | ✅ Sucesso   | Execução normal sem erros                   |
+| 1      | ❌ Erro      | Falha genérica (arquivo não encontrado, etc)|
+| 2      | 💡 Aviso     | Uso incorreto de parâmetros                 |
+| 3      | 🔒 Permissão | Falha de acesso a arquivos/dispositivos     |
 
 **Tabela de Códigos de Saída Recomendados**
 Código	Significado	Uso Típico
