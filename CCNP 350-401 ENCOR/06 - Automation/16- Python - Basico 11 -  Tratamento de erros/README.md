@@ -204,7 +204,7 @@ Use **finally** para limpeza:
 - **Erros comuns tratados:** Colunas ausentes, Delimitadores incorretos, etc.
 - **Quando usar:** Quando a estrutura dos dados é tabular (linhas e colunas), e você precisa importar ou exportar para planilhas.
 
-### [Arquivos JSON](Arquivos/json/README.md) Arrumar
+### [Arquivos JSON](Arquivos/json/README.md)
 
 - **Para que serve:** Representar dados estruturados, como inventários hierárquicos ou configurações vindas de APIs (ex: DNA Center, Meraki).
 - **Erros comuns tratados:** JSON malformado, Chaves ausentes, etc.
