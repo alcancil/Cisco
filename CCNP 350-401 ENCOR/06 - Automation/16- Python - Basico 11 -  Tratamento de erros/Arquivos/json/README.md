@@ -967,7 +967,7 @@ if __name__ == "__main__":                                                      
 ### Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
 
 | Categoria           | Boa Prática                                               | Exemplo no Código                            | Benefício                                  |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|---------------------|-----------------------------------------------------------|----------------------------------------------|--------------------------------------------|
 | Tratamento de Erros | Usar blocos try-except específicos para cada tipo de erro | except json.JSONDecodeError, except KeyError | Detecta problemas precisos e evita falhas catastróficas |
 | Capturar Exception como último recurso	except Exception as e:	Garante que nenhum erro passe despercebido
 | Manipulação de Dados	Usar .get() com valor padrão para acessar chaves	dados.get('vlans', [])	Evita KeyError e define fallbacks seguros
