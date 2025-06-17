@@ -875,57 +875,71 @@ Bloco 3: Função comparar_textualmente()
 
 def comparar_textualmente(antes, depois):                                                   # Cria a funcao comparar_textualmente usando como parâmetros antes, depois
     """Gera um diff textual entre as configurações"""
-    try:
-        print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")                                          # Cabeçalho
-        config_antes = json.dumps(antes, indent=2).splitlines()                              # Converte para string formatada
-        config_depois = json.dumps(depois, indent=2).splitlines()  
+    try:                                                                                    # Inicia o bloco de tratamento de erros com try
+        print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")                                         # Cabeçalho
+        config_antes = json.dumps(antes, indent=2).splitlines()                             # Converte o dicionário 'antes' para:
+                                                                                                       # 1. String JSON formatada (indent=2 para identação de 2 espaços)
+                                                                                                       # 2. Divide em linhas (splitlines()) para comparação linha-a-linha
+                                                                                                       # Resultado: Lista de strings pronta para diff textual
+        config_depois = json.dumps(depois, indent=2).splitlines()                           # Converte para string formatada no padrão da linha anteriror
         
-        for line in unified_diff(config_antes, config_depois, 
-                              fromfile='ANTES', tofile='DEPOIS', n=2):
-            print(line)                                                                      # Imprime cada linha do diff
-    except Exception as e:
-        print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)
+        for line in unified_diff(config_antes, config_depois,                               # # Itera sobre as diferenças entre:
+                                                                                            # - config_antes: Lista de linhas da versão anterior
+                                                                                            # - config_depois: Lista de linhas da versão nova
+                              fromfile='ANTES', tofile='DEPOIS', n=2):                      # fromfile='ANTES', - Rótulo para o arquivo origem (exibido no diff)
+                                                                                            # tofile='DEPOIS', - Rótulo para o arquivo destino (exibido no diff)
+                                                                                            # n=2): - Número de linhas de contexto (mostra 2 linhas antes/depois das mudanças)
+            print(line)                                                                     # Imprime cada linha do diff
+    except Exception as e:                                                                  # Captura qualquer exceção não tratada anteriormente
+                                                                                                    # - 'Exception': Classe base para todas as exceções built-in
+                                                                                                    # - 'as e': Armazena o objeto da exceção na variável 'e'
+                                                                                                    # Uso típico em blocos try-except como último recurso
+        print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)                  # Imprime mensagem de erro no mesmo estilo da anterior
 
 Bloco 4: Função comparar_estruturalmente()
-python
 
-def comparar_estruturalmente(antes, depois):
+def comparar_estruturalmente(antes, depois):                                                # Inicio da funcao comparar_estruturalmente tendo como parâmetros as variáveis antes e depois
     """Realiza comparação estrutural das configurações"""
-    try:
-        print("\n=== MUDANÇAS DETECTADAS ===")                                                # Cabeçalho
+    try:                                                                                    # Inicio do bloco de tratamento de erros com Try
+        print("\n=== MUDANÇAS DETECTADAS ===")                                              # Cabeçalho
         
         # Comparação de VLANs
-        try:
-            vlans_antes = set(antes.get('vlans', []))                                         # Usa get() para evitar KeyError
-            vlans_depois = set(depois.get('vlans', []))
+        try:                                                                                # Segundo bloco de tratamento de erros com try aninhado dentrdo do anterior
+            vlans_antes = set(antes.get('vlans', []))                                       # Converte a lista de VLANs para um conjunto (set):
+                                                                                                       # 1. antes.get('vlans', []): Acessa a chave 'vlans' no dicionário 'antes'
+                                                                                                       #    - Se não existir, retorna lista vazia ([]) como valor padrão
+                                                                                                       # 2. set(): Converte a lista para conjunto, permitindo operações matemáticas:
+                                                                                                       #    - Diferença de conjuntos (vlan_removidas = vlans_antes - vlans_depois)
+                                                                                                       #    - União, interseção, etc
+                                                                                                       # Objetivo: Facilitar comparação de VLANs entre configurações
+            vlans_depois = set(depois.get('vlans', []))                                     # Usa get() para evitar KeyError como na linha anterior
             
-            if added := vlans_depois - vlans_antes:                                           # Operação de conjunto
-                print(f"[+] VLANs adicionadas: {added}")
-            if removed := vlans_antes - vlans_depois:
-                print(f"[-] VLANs removidas: {removed}")
-        except AttributeError:
-            print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)
+            if added := vlans_depois - vlans_antes:                                         # Se houver VLANs em vlans_depois que não estão em vlans_antes
+                print(f"[+] VLANs adicionadas: {added}")                                    # Imprime VLANs novas com prefixo [+]
+            if removed := vlans_antes - vlans_depois:                                       # Se houver VLANs em vlans_antes que não estão em vlans_depois
+                print(f"[-] VLANs removidas: {removed}")                                    # Imprime VLANs removidas com prefixo [-]
+        except AttributeError:                                                              # Captura erro se 'vlans' não for lista/dicionário (tratamento de erros com except)
+            print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)             # Mensagem de aviso no estilo das anteriores
 
-        # Comparação de interfaces
-        try:
-            interfaces_antes = antes.get('interfaces', {})
-            interfaces_depois = depois.get('interfaces', {})
+        # Comparação de interfaces      
+        try:                                                                                # Inicio do bloco de tratamento de erros com Try 
+            interfaces_antes = antes.get('interfaces', {})                                  # Obtém interfaces da config anterior (ou dicionário vazio)
+            interfaces_depois = depois.get('interfaces', {})                                # Obtém interfaces da config nova (ou dicionário vazio)
             
-            for interface in interfaces_antes:
-                if interface in interfaces_depois:
-                    for chave in interfaces_antes[interface]:
-                        if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):
-                            print(f"[!] Interface {interface}: {chave} alterado de "
-                                  f"'{interfaces_antes[interface].get(chave)}' para "
-                                  f"'{interfaces_depois[interface].get(chave)}'")
-        except AttributeError:
-            print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)
+            for interface in interfaces_antes:                                              # Itera sobre cada interface da config anterior
+                if interface in interfaces_depois:                                          # Verifica se interface existe na config nova
+                    for chave in interfaces_antes[interface]:                               # Itera sobre cada propriedade da interface
+                        if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):  # Compara valores entre configurações
+                            print(f"[!] Interface {interface}: {chave} alterado de "        # Imprime mudanças
+                                  f"'{interfaces_antes[interface].get(chave)}' para "       # Imprime mudanças
+                                  f"'{interfaces_depois[interface].get(chave)}'")           # Imprime mudanças
+        except AttributeError:                                                              # Captura erro se 'interfaces' não for dicionário
+            print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)        # Mensagem de aviso
             
-    except Exception as e:
-        print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)
+    except Exception as e:                                                                  # Captura qualquer outro erro não previsto
+        print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)               # Imprime erro detalhado
 
 Bloco 5: Função main()
-python
 
 def main():
     try:
