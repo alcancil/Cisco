@@ -690,94 +690,94 @@ Bloco 8: Execução do Script
 **Script comparar_configs.py**
 
 ```Python
-import json
-from difflib import unified_diff
-import sys
-
-def carregar_configuracao(arquivo):
-    """Carrega um arquivo JSON de configuração com tratamento de erros"""
-    try:
-        with open(arquivo, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"[ERRO] Arquivo {arquivo} não encontrado", file=sys.stderr)
-        sys.exit(1)
-    except json.JSONDecodeError as e:
-        print(f"[ERRO] Arquivo {arquivo} com formato JSON inválido: {e}", file=sys.stderr)
-        sys.exit(1)
-    except PermissionError:
-        print(f"[ERRO] Sem permissão para ler o arquivo {arquivo}", file=sys.stderr)
-        sys.exit(1)
-
-def comparar_textualmente(antes, depois):
-    """Gera um diff textual entre as configurações"""
-    try:
-        print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")
-        config_antes = json.dumps(antes, indent=2).splitlines()
-        config_depois = json.dumps(depois, indent=2).splitlines()
-        
-        for line in unified_diff(config_antes, config_depois, 
-                              fromfile='ANTES', tofile='DEPOIS', n=2):
-            print(line)
-    except Exception as e:
-        print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)
-
-def comparar_estruturalmente(antes, depois):
-    """Realiza comparação estrutural das configurações"""
-    try:
-        print("\n=== MUDANÇAS DETECTADAS ===")
-        
-        # Comparação de VLANs
-        try:
-            vlans_antes = set(antes.get('vlans', []))
-            vlans_depois = set(depois.get('vlans', []))
-            
-            if added := vlans_depois - vlans_antes:
-                print(f"[+] VLANs adicionadas: {added}")
-            if removed := vlans_antes - vlans_depois:
-                print(f"[-] VLANs removidas: {removed}")
-        except AttributeError:
-            print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)
-
-        # Comparação de interfaces
-        try:
-            interfaces_antes = antes.get('interfaces', {})
-            interfaces_depois = depois.get('interfaces', {})
-            
-            for interface in interfaces_antes:
-                if interface in interfaces_depois:
-                    for chave in interfaces_antes[interface]:
-                        if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):
-                            print(f"[!] Interface {interface}: {chave} alterado de "
-                                  f"'{interfaces_antes[interface].get(chave)}' para "
-                                  f"'{interfaces_depois[interface].get(chave)}'")
-        except AttributeError:
-            print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)
-            
-    except Exception as e:
-        print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)
-
-def main():
-    try:
-        # Carregar configurações
-        antes = carregar_configuracao('config_antes.json')
-        depois = carregar_configuracao('config_depois.json')
-        
-        # Realizar comparações
-        comparar_textualmente(antes, depois)
-        comparar_estruturalmente(antes, depois)
-        
-    except KeyboardInterrupt:
-        print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)
-        sys.exit(0)
-    except Exception as e:
-        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
-        sys.exit(1)
-    finally:
-        print("\nAnálise concluída.")
-
-if __name__ == "__main__":
-    main()
+[01] import json
+[02] from difflib import unified_diff
+[03] import sys
+[04] 
+[05] def carregar_configuracao(arquivo):
+[06]     """Carrega um arquivo JSON de configuração com tratamento de erros"""
+[07]     try:
+[08]         with open(arquivo, 'r') as f:
+[09]             return json.load(f)
+[10]     except FileNotFoundError:
+[11]         print(f"[ERRO] Arquivo {arquivo} não encontrado", file=sys.stderr)
+[12]         sys.exit(1)
+[13]     except json.JSONDecodeError as e:
+[14]         print(f"[ERRO] Arquivo {arquivo} com formato JSON inválido: {e}", file=sys.stderr)
+[15]         sys.exit(1)
+[16]     except PermissionError:
+[17]         print(f"[ERRO] Sem permissão para ler o arquivo {arquivo}", file=sys.stderr)
+[18]         sys.exit(1)
+[19] 
+[20] def comparar_textualmente(antes, depois):
+[21]     """Gera um diff textual entre as configurações"""
+[22]     try:
+[23]         print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")
+[24]         config_antes = json.dumps(antes, indent=2).splitlines()
+[25]         config_depois = json.dumps(depois, indent=2).splitlines()
+[26]         
+[27]         for line in unified_diff(config_antes, config_depois, 
+[28]                                fromfile='ANTES', tofile='DEPOIS', n=2):
+[29]             print(line)
+[30]     except Exception as e:
+[31]         print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)
+[32] 
+[33] def comparar_estruturalmente(antes, depois):
+[34]     """Realiza comparação estrutural das configurações"""
+[35]     try:
+[36]         print("\n=== MUDANÇAS DETECTADAS ===")
+[37]         
+[38]         # Comparação de VLANs
+[39]         try:
+[40]             vlans_antes = set(antes.get('vlans', []))
+[41]             vlans_depois = set(depois.get('vlans', []))
+[42]             
+[43]             if added := vlans_depois - vlans_antes:
+[43]                print(f"[+] VLANs adicionadas: {added}")
+[44]             if removed := vlans_antes - vlans_depois:
+[45]                 print(f"[-] VLANs removidas: {removed}")
+[46]         except AttributeError:
+[47]             print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)
+[48] 
+[49]        # Comparação de interfaces
+[50]        try:
+[51]             interfaces_antes = antes.get('interfaces', {})
+[52]             interfaces_depois = depois.get('interfaces', {})
+[53]             
+[54]             for interface in interfaces_antes:
+[55]                 if interface in interfaces_depois:
+[56]                     for chave in interfaces_antes[interface]:
+[57]                         if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):
+[58]                             print(f"[!] Interface {interface}: {chave} alterado de "
+[59]                                   f"'{interfaces_antes[interface].get(chave)}' para "
+[60]                                   f"'{interfaces_depois[interface].get(chave)}'")
+[70]         except AttributeError:
+[71]             print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)
+[72]            
+[73]     except Exception as e:
+[74]         print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)
+[75] 
+[76] def main():
+[77]     try:
+[78]         # Carregar configurações
+[79]         antes = carregar_configuracao('config_antes.json')
+[80]         depois = carregar_configuracao('config_depois.json')
+[81]        
+[82]         # Realizar comparações
+[83]         comparar_textualmente(antes, depois)
+[84]         comparar_estruturalmente(antes, depois)
+[85]        
+[86]     except KeyboardInterrupt:
+[87]         print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)
+[88]         sys.exit(0)
+[89]     except Exception as e:
+[90]         print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+[91]         sys.exit(1)
+[92]     finally:
+[93]         print("\nAnálise concluída.")
+[94] 
+[95] if __name__ == "__main__":
+[96]     main()
 ```
 
 **Saída:**  
