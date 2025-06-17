@@ -11,7 +11,6 @@
   - [Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes](#resumo-de-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
   - [📌 Boas Práticas para Tratamento de JSON em Automação de Redes](#-boas-práticas-para-tratamento-de-json-em-automação-de-redes)
   - [🏷️ Códigos de Saída Padrão (Unix)](#️-códigos-de-saída-padrão-unix)
-  - [Resumo do Aprendizado](#resumo-do-aprendizado)
 
 ## 04 Tratamento de Erros com Arquivos JSON
 
@@ -966,7 +965,8 @@ if __name__ == "__main__":                                                      
     main()                                                                                   # Chama a função principal
 ```
 
-## Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
+## Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes  
+
 ## 📌 Boas Práticas para Tratamento de JSON em Automação de Redes
 
 | Categoria                   | Boa Prática                              | Exemplo de Implementação                  | Impacto                                                        |
@@ -977,18 +977,18 @@ if __name__ == "__main__":                                                      
 | **📊 Manipulação de Dados** |                                          |                                            |                                                               |
 |                              | Uso de `.get()` com valor padrão         | `dados.get('vlans', [])`                  | Resiliência contra chaves faltantes                            |
 |                              | Conversão para `set()` em comparações    | `set(config.get('interfaces', {}))`       | Eficiência em operações de conjunto                            |
-| **📝 Saída e Logs**         |                                            |                                           |                                                               |
-|                    | Erros em `sys.stderr`                             | `print("[ERRO]", file=sys.stderr)`        | Separação clara de logs vs. output                           |
-|                    | Prefixos padronizados (`[+]`, `[-]`, `[!]`)                                | `print("[+] VLAN adicionada")`            | Rastreabilidade de eventos                                              |
-| **⚙️ Estrutura de Código** |                                                                             |                                           |                                                                         |
-|                    | Funções por responsabilidade                                                | `def carregar_config():`                  | Manutenção simplificada                                                 |
-|                    | Bloco `if __name__ == "__main__":`                                          | Uso em todos os exemplos                  | Reusabilidade como módulo                                               |
-| **🔀 Controle de Fluxo**  |                                                                             |                                           |                                                                         |
-|                    | `sys.exit()` com códigos padronizados                                       | `sys.exit(1)` (erro)                      | Integração com sistemas externos                                        |
-|                    | Bloco `finally` para ações obrigatórias                                     | `finally: print("Concluído")`             | Garantia de execução pós-processamento                                  |
-| **✔️ Validação**         |                                                                             |                                           |                                                                         |
-|                    | Verificação de chaves obrigatórias                                          | `if 'hostname' not in config:`            | Prevenção contra dados incompletos                                      |
-|                    | Checagem de tipos com `isinstance()`                                        | `isinstance(vlans, list)`                 | Consistência de estruturas de dados                                     |
+| **📝 Saída e Logs**         |                                          |                                            |                                                                |
+|                              | Erros em `sys.stderr`                   | `print("[ERRO]", file=sys.stderr)`          | Separação clara de logs vs. output                            |
+|                              | Prefixos padronizados (`[+]`, `[-]`, `[!]`) | `print("[+] VLAN adicionada")`          | Rastreabilidade de eventos                                    |
+| **⚙️ Estrutura de Código**  |                                         |                                             |                                                               |
+|                              | Funções por responsabilidade            | `def carregar_config():`                    | Manutenção simplificada                                       |
+|                              | Bloco `if __name__ == "__main__":`      | Uso em todos os exemplos                    | Reusabilidade como módulo                                     |
+| **🔀 Controle de Fluxo**    |                                          |                                             |                                                               |
+|                              | `sys.exit()` com códigos padronizados   | `sys.exit(1)` (erro)                        | Integração com sistemas externos                              |
+|                              | Bloco `finally` para ações obrigatórias | `finally: print("Concluído")`               | Garantia de execução pós-processamento                        |
+| **✔️ Validação**            |                                          |                                             |                                                               |
+|                              | Verificação de chaves obrigatórias       | `if 'hostname' not in config:`              | Prevenção contra dados incompletos                           |
+|                              | Checagem de tipos com `isinstance()`     | `isinstance(vlans, list)`                   | Consistência de estruturas de dados                          |
 
 ## 🏷️ Códigos de Saída Padrão (Unix)
 
@@ -999,14 +999,6 @@ if __name__ == "__main__":                                                      
 | 2      | 💡 Aviso     | Uso incorreto de parâmetros                 |
 | 3      | 🔒 Permissão | Falha de acesso a arquivos/dispositivos     |
 
-**Tabela de Códigos de Saída Recomendados**
-Código	Significado	Uso Típico
-0	Sucesso	Execução normal
-1	Erro geral	Falha genérica (arquivo não encontrado, JSON inválido)
-2	Erro de sintaxe/argumentos	Uso incorreto do script
-3	Erro de permissão	Falha ao acessar arquivos
-4	Erro de dados	Validação de schema falhou
-
 Essas práticas são diretamente aplicáveis aos exemplos do arquivo, especialmente:
 
     Exemplo 01: Demonstra tratamento hierárquico de erros
@@ -1016,37 +1008,3 @@ Essas práticas são diretamente aplicáveis aos exemplos do arquivo, especialme
     Exemplo 03: Mostra validação de estrutura e filtragem segura
 
     Exemplo 04: Exemplifica comparação robusta entre configurações
-
-## Resumo do Aprendizado 
-
-```Bash
-1. JSON é o padrão para automação Cisco
-
-    Substitui XML em APIs modernas (DNA Center, Meraki)
-
-    Estrutura ideal para configurações de rede (VLANs, ACLs, interfaces)
-
-2. Mapeamento direto entre JSON e Python
-
-    Objetos JSON → Dicionários Python
-
-    Arrays JSON → Listas Python
-
-    Facilita manipulação de configurações
-
-3. Casos de uso essenciais:
-
-    Backup de configurações com metadados (timestamp, usuário)  
-
-    Comparação de configs (diff textual e análise estruturada)  
-
-    Processamento de logs com filtros por severidade
-
-4. Técnicas CCNP-relevantes:
-
-    Simular show running-config e diff via Python
-
-    Identificar mudanças em VLANs/interfaces
-
-    Extrair eventos críticos de logs (como show logging | include CRITICAL)
-```
