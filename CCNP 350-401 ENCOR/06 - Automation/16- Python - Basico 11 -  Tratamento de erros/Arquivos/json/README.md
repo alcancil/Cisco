@@ -830,9 +830,6 @@ Análise concluída.
 
 **Explicação**  
 
----
-ARRUMAR
-
 ```Python
 
 Bloco 1: Importações
@@ -944,29 +941,32 @@ Bloco 5: Função main()
 def main():
     try:
         # Carregar configurações
-        antes = carregar_configuracao('config_antes.json')                                            # Chama função de carregamento
-        depois = carregar_configuracao('config_depois.json')
+        antes = carregar_configuracao('config_antes.json')                                  # Chama função de carregamento
+        depois = carregar_configuracao('config_depois.json')                               # Carrega e retorna o conteúdo do arquivo JSON de configuração "depois                       
         
         # Realizar comparações
-        comparar_textualmente(antes, depois)                                                          # Diferenças textuais
-        comparar_estruturalmente(antes, depois)                                                       # Análise estrutural
+        comparar_textualmente(antes, depois)                                                 # Diferenças textuais
+        comparar_estruturalmente(antes, depois)                                              # Análise estrutural
         
     except KeyboardInterrupt:  # Captura Ctrl+C
-        print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)
-        sys.exit(0)                                                                                   # Sai com código de sucesso
-    except Exception as e:                                                                            # Erro genérico
-        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
-        sys.exit(1)                                                                                   # Sai com código de erro
-    finally:                                                                                          # Sempre executa
-        print("\nAnálise concluída.")                                                                 # Mensagem final
+        print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)                # Mensagem de erro em estilo amigável         
+        sys.exit(0)                                                                          # Sai com código de sucesso
+    except Exception as e:                                                                   # Erro genérico
+        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)                                        # Mensagem de erro em estilo amigável 
+        sys.exit(1)                                                                          # Sai com código de erro
+    finally:                                                                                 # Sempre executa
+        print("\nAnálise concluída.")                                                        # Mensagem final
 
 Bloco 6: Execução principal
-python
 
-if __name__ == "__main__":                                                                            # Verifica se é o módulo principal
-    main()                                                                                            # Chama a função principal
+if __name__ == "__main__":                                                                   # Verifica se é o módulo principal
+    main()                                                                                   # Chama a função principal
 ```
-  
+
+
+---
+ARRUMAR
+
 
 ## Resumo do Aprendizado 
 
