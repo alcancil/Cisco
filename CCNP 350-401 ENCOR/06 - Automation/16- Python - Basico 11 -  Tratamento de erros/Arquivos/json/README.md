@@ -635,64 +635,15 @@ Bloco 8: Execução do Script
 [76]     main()                                                                                     # Chama a função principal
 ```
 
-
----
-ARRUMAR
-
-
-**Pontos Chave:**
-
-        Filtro por severidade simula comandos Cisco como show logging | include ALERTA
-
-        Timestamp no formato ISO 8601 (padrão para ferramentas Cisco)
-
-**Linhas 17-18:** Processamento Dinâmico de Detalhes
-
-```Python
-    [17]        for chave, valor in log['detalhes'].items():                    # Itera sobre todos os pares chave-valor
-    [18]            print(f"    - {chave.replace('_', ' ').title()}: {valor}")  # Formatação automática (ex: "acao" → "Acao")
-```
-   
- **Pontos Chave :**
-
-    Técnica avançada:
-
-        Processa qualquer campo de detalhes sem hardcoding - essencial para logs complexos  
-                 
-        replace('_', ' '): Converte snake_case para texto legível
-
-        title(): Capitaliza a primeira letra (ex: "interface" → "Interface")
-
-
-    **OBS:** hardcoding: em desenvolvimento de software, "hard code" (ou "codificação rígida") refere-se à prática de inserir dados diretamente no código-fonte do programa, em vez de obtê-los de fontes externas ou gerá-los em tempo de execução. Isso significa que se precisar alterar esses dados, é necessário modificar o código e recompilar o programa
-
-    **OBS2:** Snake case é uma convenção de nomenclatura em programação onde as palavras de um nome (variável, função, etc.) são separadas por um sublinhado ( _ ), e todas as letras são minúsculas. É usado em várias linguagens, principalmente em Python, para melhorar a legibilidade do código. 
-        Exemplo:
-            snake_case (um nome de variável em snake case)
-            funcao_importante (uma função em snake case)
-            tabela_de_usuarios (nome de uma tabela em snake case) 
-
-**Linhas 21-25:** Estatísticas (Troubleshooting)
-
-```Python
-    [21] total_eventos = len(dados['logs'])                                            # Conta todos os logs
-    [22] criticos = sum(1 for log in dados['logs'] if log['severidade'] == 'CRITICO')  # Conta eventos críticos
-    [23] print(f"\n=== RESUMO ===")                                                    # Imprime cabeçalho === RESUMO ===
-    [24] print(f"Total de eventos: {total_eventos}")                                   # Exemplo: 3
-    [25] print(f"Eventos críticos: {criticos}")                                        # Exemplo: 1
-```
-
-**Pontos Chave**
-
-        sum() com generator expression: Técnica python para contagem
-
-        Estatísticas similares às geradas por show logging summary em IOS-XE  
-
 ### Exemplo 04 : Comparação de configurações  
 
-- Criar Arquivos de Configuração  
+**Objetivo:**
+  - Comparar versões anteriores e posteriores de configurações de dispositivos
+  - Identificar mudanças textuais e estruturais
+  - Gerar relatório detalhado de alterações
+  - Tratar erros de forma robusta para uso em produção
 
-Criar o arquivo **config_antes.json** com o conteúdo:  
+**config_antes.json**    
 
 ```json
 {
@@ -714,7 +665,7 @@ Criar o arquivo **config_antes.json** com o conteúdo:
 }
 ```
 
-Criar o arquivo **config_depois.json** com o conteúdo: 
+**config_depois.json**   
 
 ```json
 {
@@ -739,135 +690,269 @@ Criar o arquivo **config_depois.json** com o conteúdo:
 **Script comparar_configs.py**
 
 ```Python
-    [01] import json
-    [02] from difflib import unified_diff
-    [03]
-    [04] # 1. Carregar configurações
-    [05] with open('config_antes.json') as f:
-    [06]    antes = json.load(f)
-    [07]
-    [08] with open('config_depois.json') as f:
-    [09]    depois = json.load(f)
-    [10]
-    [11] # 2. Comparação textual (simulando 'diff' do Cisco)
-    [12] print("=== DIFF ENTRE CONFIGURAÇÕES ===")
-    [13] config_antes_str = json.dumps(antes, indent=2).splitlines()
-    [14] config_depois_str = json.dumps(depois, indent=2).splitlines()
-    [15]
-    [16] for line in unified_diff(config_antes_str, config_depois_str, fromfile='ANTES', tofile='DEPOIS', n=2):
-    [17]    print(line)
-    [18]
-    [19] # 3. Comparação estruturada (CCNP-relevante)
-    [20] print("\n=== MUDANÇAS DETECTADAS ===")
-    [21]
-    [22] # 3.1 Comparar VLANs
-    [23] vlan_removidas = set(antes['vlans']) - set(depois['vlans'])
-    [24] vlan_adicionadas = set(depois['vlans']) - set(antes['vlans'])
-    [25]
-    [26] if vlan_adicionadas:
-    [27]    print(f"[+] VLANs adicionadas: {vlan_adicionadas}")
-    [28] if vlan_removidas:
-    [29]    print(f"[-] VLANs removidas: {vlan_removidas}")
-    [30]
-    [31] # 3.2 Comparar interfaces
-    [31] for interface in antes['interfaces']:
-    [32]    if interface in depois['interfaces']:
-    [33]        for chave in antes['interfaces'][interface]:
-    [34]            if antes['interfaces'][interface][chave] != depois['interfaces'][interface][chave]:
-    [35]                print(f"[!] Interface {interface}: {chave} alterado de '{antes['interfaces'][interface][chave]}' para '{depois['interfaces'][interface][chave]}'")
+import json
+from difflib import unified_diff
+import sys
+
+def carregar_configuracao(arquivo):
+    """Carrega um arquivo JSON de configuração com tratamento de erros"""
+    try:
+        with open(arquivo, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"[ERRO] Arquivo {arquivo} não encontrado", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"[ERRO] Arquivo {arquivo} com formato JSON inválido: {e}", file=sys.stderr)
+        sys.exit(1)
+    except PermissionError:
+        print(f"[ERRO] Sem permissão para ler o arquivo {arquivo}", file=sys.stderr)
+        sys.exit(1)
+
+def comparar_textualmente(antes, depois):
+    """Gera um diff textual entre as configurações"""
+    try:
+        print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")
+        config_antes = json.dumps(antes, indent=2).splitlines()
+        config_depois = json.dumps(depois, indent=2).splitlines()
+        
+        for line in unified_diff(config_antes, config_depois, 
+                              fromfile='ANTES', tofile='DEPOIS', n=2):
+            print(line)
+    except Exception as e:
+        print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)
+
+def comparar_estruturalmente(antes, depois):
+    """Realiza comparação estrutural das configurações"""
+    try:
+        print("\n=== MUDANÇAS DETECTADAS ===")
+        
+        # Comparação de VLANs
+        try:
+            vlans_antes = set(antes.get('vlans', []))
+            vlans_depois = set(depois.get('vlans', []))
+            
+            if added := vlans_depois - vlans_antes:
+                print(f"[+] VLANs adicionadas: {added}")
+            if removed := vlans_antes - vlans_depois:
+                print(f"[-] VLANs removidas: {removed}")
+        except AttributeError:
+            print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)
+
+        # Comparação de interfaces
+        try:
+            interfaces_antes = antes.get('interfaces', {})
+            interfaces_depois = depois.get('interfaces', {})
+            
+            for interface in interfaces_antes:
+                if interface in interfaces_depois:
+                    for chave in interfaces_antes[interface]:
+                        if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):
+                            print(f"[!] Interface {interface}: {chave} alterado de "
+                                  f"'{interfaces_antes[interface].get(chave)}' para "
+                                  f"'{interfaces_depois[interface].get(chave)}'")
+        except AttributeError:
+            print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)
+            
+    except Exception as e:
+        print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)
+
+def main():
+    try:
+        # Carregar configurações
+        antes = carregar_configuracao('config_antes.json')
+        depois = carregar_configuracao('config_depois.json')
+        
+        # Realizar comparações
+        comparar_textualmente(antes, depois)
+        comparar_estruturalmente(antes, depois)
+        
+    except KeyboardInterrupt:
+        print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)
+        sys.exit(0)
+    except Exception as e:
+        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        print("\nAnálise concluída.")
+
+if __name__ == "__main__":
+    main()
 ```
 
 **Saída:**  
 
 ```Bash
-    alcancil@linux:~/automacoes/arquivos/json/04$ python3 comparar_configs.py 
-    === DIFF ENTRE CONFIGURAÇÕES ===
-    --- ANTES
+alcancil@linux:~/automacoes/erros/json/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/erros/json/04$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/erros/json/04$ python3 comparar_configs.py 
 
-    +++ DEPOIS
+=== DIFF ENTRE CONFIGURAÇÕES ===
+--- ANTES
 
-    @@ -4,17 +4,18 @@
++++ DEPOIS
 
-         "GigabitEthernet0/1": {
-           "status": "up",
-    -      "vlan": 10,
-    +      "vlan": 100,
-           "ip": "192.168.1.1/24"
-         },
-         "GigabitEthernet0/2": {
-    -      "status": "down",
-    +      "status": "up",
-           "vlan": 20,
-    -      "ip": null
-    +      "ip": "192.168.2.1/24"
-         }
-       },
-       "vlans": [
-         10,
-    -    20
-    +    20,
-    +    100
-       ],
-    -  "last_change": "2024-05-10 09:00:00"
-    +  "last_change": "2024-05-15 14:30:00"
+@@ -4,17 +4,18 @@
+
+     "GigabitEthernet0/1": {
+       "status": "up",
+-      "vlan": 10,
++      "vlan": 100,
+       "ip": "192.168.1.1/24"
+     },
+     "GigabitEthernet0/2": {
+-      "status": "down",
++      "status": "up",
+       "vlan": 20,
+-      "ip": null
++      "ip": "192.168.2.1/24"
      }
+   },
+   "vlans": [
+     10,
+-    20
++    20,
++    100
+   ],
+-  "last_change": "2024-05-10 09:00:00"
++  "last_change": "2024-05-15 14:30:00"
+ }
 
-    === MUDANÇAS DETECTADAS ===
-    [+] VLANs adicionadas: {100}
-    [!] Interface GigabitEthernet0/1: vlan alterado de '10' para '100'
-    [!] Interface GigabitEthernet0/2: status alterado de 'down' para 'up'
-    [!] Interface GigabitEthernet0/2: ip alterado de 'None' para '192.168.2.1/24'
-    alcancil@linux:~/automacoes/arquivos/json/04$ 
-```  
+=== MUDANÇAS DETECTADAS ===
+[+] VLANs adicionadas: {100}
+[!] Interface GigabitEthernet0/1: vlan alterado de '10' para '100'
+[!] Interface GigabitEthernet0/2: status alterado de 'down' para 'up'
+[!] Interface GigabitEthernet0/2: ip alterado de 'None' para '192.168.2.1/24'
+
+Análise concluída.
+(venv) alcancil@linux:~/automacoes/erros/json/04$ 
+```
 
 **Explicação**  
 
-Seção 1: Importação de Bibliotecas
+---
+ARRUMAR
+
 ```Python
-    Linha [01] import json                      # Importa o módulo para trabalhar com JSON
-    Linha [02] from difflib import unified_diff # Importa a função para comparação de diferenças
+
+Bloco 1: Importações
+
+import json                                                                                 # Manipulação de arquivos JSON
+from difflib import unified_diff                                                            # Geração de diff entre textos
+import sys                                                                                  # Acesso a stderr e sys.exit()
+
+Bloco 2: Função carregar_configuracao()
+
+def carregar_configuracao(arquivo):                                                         # Cria a função carregar_configuracao e usa como parâmetro a variável arquivo 
+    """Carrega um arquivo JSON de configuração com tratamento de erros"""
+    try:
+        with open(arquivo, 'r') as f:                                                       # Abre arquivo no modo leitura
+            return json.load(f)                                                             # Carrega e parseia o JSON
+    except FileNotFoundError:                                                               # Erro se arquivo não existe
+        print(f"[ERRO] Arquivo {arquivo} não encontrado", file=sys.stderr)                  # Função para imprimir mensagem no console
+                                                                                            # f"[ERRO] Arquivo {arquivo} não encontrado", - Mensagem de erro formatada:
+                                                                                                     # - [ERRO] como prefixo identificador
+                                                                                                     # - Nome do arquivo dinâmico via {arquivo}
+                                                                                            # file=sys.stderr - Redireciona para saída padrão de erros:
+                                                                                                              # 1. Permite separar logs de erro de saídas normais
+                                                                                                              # 2. Facilita redirecionamento (ex: 2> erros.log)
+                                                                                                              # 3. Segue convenções Unix para ferramentas CLI
+        sys.exit(1)                                                                         # Encerra o programa imediatamente com código de erro 1 (falha genérica)
+                                                                                            # Convenções comuns de códigos de saída:
+                                                                                                              # - 0: Sucesso
+                                                                                                              # - 1: Erro geral (usado aqui)
+                                                                                                              # - 2: Uso incorreto de comando
+                                                                                                              # - 3-127: Outros erros específicos (padrão Unix)
+                                                                                                              # Útil para scripts em pipelines (ex: if [ $? -ne 0 ]; then...)
+    except json.JSONDecodeError as e:                                                       # Erro se JSON inválido
+        print(f"[ERRO] Arquivo {arquivo} com formato JSON inválido: {e}", file=sys.stderr)  # Imprime mensagem de erro no mesmo estilo da anterior
+        sys.exit(1)                                                                         # Sai com código de erro no estilo do anterior
+    except PermissionError:                                                                 # Erro de permissão
+        print(f"[ERRO] Sem permissão para ler o arquivo {arquivo}", file=sys.stderr)        # Imprime mensagem de erro no mesmo estilo da anterior
+        sys.exit(1)                                                                         # Sai com código de erro no estilo do anterior
+
+Bloco 3: Função comparar_textualmente()
+
+def comparar_textualmente(antes, depois):                                                   # Cria a funcao comparar_textualmente usando como parâmetros antes, depois
+    """Gera um diff textual entre as configurações"""
+    try:
+        print("\n=== DIFF ENTRE CONFIGURAÇÕES ===")                                          # Cabeçalho
+        config_antes = json.dumps(antes, indent=2).splitlines()                              # Converte para string formatada
+        config_depois = json.dumps(depois, indent=2).splitlines()  
+        
+        for line in unified_diff(config_antes, config_depois, 
+                              fromfile='ANTES', tofile='DEPOIS', n=2):
+            print(line)                                                                      # Imprime cada linha do diff
+    except Exception as e:
+        print(f"[ERRO] Falha na comparação textual: {e}", file=sys.stderr)
+
+Bloco 4: Função comparar_estruturalmente()
+python
+
+def comparar_estruturalmente(antes, depois):
+    """Realiza comparação estrutural das configurações"""
+    try:
+        print("\n=== MUDANÇAS DETECTADAS ===")                                                # Cabeçalho
+        
+        # Comparação de VLANs
+        try:
+            vlans_antes = set(antes.get('vlans', []))                                         # Usa get() para evitar KeyError
+            vlans_depois = set(depois.get('vlans', []))
+            
+            if added := vlans_depois - vlans_antes:                                           # Operação de conjunto
+                print(f"[+] VLANs adicionadas: {added}")
+            if removed := vlans_antes - vlans_depois:
+                print(f"[-] VLANs removidas: {removed}")
+        except AttributeError:
+            print("[AVISO] Campo 'vlans' ausente ou inválido", file=sys.stderr)
+
+        # Comparação de interfaces
+        try:
+            interfaces_antes = antes.get('interfaces', {})
+            interfaces_depois = depois.get('interfaces', {})
+            
+            for interface in interfaces_antes:
+                if interface in interfaces_depois:
+                    for chave in interfaces_antes[interface]:
+                        if interfaces_antes[interface].get(chave) != interfaces_depois[interface].get(chave):
+                            print(f"[!] Interface {interface}: {chave} alterado de "
+                                  f"'{interfaces_antes[interface].get(chave)}' para "
+                                  f"'{interfaces_depois[interface].get(chave)}'")
+        except AttributeError:
+            print("[AVISO] Campo 'interfaces' ausente ou inválido", file=sys.stderr)
+            
+    except Exception as e:
+        print(f"[ERRO] Falha na comparação estrutural: {e}", file=sys.stderr)
+
+Bloco 5: Função main()
+python
+
+def main():
+    try:
+        # Carregar configurações
+        antes = carregar_configuracao('config_antes.json')                                            # Chama função de carregamento
+        depois = carregar_configuracao('config_depois.json')
+        
+        # Realizar comparações
+        comparar_textualmente(antes, depois)                                                          # Diferenças textuais
+        comparar_estruturalmente(antes, depois)                                                       # Análise estrutural
+        
+    except KeyboardInterrupt:  # Captura Ctrl+C
+        print("\n[INFO] Execução interrompida pelo usuário", file=sys.stderr)
+        sys.exit(0)                                                                                   # Sai com código de sucesso
+    except Exception as e:                                                                            # Erro genérico
+        print(f"[ERRO CRÍTICO] {e}", file=sys.stderr)
+        sys.exit(1)                                                                                   # Sai com código de erro
+    finally:                                                                                          # Sempre executa
+        print("\nAnálise concluída.")                                                                 # Mensagem final
+
+Bloco 6: Execução principal
+python
+
+if __name__ == "__main__":                                                                            # Verifica se é o módulo principal
+    main()                                                                                            # Chama a função principal
 ```
-
-Seção 2: Carregamento dos Arquivos de Configuração
-
-```Python
-    Linha [04]                                       # 1. Carregar configurações
-    Linha [05] with open('config_antes.json') as f:  # Abre o arquivo de configuração "antes"
-    Linha [06]    antes = json.load(f)               # Carrega o conteúdo JSON para a variável 'antes'
-    Linha [08] with open('config_depois.json') as f: # Abre o arquivo de configuração "depois"
-    Linha [09]    depois = json.load(f)              # Carrega o conteúdo JSON para a variável 'depois'
-```
-
-Seção 3: Comparação Textual (Diff)
-
-```Python
-    Linha [11]                                                                                                        # 2. Comparação textual (simulando 'diff' do Cisco)
-    Linha [12] print("=== DIFF ENTRE CONFIGURAÇÕES ===")
-    Linha [13] config_antes_str = json.dumps(antes, indent=2).splitlines()                                            # Converte JSON para string formatada e divide em linhas
-    Linha [14] config_depois_str = json.dumps(depois, indent=2).splitlines()                                          # Mesmo para a configuração "depois"
-    Linha [16] for line in unified_diff(config_antes_str, config_depois_str, fromfile='ANTES', tofile='DEPOIS', n=2):
-    Linha [17]    print(line)                                                                                         # Imprime cada linha das diferenças no formato unificado
-```
-
-Seção 4: Comparação Estruturada (Análise Específica)
-
-```Python
-    Linha [19] # 3. Comparação estruturada (CCNP-relevante)
-    Linha [20] print("\n=== MUDANÇAS DETECTADAS ===")
-    Linha [22] # 3.1 Comparar VLANs
-    Linha [23] vlan_removidas = set(antes['vlans']) - set(depois['vlans'])                                                                      # VLANs que existiam antes mas não depois
-    Linha [24] vlan_adicionadas = set(depois['vlans']) - set(antes['vlans'])                                                                    # VLANs que existem depois mas não antes
-    Linha [26] if vlan_adicionadas:
-    Linha [27]    print(f"[+] VLANs adicionadas: {vlan_adicionadas}")                                                                           # Mostra VLANs adicionadas
-    Linha [28] if vlan_removidas:
-    Linha [29]    print(f"[-] VLANs removidas: {vlan_removidas}")                                                                               # Mostra VLANs removidas
-    Linha [31] # 3.2 Comparar interfaces
-    Linha [31] for interface in antes['interfaces']:                                                                                            # Itera sobre cada interface da configuração "antes"
-    Linha [32]    if interface in depois['interfaces']:                                                                                         # Verifica se a interface também existe na configuração "depois"
-    Linha [33]        for chave in antes['interfaces'][interface]:                                                                              # Itera sobre cada propriedade da interface
-    Linha [34]            if antes['interfaces'][interface][chave] != depois['interfaces'][interface][chave]:
-    Linha [35]                print(f"[!] Interface {interface}: {chave} alterado de '{antes['interfaces'][interface][chave]}' para '{depois['interfaces'][interface][chave]}'")
-```  
+  
 
 ## Resumo do Aprendizado 
 
