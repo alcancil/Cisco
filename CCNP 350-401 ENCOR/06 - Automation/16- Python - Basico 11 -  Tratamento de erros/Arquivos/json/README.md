@@ -969,16 +969,16 @@ if __name__ == "__main__":                                                      
 ## Resumo de Boas Práticas para Tratamento de JSON em Automação de Redes
 ## 📌 Boas Práticas para Tratamento de JSON em Automação de Redes
 
-| Categoria          | Boa Prática                                                                 | Exemplo de Implementação                  | Impacto                                                                 |
-|--------------------|-----------------------------------------------------------------------------|-------------------------------------------|-------------------------------------------------------------------------|
-| **🛡️ Tratamento de Erros**  |                                                                             |                                           |                                                                         |
-|                    | `try-except` específico por tipo de erro                                    | `except json.JSONDecodeError as e:`       | Diagnóstico preciso de falhas                                           |
-|                    | `Exception` como último recurso                                             | `except Exception:`                       | Prevenção contra erros não mapeados                                     |
-| **📊 Manipulação de Dados** |                                                                             |                                           |                                                                         |
-|                    | Uso de `.get()` com valor padrão                                            | `dados.get('vlans', [])`                  | Resiliência contra chaves faltantes                                     |
-|                    | Conversão para `set()` em comparações                                       | `set(config.get('interfaces', {}))`       | Eficiência em operações de conjunto                                     |
-| **📝 Saída e Logs**       |                                                                             |                                           |                                                                         |
-|                    | Erros em `sys.stderr`                                                       | `print("[ERRO]", file=sys.stderr)`        | Separação clara de logs vs. output                                      |
+| Categoria                   | Boa Prática                              | Exemplo de Implementação                  | Impacto                                                        |
+|-----------------------------|------------------------------------------|-------------------------------------------|----------------------------------------------------------------|
+| **🛡️ Tratamento de Erros**  |                                          |                                           |                                                                |
+|                             | `try-except` específico por tipo de erro  | `except json.JSONDecodeError as e:`       | Diagnóstico preciso de falhas                                  |
+|                             | `Exception` como último recurso           | `except Exception:`                       | Prevenção contra erros não mapeados                            |
+| **📊 Manipulação de Dados** |                                          |                                            |                                                               |
+|                              | Uso de `.get()` com valor padrão         | `dados.get('vlans', [])`                  | Resiliência contra chaves faltantes                            |
+|                              | Conversão para `set()` em comparações    | `set(config.get('interfaces', {}))`       | Eficiência em operações de conjunto                            |
+| **📝 Saída e Logs**         |                                            |                                           |                                                               |
+|                    | Erros em `sys.stderr`                             | `print("[ERRO]", file=sys.stderr)`        | Separação clara de logs vs. output                           |
 |                    | Prefixos padronizados (`[+]`, `[-]`, `[!]`)                                | `print("[+] VLAN adicionada")`            | Rastreabilidade de eventos                                              |
 | **⚙️ Estrutura de Código** |                                                                             |                                           |                                                                         |
 |                    | Funções por responsabilidade                                                | `def carregar_config():`                  | Manutenção simplificada                                                 |
