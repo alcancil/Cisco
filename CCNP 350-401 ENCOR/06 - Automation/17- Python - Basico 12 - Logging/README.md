@@ -225,7 +225,10 @@ show logging | include %BGP  # Filtra logs BGP no dispositivo
 ```bash
 show logging                # Exibe logs armazenados no dispositivo
 show logging | begin Mar 1  # Filtra por data
-terminal monitor            # Exibe logs em tempo real no console
+terminal monitor            # Exibe logs em tempo real no console  
+
+> - O comando `logging trap debugging` (nível 7) é útil em labs, mas evite em produção devido ao volume de logs.  
+> - Em questões de troubleshooting, priorize `show logging | include %ERROR` para filtrar falhas graves.
 ```
 
 - Armadilhas Comuns:
