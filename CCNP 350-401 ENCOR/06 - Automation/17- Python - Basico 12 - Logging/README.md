@@ -16,6 +16,8 @@
     - [Correlação de Logs (Cisco + Python)](#correlação-de-logs-cisco--python)
     - [Logging para Troubleshooting](#logging-para-troubleshooting)
     - [Dicas de Ouro](#dicas-de-ouro)
+    - [Destinos dos Logs em Dispositivos Cisco](#destinos-dos-logs-em-dispositivos-cisco)
+  - [Exemplo de configuração completa:](#exemplo-de-configuração-completa)
 
 ### Por Que Logging é Essencial?
 
@@ -250,7 +252,29 @@ Causas possíveis:
 
   - Fonte incorreta (logging source-interface).
 
+**OBS:** antes de avançarmos, precisamos entender onde os logs são armazenados para podermos utilizar algum script python.  
 
+### Destinos dos Logs em Dispositivos Cisco
+
+Os logs podem ser enviados para múltiplos destinos simultaneamente (configuráveis via CLI):  
+
+| Destino         | Comando Cisco           | Vantagens                         | Limitações                     |
+|-----------------|-------------------------|-----------------------------------|--------------------------------|
+| Console         | logging console <nível> | Útil para troubleshooting local   | Não armazena histórico         |
+| Buffer (RAM)    | logging buffered <size> | Armazena logs temporariamente     | Limite de espaço               |
+| Servidor Syslog | logging host <IP>       | Armazenamento centralizado        | Requer conectividade           |
+| Arquivo Local   | logging file <path>     | Disponível em alguns dispositivos | Consome storage do dispositivo |
+
+## Exemplo de configuração completa:
+
+```bash
+
+configure terminal
+  logging console 6           # Exibe logs no console (nível 6 = informational)
+  logging buffered 16384      # Armazena 16KB de logs na RAM
+  logging host 192.168.1.100  # Envia para servidor Syslog (Graylog/ELK)
+end
+```
 ---
 Continuar
 
