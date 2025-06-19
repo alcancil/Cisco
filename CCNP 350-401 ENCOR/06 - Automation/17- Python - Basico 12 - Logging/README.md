@@ -213,7 +213,7 @@ def analyze_bgp_log(log_line):
 
 ```bash
 
-        show logging | include %BGP  # Filtra logs BGP no dispositivo
+show logging | include %BGP  # Filtra logs BGP no dispositivo
 ```
 
 ### Logging para Troubleshooting 
