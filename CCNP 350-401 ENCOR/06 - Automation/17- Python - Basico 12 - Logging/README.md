@@ -177,7 +177,7 @@ end
    
 ### Níveis de Severidade Cisco (0-7):
     
-```bash
+
 | Nível  | Significado    |
 |:------:|:--------------:|
 | 0:     | Emergency      |    
@@ -188,7 +188,7 @@ end
 | 5:     | Notification   |
 | 6:     | Informational  |
 | 7:     | Debugging      |
-```
+
 
 1. Correlação de Logs (Cisco + Python)
 
