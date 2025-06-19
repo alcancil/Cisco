@@ -32,19 +32,19 @@ ARRUMAR
 ```mermaid
 graph TB
     A[Script Python] --> B[Configuração Inicial do Logging]
-    B --> C["Handlers (Arquivo/Syslog/Console)"]
-    C --> D{"Eventos Durante Execução"}
-    D -->|Conexão SSH| E[Log INFO: "Conectado a 192.168.1.1"]
-    D -->|Erro de API| F[Log ERROR: "Timeout na API DNA Center"]
-    D -->|Alteração Config| G[Log WARNING: "VLAN 10 modificada"]
-    D -->|Falha Crítica| H[Log CRITICAL: "Dispositivo inacessível"]
+    B --> C['Handlers (Arquivo/Syslog/Console)']
+    C --> D{'Eventos Durante Execução'}
+    D -->|Conexão SSH| E[Log INFO: 'Conectado a 192.168.1.1']
+    D -->|Erro de API| F[Log ERROR: 'Timeout na API DNA Center']
+    D -->|Alteração Config| G[Log WARNING: 'VLAN 10 modificada']
+    D -->|Falha Crítica| H[Log CRITICAL: 'Dispositivo inacessível']
     E --> I[Arquivo network.log]
     F --> I
     G --> I
     H --> J[Alertas por Email/Slack]
     I --> K[Ferramentas de Análise]
-    K --> L["Grafana (Dashboards)"]
-    K --> M["ELK (Busca Full-Text)"]
+    K --> L['Grafana (Dashboards)']
+    K --> M['ELK (Busca Full-Text)']
 
     style B fill:#d1ecf1,stroke:#17a2b8  # Configuração
     style E fill:#d4edda,stroke:#28a745  # INFO
