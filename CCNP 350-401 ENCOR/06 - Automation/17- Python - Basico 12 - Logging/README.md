@@ -119,7 +119,28 @@ bash
 | ERROR    | Falhas em operações específicas         | logging.error("Timeout na API")                | 
 | CRITICAL | Falhas graves (dispositivo inacessível) | logging.critical("Perda de conectividade")     |
 
+**Observação sobre Sincronização de Tempo (NTP)**
 
+Para que os logs sejam confiáveis em ambientes de rede (especialmente Cisco e Python), é essencial:
+
+    Configurar NTP nos dispositivos e servidores:
+
+```bash
+! Exemplo mínimo em Cisco (CCNP ENCOR)
+configure terminal
+  ntp server 200.160.7.186  # Servidor NTP do NIC.br
+  clock timezone GMT -3      # Fuso horário (ex: Brasil)
+```
+
+**Impacto no Logging:**
+
+   - Logs sem sincronização temporal = dificuldade para correlacionar eventos (ex.: falhas em cadeia).
+
+   - Exemplo real: Um log Python marcado às 14:30 e um log Cisco às 14:35 podem ser o mesmo evento com clocks desalinhados.  
+
+**Dica para o CCNP ENCOR:**
+
+    "Sempre verifique o NTP (show ntp status) antes de analisar logs em cenários de troubleshooting no exame."
 
 
 ---
