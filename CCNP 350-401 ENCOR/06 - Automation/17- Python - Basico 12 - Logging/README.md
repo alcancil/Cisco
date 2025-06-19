@@ -44,7 +44,7 @@ graph TB
     H --> J[Alertas por Email/Slack]
     I --> K[Ferramentas de Análise]
     K --> L["Grafana (Dashboards)"]
-    K --> M['ELK (Busca Full-Text)']
+    K --> M["ELK (Busca Full-Text)"]
 
     style B fill:#d1ecf1,stroke:#17a2b8  # Configuração
     style E fill:#d4edda,stroke:#28a745  # INFO
