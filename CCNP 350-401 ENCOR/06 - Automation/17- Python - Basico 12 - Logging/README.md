@@ -11,7 +11,7 @@
     - [Fluxo de Automação](#fluxo-de-automação)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
   - [Breve revisão](#breve-revisão)
-      - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
+    - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
     - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
 - [Script Python para analisar logs de BGP](#script-python-para-analisar-logs-de-bgp)
     - [Regras de Ouro](#regras-de-ouro)
@@ -160,7 +160,7 @@ configure terminal
 
 ## Breve revisão
 
-#### SYSLOG em Dispositivos Cisco
+### SYSLOG em Dispositivos Cisco
 
 **Comandos Chave** 
     
