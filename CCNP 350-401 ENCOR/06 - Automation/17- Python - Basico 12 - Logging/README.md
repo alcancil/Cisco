@@ -46,12 +46,12 @@ graph TB
     K --> L["Grafana (Dashboards)"]
     K --> M["ELK (Busca Full-Text)"]
 
-    style B fill:#d1ecf1,stroke:#17a2b8,color:#0000  # Configuracao
-    style E fill:#d4edda,stroke:#28a745  # INFO
-    style F fill:#fff3cd,stroke:#f0ad4e  # ERROR
-    style G fill:#f8d7da,stroke:#dc3545  # WARNING
+    style B fill:#d1ecf1,stroke:#17a2b8,color:#000000  # Configuracao
+    style E fill:#d4edda,stroke:#28a745,color:#000000  # INFO
+    style F fill:#fff3cd,stroke:#f0ad4e,color:#000000  # ERROR
+    style G fill:#f8d7da,stroke:#dc3545,color:#000000  # WARNING
     style H fill:#000000,stroke:#ff0000,color:#ffffff  # CRITICAL
-    style I fill:#e2e3e5,stroke:#6c757d  # Arquivo
+    style I fill:#e2e3e5,stroke:#6c757d,color:#000000  # Arquivo
 ```
   
 **Legenda de Uso:**  
