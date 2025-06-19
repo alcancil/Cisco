@@ -10,6 +10,10 @@
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Fluxo de Automação](#fluxo-de-automação)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
+    - [Breve revisão](#breve-revisão)
+  - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
+  - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
+- [Script Python para analisar logs de BGP](#script-python-para-analisar-logs-de-bgp)
     - [Regras de Ouro](#regras-de-ouro)
     - [Arquivos TXT](#arquivos-txt)
     - [Arquivos CSV](#arquivos-csv)
@@ -153,6 +157,89 @@ configure terminal
 **Dica para o CCNP ENCOR:**
 
     "Sempre verifique o NTP (show ntp status) antes de analisar logs em cenários de troubleshooting no exame."
+
+### Breve revisão
+
+## SYSLOG em Dispositivos Cisco
+
+**Comandos Chave** 
+    
+```bash
+
+! Configuração mínima para o exame:
+configure terminal
+  logging host 10.0.0.1              # Servidor de logs
+  logging trap informational         # Nível 6 (INFO)
+  logging source-interface Gig0/0    # Origem dos logs
+  logging facility local7            # Facility padrão
+end
+```
+   
+## Níveis de Severidade Cisco (0-7):
+    
+```bash
+
+        0: Emergency   3: Errors      6: Informational  
+        1: Alert       4: Warnings    7: Debugging  
+        2: Critical    5: Notification
+```
+
+1. Correlação de Logs (Cisco + Python)
+
+    Exemplo Prático (um cenário clássico do CCNP):
+    python
+
+# Script Python para analisar logs de BGP
+import logging
+logging.basicConfig(filename='bgp_events.log', level=logging.INFO)
+
+def analyze_bgp_log(log_line):
+    if "%BGP-5-ADJCHANGE" in log_line:
+        logging.warning(f"BGP neighbor change: {log_line}")
+    elif "%BGP-3-BACKWARD" in log_line:
+        logging.error(f"BGP route fluctuation: {log_line}")
+
+    No Cisco:
+    bash
+
+        show logging | include %BGP  # Filtra logs BGP no dispositivo
+
+3. Logging para Troubleshooting (Foco na Prova)
+
+    Cenários Comuns no CCNP ENCOR:
+    Problema	Log Cisco Típico	Ação no Python
+    Falha OSPF Adjacency	%OSPF-5-ADJCHG	logging.error("OSPF neighbor down")
+    STP Loops	%SPANTREE-7-RECV_1Q_NON_TRUNK	logging.critical("STP loop detected")
+    HSRP Failover	%HSRP-6-STATECHANGE	logging.info("HSRP active change")
+
+4. Dicas de Ouro para a Prova
+
+    Comandos para Memorizar:
+    bash
+
+show logging            # Exibe logs armazenados no dispositivo
+show logging | begin Mar 1  # Filtra por data
+terminal monitor       # Exibe logs em tempo real no console
+
+Armadilhas Comuns:
+
+    Logs não aparecem? Verifique:
+    bash
+
+show logging status     # Confira se o logging está ativo
+show clock             # Horário incorreto afeta a ordem dos logs
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---
