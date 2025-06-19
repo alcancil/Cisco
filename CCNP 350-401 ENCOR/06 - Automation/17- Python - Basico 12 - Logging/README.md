@@ -13,7 +13,8 @@
   - [Breve revisão](#breve-revisão)
     - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
     - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
-- [Script Python para analisar logs de BGP](#script-python-para-analisar-logs-de-bgp)
+    - [Correlação de Logs (Cisco + Python)](#correlação-de-logs-cisco--python)
+    - [Logging para Troubleshooting (Foco na Prova)](#logging-para-troubleshooting-foco-na-prova)
     - [Regras de Ouro](#regras-de-ouro)
     - [Arquivos TXT](#arquivos-txt)
     - [Arquivos CSV](#arquivos-csv)
@@ -190,10 +191,11 @@ end
 | 7:     | Debugging      |
 
 
-1. Correlação de Logs (Cisco + Python)
+### Correlação de Logs (Cisco + Python)
 
-    Exemplo Prático (um cenário clássico do CCNP):
-    python
+Exemplo Prático (um cenário clássico do CCNP):
+
+```python
 
 # Script Python para analisar logs de BGP
 import logging
@@ -204,13 +206,16 @@ def analyze_bgp_log(log_line):
         logging.warning(f"BGP neighbor change: {log_line}")
     elif "%BGP-3-BACKWARD" in log_line:
         logging.error(f"BGP route fluctuation: {log_line}")
+```
 
-    No Cisco:
-    bash
+**No Cisco:**
+
+```bash
 
         show logging | include %BGP  # Filtra logs BGP no dispositivo
+```
 
-3. Logging para Troubleshooting (Foco na Prova)
+### Logging para Troubleshooting (Foco na Prova)
 
     Cenários Comuns no CCNP ENCOR:
     Problema	Log Cisco Típico	Ação no Python
