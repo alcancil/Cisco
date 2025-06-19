@@ -109,13 +109,15 @@ bash
 2023-10-05 14:32:15 - ERROR - Falha na conexão SSH com 192.168.1.1
 ```
 
-3. Níveis de Log (Hierarquia)
-Nível	Quando Usar?	Exemplo
-DEBUG	Detalhes internos (depuração)	logging.debug("Enviando comando: 'show vlan'")
-INFO	Eventos normais	logging.info("Dispositivo reiniciado")
-WARNING	Situações anormais, mas recuperáveis	logging.warning("Tempo de resposta alto")
-ERROR	Falhas em operações específicas	logging.error("Timeout na API")
-CRITICAL	Falhas graves (dispositivo inacessível)	logging.critical("Perda de conectividade")
+3. **Níveis de Log (Hierarquia)**  
+
+| Nível    | Quando Usar?	                         | Exemplo                                        |
+|----------|-----------------------------------------|------------------------------------------------|
+| DEBUG    | Detalhes internos (depuração)           | logging.debug("Enviando comando: 'show vlan'") |
+| INFO     | Eventos normais                         | logging.info("Dispositivo reiniciado")         | 
+| WARNING  | Situações anormais, mas recuperáveis    | logging.warning("Tempo de resposta alto")      | 
+| ERROR    | Falhas em operações específicas         | logging.error("Timeout na API")                | 
+| CRITICAL | Falhas graves (dispositivo inacessível) | logging.critical("Perda de conectividade")     |
 
 
 
