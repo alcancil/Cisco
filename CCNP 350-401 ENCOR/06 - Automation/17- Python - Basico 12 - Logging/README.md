@@ -50,8 +50,8 @@ graph TB
     style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
     style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
     style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
-    style H fill:#000000,stroke:#ff0000,color:#ffffff  # CRITICAL
-    style I fill:#e2e3e5,stroke:#6c757d,color:#000000  # Arquivo
+    style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
+    style I fill:#1a365d,stroke:#2a52be,color:#FFFFFF  # Arquivo
 ```
   
 **Legenda de Uso:**  
