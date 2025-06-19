@@ -48,8 +48,8 @@ graph TB
 
     style B fill:#d1ecf1,stroke:#17a2b8,color:#000000  # Configuracao
     style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
-    style F fill:#5c4a00,stroke:#f0ad4e,color:#ffffff  # ERROR
-    style G fill:#f8d7da,stroke:#dc3545,color:#000000  # WARNING
+    style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
+    style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
     style H fill:#000000,stroke:#ff0000,color:#ffffff  # CRITICAL
     style I fill:#e2e3e5,stroke:#6c757d,color:#000000  # Arquivo
 ```
