@@ -87,19 +87,7 @@ O logging é o sistema padrão do Python para registrar eventos durante a execu�
 ```Python
 import logging
 
-# 1. Configuração Inicial (como no seu diagrama)
-logging.basicConfig(
-    filename='network.log',          # Arquivo de saída
-    level=logging.INFO,              # Nível mínimo para registrar
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-# 2. Uso em operações de rede
-logging.info("Iniciando backup de configurações...")  # Mensagem informativa
-logging.warning("VLAN 10 modificada manualmente")     # Alerta
-logging.error("Falha na conexão SSH com 192.168.1.1") # Erro crítico
-
-# 1. Configuração Inicial (como no seu diagrama)
+# 1. Configuração Inicial
 logging.basicConfig(
     filename='network.log',          # Arquivo de saída
     level=logging.INFO,              # Nível mínimo para registrar
