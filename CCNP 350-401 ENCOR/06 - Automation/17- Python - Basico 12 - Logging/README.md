@@ -29,15 +29,15 @@ ARRUMAR
 
 ### Fluxo de Automação
 
-```
+```Mermaid
 graph TB
     A[Script Python] --> B[Configuração Inicial do Logging]
-    B --> C['Handlers (Arquivo/Syslog/Console)']
-    C --> D{'Eventos Durante Execução'}
-    D -->|Conexão SSH| E[Log INFO: 'Conectado a 192.168.1.1']
-    D -->|Erro de API| F[Log ERROR: 'Timeout na API DNA Center']
-    D -->|Alteração Config| G[Log WARNING: 'VLAN 10 modificada']
-    D -->|Falha Crítica| H[Log CRITICAL: 'Dispositivo inacessível']
+    B --> C["Handlers (Arquivo/Syslog/Console)"]
+    C --> D{"Eventos Durante Execução"}
+    D -->|Conexão SSH| E[Log INFO: ("Conectado a 192.168.1.1")]
+    D -->|Erro de API| F[Log ERROR: "Timeout na API DNA Center"]
+    D -->|Alteração Config| G[Log WARNING: "VLAN 10 modificada"]
+    D -->|Falha Crítica| H[Log CRITICAL: "Dispositivo inacessível"]
     E --> I[Arquivo network.log]
     F --> I
     G --> I
