@@ -46,7 +46,7 @@ graph TB
     K --> L["Grafana (Dashboards)"]
     K --> M["ELK (Busca Full-Text)"]
 
-    style B fill:#d1ecf1,stroke:#17a2b8,color:#000000  # Configuracao
+    style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
     style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
     style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
     style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
