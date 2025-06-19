@@ -82,9 +82,9 @@ O logging é o sistema padrão do Python para registrar eventos durante a execu�
 | Formatters | Estrutura da mensagem (timestamp/nível)    | '%(asctime)s - %(levelname)s - %(message)s' |
 | Filters    | Controle de quais logs são registrados     | filter=lambda record: 'VLAN' in record.msg  |
 
-2. Exemplo Prático (Configuração Básica)
-python
+2. **Exemplo Prático (Configuração Básica)**
 
+```Python
 import logging
 
 # 1. Configuração Inicial (como no seu diagrama)
@@ -99,12 +99,27 @@ logging.info("Iniciando backup de configurações...")  # Mensagem informativa
 logging.warning("VLAN 10 modificada manualmente")     # Alerta
 logging.error("Falha na conexão SSH com 192.168.1.1") # Erro crítico
 
+# 1. Configuração Inicial (como no seu diagrama)
+logging.basicConfig(
+    filename='network.log',          # Arquivo de saída
+    level=logging.INFO,              # Nível mínimo para registrar
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# 2. Uso em operações de rede
+logging.info("Iniciando backup de configurações...")  # Mensagem informativa
+logging.warning("VLAN 10 modificada manualmente")     # Alerta
+logging.error("Falha na conexão SSH com 192.168.1.1") # Erro crítico
+```
+
+```Bash
 Saída no network.log:
 bash
 
 2023-10-05 14:30:00 - INFO - Iniciando backup de configurações...
 2023-10-05 14:31:22 - WARNING - VLAN 10 modificada manualmente
 2023-10-05 14:32:15 - ERROR - Falha na conexão SSH com 192.168.1.1
+```
 
 3. Níveis de Log (Hierarquia)
 Nível	Quando Usar?	Exemplo
