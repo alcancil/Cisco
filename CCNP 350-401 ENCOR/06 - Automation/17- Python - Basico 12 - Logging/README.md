@@ -37,7 +37,7 @@ graph TB
     D -->|Conexão SSH| E[Log INFO: 'Conectado a 192.168.1.1']
     D -->|Erro de API| F[Log ERROR: 'Time0out na API DNA Center']
     D -->|Alteração Config| G[Log WARNING: 'VLAN 10 modificada']
-    D -->|Falha Crítica| H[Log CRITICAL: "Dispositivo inacessível"]
+    D -->|Falha Crítica| H[Log CRITICAL: 'Dispositivo inacessível']
     E --> I[Arquivo network.log]
     F --> I
     G --> I
