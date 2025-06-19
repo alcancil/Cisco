@@ -2,6 +2,23 @@
 
 ## Logging
 
+## Sumário
+- [Python - Básico 12](#python---básico-12)
+  - [Logging](#logging)
+  - [Sumário](#sumário)
+    - [Por Que Logging é Essencial?](#por-que-logging-é-essencial)
+    - [O que vamos estudar](#o-que-vamos-estudar)
+    - [Fluxo de Automação](#fluxo-de-automação)
+    - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
+    - [Regras de Ouro](#regras-de-ouro)
+    - [Arquivos TXT](#arquivos-txt)
+    - [Arquivos CSV](#arquivos-csv)
+    - [Arquivos JSON](#arquivos-json)
+    - [Arquivos YAML Arrumar](#arquivos-yaml-arrumar)
+    - [Arquivos XML Arrumar](#arquivos-xml-arrumar)
+    - [Templates J2 Arrumar](#templates-j2-arrumar)
+    - [Arquivos ENV Arrumar](#arquivos-env-arrumar)
+
 ### Por Que Logging é Essencial?
 
 Em automação de redes, 90% dos problemas ocorrem em produção — conexões SSH falhas, APIs indisponíveis ou configurações inválidas.
@@ -15,17 +32,12 @@ Logging estruturado é sua "caixa preta" para:
 
     🔄 Rollback inteligente com base em logs históricos
 
----
-ARRUMAR
-
 ### O que vamos estudar
 
-- Identificar e capturar erros comuns com try, except, else e finally
-- Tratar exceções específicas como FileNotFoundError, KeyError, json.JSONDecodeError, PermissionError, entre outras
-- Criar scripts mais robustos e prontos para produção
-- Adaptar tratamentos de erro para arquivos .txt, .csv, .json, .yaml, .env, .xml e .j2
----
-ARRUMAR
+- Entender como o módulo logging do Python funciona
+- Aprender os diferentes níveis de log e quando usá-los
+- Criar logs em arquivos e integrar com outras ferramentas (Graylog, ELK, etc)
+- Aplicar logs em scripts de automação de rede com Cisco e Linux
 
 ### Fluxo de Automação
 
