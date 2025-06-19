@@ -14,7 +14,8 @@
     - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
     - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
     - [Correlação de Logs (Cisco + Python)](#correlação-de-logs-cisco--python)
-    - [Logging para Troubleshooting (Foco na Prova)](#logging-para-troubleshooting-foco-na-prova)
+    - [Logging para Troubleshooting](#logging-para-troubleshooting)
+    - [Dicas de Ouro](#dicas-de-ouro)
     - [Regras de Ouro](#regras-de-ouro)
     - [Arquivos TXT](#arquivos-txt)
     - [Arquivos CSV](#arquivos-csv)
@@ -215,31 +216,34 @@ def analyze_bgp_log(log_line):
         show logging | include %BGP  # Filtra logs BGP no dispositivo
 ```
 
-### Logging para Troubleshooting (Foco na Prova)
+### Logging para Troubleshooting 
 
-    Cenários Comuns no CCNP ENCOR:
-    Problema	Log Cisco Típico	Ação no Python
-    Falha OSPF Adjacency	%OSPF-5-ADJCHG	logging.error("OSPF neighbor down")
-    STP Loops	%SPANTREE-7-RECV_1Q_NON_TRUNK	logging.critical("STP loop detected")
-    HSRP Failover	%HSRP-6-STATECHANGE	logging.info("HSRP active change")
+- Cenários Comuns no CCNP ENCOR:
+    
+| Problema      | Log Cisco Típico              | Ação no Python                        |
+|---------------|-------------------------------|---------------------------------------|
+| Falha OSPF    | Adjacency	%OSPF-5-ADJCHG	    | logging.error("OSPF neighbor down")   | 
+| STP Loops     | %SPANTREE-7-RECV_1Q_NON_TRUNK | logging.critical("STP loop detected") |
+| HSRP Failover | %HSRP-6-STATECHANGE           | logging.info("HSRP active change")    |
 
-4. Dicas de Ouro para a Prova
+### Dicas de Ouro 
 
-    Comandos para Memorizar:
-    bash
-
-show logging            # Exibe logs armazenados no dispositivo
+- Comandos para Aprender:
+    
+```bash
+show logging                # Exibe logs armazenados no dispositivo
 show logging | begin Mar 1  # Filtra por data
-terminal monitor       # Exibe logs em tempo real no console
+terminal monitor            # Exibe logs em tempo real no console
+```
 
-Armadilhas Comuns:
+- Armadilhas Comuns:
 
-    Logs não aparecem? Verifique:
-    bash
+**Logs não aparecem? Verifique:**
 
+```bash
 show logging status     # Confira se o logging está ativo
-show clock             # Horário incorreto afeta a ordem dos logs
-
+show clock              # Horário incorreto afeta a ordem dos logs
+```
 
 
 
