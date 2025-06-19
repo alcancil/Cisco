@@ -10,9 +10,9 @@
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Fluxo de Automação](#fluxo-de-automação)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
-    - [Breve revisão](#breve-revisão)
-  - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
-  - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
+  - [Breve revisão](#breve-revisão)
+    - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
+    - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
 - [Script Python para analisar logs de BGP](#script-python-para-analisar-logs-de-bgp)
     - [Regras de Ouro](#regras-de-ouro)
     - [Arquivos TXT](#arquivos-txt)
@@ -158,9 +158,9 @@ configure terminal
 
     "Sempre verifique o NTP (show ntp status) antes de analisar logs em cenários de troubleshooting no exame."
 
-### Breve revisão
+## Breve revisão
 
-## SYSLOG em Dispositivos Cisco
+### SYSLOG em Dispositivos Cisco
 
 **Comandos Chave** 
     
@@ -175,13 +175,19 @@ configure terminal
 end
 ```
    
-## Níveis de Severidade Cisco (0-7):
+### Níveis de Severidade Cisco (0-7):
     
 ```bash
-
-        0: Emergency   3: Errors      6: Informational  
-        1: Alert       4: Warnings    7: Debugging  
-        2: Critical    5: Notification
+| Nível  | Significado    |
+|:------:|:--------------:|
+| 0:     | Emergency      |    
+| 1:     | Alert          |
+| 2:     | Critical       |
+| 3:     | Errors         |
+| 4:     | Warnings       |
+| 5:     | Notification   |
+| 6:     | Informational  |
+| 7:     | Debugging      |
 ```
 
 1. Correlação de Logs (Cisco + Python)
