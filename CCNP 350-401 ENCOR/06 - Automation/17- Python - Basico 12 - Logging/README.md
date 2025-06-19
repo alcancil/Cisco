@@ -29,7 +29,7 @@ ARRUMAR
 
 ### Fluxo de Automação
 
-```Mermaid
+```mermaid
 graph TB
     A[Script Python] --> B[Configuração Inicial do Logging]
     B --> C["Handlers (Arquivo/Syslog/Console)"]
