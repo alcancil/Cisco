@@ -63,6 +63,60 @@ graph TB
 | 🔴 Vermelho |	ERROR         | Falhas recuperáveis (ex: timeout SSH)        |
 | ⚫ Preto    | CRITICAL      | Falhas que exigem ação imediata              |
 
+### Como Funciona o Logging em Python?
+
+O logging é o sistema padrão do Python para registrar eventos durante a execução de scripts. Em automação de redes, ele é essencial para:
+
+    📌 Rastrear o fluxo de execução
+
+    🔍 Depurar problemas
+
+    📊 Auditar operações em dispositivos
+
+1. **Componentes Principais**  
+
+| Componente | Função                                     | Exemplo em Redes                            |
+|------------|--------------------------------------------|---------------------------------------------| 
+| Loggers    | Canais de registro (hierárquicos)          | logging.getLogger('network.ssh')            |
+| Handlers   | Destinos dos logs (arquivo/console/syslog) | FileHandler('network.log')                  | 
+| Formatters | Estrutura da mensagem (timestamp/nível)    | '%(asctime)s - %(levelname)s - %(message)s' |
+| Filters    | Controle de quais logs são registrados     | filter=lambda record: 'VLAN' in record.msg  |
+
+2. Exemplo Prático (Configuração Básica)
+python
+
+import logging
+
+# 1. Configuração Inicial (como no seu diagrama)
+logging.basicConfig(
+    filename='network.log',          # Arquivo de saída
+    level=logging.INFO,              # Nível mínimo para registrar
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# 2. Uso em operações de rede
+logging.info("Iniciando backup de configurações...")  # Mensagem informativa
+logging.warning("VLAN 10 modificada manualmente")     # Alerta
+logging.error("Falha na conexão SSH com 192.168.1.1") # Erro crítico
+
+Saída no network.log:
+bash
+
+2023-10-05 14:30:00 - INFO - Iniciando backup de configurações...
+2023-10-05 14:31:22 - WARNING - VLAN 10 modificada manualmente
+2023-10-05 14:32:15 - ERROR - Falha na conexão SSH com 192.168.1.1
+
+3. Níveis de Log (Hierarquia)
+Nível	Quando Usar?	Exemplo
+DEBUG	Detalhes internos (depuração)	logging.debug("Enviando comando: 'show vlan'")
+INFO	Eventos normais	logging.info("Dispositivo reiniciado")
+WARNING	Situações anormais, mas recuperáveis	logging.warning("Tempo de resposta alto")
+ERROR	Falhas em operações específicas	logging.error("Timeout na API")
+CRITICAL	Falhas graves (dispositivo inacessível)	logging.critical("Perda de conectividade")
+
+
+
+
 ---
 Arrumar
 
