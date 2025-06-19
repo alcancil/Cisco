@@ -240,6 +240,17 @@ show logging status     # Confira se o logging está ativo
 show clock              # Horário incorreto afeta a ordem dos logs
 ```
 
+**"Por que os logs não aparecem no servidor Syslog?"**
+        
+Causas possíveis:
+
+  - Nível de severidade incorreto (logging trap).
+
+  - Bloqueio de porta UDP 514 (firewall).
+
+  - Fonte incorreta (logging source-interface).
+
+
 ---
 Continuar
 
