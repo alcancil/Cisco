@@ -420,18 +420,94 @@ graph TB
    2023-10-05 14:30:00 - INFO - Conectado a 192.168.1.1  
    2023-10-05 14:31:22 - ERROR - Timeout SSH em 192.168.1.1
 ```
----
-Continuar
 
 ## Exercícios ( Exemplos )
 
 ## Exemplo 01 — Log básico com print() x logging.info()
 
-    Mostrar a diferença entre print() e logging
+**OBJETIVO:** Demonstrar as diferenças fundamentais entre saídas simples (`print()`) e logs estruturados (`logging`), aplicáveis a cenários de redes Cisco.
 
-    Definir basicConfig
+**print_logging.py**
 
-    Gerar logs em terminal
+```Python
+# Exemplo 01 — Log básico com print() x logging.info()
+
+import logging
+
+# Configuração básica do logging (terminal + formato)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()]  # Saída no terminal
+)
+
+print("=== DEMONSTRAÇÃO PRINT() VS LOGGING ===")
+
+# Cenário: Conexão SSH simulada
+device_ip = "192.168.1.1"
+
+# Método 1: Usando print()
+print(f"[Simples] Tentando conectar a {device_ip}...")
+print(f"[Simples] Conexão SSH estabelecida com {device_ip}")
+
+# Método 2: Usando logging
+logging.debug(f"DEBUG: Mensagem invisível (nível configurado como INFO)")  # Não será exibido
+logging.info(f"Conectando a {device_ip}...")
+logging.warning(f"Conexão estabelecida com {device_ip} (nível WARNING como exemplo)")
+
+print("\n=== ANÁLISE ===")
+print("Observe como logging oferece:")
+print("- Timestamp automático")
+print("- Nível de severidade")
+print("- Formatação consistente")
+```
+   
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/logging/01$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/01$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/01$ lo
+loadkeys        locale          locale-gen      lofromtemplate  logname         loimpress       lowntfs-3g
+loadunimap      locale-check    locate          logger          logout          look            lowriter
+local           localectl       lodraw          login           logrotate       losetup         
+localc          localedef       loffice         loginctl        logsave         loweb           
+(venv) alcancil@linux:~/automacoes/logging/01$ lo
+loadkeys        locale          locale-gen      lofromtemplate  logname         loimpress       lowntfs-3g
+loadunimap      locale-check    locate          logger          logout          look            lowriter
+local           localectl       lodraw          login           logrotate       losetup         
+localc          localedef       loffice         loginctl        logsave         loweb           
+(venv) alcancil@linux:~/automacoes/logging/01$ ls
+print_logging.py  venv
+(venv) alcancil@linux:~/automacoes/logging/01$ python3 print_logging.py 
+=== DEMONSTRAÇÃO PRINT() VS LOGGING ===
+[Simples] Tentando conectar a 192.168.1.1...
+[Simples] Conexão SSH estabelecida com 192.168.1.1
+2025-06-20 15:50:30,082 - INFO - Conectando a 192.168.1.1...
+2025-06-20 15:50:30,082 - WARNING - Conexão estabelecida com 192.168.1.1 (nível WARNING como exemplo)
+
+=== ANÁLISE ===
+Observe como logging oferece:
+- Timestamp automático
+- Nível de severidade
+- Formatação consistente
+(venv) alcancil@linux:~/automacoes/logging/01$ 
+```
+
+**Boas práticas:**
+
+```python
+
+# ❌ Frágil (não use em scripts de rede)
+print("Interface Gig0/1 down!")
+
+# ✅ Profissional (CCNP-style)
+logging.error("Interface Gig0/1 down - Verificar BGP/STP")
+```
+
+---
+Continuar
+
 
 🔹 Exemplo 02 — Log para arquivo .log
 
