@@ -467,18 +467,6 @@ print("- Formatação consistente")
 ```Bash
 alcancil@linux:~/automacoes/logging/01$ python3 -m venv venv
 alcancil@linux:~/automacoes/logging/01$ source venv/bin/activate
-(venv) alcancil@linux:~/automacoes/logging/01$ lo
-loadkeys        locale          locale-gen      lofromtemplate  logname         loimpress       lowntfs-3g
-loadunimap      locale-check    locate          logger          logout          look            lowriter
-local           localectl       lodraw          login           logrotate       losetup         
-localc          localedef       loffice         loginctl        logsave         loweb           
-(venv) alcancil@linux:~/automacoes/logging/01$ lo
-loadkeys        locale          locale-gen      lofromtemplate  logname         loimpress       lowntfs-3g
-loadunimap      locale-check    locate          logger          logout          look            lowriter
-local           localectl       lodraw          login           logrotate       losetup         
-localc          localedef       loffice         loginctl        logsave         loweb           
-(venv) alcancil@linux:~/automacoes/logging/01$ ls
-print_logging.py  venv
 (venv) alcancil@linux:~/automacoes/logging/01$ python3 print_logging.py 
 === DEMONSTRAÇÃO PRINT() VS LOGGING ===
 [Simples] Tentando conectar a 192.168.1.1...
