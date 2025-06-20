@@ -357,11 +357,11 @@ graph TB
     style B stroke:#FFA500,stroke-width:2px
     style C stroke:#32CD32,stroke-width:2px
     style D stroke:#1E90FF,stroke-width:2px
-    style E fill:#FFFACD,stroke:#FFA500
+    style E stroke:#FFA500,stroke-width:2px
     style F fill:#F0FFF0,stroke:#32CD32
     style G fill:#F0F8FF,stroke:#1E90FF
 ```
-
+style E fill:#FFFACD,stroke:#FFA500
 
 ```mermaid
 graph LR
