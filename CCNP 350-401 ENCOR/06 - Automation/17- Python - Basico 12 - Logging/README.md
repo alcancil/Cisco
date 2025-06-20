@@ -23,7 +23,7 @@
     - [Diferenças Entre `print()` e `logging` em Python](#diferenças-entre-print-e-logging-em-python)
       - [📌 **Quando Usar Cada Um**](#-quando-usar-cada-um)
       - [🚨 **Problemas com `print()` em Redes**](#-problemas-com-print-em-redes)
-      - [✅ **Vantagens do `logging` para o CCNP**](#-vantagens-do-logging-para-o-ccnp)
+      - [✅ \*\*Vantagens do `logging` \*\*](#-vantagens-do-logging-)
   - [Exercícios ( Exemplos )](#exercícios--exemplos-)
   - [Exemplo 01 — Log básico com print() x logging.info()](#exemplo-01--log-básico-com-print-x-logginginfo)
 
@@ -382,7 +382,6 @@ graph TB
 | **Uso em Produção**          | Não recomendado                      | Essencial para troubleshooting e auditoria                                |
 | **Exemplo em Redes**         | `print("Conectado a", device_ip)`    | `logging.info(f"Conectado a {device_ip}")`                                |
 
----
 
 #### 📌 **Quando Usar Cada Um**
 
@@ -410,23 +409,17 @@ graph TB
          logging.error(f"Timeout em {device['host']}")
      ```
 
----
-
 #### 🚨 **Problemas com `print()` em Redes**
 - **Perda de contexto**: Sem timestamps ou níveis de severidade.  
 - **Inviável em escala**: Não filtra mensagens por importância.  
 - **Sem persistência**: Não salva em arquivo por padrão.  
 
----
-
-#### ✅ **Vantagens do `logging` para o CCNP**
+#### ✅ **Vantagens do `logging` **
 1. **Correlação de Eventos**:  
-   ```bash
+```bash
    2023-10-05 14:30:00 - INFO - Conectado a 192.168.1.1  
    2023-10-05 14:31:22 - ERROR - Timeout SSH em 192.168.1.1
-
-
-
+```
 ---
 Continuar
 
