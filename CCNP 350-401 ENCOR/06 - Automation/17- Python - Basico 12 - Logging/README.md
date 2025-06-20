@@ -57,7 +57,7 @@ graph TB
     G --> I
     H --> J[Alertas por Email/Slack]
     I --> K[Ferramentas de Análise]
-    K --> L["Grafana (Dashboards)"]
+    K --> L["Grafana / Graylog (Dashboards)"]
     K --> M["ELK (Busca Full-Text)"]
 
     style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
@@ -336,7 +336,69 @@ logging buffered 16384       # Backup local
    - Python pode capturar em tempo real com Paramiko.  
    - Útil para monitoramento ativo.  
 
+```mermaid
+graph LR
+    A[Dispositivo Cisco] -->|Envia Logs| B[Syslog Server]
+    B --> C[Python: Análise via API/Arquivos]
+    A --> D[Python: Coleta via SSH]
+```
+
+> **Atenção**: Nunca armazene senhas em código. Use variáveis de ambiente ou arquivos `.env` ou cofre de senhas.
+
 ---
 Continuar
 
+
+✅ Recomendações para a progressão de exemplos em terminal Linux
+
+Aqui vai uma trilha didática e crescente:
+🔹 Exemplo 01 — Log básico com print() x logging.info()
+
+    Mostrar a diferença entre print() e logging
+
+    Definir basicConfig
+
+    Gerar logs em terminal
+
+🔹 Exemplo 02 — Log para arquivo .log
+
+    Redirecionar os logs para automacao.log
+
+    Definir nível DEBUG e mostrar logs de todos os tipos
+
+    Analisar conteúdo do arquivo com cat e grep
+
+🔹 Exemplo 03 — Estrutura de pastas de logs
+
+    Criar pasta logs/
+
+    Gerar log dinâmico por tipo de tarefa, ex: logs/vlan.log, logs/usuario.log
+
+    Uso de logging.getLogger('vlan')
+
+🔹 Exemplo 04 — Logs por data (log rotation manual)
+
+    Gerar um log que inclui data no nome: logs/backup_2024-06-11.log
+
+    Mostrar como isso ajuda a organizar execuções por dia
+
+🔹 Exemplo 05 — Simular erro capturado via logging.exception()
+
+    Criar erro com try/except e gravar com logging.exception()
+
+    Simular falha de conexão a dispositivo e logar a stack trace
+
+🔹 Exemplo 06 — Logs formatados e personalizados
+
+    Personalizar o formato do log: [%(asctime)s] [%(levelname)s] - %(message)s
+
+    Mostrar log com data/hora, tipo de log e mensagem
+
+    Importante para quando for visualizar logs no Graylog futuramente
+
+🔹 Exemplo 07 — Integração com múltiplos arquivos Python
+
+    Criar um script principal e um módulo auxiliar (utils.py)
+
+    Usar logging em ambos e centralizar a configuração
 
