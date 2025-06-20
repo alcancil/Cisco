@@ -20,6 +20,12 @@
   - [Exemplo de configuração completa:](#exemplo-de-configuração-completa)
   - [Quando o Python Entra em Ação?](#quando-o-python-entra-em-ação)
     - [Coleta de Logs em Dispositivos Cisco](#coleta-de-logs-em-dispositivos-cisco)
+    - [Diferenças Entre `print()` e `logging` em Python](#diferenças-entre-print-e-logging-em-python)
+      - [📌 **Quando Usar Cada Um**](#-quando-usar-cada-um)
+      - [🚨 **Problemas com `print()` em Redes**](#-problemas-com-print-em-redes)
+      - [✅ **Vantagens do `logging` para o CCNP**](#-vantagens-do-logging-para-o-ccnp)
+  - [Exercícios ( Exemplos )](#exercícios--exemplos-)
+  - [Exemplo 01 — Log básico com print() x logging.info()](#exemplo-01--log-básico-com-print-x-logginginfo)
 
 ### Por Que Logging é Essencial?
 
@@ -345,9 +351,9 @@ graph TB
     end
 
     subgraph Python
-        B -->|Netmiko\nshow logging| E[Arquivo Local buffer_log.txt]
-        C -->|API/Arquivos| F[Graylog/ELK\nanalysis.log]
-        D -->|Paramiko\nTerminal em Tempo Real| G[Monitoramento\nAlerta Instantâneo]
+        B -->|Netmiko / show logging| E[Arquivo Local buffer_log.txt]
+        C -->|API/Arquivos| F[Graylog / ELK / analysis.log]
+        D -->|Paramiko / Terminal em Tempo Real| G[Monitoramento / Alerta Instantâneo]
     end
 
     E --> H[Ferramentas de Análise]
@@ -364,14 +370,69 @@ graph TB
 
 > **Atenção**: Nunca armazene senhas em código. Use variáveis de ambiente ou arquivos `.env` ou cofre de senhas.
 
+### Diferenças Entre `print()` e `logging` em Python
+
+| Característica               | `print()`                            | `logging`                                                                 |
+|------------------------------|--------------------------------------|---------------------------------------------------------------------------|
+| **Propósito**                | Saída simples para console           | Registro estruturado de eventos com severidade                            |
+| **Níveis de Severidade**     | Não possui                           | Possui (DEBUG, INFO, WARNING, ERROR, CRITICAL)                            |
+| **Formatação**               | Manual (f-strings, .format())        | Automática via `Formatters` (`%(asctime)s - %(levelname)s - %(message)s`) |
+| **Destinos de Saída**        | Apenas console                       | Múltiplos (arquivo, console, syslog, email) via `Handlers`                |
+| **Performance**              | Mais rápido (para debug pontual)     | Leve overhead (justificável em produção)                                  |
+| **Uso em Produção**          | Não recomendado                      | Essencial para troubleshooting e auditoria                                |
+| **Exemplo em Redes**         | `print("Conectado a", device_ip)`    | `logging.info(f"Conectado a {device_ip}")`                                |
+
+---
+
+#### 📌 **Quando Usar Cada Um**
+
+1. **`print()`**  
+   - Debug rápido durante o desenvolvimento.  
+   - Exemplo:  
+     ```python
+     print(f"Tentando conectar a {device_ip}...")  # Remove após testes
+     ```
+
+2. **`logging`**  
+   - Automação de redes e scripts em produção.  
+   - Exemplo (CCNP-style):  
+     ```python
+     import logging
+     logging.basicConfig(
+         filename='network.log',
+         level=logging.INFO,
+         format='%(asctime)s - %(levelname)s - %(message)s'
+     )
+     try:
+         connection = ConnectHandler(**device)
+         logging.info(f"SSH estabelecido com {device['host']}")
+     except NetmikoTimeoutException:
+         logging.error(f"Timeout em {device['host']}")
+     ```
+
+---
+
+#### 🚨 **Problemas com `print()` em Redes**
+- **Perda de contexto**: Sem timestamps ou níveis de severidade.  
+- **Inviável em escala**: Não filtra mensagens por importância.  
+- **Sem persistência**: Não salva em arquivo por padrão.  
+
+---
+
+#### ✅ **Vantagens do `logging` para o CCNP**
+1. **Correlação de Eventos**:  
+   ```bash
+   2023-10-05 14:30:00 - INFO - Conectado a 192.168.1.1  
+   2023-10-05 14:31:22 - ERROR - Timeout SSH em 192.168.1.1
+
+
+
 ---
 Continuar
 
+## Exercícios ( Exemplos )
 
-✅ Recomendações para a progressão de exemplos em terminal Linux
-
-Aqui vai uma trilha didática e crescente:
-🔹 Exemplo 01 — Log básico com print() x logging.info()
+## Exemplo 01 — Log básico com print() x logging.info()
 
     Mostrar a diferença entre print() e logging
 
