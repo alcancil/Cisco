@@ -394,7 +394,7 @@ graph TB
 
 2. **`logging`**  
    - Automação de redes e scripts em produção.  
-   - Exemplo (CCNP-style):  
+   - Exemplo :  
      ```python
      import logging
      logging.basicConfig(
