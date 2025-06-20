@@ -18,6 +18,7 @@
     - [Dicas de Ouro](#dicas-de-ouro)
     - [Destinos dos Logs em Dispositivos Cisco](#destinos-dos-logs-em-dispositivos-cisco)
   - [Exemplo de configuração completa:](#exemplo-de-configuração-completa)
+  - [Quando o Python Entra em Ação?](#quando-o-python-entra-em-ação)
 
 ### Por Que Logging é Essencial?
 
@@ -275,6 +276,52 @@ configure terminal
   logging host 192.168.1.100  # Envia para servidor Syslog (Graylog/ELK)
 end
 ```
+
+## Quando o Python Entra em Ação?
+
+O script Python pode atuar em três momentos distintos:
+
+- **Cenário 1:** Coleta de Logs do Buffer/Console (Sem Servidor Syslog)
+
+    Como funciona:
+
+        O Python se conecta via SSH (Paramiko/Netmiko) e executa show logging para ler logs do buffer.
+
+        Problema: Logs antigos são perdidos se o buffer estiver cheio.
+
+- **Cenário 2:** Análise de Logs em um Servidor Syslog (Graylog/ELK)
+
+    Como funciona:
+
+        Os dispositivos enviam logs para o servidor (ex: Graylog) via logging host.
+
+        O Python consome os logs do servidor (API/arquivos) para análise.
+
+- **Cenário 3:** Captura em Tempo Real (Terminal)
+
+    Como funciona:
+
+        O Python pode simular um terminal (ex: usando paramiko.invoke_shell()) para capturar logs enquanto são exibidos no console.
+
+        Uso típico: Monitorar eventos específicos (ex: falhas de interface).
+
+**Obs:**
+
+- Se o equipamento está configurado para enviar logs a um servidor (Graylog):
+
+    O Python não precisa acessar o dispositivo diretamente (a menos que queira executar comandos adicionais).
+
+    Basta analisar os logs no servidor (via API ou arquivos).
+
+- Se quiser garantir redundância:
+
+```bash
+
+! Configure ambos no dispositivo:
+logging host 192.168.1.100   # Graylog
+logging buffered 16384       # Backup local
+```
+
 ---
 Continuar
 
