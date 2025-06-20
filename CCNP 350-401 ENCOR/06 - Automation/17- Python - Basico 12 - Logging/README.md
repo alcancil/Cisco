@@ -309,9 +309,9 @@ O script Python pode atuar em três momentos distintos:
 
 - Se o equipamento está configurado para enviar logs a um servidor (Graylog):
 
-    O Python não precisa acessar o dispositivo diretamente (a menos que queira executar comandos adicionais).
+    > O Python não precisa acessar o dispositivo diretamente (a menos que queira executar comandos adicionais).
 
-    Basta analisar os logs no servidor (via API ou arquivos).
+    > Basta analisar os logs no servidor (via API ou arquivos).
 
 - Se quiser garantir redundância:
 
