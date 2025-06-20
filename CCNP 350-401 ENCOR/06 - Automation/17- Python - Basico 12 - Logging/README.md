@@ -19,6 +19,7 @@
     - [Destinos dos Logs em Dispositivos Cisco](#destinos-dos-logs-em-dispositivos-cisco)
   - [Exemplo de configuração completa:](#exemplo-de-configuração-completa)
   - [Quando o Python Entra em Ação?](#quando-o-python-entra-em-ação)
+    - [Coleta de Logs em Dispositivos Cisco](#coleta-de-logs-em-dispositivos-cisco)
 
 ### Por Que Logging é Essencial?
 
@@ -321,6 +322,19 @@ O script Python pode atuar em três momentos distintos:
 logging host 192.168.1.100   # Graylog
 logging buffered 16384       # Backup local
 ```
+
+### Coleta de Logs em Dispositivos Cisco  
+1. **Logs Locais (Buffer)**:  
+   - Use `show logging` via Python + Netmiko.  
+   - Limitado pelo tamanho do buffer.  
+
+2. **Servidor Syslog (Graylog/ELK)**:  
+   - Python lê via API ou arquivos.  
+   - Ideal para análise centralizada.  
+
+3. **Console/Terminal**:  
+   - Python pode capturar em tempo real com Paramiko.  
+   - Útil para monitoramento ativo.  
 
 ---
 Continuar
