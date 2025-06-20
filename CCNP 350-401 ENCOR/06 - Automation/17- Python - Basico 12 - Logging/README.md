@@ -361,16 +361,6 @@ graph TB
     style F stroke:#32CD32,stroke-width:2px
     style G stroke:#1E90FF,stroke-width:2px
 ```
-style E fill:#FFFACD,stroke:#FFA500
-style F fill:#F0FFF0,stroke:#32CD32
-style G fill:#F0F8FF,stroke:#1E90FF
-
-```mermaid
-graph LR
-    A[Dispositivo Cisco] -->|Envia Logs| B[Syslog Server]
-    B --> C[Python: Análise via API/Arquivos]
-    A --> D[Python: Coleta via SSH]
-```
 
 > **Atenção**: Nunca armazene senhas em código. Use variáveis de ambiente ou arquivos `.env` ou cofre de senhas.
 
