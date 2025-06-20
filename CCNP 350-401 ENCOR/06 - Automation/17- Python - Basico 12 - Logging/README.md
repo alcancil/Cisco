@@ -337,6 +337,33 @@ logging buffered 16384       # Backup local
    - Útil para monitoramento ativo.  
 
 ```mermaid
+graph TB
+    subgraph Dispositivo Cisco
+        A[Logs Gerados] --> B[Buffer/Memória]
+        A --> C[Syslog Server]
+        A --> D[Console]
+    end
+
+    subgraph Python
+        B -->|Netmiko\nshow logging| E[Arquivo Local buffer_log.txt]
+        C -->|API/Arquivos| F[Graylog/ELK\nanalysis.log]
+        D -->|Paramiko\nTerminal em Tempo Real| G[Monitoramento\nAlerta Instantâneo]
+    end
+
+    E --> H[Ferramentas de Análise]
+    F --> H
+    G --> H
+
+    style B stroke:#FFA500,stroke-width:2px
+    style C stroke:#32CD32,stroke-width:2px
+    style D stroke:#1E90FF,stroke-width:2px
+    style E fill:#FFFACD,stroke:#FFA500
+    style F fill:#F0FFF0,stroke:#32CD32
+    style G fill:#F0F8FF,stroke:#1E90FF
+```
+
+
+```mermaid
 graph LR
     A[Dispositivo Cisco] -->|Envia Logs| B[Syslog Server]
     B --> C[Python: Análise via API/Arquivos]
