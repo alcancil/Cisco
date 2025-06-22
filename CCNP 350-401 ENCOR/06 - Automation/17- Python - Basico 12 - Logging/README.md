@@ -432,6 +432,7 @@ graph TB
 📂 Estrutura Final do Projeto
 
 ```bash
+logging
 │
 └── 01
     └── print_logging.py
