@@ -24,9 +24,10 @@
       - [📌 **Quando Usar Cada Um**](#-quando-usar-cada-um)
       - [🚨 **Problemas com `print()` em Redes**](#-problemas-com-print-em-redes)
       - [✅ \*\*Vantagens do `logging` \*\*](#-vantagens-do-logging-)
-  - [Exercícios ( Exemplos )](#exercícios--exemplos-)
-  - [Exemplo 01 — Log básico com print() x logging.info()](#exemplo-01--log-básico-com-print-x-logginginfo)
-  - [Exemplo 02 — Log para arquivo .log](#exemplo-02--log-para-arquivo-log)
+  - [Exercícios](#exercícios)
+  - [Exercício 01 — Log básico com print() x logging.info()](#exercício-01--log-básico-com-print-x-logginginfo)
+  - [Exercício 02 — Log para arquivo .log](#exercício-02--log-para-arquivo-log)
+  - [Exercício 03 — Estrutura de pastas de logs](#exercício-03--estrutura-de-pastas-de-logs)
 
 ### Por Que Logging é Essencial?
 
@@ -422,9 +423,9 @@ graph TB
    2023-10-05 14:31:22 - ERROR - Timeout SSH em 192.168.1.1
 ```
 
-## Exercícios ( Exemplos )
+## Exercícios
 
-## Exemplo 01 — Log básico com print() x logging.info()
+## Exercício 01 — Log básico com print() x logging.info()
 
 **OBJETIVO:** Demonstrar as diferenças fundamentais entre saídas simples (`print()`) e logs estruturados (`logging`), aplicáveis a cenários de redes Cisco.
 
@@ -494,7 +495,7 @@ print("Interface Gig0/1 down!")
 logging.error("Interface Gig0/1 down - Verificar BGP/STP")
 ```
 
-## Exemplo 02 — Log para arquivo .log
+## Exercício 02 — Log para arquivo .log
 
     Redirecionar os logs para automacao.log
 
@@ -625,6 +626,135 @@ ERROR: 1 ocorrências
 CRITICAL: 1 ocorrências
 ```
 
+## Exercício 03 — Estrutura de pastas de logs
+
+**Objetivo:** Criar um sistema de logs organizado por tipo de tarefa em automação de redes.
+
+📂 Estrutura Final do Projeto
+
+```bash
+
+projeto_redes/
+├── logs/
+│   ├── vlan.log
+│   ├── usuario.log
+│   └── sistema.log
+└── rede.py
+```
+ 
+**rede.py**
+
+```python
+
+import logging
+import os
+from datetime import datetime
+
+# 1. Criar pasta 'logs' se não existir
+os.makedirs('logs', exist_ok=True)
+
+# 2. Configuração base
+def setup_logger(name, log_file, level=logging.INFO):
+    """Cria um logger customizado para cada tipo de tarefa"""
+    
+    # Cria o logger
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    
+    # Formatação profissional
+    formatter = logging.Formatter(
+        '%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    
+    # Handler para arquivo
+    file_handler = logging.FileHandler(f'logs/{log_file}')
+    file_handler.setFormatter(formatter)
+    
+    logger.addHandler(file_handler)
+    
+    return logger
+
+# 3. Loggers específicos (exemplo para VLANs)
+logger_vlan = setup_logger('vlan', 'vlan.log')
+logger_usuario = setup_logger('usuario', 'usuario.log')
+logger_sistema = setup_logger('sistema', 'sistema.log', logging.DEBUG)
+
+# --- Exemplos de uso ---
+
+# 4. Simulação de automação de VLAN
+def configurar_vlan(vlan_id, nome):
+    try:
+        logger_vlan.info(f"Iniciando configuração da VLAN {vlan_id}")
+        # Lógica fictícia (substitua por netmiko/ansible depois)
+        if not nome:
+            raise ValueError("Nome da VLAN vazio")
+            
+        logger_vlan.debug(f"Parâmetros: ID={vlan_id}, Nome={nome}")
+        logger_vlan.info(f"VLAN {vlan_id} ({nome}) configurada com sucesso")
+        
+    except Exception as e:
+        logger_vlan.error(f"Falha na VLAN {vlan_id}: {str(e)}", exc_info=True)
+
+# 5. Testando
+if __name__ == "__main__":
+    configurar_vlan(10, "GERENCIA")
+    configurar_vlan(20, "")  # Forçar erro
+    logger_usuario.warning("Usuário 'admin' fez login fora do horário comercial")
+    logger_sistema.debug("Memória utilizada: 45%")
+```
+
+📌 Saída Gerada nos Arquivos
+
+logs/vlan.log
+text
+
+2023-08-22 14:30:00 | vlan | INFO | Iniciando configuração da VLAN 10  
+2023-08-22 14:30:00 | vlan | DEBUG | Parâmetros: ID=10, Nome=GERENCIA  
+2023-08-22 14:30:00 | vlan | INFO | VLAN 10 (GERENCIA) configurada com sucesso  
+2023-08-22 14:30:01 | vlan | ERROR | Falha na VLAN 20: Nome da VLAN vazio  
+Traceback (most recent call last):  
+  File "rede.py", line 30, in configurar_vlan  
+    raise ValueError("Nome da VLAN vazio")  
+ValueError: Nome da VLAN vazio  
+
+logs/usuario.log
+text
+
+2023-08-22 14:30:01 | usuario | WARNING | Usuário 'admin' fez login fora do horário comercial  
+
+logs/sistema.log
+text
+
+2023-08-22 14:30:01 | sistema | DEBUG | Memória utilizada: 45%  
+
+🔍 Explicação dos Conceitos
+
+    logging.getLogger()
+
+        Cria loggers independentes para cada módulo/tarefa
+
+        Evita poluição entre logs de VLANs, usuários, etc.
+
+    FileHandler
+
+        Direciona logs para arquivos específicos
+
+        Permite rotação (ex: 1 arquivo por dia)
+
+    Níveis de Log
+
+        DEBUG: Detalhes técnicos (ex: parâmetros exatos)
+
+        INFO: Eventos normais (ex: configuração aplicada)
+
+        WARNING: Comportamentos incomuns
+
+        ERROR: Falhas recuperáveis
+
+
+
+
 
 
 
@@ -632,28 +762,19 @@ CRITICAL: 1 ocorrências
 Continuar
 
 
-
-🔹 Exemplo 03 — Estrutura de pastas de logs
-
-    Criar pasta logs/
-
-    Gerar log dinâmico por tipo de tarefa, ex: logs/vlan.log, logs/usuario.log
-
-    Uso de logging.getLogger('vlan')
-
-🔹 Exemplo 04 — Logs por data (log rotation manual)
+🔹 Exercício 04 — Logs por data (log rotation manual)
 
     Gerar um log que inclui data no nome: logs/backup_2024-06-11.log
 
     Mostrar como isso ajuda a organizar execuções por dia
 
-🔹 Exemplo 05 — Simular erro capturado via logging.exception()
+🔹 Exercício 05 — Simular erro capturado via logging.exception()
 
     Criar erro com try/except e gravar com logging.exception()
 
     Simular falha de conexão a dispositivo e logar a stack trace
 
-🔹 Exemplo 06 — Logs formatados e personalizados
+🔹 Exercício 06 — Logs formatados e personalizados
 
     Personalizar o formato do log: [%(asctime)s] [%(levelname)s] - %(message)s
 
@@ -661,7 +782,7 @@ Continuar
 
     Importante para quando for visualizar logs no Graylog futuramente
 
-🔹 Exemplo 07 — Integração com múltiplos arquivos Python
+🔹 Exercício 07 — Integração com múltiplos arquivos Python
 
     Criar um script principal e um módulo auxiliar (utils.py)
 
