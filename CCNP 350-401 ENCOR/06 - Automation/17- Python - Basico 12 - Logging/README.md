@@ -429,6 +429,14 @@ graph TB
 
 **OBJETIVO:** Demonstrar as diferenças fundamentais entre saídas simples (`print()`) e logs estruturados (`logging`), aplicáveis a cenários de redes Cisco.
 
+📂 Estrutura Final do Projeto
+
+```bash
+│
+└── 01
+    └── print_logging.py
+```
+
 **print_logging.py**
 
 ```Python
@@ -504,6 +512,19 @@ logging.error("Interface Gig0/1 down - Verificar BGP/STP")
     Analisar conteúdo do arquivo com cat e grep
 
 **OBJETIVO:** Redirecionar logs estruturados para um arquivo `automacao.log` com nível `DEBUG`, demonstrando análise em diferentes sistemas operacionais.
+
+📂 Estrutura Final do Projeto
+
+```bash
+logging
+│   
+└── 02
+    ├── analise_linux.py
+    ├── analise_windows.py
+    ├── arquivo_log_universal.py
+    └── automacao.log
+
+```
 
 **arquivo_log_universal.py**
 
@@ -660,7 +681,83 @@ Bloco 3: Geração de Logs de Exemplo
 **analise_linux.py**
 
 ```Python
+Bloco 1: Definição da Função
 
+[01] def analisar_log():                                                # Define a função principal para análise de logs
+
+Bloco 2: Leitura do Arquivo de Log
+
+[02]     with open('automacao.log', 'r') as f:                          # Abre o arquivo em modo leitura (seguro com 'with')
+[03]         linhas = f.readlines()                                     # Lê todas as linhas do arquivo para uma lista
+
+Bloco 3: Filtro de Erros Críticos
+
+[05]     print("\n=== ERROS CRÍTICOS ===")                              # Cabeçalho para seção de erros
+[06]     [print(l.strip()) for l in linha if "CRITICAL" in l]           # List comprehension que:
+                                                                        # 1. Filtra linhas com "CRITICAL"
+                                                                        # 2. Remove espaços em branco (.strip())
+                                                                        # 3. Imprime cada linha
+
+Bloco 4: Geração do Resumo Estatístico
+
+[08]     print("\n=== RESUMO ===")                                      # Cabeçalho para seção estatística
+[09]     niveis = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]     # Lista de níveis de log a analisar
+[10]     for nivel in niveis:                                           # Itera sobre cada nível
+[11]         qtd = sum(1 for linha in linhas if f"| {nivel}" in linha)  # Conta ocorrências:
+                                                                        # 1. Generator expression para eficiência
+                                                                        # 2. Verifica padrão "| NÍVEL" no log
+[12]         print(f"{nivel}: {qtd} ocorrências")                       # Formata saída (ex: "INFO: 5 ocorrências")
+
+Bloco 5: Execução Condicional
+
+[14] if __name__ == "__main__":                                         # Verifica se o script está sendo executado diretamente
+[15]     analisar_log()                                                 # Chama a função principal
+```
+
+**analise_windows.py**
+
+```Python
+Bloco 1: Definição da Função Principal
+
+[01] def analisar_log():                                             # Define a função principal para análise de logs
+
+Bloco 2: Leitura do Arquivo de Log
+
+[02]     with open('automacao.log', 'r') as f:                       # Abre o arquivo em modo leitura (auto-fechamento com 'with')
+[03]         linhas = f.readlines()                                  # Lê todas as linhas do arquivo para uma lista
+
+Bloco 3: Exibição de Erros Críticos
+
+[05]     print("\n--- ERROS CRÍTICOS ---")                           # Cabeçalho para a seção de erros
+[06]     [print(l.strip()) for l in linhas if "CRITICAL" in l]       # Exibe erros críticos onde:
+                                                                              # 1. Filtra linhas com "CRITICAL"
+                                                                              # 2. Remove espaços extras (.strip())
+                                                                              # 3. Imprime cada linha
+
+Bloco 4: Configuração do Contador
+
+[08]     print("\n--- RESUMO ---")                                   # Cabeçalho para a seção estatística
+[09]     from collections import defaultdict                         # Importa o defaultdict para contagem eficiente
+[10]     contador = defaultdict(int)                                 # Cria um dicionário com valores padrão 0 (int)
+
+Bloco 5: Contagem de Ocorrências por Nível
+
+[12]     for linha in linhas:                                        # Itera sobre cada linha do log
+[13]         if "| DEBUG" in linha: contador["DEBUG"] += 1           # Conta logs DEBUG
+[14]         elif "| INFO" in linha: contador["INFO"] += 1           # Conta logs INFO
+[15]         elif "| WARNING" in linha: contador["WARNING"] += 1     # Conta logs WARNING
+[16]         elif "| ERROR" in linha: contador["ERROR"] += 1         # Conta logs ERROR
+[17]         elif "| CRITICAL" in linha: contador["CRITICAL"] += 1   # Conta logs CRITICAL
+
+Bloco 6: Exibição dos Resultados
+
+[19]     for nivel, qtd in contador.items():                         # Itera sobre o dicionário de contagens
+[20]         print(f"{nivel}: {qtd} ocorrência(s)")                  # Formata a saída (plural condicional)
+
+Bloco 7: Execução Condicional
+
+[22] if __name__ == "__main__":                                      # Verifica se o script está sendo executado diretamente
+[23]     analisar_log()                                              # Chama a função principal de análise
 ```
 
 ## Exercício 03 — Estrutura de pastas de logs
@@ -671,14 +768,14 @@ Bloco 3: Geração de Logs de Exemplo
 
 ```bash
 
-automacoes/
-└── logging/
-    03/
-       ├── logs/ 
-       │        ├── vlan.log
-       │        ├── usuario.log
-       │        └── sistema.log
-       └── rede.py
+logging
+│   
+└── 03
+    ├── logs
+    │   ├── sistema.log
+    │   ├── usuario.log
+    │   └── vlan.log
+    └── rede.py
 ```
  
 **rede.py**
