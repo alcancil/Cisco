@@ -646,62 +646,62 @@ projeto_redes/
 
 ```python
 
-import logging
-import os
-from datetime import datetime
-
-# 1. Criar pasta 'logs' se não existir
-os.makedirs('logs', exist_ok=True)
-
-# 2. Configuração base
-def setup_logger(name, log_file, level=logging.INFO):
-    """Cria um logger customizado para cada tipo de tarefa"""
-    
-    # Cria o logger
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    
-    # Formatação profissional
-    formatter = logging.Formatter(
-        '%(asctime)s | %(name)s | %(levelname)s | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    
-    # Handler para arquivo
-    file_handler = logging.FileHandler(f'logs/{log_file}')
-    file_handler.setFormatter(formatter)
-    
-    logger.addHandler(file_handler)
-    
-    return logger
-
-# 3. Loggers específicos (exemplo para VLANs)
-logger_vlan = setup_logger('vlan', 'vlan.log')
-logger_usuario = setup_logger('usuario', 'usuario.log')
-logger_sistema = setup_logger('sistema', 'sistema.log', logging.DEBUG)
-
-# --- Exemplos de uso ---
-
-# 4. Simulação de automação de VLAN
-def configurar_vlan(vlan_id, nome):
-    try:
-        logger_vlan.info(f"Iniciando configuração da VLAN {vlan_id}")
-        # Lógica fictícia (substitua por netmiko/ansible depois)
-        if not nome:
-            raise ValueError("Nome da VLAN vazio")
-            
-        logger_vlan.debug(f"Parâmetros: ID={vlan_id}, Nome={nome}")
-        logger_vlan.info(f"VLAN {vlan_id} ({nome}) configurada com sucesso")
-        
-    except Exception as e:
-        logger_vlan.error(f"Falha na VLAN {vlan_id}: {str(e)}", exc_info=True)
-
-# 5. Testando
-if __name__ == "__main__":
-    configurar_vlan(10, "GERENCIA")
-    configurar_vlan(20, "")  # Forçar erro
-    logger_usuario.warning("Usuário 'admin' fez login fora do horário comercial")
-    logger_sistema.debug("Memória utilizada: 45%")
+[01] import logging
+[02] import os
+[03] from datetime import datetime
+[04]
+[05] # 1. Criar pasta 'logs' se não existir
+[06] os.makedirs('logs', exist_ok=True)
+[07]
+[08] # 2. Configuração base
+[09] def setup_logger(name, log_file, level=logging.INFO):
+[10]     """Cria um logger customizado para cada tipo de tarefa"""
+[11]     
+[12]     # Cria o logger
+[13]     logger = logging.getLogger(name)
+[14]     logger.setLevel(level)
+[15]     
+[16]     # Formatação profissional
+[17]     formatter = logging.Formatter(
+[18]         '%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+[19]         datefmt='%Y-%m-%d %H:%M:%S'
+[20]     )
+[21]     
+[22]     # Handler para arquivo
+[23]     file_handler = logging.FileHandler(f'logs/{log_file}')
+[24]     file_handler.setFormatter(formatter)
+[25]     
+[26]     logger.addHandler(file_handler)
+[27]     
+[28]     return logger
+[29] 
+[30] # 3. Loggers específicos (exemplo para VLANs)
+[31] logger_vlan = setup_logger('vlan', 'vlan.log')
+[32] logger_usuario = setup_logger('usuario', 'usuario.log')
+[33] logger_sistema = setup_logger('sistema', 'sistema.log', logging.DEBUG)
+[34]
+[35] # --- Exemplos de uso ---
+[36]
+[37] # 4. Simulação de automação de VLAN
+[38] def configurar_vlan(vlan_id, nome):
+[39]     try:
+[40]         logger_vlan.info(f"Iniciando configuração da VLAN {vlan_id}")
+[41]         # Lógica fictícia (substitua por netmiko/ansible depois)
+[42]         if not nome:
+[43]             raise ValueError("Nome da VLAN vazio")
+[44]             
+[45]         logger_vlan.debug(f"Parâmetros: ID={vlan_id}, Nome={nome}")
+[46]         logger_vlan.info(f"VLAN {vlan_id} ({nome}) configurada com sucesso")
+[47]         
+[48]     except Exception as e:
+[49]         logger_vlan.error(f"Falha na VLAN {vlan_id}: {str(e)}", exc_info=True)
+[50] 
+[51] # 5. Testando
+[52] if __name__ == "__main__":
+[53]     configurar_vlan(10, "GERENCIA")
+[54]     configurar_vlan(20, "")  # Forçar erro
+[55]     logger_usuario.warning("Usuário 'admin' fez login fora do horário comercial")
+[56]     logger_sistema.debug("Memória utilizada: 45%")
 ```
 
 **Saída**
@@ -733,6 +733,77 @@ ValueError: Nome da VLAN vazio
 (venv) alcancil@linux:~/automacoes/logging/03/logs$ 
 ```
 
+**Explicação**
+
+```Python
+Bloco 1: Importações
+
+[01] import logging                                                                    # Biblioteca padrão para geração de logs
+[02] import os                                                                         # Para operações com sistema de arquivos
+[03] from datetime import datetime                                                     # Para manipulação de datas/horas (usado indiretamente pelo logging)
+
+Bloco 2: Criação da Pasta de Logs
+
+[05] # 1. Criar pasta 'logs' se não existir
+[06] os.makedirs('logs', exist_ok=True)                                                 # Cria diretório 'logs' caso não exista (evita erros)
+                                                                                        # 'exist_ok=True' ignora se pasta já existir
+
+Bloco 3: Configuração Base do Logger
+
+[08] # 2. Configuração base
+[09] def setup_logger(name, log_file, level=logging.INFO):                              # Define função para criar loggers customizados
+[10]     """Cria um logger customizado para cada tipo de tarefa"""                      # Docstring explicativa
+[11]     
+[12]     # Cria o logger
+[13]     logger = logging.getLogger(name)                                               # Obtém ou cria um logger com o nome especificado
+[14]     logger.setLevel(level)                                                         # Define nível mínimo de log (INFO por padrão)
+[15]     
+[16]     # Formatação profissional
+[17]     formatter = logging.Formatter(                                                 # Cria formatador para as mensagens
+[18]         '%(asctime)s | %(name)s | %(levelname)s | %(message)s',                    # Padrão: data+hora | nome | nível | mensagem
+[19]         datefmt='%Y-%m-%d %H:%M:%S'                                                # Formato da data: '2023-08-22 14:30:00'
+[20]     )
+[21]     
+[22]     # Handler para arquivo
+[23]     file_handler = logging.FileHandler(f'logs/{log_file}')                         # Cria handler para gravar em arquivo
+[24]     file_handler.setFormatter(formatter)                                           # Aplica formatação ao handler
+[25]     
+[26]     logger.addHandler(file_handler)                                                # Adiciona o handler ao logger
+[27]     
+[28]     return logger                                                                  # Retorna o logger configurado
+
+Bloco 4: Criação dos Loggers Específicos
+
+[30] # 3. Loggers específicos (exemplo para VLANs)
+[31] logger_vlan = setup_logger('vlan', 'vlan.log')                                     # Logger para operações de VLAN (nível INFO)
+[32] logger_usuario = setup_logger('usuario', 'usuario.log')                            # Logger para ações de usuário
+[33] logger_sistema = setup_logger('sistema', 'sistema.log', logging.DEBUG)             # Logger para sistema (nível DEBUG)
+
+Bloco 5: Função de Exemplo (VLAN)
+
+[37] # 4. Simulação de automação de VLAN
+[38] def configurar_vlan(vlan_id, nome):                                                # Função exemplo para configuração de VLAN
+[39]     try:
+[40]         logger_vlan.info(f"Iniciando configuração da VLAN {vlan_id}")              # Log nível INFO
+[41]         # Lógica fictícia (substitua por netmiko/ansible depois)
+[42]         if not nome:
+[43]             raise ValueError("Nome da VLAN vazio")                                 # Força erro se nome estiver vazio
+[44]             
+[45]         logger_vlan.debug(f"Parâmetros: ID={vlan_id}, Nome={nome}")                # Log nível DEBUG (só aparece se configurado)
+[46]         logger_vlan.info(f"VLAN {vlan_id} ({nome}) configurada com sucesso")       # Log de sucesso
+[47]         
+[48]     except Exception as e:
+[49]         logger_vlan.error(f"Falha na VLAN {vlan_id}: {str(e)}", exc_info=True)     # Log de erro com stack trace
+
+Bloco 6: Teste dos Loggers
+
+[51] # 5. Testando
+[52] if __name__ == "__main__":                                                         # Executa apenas se o script for rodado diretamente
+[53]     configurar_vlan(10, "GERENCIA")                                                # Caso de sucesso
+[54]     configurar_vlan(20, "")                                                        # Caso de erro (nome vazio)
+[55]     logger_usuario.warning("Usuário 'admin' fez login fora do horário comercial")  # Log nível WARNING
+[56]     logger_sistema.debug("Memória utilizada: 45%")                                 # Log nível DEBUG (só aparece no sistema.log)
+```
 
 **🔍 Explicação dos Conceitos**
 
