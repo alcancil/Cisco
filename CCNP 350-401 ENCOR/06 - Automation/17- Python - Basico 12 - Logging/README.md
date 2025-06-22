@@ -508,69 +508,69 @@ logging.error("Interface Gig0/1 down - Verificar BGP/STP")
 **arquivo_log_universal.py**
 
 ```Python
-import logging
-import platform
-
-logging.basicConfig(
-    filename='automacao.log',
-    level=logging.DEBUG,
-    format='%(asctime)s | %(levelname)-8s | %(message)s'
-)
-
-# Logs de exemplo
-logging.debug("Debug: Configuração carregada")
-logging.info(f"SO detectado: {platform.system()}")
-logging.warning("Alerta: CPU acima de 80%")
-logging.error("Erro: Timeout na conexão SSH")
-logging.critical("CRÍTICO: Dispositivo offline")
+[01] import logging
+[02] import platform
+[03] 
+[04] logging.basicConfig(
+[05]     filename='automacao.log',
+[06]     level=logging.DEBUG,
+[07]     format='%(asctime)s | %(levelname)-8s | %(message)s'
+[08] )
+[09] 
+[10] # Logs de exemplo
+[11] logging.debug("Debug: Configuração carregada")
+[12] logging.info(f"SO detectado: {platform.system()}")
+[13] logging.warning("Alerta: CPU acima de 80%")
+[14] logging.error("Erro: Timeout na conexão SSH")
+[15] logging.critical("CRÍTICO: Dispositivo offline")
 ```
 
 **analise_linux.py**
 
 ```Python
-def analisar_log():
-    with open('automacao.log', 'r') as f:
-        linhas = f.readlines()
-    
-    print("\n=== ERROS CRÍTICOS ===")
-    [print(l.strip()) for l in linhas if "CRITICAL" in l]
-    
-    print("\n=== RESUMO ===")
-    niveis = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    for nivel in niveis:
-        qtd = sum(1 for linha in linhas if f"| {nivel}" in linha)
-        print(f"{nivel}: {qtd} ocorrências")
-
-if __name__ == "__main__":
-    analisar_log()
+[01] def analisar_log():
+[02]     with open('automacao.log', 'r') as f:
+[03]         linhas = f.readlines()
+[04]     
+[05]     print("\n=== ERROS CRÍTICOS ===")
+[06]     [print(l.strip()) for l in linhas if "CRITICAL" in l]
+[07]     
+[08]     print("\n=== RESUMO ===")
+[09]     niveis = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+[10]     for nivel in niveis:
+[11]         qtd = sum(1 for linha in linhas if f"| {nivel}" in linha)
+[12]         print(f"{nivel}: {qtd} ocorrências")
+[13] 
+[14] if __name__ == "__main__":
+[15]     analisar_log()
 ```
 
 **analise_windows.py**
 
 ```Python
-def analisar_log():
-    with open('automacao.log', 'r') as f:
-        linhas = f.readlines()
-    
-    print("\n--- ERROS CRÍTICOS ---")
-    [print(l.strip()) for l in linhas if "CRITICAL" in l]
-    
-    print("\n--- RESUMO ---")
-    from collections import defaultdict
-    contador = defaultdict(int)
-    
-    for linha in linhas:
-        if "| DEBUG" in linha: contador["DEBUG"] += 1
-        elif "| INFO" in linha: contador["INFO"] += 1
-        elif "| WARNING" in linha: contador["WARNING"] += 1
-        elif "| ERROR" in linha: contador["ERROR"] += 1
-        elif "| CRITICAL" in linha: contador["CRITICAL"] += 1
-    
-    for nivel, qtd in contador.items():
-        print(f"{nivel}: {qtd} ocorrência(s)")
-
-if __name__ == "__main__":
-    analisar_log()
+[01] def analisar_log():
+[02]     with open('automacao.log', 'r') as f:
+[03]         linhas = f.readlines()
+[04]     
+[05]     print("\n--- ERROS CRÍTICOS ---")
+[06]     [print(l.strip()) for l in linhas if "CRITICAL" in l]
+[07]     
+[08]     print("\n--- RESUMO ---")
+[09]     from collections import defaultdict
+[10]     contador = defaultdict(int)
+[11]     
+[12]     for linha in linhas:
+[13]         if "| DEBUG" in linha: contador["DEBUG"] += 1
+[14]         elif "| INFO" in linha: contador["INFO"] += 1
+[15]         elif "| WARNING" in linha: contador["WARNING"] += 1
+[16]         elif "| ERROR" in linha: contador["ERROR"] += 1
+[17]         elif "| CRITICAL" in linha: contador["CRITICAL"] += 1
+[18]    
+[19]     for nivel, qtd in contador.items():
+[20]         print(f"{nivel}: {qtd} ocorrência(s)")
+[21]
+[22] if __name__ == "__main__":
+[23]     analisar_log()
 ```
 
 **Como utilizar?**  
@@ -626,6 +626,43 @@ ERROR: 1 ocorrências
 CRITICAL: 1 ocorrências
 ```
 
+**Explicação**
+
+**arquivo_log_universal.py**
+
+```Python
+Bloco 1: Importações
+
+[01] import logging                                            # Importa o módulo de logging padrão do Python para geração de logs
+[02] import platform                                           # Importa o módulo para obter informações do sistema operacional
+
+Bloco 2: Configuração Básica do Logging
+
+[04] logging.basicConfig(                                       # Função para configuração básica do sistema de logs
+[05]     filename='automacao.log',                              # Especifica o arquivo onde os logs serão salvos
+[06]     level=logging.DEBUG,                                   # Define o nível mínimo de log para DEBUG (captura todos)
+[07]     format='%(asctime)s | %(levelname)-8s | %(message)s'   # Formato das mensagens:
+                                                                # - %(asctime)s: Data/hora
+                                                                # - %(levelname)-8s: Nível do log (alinhado em 8 chars)
+                                                                # - %(message)s: Mensagem do log
+[08] )
+
+Bloco 3: Geração de Logs de Exemplo
+
+[10] # Logs de exemplo
+[11] logging.debug("Debug: Configuração carregada")             # Mensagem de DEBUG (nível mais baixo, para detalhes)
+[12] logging.info(f"SO detectado: {platform.system()}")         # Mensagem INFO (informações gerais)
+[13] logging.warning("Alerta: CPU acima de 80%")                # Mensagem WARNING (alerta sobre problemas não críticos)
+[14] logging.error("Erro: Timeout na conexão SSH")              # Mensagem ERROR (erros que afetam funcionalidades)
+[15] logging.critical("CRÍTICO: Dispositivo offline")           # Mensagem CRITICAL (falhas graves que exigem ação imediata)
+```
+
+**analise_linux.py**
+
+```Python
+
+```
+
 ## Exercício 03 — Estrutura de pastas de logs
 
 **Objetivo:** Criar um sistema de logs organizado por tipo de tarefa em automação de redes.
@@ -634,12 +671,14 @@ CRITICAL: 1 ocorrências
 
 ```bash
 
-projeto_redes/
-├── logs/
-│   ├── vlan.log
-│   ├── usuario.log
-│   └── sistema.log
-└── rede.py
+automacoes/
+└── logging/
+    03/
+       ├── logs/ 
+       │        ├── vlan.log
+       │        ├── usuario.log
+       │        └── sistema.log
+       └── rede.py
 ```
  
 **rede.py**
