@@ -441,36 +441,36 @@ logging
 **print_logging.py**
 
 ```Python
-# Exemplo 01 — Log básico com print() x logging.info()
-
-import logging
-
-# Configuração básica do logging (terminal + formato)
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler()]  # Saída no terminal
-)
-
-print("=== DEMONSTRAÇÃO PRINT() VS LOGGING ===")
-
-# Cenário: Conexão SSH simulada
-device_ip = "192.168.1.1"
-
-# Método 1: Usando print()
-print(f"[Simples] Tentando conectar a {device_ip}...")
-print(f"[Simples] Conexão SSH estabelecida com {device_ip}")
-
-# Método 2: Usando logging
-logging.debug(f"DEBUG: Mensagem invisível (nível configurado como INFO)")  # Não será exibido
-logging.info(f"Conectando a {device_ip}...")
-logging.warning(f"Conexão estabelecida com {device_ip} (nível WARNING como exemplo)")
-
-print("\n=== ANÁLISE ===")
-print("Observe como logging oferece:")
-print("- Timestamp automático")
-print("- Nível de severidade")
-print("- Formatação consistente")
+[01] # Exemplo 01 — Log básico com print() x logging.info()
+[02] 
+[03] import logging
+[04] 
+[05] # Configuração básica do logging (terminal + formato)
+[06] logging.basicConfig(
+[07]     level=logging.INFO,
+[08]     format='%(asctime)s - %(levelname)s - %(message)s',
+[09]     handlers=[logging.StreamHandler()]  # Saída no terminal
+[10] )
+[11] 
+[12] print("=== DEMONSTRAÇÃO PRINT() VS LOGGING ===")
+[13] 
+[14] # Cenário: Conexão SSH simulada
+[15] device_ip = "192.168.1.1"
+[16] 
+[17] # Método 1: Usando print()
+[18] print(f"[Simples] Tentando conectar a {device_ip}...")
+[19] print(f"[Simples] Conexão SSH estabelecida com {device_ip}")
+[20] 
+[21] # Método 2: Usando logging
+[22] logging.debug(f"DEBUG: Mensagem invisível (nível configurado como INFO)")  # Não será exibido
+[23] logging.info(f"Conectando a {device_ip}...")
+[24] logging.warning(f"Conexão estabelecida com {device_ip} (nível WARNING como exemplo)")
+[25] 
+[26] print("\n=== ANÁLISE ===")
+[27] print("Observe como logging oferece:")
+[28] print("- Timestamp automático")
+[29] print("- Nível de severidade")
+[30] print("- Formatação consistente")
 ```
    
 **Saída**
@@ -502,6 +502,57 @@ print("Interface Gig0/1 down!")
 
 # ✅ Profissional (CCNP-style)
 logging.error("Interface Gig0/1 down - Verificar BGP/STP")
+```
+
+**Explicação**
+
+**print_logging.py**
+
+```Python
+Bloco 1: Cabeçalho e Importações
+
+[01] # Exemplo 01 — Log básico com print() x logging.info()  # Descrição do exemplo
+[02] 
+[03] import logging                                                                        # Importa o módulo de logging padrão do Python
+
+Bloco 2: Configuração Básica do Logging
+
+[05] # Configuração básica do logging (terminal + formato)  # Comentário explicativo
+[06] logging.basicConfig(                                                                  # Função para configuração básica do sistema de logs
+[07]     level=logging.INFO,                                                               # Define o nível mínimo de log para INFO (ignora DEBUG)
+[08]     format='%(asctime)s - %(levelname)s - %(message)s',                               # Formato padrão das mensagens
+[09]     handlers=[logging.StreamHandler()]                                                # Saída no terminal (console)
+[10] )                                                                                     # Fecha a configuração
+
+Bloco 3: Demonstração Inicial
+
+[12] print("=== DEMONSTRAÇÃO PRINT() VS LOGGING ===")                                      # Título da demonstração
+
+Bloco 4: Cenário de Exemplo
+
+[14] # Cenário: Conexão SSH simulada  # Contexto do exemplo
+[15] device_ip = "192.168.1.1"                                                             # Define um endereço IP fictício para o exemplo
+
+Bloco 5: Método Tradicional (print)
+
+[17] # Método 1: Usando print()                                                            # Demonstração da abordagem tradicional
+[18] print(f"[Simples] Tentando conectar a {device_ip}...")                                # Mensagem de status
+[19] print(f"[Simples] Conexão SSH estabelecida com {device_ip}")                          # Mensagem de sucesso
+
+Bloco 6: Método Profissional (logging)
+
+[21] # Método 2: Usando logging  # Demonstração da abordagem profissional
+[22] logging.debug(f"DEBUG: Mensagem invisível (nível configurado como INFO)")              # Exemplo de mensagem que não será exibida
+[23] logging.info(f"Conectando a {device_ip}...")                                           # Mensagem de nível INFO (será exibida)
+[24] logging.warning(f"Conexão estabelecida com {device_ip} (nível WARNING como exemplo)")  # Mensagem de nível WARNING (será exibida)
+
+Bloco 7: Análise Comparativa
+
+[26] print("\n=== ANÁLISE ===")                                                             # Cabeçalho da seção de análise
+[27] print("Observe como logging oferece:")                                                 # Introdução às vantagens
+[28] print("- Timestamp automático")                                                        # Vantagem 1: Registro temporal
+[29] print("- Nível de severidade")                                                         # Vantagem 2: Classificação de importância
+[30] print("- Formatação consistente")                                                      # Vantagem 3: Padronização de saída
 ```
 
 ## Exercício 02 — Log para arquivo .log
