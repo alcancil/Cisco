@@ -26,6 +26,7 @@
       - [✅ \*\*Vantagens do `logging` \*\*](#-vantagens-do-logging-)
   - [Exercícios ( Exemplos )](#exercícios--exemplos-)
   - [Exemplo 01 — Log básico com print() x logging.info()](#exemplo-01--log-básico-com-print-x-logginginfo)
+  - [Exemplo 02 — Log para arquivo .log](#exemplo-02--log-para-arquivo-log)
 
 ### Por Que Logging é Essencial?
 
@@ -493,17 +494,144 @@ print("Interface Gig0/1 down!")
 logging.error("Interface Gig0/1 down - Verificar BGP/STP")
 ```
 
----
-Continuar
-
-
-🔹 Exemplo 02 — Log para arquivo .log
+## Exemplo 02 — Log para arquivo .log
 
     Redirecionar os logs para automacao.log
 
     Definir nível DEBUG e mostrar logs de todos os tipos
 
     Analisar conteúdo do arquivo com cat e grep
+
+**OBJETIVO:** Redirecionar logs estruturados para um arquivo `automacao.log` com nível `DEBUG`, demonstrando análise em diferentes sistemas operacionais.
+
+**arquivo_log_universal.py**
+
+```Python
+import logging
+import platform
+
+logging.basicConfig(
+    filename='automacao.log',
+    level=logging.DEBUG,
+    format='%(asctime)s | %(levelname)-8s | %(message)s'
+)
+
+# Logs de exemplo
+logging.debug("Debug: Configuração carregada")
+logging.info(f"SO detectado: {platform.system()}")
+logging.warning("Alerta: CPU acima de 80%")
+logging.error("Erro: Timeout na conexão SSH")
+logging.critical("CRÍTICO: Dispositivo offline")
+```
+
+**analise_linux.py**
+
+```Python
+def analisar_log():
+    with open('automacao.log', 'r') as f:
+        linhas = f.readlines()
+    
+    print("\n=== ERROS CRÍTICOS ===")
+    [print(l.strip()) for l in linhas if "CRITICAL" in l]
+    
+    print("\n=== RESUMO ===")
+    niveis = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    for nivel in niveis:
+        qtd = sum(1 for linha in linhas if f"| {nivel}" in linha)
+        print(f"{nivel}: {qtd} ocorrências")
+
+if __name__ == "__main__":
+    analisar_log()
+```
+
+**analise_windows.py**
+
+```Python
+def analisar_log():
+    with open('automacao.log', 'r') as f:
+        linhas = f.readlines()
+    
+    print("\n--- ERROS CRÍTICOS ---")
+    [print(l.strip()) for l in linhas if "CRITICAL" in l]
+    
+    print("\n--- RESUMO ---")
+    from collections import defaultdict
+    contador = defaultdict(int)
+    
+    for linha in linhas:
+        if "| DEBUG" in linha: contador["DEBUG"] += 1
+        elif "| INFO" in linha: contador["INFO"] += 1
+        elif "| WARNING" in linha: contador["WARNING"] += 1
+        elif "| ERROR" in linha: contador["ERROR"] += 1
+        elif "| CRITICAL" in linha: contador["CRITICAL"] += 1
+    
+    for nivel, qtd in contador.items():
+        print(f"{nivel}: {qtd} ocorrência(s)")
+
+if __name__ == "__main__":
+    analisar_log()
+```
+
+**Como utilizar?**  
+
+- python3 arquivo_log_universal.py  # Gera o log
+- python3 analise_linux.py          # Analisa o log
+- python arquivo_log_universal.py   # Gera o log
+- python analise_windows.py         # Analisa o log
+
+
+**Saída**
+
+```bash
+alcancil@linux:~/automacoes/logging/02$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/02$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/02$ python3 arquivo_log_universal.py 
+```
+
+**OBS:** como primeiro geramos o log em um arquivo de log, vou mostrar o formato e conteúdo do arquivo
+
+```Bash
+(venv) alcancil@linux:~/automacoes/logging/02$ ls -la
+total 28
+drwxrwxr-x 3 alcancil alcancil 4096 jun 21 14:37 .
+drwxrwxr-x 4 alcancil alcancil 4096 jun 21 14:31 ..
+-rw-r--r-- 1 root     root      477 jun 21 14:33 analise_linux.py
+-rw-r--r-- 1 root     root      758 jun 21 14:34 analise_windows.py
+-rw-r--r-- 1 root     root      427 jun 21 14:32 arquivo_log_universal.py
+-rw-rw-r-- 1 alcancil alcancil  322 jun 21 14:36 automacao.log
+drwxrwxr-x 5 alcancil alcancil 4096 jun 21 14:35 venv
+(venv) alcancil@linux:~/automacoes/logging/02$ cat automacao.log 
+2025-06-21 14:36:08,931 | DEBUG    | Debug: Configuração carregada
+2025-06-21 14:36:08,931 | INFO     | SO detectado: Linux
+2025-06-21 14:36:08,931 | WARNING  | Alerta: CPU acima de 80%
+2025-06-21 14:36:08,931 | ERROR    | Erro: Timeout na conexão SSH
+2025-06-21 14:36:08,931 | CRITICAL | CRÍTICO: Dispositivo offline
+(venv) alcancil@linux:~/automacoes/logging/02$ 
+```
+
+- Agora vamos realizar a análise como script
+
+```Bash
+(venv) alcancil@linux:~/automacoes/logging/02$ python3 analise_linux.py 
+
+=== ERROS CRÍTICOS ===
+2025-06-21 14:36:08,931 | CRITICAL | CRÍTICO: Dispositivo offline
+
+=== RESUMO ===
+DEBUG: 1 ocorrências
+INFO: 1 ocorrências
+WARNING: 1 ocorrências
+ERROR: 1 ocorrências
+CRITICAL: 1 ocorrências
+```
+
+
+
+
+---
+Continuar
+
+
 
 🔹 Exemplo 03 — Estrutura de pastas de logs
 
