@@ -704,31 +704,37 @@ if __name__ == "__main__":
     logger_sistema.debug("Memória utilizada: 45%")
 ```
 
-📌 Saída Gerada nos Arquivos
+**Saída**
 
-logs/vlan.log
-text
+**vlan.log***
 
-2023-08-22 14:30:00 | vlan | INFO | Iniciando configuração da VLAN 10  
-2023-08-22 14:30:00 | vlan | DEBUG | Parâmetros: ID=10, Nome=GERENCIA  
-2023-08-22 14:30:00 | vlan | INFO | VLAN 10 (GERENCIA) configurada com sucesso  
-2023-08-22 14:30:01 | vlan | ERROR | Falha na VLAN 20: Nome da VLAN vazio  
-Traceback (most recent call last):  
-  File "rede.py", line 30, in configurar_vlan  
-    raise ValueError("Nome da VLAN vazio")  
-ValueError: Nome da VLAN vazio  
+```Bash
+alcancil@linux:~/automacoes/logging/03$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/03$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/03$ python3 rede.py 
+(venv) alcancil@linux:~/automacoes/logging/03$ ls
+logs  rede.py  venv
+(venv) alcancil@linux:~/automacoes/logging/03$ cd logs
+(venv) alcancil@linux:~/automacoes/logging/03/logs$ ls
+sistema.log  usuario.log  vlan.log
+(venv) alcancil@linux:~/automacoes/logging/03/logs$ cat sistema.log 
+2025-06-22 17:22:58 | sistema | DEBUG | Memória utilizada: 45%
+(venv) alcancil@linux:~/automacoes/logging/03/logs$ cat usuario.log 
+2025-06-22 17:22:58 | usuario | WARNING | Usuário 'admin' fez login fora do horário comercial
+(venv) alcancil@linux:~/automacoes/logging/03/logs$ cat vlan.log 
+2025-06-22 17:22:58 | vlan | INFO | Iniciando configuração da VLAN 10
+2025-06-22 17:22:58 | vlan | INFO | VLAN 10 (GERENCIA) configurada com sucesso
+2025-06-22 17:22:58 | vlan | INFO | Iniciando configuração da VLAN 20
+2025-06-22 17:22:58 | vlan | ERROR | Falha na VLAN 20: Nome da VLAN vazio
+Traceback (most recent call last):
+  File "/home/alcancil/automacoes/logging/03/rede.py", line 43, in configurar_vlan
+    raise ValueError("Nome da VLAN vazio")
+ValueError: Nome da VLAN vazio
+(venv) alcancil@linux:~/automacoes/logging/03/logs$ 
+```
 
-logs/usuario.log
-text
 
-2023-08-22 14:30:01 | usuario | WARNING | Usuário 'admin' fez login fora do horário comercial  
-
-logs/sistema.log
-text
-
-2023-08-22 14:30:01 | sistema | DEBUG | Memória utilizada: 45%  
-
-🔍 Explicação dos Conceitos
+**🔍 Explicação dos Conceitos**
 
     logging.getLogger()
 
