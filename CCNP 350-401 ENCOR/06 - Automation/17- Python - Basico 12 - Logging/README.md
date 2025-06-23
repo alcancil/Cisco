@@ -1058,7 +1058,16 @@ Ferramentas de Log Rotation Automático
 | Windows    | PowerShell Scripts ou LogRotateWin | Simula o logrotate do Linux.                          |
 | Aplicações | Bibliotecas (Python/Java/Node.js)  | Implementa rotação dentro do próprio código.          |
 
-Vamos agora ao exercício.  
+Vamos agora ao exercício.
+
+📂 Estrutura Final do Projeto
+
+```Bash
+04
+    ├── log_rotate.py
+    └── logs
+        └── backup_2025-06-22.log
+```
 
 **log_rotation.py (Multiplaforma)**  
 
@@ -1127,12 +1136,7 @@ backup_2025-06-22.log
 (venv) alcancil@linux:~/automacoes/logging/04/logs$ 
 ```
 
-Conteúdo do Arquivo de Log
-text
 
-14:30:45 - INFO - Iniciando processo de backup
-14:30:45 - WARNING - Atenção: disco com 85% de uso
-14:30:45 - ERROR - Falha na conexão com o banco de dados
 
 Rotação Automatizada (Extensão do Exemplo)
 
