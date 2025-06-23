@@ -1544,6 +1544,19 @@ Traceback... (stack trace)
    - Mostrar log com data/hora, tipo de log e mensagem
 
    - Importante para quando for visualizar logs em um SIEM ( Graylog / Wazuh / Splunk) futuramente
+  
+📂 Estrutura Final do Projeto  
+
+```bash
+06
+├── formatted_logs
+│   └── app_20250623.log
+├── log2.py
+├── logs.py
+├── requirements.txt
+└── siem_logs
+    └── app_20250623.json
+```
 
 **log.py**
 
