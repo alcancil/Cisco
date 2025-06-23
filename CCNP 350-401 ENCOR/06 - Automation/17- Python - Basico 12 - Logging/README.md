@@ -1937,13 +1937,14 @@ Configuração típica:
         for interface, count in flap_count.items():
             if count > 5:
                 print(f"ALERTA: Flapping em {interface} ({count}x)")
+```
 
     Vantagens:
 
         Flexibilidade: Análises específicas sem afetar o SIEM.
 
         Offline: Funciona mesmo sem conectividade com o SIEM.
-```
+
 
 **Tabela Comparativa: Filebeat vs Python**
 
