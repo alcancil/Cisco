@@ -1266,6 +1266,15 @@ ConnectionError: Falha na autenticação
 
   - Simular falha de conexão a dispositivo e logar a stack trace
 
+📂 Estrutura Final do Projeto
+
+```Bash
+05
+├── error_logs
+│   └── errors_2025-06-23.log
+└── stack_trace.py
+```
+
 **stack_trace.py**
 
 ```Python
@@ -1389,6 +1398,141 @@ Bloco 6: Feedback ao Usuário
 
 [30] print(f"Log de erros gerado em: {log_file}")                              # Mostra onde o log foi salvo
 ```
+
+**Por Que Usar logging.exception()?**
+
+✔️ Debug mais fácil - Mostra exatamente onde o erro ocorreu  
+✔️ Contexto completo - Inclui a cadeia de chamadas que levou ao erro  
+✔️ Padronização - Formato consistente para todos os erros  
+
+**Variantes Úteis**
+
+✔️ Capturando Qualquer Tipo de Erro (Genérico)  
+✔️ Adicionando Contexto ao Erro  
+✔️ Versão Combinada (Contexto + Genérico)  
+
+1. Capturando Qualquer Tipo de Erro (Genérico)
+
+```python
+
+try:
+    # Código que pode falhar
+    dispositivo.connect()
+except Exception as e:  # Captura QUALQUER tipo de exceção
+    logging.exception("Erro inesperado")  # Registra a mensagem + stack trace completo
+```
+
+Comentários:
+
+    Exception é a classe base para todas as exceções em Python
+
+    Útil quando você quer tratar todos os erros da mesma forma
+
+    Cuidado: Pode mascarar erros específicos se usado indiscriminadamente
+
+**Saída no log:**
+
+```Bash
+ERROR: Erro inesperado
+Traceback... (stack trace completo)
+```
+
+2. Adicionando Contexto ao Erro  
+
+```python
+try:
+    dispositivo.connect("192.168.1.10")
+except ConnectionError as e:
+    # Adiciona informações contextuais antes do stack trace
+    logging.error(f"Falha ao conectar no IP: 192.168.1.10 - Tentativa {tentativa}/3")
+    logging.exception(e)  # Mantém o stack trace original
+```
+
+Comentários:
+
+    logging.error() registra informações adicionais (IP, tentativas, etc.)
+
+    logging.exception() ainda captura os detalhes técnicos
+
+    Ideal para erros onde o contexto é importante para diagnóstico  
+
+**Saída no log:**
+
+```Bash
+ERROR: Falha ao conectar no IP: 192.168.1.10 - Tentativa 2/3
+ERROR: Conexão recusada: porta 22 bloqueada
+Traceback... (stack trace original)
+```
+
+3. Versão Combinada (Contexto + Genérico)
+
+```python
+
+try:
+    dispositivo.connect(ip)
+except ConnectionError as e:
+    logging.error(f"Falha específica de conexão com {ip}")
+    logging.exception(e)
+except Exception as e:
+    logging.error(f"Erro inesperado ao acessar {ip}")
+    logging.exception(e)
+```
+
+Hierarquia de Tratamento:
+
+    Primeiro tenta capturar erros específicos de conexão
+
+    Depois trata qualquer outro erro como genérico
+
+**Tabela Comparativa**
+
+| Cenário              | Quando Usar                               | Vantagens Cuidados                                      |
+|----------------------|-------------------------------------------|---------------------------------------------------------|
+| except Exception     | Para erros genéricos não esperados	       | Simplicidade	Pode esconder erros específicos          | 
+| except SpecificError | Quando conhece os possíveis erros	       | Tratamento personalizado	Requer conhecimento prévio   |
+| Contexto + Exception | Erros onde detalhes operacionais importam | Diagnóstico rico	Verbosidade no log                   |
+
+**Exemplo Completo com Ambas Variantes**
+
+```python
+
+import logging
+
+logging.basicConfig(filename='app.log', level=logging.ERROR)
+
+class Dispositivo:
+    def connect(self, ip):
+        if "192.168" not in ip:
+            raise ValueError("IP inválido")
+        raise ConnectionError("Porta 22 bloqueada")
+
+# Testando as variantes
+for ip in ["192.168.1.10", "10.0.0.1"]:
+    try:
+        Dispositivo().connect(ip)
+    except ConnectionError as e:
+        logging.error(f"[CONEXÃO] Falha com {ip}")
+        logging.exception(e)
+    except ValueError as e:
+        logging.error(f"[VALIDAÇÃO] IP {ip} inválido")
+        logging.exception(e)
+    except Exception as e:
+        logging.error(f"[INESPERADO] Erro com {ip}")
+        logging.exception(e)
+```
+
+**Saída em app.log:**
+
+```Bash
+ERROR: [CONEXÃO] Falha com 192.168.1.10
+ERROR: Porta 22 bloqueada
+Traceback... (stack trace)
+ERROR: [VALIDAÇÃO] IP 10.0.0.1 inválido
+ERROR: IP inválido
+Traceback... (stack trace)
+```
+
+**Melhor Prática:** Use a abordagem mais específica possível, adicionando contexto apenas onde for realmente útil para troubleshooting.
 
 ---
 Continuar
