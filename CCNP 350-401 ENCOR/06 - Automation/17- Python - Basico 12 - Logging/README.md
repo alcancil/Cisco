@@ -30,6 +30,7 @@
   - [Exercício 03 — Estrutura de pastas de logs](#exercício-03--estrutura-de-pastas-de-logs)
   - [Exercício 04 — Logs por data (log rotation manual)](#exercício-04--logs-por-data-log-rotation-manual)
     - [Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation](#antes-de-começarmos-o-exercício-vamos-verificar-o-conceito-de-log-rotation)
+- [Remove logs com mais de 7 dias](#remove-logs-com-mais-de-7-dias)
 
 ### Por Que Logging é Essencial?
 
@@ -1057,7 +1058,102 @@ Ferramentas de Log Rotation Automático
 | Windows    | PowerShell Scripts ou LogRotateWin | Simula o logrotate do Linux.                          |
 | Aplicações | Bibliotecas (Python/Java/Node.js)  | Implementa rotação dentro do próprio código.          |
 
+Vamos agora ao exercício.  
 
+**log_rotation.py (Multiplaforma)**  
+
+```python
+
+import logging
+from datetime import datetime
+import os
+
+# Configuração do diretório de logs
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Nome do arquivo com data atual (formato: backup_AAAA-MM-DD.log)
+today = datetime.now().strftime("%Y-%m-%d")
+log_file = f"{LOG_DIR}/backup_{today}.log"
+
+# Configuração do logging
+logging.basicConfig(
+    filename=log_file,
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
+
+# Simulação de geração de logs
+logging.info("Iniciando processo de backup")
+logging.warning("Atenção: disco com 85% de uso")
+logging.error("Falha na conexão com o banco de dados")
+
+print(f"Log gerado em: {log_file}")
+```
+
+**Como Executar e Resultado**
+
+    Salve como log_rotation.py
+
+    Execute: python log_rotation.py
+
+    Verifique a pasta logs:
+
+    logs/
+    └── backup_2024-06-12.log  # Exemplo de saída
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/logging/04$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/04$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/04$ python3 log_rotate.py 
+Log gerado em: logs/backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04$ ls -la
+total 20
+drwxrwxr-x 4 alcancil alcancil 4096 jun 22 23:15 .
+drwxrwxr-x 6 alcancil alcancil 4096 jun 22 23:13 ..
+-rw-r--r-- 1 root     root      705 jun 22 23:11 log_rotate.py
+drwxrwxr-x 2 alcancil alcancil 4096 jun 22 23:15 logs
+drwxrwxr-x 5 alcancil alcancil 4096 jun 22 23:15 venv
+(venv) alcancil@linux:~/automacoes/logging/04$ cd logs/
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ ls
+backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ cat backup_2025-06-22.log 
+23:15:42 - INFO - Iniciando processo de backup
+23:15:42 - WARNING - Atenção: disco com 85% de uso
+23:15:42 - ERROR - Falha na conexão com o banco de dados
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ 
+```
+
+Conteúdo do Arquivo de Log
+text
+
+14:30:45 - INFO - Iniciando processo de backup
+14:30:45 - WARNING - Atenção: disco com 85% de uso
+14:30:45 - ERROR - Falha na conexão com o banco de dados
+
+Rotação Automatizada (Extensão do Exemplo)
+
+Para tornar a rotação automática (eliminando logs antigos):
+python
+
+import glob
+from datetime import timedelta
+
+# Remove logs com mais de 7 dias
+for old_log in glob.glob(f"{LOG_DIR}/backup_*.log"):
+    log_date = old_log.split("_")[1].replace(".log", "")
+    if datetime.strptime(log_date, "%Y-%m-%d") < datetime.now() - timedelta(days=7):
+        os.remove(old_log)
+        print(f"Removido log antigo: {old_log}")
+
+Vantagens Desta Abordagem
+
+✔️ Multiplataforma (funciona em qualquer SO)
+✔️ Simplicidade (sem dependências externas)
+✔️ Facilidade de busca (logs organizados por data)
 
 
 
