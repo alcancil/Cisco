@@ -1269,39 +1269,38 @@ ConnectionError: Falha na autenticação
 **stack_trace.py**
 
 ```Python
-python
 
-import logging
-from datetime import datetime
-import os
-
-# Configuração inicial
-LOG_DIR = "error_logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-
-# Arquivo de log com data
-log_file = f"{LOG_DIR}/errors_{datetime.now().strftime('%Y-%m-%d')}.log"
-logging.basicConfig(
-    filename=log_file,
-    level=logging.ERROR,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-# Classe simulando dispositivo
-class Dispositivo:
-    def connect(self):
-        raise ConnectionError("Conexão recusada: porta 22 bloqueada")
-
-# Bloco try-except com logging
-try:
-    dispositivo = Dispositivo()
-    dispositivo.connect()  # Isso vai falhar
-
-except ConnectionError as e:
-    logging.error("Falha na conexão com dispositivo")  # Mensagem simples
-    logging.exception(e)  # Log com stack trace completo
-
-print(f"Log de erros gerado em: {log_file}")
+[01] import logging
+[02] from datetime import datetime
+[03] import os
+[04]
+[05] # Configuração inicial
+[06] LOG_DIR = "error_logs"
+[07] os.makedirs(LOG_DIR, exist_ok=True)
+[08]
+[09] # Arquivo de log com data
+[10] log_file = f"{LOG_DIR}/errors_{datetime.now().strftime('%Y-%m-%d')}.log"
+[11] logging.basicConfig(
+[12]     filename=log_file,
+[13]     level=logging.ERROR,
+[14]     format='%(asctime)s - %(levelname)s - %(message)s'
+[14] )
+[15]
+[16] # Classe simulando dispositivo
+[17] class Dispositivo:
+[18]     def connect(self):
+[19]         raise ConnectionError("Conexão recusada: porta 22 bloqueada")
+[20]
+[21] # Bloco try-except com logging
+[22] try:
+[23]     dispositivo = Dispositivo()
+[24]     dispositivo.connect()  # Isso vai falhar
+[25]
+[26] except ConnectionError as e:
+[27]     logging.error("Falha na conexão com dispositivo")  # Mensagem simples
+[28]     logging.exception(e)  # Log com stack trace completo
+[29]
+[30] print(f"Log de erros gerado em: {log_file}")
 ```
 
 **Como Funciona?**  
@@ -1341,6 +1340,54 @@ Traceback (most recent call last):
     raise ConnectionError("Conexão recusada: porta 22 bloqueada")
 ConnectionError: Conexão recusada: porta 22 bloqueada
 (venv) alcancil@linux:~/automacoes/logging/05/error_logs$ 
+```
+
+**Explicação**
+
+```Python
+Bloco 1: Importações
+
+[01] import logging                                                            # Módulo para registro de logs
+[02] from datetime import datetime                                             # Para obter a data/hora atual
+[03] import os                                                                 # Para operações com sistema de arquivos
+
+Bloco 2: Configuração Inicial
+
+[05] # Configuração inicial
+[06] LOG_DIR = "error_logs"                                                    # Nome do diretório para armazenar logs de erro
+[07] os.makedirs(LOG_DIR, exist_ok=True)                                       # Cria a pasta se não existir (evita erros)
+
+Bloco 3: Configuração do Arquivo de Log
+
+[09] # Arquivo de log com data
+[10] log_file = f"{LOG_DIR}/errors_{datetime.now().strftime('%Y-%m-%d')}.log"  # Nome do arquivo com data
+[11] logging.basicConfig(                                                      # Configuração básica do logging
+[12]     filename=log_file,                                                    # Arquivo de saída dos logs
+[13]     level=logging.ERROR,                                                  # Só registra erros (ignora INFO/WARNING)
+[14]     format='%(asctime)s - %(levelname)s - %(message)s'                    # Formato das mensagens
+[15] )
+
+Bloco 4: Simulação de Dispositivo
+
+[16] # Classe simulando dispositivo
+[17] class Dispositivo:                                                        # Classe fictícia para simular erro
+[18]     def connect(self):                                                    # Método que sempre falha
+[19]         raise ConnectionError("Conexão recusada: porta 22 bloqueada")     # Força um erro
+
+Bloco 5: Captura e Registro do Erro
+
+[21] # Bloco try-except com logging
+[22] try:                                                                      # Tenta executar o código abaixo
+[23]     dispositivo = Dispositivo()                                           # Cria instância do dispositivo
+[24]     dispositivo.connect()                                                 # Chama o método que vai falhar
+[25]
+[26] except ConnectionError as e:                                              # Captura especificamente erros de conexão
+[27]     logging.error("Falha na conexão com dispositivo")                     # Log simples do erro
+[28]     logging.exception(e)                                                  # Log COMPLETO com stack trace
+
+Bloco 6: Feedback ao Usuário
+
+[30] print(f"Log de erros gerado em: {log_file}")                              # Mostra onde o log foi salvo
 ```
 
 ---
