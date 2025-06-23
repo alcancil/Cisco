@@ -1850,8 +1850,8 @@ flowchart LR
     B --> D[(Cópia dos Logs<br>/var/log/cisco_backup.log)]
     D --> E[Script Python<br>Troubleshooting Sob Demanda]
 
-    style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
-    style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
+    style H fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
+    style A fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
     
 ```
 
