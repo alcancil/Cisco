@@ -31,6 +31,7 @@
   - [Exercício 04 — Logs por data (log rotation manual)](#exercício-04--logs-por-data-log-rotation-manual)
     - [Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation](#antes-de-começarmos-o-exercício-vamos-verificar-o-conceito-de-log-rotation)
   - [Exercício 05 — Simular erro capturado via logging.exception()](#exercício-05--simular-erro-capturado-via-loggingexception)
+  - [Exercício 06 — Logs formatados e personalizados](#exercício-06--logs-formatados-e-personalizados)
 
 ### Por Que Logging é Essencial?
 
@@ -1534,21 +1535,132 @@ Traceback... (stack trace)
 
 **Melhor Prática:** Use a abordagem mais específica possível, adicionando contexto apenas onde for realmente útil para troubleshooting.
 
+## Exercício 06 — Logs formatados e personalizados
+
+**Objetivo:**
+
+   - Personalizar o formato do log: [%(asctime)s] [%(levelname)s] - %(message)s
+
+   - Mostrar log com data/hora, tipo de log e mensagem
+
+   - Importante para quando for visualizar logs em um SIEM ( Graylog / Wazuh / Splunk) futuramente
+
+**log.py**
+
+```python
+
+import logging
+from datetime import datetime
+import os
+
+# --- Configuração do diretório de logs ---
+LOG_DIR = "formatted_logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# --- Configuração do formato personalizado ---
+log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"
+log_file = f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.log"
+
+logging.basicConfig(
+    filename=log_file,
+    level=logging.DEBUG,  # Captura todos os níveis
+    format=log_format,
+    datefmt='%Y-%m-%d %H:%M:%S'  # Formato completo de data/hora
+)
+
+# --- Criando um logger com nome específico ---
+logger = logging.getLogger("AppLogger")
+
+# --- Exemplo de logs em diferentes níveis ---
+logger.debug("Mensagem de debug - Detalhes internos")  # Nível 10
+logger.info("Conexão estabelecida com sucesso")        # Nível 20
+logger.warning("Disco com 85% de capacidade")          # Nível 30
+logger.error("Falha na autenticação do usuário")       # Nível 40
+logger.critical("Servidor fora do ar")                 # Nível 50
+
+print(f"Logs gerados em: {log_file}")
+```
+
+**Explicação Detalhada**
+
+1. Formatação Personalizada
+
+```python
+
+log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"
+
+    %(asctime)s: Data/hora no formato especificado em datefmt
+
+    %(levelname)s: Nível do log (DEBUG, INFO, WARNING, etc.)
+
+    %(message)s: Mensagem do log
+```
+2. Saída Gerada no Arquivo
+
+```Bash
+[2024-06-15 14:30:45] [DEBUG] - Mensagem de debug - Detalhes internos
+[2024-06-15 14:30:45] [INFO] - Conexão estabelecida com sucesso
+[2024-06-15 14:30:45] [WARNING] - Disco com 85% de capacidade
+[2024-06-15 14:30:45] [ERROR] - Falha na autenticação do usuário
+[2024-06-15 14:30:45] [CRITICAL] - Servidor fora do ar
+```
+
+3. Benefícios para Graylog/ELK
+
+    Estrutura Consistente: Padrão facilita parsing e filtros
+
+    Metadados Explícitos: Nível e timestamp são facilmente identificáveis
+
+    Compatibilidade: Formato simples funciona em qualquer sistema de log
+
+Como Melhorar para Graylog
+
+Adicione campos estruturados (usando JSON):
+
+```python
+
+import json
+from pythonjsonlogger import jsonlogger  # pip install python-json-logger
+
+# Configuração JSON
+json_handler = logging.FileHandler('structured_logs.json')
+formatter = jsonlogger.JsonFormatter(
+    '%(asctime)s %(levelname)s %(message)s %(module)s %(funcName)s'
+)
+json_handler.setFormatter(formatter)
+
+logger = logging.getLogger()
+logger.addHandler(json_handler)
+logger.info("Evento estruturado", extra={"user": "admin", "ip": "192.168.1.1"})
+```
+
+Saída JSON:
+
+```json
+
+{
+  "asctime": "2024-06-15 14:30:45",
+  "levelname": "INFO",
+  "message": "Evento estruturado",
+  "module": "app",
+  "funcName": "<module>",
+  "user": "admin",
+  "ip": "192.168.1.1"
+}
+```
+
+**Tabela de Níveis de Log**
+
+| Nível    |  Valor | Quando Usar                           |
+|----------|--------|---------------------------------------|
+| DEBUG    |  10	| Detalhes para desenvolvimento         |
+| INFO     |  20	| Confirmações de operações normais     |
+| WARNING  |  30	| Eventos anormais não críticos         |
+| ERROR    |  40    | Falhas em funcionalidades importantes | 
+| CRITICAL |  50	| Sistemas inoperantes                  |
+
 ---
 Continuar
-
-
-    Criar erro com try/except e gravar com logging.exception()
-
-    Simular falha de conexão a dispositivo e logar a stack trace
-
-🔹 Exercício 06 — Logs formatados e personalizados
-
-    Personalizar o formato do log: [%(asctime)s] [%(levelname)s] - %(message)s
-
-    Mostrar log com data/hora, tipo de log e mensagem
-
-    Importante para quando for visualizar logs no Graylog futuramente
 
 🔹 Exercício 07 — Integração com múltiplos arquivos Python
 
