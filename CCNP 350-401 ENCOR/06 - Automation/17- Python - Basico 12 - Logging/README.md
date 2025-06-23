@@ -1024,10 +1024,10 @@ Bloco 6: Teste dos Loggers
 
 ### Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation
 
-Log Rotation é uma técnica de gerenciamento de arquivos de log que evita o acúmulo excessivo de registros, dividindo-os em arquivos menores, organizados por tempo, tamanho ou critérios personalizados. Isso ajuda a:
+Log Rotation é uma técnica de gerenciamento de arquivos de log que evita o acúmulo excessivo de registros, dividindo-os em arquivos menores, organizados por tempo, tamanho ou critérios personalizados. Isso ajuda a:  
 
-✅ Evitar esgotamento de espaço em disco
-✅ Facilitar a busca em logs históricos
+✅ Evitar esgotamento de espaço em disco  
+✅ Facilitar a busca em logs históricos  
 ✅ Manter a aplicação performática (arquivos muito grandes podem travar sistemas)  
 
 **Como Funciona o Log Rotation?**
