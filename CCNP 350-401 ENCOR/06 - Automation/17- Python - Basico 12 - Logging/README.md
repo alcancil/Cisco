@@ -1549,37 +1549,55 @@ Traceback... (stack trace)
 
 ```python
 
-import logging
-from datetime import datetime
-import os
-
-# --- Configuração do diretório de logs ---
-LOG_DIR = "formatted_logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-
-# --- Configuração do formato personalizado ---
-log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"
-log_file = f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.log"
-
-logging.basicConfig(
-    filename=log_file,
-    level=logging.DEBUG,  # Captura todos os níveis
-    format=log_format,
-    datefmt='%Y-%m-%d %H:%M:%S'  # Formato completo de data/hora
-)
-
-# --- Criando um logger com nome específico ---
-logger = logging.getLogger("AppLogger")
-
-# --- Exemplo de logs em diferentes níveis ---
-logger.debug("Mensagem de debug - Detalhes internos")  # Nível 10
-logger.info("Conexão estabelecida com sucesso")        # Nível 20
-logger.warning("Disco com 85% de capacidade")          # Nível 30
-logger.error("Falha na autenticação do usuário")       # Nível 40
-logger.critical("Servidor fora do ar")                 # Nível 50
-
-print(f"Logs gerados em: {log_file}")
+[01] import logging
+[02] from datetime import datetime
+[03] import os
+[04] 
+[05] # --- Configuração do diretório de logs ---
+[06] LOG_DIR = "formatted_logs"
+[07] os.makedirs(LOG_DIR, exist_ok=True)
+[08] 
+[09] # --- Configuração do formato personalizado ---
+[10] log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"
+[11] log_file = f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.log"
+[12] 
+[13] logging.basicConfig(
+[14]     filename=log_file,
+[15]     level=logging.DEBUG,  # Captura todos os níveis
+[16]     format=log_format,
+[17]     datefmt='%Y-%m-%d %H:%M:%S'  # Formato completo de data/hora
+[18] )
+[19]
+[20] # --- Criando um logger com nome específico ---
+[21] logger = logging.getLogger("AppLogger")
+[22] 
+[23] # --- Exemplo de logs em diferentes níveis ---
+[24] logger.debug("Mensagem de debug - Detalhes internos")  # Nível 10
+[25] logger.info("Conexão estabelecida com sucesso")        # Nível 20
+[26] logger.warning("Disco com 85% de capacidade")          # Nível 30
+[27] logger.error("Falha na autenticação do usuário")       # Nível 40
+[28] logger.critical("Servidor fora do ar")                 # Nível 50
+[29]
+[30] print(f"Logs gerados em: {log_file}")
 ```
+
+**saída**
+
+```bash
+alcancil@linux:~/automacoes/logging/06$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/06$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/06$ python3 logs.py 
+Logs gerados em: formatted_logs/app_20250623.log
+(venv) alcancil@linux:~/automacoes/logging/06$ cd formatted_logs/
+(venv) alcancil@linux:~/automacoes/logging/06/formatted_logs$ cat app_20250623.log 
+[2025-06-23 15:15:52] [DEBUG] - Mensagem de debug - Detalhes internos
+[2025-06-23 15:15:52] [INFO] - Conexão estabelecida com sucesso
+[2025-06-23 15:15:52] [WARNING] - Disco com 85% de capacidade
+[2025-06-23 15:15:52] [ERROR] - Falha na autenticação do usuário
+[2025-06-23 15:15:52] [CRITICAL] - Servidor fora do ar
+(venv) alcancil@linux:~/automacoes/logging/06/formatted_logs$ 
+```
+
 
 **Explicação Detalhada**
 
@@ -1613,7 +1631,56 @@ log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"
 
     Compatibilidade: Formato simples funciona em qualquer sistema de log
 
-Como Melhorar para Graylog
+**log.py**
+
+```Python
+Bloco 1: Importações
+
+[01] import logging                                                       # Módulo padrão para geração de logs
+[02] from datetime import datetime                                        # Para manipulação de datas e horas
+[03] import os                                                            # Para operações com sistema de arquivos
+
+Bloco 2: Configuração do Diretório
+
+[05] # --- Configuração do diretório de logs ---
+[06] LOG_DIR = "formatted_logs"                                           # Nome da pasta onde os logs serão armazenados
+[07] os.makedirs(LOG_DIR, exist_ok=True)                                  # Cria o diretório se não existir (evita erros)
+
+Bloco 3: Formatação Personalizada
+
+[09] # --- Configuração do formato personalizado ---
+[10] log_format = "[%(asctime)s] [%(levelname)s] - %(message)s"           # Estrutura do log
+[11] log_file = f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.log"  # Nome do arquivo com data
+
+Bloco 4: Configuração Básica do Logging
+
+[13] logging.basicConfig(                                                 # Configuração global do módulo logging
+[14]     filename=log_file,                                               # Arquivo de destino dos logs
+[15]     level=logging.DEBUG,                                             # Captura todos os níveis (DEBUG e acima)
+[16]     format=log_format,                                               # Aplica o formato personalizado
+[17]     datefmt='%Y-%m-%d %H:%M:%S'                                      # Formato da data/hora nos logs
+[18] ) 
+
+Bloco 5: Logger Específico
+
+[20] # --- Criando um logger com nome específico ---
+[21] logger = logging.getLogger("AppLogger")                              # Logger identificável para rastreamento
+
+Bloco 6: Geração de Logs
+
+[23] # --- Exemplo de logs em diferentes níveis ---
+[24] logger.debug("Mensagem de debug - Detalhes internos")                # Nível 10 (diagnóstico)
+[25] logger.info("Conexão estabelecida com sucesso")                      # Nível 20 (informação normal)
+[26] logger.warning("Disco com 85% de capacidade")                        # Nível 30 (alerta)
+[27] logger.error("Falha na autenticação do usuário")                     # Nível 40 (erro operacional)
+[28] logger.critical("Servidor fora do ar")                               # Nível 50 (falha crítica)
+
+Bloco 7: Feedback
+
+[30] print(f"Logs gerados em: {log_file}")                                # Exibe o caminho do arquivo no console
+```
+
+**Como Melhorar para Graylog / Splunk - SIEM ?**  
 
 Adicione campos estruturados (usando JSON):
 
@@ -1647,6 +1714,109 @@ Saída JSON:
   "user": "admin",
   "ip": "192.168.1.1"
 }
+```
+
+Vamos executar o script **log2.py** já com as melhorias em json embutidas dentro.  
+
+**log2.py**
+
+```Python
+[01] import logging
+[02] from pythonjsonlogger import jsonlogger  # pip install python-json-logger
+[03] from datetime import datetime
+[04] import os
+[05] 
+[06] # --- Configuração do diretório ---
+[07] LOG_DIR = "siem_logs"
+[08] os.makedirs(LOG_DIR, exist_ok=True)
+[09]
+[10] # --- Configuração JSON para SIEM ---
+[11] logger = logging.getLogger("SIEMLogger")
+[12] logger.setLevel(logging.INFO)
+[13] 
+[14] json_handler = logging.FileHandler(
+[15]     filename=f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.json"
+[16] )
+[17] formatter = jsonlogger.JsonFormatter(
+[18]     '%(asctime)s %(levelname)s %(message)s %(module)s %(funcName)s %(pathname)s',
+[19]     rename_fields={'asctime': 'timestamp', 'levelname': 'severity'}  # Padrão SIEM
+[20] )
+[21] json_handler.setFormatter(formatter)
+[22] logger.addHandler(json_handler)
+[23]
+[24] # --- Exemplo com campos customizados ---
+[25] logger.info("Tentativa de login", extra={
+[26]     "user": "admin",
+[27]     "ip": "192.168.1.1",
+[28]     "event_code": "LOGIN_ATTEMPT_001"
+[29] })
+```
+
+**Saída**
+
+```Bash
+(venv) alcancil@linux:~/automacoes/logging/06$ sudo nano requirements.txt
+(venv) alcancil@linux:~/automacoes/logging/06$ pip install -r requirements.txt 
+Collecting python-json-logger (from -r requirements.txt (line 1))
+  Downloading python_json_logger-3.3.0-py3-none-any.whl.metadata (4.0 kB)
+Downloading python_json_logger-3.3.0-py3-none-any.whl (15 kB)
+Installing collected packages: python-json-logger
+Successfully installed python-json-logger-3.3.0
+(venv) alcancil@linux:~/automacoes/logging/06$ python3 log2.py 
+(venv) alcancil@linux:~/automacoes/logging/06$ ls
+formatted_logs  log2.py  logs.py  requirements.txt  siem_logs  venv
+(venv) alcancil@linux:~/automacoes/logging/06$ cd siem_logs/
+(venv) alcancil@linux:~/automacoes/logging/06/siem_logs$ ls
+app_20250623.json
+(venv) alcancil@linux:~/automacoes/logging/06/siem_logs$ cat app_20250623.json 
+{"timestamp": "2025-06-23 15:39:56,570", "severity": "INFO", "message": "Tentativa de login", "module": "log2", "funcName": "<module>", "pathname": "/home/alcancil/automacoes/logging/06/log2.py", "user": "admin", "ip": "192.168.1.1", "event_code": "LOGIN_ATTEMPT_001"}
+(venv) alcancil@linux:~/automacoes/logging/06/siem_logs$
+```
+
+**Expçicação**
+
+```Python
+Bloco 1: Importações
+
+[01] import logging                                                                     # Módulo padrão para geração de logs
+[02] from pythonjsonlogger import jsonlogger                                            # Biblioteca para formatação JSON (instalável via pip)
+[03] from datetime import datetime                                                      # Para manipulação de datas/horas
+[04] import os                                                                          # Para operações com sistema de arquivos
+
+Bloco 2: Configuração do Diretório
+
+[06] # --- Configuração do diretório ---
+[07] LOG_DIR = "siem_logs"                                                              # Nome da pasta para armazenar logs
+[08] os.makedirs(LOG_DIR, exist_ok=True)                                                # Cria o diretório se não existir (evita erros)
+
+Bloco 3: Configuração do Logger
+
+[10] # --- Configuração JSON para SIEM ---
+[11] logger = logging.getLogger("SIEMLogger")                                           # Cria um logger com identificador único
+[12] logger.setLevel(logging.INFO)                                                      # Configura para capturar logs de nível INFO ou superior
+
+Bloco 4: Configuração do Handler JSON
+
+[14] json_handler = logging.FileHandler(                                                # Handler para escrever em arquivo
+[15]     filename=f"{LOG_DIR}/app_{datetime.now().strftime('%Y%m%d')}.json"             # Nome do arquivo com data
+[16] )
+[17] formatter = jsonlogger.JsonFormatter(                                              # Formato personalizado em JSON
+[18]     '%(asctime)s %(levelname)s %(message)s %(module)s %(funcName)s %(pathname)s',  # Campos incluídos
+[19]     rename_fields={'asctime': 'timestamp', 'levelname': 'severity'}                # Padroniza nomes para SIEM
+[20] )
+[21] json_handler.setFormatter(formatter)                                               # Aplica o formatador ao handler
+[22] logger.addHandler(json_handler)                                                    # Registra o handler no logger
+
+Bloco 5: Exemplo de Log Estruturado
+
+[24] # --- Exemplo com campos customizados ---
+[25] logger.info("Tentativa de login", extra={                                          # Log nível INFO com metadados
+[26]     "user": "admin",                                                               # Campo customizado 1
+[27]     "ip": "192.168.1.1",                                                           # Campo customizado 2
+[28]     "event_code": "LOGIN_ATTEMPT_001"                                              # Código de evento padronizado
+[29] })
+
+
 ```
 
 **Tabela de Níveis de Log**
