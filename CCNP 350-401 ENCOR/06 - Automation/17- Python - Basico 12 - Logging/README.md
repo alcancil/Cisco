@@ -1954,14 +1954,3 @@ Configuração típica:
 | Complexidade          | Baixa (configuração YAML)  | Alta (requer codificação)        |
 | Performance           | Otimizado para alto volume | Limitado pelo hardware local     |
 | Melhor para           | Coleta centralizada        | Análises pontuais e customizadas | 
-
-
----
-Continuar
-
-🔹 Exercício 07 — Integração com múltiplos arquivos Python
-
-    Criar um script principal e um módulo auxiliar (utils.py)
-
-    Usar logging em ambos e centralizar a configuração
-
