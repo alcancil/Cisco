@@ -30,7 +30,6 @@
   - [Exercício 03 — Estrutura de pastas de logs](#exercício-03--estrutura-de-pastas-de-logs)
   - [Exercício 04 — Logs por data (log rotation manual)](#exercício-04--logs-por-data-log-rotation-manual)
     - [Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation](#antes-de-começarmos-o-exercício-vamos-verificar-o-conceito-de-log-rotation)
-- [Remove logs com mais de 7 dias](#remove-logs-com-mais-de-7-dias)
 
 ### Por Que Logging é Essencial?
 
@@ -1073,39 +1072,49 @@ Vamos agora ao exercício.
 
 ```python
 
-import logging
-from datetime import datetime
-import os
-
-# Configuração do diretório de logs
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-
-# Nome do arquivo com data atual (formato: backup_AAAA-MM-DD.log)
-today = datetime.now().strftime("%Y-%m-%d")
-log_file = f"{LOG_DIR}/backup_{today}.log"
-
-# Configuração do logging
-logging.basicConfig(
-    filename=log_file,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
-
-# Simulação de geração de logs
-logging.info("Iniciando processo de backup")
-logging.warning("Atenção: disco com 85% de uso")
-logging.error("Falha na conexão com o banco de dados")
-
-print(f"Log gerado em: {log_file}")
+[01] import logging
+[02] from datetime import datetime, timedelta
+[03] import os
+[04] import glob
+[05] 
+[06] # --- Configuração do diretório ---
+[07] LOG_DIR = "logs"
+[08] os.makedirs(LOG_DIR, exist_ok=True)
+[09] 
+[10] # --- Definição do arquivo de log do dia ---
+[11] today = datetime.now().strftime("%Y-%m-%d")
+[12] log_file = f"{LOG_DIR}/backup_{today}.log"
+[13]
+[14] # --- Configuração do logging ---
+[15] logging.basicConfig(
+[16]     filename=log_file,
+[17]     level=logging.INFO,
+[18]     format='%(asctime)s - %(levelname)s - %(message)s',
+[19]     datefmt='%H:%M:%S'
+[20] )
+[21] 
+[22] # --- Rotação: Apaga logs com mais de 7 dias ---
+[23] for old_log in glob.glob(f"{LOG_DIR}/backup_*.log"):
+[24]     # Extrai a data do nome do arquivo
+[25]     log_date_str = old_log.split("_")[1].replace(".log", "")
+[26]     log_date = datetime.strptime(log_date_str, "%Y-%m-%d")
+[27]     
+[28]     # Se o log for mais antigo que 7 dias, remove
+[29]     if log_date < datetime.now() - timedelta(days=7):
+[30]         os.remove(old_log)
+[31]         logging.info(f"Removido log antigo: {old_log}")
+[32]
+[33] # --- Exemplo de logs ---
+[34] logging.info("Iniciando processo de backup")
+[35] logging.warning("Disco com 85% de uso")
+[36] print(f"Log atual: {log_file}")
 ```
 
 **Como Executar e Resultado**
 
     Salve como log_rotation.py
 
-    Execute: python log_rotation.py
+    Execute: python log_rotation.py várias vezes
 
     Verifique a pasta logs:
 
@@ -1115,64 +1124,121 @@ print(f"Log gerado em: {log_file}")
 **Saída**
 
 ```Bash
-alcancil@linux:~/automacoes/logging/04$ python3 -m venv venv
 alcancil@linux:~/automacoes/logging/04$ source venv/bin/activate
 (venv) alcancil@linux:~/automacoes/logging/04$ python3 log_rotate.py 
-Log gerado em: logs/backup_2025-06-22.log
+Log atual: logs/backup_2025-06-22.log
 (venv) alcancil@linux:~/automacoes/logging/04$ ls -la
 total 20
-drwxrwxr-x 4 alcancil alcancil 4096 jun 22 23:15 .
+drwxrwxr-x 4 alcancil alcancil 4096 jun 22 23:40 .
 drwxrwxr-x 6 alcancil alcancil 4096 jun 22 23:13 ..
--rw-r--r-- 1 root     root      705 jun 22 23:11 log_rotate.py
-drwxrwxr-x 2 alcancil alcancil 4096 jun 22 23:15 logs
+-rw-r--r-- 1 root     root     1092 jun 22 23:40 log_rotate.py
+drwxrwxr-x 2 alcancil alcancil 4096 jun 22 23:40 logs
 drwxrwxr-x 5 alcancil alcancil 4096 jun 22 23:15 venv
-(venv) alcancil@linux:~/automacoes/logging/04$ cd logs/
+(venv) alcancil@linux:~/automacoes/logging/04$ cd logs
 (venv) alcancil@linux:~/automacoes/logging/04/logs$ ls
 backup_2025-06-22.log
 (venv) alcancil@linux:~/automacoes/logging/04/logs$ cat backup_2025-06-22.log 
-23:15:42 - INFO - Iniciando processo de backup
-23:15:42 - WARNING - Atenção: disco com 85% de uso
-23:15:42 - ERROR - Falha na conexão com o banco de dados
+23:40:53 - INFO - Iniciando processo de backup
+23:40:53 - WARNING - Disco com 85% de uso
 (venv) alcancil@linux:~/automacoes/logging/04/logs$ 
 ```
 
+**OBS:** Se você executar 10 vezes:  
+
+    No mesmo dia: as mensagens são acumuladas no mesmo arquivo  
+
+    Em dias diferentes: cria novos arquivos (backup_2024-06-16.log, etc.)  
+
+    Logs com mais de 7 dias são apagados na próxima execução   
+
+```Bash
+(venv) alcancil@linux:~/automacoes/logging/04$ python3 log_rotate.py 
+Log atual: logs/backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04$ cd 04
+bash: cd: 04: Arquivo ou diretório inexistente
+(venv) alcancil@linux:~/automacoes/logging/04$ cd logs/
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ cat backup_2025-06-22.log 
+23:40:53 - INFO - Iniciando processo de backup
+23:40:53 - WARNING - Disco com 85% de uso
+23:42:15 - INFO - Iniciando processo de backup
+23:42:15 - WARNING - Disco com 85% de uso
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ 
+```
+
+**OBS2:** agora vamos rodos o script mais um vez para gerar o rotate. Dessa vez, vamos deixar um arquivo de backup junto com mais de 7 dias. Esse arquivo deve ser apagado.
+
+```Bash
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ cp backup_2025-06-22.log backup_2025-06-10.log 
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ ls
+backup_2025-06-10.log  backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ cd ..
+(venv) alcancil@linux:~/automacoes/logging/04$ python3 log_rotate.py 
+Log atual: logs/backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04$ cd logs
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ ls
+backup_2025-06-22.log
+(venv) alcancil@linux:~/automacoes/logging/04/logs$ 
+```
+
+**Explicação**  
+
+**log_rotation.py**  
 
 
-Rotação Automatizada (Extensão do Exemplo)
+```Python
+Bloco 1: Importações
 
-Para tornar a rotação automática (eliminando logs antigos):
-python
+[01] import logging                                                # Biblioteca padrão para registro de logs
+[02] from datetime import datetime, timedelta                      # Para manipular datas e calcular diferenças temporais
+[03] import os                                                     # Para operações com sistema de arquivos
+[04] import glob                                                   # Para encontrar arquivos usando padrões (como *.log)
 
-import glob
-from datetime import timedelta
+Bloco 2: Configuração do Diretório
 
-# Remove logs com mais de 7 dias
-for old_log in glob.glob(f"{LOG_DIR}/backup_*.log"):
-    log_date = old_log.split("_")[1].replace(".log", "")
-    if datetime.strptime(log_date, "%Y-%m-%d") < datetime.now() - timedelta(days=7):
-        os.remove(old_log)
-        print(f"Removido log antigo: {old_log}")
+[06] # --- Configuração do diretório ---
+[07] LOG_DIR = "logs"                                              # Nome da pasta onde os logs serão armazenados
+[08] os.makedirs(LOG_DIR, exist_ok=True)                           # Cria a pasta se não existir (evita erros se já existir)
 
-Vantagens Desta Abordagem
+Bloco 3: Definição do Arquivo de Log
 
-✔️ Multiplataforma (funciona em qualquer SO)
-✔️ Simplicidade (sem dependências externas)
-✔️ Facilidade de busca (logs organizados por data)
+[10] # --- Definição do arquivo de log do dia ---
+[11] today = datetime.now().strftime("%Y-%m-%d")                   # Obtém a data atual no formato ano-mês-dia
+[12] log_file = f"{LOG_DIR}/backup_{today}.log"                    # Cria o nome do arquivo (ex: logs/backup_2024-06-15.log)
 
+Bloco 4: Configuração do Sistema de Logging
 
+[14] # --- Configuração do logging ---
+[15] logging.basicConfig(                                          # Configuração básica do sistema de logs
+[16]     filename=log_file,                                        # Arquivo onde os logs serão escritos
+[17]     level=logging.INFO,                                       # Nível mínimo de registro (INFO, WARNING, ERROR)
+[18]     format='%(asctime)s - %(levelname)s - %(message)s',       # Formato das mensagens
+[19]     datefmt='%H:%M:%S'                                        # Formato da hora nas mensagens
+[20] )
 
+Bloco 5: Rotação de Logs (Parte Principal)
 
+[22] # --- Rotação: Apaga logs com mais de 7 dias ---
+[23] for old_log in glob.glob(f"{LOG_DIR}/backup_*.log"):          # Lista todos os arquivos de log
+[24]     # Extrai a data do nome do arquivo
+[25]     log_date_str = old_log.split("_")[1].replace(".log", "")  # Isola a data do nome do arquivo
+[26]     log_date = datetime.strptime(log_date_str, "%Y-%m-%d")    # Converte para objeto datetime
+[27]     
+[28]     # Se o log for mais antigo que 7 dias, remove
+[29]     if log_date < datetime.now() - timedelta(days=7):         # Compara datas
+[30]         os.remove(old_log)                                    # Apaga o arquivo antigo
+[31]         logging.info(f"Removido log antigo: {old_log}")       # Registra a ação
 
+Bloco 6: Exemplo de Uso
 
-
+[33] # --- Exemplo de logs ---
+[34] logging.info("Iniciando processo de backup")                  # Registra uma mensagem informativa
+[35] logging.warning("Disco com 85% de uso")                       # Registra um aviso
+[36] print(f"Log atual: {log_file}")                               # Mostra o caminho do arquivo no consol
+```
 
 ---
 Continuar
 
-
-    Gerar um log que inclui data no nome: logs/backup_2024-06-11.log
-
-    Mostrar como isso ajuda a organizar execuções por dia
 
 🔹 Exercício 05 — Simular erro capturado via logging.exception()
 
