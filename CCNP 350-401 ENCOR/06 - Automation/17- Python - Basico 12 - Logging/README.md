@@ -28,6 +28,8 @@
   - [Exercício 01 — Log básico com print() x logging.info()](#exercício-01--log-básico-com-print-x-logginginfo)
   - [Exercício 02 — Log para arquivo .log](#exercício-02--log-para-arquivo-log)
   - [Exercício 03 — Estrutura de pastas de logs](#exercício-03--estrutura-de-pastas-de-logs)
+  - [Exercício 04 — Logs por data (log rotation manual)](#exercício-04--logs-por-data-log-rotation-manual)
+    - [Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation](#antes-de-começarmos-o-exercício-vamos-verificar-o-conceito-de-log-rotation)
 
 ### Por Que Logging é Essencial?
 
@@ -1018,6 +1020,47 @@ Bloco 6: Teste dos Loggers
         ERROR: Falhas recuperáveis
 
 
+## Exercício 04 — Logs por data (log rotation manual)
+
+### Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation
+
+Log Rotation é uma técnica de gerenciamento de arquivos de log que evita o acúmulo excessivo de registros, dividindo-os em arquivos menores, organizados por tempo, tamanho ou critérios personalizados. Isso ajuda a:
+
+✅ Evitar esgotamento de espaço em disco
+✅ Facilitar a busca em logs históricos
+✅ Manter a aplicação performática (arquivos muito grandes podem travar sistemas)  
+
+**Como Funciona o Log Rotation?**
+
+O processo geralmente segue estas etapas:  
+
+| Passo	                    | Descrição                                                                             |
+|---------------------------|---------------------------------------------------------------------------------------|
+| 1. Critério de Rotação    | Define quando um novo log deve ser criado (ex.: diariamente, ao atingir 10MB).        |
+| 2. Geração do Novo Log    | O sistema fecha o arquivo atual e abre um novo (ex.: app.log → app_2024-06-12.log).   |
+| 3. Compactação (opcional) | Logs antigos podem ser compactados (ex.: .log.gz) para economizar espaço.             |
+| 4. Limite de Retenção     | Remove logs muito antigos (ex.: manter apenas os últimos 7 dias).                     |
+
+Métodos Comuns de Rotação
+
+| Tipo               | Funcionamento                                                            | Exemplo                       | 
+|--------------------|--------------------------------------------------------------------------|-------------------------------|
+| Baseado em Tempo   | Gera um novo log periodicamente (hora/dia/mês).                          | error_2024-06-12.log          |
+| Baseado em Tamanho | Quando o arquivo atinge um limite (ex.: 10MB), é rotacionado.            | app.log → app.1.log           |
+| Híbrido            | Combina tempo e tamanho (ex.: novo log a cada dia OU se passar de 50MB). | Usado em servidores críticos. |
+
+Ferramentas de Log Rotation Automático
+
+| Sistema    | Ferramenta                         | Uso Típico                                            |
+|------------|------------------------------------|-------------------------------------------------------| 
+| Linux	     | logrotate                          | Rota, compacta e remove logs antigos automaticamente. |
+| Windows    | PowerShell Scripts ou LogRotateWin | Simula o logrotate do Linux.                          |
+| Aplicações | Bibliotecas (Python/Java/Node.js)  | Implementa rotação dentro do próprio código.          |
+
+
+
+
+
 
 
 
@@ -1026,8 +1069,6 @@ Bloco 6: Teste dos Loggers
 ---
 Continuar
 
-
-🔹 Exercício 04 — Logs por data (log rotation manual)
 
     Gerar um log que inclui data no nome: logs/backup_2024-06-11.log
 
