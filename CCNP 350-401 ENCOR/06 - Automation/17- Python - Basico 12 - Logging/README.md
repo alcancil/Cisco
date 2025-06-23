@@ -30,6 +30,7 @@
   - [Exercício 03 — Estrutura de pastas de logs](#exercício-03--estrutura-de-pastas-de-logs)
   - [Exercício 04 — Logs por data (log rotation manual)](#exercício-04--logs-por-data-log-rotation-manual)
     - [Antes de começarmos o exercício, vamos verificar o conceito de Log Rotation](#antes-de-começarmos-o-exercício-vamos-verificar-o-conceito-de-log-rotation)
+  - [Exercício 05 — Simular erro capturado via logging.exception()](#exercício-05--simular-erro-capturado-via-loggingexception)
 
 ### Por Que Logging é Essencial?
 
@@ -1236,11 +1237,115 @@ Bloco 6: Exemplo de Uso
 [36] print(f"Log atual: {log_file}")                               # Mostra o caminho do arquivo no consol
 ```
 
+## Exercício 05 — Simular erro capturado via logging.exception()
+
+**O que é Stack Trace?**
+
+Um stack trace (rastreamento de pilha) é um relatório que mostra:
+
+  - A sequência exata de chamadas de funções/métodos que levaram a um erro
+
+  - O tipo de erro ocorrido
+
+  - O arquivo e linha onde o erro aconteceu
+
+**Exemplo de stack trace:**
+
+```Python
+Traceback (most recent call last):
+  File "app.py", line 10, in <module>
+    conexao.dispositivo.connect()
+  File "/lib/conexao.py", line 25, in connect
+    raise ConnectionError("Falha na autenticação")
+ConnectionError: Falha na autenticação
+```
+
+**Objetivo:**   
+  
+  - Criar erro com try/except e gravar com logging.exception()
+
+  - Simular falha de conexão a dispositivo e logar a stack trace
+
+**stack_trace.py**
+
+```Python
+python
+
+import logging
+from datetime import datetime
+import os
+
+# Configuração inicial
+LOG_DIR = "error_logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Arquivo de log com data
+log_file = f"{LOG_DIR}/errors_{datetime.now().strftime('%Y-%m-%d')}.log"
+logging.basicConfig(
+    filename=log_file,
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Classe simulando dispositivo
+class Dispositivo:
+    def connect(self):
+        raise ConnectionError("Conexão recusada: porta 22 bloqueada")
+
+# Bloco try-except com logging
+try:
+    dispositivo = Dispositivo()
+    dispositivo.connect()  # Isso vai falhar
+
+except ConnectionError as e:
+    logging.error("Falha na conexão com dispositivo")  # Mensagem simples
+    logging.exception(e)  # Log com stack trace completo
+
+print(f"Log de erros gerado em: {log_file}")
+```
+
+**Como Funciona?**  
+
+Quando ocorre o erro:  
+
+  - logging.error() registra uma mensagem de erro simples
+
+  - logging.exception() registra:
+
+        A mensagem de erro
+
+        O stack trace completo
+
+        O tipo de exceção
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/logging/05$ python3 -m venv venv
+alcancil@linux:~/automacoes/logging/05$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/logging/05$ python3 stack_trace.py 
+Log de erros gerado em: error_logs/errors_2025-06-23.log
+(venv) alcancil@linux:~/automacoes/logging/05$ ls
+error_logs  stack_trace.py  venv
+(venv) alcancil@linux:~/automacoes/logging/05$ cd error_logs/
+(venv) alcancil@linux:~/automacoes/logging/05/error_logs$ ls
+errors_2025-06-23.log
+(venv) alcancil@linux:~/automacoes/logging/05/error_logs$ cat errors_2025-06-23.log 
+2025-06-23 11:31:35,502 - ERROR - Falha na conexão com dispositivo
+2025-06-23 11:31:35,502 - ERROR - Conexão recusada: porta 22 bloqueada
+Traceback (most recent call last):
+  File "/home/alcancil/automacoes/logging/05/stack_trace.py", line 25, in <module>
+    dispositivo.connect()  # Isso vai falhar
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alcancil/automacoes/logging/05/stack_trace.py", line 20, in connect
+    raise ConnectionError("Conexão recusada: porta 22 bloqueada")
+ConnectionError: Conexão recusada: porta 22 bloqueada
+(venv) alcancil@linux:~/automacoes/logging/05/error_logs$ 
+```
+
 ---
 Continuar
 
-
-🔹 Exercício 05 — Simular erro capturado via logging.exception()
 
     Criar erro com try/except e gravar com logging.exception()
 
