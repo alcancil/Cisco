@@ -116,8 +116,8 @@ flowchart TD
     A[Script Python] --> B[Coleta de Dados]
     B --> C{Origem dos Dados}
     
-    C --> D1[Saída de Comando CLI\nex: show ip interface brief]
-    C --> D2[Resposta de API REST\nFormato JSON]
+    C --> D1[Saída de Comando CLI ex: show ip interface brief]
+    C --> D2[Resposta de API REST Formato JSON]
     C --> D3[Arquivo XML/YAML local]
     
     D1 --> E1[Usar Parser Genie - Estruturação automática]
@@ -129,7 +129,7 @@ flowchart TD
     E3 --> F
 
     F --> G{Tipo de Ação}
-    G --> H1[Verificação de Status\nex: Interface Down]
+    G --> H1[Verificação de Status ex: Interface Down]
     G --> H2[Geração de Logs]
     G --> H3[Análise e Dashboards]
     
@@ -142,16 +142,16 @@ flowchart TD
         I1 & I2 & I3 --> Z[Encaminhar para Operações]
     end
 
-    %% Cores no estilo semáforo
-    style D1 fill:#006400,stroke:#00ff00,color:#ffffff       %% Verde - INFO (Parser CLI bem-sucedido)
-    style D2 fill:#ffc107,stroke:#ffcc00,color:#000000       %% Amarelo - WARNING (JSON pode variar)
-    style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff       %% Vermelho - ERROR (XML/YAML malformado)
-    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff         %% Azul - Extração Técnica
-    style G fill:#343a40,stroke:#ffffff,color:#ffffff        %% Cinza - Decisão lógica
-    style H1 fill:#000000,stroke:#ff0000,color:#ffffff       %% Preto - CRITICAL
-    style H2 fill:#198754,stroke:#00ff00,color:#ffffff       %% Verde escuro - Logs INFO/WARN/ERROR
-    style H3 fill:#6610f2,stroke:#9370DB,color:#ffffff       %% Roxo - Análise
-    style Z fill:#0dcaf0,stroke:#17a2b8,color:#000000        %% Azul claro - Encaminhar p/ Operações
+    # Cores no estilo semáforo
+    style D1 fill:#006400,stroke:#00ff00,color:#ffffff       # Verde - INFO (Parser CLI bem-sucedido)
+    style D2 fill:#ffc107,stroke:#ffcc00,color:#000000       # Amarelo - WARNING (JSON pode variar)
+    style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff       # Vermelho - ERROR (XML/YAML malformado)
+    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff        # Azul - Extração Técnica
+    style G fill:#343a40,stroke:#ffffff,color:#ffffff        # Cinza - Decisão lógica
+    style H1 fill:#000000,stroke:#ff0000,color:#ffffff       # Preto - CRITICAL
+    style H2 fill:#198754,stroke:#00ff00,color:#ffffff       # Verde escuro - Logs INFO/WARN/ERROR
+    style H3 fill:#6610f2,stroke:#9370DB,color:#ffffff       # Roxo - Análise
+    style Z fill:#0dcaf0,stroke:#17a2b8,color:#000000        # Azul claro - Encaminhar p/ Operações
 ```
 
 **🎯 Interpretação baseada em cor (semáforo adaptado):**
