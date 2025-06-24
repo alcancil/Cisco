@@ -9,6 +9,7 @@
     - [🧩 O que é Parsing?](#-o-que-é-parsing)
     - [Por que Parsing é Essencial?](#por-que-parsing-é-essencial)
     - [Documentação oficial](#documentação-oficial)
+  - [https://pyyaml.org/wiki/PyYAMLDocumentation](#httpspyyamlorgwikipyyamldocumentation)
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Para que serve o Parsing?](#para-que-serve-o-parsing)
     - [Quando usar Parsing?](#quando-usar-parsing)
@@ -52,9 +53,14 @@ No contexto de redes e automação, parsing é essencial para transformar dados 
 Parser - Python  
 https://docs.python.org/pt-br/3.8/library/parser.html  
 
-Genie - Cisco
+Genie - Cisco  
 https://developer.cisco.com/docs/genie-docs/
 
+Python Docs - Json  
+https://docs.python.org/3/library/json.html
+
+PyYaml  
+https://pyyaml.org/wiki/PyYAMLDocumentation
 ---
 Arrumar
 
