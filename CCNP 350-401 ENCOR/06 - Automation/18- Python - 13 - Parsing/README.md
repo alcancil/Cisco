@@ -161,49 +161,12 @@ flowchart TD
 | 🟡 Amarelo  | Parsing requer atenção (ex: variações API) | D2    |
 | 🔴 Vermelho | Parsing pode gerar erro grave              | D3    |
 | ⚫ Preto    | Ação crítica esperada                      | H1    |
-| 🟦 Azul     | Etapas técnicas neutras                    | F, Z  | 
-| 🟪 Roxo     | Etapas de análise/visualização             | H3    |
+| 🔵 Azul     | Etapas técnicas neutras                    | F, Z  | 
+| 🟣 Roxo     | Etapas de análise/visualização             | H3    |
 | ⚪ Cinza    | Decisão intermediária                      | G     |
 
-
-    style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
-    style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
-    style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
-    style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
-    style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
-    style I fill:#1a365d,stroke:#2a52be,color:#FFFFFF  # Arquivo
-
-
-**Interpretação das Etapas:**
-| Etapa                     | Descrição                                |
-|---------------------------|------------------------------------------|
-| Coleta de Dados           | Pode vir de CLI, API, arquivos           |
-| Origem dos Dados          | Define o tipo de parsing necessário      |
-| Parsing com ...           | Usa a biblioteca correta para cada tipo  |
-| Extração de Campos        | Onde você filtra o que realmente importa |
-| Tipo de Ação              | Define se será log, alerta ou análise    |
-| Encaminhar para Operações | Etapa final, automatizada ou manual      |
-
-
-
-    style B stroke:#FFA500,stroke-width:2px
-    style C stroke:#32CD32,stroke-width:2px
-    style D1 stroke:#1E90FF,stroke-width:2px
-    style D2 stroke:#1E90FF,stroke-width:2px
-    style D3 stroke:#1E90FF,stroke-width:2px
-    style E fill:#FFFACD,stroke:#FFA500
-    style F fill:#F0FFF0,stroke:#32CD32
-    style G fill:#F0F8FF,stroke:#1E90FF
-
-  
-**Legenda de Uso:**  
-
-| Cor         | Nível de Log  | Quando Usar                                  |
-|-------------|---------------|----------------------------------------------|
-| 🟢 Verde    | INFO          | Conexões bem-sucedidas, eventos rotineiros   |
-| 🟡 Amarelo  |	WARNING       | Configurações incomuns mas não críticas      |
-| 🔴 Vermelho |	ERROR         | Falhas recuperáveis (ex: timeout SSH)        |
-| ⚫ Preto    | CRITICAL      | Falhas que exigem ação imediata              |
+---
+Arrumar
 
 ### Como Funciona o Logging em Python?
 
