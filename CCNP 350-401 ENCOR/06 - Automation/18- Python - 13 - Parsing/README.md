@@ -154,6 +154,19 @@ flowchart TD
     style Z fill:#0dcaf0,stroke:#17a2b8,color:#000000        %% Azul claro - Encaminhar p/ Operações
 ```
 
+**🎯 Interpretação baseada em cor (semáforo adaptado):**
+
+| Cor          | Significado                                | Etapa |
+|--------------|----------------------------------------------------|
+| 🟢 Verde    | Parsing claro e direto (ex: JSON limpo)    | D1, H2 |
+| 🟡 Amarelo  | Parsing requer atenção (ex: variações API) | D2    |
+| 🔴 Vermelho | Parsing pode gerar erro grave              | D3    |
+| ⚫ Preto    | Ação crítica esperada                      | H1    |
+| 🟦 Azul     | Etapas técnicas neutras                    | F, Z  | 
+| 🟪 Roxo     | Etapas de análise/visualização             | H3    |
+| ⚪ Cinza    | Decisão intermediária                      | G     |
+
+
     style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
     style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
     style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
