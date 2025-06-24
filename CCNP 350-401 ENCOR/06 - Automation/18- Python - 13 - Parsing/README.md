@@ -116,12 +116,12 @@ flowchart TD
     A[Script Python] --> B[Coleta de Dados]
     B --> C{Origem dos Dados}
     
-    C --> D1[Saída de Comando CLI<br>ex: show ip interface brief]
-    C --> D2[Resposta de API REST<br>Formato JSON]
+    C --> D1[Saída de Comando CLI\nex: show ip interface brief]
+    C --> D2[Resposta de API REST\nFormato JSON]
     C --> D3[Arquivo XML/YAML local]
     
-    D1 --> E1[Usar Parser Genie<br>(Estruturação automática)]
-    D2 --> E2[Parsing com json.loads()]
+    D1 --> E1[Usar Parser Genie - Estruturação automática]
+    D2 --> E2[Parsing com json.loads]
     D3 --> E3[Parsing com ElementTree ou PyYAML]
 
     E1 --> F[Extração de Campos Úteis]
@@ -129,18 +129,26 @@ flowchart TD
     E3 --> F
 
     F --> G{Tipo de Ação}
-    G --> H1[Verificação de Status<br>ex: Interface Down]
+    G --> H1[Verificação de Status\nex: Interface Down]
     G --> H2[Geração de Logs]
     G --> H3[Análise e Dashboards]
     
     H1 --> I1[Alerta: Email/Slack]
-    H2 --> I2[Log estruturado<br>(INFO/WARNING/ERROR)]
+    H2 --> I2[Log estruturado - INFO/WARNING/ERROR]
     H3 --> I3[Enviar dados para ELK ou Graylog]
 
     subgraph " "
         direction LR
         I1 & I2 & I3 --> Z[Encaminhar para Operações]
     end
+
+    style B stroke:#FFA500,stroke-width:2px
+    style C stroke:#32CD32,stroke-width:2px
+    style D1 stroke:#1E90FF,stroke-width:2px
+    style D2 stroke:#1E90FF,stroke-width:2px
+    style D3 stroke:#1E90FF,stroke-width:2px
+    style E fill:#FFFACD,stroke:#FFA500
+    style F fill:#F0FFF0,stroke:#32CD32
 ```
   
 **Legenda de Uso:**  
