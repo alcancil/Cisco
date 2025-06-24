@@ -157,7 +157,7 @@ flowchart TD
 **🎯 Interpretação baseada em cor (semáforo adaptado):**
 
 | Cor          | Significado                                | Etapa |
-|--------------|-------------------------------------------------- -|
+|--------------|--------------------------------------------|-------|
 | 🟢 Verde    | Parsing claro e direto (ex: JSON limpo)    | D1, H2|
 | 🟡 Amarelo  | Parsing requer atenção (ex: variações API) | D2    |
 | 🔴 Vermelho | Parsing pode gerar erro grave              | D3    |
