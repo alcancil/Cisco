@@ -142,7 +142,6 @@ flowchart TD
         I1 & I2 & I3 --> Z[Encaminhar para Operações]
     end
 
-    # Cores no estilo semáforo
     style D1 fill:#006400,stroke:#00ff00,color:#ffffff       # Verde - INFO (Parser CLI bem-sucedido)
     style D2 fill:#ffc107,stroke:#ffcc00,color:#000000       # Amarelo - WARNING (JSON pode variar)
     style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff       # Vermelho - ERROR (XML/YAML malformado)
