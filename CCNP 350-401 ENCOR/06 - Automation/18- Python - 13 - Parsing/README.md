@@ -142,6 +142,14 @@ flowchart TD
         I1 & I2 & I3 --> Z[Encaminhar para Operações]
     end
 
+    style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
+    style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
+    style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
+    style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
+    style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
+    style I fill:#1a365d,stroke:#2a52be,color:#FFFFFF  # Arquivo
+```
+
     style B stroke:#FFA500,stroke-width:2px
     style C stroke:#32CD32,stroke-width:2px
     style D1 stroke:#1E90FF,stroke-width:2px
@@ -150,7 +158,7 @@ flowchart TD
     style E fill:#FFFACD,stroke:#FFA500
     style F fill:#F0FFF0,stroke:#32CD32
     style G fill:#F0F8FF,stroke:#1E90FF
-```
+
   
 **Legenda de Uso:**  
 
