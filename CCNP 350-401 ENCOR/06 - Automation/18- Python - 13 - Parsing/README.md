@@ -13,7 +13,7 @@
     - [Para que serve o Parsing?](#para-que-serve-o-parsing)
     - [Quando usar Parsing?](#quando-usar-parsing)
     - [Quando evitar ou adiar o parsing?](#quando-evitar-ou-adiar-o-parsing)
-    - [Fluxo de Automação](#fluxo-de-automação)
+    - [Fluxo de Parsing](#fluxo-de-parsing)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
   - [Breve revisão](#breve-revisão)
     - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
@@ -109,31 +109,38 @@ Parsing pode ser custoso, confuso ou desnecessário em certos cenários:
 | Projeto pequeno e pontual	                           | Um if "up" in string: pode ser o suficiente  |
 
 
-### Fluxo de Automação
+### Fluxo de Parsing
 
 ```mermaid
-graph TB
-    A[Script Python] --> B[Configuração Inicial do Logging]
-    B --> C["Handlers (Arquivo/Syslog/Console)"]
-    C --> D{"Eventos Durante Execução"}
-    D -->|Conexão SSH| E[Log INFO: 'Conectado a 192.168.1.1']
-    D -->|Erro de API| F[Log ERROR: 'Time0out na API DNA Center']
-    D -->|Alteração Config| G[Log WARNING: 'VLAN 10 modificada']
-    D -->|Falha Crítica| H[Log CRITICAL: 'Dispositivo inacessível']
-    E --> I[Arquivo network.log]
-    F --> I
-    G --> I
-    H --> J[Alertas por Email/Slack]
-    I --> K[Ferramentas de Análise]
-    K --> L["Grafana / Graylog (Dashboards)"]
-    K --> M["ELK (Busca Full-Text)"]
+flowchart TD
+    A[Script Python] --> B[Coleta de Dados]
+    B --> C{Origem dos Dados}
+    
+    C --> D1[Saída de Comando CLI<br>ex: show ip interface brief]
+    C --> D2[Resposta de API REST<br>Formato JSON]
+    C --> D3[Arquivo XML/YAML local]
+    
+    D1 --> E1[Usar Parser Genie<br>(Estruturação automática)]
+    D2 --> E2[Parsing com json.loads()]
+    D3 --> E3[Parsing com ElementTree ou PyYAML]
 
-    style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
-    style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
-    style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
-    style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
-    style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
-    style I fill:#1a365d,stroke:#2a52be,color:#FFFFFF  # Arquivo
+    E1 --> F[Extração de Campos Úteis]
+    E2 --> F
+    E3 --> F
+
+    F --> G{Tipo de Ação}
+    G --> H1[Verificação de Status<br>ex: Interface Down]
+    G --> H2[Geração de Logs]
+    G --> H3[Análise e Dashboards]
+    
+    H1 --> I1[Alerta: Email/Slack]
+    H2 --> I2[Log estruturado<br>(INFO/WARNING/ERROR)]
+    H3 --> I3[Enviar dados para ELK ou Graylog]
+
+    subgraph " "
+        direction LR
+        I1 & I2 & I3 --> Z[Encaminhar para Operações]
+    end
 ```
   
 **Legenda de Uso:**  
