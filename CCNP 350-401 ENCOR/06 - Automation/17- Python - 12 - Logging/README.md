@@ -1,12 +1,13 @@
-# Python - Básico 12
+# Python - 12
 
 ## Logging
 
 ## Sumário
-- [Python - Básico 12](#python---básico-12)
+- [Python - 12](#python---12)
   - [Logging](#logging)
   - [Sumário](#sumário)
     - [Por Que Logging é Essencial?](#por-que-logging-é-essencial)
+    - [Documentação oficial](#documentação-oficial)
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Fluxo de Automação](#fluxo-de-automação)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
@@ -46,6 +47,10 @@ Logging estruturado é sua "caixa preta" para:
     🔒 Cumprir requisitos de segurança
 
     🔄 Rollback inteligente com base em logs históricos
+
+### Documentação oficial
+
+https://docs.python.org/3/library/logging.html
 
 ### O que vamos estudar
 
