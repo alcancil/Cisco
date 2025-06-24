@@ -145,7 +145,7 @@ flowchart TD
     style D1 fill:#006400,stroke:#00ff00,color:#ffffff       # Verde - INFO - Parser CLI bem-sucedido
     style D2 fill:#ffc107,stroke:#ffcc00,color:#000000       # Amarelo - WARNING - JSON pode variar
     style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff       # Vermelho - ERROR - XML/YAML malformado
-    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff        # Azul - Extração Tecnica
+    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff        # Azul - Extração 
     style G fill:#343a40,stroke:#ffffff,color:#ffffff        # Cinza - Decisão lógica
     style H1 fill:#000000,stroke:#ff0000,color:#ffffff       # Preto - CRITICAL
     style H2 fill:#198754,stroke:#00ff00,color:#ffffff       # Verde escuro - Logs INFO/WARN/ERROR
