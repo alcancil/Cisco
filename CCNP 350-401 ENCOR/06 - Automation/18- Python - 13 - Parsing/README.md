@@ -142,13 +142,37 @@ flowchart TD
         I1 & I2 & I3 --> Z[Encaminhar para Operações]
     end
 
+    %% Cores no estilo semáforo
+    style D1 fill:#006400,stroke:#00ff00,color:#ffffff       %% Verde - INFO (Parser CLI bem-sucedido)
+    style D2 fill:#ffc107,stroke:#ffcc00,color:#000000       %% Amarelo - WARNING (JSON pode variar)
+    style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff       %% Vermelho - ERROR (XML/YAML malformado)
+    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff         %% Azul - Extração Técnica
+    style G fill:#343a40,stroke:#ffffff,color:#ffffff        %% Cinza - Decisão lógica
+    style H1 fill:#000000,stroke:#ff0000,color:#ffffff       %% Preto - CRITICAL
+    style H2 fill:#198754,stroke:#00ff00,color:#ffffff       %% Verde escuro - Logs INFO/WARN/ERROR
+    style H3 fill:#6610f2,stroke:#9370DB,color:#ffffff       %% Roxo - Análise
+    style Z fill:#0dcaf0,stroke:#17a2b8,color:#000000        %% Azul claro - Encaminhar p/ Operações
+```
+
     style B fill:#1e3a8a,stroke:#3b82f6,color:#FFFFFF  # Configuracao
     style E fill:#005500,stroke:#00AA00,color:#FFFFFF  # INFO
     style F fill:#5c4a00,stroke:#f0ad4e,color:#FFFFFF  # ERROR
     style G fill:#5c1a1a,stroke:#dc3545,color:#FFFFFF  # WARNING
     style H fill:#000000,stroke:#ff0000,color:#FFFFFF  # CRITICAL
     style I fill:#1a365d,stroke:#2a52be,color:#FFFFFF  # Arquivo
-```
+
+
+**Interpretação das Etapas:**
+| Etapa                     | Descrição                                |
+|---------------------------|------------------------------------------|
+| Coleta de Dados           | Pode vir de CLI, API, arquivos           |
+| Origem dos Dados          | Define o tipo de parsing necessário      |
+| Parsing com ...           | Usa a biblioteca correta para cada tipo  |
+| Extração de Campos        | Onde você filtra o que realmente importa |
+| Tipo de Ação              | Define se será log, alerta ou análise    |
+| Encaminhar para Operações | Etapa final, automatizada ou manual      |
+
+
 
     style B stroke:#FFA500,stroke-width:2px
     style C stroke:#32CD32,stroke-width:2px
