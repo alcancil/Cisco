@@ -1,14 +1,18 @@
 # Python - 12
 
-## Logging
+## Parsing
 
 ## Sumário
 - [Python - 12](#python---12)
-  - [Logging](#logging)
+  - [Parsing](#parsing)
   - [Sumário](#sumário)
-    - [Por Que Logging é Essencial?](#por-que-logging-é-essencial)
+    - [🧩 O que é Parsing?](#-o-que-é-parsing)
+    - [Por que Parsing é Essencial?](#por-que-parsing-é-essencial)
     - [Documentação oficial](#documentação-oficial)
     - [O que vamos estudar](#o-que-vamos-estudar)
+    - [Para que serve o Parsing?](#para-que-serve-o-parsing)
+    - [Quando usar Parsing?](#quando-usar-parsing)
+    - [Quando evitar ou adiar o parsing?](#quando-evitar-ou-adiar-o-parsing)
     - [Fluxo de Automação](#fluxo-de-automação)
     - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
   - [Breve revisão](#breve-revisão)
@@ -35,22 +39,24 @@
   - [Exercício 06 — Logs formatados e personalizados](#exercício-06--logs-formatados-e-personalizados)
     - [Explicações adicionais](#explicações-adicionais)
 
-### Por Que Logging é Essencial?
+### 🧩 O que é Parsing?
 
-Em automação de redes, 90% dos problemas ocorrem em produção — conexões SSH falhas, APIs indisponíveis ou configurações inválidas.
-Logging estruturado é sua "caixa preta" para:  
+Parsing (ou análise sintática) é o processo de analisar e extrair informações de dados estruturados ou semiestruturados, como arquivos JSON, XML, YAML, HTML ou mesmo a saída de um comando de terminal.
 
-    🕵️‍♂️ Diagnosticar falhas que só acontecem em ambientes reais
+### Por que Parsing é Essencial?
 
-    📜 Auditar mudanças em dispositivos de rede
-
-    🔒 Cumprir requisitos de segurança
-
-    🔄 Rollback inteligente com base em logs históricos
+No contexto de redes e automação, parsing é essencial para transformar dados brutos (de um equipamento ou API) em dados organizados e utilizáveis por scripts ou dashboards.
 
 ### Documentação oficial
 
-https://docs.python.org/3/library/logging.html
+Parser - Python  
+https://docs.python.org/pt-br/3.8/library/parser.html  
+
+Genie - Cisco
+https://developer.cisco.com/docs/genie-docs/
+
+---
+Arrumar
 
 ### O que vamos estudar
 
@@ -58,6 +64,44 @@ https://docs.python.org/3/library/logging.html
 - Aprender os diferentes níveis de log e quando usá-los
 - Criar logs em arquivos e integrar com outras ferramentas (Graylog, ELK, etc)
 - Aplicar logs em scripts de automação de rede com Cisco e Linux
+
+---
+Arrumar
+
+### Para que serve o Parsing?
+
+Principais objetivos:
+
+  - Extrair informações específicas: Por exemplo, o status de uma interface, o hostname de um roteador, ou o IP de uma VLAN.
+
+  - Validar dados recebidos: Garantir que o conteúdo tem o formato esperado (ex: JSON válido, XML bem formado).
+
+  - Transformar a informação: Convertendo dados de texto para dicionários Python, listas, etc., para facilitar o tratamento e a automação.
+
+  - Gerar insights e relatórios: Organizar e exibir informações para análise (Zabbix, Grafana, Graylog, etc).
+
+### Quando usar Parsing?
+
+Você usa parsing quando:  
+
+| Cenário                                                       | Exemplo                                                                 |
+|---------------------------------------------------------------|-------------------------------------------------------------------------| 
+| 📤 Você recebe dados de um equipamento ou API                 | Saída do comando show ip interface brief, payload JSON de uma REST API  |
+| 🧩 Precisa filtrar campos específicos                         | Pegar apenas o IP de uma interface em JSON                              |
+| 📊 Quer estruturar os dados para um script, dashboard ou log  | Converter XML de retorno em dicionário Python                           |
+| 🔄 Vai automatizar a configuração ou análise                  | Verificar se todas as interfaces estão "up" antes de aplicar uma ACL    |
+
+### Quando evitar ou adiar o parsing?
+
+Parsing pode ser custoso, confuso ou desnecessário em certos cenários:  
+
+| Situação                                             | Melhor alternativa                           |
+|------------------------------------------------------|----------------------------------------------|
+| Dados já vêm em estrutura limpa e simples	           | Use direto, sem parsing extra                |
+| Está em uma fase inicial de automação	               | Pode focar em coletar dados primeiro         |
+| Vai usar ferramentas com parsers prontos (ex: Genie) | Evita reinventar a roda                      |
+| Projeto pequeno e pontual	                           | Um if "up" in string: pode ser o suficiente  |
+
 
 ### Fluxo de Automação
 
