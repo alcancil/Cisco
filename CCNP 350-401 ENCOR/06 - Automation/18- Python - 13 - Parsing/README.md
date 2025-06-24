@@ -149,6 +149,7 @@ flowchart TD
     style D3 stroke:#1E90FF,stroke-width:2px
     style E fill:#FFFACD,stroke:#FFA500
     style F fill:#F0FFF0,stroke:#32CD32
+    style G fill:#F0F8FF,stroke:#1E90FF
 ```
   
 **Legenda de Uso:**  
