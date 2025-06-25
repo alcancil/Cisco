@@ -16,6 +16,11 @@
     - [Fluxo de Parsing](#fluxo-de-parsing)
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
+    - [🟩 Parsing de JSON](#-parsing-de-json)
+    - [🟥 Parsing de XML](#-parsing-de-xml)
+    - [🟨 Parsing de YAML](#-parsing-de-yaml)
+    - [⚫ Parsing de texto (CLI) com Regex](#-parsing-de-texto-cli-com-regex)
+    - [🧠 Conclusão\*\*](#-conclusão)
   - [Breve revisão](#breve-revisão)
     - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
     - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
@@ -183,7 +188,7 @@ Parsing manual significa ler, interpretar e estruturar informações não padron
 
 Abaixo, apresentamos os principais formatos e como fazer o parsing manual com Python.
 
-**🟩 Parsing de JSON**
+### 🟩 Parsing de JSON
 
 Muito comum em automações baseadas em REST APIs, especialmente para coletar dados de controladores, switches modernos e sistemas de gerenciamento.
 
@@ -199,7 +204,7 @@ print(parsed["ip"])        # Saída: 192.168.0.1
 
     ✅ Quando usar: APIs REST, retorno de sistemas modernos como Cisco DNA Center, Meraki, etc.
 
-**🟥 Parsing de XML**
+### 🟥 Parsing de XML
 
 Presente em configurações, respostas de protocolo NETCONF, e arquivos de sistemas legados. O XML possui estrutura em árvore (tags aninhadas).
 
@@ -220,7 +225,7 @@ print(root.find('ip').text)    # Saída: 10.0.0.1
 
     ✅ Quando usar: NETCONF, arquivos de configuração, sistemas mais antigos.
 
-**🟨 Parsing de YAML**
+### 🟨 Parsing de YAML
 
 Muito usado para arquivos de configuração legíveis, como inventory, playbooks ou templates em ferramentas como Ansible.
 
@@ -239,7 +244,7 @@ print(parsed["router"]["loopback"]) # Saída: 10.1.1.1
 ```
     ✅ Quando usar: arquivos .yaml em playbooks, inventories e modelos declarativos.
 
-**⚫ Parsing de texto (CLI) com Regex**
+### ⚫ Parsing de texto (CLI) com Regex
 
 Usado quando o equipamento só retorna texto puro, como saídas de show commands. É o mais "manual" e propenso a erros, mas também o mais comum em redes tradicionais.
 
@@ -256,7 +261,7 @@ if match:
 
     ✅ Quando usar: equipamentos sem API ou parser nativo, parsing de logs e saídas CLI.
 
-**🧠 Conclusão**
+### 🧠 Conclusão**
 
 Parsing manual é a base do entendimento da automação. Ele te prepara para lidar com situações imprevisíveis — seja criando seus próprios parsers ou entendendo os dados antes de aplicar ferramentas como Genie, pyATS ou NAPALM.
 
