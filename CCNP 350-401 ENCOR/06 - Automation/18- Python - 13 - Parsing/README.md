@@ -17,7 +17,7 @@
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
     - [🟩 Parsing de JSON](#-parsing-de-json)
-    - [🟥 Parsing de XML](#-parsing-de-xml)
+    - [� Parsing de XML](#-parsing-de-xml)
     - [🟨 Parsing de YAML](#-parsing-de-yaml)
     - [⚫ Parsing de texto (CLI) com Regex](#-parsing-de-texto-cli-com-regex)
     - [🧠 Conclusão\*\*](#-conclusão)
@@ -190,16 +190,174 @@ Abaixo, apresentamos os principais formatos e como fazer o parsing manual com Py
 
 ### 🟩 Parsing de JSON
 
-Muito comum em automações baseadas em REST APIs, especialmente para coletar dados de controladores, switches modernos e sistemas de gerenciamento.
+O parsing de JSON é essencial para trabalhar com:
+- APIs REST de plataformas Cisco (DNA Center, Meraki Dashboard)
+- Retornos de equipamentos modernos (IOS XE, ACI)
+- Automação de configurações e coleta de dados
+
+Dados obtidos de uma API Cisco - Simulado
+
+**dados_api.json**
 
 ```json
-import json
+{
+  "hostname": "R1-CCNP",
+  "ip": "10.0.0.1",
+  "os": "IOS-XE",
+  "interfaces": [
+    {"name": "Gig0/1", "status": "up", "vlan": 10},
+    {"name": "Gig0/2", "status": "down", "vlan": 20}
+  ]
+}
+```
 
-data = '{"hostname": "R1", "ip": "192.168.0.1", "status": "up"}'
-parsed = json.loads(data)
+**parse_cisco_json.py**
 
-print(parsed["hostname"])  # Saída: R1
-print(parsed["ip"])        # Saída: 192.168.0.1
+```Python
+[01] import json
+[02]
+[03] # Simulando um cenário (parsing para troubleshooting)
+[04] try:
+[05]     with open('device_data.json') as f:
+[06]         data = json.load(f)
+[07]     
+[08]     # Validação
+[09]     if not all(key in data for key in ['hostname', 'interfaces']):
+[10]         raise ValueError("JSON inválido: estrutura Cisco esperada não encontrada")
+[11]    
+[12]     # Análise de interface
+[13]     interfaces_down = [
+[14]         intf['name'] for intf in data['interfaces']
+[15]         if intf['status'] == 'down'
+[16]     ]
+[17]    
+[18]     # Saída formatada (similar a questões da prova)
+[19]     print(f"\nDispositivo: {data['hostname']}")
+[20]     print(f"Interfaces DOWN: {interfaces_down}")
+[21]     print("\nAções recomendadas:")
+[22]     for intf in interfaces_down:
+[23]         print(f"  - Executar: 'show interface {intf}'")
+[24]
+[25] except json.JSONDecodeError:
+[26]     print("ERRO: JSON malformado")
+[27] except FileNotFoundError:
+[28]     print("ERRO: Arquivo não encontrado (importante para troubleshooting)")
+[29] except Exception as e:
+[30]     print(f"ERRO inesperado: {str(e)}")
+```
+
+**Saída**
+
+```bash
+alcancil@linux:~/automacoes/parsing/01$ python3 -m venv venv
+alcancil@linux:~/automacoes/parsing/01$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/parsing/01$ python3 parse_cisco.py 
+
+Dispositivo: R1-CCNP
+Interfaces DOWN: ['Gig0/2']
+
+Ações recomendadas (exemplo ENCOR):
+  - Executar: 'show interface Gig0/2'
+(venv) alcancil@linux:~/automacoes/parsing/01$
+```
+
+**Explicação**
+
+```Python
+Bloco 1: Importação e Contexto
+
+[01] import json                                                                         # Importa o módulo JSON padrão do Python para parsing
+[02]
+[03] # Simulando um cenário  (parsing para troubleshooting)
+
+Bloco 2: Leitura e Validação do JSON
+
+[04] try:                                                                                # Inicio bloco tratamento de erros 
+[05]     with open('device_data.json') as f:                                             # Abre o arquivo JSON (simula resposta de API)
+[06]         data = json.load(f)                                                         # Carrega e decodifica o JSON para um dicionário Python
+[07]     
+[08]     # Validação 
+[09]     if not all(key in data for key in ['hostname', 'interfaces']):                  # Verifica chaves obrigatórias
+[10]         raise ValueError("JSON inválido: estrutura Cisco esperada não encontrada")  # Falha controlada - Se não encontra chaves chama um erro
+
+Bloco 3: Processamento
+
+[12]     # Análise de interfaces (exemplo clássico ENCOR)
+[13]     interfaces_down = [                                                                # List comprehension para processamento eficiente
+[14]         intf['name'] for intf in data['interfaces']                                    # List comprehension para eficiência
+[15]         if intf['status'] == 'down'                                                    # Filtra interfaces com status 'down'
+[16]     ]
+
+Bloco 4: Saída Formatada
+
+[18]     # Saída formatada 
+[19]     print(f"\nDispositivo: {data['hostname']}")                                         # Exibe hostname (dado básico)
+[20]     print(f"Interfaces DOWN: {interfaces_down}")                                        # Lista interfaces problemáticas
+[21]     print("\nAções recomendadas:")                                                      # Header para seção de troubleshooting
+[22]     for intf in interfaces_down:                                                        # Itera sobre interfaces down
+[23]         print(f"  - Executar: 'show interface {intf}'")                                 # Sugere comandos para troubleshooting
+
+Bloco 5: Tratamento de Erros
+
+[25] except json.JSONDecodeError:                                                            # Erro de sintaxe JSON (arquivo corrompido)
+[26]     print("ERRO: JSON malformado")                                                      # Mensagem clara para o usuário
+[27] except FileNotFoundError:                                                               # Captura ausência do arquivo (erro comum em automação)
+[28]     print("ERRO: Arquivo não encontrado (importante para troubleshooting)")             # Feedback específico
+[29] except Exception as e:                                                                  # Fallback para outros erros
+[30]     print(f"ERRO inesperado: {str(e)}")                                                 # Exibe detalhes do erro para debug
+```
+
+**OBS: List Comprehension (compreensão de lista)** é uma forma concisa e eficiente de criar listas em Python, muito usada em automação de redes para processar saídas de comandos Cisco (como show interface, show ip route) ou respostas de APIs (DNA Center, Meraki).
+
+**🔎 Como Funciona?**  
+
+Sintaxe básica:  
+
+```python
+nova_lista = [expressão for item in lista if condição]  
+```
+
+| Parte	          | Descrição                                                        | Exemplo Cisco ENCOR             |
+|-----------------|------------------------------------------------------------------|---------------------------------|
+| expressão       | O que será incluído na lista (ex: nome da interface, IP, status) | intf['name']                    |
+| for item        | Itera sobre cada elemento de uma lista/dicionário                | for intf in data['interfaces']  |
+| if condição     | (Opcional) Filtra os itens que atendem a uma condição            | if intf['status'] == 'down'     |
+
+**💡 Exemplo Prático (Cenário ENCOR)**
+
+Suponha que você queira extrair interfaces **DOWN** de um JSON retornado por um comando **show interface | json** em um switch Cisco:  
+
+Dados de Exemplo (JSON Cisco):
+
+```Python
+data = {
+    "interfaces": [
+        {"name": "Gig0/1", "status": "up", "vlan": 10},
+        {"name": "Gig0/2", "status": "down", "vlan": 20},
+        {"name": "Gig0/3", "status": "down", "vlan": 30}
+    ]
+}  
+```
+
+**📌 Forma Tradicional (Sem List Comprehension)**
+
+```python
+interfaces_down = []  
+for intf in data['interfaces']:  
+    if intf['status'] == 'down':  
+        interfaces_down.append(intf['name'])  
+```
+
+**🚀 Forma com List Comprehension**
+
+```python
+interfaces_down = [intf['name'] for intf in data['interfaces'] if intf['status'] == 'down']  
+```
+
+**Saída:**
+
+```python
+['Gig0/2', 'Gig0/3']  # Lista pronta para uso em automação/troubleshooting  
 ```
 
     ✅ Quando usar: APIs REST, retorno de sistemas modernos como Cisco DNA Center, Meraki, etc.
