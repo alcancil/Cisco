@@ -14,7 +14,8 @@
     - [Quando usar Parsing?](#quando-usar-parsing)
     - [Quando evitar ou adiar o parsing?](#quando-evitar-ou-adiar-o-parsing)
     - [Fluxo de Parsing](#fluxo-de-parsing)
-    - [Como Funciona o Logging em Python?](#como-funciona-o-logging-em-python)
+  - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
+    - [Introdução](#introdução)
   - [Breve revisão](#breve-revisão)
     - [SYSLOG em Dispositivos Cisco](#syslog-em-dispositivos-cisco)
     - [Níveis de Severidade Cisco (0-7):](#níveis-de-severidade-cisco-0-7)
@@ -165,83 +166,106 @@ flowchart TD
 | 🟣 Roxo     | Etapas de análise/visualização             | H3    |
 | ⚪ Cinza    | Decisão intermediária                      | G     |
 
+
+## Parsing Manual em Automação de Redes
+
+### Introdução
+
+Nem sempre os dados coletados em redes vêm prontos para serem processados. Em muitos casos, o profissional precisa interpretar manualmente saídas de comandos, arquivos de configuração ou respostas de APIs. Esse processo é chamado de parsing manual.
+
+Parsing manual significa ler, interpretar e estruturar informações não padronizadas, como strings brutas ou arquivos em formatos diversos. Isso é útil quando:
+
+  - Não há um parser pronto disponível (como o Genie).
+
+  - O formato dos dados é simples o bastante para tratar diretamente com Python.
+
+  - Desejamos entender melhor a estrutura interna dos dados antes de automatizar em larga escala.
+
+Abaixo, apresentamos os principais formatos e como fazer o parsing manual com Python.
+
+**🟩 Parsing de JSON**
+
+Muito comum em automações baseadas em REST APIs, especialmente para coletar dados de controladores, switches modernos e sistemas de gerenciamento.
+
+```json
+import json
+
+data = '{"hostname": "R1", "ip": "192.168.0.1", "status": "up"}'
+parsed = json.loads(data)
+
+print(parsed["hostname"])  # Saída: R1
+print(parsed["ip"])        # Saída: 192.168.0.1
+```
+
+    ✅ Quando usar: APIs REST, retorno de sistemas modernos como Cisco DNA Center, Meraki, etc.
+
+**🟥 Parsing de XML**
+
+Presente em configurações, respostas de protocolo NETCONF, e arquivos de sistemas legados. O XML possui estrutura em árvore (tags aninhadas).
+
+```xml
+import xml.etree.ElementTree as ET
+
+xml_data = '''
+<interface>
+  <name>Gig0/1</name>
+  <ip>10.0.0.1</ip>
+</interface>
+'''
+
+root = ET.fromstring(xml_data)
+print(root.find('name').text)  # Saída: Gig0/1
+print(root.find('ip').text)    # Saída: 10.0.0.1
+```
+
+    ✅ Quando usar: NETCONF, arquivos de configuração, sistemas mais antigos.
+
+**🟨 Parsing de YAML**
+
+Muito usado para arquivos de configuração legíveis, como inventory, playbooks ou templates em ferramentas como Ansible.
+
+```yaml
+import yaml
+
+yaml_data = '''
+router:
+  name: R1
+  loopback: 10.1.1.1
+'''
+
+parsed = yaml.safe_load(yaml_data)
+print(parsed["router"]["name"])     # Saída: R1
+print(parsed["router"]["loopback"]) # Saída: 10.1.1.1
+```
+    ✅ Quando usar: arquivos .yaml em playbooks, inventories e modelos declarativos.
+
+**⚫ Parsing de texto (CLI) com Regex**
+
+Usado quando o equipamento só retorna texto puro, como saídas de show commands. É o mais "manual" e propenso a erros, mas também o mais comum em redes tradicionais.
+
+```txt
+import re
+
+cli_output = "GigabitEthernet0/1 is up, line protocol is up"
+match = re.search(r'(\S+) is (\w+),', cli_output)
+
+if match:
+    print(match.group(1))  # Saída: GigabitEthernet0/1
+    print(match.group(2))  # Saída: up
+```
+
+    ✅ Quando usar: equipamentos sem API ou parser nativo, parsing de logs e saídas CLI.
+
+**🧠 Conclusão**
+
+Parsing manual é a base do entendimento da automação. Ele te prepara para lidar com situações imprevisíveis — seja criando seus próprios parsers ou entendendo os dados antes de aplicar ferramentas como Genie, pyATS ou NAPALM.
+
+No próximo passo, veremos como parsers prontos como o Genie facilitam (e muito) esse trabalho — trazendo agilidade e padronização para ambientes Cisco e, em alguns casos, multivendor.
+
+
+
 ---
 Arrumar
-
-### Como Funciona o Logging em Python?
-
-O logging é o sistema padrão do Python para registrar eventos durante a execução de scripts. Em automação de redes, ele é essencial para:
-
-    📌 Rastrear o fluxo de execução
-
-    🔍 Depurar problemas
-
-    📊 Auditar operações em dispositivos
-
-1. **Componentes Principais**  
-
-| Componente | Função                                     | Exemplo em Redes                            |
-|------------|--------------------------------------------|---------------------------------------------| 
-| Loggers    | Canais de registro (hierárquicos)          | logging.getLogger('network.ssh')            |
-| Handlers   | Destinos dos logs (arquivo/console/syslog) | FileHandler('network.log')                  | 
-| Formatters | Estrutura da mensagem (timestamp/nível)    | '%(asctime)s - %(levelname)s - %(message)s' |
-| Filters    | Controle de quais logs são registrados     | filter=lambda record: 'VLAN' in record.msg  |
-
-2. **Exemplo Prático (Configuração Básica)**
-
-```Python
-import logging
-
-# 1. Configuração Inicial
-logging.basicConfig(
-    filename='network.log',          # Arquivo de saída
-    level=logging.INFO,              # Nível mínimo para registrar
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-# 2. Uso em operações de rede
-logging.info("Iniciando backup de configurações...")  # Mensagem informativa
-logging.warning("VLAN 10 modificada manualmente")     # Alerta
-logging.error("Falha na conexão SSH com 192.168.1.1") # Erro crítico
-```
-
-```Bash
-Saída no network.log:
-bash
-
-2023-10-05 14:30:00 - INFO - Iniciando backup de configurações...
-2023-10-05 14:31:22 - WARNING - VLAN 10 modificada manualmente
-2023-10-05 14:32:15 - ERROR - Falha na conexão SSH com 192.168.1.1
-```
-
-3. **Níveis de Log (Hierarquia)**  
-
-| Nível    | Quando Usar?	                         | Exemplo                                        |
-|----------|-----------------------------------------|------------------------------------------------|
-| DEBUG    | Detalhes internos (depuração)           | logging.debug("Enviando comando: 'show vlan'") |
-| INFO     | Eventos normais                         | logging.info("Dispositivo reiniciado")         | 
-| WARNING  | Situações anormais, mas recuperáveis    | logging.warning("Tempo de resposta alto")      | 
-| ERROR    | Falhas em operações específicas         | logging.error("Timeout na API")                | 
-| CRITICAL | Falhas graves (dispositivo inacessível) | logging.critical("Perda de conectividade")     |
-
-**Observação sobre Sincronização de Tempo (NTP)**
-
-Para que os logs sejam confiáveis em ambientes de rede (especialmente Cisco e Python), é essencial:
-
-    Configurar NTP nos dispositivos e servidores:
-
-```bash
-! Exemplo mínimo em Cisco (CCNP ENCOR)
-configure terminal
-  ntp server 200.160.7.186  # Servidor NTP do NIC.br
-  clock timezone GMT -3      # Fuso horário (ex: Brasil)
-```
-
-**Impacto no Logging:**
-
-   - Logs sem sincronização temporal = dificuldade para correlacionar eventos (ex.: falhas em cadeia).
-
-   - Exemplo real: Um log Python marcado às 14:30 e um log Cisco às 14:35 podem ser o mesmo evento com clocks desalinhados.  
 
 **Dica para o CCNP ENCOR:**
 
