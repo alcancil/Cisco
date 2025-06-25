@@ -17,7 +17,7 @@
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
     - [🟩 Parsing de JSON](#-parsing-de-json)
-    - [� Parsing de XML](#-parsing-de-xml)
+    - [🟥 Parsing de XML](#-parsing-de-xml)
     - [🟨 Parsing de YAML](#-parsing-de-yaml)
     - [⚫ Parsing de texto (CLI) com Regex](#-parsing-de-texto-cli-com-regex)
     - [🧠 Conclusão\*\*](#-conclusão)
@@ -364,21 +364,109 @@ interfaces_down = [intf['name'] for intf in data['interfaces'] if intf['status']
 
 ### 🟥 Parsing de XML
 
-Presente em configurações, respostas de protocolo NETCONF, e arquivos de sistemas legados. O XML possui estrutura em árvore (tags aninhadas).
+o parsing de XML é essencial para:
 
-```xml
-import xml.etree.ElementTree as ET
+  - Configurações via NETCONF (protocolo usado em automação Cisco)
 
-xml_data = '''
-<interface>
-  <name>Gig0/1</name>
-  <ip>10.0.0.1</ip>
-</interface>
-'''
+  - Arquivos de configuração legados (ex: backups de IOS clássico)
 
-root = ET.fromstring(xml_data)
-print(root.find('name').text)  # Saída: Gig0/1
-print(root.find('ip').text)    # Saída: 10.0.0.1
+  - Integração com sistemas enterprise (ACI, ISE) que usam XML
+
+**parse_xml.py**
+
+```Python
+[01] import xml.etree.ElementTree as ET
+[02]
+[03] # XML simulando uma configuração básica de interface (pré-NETCONF)
+[04] interface_config = '''
+[05] <cisco_config>
+[06]     <interface>
+[07]         <name>GigabitEthernet0/1</name>
+[08]         <ip_address>192.168.1.1</ip_address>
+[09]         <status>up</status>
+[10]         <vlan>10</vlan>
+[11]     </interface>
+[12]     <interface>
+[13]         <name>GigabitEthernet0/2</name>
+[14]         <ip_address>192.168.2.1</ip_address>
+[15]         <status>down</status>
+[16]         <vlan>20</vlan>
+[17]     </interface>
+[18] </cisco_config>
+[19] '''
+[20]
+[21] # Parse básico (sem namespaces para simplificar)
+[22] root = ET.fromstring(interface_config)
+[23] 
+[25] # Extraindo informações como no ENCOR (encontrar interfaces down)
+[26] print("🔍 Interfaces com problemas:")
+[27] for interface in root.findall('interface'):
+[28]     name = interface.find('name').text
+[29]     status = interface.find('status').text
+[30]    
+[31]     if status == 'down':
+[32]         ip = interface.find('ip_address').text
+[33]         vlan = interface.find('vlan').text
+[34]         print(f"  ! Interface {name} (IP: {ip}, VLAN: {vlan}) está DOWN")
+```
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/parsing/02$ python3 -m venv venv
+alcancil@linux:~/automacoes/parsing/02$ source venv/bin/activate
+(venv) alcancil@linux:~/automacoes/parsing/02$ python3 parse_xml.py 
+🔍 Interfaces com problemas:
+  ! Interface GigabitEthernet0/2 (IP: 192.168.2.1, VLAN: 20) está DOWN
+(venv) alcancil@linux:~/automacoes/parsing/02$ 
+```
+
+**Explicação**  
+
+```Python
+Bloco 1: Importação e Dados de Exemplo
+python
+
+[01] import xml.etree.ElementTree as ET                                         # Importa a biblioteca padrão para parsing XML
+[02]
+[03] # XML simulando uma configuração básica de interface (pré-NETCONF)
+[04] interface_config = '''                                                     # String multilinha contendo o XML
+[05] <cisco_config>                                                             # Tag raiz do XML (equivalente a um "envelope")
+[06]     <interface>                                                            # Primeiro bloco de interface (elemento filho)
+[07]         <name>GigabitEthernet0/1</name>                                    # Nome da interface (tag + valor)
+[08]         <ip_address>192.168.1.1</ip_address>                               # Endereço IP configurado
+[09]         <status>up</status>                                                # Status operacional (up/down)
+[10]         <vlan>10</vlan>                                                    # VLAN associada
+[11]     </interface>                                                           # Fechamento do bloco
+[12]     <interface>                                                            # Segunda interface
+[13]         <name>GigabitEthernet0/2</name>                                    # Nome da Interface
+[14]         <ip_address>192.168.2.1</ip_address>                               # Ip da interface
+[15]         <status>down</status>                                              # Interface propositalmente down para exemplo
+[16]         <vlan>20</vlan>                                                    # Número da Vlan que a interface está
+[17]     </interface>                                                           # Fechamento do bloco Interface
+[18] </cisco_config>                                                            # Fechamento da tag raiz
+[19] '''
+
+Bloco 2: Parsing Básico
+
+[21] # Parse básico (sem namespaces para simplificar)
+[22] root = ET.fromstring(interface_config)                                     # Converte a string XML em um objeto Python (árvore DOM)
+                                                                                # Linha 22: ET.fromstring() é o método fundamental para iniciar o parsing.
+                                                                                      # Transforma o XML em uma estrutura hierárquica onde você pode navegar com find()/findall().
+                                                                                      # Equivalente a comandos Cisco como show interface | xml (mas em Python).
+
+Bloco 3: Extração de Dados (Estilo ENCOR)
+
+[25] # Extraindo informações como no ENCOR (encontrar interfaces down)
+[26] print("🔍 Interfaces com problemas:")                                      # Cabeçalho para output (simula um alerta)
+[27] for interface in root.findall('interface'):                                # Itera sobre TODAS as tags <interface>
+[28]     name = interface.find('name').text                                     # Extrai o texto dentro de <name> (ex: Gig0/1)
+[29]     status = interface.find('status').text                                 # Extrai o status (up/down)
+[30]    
+[31]     if status == 'down':                                                   # Filtro para troubleshooting
+[32]         ip = interface.find('ip_address').text                             # Extrai IP se interface estiver down
+[33]         vlan = interface.find('vlan').text                                 # Extrai VLAN associada
+[34]         print(f"  ! Interface {name} (IP: {ip}, VLAN: {vlan}) está DOWN")  # Saída formatada
 ```
 
     ✅ Quando usar: NETCONF, arquivos de configuração, sistemas mais antigos.
