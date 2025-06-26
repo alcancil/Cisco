@@ -721,11 +721,11 @@ Bloco 6: Tratamento de Erros
 
 🎓 Recursos para Aprofundar:
 
-    (Regex101)[https://regex101.com/]- Testador online com debug visual
+    Regex101 - https://regex101.com/ - Testador online com debug visual
 
-    Cisco DevNet - Parsing Guide
+    Cisco DevNet - https://developer.cisco.com/docs/pyats/parsing-device-output/#device-output-parsing - Parsing Guide
 
-    Python re Documentation
+    Python re Documentation - https://docs.python.org/3/library/re.html
 
 ### 🧠 Conclusão**
 
