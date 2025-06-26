@@ -575,57 +575,57 @@ Usado quando o equipamento só retorna texto puro, como saídas de show commands
 **status.py**
 
 ```Python
-import re
-
-# Bloco 1: Definição dos dados e padrão Regex
-# ------------------------------------------
-cli_output = """
-GigabitEthernet0/1 is up, line protocol is up
-GigabitEthernet0/2 is administratively down, line protocol is down
-Loopback0 is up, line protocol is up
-"""
-
-# Padrão Regex para capturar:
-# - Grupo 1: Nome da interface (\S+ = qualquer caractere não-espaço)
-# - Grupo 2: Status administrativo (\w+ = palavra)
-pattern = r'^(\S+)\s+is\s+(\w+),'
-
-# Bloco 2: Processamento com tratamento de erros
-# --------------------------------------------
-print("🔍 Status das Interfaces:")
-
-try:
-    # Valida se há conteúdo para parsear
-    if not cli_output.strip():
-        raise ValueError("Saída CLI vazia")
-    
-    found_interfaces = False
-    
-    # Processa cada linha da saída CLI
-    for line in cli_output.split('\n'):
-        line = line.strip()
-        if not line:  # Ignora linhas vazias
-            continue
-            
-        match = re.search(pattern, line)
-        if match:
-            interface = match.group(1)
-            status = match.group(2)
-            
-            # Filtra apenas interfaces físicas para exemplo (opcional)
-            if interface.startswith(('Gig', 'Fast', 'Ten')):
-                print(f"  {interface:18} | Status: {status}")
-                found_interfaces = True
-    
-    if not found_interfaces:
-        print("  ⚠️ Nenhuma interface física encontrada")
-
-except re.error:
-    print("  ❌ Erro no padrão Regex - revise a expressão regular")
-except Exception as e:
-    print(f"  ❌ Erro inesperado: {str(e)}")
-finally:
-    print("\n✅ Análise concluída")
+[01] import re
+[02] 
+[03] # Bloco 1: Definição dos dados e padrão Regex
+[04] # ------------------------------------------
+[05] cli_output = """
+[06] GigabitEthernet0/1 is up, line protocol is up
+[07] GigabitEthernet0/2 is administratively down, line protocol is down
+[08] Loopback0 is up, line protocol is up
+[09] """
+[10] 
+[11] # Padrão Regex para capturar:
+[12] # - Grupo 1: Nome da interface (\S+ = qualquer caractere não-espaço)
+[13] # - Grupo 2: Status administrativo (\w+ = palavra)
+[14] pattern = r'^(\S+)\s+is\s+(\w+),'
+[15] 
+[16] # Bloco 2: Processamento com tratamento de erros
+[17] # --------------------------------------------
+[18] print("🔍 Status das Interfaces:")
+[19] 
+[20] try:
+[21]     # Valida se há conteúdo para parsear
+[22]     if not cli_output.strip():
+[23]         raise ValueError("Saída CLI vazia")
+[24]     
+[25]     found_interfaces = False
+[26]     
+[27]     # Processa cada linha da saída CLI
+[29]     for line in cli_output.split('\n'):
+[30]         line = line.strip()
+[31]         if not line:  # Ignora linhas vazias
+[32]             continue
+[33]             
+[34]         match = re.search(pattern, line)
+[35]         if match:
+[36]             interface = match.group(1)
+[37]             status = match.group(2)
+[38]             
+[39]             # Filtra apenas interfaces físicas para exemplo (opcional)
+[40]             if interface.startswith(('Gig', 'Fast', 'Ten')):
+[41]                 print(f"  {interface:18} | Status: {status}")
+[42]                 found_interfaces = True
+[43]     
+[44]     if not found_interfaces:
+[45]         print("  ⚠️ Nenhuma interface física encontrada")
+[46] 
+[47] except re.error:
+[48]     print("  ❌ Erro no padrão Regex - revise a expressão regular")
+[49] except Exception as e:
+[50]     print(f"  ❌ Erro inesperado: {str(e)}")
+[51] finally:
+[52]     print("\n✅ Análise concluída")
 ```
 
 ```Bash
@@ -637,6 +637,78 @@ alcancil@linux:~/automacoes/parsing/04$ source venv/bin/activate
 
 ✅ Análise concluída
 (venv) alcancil@linux:~/automacoes/parsing/04$
+```
+
+**Explicação**
+
+```Python
+Bloco 1: Importação e Configuração Inicial
+
+[01] import re                                                           # Importa o módulo de expressões regulares do Python
+[02] 
+[03] # Bloco 1: Definição dos dados e padrão Regex
+[04] # ------------------------------------------
+[05] cli_output = """                                                    # String multilinha simulando saída de comando Cisco
+[06] GigabitEthernet0/1 is up, line protocol is up                       # Exemplo de interface up
+[07] GigabitEthernet0/2 is administratively down, line protocol is down  # Interface down
+[08] Loopback0 is up, line protocol is up                                # Interface loopback (será filtrada)
+[09] """
+
+Bloco 2: Definição do Padrão Regex
+
+[10] 
+[11] # Padrão Regex para capturar:
+[12] # - Grupo 1: Nome da interface (\S+ = qualquer caractere não-espaço)
+[13] # - Grupo 2: Status administrativo (\w+ = palavra)
+[14] pattern = r'^(\S+)\s+is\s+(\w+),'  # ^ = início da linha, \s+ = espaços
+
+Bloco 3: Processamento Principal
+
+[16] # Bloco 2: Processamento com tratamento de erros
+[17] # --------------------------------------------
+[18] print("🔍 Status das Interfaces:")                                   # Cabeçalho do relatório
+[19] 
+[20] try:                                                                  # Início do bloco de tratamento de erros
+[21]     # Valida se há conteúdo para parsear
+[22]     if not cli_output.strip():                                       # Remove espaços e verifica se está vazio
+[23]         raise ValueError("Saída CLI vazia")                          # Erro personalizado
+[24]     
+[25]     found_interfaces = False                                         # Flag para controle de resultados
+
+Bloco 4: Loop de Processamento
+
+[26]     
+[27]     # Processa cada linha da saída CLI
+[29]     for line in cli_output.split('\n'):                              # Divide a saída por linhas
+[30]         line = line.strip()                                          # Remove espaços no início/fim
+[31]         if not line:                                                 # Ignora linhas vazias
+[32]             continue                                                 # Pula para próxima iteração
+[33]             
+[34]         match = re.search(pattern, line)                             # Aplica o regex
+[35]         if match:                                                    # Se encontrou correspondência
+[36]             interface = match.group(1)                               # Captura o nome da interface
+[37]             status = match.group(2)                                  # Captura o status
+
+Bloco 5: Filtragem e Saída
+
+[38]             
+[39]             # Filtra apenas interfaces físicas para exemplo (opcional)
+[40]             if interface.startswith(('Gig', 'Fast', 'Ten')):        # Verifica prefixos
+[41]                 print(f"  {interface:18} | Status: {status}")       # Formatação alinhada
+[42]                 found_interfaces = True                             # Marca que encontrou interfaces
+[43]     
+[44]     if not found_interfaces:                                        # Verifica se nenhuma interface foi encontrada
+[45]         print("  ⚠️ Nenhuma interface física encontrada")           # Mensagem alternativa
+
+Bloco 6: Tratamento de Erros
+
+[46]  
+[47] except re.error:                                                     # Captura erros específicos do regex
+[48]     print("  ❌ Erro no padrão Regex - revise a expressão regular") # Mensagem amigável de problemas no Regex
+[49] except Exception as e:                                               # Captura outros erros genéricos
+[50]     print(f"  ❌ Erro inesperado: {str(e)}")                        # Exibe a mensagem de erro
+[51] finally:                                                             # Executa independentemente de erros
+[52]     print("\n✅ Análise concluída")                                  # Mensagem final de confirmação
 ```
 
     ✅ Quando usar: equipamentos sem API ou parser nativo, parsing de logs e saídas CLI.
