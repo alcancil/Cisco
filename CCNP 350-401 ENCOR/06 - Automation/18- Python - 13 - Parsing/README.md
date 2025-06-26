@@ -719,6 +719,14 @@ Bloco 6: Tratamento de Erros
 | Análise de logs        | show logging | include BGP | Capturar eventos específicos |
 | Equipamentos legados   | show version	              | Extrair versão do IOS        |
 
+🎓 Recursos para Aprofundar:
+
+    (Regex101)[https://regex101.com/]- Testador online com debug visual
+
+    Cisco DevNet - Parsing Guide
+
+    Python re Documentation
+
 ### 🧠 Conclusão**
 
 Parsing manual é a base do entendimento da automação. Ele te prepara para lidar com situações imprevisíveis — seja criando seus próprios parsers ou entendendo os dados antes de aplicar ferramentas como Genie, pyATS ou NAPALM.
