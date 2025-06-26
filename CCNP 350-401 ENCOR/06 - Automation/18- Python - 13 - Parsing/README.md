@@ -845,6 +845,3 @@ Parsing manual é a base do entendimento da automação. Ele te prepara para lid
 No próximo passo, veremos como parsers prontos como o Genie facilitam (e muito) esse trabalho — trazendo agilidade e padronização para ambientes Cisco e, em alguns casos, multivendor.
 
 
----
-Continuar
-
