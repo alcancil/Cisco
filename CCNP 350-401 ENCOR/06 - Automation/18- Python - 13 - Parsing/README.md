@@ -836,7 +836,10 @@ alcancil@linux:~/automacoes/parsing/05$ python3 parsing.py
 alcancil@linux:~/automacoes/parsing/05$ 
 ```
 
-Perceberam a diferença ? Só que isso pode ser feito para uma analise pontual e depois ser enviado para ferramentas de SIEM, por exemplo, para facilitar a análise e o trabalho da ferramenta.
+Perceberam a diferença ? Só que isso pode ser feito para uma analise pontual e depois ser enviado para ferramentas de SIEM, por exemplo, para facilitar a análise e o trabalho da ferramenta.  
+
+🔁 Integração futura:
+Este processo de parsing pode ser a base para envio automatizado de eventos críticos a um SIEM (como o Graylog / Splunk), usando ferramentas como Filebeat, rsyslog ou scripts em Python com envio via API ou syslog.  
 
 ### 🧠 Conclusão
 
