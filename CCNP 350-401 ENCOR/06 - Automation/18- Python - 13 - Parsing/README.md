@@ -713,6 +713,12 @@ Bloco 6: Tratamento de Erros
 
     ✅ Quando usar: equipamentos sem API ou parser nativo, parsing de logs e saídas CLI.
 
+| Quando Usar            | Comando Cisco Relacionado  | Aplicação Regex              |
+|------------------------|----------------------------|------------------------------|
+| Troubleshooting básico | show interface status      | Filtrar interfaces down      |
+| Análise de logs        | show logging | include BGP | Capturar eventos específicos |
+| Equipamentos legados   | show version	              | Extrair versão do IOS        |
+
 ### 🧠 Conclusão**
 
 Parsing manual é a base do entendimento da automação. Ele te prepara para lidar com situações imprevisíveis — seja criando seus próprios parsers ou entendendo os dados antes de aplicar ferramentas como Genie, pyATS ou NAPALM.
