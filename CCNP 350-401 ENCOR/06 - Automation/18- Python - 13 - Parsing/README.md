@@ -560,17 +560,83 @@ Bloco 3: Extração de Dados
 
 ### ⚫ Parsing de texto (CLI) com Regex
 
+Embora Regex não seja um tópico explícito no blueprint atual, é essencial para:
+
+  - Processar saídas de comandos show em equipamentos legados
+
+  - Extrair informações críticas para troubleshooting
+
+  - Criar scripts de automação quando parsers estruturados não estão disponíveis  
+
 Usado quando o equipamento só retorna texto puro, como saídas de show commands. É o mais "manual" e propenso a erros, mas também o mais comum em redes tradicionais.
 
-```txt
+**Exemplo Prático - Status de Interface**
+
+**status.py**
+
+```Python
 import re
 
-cli_output = "GigabitEthernet0/1 is up, line protocol is up"
-match = re.search(r'(\S+) is (\w+),', cli_output)
+# Bloco 1: Definição dos dados e padrão Regex
+# ------------------------------------------
+cli_output = """
+GigabitEthernet0/1 is up, line protocol is up
+GigabitEthernet0/2 is administratively down, line protocol is down
+Loopback0 is up, line protocol is up
+"""
 
-if match:
-    print(match.group(1))  # Saída: GigabitEthernet0/1
-    print(match.group(2))  # Saída: up
+# Padrão Regex para capturar:
+# - Grupo 1: Nome da interface (\S+ = qualquer caractere não-espaço)
+# - Grupo 2: Status administrativo (\w+ = palavra)
+pattern = r'^(\S+)\s+is\s+(\w+),'
+
+# Bloco 2: Processamento com tratamento de erros
+# --------------------------------------------
+print("🔍 Status das Interfaces:")
+
+try:
+    # Valida se há conteúdo para parsear
+    if not cli_output.strip():
+        raise ValueError("Saída CLI vazia")
+    
+    found_interfaces = False
+    
+    # Processa cada linha da saída CLI
+    for line in cli_output.split('\n'):
+        line = line.strip()
+        if not line:  # Ignora linhas vazias
+            continue
+            
+        match = re.search(pattern, line)
+        if match:
+            interface = match.group(1)
+            status = match.group(2)
+            
+            # Filtra apenas interfaces físicas para exemplo (opcional)
+            if interface.startswith(('Gig', 'Fast', 'Ten')):
+                print(f"  {interface:18} | Status: {status}")
+                found_interfaces = True
+    
+    if not found_interfaces:
+        print("  ⚠️ Nenhuma interface física encontrada")
+
+except re.error:
+    print("  ❌ Erro no padrão Regex - revise a expressão regular")
+except Exception as e:
+    print(f"  ❌ Erro inesperado: {str(e)}")
+finally:
+    print("\n✅ Análise concluída")
+```
+
+```Bash
+alcancil@linux:~/automacoes/parsing/04$ python3 -m venv venv 
+alcancil@linux:~/automacoes/parsing/04$ source venv/bin/activate   
+(venv) alcancil@linux:~/automacoes/parsing/04$ python3 status.py 
+🔍 Status das Interfaces:
+  GigabitEthernet0/1 | Status: up
+
+✅ Análise concluída
+(venv) alcancil@linux:~/automacoes/parsing/04$
 ```
 
     ✅ Quando usar: equipamentos sem API ou parser nativo, parsing de logs e saídas CLI.
