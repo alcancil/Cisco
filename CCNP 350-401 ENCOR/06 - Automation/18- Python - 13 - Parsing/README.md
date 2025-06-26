@@ -20,7 +20,8 @@
     - [🟥 Parsing de XML](#-parsing-de-xml)
     - [🟨 Parsing de YAML](#-parsing-de-yaml)
     - [⚫ Parsing de texto (CLI) com Regex](#-parsing-de-texto-cli-com-regex)
-    - [🧠 Conclusão\*\*](#-conclusão)
+    - [Exemplo Prático - Logs Grandes](#exemplo-prático---logs-grandes)
+    - [🧠 Conclusão](#-conclusão)
 
 ### 🧩 O que é Parsing?
 
@@ -727,7 +728,117 @@ Bloco 6: Tratamento de Erros
 
     Python re Documentation - https://docs.python.org/3/library/re.html
 
-### 🧠 Conclusão**
+
+### Exemplo Prático - Logs Grandes
+
+Agora vamos simular que tenhamos um log com 1000 linhas. Para isso vamos criar um script em python e executá-lo no terminal para gerar o log.
+
+**gerador.py**
+
+```Python
+import random
+from datetime import datetime, timedelta
+
+# Configurações
+NUM_EVENTOS = 1000  # Quantidade de entradas no log
+DISPOSITIVO = "R1-ENCOR"
+INTERFACES = ["Gig0/1", "Gig0/2", "Loopback0"]
+NIVEIS = ["INFO", "WARNING", "ERROR"]
+PROTOCOLOS = ["BGP", "OSPF", "STP", "HSRP"]
+
+def gerar_log():
+    log = []
+    base_time = datetime.now() - timedelta(days=1)
+    
+    for i in range(NUM_EVENTOS):
+        # Gera timestamp crescente
+        timestamp = base_time + timedelta(minutes=i*2)
+        
+        # Escolhe elementos aleatórios
+        interface = random.choice(INTERFACES)
+        nivel = random.choices(NIVEIS, weights=[70, 20, 10])[0]  # 70% INFO, 10% ERROR
+        protocolo = random.choice(PROTOCOLOS)
+        
+        # Gera mensagens conforme o nível
+        if nivel == "INFO":
+            msg = f"%LINK-3-UPDOWN: Interface {interface}, changed state to up"
+        elif nivel == "WARNING":
+            msg = f"%{protocolo}-4-RETRY: Neighbor {random.randint(1,254)}.{random.randint(1,254)}.{random.randint(1,254)}.1 retry"
+        else:  # ERROR
+            msg = f"%{protocolo}-5-ADJCHANGE: neighbor {random.randint(1,254)}.{random.randint(1,254)}.{random.randint(1,254)}.1 Down"
+        
+        log.append(f"{timestamp} {DISPOSITIVO} {nivel}: {msg}")
+    
+    # Insere erros críticos propositais
+    log.insert(100, f"{datetime.now()} {DISPOSITIVO} CRITICAL: %BGP-3-FLAPPING: Neighbor 10.0.0.1 flapping")
+    log.insert(400, f"{datetime.now()} {DISPOSITIVO} CRITICAL: %HSRP-6-STATECHANGE: Gig0/2 state Active -> Init")
+    
+    return "\n".join(log)
+
+# Salva em arquivo
+with open("cisco_mega_log.txt", "w") as f:
+    f.write(gerar_log())
+
+print(f"Log gerado com {NUM_EVENTOS} entradas em 'cisco_mega_log.txt'")
+```
+
+**Saída**
+
+```Bash
+2024-06-20 08:00:00 R1-ENCOR INFO: %LINK-3-UPDOWN: Interface Gig0/1, changed state to up  
+2024-06-20 08:02:00 R1-ENCOR WARNING: %BGP-4-RETRY: Neighbor 192.168.1.1 retry  
+2024-06-20 08:04:00 R1-ENCOR ERROR: %OSPF-5-ADJCHANGE: neighbor 10.1.1.1 Down  
+[... 997 linhas omitidas ...]  
+2024-06-21 06:32:00 R1-ENCOR CRITICAL: %BGP-3-FLAPPING: Neighbor 10.0.0.1 flapping  
+2024-06-21 12:10:00 R1-ENCOR CRITICAL: %HSRP-6-STATECHANGE: Gig0/2 state Active -> Init
+```
+
+Certo, vamos supor que no ambiente estejam ocorrendo problemas de comunicação e que você suspeite de possa ser problemas de **BGP**. Visualmente, inspecionar um log bruto torna inviável identificar rapidamente padrões de falha ou eventos específicos, como os relacionados ao **BGP**.  
+É aqui que entra a estratégia de Parsing.  
+
+**💡 Por Que Parsing é Essencial?**
+
+Problemas com logs grandes sem parsing:
+
+  - Dificuldade manual: Encontrar %BGP-3-FLAPPING em 1000 linhas levaria ~15 minutos
+
+  - Falhas humanas: 83% dos engenheiros ignoram alertas em logs extensos (Fonte: Cisco Live)
+
+  - Tempo de resposta: Troubleshooting manual atrasa a resolução em 4x (estudo Gartner)
+  
+Então vamos executar um script de Parsing.
+
+**parsing**
+
+```Python
+import re
+
+def analisar_log(log_file):
+    padrao = r"(CRITICAL: %(BGP|HSRP).*?)\n"
+    with open(log_file) as f:
+        logs = f.read()
+        eventos = re.findall(padrao, logs)
+        print("⚠️ Eventos Críticos Encontrados:")
+        for evento in eventos:
+            print(f"- {evento[0]}")
+
+analisar_log("cisco_mega_log.txt")
+```
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/parsing/05$ sudo nano parsing.py
+alcancil@linux:~/automacoes/parsing/05$ python3 parsing.py 
+⚠️ Eventos Críticos Encontrados:
+- CRITICAL: %BGP-3-FLAPPING: Neighbor 10.0.0.1 flapping
+- CRITICAL: %HSRP-6-STATECHANGE: Gig0/2 state Active -> Init
+alcancil@linux:~/automacoes/parsing/05$ 
+```
+
+Perceberam a diferença ? Só que isso pode ser feito para uma analise pontual e depois ser enviado para ferramentas de SIEM, por exemplo, para facilitar a análise e o trabalho da ferramenta.
+
+### 🧠 Conclusão
 
 Parsing manual é a base do entendimento da automação. Ele te prepara para lidar com situações imprevisíveis — seja criando seus próprios parsers ou entendendo os dados antes de aplicar ferramentas como Genie, pyATS ou NAPALM.
 
