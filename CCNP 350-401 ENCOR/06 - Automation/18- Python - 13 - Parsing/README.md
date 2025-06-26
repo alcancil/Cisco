@@ -45,18 +45,17 @@ https://docs.python.org/3/library/json.html
 PyYaml  
 https://pyyaml.org/wiki/PyYAMLDocumentation
 
----
-Arrumar
-
 ### O que vamos estudar
 
-- Entender como o módulo logging do Python funciona
-- Aprender os diferentes níveis de log e quando usá-los
-- Criar logs em arquivos e integrar com outras ferramentas (Graylog, ELK, etc)
-- Aplicar logs em scripts de automação de rede com Cisco e Linux
+  - Parsing de JSON: APIs Cisco (DNA Center, Meraki), extração de dados estruturados.
 
----
-Arrumar
+  - Parsing de XML: Configurações NETCONF e arquivos legados.
+
+  - Parsing de YAML: Inventários do Ansible e templates declarativos.
+
+  - Regex para CLI: Análise de comandos show e logs (ex: BGP, interfaces).
+
+  - Integração com ferramentas: SIEMs (Graylog/Splunk) e parsers automáticos (Genie).
 
 ### Para que serve o Parsing?
 
