@@ -156,9 +156,9 @@ flowchart TD
     C -->|Sim| E[Use Genie - Melhor custo-benefício]
     C -->|Não| F[Combine Genie com parsing customizado]
     
-    style E fill:#28a745,stroke:#000000
+    style E fill:#006400,stroke:#00ff00,color:#ffffff 
     style D fill:#dc3545,stroke:#000000
-    style F fill:#ffc107,stroke:#000000
+    style F fill:#ffc107,stroke:#ffcc00,color:#000000
 ```
 
 **Legenda:**
