@@ -12,8 +12,9 @@
     - [O que é um Framework?](#o-que-é-um-framework)
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Para que serve o Parsing?](#para-que-serve-o-parsing)
-    - [Quando usar Parsing?](#quando-usar-parsing)
-    - [Quando evitar ou adiar o parsing?](#quando-evitar-ou-adiar-o-parsing)
+    - [Quando usar o Genie para Parsing?](#quando-usar-o-genie-para-parsing)
+    - [Quando evitar ou adiar o uso do Genie?](#quando-evitar-ou-adiar-o-uso-do-genie)
+    - [Fluxo de Decisão para Uso do Genie](#fluxo-de-decisão-para-uso-do-genie)
     - [Fluxo de Parsing](#fluxo-de-parsing)
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
@@ -106,6 +107,9 @@ Arrumar
 
   - Integração com ferramentas: SIEMs (Graylog/Splunk) e parsers automáticos (Genie).
 
+---
+Arrumar
+
 ### Para que serve o Parsing?
 
 Principais objetivos:
@@ -118,27 +122,31 @@ Principais objetivos:
 
   - Gerar insights e relatórios: Organizar e exibir informações para análise (Zabbix, Grafana, Graylog, etc).
 
-### Quando usar Parsing?
+### Quando usar o Genie para Parsing?
 
-Você usa parsing quando:  
+Você deve considerar o Genie para parsing quando:  
 
-| Cenário                                                       | Exemplo                                                                 |
-|---------------------------------------------------------------|-------------------------------------------------------------------------| 
-| 📤 Você recebe dados de um equipamento ou API                 | Saída do comando show ip interface brief, payload JSON de uma REST API  |
-| 🧩 Precisa filtrar campos específicos                         | Pegar apenas o IP de uma interface em JSON                              |
-| 📊 Quer estruturar os dados para um script, dashboard ou log  | Converter XML de retorno em dicionário Python                           |
-| 🔄 Vai automatizar a configuração ou análise                  | Verificar se todas as interfaces estão "up" antes de aplicar uma ACL    |
+| Cenário	                                        | Exemplo com Genie                          	                  | Benefício do Genie                                                  |
+|-------------------------------------------------|---------------------------------------------------------------|---------------------------------------------------------------------|
+|📤 Trabalha com saídas de comandos Cisco	        | show ip interface brief, show bgp summary	                    | Parsers pré-construídos para +500 comandos Cisco                    |
+|🧩 Precisa de dados estruturados consistentes    | Comparar snapshots de show interface antes/depois de mudanças | Modelos de dados padronizados para todas plataformas (IOS-XE, NX-OS, IOS-XR) |
+|📊 Requer validação complexa de estado de rede   | Verificar se todos vizinhos BGP estão estabelecidos           | Funções built-in para análise de estado                             |
+|🔄 Desenvolve automação operacional              | Monitorar flaps de interface automaticamente                  | Sistema de triggers e aprendizado de estado                         |
+|🕵️ Precisa fazer troubleshooting em larga escala | Identificar interfaces down em 100 dispositivos               | Parsing eficiente e relatórios consolidados                        |
 
-### Quando evitar ou adiar o parsing?
+### Quando evitar ou adiar o uso do Genie?
 
-Parsing pode ser custoso, confuso ou desnecessário em certos cenários:  
+O Genie pode não ser a melhor escolha quando:  
 
-| Situação                                             | Melhor alternativa                           |
-|------------------------------------------------------|----------------------------------------------|
-| Dados já vêm em estrutura limpa e simples	           | Use direto, sem parsing extra                |
-| Está em uma fase inicial de automação	               | Pode focar em coletar dados primeiro         |
-| Vai usar ferramentas com parsers prontos (ex: Genie) | Evita reinventar a roda                      |
-| Projeto pequeno e pontual	                           | Um if "up" in string: pode ser o suficiente  |
+| Situação                                                    | Alternativa Recomendada	Razão                                                               |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| Trabalha com equipamentos não-Cisco                         | Parsers customizados ou bibliotecas vendor-specific	Cobertura limitada a ecossistema Cisco  |
+| Necessita parsing de saídas completamente customizadas      | Regex ou parsing manual	Genie funciona melhor com saídas de comandos padrão                 |
+| Desenvolve soluções simples/únicas                          | Processamento básico de strings	Overhead de configuração pode não valer a pena              |
+| Trabalha com formatos não suportados (ex: logs específicos) | Ferramentas especializadas (Logstash, etc.)	Genie foca em saídas de comandos CLI            |
+| Precisa de parsing em tempo real extremamente rápido        | Processamento direto na CLI	Genie adiciona pequena latência na transformação                |
+
+### Fluxo de Decisão para Uso do Genie
 
 
 ### Fluxo de Parsing
