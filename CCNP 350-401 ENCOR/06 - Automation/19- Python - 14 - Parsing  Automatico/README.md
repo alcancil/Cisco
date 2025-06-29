@@ -1,13 +1,13 @@
-# Python - 13
+# Python - 14
 
-## Parsing
+## Parsing Automático - Genie
 
 ## Sumário
-- [Python - 13](#python---13)
-  - [Parsing](#parsing)
+- [Python - 14](#python---14)
+  - [Parsing Automático - Genie](#parsing-automático---genie)
   - [Sumário](#sumário)
-    - [🧩 O que é Parsing?](#-o-que-é-parsing)
-    - [Por que Parsing é Essencial?](#por-que-parsing-é-essencial)
+    - [Introdução ao Genie](#introdução-ao-genie)
+    - [Comparação: Parsing Manual vs Genie](#comparação-parsing-manual-vs-genie)
     - [Documentação oficial](#documentação-oficial)
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Para que serve o Parsing?](#para-que-serve-o-parsing)
@@ -23,13 +23,27 @@
     - [Exemplo Prático - Logs Grandes](#exemplo-prático---logs-grandes)
     - [🧠 Conclusão](#-conclusão)
 
-### 🧩 O que é Parsing?
 
-Parsing (ou análise sintática) é o processo de analisar e extrair informações de dados estruturados ou semiestruturados, como arquivos JSON, XML, YAML, HTML ou mesmo a saída de um comando de terminal.
+### Introdução ao Genie
 
-### Por que Parsing é Essencial?
+O Cisco Genie é um framework de automação e parsing desenvolvido pela Cisco como parte do pyATS/Test Automation Solution. Ele fornece parsers pré-construídos para a maioria dos comandos show da Cisco, transformando saídas de texto não estruturadas em dados estruturados prontos para automação.
 
-No contexto de redes e automação, parsing é essencial para transformar dados brutos (de um equipamento ou API) em dados organizados e utilizáveis por scripts ou dashboards.
+**Por que usar Genie para o CCNP ENCOR?**
+- Cobre todos os comandos relevantes do blueprint (BGP, OSPF, interfaces, etc.)
+- Modelos de dados consistentes para diferentes plataformas IOS-XE, NX-OS, IOS-XR
+- Integração com pyATS para testes automatizados
+- Economiza tempo em troubleshooting e validação de configurações
+
+### Comparação: Parsing Manual vs Genie
+
+| Característica          | Parsing Manual | Genie       |
+|-------------------------|----------------|-------------|
+| Tempo de desenvolvimento | Alto          | Baixo       |
+| Manutenção              | Complexa       | Simples     |
+| Cobertura de comandos   | Limitada       | Amplo       |
+| Consistência            | Variável       | Padronizado |
+| Curva de aprendizado    | Moderada       | Baixa       |
+| Adequação para CCNP     | Fundamental    | Essencial   |
 
 ### Documentação oficial
 
