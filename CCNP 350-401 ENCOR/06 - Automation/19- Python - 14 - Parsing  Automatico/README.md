@@ -15,7 +15,6 @@
     - [Quando usar o Genie para Parsing?](#quando-usar-o-genie-para-parsing)
     - [Quando evitar ou adiar o uso do Genie?](#quando-evitar-ou-adiar-o-uso-do-genie)
     - [Fluxo de Decisão para Uso do Genie](#fluxo-de-decisão-para-uso-do-genie)
-    - [Fluxo de Parsing](#fluxo-de-parsing)
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
     - [🟩 Parsing de JSON](#-parsing-de-json)
@@ -157,7 +156,7 @@ flowchart TD
     C -->|Não| F[Combine Genie com parsing customizado]
     
     style E fill:#006400,stroke:#00ff00,color:#ffffff 
-    style D fill:#dc3545,stroke:#000000
+    style D fill:#dc3545,stroke:#ff0000,color:#ffffff
     style F fill:#ffc107,stroke:#ffcc00,color:#000000
 ```
 
@@ -169,61 +168,6 @@ flowchart TD
 
     🔴 Vermelho: Casos onde Genie não é recomendado
 
-### Fluxo de Parsing
-
-```mermaid
-flowchart TD
-    A[Script Python] --> B[Coleta de Dados]
-    B --> C{Origem dos Dados}
-    
-    C --> D1[Saída de Comando CLI ex: show ip interface brief]
-    C --> D2[Resposta de API REST Formato JSON]
-    C --> D3[Arquivo XML/YAML local]
-    
-    D1 --> E1[Usar Parser Genie - Estruturação automática]
-    D2 --> E2[Parsing com json.loads]
-    D3 --> E3[Parsing com ElementTree ou PyYAML]
-
-    E1 --> F[Extração de Campos Úteis]
-    E2 --> F
-    E3 --> F
-
-    F --> G{Tipo de Ação}
-    G --> H1[Verificação de Status ex: Interface Down]
-    G --> H2[Geração de Logs]
-    G --> H3[Análise e Dashboards]
-    
-    H1 --> I1[Alerta: Email/Slack]
-    H2 --> I2[Log estruturado - INFO/WARNING/ERROR]
-    H3 --> I3[Enviar dados para ELK ou Graylog]
-
-    subgraph " "
-        direction LR
-        I1 & I2 & I3 --> Z[Encaminhar para Operações]
-    end
-
-    style D1 fill:#006400,stroke:#00ff00,color:#ffffff 
-    style D2 fill:#ffc107,stroke:#ffcc00,color:#000000
-    style D3 fill:#dc3545,stroke:#ff0000,color:#ffffff
-    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff
-    style G fill:#343a40,stroke:#ffffff,color:#ffffff
-    style H1 fill:#000000,stroke:#ff0000,color:#ffffff
-    style H2 fill:#198754,stroke:#00ff00,color:#ffffff
-    style H3 fill:#6610f2,stroke:#9370DB,color:#ffffff
-    style Z fill:#0dcaf0,stroke:#17a2b8,color:#000000
-```
-
-**🎯 Interpretação baseada em cor (semáforo adaptado):**
-
-| Cor          | Significado                                | Etapa |
-|--------------|--------------------------------------------|-------|
-| 🟢 Verde    | Parsing claro e direto (ex: JSON limpo)    | D1, H2|
-| 🟡 Amarelo  | Parsing requer atenção (ex: variações API) | D2    |
-| 🔴 Vermelho | Parsing pode gerar erro grave              | D3    |
-| ⚫ Preto    | Ação crítica esperada                      | H1    |
-| 🔵 Azul     | Etapas técnicas neutras                    | F, Z  | 
-| 🟣 Roxo     | Etapas de análise/visualização             | H3    |
-| ⚪ Cinza    | Decisão intermediária                      | G     |
 
 
 ## Parsing Manual em Automação de Redes
