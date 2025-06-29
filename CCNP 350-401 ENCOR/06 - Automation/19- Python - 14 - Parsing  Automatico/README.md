@@ -11,7 +11,7 @@
     - [Documentação oficial](#documentação-oficial)
     - [O que é um Framework?](#o-que-é-um-framework)
     - [O que vamos estudar](#o-que-vamos-estudar)
-    - [Para que serve o Parsing?](#para-que-serve-o-parsing)
+    - [Para que serve o Genie?](#para-que-serve-o-genie)
     - [Quando usar o Genie para Parsing?](#quando-usar-o-genie-para-parsing)
     - [Quando evitar ou adiar o uso do Genie?](#quando-evitar-ou-adiar-o-uso-do-genie)
     - [Fluxo de Decisão para Uso do Genie](#fluxo-de-decisão-para-uso-do-genie)
@@ -109,17 +109,19 @@ Arrumar
 ---
 Arrumar
 
-### Para que serve o Parsing?
+### Para que serve o Genie?
 
 Principais objetivos:
 
-  - Extrair informações específicas: Por exemplo, o status de uma interface, o hostname de um roteador, ou o IP de uma VLAN.
+  - Extrair informações estruturadas de comandos Cisco: status de interfaces, vizinhos BGP, rotas OSPF, etc., com parsers pré-construídos.
 
-  - Validar dados recebidos: Garantir que o conteúdo tem o formato esperado (ex: JSON válido, XML bem formado).
+  - Validar automaticamente saídas de comandos, garantindo consistência entre plataformas (IOS-XE, NX-OS).
 
-  - Transformar a informação: Convertendo dados de texto para dicionários Python, listas, etc., para facilitar o tratamento e a automação.
+  - Transformar CLI em JSON estruturado, pronto para automação em Python.
 
-  - Gerar insights e relatórios: Organizar e exibir informações para análise (Zabbix, Grafana, Graylog, etc).
+  - Gerar relatórios e análises comparativas (ex: snapshots antes/depois de mudanças) para ferramentas como Grafana ou SIEMs.
+
+**Diferencial:** Elimina a necessidade de regex manual, padronizando o parsing em ambientes Cisco.
 
 ### Quando usar o Genie para Parsing?
 
@@ -168,7 +170,8 @@ flowchart TD
 
     🔴 Vermelho: Casos onde Genie não é recomendado
 
-
+---
+Continuar
 
 ## Parsing Manual em Automação de Redes
 
