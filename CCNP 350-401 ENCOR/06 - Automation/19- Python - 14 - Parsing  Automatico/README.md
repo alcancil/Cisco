@@ -148,6 +148,26 @@ O Genie pode não ser a melhor escolha quando:
 
 ### Fluxo de Decisão para Uso do Genie
 
+```mermaid
+flowchart TD
+    A[Precisa analisar saída de equipamento?] --> B{É equipamento Cisco?}
+    B -->|Sim| C{Comando é suportado pelo Genie?}
+    B -->|Não| D[Considere parsing manual/outras libs]
+    C -->|Sim| E[Use Genie - Melhor custo-benefício]
+    C -->|Não| F[Combine Genie com parsing customizado]
+    
+    style E fill:#28a745,stroke:#000000
+    style D fill:#dc3545,stroke:#000000
+    style F fill:#ffc107,stroke:#000000
+```
+
+**Legenda:**
+
+    🟢 Verde: Casos ideais para Genie
+
+    🟡 Amarelo: Casos que podem usar Genie parcialmente
+
+    🔴 Vermelho: Casos onde Genie não é recomendado
 
 ### Fluxo de Parsing
 
