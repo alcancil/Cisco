@@ -9,6 +9,7 @@
     - [Introdução ao Genie](#introdução-ao-genie)
     - [Comparação: Parsing Manual vs Genie](#comparação-parsing-manual-vs-genie)
     - [Documentação oficial](#documentação-oficial)
+    - [O que é um Framework?](#o-que-é-um-framework)
     - [O que vamos estudar](#o-que-vamos-estudar)
     - [Para que serve o Parsing?](#para-que-serve-o-parsing)
     - [Quando usar Parsing?](#quando-usar-parsing)
@@ -52,6 +53,33 @@ https://developer.cisco.com/docs/genie-docs/
 
 PyYaml  
 https://pyyaml.org/wiki/PyYAMLDocumentation
+
+### O que é um Framework?
+
+Um framework (estrutura ou arcabouço, em português) é uma plataforma abrangente que fornece:
+
+  - Uma estrutura base para desenvolvimento
+
+  - Conjunto de ferramentas integradas
+
+  - Convenções e melhores práticas
+
+  - Funcionalidades pré-construídas
+
+**Analogia:** Pense como um kit de construção - você recebe a estrutura básica e ferramentas especializadas para construir algo específico.
+A Arquitetura pyATS/Genie
+
+```Bash
+pyATS (Framework de Teste e Automação)
+├── Core (Infraestrutura básica)
+├── Genie (Biblioteca de Parsing e Automação)
+│   ├── Libs (Bibliotecas específicas)
+│   │   ├── Parser (Análise de comandos)
+│   │   ├── SDK (Interface de programação)
+│   │   └── ... 
+├── XPRESS (API REST)
+└── Outros componentes
+```
 
 ---
 Arrumar
