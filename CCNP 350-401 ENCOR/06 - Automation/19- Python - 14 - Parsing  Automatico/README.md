@@ -47,17 +47,14 @@ O Cisco Genie é um framework de automação e parsing desenvolvido pela Cisco c
 
 ### Documentação oficial
 
-Parser - Python  
-https://docs.python.org/pt-br/3.8/library/parser.html  
-
 Genie - Cisco  
 https://developer.cisco.com/docs/genie-docs/
 
-Python Docs - Json  
-https://docs.python.org/3/library/json.html
-
 PyYaml  
 https://pyyaml.org/wiki/PyYAMLDocumentation
+
+---
+Arrumar
 
 ### O que vamos estudar
 
