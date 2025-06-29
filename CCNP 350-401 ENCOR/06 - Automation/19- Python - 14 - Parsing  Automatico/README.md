@@ -56,7 +56,7 @@ https://pyyaml.org/wiki/PyYAMLDocumentation
 
 ### O que é um Framework?
 
-Um framework (estrutura ou arcabouço, em português) é uma plataforma abrangente que fornece:
+Um framework (estrutura, em português) é uma plataforma abrangente que fornece:
 
   - Uma estrutura base para desenvolvimento
 
@@ -80,6 +80,16 @@ pyATS (Framework de Teste e Automação)
 ├── XPRESS (API REST)
 └── Outros componentes
 ```
+
+**Use Genie quando precisar:**
+
+  - Fazer parsing de comandos **show**
+
+  - Comparar estados de rede **(snapshots)**
+
+  - Criar triggers para **monitoramento**
+
+  - Implementar automação operacional
 
 ---
 Arrumar
