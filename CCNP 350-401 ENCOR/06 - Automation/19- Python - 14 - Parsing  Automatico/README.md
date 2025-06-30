@@ -15,6 +15,15 @@
     - [Quando usar o Genie para Parsing?](#quando-usar-o-genie-para-parsing)
     - [Quando evitar ou adiar o uso do Genie?](#quando-evitar-ou-adiar-o-uso-do-genie)
     - [Fluxo de Decisão para Uso do Genie](#fluxo-de-decisão-para-uso-do-genie)
+  - [Considerações sobre IOS vs IOS-XE](#considerações-sobre-ios-vs-ios-xe)
+    - [Compatibilidade do Genie](#compatibilidade-do-genie)
+    - [Recomendações para CCNP:](#recomendações-para-ccnp)
+    - [💡 **Por que isso é importante?**](#-por-que-isso-é-importante)
+  - [Instalação e Primeiros Passos com Genie](#instalação-e-primeiros-passos-com-genie)
+    - [Pré-requisitos](#pré-requisitos)
+    - [Instalação](#instalação)
+    - [Verificação](#verificação)
+    - [Estrutura de Parsers](#estrutura-de-parsers)
   - [Parsing Manual em Automação de Redes](#parsing-manual-em-automação-de-redes)
     - [Introdução](#introdução)
     - [🟩 Parsing de JSON](#-parsing-de-json)
@@ -169,6 +178,99 @@ flowchart TD
     🟡 Amarelo: Casos que podem usar Genie parcialmente
 
     🔴 Vermelho: Casos onde Genie não é recomendado
+
+## Considerações sobre IOS vs IOS-XE
+
+### Compatibilidade do Genie
+| Feature          | IOS Tradicional | IOS-XE |
+|------------------|-----------------|--------|
+| Parsers CLI      | 85% cobertura   | 100%   |
+| Validação        | Básica          | Avançada |
+| APIs             | Não             | Sim    |
+
+### Recomendações para CCNP:
+1. Priorize estudos em IOS-XE
+2. Para IOS legado:
+   - Use `genie.libs.parser.ios`
+   - Combine com regex quando necessário
+3. Pratique a conversão mental entre sintaxes:
+   ```bash
+   # IOS
+   show ip interface brief
+   # IOS-XE
+   show interface | include IP
+   ```
+
+### 💡 **Por que isso é importante?**
+- **Mercado**: Novos projetos Cisco são quase todos IOS-XE
+- **Exame**: CCNP ENCOR testa ambos, mas com pesos diferentes
+- **Automação**: Seu código precisará lidar com ambientes híbridos
+
+## Instalação e Primeiros Passos com Genie
+
+### Pré-requisitos
+- Python 3.6+
+- PIP atualizado
+- Ambiente virtual (recomendado)
+
+### Instalação
+```bash
+# Opção 1: Apenas Genie (para parsing - vamos utilizar esse agora)
+pip install genie
+
+# Opção 2: pyATS completo (recomendado para CCNP)
+pip install pyats[full]
+```
+
+### Verificação
+
+```python
+from genie.conf import Genie
+genie = Genie.init()
+print(f"Genie {genie.version} instalado corretamente")
+```
+
+### Estrutura de Parsers
+
+Principais módulos para CCNP ENCOR:
+
+```Bash
+genie/
+└── libs/
+    └── parser/
+        ├── iosxe/
+        │   ├── show_interface.py
+        │   ├── show_bgp.py
+        │   └── show_ip_route.py
+        └── nxos/  # Para estudos multivendor
+```
+
+Exemplo Básico - Parsing de Interface
+
+```python
+from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief
+
+output = '''
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0     192.168.1.1    YES manual up                    up
+GigabitEthernet0/1     unassigned     YES unset  administratively down down
+'''
+
+parsed = ShowIpInterfaceBrief.parse(output=output)
+print(f"Status de G0/0: {parsed['interface']['GigabitEthernet0/0']['status']}")
+```
+
+**Saída Esperada:**
+
+```Bash
+Status de G0/0: up
+```
+
+
+
+
+
+
 
 ---
 Continuar
