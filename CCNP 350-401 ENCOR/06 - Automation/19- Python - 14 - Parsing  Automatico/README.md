@@ -29,6 +29,7 @@
     - [Casos de Uso Típicos do Genie](#casos-de-uso-típicos-do-genie)
     - [Quando NÃO Usar Genie?](#quando-não-usar-genie)
     - [Recomendações de Uso](#recomendações-de-uso)
+    - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
 
 
 ### Introdução ao Genie
@@ -370,6 +371,24 @@ Legenda: ✅✅✅ = Suporte nativo completo | ✅ = Suporte básico
   - Automação com Ansible existente → cli_parse
 
   - Performance crítica → Scrapli
+
+### Casos de Uso do Genie (do Básico ao Avançado)
+
+| Comando                 | Protocolo/Feature | Aplicação Típica                                                             |
+|-------------------------|-------------------|------------------------------------------------------------------------------|
+| show ip interface brief | Interfaces        | Verificar status (up/down) e endereços IP das interfaces.                    |
+| show version            | Sistema           | Coletar modelo, versão do IOS e tempo de operação (uptime).                  |
+| show vlan brief         | VLANs (Switches)  | Listar VLANs configuradas e portas associadas.                               |
+| show cdp neighbors      | Topologia         | Mapear dispositivos vizinhos e conexões.                                     |
+| show ip ospf neighbor   | OSPF              | Verificar adjacências (FULL/DOWN) e problemas de vizinhança.                 |
+| show ip eigrp neighbors | EIGRP             | Monitorar estabilidade de vizinhos EIGRP.                                    |
+| show bgp summary        | BGP               | Checar sessões com peers (estabelecidas/pendentes) e contagem de rotas.      |
+| show ip route	          | Roteamento	      | Analisar rotas (OSPF, EIGRP, estáticas) e métricas.                          |
+| show running-config     | Configuração      | Auditoria de segurança (ACLs, SNMP) ou compliance (descrição de interfaces). |
+| show interface trunk    | VLANs (Trunks)    | Verificar trunks configurados e modo de encapsulamento (802.1Q).             |
+| Snapshot (antes/depois) | Todos             | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).      |
+| show tech-support       | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).              |
+
 
 ---
 Continuar
