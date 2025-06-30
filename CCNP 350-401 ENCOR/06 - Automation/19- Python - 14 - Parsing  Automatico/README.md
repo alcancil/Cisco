@@ -271,7 +271,7 @@ flowchart TD
     C --> E[Automação Python]
 
     style A fill:#006400,stroke:#00ff00,color:#ffffff 
-    style B fill:#dc3545,stroke:#ff0000,color:#ffffff
+    style C fill:#dc3545,stroke:#ff0000,color:#ffffff
     style D fill:#ffc107,stroke:#ffcc00,color:#000000
     style E fill:#ffc107,stroke:#ffcc00,color:#000000
 ```
