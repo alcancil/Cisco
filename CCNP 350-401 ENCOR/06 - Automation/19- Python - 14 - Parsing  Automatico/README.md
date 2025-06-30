@@ -30,6 +30,8 @@
     - [Quando NÃO Usar Genie?](#quando-não-usar-genie)
     - [Recomendações de Uso](#recomendações-de-uso)
     - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
+    - [Exemplos](#exemplos)
+  - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
 
 
 ### Introdução ao Genie
@@ -389,6 +391,104 @@ Legenda: ✅✅✅ = Suporte nativo completo | ✅ = Suporte básico
 | Snapshot (antes/depois) | Todos             | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).      |
 | show tech-support       | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).              |
 
+### Exemplos
+
+## Exemplo 01: Parsing de show ip interface brief com Genie
+
+**Objetivo:** Extrair status e endereços IP de interfaces de forma estruturada.  
+
+**📁 Estrutura recomendada**
+
+```Bash
+genie/
+└── 01/
+    ├── parse_interface_brief.py
+    └── mock_data/
+        └── show_ip_interface_brief.txt
+```
+
+**Requerimentos: requiremnets.txt**
+
+```txt
+pyats[full]
+```
+
+**show_ip_interface_brief.txt**
+
+```txt
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       unassigned      YES unset  administratively down down    
+GigabitEthernet2       10.1.1.1        YES manual up                    up      
+Loopback0              192.168.0.1     YES manual up                    up      
+```
+
+**parse_interface_brief.py**
+
+```python
+from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief
+
+class DummyDevice:
+    def __init__(self, name='mock'):
+        self.name = name
+
+device = DummyDevice()
+
+# Leitura do conteúdo mock
+with open('mock_data/show_ip_interface_brief.txt') as f:
+    raw_output = f.read()
+
+# Parsing
+parser = ShowIpInterfaceBrief(device=device)
+parsed = parser.parse(output=raw_output)
+
+print("\n=== Interfaces Ativas ===")
+for intf, details in parsed['interface'].items():
+    if details.get('status', '').strip() == 'up':
+        print(f"{intf}:")
+        print(f"  IP: {details.get('ip_address', 'N/A').strip()}")
+        print(f"  Status: {details.get('status', 'N/A').strip()}")
+        print(f"  Protocolo: {details.get('protocol', 'N/A').strip()}\n")
+
+print("\n=== Interfaces Inativas ===")
+for intf, details in parsed['interface'].items():
+    if details.get('status', '').strip() != 'up':
+        print(f"{intf}: {details.get('status', 'unknown').strip()}")
+```
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/genie/01$ python3 -m venv genie
+alcancil@linux:~/automacoes/genie/01$ source genie/bin/activate
+genie) alcancil@linux:~/automacoes/genie/01$ pip install -r requiremnets.txt 
+Collecting pyats[full] (from -r requiremnets.txt (line 1))
+  Using cached pyats-25.5-cp312-cp312-manylinux2014_x86_64.whl.metadata (4.5 kB)
+Collecting packaging>=20.0 (from pyats[full]->-r requiremnets.txt (line 1))
+  Using cached packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting pyats.aereport<25.6.0,>=25.5.0 (from pyats[full]->-r requiremnets.txt (line 1))
+  Using cached pyats.aereport-25.5-cp312-cp312-manylinux2014_x86_64.whl.metadata (3.2 kB)
+...
+4.67.1 types-python-dateutil-2.9.0.20250516 typing-extensions-4.14.0 unicon-25.5 unicon.plugins-25.5 urllib3-2.5.0 wcwidth-0.2.13 websocket-client-1.8.0 wheel-0.45.1 wsproto-1.2.0 xlrd-1.2.0 xlsxwriter-3.2.5 xlwt-1.3.0 xmltodict-0.12.0 yamllint-1.37.1 yang.connector-25.5 yarl-1.20.1
+(genie) alcancil@linux:~/automacoes/genie/01$ python3 parse_interface_brief.py 
+/home/alcancil/automacoes/genie/01/genie/lib/python3.12/site-packages/unicon/__init__.py:10: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from unicon.core.pluginmanager import PluginManager
+
+=== Interfaces Ativas ===
+GigabitEthernet2:
+  IP: 10.1.1.1
+  Status: up
+  Protocolo: up
+
+Loopback0:
+  IP: 192.168.0.1
+  Status: up
+  Protocolo: up
+
+
+=== Interfaces Inativas ===
+GigabitEthernet1: administratively down
+(genie) alcancil@linux:~/automacoes/genie/01$ 
+```
 
 ---
 Continuar
