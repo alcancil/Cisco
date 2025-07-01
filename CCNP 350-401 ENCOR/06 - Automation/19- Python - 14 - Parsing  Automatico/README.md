@@ -410,8 +410,10 @@ genie/
 **Requerimentos: requiremnets.txt**
 
 ```txt
-pyats[full]
+pyats[full]  
 ```
+
+**OBS:** aqui estou instalado o pyats[FULL] pois ele já instala o Genie na versão mais completa e compatível com a versão do pyats. Dessa maneira não falta nenhuma dependência para o projeto e prevê futuros crescimentos no script como conexões a equipamentos via ssh. A "suite" completa tem 500 Mb, já o Genia ocuparia 200 Mb.
 
 **show_ip_interface_brief.txt**
 
