@@ -32,6 +32,7 @@
     - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
+    - [O que é conteúdo mock?](#o-que-é-conteúdo-mock)
 
 
 ### Introdução ao Genie
@@ -427,34 +428,34 @@ Loopback0              192.168.0.1     YES manual up                    up
 **parse_interface_brief.py**
 
 ```python
-from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief
-
-class DummyDevice:
-    def __init__(self, name='mock'):
-        self.name = name
-
-device = DummyDevice()
-
-# Leitura do conteúdo mock
-with open('mock_data/show_ip_interface_brief.txt') as f:
-    raw_output = f.read()
-
-# Parsing
-parser = ShowIpInterfaceBrief(device=device)
-parsed = parser.parse(output=raw_output)
-
-print("\n=== Interfaces Ativas ===")
-for intf, details in parsed['interface'].items():
-    if details.get('status', '').strip() == 'up':
-        print(f"{intf}:")
-        print(f"  IP: {details.get('ip_address', 'N/A').strip()}")
-        print(f"  Status: {details.get('status', 'N/A').strip()}")
-        print(f"  Protocolo: {details.get('protocol', 'N/A').strip()}\n")
-
-print("\n=== Interfaces Inativas ===")
-for intf, details in parsed['interface'].items():
-    if details.get('status', '').strip() != 'up':
-        print(f"{intf}: {details.get('status', 'unknown').strip()}")
+[01] from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief
+[02] 
+[03] class DummyDevice:
+[04]     def __init__(self, name='mock'):
+[05]         self.name = name
+[06] 
+[07] device = DummyDevice()
+[08] 
+[09] # Leitura do conteúdo mock
+[10] with open('mock_data/show_ip_interface_brief.txt') as f:
+[11]     raw_output = f.read()
+[12]
+[13] # Parsing
+[14] parser = ShowIpInterfaceBrief(device=device)
+[15] parsed = parser.parse(output=raw_output)
+[16] 
+[17] print("\n=== Interfaces Ativas ===")
+[18] for intf, details in parsed['interface'].items():
+[19]     if details.get('status', '').strip() == 'up':
+[20]         print(f"{intf}:")
+[21]         print(f"  IP: {details.get('ip_address', 'N/A').strip()}")
+[22]         print(f"  Status: {details.get('status', 'N/A').strip()}")
+[23]         print(f"  Protocolo: {details.get('protocol', 'N/A').strip()}\n")
+[24]
+[25] print("\n=== Interfaces Inativas ===")
+[26] for intf, details in parsed['interface'].items():
+[27]     if details.get('status', '').strip() != 'up':
+[28]         print(f"{intf}: {details.get('status', 'unknown').strip()}")
 ```
 
 **Saída**
@@ -491,6 +492,91 @@ Loopback0:
 GigabitEthernet1: administratively down
 (genie) alcancil@linux:~/automacoes/genie/01$ 
 ```
+
+**Explicação**
+
+```Python
+[Bloco 1] Importação da biblioteca Genie
+
+[01] from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief    # Importa o parser específico do comando 'show ip interface brief' para dispositivos IOS-XE
+
+[Bloco 2] Criação de um dispositivo simulado (Dummy)
+
+[03] class DummyDevice:                                                         # Define uma classe fictícia que simula um "device" para o parser funcionar
+[04]     def __init__(self, name='mock'):                                       # Método construtor da classe
+[05]         self.name = name                                                   # Atribui um nome ao dispositivo (apenas para satisfazer o parser)
+[07] device = DummyDevice()                                                     # Instancia o dispositivo simulado
+
+[Bloco 3] Leitura da saída simulada do comando CLI
+
+[09] # Leitura do conteúdo mock
+[10] with open('mock_data/show_ip_interface_brief.txt') as f:                   # Abre o arquivo contendo a saída simulada do comando
+[11]     raw_output = f.read()                                                  # Lê todo o conteúdo do arquivo e armazena na variável
+
+[Bloco 4] Parsing da saída usando Genie
+
+[13] # Parsing
+[14] parser = ShowIpInterfaceBrief(device=device)                               # Cria o objeto parser, passando o dispositivo simulado como parâmetro
+[15] parsed = parser.parse(output=raw_output)                                   # Executa o parsing da saída CLI e armazena os dados estruturados em 'parsed'
+
+[Bloco 5] Impressão das interfaces com status "up" (ativas)
+
+[17] print("\n=== Interfaces Ativas ===")                                       # Título da seção de interfaces ativas
+[18] for intf, details in parsed['interface'].items():                          # Itera sobre cada interface e seus detalhes
+[19]     if details.get('status', '').strip() == 'up':                          # Verifica se o status da interface é "up"
+[20]         print(f"{intf}:")                                                  # Exibe o nome da interface
+[21]         print(f"  IP: {details.get('ip_address', 'N/A').strip()}")         # Exibe o IP da interface
+[22]         print(f"  Status: {details.get('status', 'N/A').strip()}")         # Exibe o status (ex: up, administratively down)
+[23]         print(f"  Protocolo: {details.get('protocol', 'N/A').strip()}\n")  # Exibe o status do protocolo (ex: up/down)
+
+[Bloco 6] Impressão das interfaces com status diferente de "up" (inativas)
+
+[25] print("\n=== Interfaces Inativas ===")                                     # Título da seção de interfaces inativas
+[26] for intf, details in parsed['interface'].items():                          # Itera novamente sobre todas as interfaces
+[27]     if details.get('status', '').strip() != 'up':                          # Verifica se o status não é "up"
+[28]         print(f"{intf}: {details.get('status', 'unknown').strip()}")       # Exibe o nome e o statu
+```
+
+### O que é conteúdo mock?
+
+Mock é uma simulação, um conteúdo falso ou de teste que representa um dado real, usado para desenvolvimento, estudo ou teste de scripts — sem depender de um equipamento de verdade.
+
+Quando falamos de:
+
+```Bash
+mock_data/show_ip_interface_brief.txt
+```
+
+Esse arquivo contém a saída simulada do comando:
+
+```bash
+show ip interface brief
+```
+Ou seja:  
+
+  - Ele imita exatamente o que um roteador Cisco IOS-XE responderia;
+
+  - Mas está salvo em um arquivo .txt, para você testar seu parser sem precisar se conectar via SSH ou Telnet.
+
+**🧠 Por que usar conteúdo mock?**
+
+| Vantagem                      | Explicação                                                                           |
+|-------------------------------|--------------------------------------------------------------------------------------|
+| ✅ Não depende de laboratório | Você pode estudar e desenvolver seu código sem ter acesso a equipamentos reais       |
+| ✅ Reprodutível               | O conteúdo é sempre o mesmo, então facilita testes e debug                           |
+| ✅ Ideal para aprendizado     | Te permite focar no parsing e na lógica, sem se preocupar com conexões ou permissões |
+| ✅ Rápido e leve              | Você roda tudo localmente em segundos, com arquivos .txt                             |
+
+**📌 Exemplo de conteúdo mock (simulação de saída)**
+
+```Bash
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0     192.168.1.1     YES manual up                    up
+GigabitEthernet0/1     unassigned      YES unset  administratively down down
+Loopback0              10.0.0.1        YES manual up                    up
+```
+
+Isso imita a resposta real do roteador, e permite que o parser Genie funcione corretamente.  
 
 ---
 Continuar
