@@ -30,9 +30,11 @@
     - [Quando NÃO Usar Genie?](#quando-não-usar-genie)
     - [Recomendações de Uso](#recomendações-de-uso)
     - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
+    - [Conceitos Fundamentais no Genie: Mock Files e Dummy Devices](#conceitos-fundamentais-no-genie-mock-files-e-dummy-devices)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
     - [O que é conteúdo mock?](#o-que-é-conteúdo-mock)
+  - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
 
 
 ### Introdução ao Genie
@@ -392,6 +394,33 @@ Legenda: ✅✅✅ = Suporte nativo completo | ✅ = Suporte básico
 | Snapshot (antes/depois) | Todos             | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).      |
 | show tech-support       | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).              |
 
+### Conceitos Fundamentais no Genie: Mock Files e Dummy Devices
+
+Antes de avançarmos, é essencial entender dois pilares do Genie/pyATS para automação e testes:
+
+**1. Mock Files (Arquivos de Simulação)**
+
+O que são?  
+
+Arquivos de texto (.txt) que contêm saídas simuladas de comandos Cisco, como show version ou show ip interface brief. Esses arquivos imitam exatamente o que um dispositivo real retornaria via CLI.
+
+Por que usar?
+
+    ✅ Teste sem equipamentos: Permite desenvolver e validar parsers sem acesso físico a roteadores/switches.
+
+    ✅ Consistência: Garante que o parser sempre receba a mesma entrada (útil para depuração).
+
+    ✅ Eficiência: Elimina a latência de conexões SSH/Telnet durante o desenvolvimento.
+
+Exemplo Prático:
+
+```python
+# mock_data/show_version.txt
+Cisco IOS XE Software, Version 17.03.04
+Router uptime is 1 week, 2 days
+System image file is "bootflash:isr4300-universalk9.17.03.04.SPA.bin"
+```
+
 ### Exemplos
 
 ## Exemplo 01: Parsing de show ip interface brief com Genie
@@ -408,13 +437,13 @@ genie/
         └── show_ip_interface_brief.txt
 ```
 
-**Requerimentos: requiremnets.txt**
+**Requerimentos: requirements.txt**
 
 ```txt
 pyats[full]  
 ```
 
-**OBS:** aqui estou instalado o pyats[FULL] pois ele já instala o Genie na versão mais completa e compatível com a versão do pyats. Dessa maneira não falta nenhuma dependência para o projeto e prevê futuros crescimentos no script como conexões a equipamentos via ssh. A "suite" completa tem 500 Mb, já o Genia ocuparia 200 Mb.
+**OBS:** aqui estou instalado o pyats[FULL] pois ele já instala o Genie na versão mais completa e compatível com a versão do pyats. Dessa maneira não falta nenhuma dependência para o projeto e prevê futuros crescimentos no script como conexões a equipamentos via ssh. A "suite" completa tem 500 Mb, já o Genie ocuparia 200 Mb.
 
 **show_ip_interface_brief.txt**
 
@@ -577,6 +606,91 @@ Loopback0              10.0.0.1        YES manual up                    up
 ```
 
 Isso imita a resposta real do roteador, e permite que o parser Genie funcione corretamente.  
+
+## Exemplo 02: Parsing de show version com Genie
+
+**Objetivo:**
+
+Extrair informações estruturadas sobre o sistema operacional do roteador: versão do IOS, modelo do hardware, tempo de uptime e outros detalhes relevantes.  
+
+**📁 Estrutura recomendada**
+
+```Bash
+genie/
+└── 02/
+    ├── parse_show_version.py
+    └── mock_data/
+        └── show_version.txt
+```
+
+**requirements.txt**
+
+```Bash
+pyats[full]
+```
+
+**mock_data/show_version.txt (exemplo de saída real)**
+
+```Bash
+Cisco IOS XE Software, Version 17.03.04
+Cisco IOS Software [Amsterdam], ISR Software (ARMV8EB_LINUX_IOSD-UNIVERSALK9_IAS-M), Version 17.3.4, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Compiled Tue 20-Apr-21 09:18 by mcpre
+
+ROM: IOS-XE ROMMON
+
+Router uptime is 1 week, 2 days, 5 hours, 30 minutes
+System returned to ROM by PowerOn
+System image file is "bootflash:isr4300-universalk9.17.03.04.SPA.bin"
+Last reload reason: PowerOn
+
+Cisco ISR4321/K9 (1RU) processor with 1662612K/6147K bytes of memory.
+Processor board ID FLM2306W0LB
+2 Gigabit Ethernet interfaces
+32768K bytes of non-volatile configuration memory.
+4194304K bytes of physical memory.
+2557440K bytes of flash memory at bootflash:.
+```
+
+**parse_show_version.py**
+
+```Python
+from genie.libs.parser.iosxe.show_version import ShowVersionMode
+
+# Testbed com mock
+testbed = load({
+    "devices": {
+        "mock": {
+            "os": "iosxe",
+            "type": "router",
+            "connections": {
+                "cli": {
+                    "protocol": "mock"
+                }
+            }
+        }
+    }
+})
+
+device = testbed.devices['mock']
+
+# Lê a saída do comando salva no arquivo mock
+with open('mock_data/show_version.txt') as f:
+    raw_output = f.read()
+
+# Usa o parser automaticamente, sem importar a classe diretamente
+parser = ShowVersionMode(device=device)
+parsed = parser.parse(output=raw_output)
+
+# Impressão dos dados estruturados relevantes
+print("\n=== Informações do Sistema ===")
+print(f"Versão do IOS: {parsed.get('version', {}).get('version', 'N/A')}")
+print(f"Nome da Imagem: {parsed.get('version', {}).get('system_image', 'N/A')}")
+print(f"Modelo: {parsed.get('version', {}).get('chassis', 'N/A')}")
+print(f"Tempo de Uptime: {parsed.get('version', {}).get('uptime', 'N/A')}")
+print(f"Motivo do último reload: {parsed.get('version', {}).get('reload_reason', 'N/A')}")
+
+```
 
 ---
 Continuar
