@@ -39,7 +39,6 @@
     - [Exemplo com mock files e Dummy Devices](#exemplo-com-mock-files-e-dummy-devices)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
-    - [O que é conteúdo mock?](#o-que-é-conteúdo-mock)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
 
 
@@ -721,28 +720,6 @@ GigabitEthernet1: administratively down
 [27]     if details.get('status', '').strip() != 'up':                          # Verifica se o status não é "up"
 [28]         print(f"{intf}: {details.get('status', 'unknown').strip()}")       # Exibe o nome e o statu
 ```
-
-### O que é conteúdo mock?
-
-Mock é uma simulação, um conteúdo falso ou de teste que representa um dado real, usado para desenvolvimento, estudo ou teste de scripts — sem depender de um equipamento de verdade.
-
-Quando falamos de:
-
-```Bash
-mock_data/show_ip_interface_brief.txt
-```
-
-Esse arquivo contém a saída simulada do comando:
-
-```bash
-show ip interface brief
-```
-Ou seja:  
-
-  - Ele imita exatamente o que um roteador Cisco IOS-XE responderia;
-
-  - Mas está salvo em um arquivo .txt, para você testar seu parser sem precisar se conectar via SSH ou Telnet.
-
 
 ## Exemplo 02: Parsing de show version com Genie
 
