@@ -624,7 +624,8 @@ Então estamos dizendo:
 
     “Quero criar um roteador de testes chamado DummyISR que já vem configurado como um router IOS-XE chamado isr4321, reutilizando tudo que já existe na classe DummyDevice.”
 
-**📌 Resumo**
+**📌 Resumo**  
+
 | Conceito | Explicação curta                                      |              
 |----------|-------------------------------------------------------|
 | Classe   | Modelo para criar objetos (ex: roteadores, switches)  |
@@ -669,7 +670,7 @@ r1.exibir_modelo()        # Chama o método da classe
 **Resumo**
 
 | Elemento | O que faz                                       |
-|------------------------------------------------------------|
+|----------|-------------------------------------------------|
 | def      | Define uma função (ou método, dentro da classe) |
 | __init__ | Inicializa os atributos do objeto (construtor)  |
 Outros métodos	Definem ações que o objeto pode executar     |
