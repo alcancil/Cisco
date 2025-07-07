@@ -30,12 +30,17 @@
     - [Quando NÃO Usar Genie?](#quando-não-usar-genie)
     - [Recomendações de Uso](#recomendações-de-uso)
     - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
+    - [Usando pyATS + Genie - testbed.yaml](#usando-pyats--genie---testbedyaml)
+    - [E quando usamos apenas o Genie?](#e-quando-usamos-apenas-o-genie)
     - [Conceitos Fundamentais no Genie: Mock Files e Dummy Devices](#conceitos-fundamentais-no-genie-mock-files-e-dummy-devices)
     - [Boas Práticas para Mocks no Genie](#boas-práticas-para-mocks-no-genie)
     - [Dummy Devices (Dispositivos Simulados)](#dummy-devices-dispositivos-simulados)
     - [Relação entre os Conceitos](#relação-entre-os-conceitos)
   - [Quando Usar?](#quando-usar)
     - [Boas práticas para Dummy Devices no Genie](#boas-práticas-para-dummy-devices-no-genie)
+    - [O que é uma classe?](#o-que-é-uma-classe)
+    - [O que é herança?](#o-que-é-herança)
+    - [O que é def dentro de uma classe?](#o-que-é-def-dentro-de-uma-classe)
     - [Exemplo com mock files e Dummy Devices](#exemplo-com-mock-files-e-dummy-devices)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
@@ -399,6 +404,36 @@ Legenda: ✅✅✅ = Suporte nativo completo | ✅ = Suporte básico
 | Snapshot (antes/depois) | Todos             | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).      |
 | show tech-support       | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).              |
 
+### Usando pyATS + Genie - testbed.yaml
+
+Quando usamos o pyATS junto com o Genie em um ambiente real, o primeiro passo é criar um arquivo chamado testbed.yaml. Esse arquivo descreve os dispositivos da rede (nome, IP, sistema operacional, credenciais, etc).  
+
+O próprio pyATS pode gerar automaticamente esse arquivo a partir de conexões SSH reais. Esse processo coleta informações do ambiente e cria um "mapa da rede", chamado de snapshot. Isso traz um certo overhead, já que depende da conexão com os equipamentos.  
+
+Uma vez que o testbed.yaml está disponível e o dispositivo é conectado com device.connect(), o Genie pode usar comandos como:  
+
+```python
+device.parse("show version")
+```
+
+E então, ele escolhe automaticamente o parser correto baseado no sistema operacional e no comando.  
+
+### E quando usamos apenas o Genie?
+
+Quando não temos uma rede real (como neste projeto), podemos usar o Genie isoladamente, sem o pyATS conectado. Nesse caso:  
+
+  - Criamos arquivos simulando a saída dos comandos (mock files),
+
+  - E usamos objetos de teste (DummyDevice) para representar o equipamento.
+
+Como não existe conexão real nem testbed.yaml, o Genie não consegue identificar o parser automaticamente. Por isso, precisamos informar manualmente qual parser será usado:
+
+```python
+from genie.libs.parser.iosxe.show_version import ShowVersion
+```
+
+Essa abordagem é mais simples e ideal para estudo, testes locais e automação offline.
+
 ### Conceitos Fundamentais no Genie: Mock Files e Dummy Devices
 
 Antes de avançarmos, é essencial entender dois pilares do Genie/pyATS para automação e testes:
@@ -534,12 +569,12 @@ flowchart LR
 
 ## Quando Usar?
 
-| Cenário	Mock             | File                    | Dummy Device                   |
-|--------------------------|-------------------------|--------------------------------|
-| Desenvolvimento local    | ✅                     | ✅                             |
-| Testes em CI/CD          | ✅	                   | ✅                             |
-| Validação rápida         | ❌ (Use string direta) | ✅                             |
-| Conexão a dispositivo real | ❌	                   | ❌ (Use Device real)         |  
+| Cenário	Mock               | File                   | Dummy Device                   |
+|----------------------------|------------------------|--------------------------------|
+| Desenvolvimento local      | ✅                     | ✅                            |
+| Testes em CI/CD            | ✅	                   | ✅                            |
+| Validação rápida           | ❌ (Use string direta) | ✅                            |
+| Conexão a dispositivo real | ❌	                   | ❌ (Use Device real)          |  
 
 ### Boas práticas para Dummy Devices no Genie
 
@@ -553,6 +588,93 @@ class DummyISR(DummyDevice):
     def __init__(self):
         super().__init__(os='iosxe', type='router', name='isr4321')
 ```
+
+**OBS:** Vamos a uma breve explicação sobre Classes e Funções
+
+### O que é uma classe?
+
+No Python (e em programação orientada a objetos), uma classe é como um molde ou modelo para criar objetos. Ela define características (atributos) e ações (métodos) que aquele tipo de objeto pode ter.
+
+Exemplo simples:
+
+```python
+class Roteador:
+    def __init__(self, modelo):
+        self.modelo = modelo
+```
+
+Com essa classe, você pode criar vários roteadores:
+
+```python
+r1 = Roteador('ISR4321')
+r2 = Roteador('ASR1001')
+``` 
+
+### O que é herança?
+
+Herança é quando você cria uma nova classe baseada em outra. A nova classe herda os atributos e comportamentos da classe original e pode personalizar ou expandir o que for necessário.
+
+No exemplo:
+
+```Python
+class DummyISR(DummyDevice):
+    def __init__(self):
+        super().__init__(os='iosxe', type='router', name='isr4321')
+```
+
+Então estamos dizendo:
+
+    “Quero criar um roteador de testes chamado DummyISR que já vem configurado como um router IOS-XE chamado isr4321, reutilizando tudo que já existe na classe DummyDevice.”
+
+**📌 Resumo**
+| Conceito | Explicação curta                                      |              
+|----------|-------------------------------------------------------|
+| Classe   | Modelo para criar objetos (ex: roteadores, switches)  |
+| Herança  | Reutilização de uma classe existente em outra         |
+
+- Essa técnica torna o código mais organizado, reutilizável e profissional, principalmente em projetos maiores.
+
+### O que é def dentro de uma classe?
+
+A palavra-chave def no Python é usada para definir uma função — e quando essa função está dentro de uma classe, ela é chamada de método.
+
+**Por que usar def dentro de uma classe?**
+
+Porque assim você define comportamentos específicos que os objetos daquela classe podem executar.
+
+Por exemplo:
+
+```Python
+class Roteador:
+    def __init__(self, modelo):
+        self.modelo = modelo
+
+    def exibir_modelo(self):
+        print(f"O modelo é: {self.modelo}")
+```
+
+Aqui temos:
+
+  - __init__: um método especial que é chamado automaticamente quando o objeto é criado.
+
+  - **exibir_modelo:** um método criado por você, que exibe o modelo do roteador.
+
+**Por que __init__ é especial?**
+
+É o construtor da classe. Ele é chamado automaticamente quando você cria um novo objeto.
+
+```Python
+r1 = Roteador('ISR4321')  # Chama __init__ automaticamente
+r1.exibir_modelo()        # Chama o método da classe
+```
+
+**Resumo**
+
+| Elemento | O que faz                                       |
+|------------------------------------------------------------|
+| def      | Define uma função (ou método, dentro da classe) |
+| __init__ | Inicializa os atributos do objeto (construtor)  |
+Outros métodos	Definem ações que o objeto pode executar     |
 
 ### Exemplo com mock files e Dummy Devices
 
@@ -575,6 +697,8 @@ parsed = ShowVersion(device).parse(output=raw_output)
 
 print(f"Versão: {parsed['version']['version_short']}")
 ```
+
+---Arrumar
 
 ### Exemplos
 
