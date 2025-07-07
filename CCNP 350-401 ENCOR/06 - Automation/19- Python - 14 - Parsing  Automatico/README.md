@@ -669,11 +669,11 @@ r1.exibir_modelo()        # Chama o método da classe
 
 **Resumo**
 
-| Elemento | O que faz                                       |
-|----------|-------------------------------------------------|
-| def      | Define uma função (ou método, dentro da classe) |
-| __init__ | Inicializa os atributos do objeto (construtor)  |
-Outros métodos	Definem ações que o objeto pode executar     |
+| Elemento      | O que faz                                       |
+|---------------|-------------------------------------------------|
+| def           | Define uma função (ou método, dentro da classe) |
+| __init__      | Inicializa os atributos do objeto (construtor)  |
+| Outros métodos| Definem ações que o objeto pode executar        |
 
 ### Exemplo com mock files e Dummy Devices
 
