@@ -461,8 +461,6 @@ Router uptime is 1 week, 2 days
 System image file is "bootflash:isr4300-universalk9.17.03.04.SPA.bin"
 ```
 
-**🧠 Por que usar conteúdo mock?**
-
 | Vantagem                      | Explicação                                                                           |
 |-------------------------------|--------------------------------------------------------------------------------------|
 | ✅ Não depende de laboratório | Você pode estudar e desenvolver seu código sem ter acesso a equipamentos reais       |
