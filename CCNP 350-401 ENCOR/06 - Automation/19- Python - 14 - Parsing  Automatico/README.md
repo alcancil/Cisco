@@ -31,6 +31,12 @@
     - [Recomendações de Uso](#recomendações-de-uso)
     - [Casos de Uso do Genie (do Básico ao Avançado)](#casos-de-uso-do-genie-do-básico-ao-avançado)
     - [Conceitos Fundamentais no Genie: Mock Files e Dummy Devices](#conceitos-fundamentais-no-genie-mock-files-e-dummy-devices)
+    - [Boas Práticas para Mocks no Genie](#boas-práticas-para-mocks-no-genie)
+    - [Dummy Devices (Dispositivos Simulados)](#dummy-devices-dispositivos-simulados)
+    - [Relação entre os Conceitos](#relação-entre-os-conceitos)
+  - [Quando Usar?](#quando-usar)
+    - [Boas práticas para Dummy Devices no Genie](#boas-práticas-para-dummy-devices-no-genie)
+    - [Exemplo com mock files e Dummy Devices](#exemplo-com-mock-files-e-dummy-devices)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
     - [O que é conteúdo mock?](#o-que-é-conteúdo-mock)
@@ -400,11 +406,11 @@ Antes de avançarmos, é essencial entender dois pilares do Genie/pyATS para aut
 
 **1. Mock Files (Arquivos de Simulação)**
 
-O que são?  
+**O que são?**  
 
 Arquivos de texto (.txt) que contêm saídas simuladas de comandos Cisco, como show version ou show ip interface brief. Esses arquivos imitam exatamente o que um dispositivo real retornaria via CLI.
 
-Por que usar?
+**Por que usar?**
 
     ✅ Teste sem equipamentos: Permite desenvolver e validar parsers sem acesso físico a roteadores/switches.
 
@@ -412,13 +418,163 @@ Por que usar?
 
     ✅ Eficiência: Elimina a latência de conexões SSH/Telnet durante o desenvolvimento.
 
-Exemplo Prático:
+**Exemplo Prático:**
 
 ```python
 # mock_data/show_version.txt
 Cisco IOS XE Software, Version 17.03.04
 Router uptime is 1 week, 2 days
 System image file is "bootflash:isr4300-universalk9.17.03.04.SPA.bin"
+```
+
+**🧠 Por que usar conteúdo mock?**
+
+| Vantagem                      | Explicação                                                                           |
+|-------------------------------|--------------------------------------------------------------------------------------|
+| ✅ Não depende de laboratório | Você pode estudar e desenvolver seu código sem ter acesso a equipamentos reais       |
+| ✅ Reprodutível               | O conteúdo é sempre o mesmo, então facilita testes e debug                           |
+| ✅ Ideal para aprendizado     | Te permite focar no parsing e na lógica, sem se preocupar com conexões ou permissões |
+| ✅ Rápido e leve              | Você roda tudo localmente em segundos, com arquivos .txt                             |
+
+**📌 Exemplo de conteúdo mock (simulação de saída)**
+
+```Bash
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0     192.168.1.1     YES manual up                    up
+GigabitEthernet0/1     unassigned      YES unset  administratively down down
+Loopback0              10.0.0.1        YES manual up                    up
+```
+
+Isso imita a resposta real do roteador, e permite que o parser Genie funcione corretamente.  
+
+### Boas Práticas para Mocks no Genie
+
+Para Projetos Reais:
+
+1. Estrutura de Pastas:
+
+```Bash
+
+    project/
+    ├── src/
+    │   ├── parsers/
+    │   └── tests/
+    │       ├── mock_data/
+    │       │   ├── iosxe/
+    │       │   │   ├── show_version.txt
+    │       │   │   └── show_interface.txt
+    │       └── test_parsers.py
+```
+
+2. Nomenclatura:
+
+   - Use nomes descritivos: iosxe_show_version_v17.3.4.txt.
+
+3. Validação:
+
+   - Sempre verifique se o mock corresponde à saída real (copie do dispositivo se possível).  
+
+4. Para Fins Didáticos:
+
+   - Mantenha os mocks em arquivos separados.
+
+   - Adicione comentários explicativos no mock:
+
+```Bash
+# mock_data/show_version.txt
+# Saída simulada de um Cisco ISR4321 com IOS-XE 17.03.04
+# Última atualização: 2024-06-01
+Cisco IOS XE Software, Version 17.03.04
+...
+```
+
+5. Armazene em pastas mock_data/ separadas por OS (ex: iosxe/, nxos/).  
+
+6. Nomeie os arquivos com o comando e versão (ex: show_version_iosxe_17.3.4.txt).
+
+### Dummy Devices (Dispositivos Simulados)
+
+**O que são?**  
+
+Classes Python simples que emulam um dispositivo de rede (roteador, switch) para fins de teste. Elas fornecem os atributos mínimos que o Genie precisa para operar (como os e type).  
+
+**Por que usar?**  
+
+    ✅ Abstração: Testa parsers sem configurar conexões complexas.
+
+    ✅ Flexibilidade: Simula diferentes sistemas operacionais (IOS-XE, NX-OS) mudando apenas self.os.
+
+    ✅ Isolamento: Valida apenas a lógica de parsing, sem interferência de falhas de rede.
+
+Exemplo Prático:
+
+```python
+
+class DummyDevice:
+    def __init__(self, os='iosxe', name='lab-router'):
+        self.os = os  # Define o sistema operacional (crucial para o Genie)
+        self.name = name  # Identificação opcional
+
+# Uso:
+device = DummyDevice(os='iosxe')
+parser = ShowVersion(device=device)  # O parser usa 'os' para selecionar a implementação correta
+```
+
+### Relação entre os Conceitos
+
+```mermaid
+flowchart LR
+    A[Mock File] -->|Fornece saída bruta| B[Parser Genie]
+    C[Dummy Device] -->|Fornece contexto| B[Parser Genie]
+    B --> D[Dados Estruturados]
+```
+
+- Mock File: Simula o que o dispositivo envia (dados).
+
+- Dummy Device: Simula quem envia (contexto: IOS-XE, NX-OS, etc.).
+
+## Quando Usar?
+
+| Cenário	Mock             | File                    | Dummy Device                   |
+|--------------------------|-------------------------|--------------------------------|
+| Desenvolvimento local    | ✅                     | ✅                             |
+| Testes em CI/CD          | ✅	                   | ✅                             |
+| Validação rápida         | ❌ (Use string direta) | ✅                             |
+| Conexão a dispositivo real | ❌	                   | ❌ (Use Device real)         |  
+
+### Boas práticas para Dummy Devices no Genie
+
+Adicione apenas os atributos essenciais (os, type, name).
+
+Use herança para casos complexos:
+
+```python
+
+class DummyISR(DummyDevice):
+    def __init__(self):
+        super().__init__(os='iosxe', type='router', name='isr4321')
+```
+
+### Exemplo com mock files e Dummy Devices
+
+```Python
+from genie.libs.parser.iosxe.show_version import ShowVersion
+
+# 1. Dispositivo simulado
+class DummyRouter:
+    def __init__(self):
+        self.os = 'iosxe'  # Atributo obrigatório para o Genie
+        self.name = 'lab-device'
+
+# 2. Mock file
+with open('mock_data/show_version.txt') as f:
+    raw_output = f.read()
+
+# 3. Parsing
+device = DummyRouter()
+parsed = ShowVersion(device).parse(output=raw_output)
+
+print(f"Versão: {parsed['version']['version_short']}")
 ```
 
 ### Exemplos
@@ -587,25 +743,6 @@ Ou seja:
 
   - Mas está salvo em um arquivo .txt, para você testar seu parser sem precisar se conectar via SSH ou Telnet.
 
-**🧠 Por que usar conteúdo mock?**
-
-| Vantagem                      | Explicação                                                                           |
-|-------------------------------|--------------------------------------------------------------------------------------|
-| ✅ Não depende de laboratório | Você pode estudar e desenvolver seu código sem ter acesso a equipamentos reais       |
-| ✅ Reprodutível               | O conteúdo é sempre o mesmo, então facilita testes e debug                           |
-| ✅ Ideal para aprendizado     | Te permite focar no parsing e na lógica, sem se preocupar com conexões ou permissões |
-| ✅ Rápido e leve              | Você roda tudo localmente em segundos, com arquivos .txt                             |
-
-**📌 Exemplo de conteúdo mock (simulação de saída)**
-
-```Bash
-Interface              IP-Address      OK? Method Status                Protocol
-GigabitEthernet0/0     192.168.1.1     YES manual up                    up
-GigabitEthernet0/1     unassigned      YES unset  administratively down down
-Loopback0              10.0.0.1        YES manual up                    up
-```
-
-Isso imita a resposta real do roteador, e permite que o parser Genie funcione corretamente.  
 
 ## Exemplo 02: Parsing de show version com Genie
 
