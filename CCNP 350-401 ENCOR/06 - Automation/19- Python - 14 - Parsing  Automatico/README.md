@@ -45,6 +45,7 @@
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
+    - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
 
 
 ### Introdução ao Genie
@@ -857,6 +858,75 @@ GigabitEthernet1: administratively down
 **Objetivo:**
 
 Extrair informações estruturadas sobre o sistema operacional do roteador: versão do IOS, modelo do hardware, tempo de uptime e outros detalhes relevantes.  
+
+⚠️ **Importante: Sobre a versão do Python**
+
+Durante o desenvolvimento deste exemplo, identifiquei que alguns parsers do Genie não são totalmente compatíveis com o Python mais recente (`3.12.x`) quando utilizados em **testes locais simulados** com `mock files` e `dummy devices`.  
+
+Após diversos testes, confirmei que a versão mais compatível para esse cenário é o **Python 3.10.17**, amplamente suportado pelo `pyATS` e `Genie`, especialmente para ambientes sem acesso a equipamentos reais.
+
+A seguir, explico como instalar essa versão manualmente, mantendo as duas versões do Python lado a lado no Linux Mint, sem afetar o sistema:
+
+### ✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)
+
+**Fonte oficial utilizada:**
+[https://www.python.org/downloads/release/python-31017](https://www.python.org/downloads/release/python-31017)
+
+**Comandos utilizados:**
+
+```bash
+cd ~/Downloads
+wget https://www.python.org/ftp/python/3.10.17/Python-3.10.17.tgz
+tar -xf Python-3.10.17.tgz
+cd Python-3.10.17
+./configure --enable-optimizations
+make -j4
+sudo make altinstall
+```
+
+**🧠 O que esses comandos significam?**
+
+| Comando                            | Explicação                                                                        |
+|------------------------------------|-----------------------------------------------------------------------------------| 
+| wget ...Python-3.10.17.tgz         | Você baixou o código-fonte oficial do Python 3.10.17.                             | 
+| tar -xf                            | Você descompactou o arquivo.                                                      |
+| ./configure --enable-optimizations | Preparou a compilação com otimizações de performance.                             |
+| make -j 4	                         | Compilou o Python usando 4 núcleos.                                               |
+| sudo make altinstall               | Instala a versão sem sobrescrever o Python padrão do sistema (muito importante!). |
+
+**🔎 Onde foi instalado?**
+
+Provavelmente em:
+
+```bash
+/usr/local/bin/python3.10
+```
+
+Você pode confirmar com:
+
+```bash
+which python3.10
+```
+
+**🔎 Verificação após a instalação**
+
+Após instalar, confirme a presença da nova versão:
+
+```bash
+/usr/local/bin/python3.10 --version
+```
+
+Resultado esperado:
+
+```bash
+Python 3.10.17
+```
+
+Você poderá então criar ambientes virtuais com essa versão usando:
+
+```python
+python3.10 -m venv nome_do_ambiente
+```
 
 **📁 Estrutura recomendada**
 
