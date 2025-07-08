@@ -844,6 +844,14 @@ GigabitEthernet1: administratively down
 [28]         print(f"{intf}: {details.get('status', 'unknown').strip()}")       # Exibe o nome e o statu
 ```
 
+> 🧪 **Observação importante sobre a versão do Python**
+>
+> O Exemplo 01 foi desenvolvido utilizando a versão mais recente do Python disponível no momento (`Python 3.12.3`). No entanto, durante a simulação com arquivos *mock* e *dummy devices*, identifiquei que **alguns parsers do Genie ainda não estão totalmente compatíveis com essa versão**.
+>
+> Por isso, **recomendo fortemente a utilização da versão `Python 3.10.17`**, que é mais estável e amplamente compatível com os parsers utilizados no PyATS + Genie, especialmente para simulações locais sem acesso a equipamentos reais.
+>
+> Essa adaptação será demonstrada nos próximos exemplos.
+
 ## Exemplo 02: Parsing de show version com Genie
 
 **Objetivo:**
