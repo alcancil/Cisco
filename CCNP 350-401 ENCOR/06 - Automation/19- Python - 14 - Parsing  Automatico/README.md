@@ -46,6 +46,10 @@
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
     - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
+- [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
+- [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
+- [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
+    - [📚 Glossário](#-glossário)
 
 
 ### Introdução ao Genie
@@ -1046,9 +1050,96 @@ Modelo: ISR4321/K9
 Uptime: 1 week, 2 days, 5 hours, 30 minutes
 (genie310) alcancil@linux:~/automacoes/genie/02$ 
 ```
+
+**Explicação**
+
+**📌 Verificando Versões do Python Instaladas**
+
+Para listar todas as versões do Python disponíveis no sistema (globalmente), use:
+
+```bash
+# Lista executáveis Python no PATH
+ls /usr/bin/python*  
+
+# Ou para versões específicas (3.10+):
+which python3.10 python3.12  # Caminhos completos
+python3.10 --version         # Verifica a versão exata
+```
+
+**Saída esperada:**
+
+```bash
+/usr/bin/python3.10   # Python 3.10.17
+/usr/bin/python3.12   # Python 3.12.3
+```
+
+**🌐 Criando um Ambiente Virtual com uma Versão Específica**
+
+Se você instalou o Python 3.10 manualmente (como no Exemplo 02), siga estes passos:
+
+  - Localize o caminho do Python 3.10:
+    
+```bash
+which python3.10  # Ex: /usr/local/bin/python3.10
+```
+
+  - Crie o ambiente virtual:
+
+```bash
+# Sintaxe: <caminho_python> -m venv <nome_do_ambiente>
+/usr/local/bin/python3.10 -m venv genie310
+```
+
+  - Ative o ambiente:
+
+```bash
+source genie310/bin/activate
+```
+
+  - Verifique a versão dentro do ambiente:
+
+```bash
+    python --version  # Deve mostrar "Python 3.10.17"
+```
+
+**🔍 Exemplo Prático**
+
+# 1. Verifica versões disponíveis
+
+```bash
+alcancil@linux:~$ which python3.10 python3.12
+/usr/local/bin/python3.10   # Python 3.10.17 (instalado manualmente)
+/usr/bin/python3.12         # Python padrão do sistema
+```
+
+# 2. Cria e ativa o ambiente
+
+```bash
+alcancil@linux:~/automacoes/genie/02$ python3.10 -m venv genie310
+alcancil@linux:~/automacoes/genie/02$ source genie310/bin/activate
+```
+
+# 3. Confirma a versão no ambiente
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/02$ python --version
+Python 3.10.17
+```
+
+**💡 Por Que Isso é Importante?**
+
+  **Isolamento:** Ambientes virtuais evitam conflitos entre projetos.
+
+  **Compatibilidade:** Garante que o Genie/pyATS funcione corretamente (como no Exemplo 02, que requer Python 3.10).
+
+  **Controle:** Você pode ter múltiplos ambientes com versões diferentes do Python.
+
 ---
 Continuar
 
 
-
+### 📚 Glossário
+- **Mock File:** Arquivo com saída simulada de comandos CLI.
+- **Dummy Device:** Classe Python que emula um dispositivo de rede.
+- **Snapshot:** Captura do estado da rede em um momento específico.
 
