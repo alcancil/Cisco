@@ -698,8 +698,6 @@ parsed = ShowVersion(device).parse(output=raw_output)
 print(f"Versão: {parsed['version']['version_short']}")
 ```
 
----Arrumar
-
 ### Exemplos
 
 ## Exemplo 01: Parsing de show ip interface brief com Genie
@@ -970,43 +968,84 @@ Processor board ID FLM2306W0LB
 **parse_show_version.py**
 
 ```Python
-from genie.libs.parser.iosxe.show_version import ShowVersionMode
-
-# Testbed com mock
-testbed = load({
-    "devices": {
-        "mock": {
-            "os": "iosxe",
-            "type": "router",
-            "connections": {
-                "cli": {
-                    "protocol": "mock"
-                }
-            }
-        }
-    }
-})
-
-device = testbed.devices['mock']
-
-# Lê a saída do comando salva no arquivo mock
-with open('mock_data/show_version.txt') as f:
-    raw_output = f.read()
-
-# Usa o parser automaticamente, sem importar a classe diretamente
-parser = ShowVersionMode(device=device)
-parsed = parser.parse(output=raw_output)
-
-# Impressão dos dados estruturados relevantes
-print("\n=== Informações do Sistema ===")
-print(f"Versão do IOS: {parsed.get('version', {}).get('version', 'N/A')}")
-print(f"Nome da Imagem: {parsed.get('version', {}).get('system_image', 'N/A')}")
-print(f"Modelo: {parsed.get('version', {}).get('chassis', 'N/A')}")
-print(f"Tempo de Uptime: {parsed.get('version', {}).get('uptime', 'N/A')}")
-print(f"Motivo do último reload: {parsed.get('version', {}).get('reload_reason', 'N/A')}")
-
+[01] from genie.libs.parser.utils import get_parser
+[02] from genie.metaparser.util.exceptions import SchemaEmptyParserError
+[03] import re
+[04] 
+[05] class DummyDevice:
+[06]     def __init__(self, name='mock', os='iosxe'):
+[07]         self.name = name
+[08]         self.os = os
+[09]         self.custom = {'abstraction': {'order': ['os']}}
+[10] 
+[11] def validate_mock_output(content):
+[12]     """Verifica se o mock tem o formato esperado"""
+[13]     required_patterns = [
+[14]         r'Cisco IOS XE Software, Version \d+\.\d+\.\d+',
+[15]         r'Cisco IOS Software \[.+\], .+ Version \d+\.\d+\.\d+',
+[16]         r'System image file is ".+"',
+[17]         r'Router uptime is .+',
+[18]         r'Cisco \w+/.+ processor with',
+[19]         r'\d+K bytes of (non-volatile configuration|physical|flash) memory'
+[20]     ]
+[21]     
+[22]     for pattern in required_patterns:
+[23]         if not re.search(pattern, content):
+[24]             raise ValueError(f"Padrão não encontrado: {pattern}")
+[25] 
+[26] device = DummyDevice()
+[27] 
+[28] with open('mock_data/show_version.txt', 'r') as f:
+[29]     raw_output = f.read()
+[30] 
+[31] try:
+[32]     validate_mock_output(raw_output)
+[33]     
+[34]     # Modificação crítica aqui: tratamento correto do retorno do get_parser
+[35]     parser_class = get_parser('show version', device=device)
+[36]     if isinstance(parser_class, tuple):
+[37]         parser = parser_class[0](device=device)  # Pega a classe de parser da tupla
+[38]     else:
+[39]         parser = parser_class(device=device)
+[40]     
+[41]     parsed = parser.parse(output=raw_output)
+[42]     
+[43]     print("\n=== Parsing Bem Sucedido ===")
+[44]     print(f"Versão: {parsed['version']['version_short']}")
+[45]     print(f"Modelo: {parsed['version']['chassis']}")
+[46]     print(f"Uptime: {parsed['version']['uptime']}")
+[47]  
+[48] except ValueError as ve:
+[49]     print(f"\nERRO: Formato inválido no mock: {ve}")
+[50] except SchemaEmptyParserError:
+[51]     print("\nERRO: O parser retornou vazio - verifique o formato do output")
+[52] except Exception as e:
+[53]     print(f"\nErro durante parsing: {str(e)}")
+[54]     print("\nConteúdo problemático:")
+[55]     print(raw_output)
 ```
 
+**Saída**
+
+```bash
+lcancil@linux:~/automacoes/genie/02$ which python3
+/usr/bin/python3
+alcancil@linux:~/automacoes/genie/02$ which python3.10
+/usr/local/bin/python3.10
+alcancil@linux:~/automacoes/genie/02$ 
+alcancil@linux:~/automacoes/genie/02$ python3.10 -m venv genie310
+alcancil@linux:~/automacoes/genie/02$ source genie310/bin/activate
+(genie310) alcancil@linux:~/automacoes/genie/02$ python
+python             python3.10         python3.12         python3-config     
+python3            python3.10-config  python3.12-config  python3-qr         
+(genie310) alcancil@linux:~/automacoes/genie/02$ python3 parse_show_version.py 
+
+=== Parsing Bem Sucedido ===
+Versão: 17.3
+Modelo: ISR4321/K9
+Uptime: 1 week, 2 days, 5 hours, 30 minutes
+(genie310) alcancil@linux:~/automacoes/genie/02$ 
+```
 ---
 Continuar
 
