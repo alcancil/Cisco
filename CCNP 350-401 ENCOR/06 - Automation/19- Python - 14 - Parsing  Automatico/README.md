@@ -46,9 +46,9 @@
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
     - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
-- [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
-- [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
-- [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
+    - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
+    - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
+    - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
     - [📚 Glossário](#-glossário)
 
 
@@ -1104,7 +1104,7 @@ source genie310/bin/activate
 
 **🔍 Exemplo Prático**
 
-# 1. Verifica versões disponíveis
+### 1. Verifica versões disponíveis
 
 ```bash
 alcancil@linux:~$ which python3.10 python3.12
@@ -1112,14 +1112,14 @@ alcancil@linux:~$ which python3.10 python3.12
 /usr/bin/python3.12         # Python padrão do sistema
 ```
 
-# 2. Cria e ativa o ambiente
+### 2. Cria e ativa o ambiente
 
 ```bash
 alcancil@linux:~/automacoes/genie/02$ python3.10 -m venv genie310
 alcancil@linux:~/automacoes/genie/02$ source genie310/bin/activate
 ```
 
-# 3. Confirma a versão no ambiente
+### 3. Confirma a versão no ambiente
 
 ```bash
 (genie310) alcancil@linux:~/automacoes/genie/02$ python --version
