@@ -1134,6 +1134,98 @@ Python 3.10.17
 
   **Controle:** Você pode ter múltiplos ambientes com versões diferentes do Python.
 
+**parse_show_version.py**
+
+```Python
+Bloco 1: Importações
+
+[01] from genie.libs.parser.utils import get_parser                               # Importa a função que seleciona automaticamente o parser correto para um comando
+[02] from genie.metaparser.util.exceptions import SchemaEmptyParserError          # Importa exceção para tratar saídas vazias/inválidas
+[03] import re                                                                    # Biblioteca para validação com regex
+
+Bloco 2: Classe DummyDevice
+
+[05] class DummyDevice:                                                           # Simula um dispositivo de rede para testes offline
+[06]     def __init__(self, name='mock', os='iosxe'):
+[07]         self.name = name                                                     # Nome do dispositivo (opcional)
+[08]         self.os = os                                                         # Sistema operacional (crucial para o Genie selecionar o parser)
+[09]         self.custom = {'abstraction': {'order': ['os']}}                     # Define a hierarquia de abstração (padrão pyATS)
+
+Bloco 3: Validação do Mock File
+
+[11] def validate_mock_output(content):                                           # Garante que o arquivo mock tenha o formato esperado
+[12]     """Verifica se o mock tem o formato esperado"""
+[13]     required_patterns = [                                                    # Lista de padrões regex que devem existir na saída
+[14]         r'Cisco IOS XE Software, Version \d+\.\d+\.\d+',                     # Versão do IOS
+[15]         r'Cisco IOS Software \[.+\], .+ Version \d+\.\d+\.\d+',              # Detalhes da versão
+[16]         r'System image file is ".+"',                                        # Nome da imagem
+[17]         r'Router uptime is .+',                                              # Tempo de atividade
+[18]         r'Cisco \w+/.+ processor with',                                      # Modelo do hardware
+[19]         r'\d+K bytes of (non-volatile configuration|physical|flash) memory'  # Memória
+[20]     ]
+[21]     
+[22]     for pattern in required_patterns:                                        # Verifica cada padrão
+[23]         if not re.search(pattern, content):                                  # Se algum padrão não for encontrado...
+[24]             raise ValueError(f"Padrão não encontrado: {pattern}")            # Falha com erro descritivo
+
+Bloco 4: Configuração Inicial
+
+[26] device = DummyDevice()                                                       # Cria um dispositivo simulado IOS-XE
+[27] 
+[28] with open('mock_data/show_version.txt', 'r') as f:                           # Abre o arquivo mock
+[29]     raw_output = f.read()                                                    # Lê todo o conteúdo
+
+Bloco 5: Parsing e Tratamento de Erros
+
+[31] try:                                                                         # Início do bloco para capturar erros
+[32]     validate_mock_output(raw_output)                                         # Valida o conteúdo do mock
+[33]     
+[34]     # Obtém a classe do parser para 'show version' (pode retornar uma tupla ou classe direta)
+[35]     parser_class = get_parser('show version', device=device)
+[36]     if isinstance(parser_class, tuple):                                      # Se for tupla (classe + args)...
+[37]         parser = parser_class[0](device=device)                              # Pega a classe (primeiro elemento)
+[38]     else:                                                                    # Se for direto...
+[39]         parser = parser_class(device=device)                                 # Usa a classe diretamente
+[40]     
+[41]     parsed = parser.parse(output=raw_output)                                 # Executa o parsing
+[42]     
+[43]     print("\n=== Parsing Bem Sucedido ===")                                  # Saída formatada
+[44]     print(f"Versão: {parsed['version']['version_short']}")                   # Ex: "17.3"
+[45]     print(f"Modelo: {parsed['version']['chassis']}")                         # Ex: "ISR4321/K9"
+[46]     print(f"Uptime: {parsed['version']['uptime']}")                          # Ex: "1 week, 2 days"
+[47]  
+[48] except ValueError as ve:                                                     # Erro na validação do mock
+[49]     print(f"\nERRO: Formato inválido no mock: {ve}")                         # Exibe mensagem de erro formatada quando a validação do mock falha:
+                                                                                          # - \n insere quebra de linha antes da mensagem
+                                                                                          # - f-string permite inserir o valor da variável 've' (ValueError)
+                                                                                          # - 've' contém detalhes do padrão regex não encontrado
+[50] except SchemaEmptyParserError:                                               # Erro no parser (saída vazia/inválida)
+[51]     print("\nERRO: O parser retornou vazio - verifique o formato do output") # Exibe mensagem de erro quando o parser não consegue processar a saída:
+                                                                                          # - \n cria uma quebra de linha para separação visual
+                                                                                          # - Indica que o parser retornou vazio (SchemaEmptyParserError)
+                                                                                          # - Sugere verificar:
+                                                                                          #   1. Se o mock contém a saída COMPLETA do comando
+                                                                                          #   2. Se há diferenças na sintaxe da saída real vs mock
+                                                                                          #   3. Se a versão do OS no DummyDevice corresponde ao mock
+[52] except Exception as e:                                                       # Qualquer outro erro
+[53]     print(f"\nErro durante parsing: {str(e)}")                               # Exibe mensagem genérica de erro durante o processamento:
+                                                                                          # - \n insere quebra de linha para melhor formatação
+                                                                                          # - f-string permite incluir detalhes do erro através da variável 'e'
+                                                                                          # - str(e) converte a exceção para string legível
+                                                                                          # - Captura qualquer erro não tratado especificamente (Exception)
+                                                                                          # - Útil para debug de problemas inesperados
+[54]     print("\nConteúdo problemático:")                                        # Debug: mostra o conteúdo problemático
+[55]     print(raw_output)                                                        # Exibe o conteúdo bruto do arquivo mock quando ocorre um erro inesperado:
+                                                                                          # - Mostra exatamente o que foi lido do arquivo 'show_version.txt'
+                                                                                          # - Auxilia no debug comparando a entrada com o formato esperado
+                                                                                          # - Útil para identificar:
+                                                                                          #   * Dados faltantes no mock
+                                                                                          #   * Diferenças de formatação
+                                                                                          #   * Caracteres inválidos
+                                                                                          #   * Problemas de codificação
+                                                                                          # - Sempre executado após mensagem de erro principal (linha 53)
+```
+
 ---
 Continuar
 
