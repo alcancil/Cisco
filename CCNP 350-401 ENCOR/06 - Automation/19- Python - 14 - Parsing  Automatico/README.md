@@ -1226,6 +1226,74 @@ Bloco 5: Parsing e Tratamento de Erros
                                                                                           # - Sempre executado após mensagem de erro principal (linha 53)
 ```
 
+**OBSERVAÇÂO:**
+
+Como o Genie Escolhe Automaticamente o Parser?  
+
+O Genie utiliza um sistema inteligente de seleção de parsers baseado em duas informações-chave:  
+
+1. Mecanismo de Seleção (Passo a Passo):
+
+ - Biblioteca de Parsers : O Genie possui +500 parsers pré-construídos organizados por sistema operacional:
+  
+```bash
+genie/libs/parser/
+├── iosxe/
+│   ├── show_version.py
+│   └── show_interface.py
+├── nxos/
+│   ├── show_version.py
+│   └── show_interface.py
+└── iosxr/
+    ├── show_version.py
+    └── show_interface.py
+```
+
+2. Chave de Seleção  
+  
+O get_parser usa dois critérios para escolher o parser correto:
+
+   - Tipo de dispositivo (device.os no DummyDevice)
+
+   - Comando Cisco (ex: show version)
+
+**Fluxo Automático**
+
+Quando você chama:
+
+```python
+get_parser('show version', device=device)
+```
+
+O Genie:
+
+   - Verifica device.os (ex: iosxe)
+
+   - Busca em genie/libs/parser/iosxe/ o arquivo show_version.py
+
+   - Retorna a classe ShowVersion pronta para uso
+
+**Exemplo Prático: Diferença entre Plataformas**
+
+| Comando        | IOS-XE Parser	NX-OS Parser                                      |
+|----------------|------------------------------------------------------------------|
+| show version   | Extrai version_short (ex: 17.3) | Extrai nxos_platform (ex: N9K) |
+| show interface | Campo protocol                  | Campo state (nome diferente)   |
+
+**Por Que Isso é Útil em Ambientes Simulados?**
+
+- **Consistência:** Seus testes comportam-se igual em simulação e produção.
+
+- **Flexibilidade:** Para testar diferentes OS, basta mudar device.os:
+    
+```python
+    device = DummyDevice(os='nxos')  # Agora usa parsers do NX-OS!
+```
+    
+- **Manutenção Zero:** Se a Cisco atualizar um parser, seu código herda as melhorias automaticamente.
+
+
+
 ---
 Continuar
 
