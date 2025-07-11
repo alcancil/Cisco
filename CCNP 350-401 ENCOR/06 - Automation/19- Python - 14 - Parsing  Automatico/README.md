@@ -50,13 +50,7 @@
     - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
-    - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
-- [Liste versões disponíveis](#liste-versões-disponíveis)
-- [Instale a versão específica](#instale-a-versão-específica)
-- [Defina como versão global](#defina-como-versão-global)
-- [Verifique](#verifique)
-- [Crie um ambiente virtual](#crie-um-ambiente-virtual)
-- [Instale as dependências](#instale-as-dependências)
+  - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1352,7 +1346,7 @@ O Genie:
     
 - **Manutenção Zero:** Se a Cisco atualizar um parser, seu código herda as melhorias automaticamente.
 
-### Exemplo 03: Parsing de show vlan brief com Genie + pyenv
+## Exemplo 03: Parsing de show vlan brief com Genie + pyenv
 
 **Objetivo**
 
@@ -1382,25 +1376,25 @@ source ~/.bashrc
 
 **🔧 Passo 2: Instale o Python 3.10.17 via pyenv**
 
-# Liste versões disponíveis
+**Liste versões disponíveis**
 
 ```bash
 pyenv install --list | grep 3.10
 ```
 
-# Instale a versão específica
+**Instale a versão específica**
 
 ```bash
 pyenv install 3.10.17
 ```
 
-# Defina como versão global
+**Defina como versão global**
 
 ```bash
 pyenv global 3.10.17
 ```
 
-# Verifique
+**Verifique**
 
 ```bash
 python --version  # Deve mostrar "Python 3.10.17"
@@ -1410,14 +1404,14 @@ python --version  # Deve mostrar "Python 3.10.17"
 
 **🛠️ Passo 3: Configure o Ambiente e Instale o Genie**
 
-# Crie um ambiente virtual  
+**Crie um ambiente virtual**  
 
 ```bash
 python -m venv genie310
 source genie310/bin/activate
 ```
 
-# Instale as dependências
+**Instale as dependências**
 
 ```bash
 pip install pyats[full]
