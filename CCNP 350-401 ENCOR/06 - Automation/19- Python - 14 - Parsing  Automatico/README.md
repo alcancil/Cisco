@@ -50,6 +50,11 @@
     - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
+    - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
+- [Liste versões disponíveis](#liste-versões-disponíveis)
+- [Instale a versão específica](#instale-a-versão-específica)
+- [Defina como versão global](#defina-como-versão-global)
+- [Verifique](#verifique)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1345,7 +1350,61 @@ O Genie:
     
 - **Manutenção Zero:** Se a Cisco atualizar um parser, seu código herda as melhorias automaticamente.
 
+### Exemplo 03: Parsing de show vlan brief com Genie + pyenv
 
+**Objetivo**
+
+Extrair VLANs e portas associadas de switches Cisco, usando pyenv para garantir a compatibilidade com Python 3.10.17.  
+
+**Obs:** como demonstrado no exemplo 02, podemos ter várias versões de python dentro de um mesmo computador. Então agora vou demonstrar como utilizar o **pyenv**, uma alternativa um pouco mais robusta para gerenciamento das várias versões de python.  
+
+**📥 Passo 1: Instalação do pyenv**
+
+No Linux (ex: Ubuntu/Mint):  
+
+```bash
+# Dependências necessárias
+sudo apt update && sudo apt install -y make build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
+libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl
+
+# Instalação do pyenv
+curl https://pyenv.run | bash
+
+# Adicione ao seu .bashrc ou .zshrc
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**🔧 Passo 2: Instale o Python 3.10.17 via pyenv**
+
+# Liste versões disponíveis
+
+```bash
+pyenv install --list | grep 3.10
+```
+
+# Instale a versão específica
+
+```bash
+pyenv install 3.10.17
+```
+
+# Defina como versão global
+
+```bash
+pyenv global 3.10.17
+```
+
+# Verifique
+
+```bash
+python --version  # Deve mostrar "Python 3.10.17"
+```
+
+**OBS:** realize os mesmos passos para o python3.12.3 assim teremos 2 versões de python gerenciadas pelo **pyenv**. 
 
 ---
 Continuar
