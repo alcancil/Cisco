@@ -55,6 +55,8 @@
 - [Instale a versão específica](#instale-a-versão-específica)
 - [Defina como versão global](#defina-como-versão-global)
 - [Verifique](#verifique)
+- [Crie um ambiente virtual](#crie-um-ambiente-virtual)
+- [Instale as dependências](#instale-as-dependências)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1405,6 +1407,42 @@ python --version  # Deve mostrar "Python 3.10.17"
 ```
 
 **OBS:** realize os mesmos passos para o python3.12.3 assim teremos 2 versões de python gerenciadas pelo **pyenv**. 
+
+**🛠️ Passo 3: Configure o Ambiente e Instale o Genie**
+
+# Crie um ambiente virtual  
+
+```bash
+python -m venv genie310
+source genie310/bin/activate
+```
+
+# Instale as dependências
+
+```bash
+pip install pyats[full]
+```
+
+**📂 Estrutura do Projeto**
+
+```bash
+genie/03_show_vlan/
+├── mock_data/
+│   └── show_vlan_brief.txt
+└── parse_vlan.py
+```
+
+**Conteúdo do mock_data/show_vlan_brief.txt**
+
+```bash
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi1/0/1, Gi1/0/2
+10   VLAN0010                         active    Gi1/0/3
+20   VLAN0020                         active    Gi1/0/4, Gi1/0/5
+1002 fddi-default                     act/unsup
+1003 token-ring-default               act/unsup
+```
 
 ---
 Continuar
