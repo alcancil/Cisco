@@ -1401,7 +1401,7 @@ pyenv global 3.10.17
 python --version  # Deve mostrar "Python 3.10.17"
 ```
 
-**OBS:** realize os mesmos passos para o python3.12.3 assim teremos 2 versões de python gerenciadas pelo **pyenv**. 
+**OBS:** realize os mesmos passos para o python3.12.3 assim teremos 2 versões de python gerenciadas pelo **pyenv**. Sempre que for escolher a versão que for utilizar **pyenv global versão ecolhida**
 
 **🛠️ Passo 3: Configure o Ambiente e Instale o Genie**
 
