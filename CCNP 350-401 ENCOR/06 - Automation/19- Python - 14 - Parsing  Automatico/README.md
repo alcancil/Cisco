@@ -1520,7 +1520,7 @@ alcancil@linux:~/automacoes/genie/03$
 alcancil@linux:~/automacoes/genie/03$ python -m venv genie310
 ```
 
-***Executar o script com o python3.18**
+**Executar o script com o python3.18**
 
 ```Bash
 (genie310) alcancil@linux:~/automacoes/genie/03$ python3 parse_vlan.py 
