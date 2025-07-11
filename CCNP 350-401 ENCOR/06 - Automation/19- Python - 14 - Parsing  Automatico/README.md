@@ -51,7 +51,6 @@
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
   - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
-- [Na pasta do seu projeto:](#na-pasta-do-seu-projeto)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1488,7 +1487,7 @@ alcancil@linux:~/automacoes/genie/03$
 
 2. Ative o Python 3.10 localmente (apenas para esta pasta):
 
-# Na pasta do seu projeto:
+**Na pasta do seu projeto:**  
 
 ```Bash
 pyenv local 3.10.17
