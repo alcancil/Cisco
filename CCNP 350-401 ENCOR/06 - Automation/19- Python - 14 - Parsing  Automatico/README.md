@@ -107,9 +107,9 @@ Cuidados com versões diferentes:
 
 ✅ Sempre consulte a documentação oficial:
 
-    [Python: What's New](https://docs.python.org/3/whatsnew/)
+  [Python: What's New](https://docs.python.org/3/whatsnew/)
 
-    [Genie: Requirements](https://developer.cisco.com/docs/genie-docs/#!requirements)
+  [Genie: Requirements](https://developer.cisco.com/docs/genie-docs/#!requirements)
 
 ### Comparação: Parsing Manual vs Genie
 
