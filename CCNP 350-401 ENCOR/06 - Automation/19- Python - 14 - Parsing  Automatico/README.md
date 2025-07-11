@@ -109,7 +109,7 @@ Cuidados com versões diferentes:
 
   [Python: What's New](https://docs.python.org/3/whatsnew/)
 
-  [Genie: Requirements](https://developer.cisco.com/docs/genie-docs/#!requirements)
+  [Genie](https://developer.cisco.com/docs/genie-docs/)
 
 ### Comparação: Parsing Manual vs Genie
 
