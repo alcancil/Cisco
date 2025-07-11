@@ -51,6 +51,7 @@
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
   - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
+  - [Exemplo 04: show cdp neighbors](#exemplo-04-show-cdp-neighbors)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1490,7 +1491,7 @@ alcancil@linux:~/automacoes/genie/03$
 **Na pasta do seu projeto:**  
 
 ```Bash
-pyenv local 3.10.17
+pyenv local 3.10.18
 ```
 Isso cria um arquivo .python-version na pasta, forçando o uso do Python 3.10 ali.
 
@@ -1583,6 +1584,166 @@ Bloco 6: Tratamento de Erros
 
 [24] except Exception as e:                                        # Captura qualquer exceção
 [25]     print(f"Erro: {e}")                                       # Exibe a mensagem de erro
+```
+
+## Exemplo 04: show cdp neighbors  
+
+**Objetivo**
+
+Extrair informações estruturadas sobre dispositivos vizinhos conectados via CDP (Cisco Discovery Protocol), incluindo:
+
+  - Nome do vizinho e endereço IP
+
+  - Plataforma (modelo do equipamento)
+
+  - Interface local e porta remota
+
+  - Capacidades (Router, Switch, etc.)
+
+**📁 Estrutura do Projeto**
+
+```bash
+04/  
+├── mock_data/  
+│   └── show_cdp_neighbors.txt    # Arquivo com saída simulada do comando  
+└── parse_cdp_neighbors.py        # Script principal de parsing  
+```
+
+**show_cdp_neighboors.txt**
+
+```bash
+Device ID: SW1.example.com
+Entry address(es):
+  IP address: 192.168.10.2
+Platform: cisco WS-C2960X,  Capabilities: Switch IGMP
+Interface: Gig1/0/1,  Port ID (outgoing port): Gi1/0/24
+Holdtime : 145 sec
+
+Device ID: R2.example.com
+Entry address(es):
+  IP address: 192.168.20.2
+Platform: cisco ISR4321,  Capabilities: Router
+Interface: Gig0/0,  Port ID (outgoing port): Gi0/1
+Holdtime : 156 sec
+```
+
+**parse_show_cdp_neighbors.py**
+
+```Python
+from genie.libs.parser.iosxe.show_cdp import ShowCdpNeighbors
+
+class DummyDevice:
+    def __init__(self):
+        self.os = 'iosxe'
+        self.hostname = 'R1'
+
+def manual_parse(output):
+    """Parser manual para quando o Genie falhar"""
+    print("\n=== Usando Parser Manual ===")
+    devices = []
+    current = {}
+    
+    for line in output.splitlines():
+        if line.startswith('Device ID:'):
+            if current:
+                devices.append(current)
+            current = {'device_id': line.split('Device ID:')[1].strip()}
+        elif 'IP address:' in line:
+            current['ip'] = line.split('IP address:')[1].strip()
+        elif 'Platform:' in line:
+            parts = line.split('Platform:')[1].split(', Capabilities:')
+            current['platform'] = parts[0].strip()
+            if len(parts) > 1:
+                current['capabilities'] = parts[1].strip().split()
+        elif 'Interface:' in line:
+            parts = line.split('Interface:')[1].split(', Port ID (outgoing port):')
+            current['local_intf'] = parts[0].strip()
+            if len(parts) > 1:
+                current['remote_port'] = parts[1].strip()
+    
+    if current:
+        devices.append(current)
+    
+    for dev in devices:
+        print(f"\nInterface: {dev.get('local_intf', 'N/A')}")
+        print(f"  Vizinho: {dev.get('device_id', 'N/A')}")
+        print(f"  IP: {dev.get('ip', 'N/A')}")
+        print(f"  Plataforma: {dev.get('platform', 'N/A')}")
+        print(f"  Porta Remota: {dev.get('remote_port', 'N/A')}")
+        print(f"  Capacidades: {', '.join(dev.get('capabilities', []))}")
+
+def main():
+    device = DummyDevice()
+    
+    try:
+        with open('mock_data/show_cdp_neighbors.txt') as f:
+            cdp_output = f.read()
+
+        print("=== Dispositivos Vizinhos via CDP ===")
+        print(f"Dispositivo Local: {device.hostname}")
+        
+        # Tenta com Genie primeiro
+        try:
+            parsed = ShowCdpNeighbors(device).parse(output=cdp_output)
+            if parsed and 'cdp' in parsed and 'index' in parsed['cdp']:
+                print("\n=== Usando Parser Genie ===")
+                for idx, neighbor in parsed['cdp']['index'].items():
+                    print(f"\nInterface: {neighbor['local_interface']}")
+                    print(f"  Vizinho: {neighbor['device_id']}")
+                    print(f"  Porta Remota: {neighbor['port_id']}")
+                return
+        except Exception as e:
+            pass
+        
+        # Fallback para parser manual
+        manual_parse(cdp_output)
+    
+    except FileNotFoundError:
+        print("Erro: Arquivo mock não encontrado")
+    except Exception as e:
+        print(f"Erro inesperado: {str(e)}")
+
+if __name__ == "__main__":
+    main()
+```
+
+**Saída**
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/04$ python3 parse_show_cdp_neighbors.py 
+=== Dispositivos Vizinhos via CDP ===
+Dispositivo Local: R1
+
+=== Usando Parser Manual ===
+
+Interface: Gig1/0/1,  Port ID (outgoing port): Gi1/0/24
+  Vizinho: SW1.example.com
+  IP: 192.168.10.2
+  Plataforma: cisco WS-C2960X,  Capabilities: Switch IGMP
+  Porta Remota: N/A
+  Capacidades: 
+
+Interface: Gig0/0,  Port ID (outgoing port): Gi0/1
+  Vizinho: R2.example.com
+  IP: 192.168.20.2
+  Plataforma: cisco ISR4321,  Capabilities: Router
+  Porta Remota: N/A
+  Capacidades: 
+(genie310) alcancil@linux:~/automacoes/genie/04$ cat mock_data/show_cdp_neighbors.txt 
+Device ID: SW1.example.com
+Entry address(es):
+  IP address: 192.168.10.2
+Platform: cisco WS-C2960X,  Capabilities: Switch IGMP
+Interface: Gig1/0/1,  Port ID (outgoing port): Gi1/0/24
+Holdtime : 145 sec
+
+Device ID: R2.example.com
+Entry address(es):
+  IP address: 192.168.20.2
+Platform: cisco ISR4321,  Capabilities: Router
+Interface: Gig0/0,  Port ID (outgoing port): Gi0/1
+Holdtime : 156 sec
+(genie310) alcancil@linux:~/automacoes/genie/04$ 
 ```
 
 ---
