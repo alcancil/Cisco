@@ -7,6 +7,7 @@
   - [Parsing Automático - Genie](#parsing-automático---genie)
   - [Sumário](#sumário)
     - [Introdução ao Genie](#introdução-ao-genie)
+    - [⚠️ Aviso sobre Versões do Python](#️-aviso-sobre-versões-do-python)
     - [Comparação: Parsing Manual vs Genie](#comparação-parsing-manual-vs-genie)
     - [Documentação oficial](#documentação-oficial)
     - [O que é um Framework?](#o-que-é-um-framework)
@@ -50,6 +51,23 @@
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
     - [📚 Glossário](#-glossário)
+  - [A](#a)
+  - [C](#c)
+  - [D](#d)
+  - [F](#f)
+  - [G](#g)
+  - [H](#h)
+  - [I](#i)
+  - [J](#j)
+  - [M](#m)
+  - [N](#n)
+  - [O](#o)
+  - [P](#p)
+  - [R](#r)
+  - [S](#s)
+  - [T](#t)
+  - [V](#v)
+  - [Y](#y)
 
 
 ### Introdução ao Genie
@@ -61,6 +79,37 @@ O Cisco Genie é um framework de automação e parsing desenvolvido pela Cisco c
 - Modelos de dados consistentes para diferentes plataformas IOS-XE, NX-OS, IOS-XR
 - Integração com pyATS para testes automatizados
 - Economiza tempo em troubleshooting e validação de configurações
+
+### ⚠️ Aviso sobre Versões do Python
+
+Os exemplos deste guia foram testados em Python 3.10.17.  
+
+Cuidados com versões diferentes:
+
+**Python < 3.6:**
+
+  - Não suporta f-strings (use .format() ou concatenação).
+
+  - Incompatível com Genie/pyATS.
+
+**Python ≥ 3.12:**
+
+  - Pode gerar erros com parsers do Genie em mock files.
+
+  - Solução recomendada:
+    
+    ```bash
+    pyenv install 3.10.17  # Usando pyenv
+    pyenv global 3.10.17   # Define como versão padrão
+    ```
+
+**Regra de ouro:**
+
+✅ Sempre consulte a documentação oficial:
+
+    [Python: What's New](https://docs.python.org/3/whatsnew/)
+
+    [Genie: Requirements](https://developer.cisco.com/docs/genie-docs/#!requirements)
 
 ### Comparação: Parsing Manual vs Genie
 
@@ -545,14 +594,18 @@ Classes Python simples que emulam um dispositivo de rede (roteador, switch) para
 
 Exemplo Prático:
 
-```python
+**Atributos essenciais:**
 
+```python
 class DummyDevice:
     def __init__(self, os='iosxe', name='lab-router'):
         self.os = os  # Define o sistema operacional (crucial para o Genie)
         self.name = name  # Identificação opcional
+```
 
-# Uso:
+**Uso típico**
+
+```python
 device = DummyDevice(os='iosxe')
 parser = ShowVersion(device=device)  # O parser usa 'os' para selecionar a implementação correta
 ```
@@ -718,13 +771,13 @@ genie/
         └── show_ip_interface_brief.txt
 ```
 
-**Requerimentos: requirements.txt**
+**Requisitos: requirements.txt**
 
 ```txt
 pyats[full]  
 ```
 
-**OBS:** aqui estou instalado o pyats[FULL] pois ele já instala o Genie na versão mais completa e compatível com a versão do pyats. Dessa maneira não falta nenhuma dependência para o projeto e prevê futuros crescimentos no script como conexões a equipamentos via ssh. A "suite" completa tem 500 Mb, já o Genie ocuparia 200 Mb.
+**OBS:** aqui estou instalado o pyats[full] pois ele já instala o Genie na versão mais completa e compatível com a versão do pyats. Dessa maneira não falta nenhuma dependência para o projeto e prevê futuros crescimentos no script como conexões a equipamentos via ssh. A "suite" completa tem 500 Mb, já o Genie ocuparia 200 Mb.
 
 **show_ip_interface_brief.txt**
 
@@ -1226,7 +1279,7 @@ Bloco 5: Parsing e Tratamento de Erros
                                                                                           # - Sempre executado após mensagem de erro principal (linha 53)
 ```
 
-**OBSERVAÇÂO:**
+**OBSERVAÇÃO:**
 
 Como o Genie Escolhe Automaticamente o Parser?  
 
@@ -1299,7 +1352,91 @@ Continuar
 
 
 ### 📚 Glossário
-- **Mock File:** Arquivo com saída simulada de comandos CLI.
-- **Dummy Device:** Classe Python que emula um dispositivo de rede.
-- **Snapshot:** Captura do estado da rede em um momento específico.
+
+## A
+
+- **Abstração (no pyATS/Genie):** Mecanismo que permite ao Genie selecionar automaticamente o parser correto com base no sistema operacional do dispositivo (iosxe, nxos, iosxr, etc.).
+
+- **API (Application Programming Interface):** Conjunto de protocolos e ferramentas para integração entre sistemas. Usada no Genie para comunicação com equipamentos Cisco (ex: DNA Center, Meraki).
+
+## C
+
+- **CLI (Command-Line Interface):** Interface baseada em texto para interagir com dispositivos de rede. O Genie converte saídas CLI em dados estruturados.
+
+- **Compliance (Conformidade):** Processo de verificar se dispositivos seguem políticas de rede (ex: interfaces com descrição). O Genie auxilia na automação dessa validação.
+
+## D
+
+- **Dummy Device:** Classe Python que simula um dispositivo de rede (roteador/switch) para testes offline. Contém atributos como os e name para o Genie identificar o parser correto.
+
+## F
+
+- **Framework:** Plataforma que fornece estrutura e ferramentas para desenvolvimento (ex: pyATS/Genie para automação de redes).
+
+## G
+
+- **Genie (Cisco Genie):** Framework de automação e parsing da Cisco, parte do ecossistema pyATS. Transforma saídas de comandos Cisco (show, debug) em JSON estruturado.
+
+## H
+
+- **Herança (Programação Orientada a Objetos):** Reutilização de código entre classes. Exemplo: DummyISR herda atributos de DummyDevice.
+
+## I
+
+- **IOS-XE vs IOS Tradicional:**
+
+    - **IOS-XE:** Sistema operacional modular da Cisco (suporte completo ao Genie).
+
+    - **IOS Tradicional:** Versão legada (suporte limitado no Genie).
+
+## J
+
+- **JSON (JavaScript Object Notation):** Formato de dados estruturados usado pelo Genie para representar saídas de comandos (ex: show version).
+
+## M
+
+- **Mock File:** Arquivo de texto (.txt) que simula a saída de um comando CLI para testes locais sem equipamentos reais.
+
+## N
+
+- **NTC-Templates:** Biblioteca alternativa ao Genie para parsing multivendor (Juniper, Arista).
+
+## O
+
+- **Overhead:** Custo adicional de processamento (ex: latência ao usar Genie vs. parsing manual).
+
+## P
+
+- **Parser:** Componente do Genie que converte texto não estruturado (ex: show ip interface brief) em dados estruturados.
+
+- **pyATS:** Framework de teste e automação da Cisco, onde o Genie está inserido.
+
+- **Python Virtual Environment (venv):** Ambiente isolado para instalar dependências específicas (ex: Python 3.10 para compatibilidade com Genie).
+
+## R
+
+- **Regex (Regular Expression):** Padrões de texto para extrair dados. Usado em parsing manual, mas não necessário com Genie.
+
+## S
+
+- **SchemaEmptyParserError:** Exceção lançada pelo Genie quando a saída do comando está vazia ou é inválida.
+
+- **Snapshot:** Captura do estado da rede em um momento específico (ex: antes/depois de mudanças). O Genie compara snapshots para troubleshooting.
+
+- **Syslog:** Protocolo para envio de logs. Menos estruturado que o Genie, mas útil para eventos simples (ex: %LINK-UPDOWN).
+
+## T
+
+- **Testbed (testbed.yaml):** Arquivo YAML que descreve dispositivos de rede (IP, credenciais, OS) para automação com pyATS/Genie.
+
+- **Trigger (Genie):** Mecanismo para monitorar eventos (ex: interface down) e executar ações automáticas.
+
+## V
+
+- **Vendor-Agnostic:** Ferramentas compatíveis com múltiplos fabricantes (ex: Ansible). Genie é focado em Cisco, mas suporta alguns parsers multivendor.
+
+## Y
+
+- **YAML (YAML Ain’t Markup Language):** Formato para configurações human-readable (ex: testbed.yaml no pyATS).
+
 
