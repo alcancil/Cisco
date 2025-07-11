@@ -51,6 +51,7 @@
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
   - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
+- [Na pasta do seu projeto:](#na-pasta-do-seu-projeto)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1436,6 +1437,106 @@ VLAN Name                             Status    Ports
 20   VLAN0020                         active    Gi1/0/4, Gi1/0/5
 1002 fddi-default                     act/unsup
 1003 token-ring-default               act/unsup
+```
+
+**parse_vlan.py**
+
+```python
+from genie.libs.parser.iosxe.show_vlan import ShowVlanBrief
+
+# Dispositivo simulado
+class DummySwitch:
+    def __init__(self):
+        self.os = 'iosxe'
+
+device = DummySwitch()
+
+# Carrega o mock file
+with open('mock_data/show_vlan_brief.txt') as f:
+    raw_output = f.read()
+
+# Parsing com Genie
+try:
+    parsed = ShowVlanBrief(device).parse(output=raw_output)
+    
+    print("\n=== VLANs Ativas ===")
+    for vlan_id, details in parsed['vlans'].items():
+        if details['status'] == 'active':
+            print(f"VLAN {vlan_id}: {details['name']}")
+            print(f"Portas: {details['interfaces']}\n")
+
+except Exception as e:
+    print(f"Erro: {e}")
+```
+
+**Criar Ambiente Virtual com Python 3.10 via pyenv**
+
+1. Verifique as versões instaladas no pyenv:
+bash
+
+pyenv versions
+
+**Saída:**
+
+```Bash
+alcancil@linux:~/automacoes/genie/03$ pyenv versions
+  system
+  3.10.18
+* 3.12.3 (set by /home/alcancil/.pyenv/version)
+alcancil@linux:~/automacoes/genie/03$
+```
+
+2. Ative o Python 3.10 localmente (apenas para esta pasta):
+
+# Na pasta do seu projeto:
+
+```Bash
+pyenv local 3.10.17
+```
+Isso cria um arquivo .python-version na pasta, forçando o uso do Python 3.10 ali.
+
+**Saída**
+
+```Bash
+alcancil@linux:~/automacoes/genie/03$ pyenv versions
+  system
+* 3.10.18 (set by /home/alcancil/automacoes/genie/03/.python-version)
+  3.12.3
+alcancil@linux:~/automacoes/genie/03$ 
+```
+
+3. Agora crie o ambiente virtual:
+
+```bash
+alcancil@linux:~/automacoes/genie/03$ python -m venv genie310
+alcancil@linux:~/automacoes/genie/03$ ls -la
+total 24
+drwxrwxr-x 4 alcancil alcancil 4096 jul 11 15:06 .
+drwxrwxr-x 5 alcancil alcancil 4096 jul 11 14:55 ..
+drwxrwxr-x 5 alcancil alcancil 4096 jul 11 15:06 genie310
+drwxrwxr-x 2 alcancil alcancil 4096 jul 11 14:57 mock_data
+-rw-r--r-- 1 root     root      657 jul 11 14:57 parse_vlan.py
+-rw-rw-r-- 1 alcancil alcancil    8 jul 11 15:04 .python-version
+alcancil@linux:~/automacoes/genie/03$ 
+alcancil@linux:~/automacoes/genie/03$ python -m venv genie310
+```
+
+***Executar o script com o python3.18**
+
+```Bash
+(genie310) alcancil@linux:~/automacoes/genie/03$ python3 parse_vlan.py 
+
+=== VLANs Ativas ===
+VLAN 1: default
+Portas: ['Gi1/0/1', 'Gi1/0/2']
+
+VLAN 10: VLAN0010
+Portas: ['Gi1/0/3']
+
+VLAN 20: VLAN0020
+Portas: ['Gi1/0/4', 'Gi1/0/5']
+
+(genie310) alcancil@linux:~/automacoes/genie/03$ 
 ```
 
 ---
