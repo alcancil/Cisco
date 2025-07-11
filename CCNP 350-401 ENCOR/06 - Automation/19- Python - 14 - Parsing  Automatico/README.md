@@ -1441,31 +1441,31 @@ VLAN Name                             Status    Ports
 **parse_vlan.py**
 
 ```python
-from genie.libs.parser.iosxe.show_vlan import ShowVlanBrief
-
-# Dispositivo simulado
-class DummySwitch:
-    def __init__(self):
-        self.os = 'iosxe'
-
-device = DummySwitch()
-
-# Carrega o mock file
-with open('mock_data/show_vlan_brief.txt') as f:
-    raw_output = f.read()
-
-# Parsing com Genie
-try:
-    parsed = ShowVlanBrief(device).parse(output=raw_output)
-    
-    print("\n=== VLANs Ativas ===")
-    for vlan_id, details in parsed['vlans'].items():
-        if details['status'] == 'active':
-            print(f"VLAN {vlan_id}: {details['name']}")
-            print(f"Portas: {details['interfaces']}\n")
-
-except Exception as e:
-    print(f"Erro: {e}")
+[01] from genie.libs.parser.iosxe.show_vlan import ShowVlanBrief
+[02]
+[03] # Dispositivo simulado
+[04] class DummySwitch:
+[05]     def __init__(self):
+[06]         self.os = 'iosxe'
+[07] 
+[08] device = DummySwitch()
+[09] 
+[10] # Carrega o mock file
+[11] with open('mock_data/show_vlan_brief.txt') as f:
+[12]     raw_output = f.read()
+[13] 
+[14] # Parsing com Genie
+[15] try:
+[16]     parsed = ShowVlanBrief(device).parse(output=raw_output)
+[17]     
+[18]     print("\n=== VLANs Ativas ===")
+[19]     for vlan_id, details in parsed['vlans'].items():
+[20]         if details['status'] == 'active':
+[21]             print(f"VLAN {vlan_id}: {details['name']}")
+[22]             print(f"Portas: {details['interfaces']}\n")
+[23] 
+[24] except Exception as e:
+[25]     print(f"Erro: {e}")
 ```
 
 **Criar Ambiente Virtual com Python 3.10 via pyenv**
@@ -1536,6 +1536,53 @@ VLAN 20: VLAN0020
 Portas: ['Gi1/0/4', 'Gi1/0/5']
 
 (genie310) alcancil@linux:~/automacoes/genie/03$ 
+```
+
+**Explicação**
+
+```python
+Bloco 1: Importação do Parser
+
+[01] from genie.libs.parser.iosxe.show_vlan import ShowVlanBrief  # Importa o parser do comando 'show vlan brief' para IOS-XE
+[02]  # Linha em branco para organização
+
+Bloco 2: Dispositivo Simulado (Dummy Device)
+
+[03] # Dispositivo simulado  - Indica o início da definição do dispositivo fake
+[04] class DummySwitch:                                           # Classe que emula um switch Cisco
+[05]     def __init__(self):                                      # Método construtor
+[06]         self.os = 'iosxe'                                    # Atributo obrigatório: define o OS como IOS-XE
+[07]  # Linha em branco
+[08] device = DummySwitch()                                       # Instancia o dispositivo simulado
+[09]  # Linha em branco
+
+Bloco 3: Carregamento do Mock File
+
+[10] # Carrega o mock file - Indica a leitura do arquivo de simulação
+[11] with open('mock_data/show_vlan_brief.txt') as f:            # Abre o arquivo em modo leitura
+[12]     raw_output = f.read()                                   # Lê todo o conteúdo do arquivo
+[13]  # Linha em branco
+
+Bloco 4: Parsing com Genie
+
+[14] # Parsing com Genie - Seção principal do parsing
+[15] try:                                                         # Inicia bloco para tratamento de erros
+[16]     parsed = ShowVlanBrief(device).parse(output=raw_output)  # Executa o parsing da saída CLI
+[17]      # Linha em branco
+
+Bloco 5: Processamento das VLANs
+
+[18]     print("\n=== VLANs Ativas ===")                           # Cabeçalho para organização da saída
+[19]     for vlan_id, details in parsed['vlans'].items():          # Itera sobre cada VLAN no resultado
+[20]         if details['status'] == 'active':                     # Filtra apenas VLANs ativas
+[21]             print(f"VLAN {vlan_id}: {details['name']}")       # Exibe ID e nome da VLAN
+[22]             print(f"Portas: {details['interfaces']}\n")       # Exibe portas associadas
+[23]  # Linha em branco
+
+Bloco 6: Tratamento de Erros
+
+[24] except Exception as e:                                        # Captura qualquer exceção
+[25]     print(f"Erro: {e}")                                       # Exibe a mensagem de erro
 ```
 
 ---
