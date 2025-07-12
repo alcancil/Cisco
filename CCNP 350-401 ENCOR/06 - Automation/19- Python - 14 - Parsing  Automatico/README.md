@@ -47,7 +47,7 @@
   - [Exemplos](#exemplos)
     - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
     - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
-    - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
+      - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
     - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
@@ -975,7 +975,7 @@ Após diversos testes, confirmei que a versão mais compatível para esse cenár
 
 A seguir, explico como instalar essa versão manualmente, mantendo as duas versões do Python lado a lado no Linux Mint, sem afetar o sistema:
 
-### ✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)
+#### ✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)
 
 **Fonte oficial utilizada:**
 [https://www.python.org/downloads/release/python-31017](https://www.python.org/downloads/release/python-31017)
