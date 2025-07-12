@@ -43,6 +43,7 @@
     - [O que é herança?](#o-que-é-herança)
     - [O que é def dentro de uma classe?](#o-que-é-def-dentro-de-uma-classe)
     - [Exemplo com mock files e Dummy Devices](#exemplo-com-mock-files-e-dummy-devices)
+    - [🔍 Como escolher manualmente um parser no Genie](#-como-escolher-manualmente-um-parser-no-genie)
     - [Exemplos](#exemplos)
   - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
@@ -756,6 +757,56 @@ parsed = ShowVersion(device).parse(output=raw_output)
 
 print(f"Versão: {parsed['version']['version_short']}")
 ```
+
+### 🔍 Como escolher manualmente um parser no Genie
+
+Ao usar o Genie de forma offline (sem conexão com dispositivos), é necessário selecionar o parser manualmente. Siga os passos:  
+
+**✅ 1. Identifique o sistema operacional (OS)**
+
+Verifique o OS do equipamento (ex: iosxe, ios, nxos, asa) — isso define o módulo correto de parser.  
+
+**🌐 2. Acesse o repositório oficial**
+
+👉 https://github.com/CiscoTestAutomation/genieparser
+
+Nele, você encontra:  
+
+  - O comando suportado
+
+  - O OS compatível
+
+  - O nome da classe do parser
+
+  - O caminho de importação
+
+**📦 3. Faça a importação no seu script**
+
+Exemplo para show cdp neighbors detail em IOS-XE:
+
+```python
+from genie.libs.parser.iosxe.show_cdp import ShowCdpNeighborsDetail
+```
+
+Use depois com:
+
+```python
+parser = ShowCdpNeighborsDetail(device=None)
+parsed = parser.parse(output=saida_do_comando)
+```
+
+**🤖 Observação**
+
+Se você estiver usando o Genie com um dispositivo real via testbed, o próprio .parse() escolhe automaticamente o parser com base no OS e comando.  
+
+**✔️ Resumo rápido**
+
+| Etapa | Ação                                                                    |
+|-------|-------------------------------------------------------------------------|
+| 1.    | OS	Identifique o sistema operacional (ex: iosxe)                       | 
+| 2.    | Site	Consulte o parser no GitHub oficial                               |
+| 3.    | Classe	Importe e instancie manualmente o parser                        |
+| 4.    | Real	Em dispositivos reais, o Genie seleciona o parser automaticamente |
 
 ### Exemplos
 
