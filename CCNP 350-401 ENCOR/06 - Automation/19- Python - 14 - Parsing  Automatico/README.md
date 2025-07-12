@@ -48,7 +48,7 @@
     - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
     - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
       - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
-    - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
+        - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
     - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
@@ -1210,7 +1210,7 @@ source genie310/bin/activate
 
 **🔍 Exemplo Prático**
 
-### 1. Verifica versões disponíveis
+##### 1. Verifica versões disponíveis
 
 ```bash
 alcancil@linux:~$ which python3.10 python3.12
