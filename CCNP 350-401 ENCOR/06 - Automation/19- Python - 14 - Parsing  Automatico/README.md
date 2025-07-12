@@ -46,7 +46,7 @@
     - [🔍 Como escolher manualmente um parser no Genie](#-como-escolher-manualmente-um-parser-no-genie)
   - [Exemplos](#exemplos)
     - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
-  - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
+    - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
     - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
     - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
@@ -961,7 +961,7 @@ GigabitEthernet1: administratively down
 >
 > Essa adaptação será demonstrada nos próximos exemplos.
 
-## Exemplo 02: Parsing de show version com Genie
+### Exemplo 02: Parsing de show version com Genie
 
 **Objetivo:**
 
