@@ -53,6 +53,7 @@
         - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
     - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
     - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
+    - [Exemplo 05: show ip ospf neighbor](#exemplo-05-show-ip-ospf-neighbor)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1815,6 +1816,192 @@ Bloco 9 — Ponto de entrada
 [24] if __name__ == '__main__':                                          # Verifica se o script está sendo executado diretamente (e não importado como módulo)
 [25]     main()                                                          # Chama a função principal
 ```
+
+### Exemplo 05: show ip ospf neighbor
+
+**📁 Estrutura do Projeto**
+
+```bash
+ospf_neighbor_example/
+├── mock_data/
+│   └── show_ip_ospf_neighbor.txt    # Saída simulada do comando
+├── logs/
+│   └── ospf_parser.log              # Arquivo de logs (será criado automaticamente)
+└── parse_ospf_neighbor.py           # Script principal
+```
+
+**show_ip_ospf_neighbor.txt**
+
+```bash
+# =============================================
+# MOCK FILE SIMULADO - DADOS PARA TESTE COM GENIE
+# =============================================
+#
+# ATENÇÃO: Este é um arquivo de simulação (mock).
+#          NÃO foi gerado por um dispositivo real.
+#
+# Comando simulado: show ip ospf neighbor
+# Sistema Operacional: Cisco IOS-XE 17.03.04
+# Modelo do Dispositivo: Cisco ISR 4321
+# Última atualização: 2024-07-15
+# =============================================
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+192.168.1.2     1     FULL/DR         00:00:37    10.0.0.2        GigabitEthernet0/0
+192.168.1.3     1     FULL/BDR        00:00:35    10.0.0.3        GigabitEthernet0/1
+192.168.1.4     0     DOWN            00:01:55    10.0.0.4        GigabitEthernet0/2
+
+# =============================================
+# DETALHES DOS VIZINHOS OSPF SIMULADOS:
+# ---------------------------------------------
+# 1. 192.168.1.2:
+#    - Dispositivo: Cisco Catalyst 9300 (IOS-XE 16.12.4)
+#    - Prioridade: 1 (Designated Router)
+# 2. 192.168.1.3:
+#    - Dispositivo: Cisco ASR 1001 (IOS-XE 17.06.02)
+#    - Prioridade: 1 (Backup DR)
+# 3. 192.168.1.4:
+#    - Dispositivo: Cisco 3850 (IOS 15.2(4)E5)
+#    - Estado: DOWN (Link fisicamente inativo)
+# =============================================
+```
+
+**parse_ospf_neighbors.py**
+
+```python
+import logging
+from genie.libs.parser.iosxe.show_ospf import ShowIpOspfNeighbor
+import json
+import os
+
+# --- Configuração do Logging ---
+os.makedirs('logs', exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/ospf_parser.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# --- Dispositivo Simulado ---
+class DummyDevice:
+    def __init__(self, os='iosxe'):
+        self.os = os
+
+# --- Parsing ---
+try:
+    logger.info("Iniciando parsing de OSPF neighbors...")
+    
+    # 1. Carrega o mock file
+    with open('mock_data/show_ip_ospf_neighbor.txt') as f:
+        raw_output = f.read()
+    logger.debug(f"Conteúdo do mock file:\n{raw_output}")  # Debug útil
+
+    # 2. Parsing com Genie
+    device = DummyDevice()
+    parsed = ShowIpOspfNeighbor(device).parse(output=raw_output)
+    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")  # Debug da estrutura
+
+    # 3. Validação da estrutura
+    if not isinstance(parsed, dict) or 'interfaces' not in parsed:
+        raise ValueError("Estrutura parseada inválida: falta chave 'interfaces'")
+
+    # 4. Processa vizinhos
+    print("\n=== Vizinhos OSPF ===")
+    for interface, data in parsed['interfaces'].items():
+        print(f"\nInterface: {interface}")
+        
+        # Verifica se 'neighbors' existe e é uma lista
+        neighbors = data.get('neighbors', [])
+        if isinstance(neighbors, str):  # Caso o Genie retorne uma string
+            logger.warning(f"Vizinho em formato inesperado (string): {neighbors}")
+            continue
+            
+        for neighbor in neighbors if isinstance(neighbors, list) else []:
+            # Verifica se neighbor é um dicionário
+            if not isinstance(neighbor, dict):
+                logger.warning(f"Vizinho ignorado (formato inválido): {neighbor}")
+                continue
+                
+            state = neighbor.get('state', 'UNKNOWN')
+            status = "✅ UP" if "FULL" in state else "❌ DOWN"
+            print(f"  - Neighbor: {neighbor.get('neighbor_id', 'N/A')}")
+            print(f"    State: {state} {status}")
+            print(f"    Priority: {neighbor.get('priority', 'N/A')}")
+
+    # 5. Salva em JSON
+    with open('parsed_ospf_neighbor.json', 'w') as f:
+        json.dump(parsed, f, indent=2)
+    logger.info("Resultados salvos em 'parsed_ospf_neighbor.json'")
+
+except FileNotFoundError:
+    logger.error("Arquivo mock não encontrado!", exc_info=True)
+except Exception as e:
+    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+```
+
+**saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/05$ python3 parse_ospf_neighbor.py 
+2025-07-12 20:37:50,192 - INFO - Iniciando parsing de OSPF neighbors...
+2025-07-12 20:37:50,194 - INFO - Dados parseados:
+{
+  "interfaces": {
+    "GigabitEthernet0/0": {
+      "neighbors": {
+        "192.168.1.2": {
+          "priority": 1,
+          "state": "FULL/DR",
+          "dead_time": "00:00:37",
+          "address": "10.0.0.2"
+        }
+      }
+    },
+    "GigabitEthernet0/1": {
+      "neighbors": {
+        "192.168.1.3": {
+          "priority": 1,
+          "state": "FULL/BDR",
+          "dead_time": "00:00:35",
+          "address": "10.0.0.3"
+        }
+      }
+    },
+    "GigabitEthernet0/2": {
+      "neighbors": {
+        "192.168.1.4": {
+          "priority": 0,
+          "state": "DOWN",
+          "dead_time": "00:01:55",
+          "address": "10.0.0.4"
+        }
+      }
+    }
+  }
+}
+
+=== Vizinhos OSPF ===
+
+Interface: GigabitEthernet0/0
+
+Interface: GigabitEthernet0/1
+
+Interface: GigabitEthernet0/2
+2025-07-12 20:37:50,194 - INFO - Resultados salvos em 'parsed_ospf_neighbor.json'
+(genie310) alcancil@linux:~/automacoes/genie/05$ 
+```
+
+**Explicação**
 
 ---
 Continuar
