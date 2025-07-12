@@ -44,15 +44,15 @@
     - [O que é def dentro de uma classe?](#o-que-é-def-dentro-de-uma-classe)
     - [Exemplo com mock files e Dummy Devices](#exemplo-com-mock-files-e-dummy-devices)
     - [🔍 Como escolher manualmente um parser no Genie](#-como-escolher-manualmente-um-parser-no-genie)
-    - [Exemplos](#exemplos)
-  - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
+  - [Exemplos](#exemplos)
+    - [Exemplo 01: Parsing de show ip interface brief com Genie](#exemplo-01-parsing-de-show-ip-interface-brief-com-genie)
   - [Exemplo 02: Parsing de show version com Genie](#exemplo-02-parsing-de-show-version-com-genie)
     - [✅ Instalação manual do Python 3.10.17 (sem sobrescrever o Python do sistema)](#-instalação-manual-do-python-31017-sem-sobrescrever-o-python-do-sistema)
     - [1. Verifica versões disponíveis](#1-verifica-versões-disponíveis)
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
-  - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
-  - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
+    - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
+    - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -808,9 +808,9 @@ Se você estiver usando o Genie com um dispositivo real via testbed, o próprio 
 | 3.    | Classe	Importe e instancie manualmente o parser                        |
 | 4.    | Real	Em dispositivos reais, o Genie seleciona o parser automaticamente |
 
-### Exemplos
+## Exemplos
 
-## Exemplo 01: Parsing de show ip interface brief com Genie
+### Exemplo 01: Parsing de show ip interface brief com Genie
 
 **Objetivo:** Extrair status e endereços IP de interfaces de forma estruturada.  
 
@@ -1398,7 +1398,7 @@ O Genie:
     
 - **Manutenção Zero:** Se a Cisco atualizar um parser, seu código herda as melhorias automaticamente.
 
-## Exemplo 03: Parsing de show vlan brief com Genie + pyenv
+### Exemplo 03: Parsing de show vlan brief com Genie + pyenv
 
 **Objetivo**
 
@@ -1637,7 +1637,7 @@ Bloco 6: Tratamento de Erros
 [25]     print(f"Erro: {e}")                                       # Exibe a mensagem de erro
 ```
 
-## Exemplo 04: show cdp neighbors detail 
+### Exemplo 04: show cdp neighbors detail 
 
 **Objetivo**
 
