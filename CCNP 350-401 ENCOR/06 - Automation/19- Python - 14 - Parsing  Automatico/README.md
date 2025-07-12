@@ -51,7 +51,7 @@
     - [2. Cria e ativa o ambiente](#2-cria-e-ativa-o-ambiente)
     - [3. Confirma a versão no ambiente](#3-confirma-a-versão-no-ambiente)
   - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
-  - [Exemplo 04: show cdp neighbors](#exemplo-04-show-cdp-neighbors)
+  - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -1586,7 +1586,7 @@ Bloco 6: Tratamento de Erros
 [25]     print(f"Erro: {e}")                                       # Exibe a mensagem de erro
 ```
 
-## Exemplo 04: show cdp neighbors  
+## Exemplo 04: show cdp neighbors detail 
 
 **Objetivo**
 
@@ -1605,11 +1605,11 @@ Extrair informações estruturadas sobre dispositivos vizinhos conectados via CD
 ```bash
 04/  
 ├── mock_data/  
-│   └── show_cdp_neighbors.txt    # Arquivo com saída simulada do comando  
-└── parse_cdp_neighbors.py        # Script principal de parsing  
+│   └── show_cdp_neighbors_detail.txt    # Arquivo com saída simulada do comando  
+└── parse_cdp_neighbors_detail.py        # Script principal de parsing  
 ```
 
-**show_cdp_neighboors.txt**
+**show_cdp_neighboors_detail.txt**
 
 ```bash
 Device ID: SW1.example.com
@@ -1630,120 +1630,139 @@ Holdtime : 156 sec
 **parse_show_cdp_neighbors.py**
 
 ```Python
-from genie.libs.parser.iosxe.show_cdp import ShowCdpNeighbors
-
-class DummyDevice:
-    def __init__(self):
-        self.os = 'iosxe'
-        self.hostname = 'R1'
-
-def manual_parse(output):
-    """Parser manual para quando o Genie falhar"""
-    print("\n=== Usando Parser Manual ===")
-    devices = []
-    current = {}
-    
-    for line in output.splitlines():
-        if line.startswith('Device ID:'):
-            if current:
-                devices.append(current)
-            current = {'device_id': line.split('Device ID:')[1].strip()}
-        elif 'IP address:' in line:
-            current['ip'] = line.split('IP address:')[1].strip()
-        elif 'Platform:' in line:
-            parts = line.split('Platform:')[1].split(', Capabilities:')
-            current['platform'] = parts[0].strip()
-            if len(parts) > 1:
-                current['capabilities'] = parts[1].strip().split()
-        elif 'Interface:' in line:
-            parts = line.split('Interface:')[1].split(', Port ID (outgoing port):')
-            current['local_intf'] = parts[0].strip()
-            if len(parts) > 1:
-                current['remote_port'] = parts[1].strip()
-    
-    if current:
-        devices.append(current)
-    
-    for dev in devices:
-        print(f"\nInterface: {dev.get('local_intf', 'N/A')}")
-        print(f"  Vizinho: {dev.get('device_id', 'N/A')}")
-        print(f"  IP: {dev.get('ip', 'N/A')}")
-        print(f"  Plataforma: {dev.get('platform', 'N/A')}")
-        print(f"  Porta Remota: {dev.get('remote_port', 'N/A')}")
-        print(f"  Capacidades: {', '.join(dev.get('capabilities', []))}")
-
-def main():
-    device = DummyDevice()
-    
-    try:
-        with open('mock_data/show_cdp_neighbors.txt') as f:
-            cdp_output = f.read()
-
-        print("=== Dispositivos Vizinhos via CDP ===")
-        print(f"Dispositivo Local: {device.hostname}")
-        
-        # Tenta com Genie primeiro
-        try:
-            parsed = ShowCdpNeighbors(device).parse(output=cdp_output)
-            if parsed and 'cdp' in parsed and 'index' in parsed['cdp']:
-                print("\n=== Usando Parser Genie ===")
-                for idx, neighbor in parsed['cdp']['index'].items():
-                    print(f"\nInterface: {neighbor['local_interface']}")
-                    print(f"  Vizinho: {neighbor['device_id']}")
-                    print(f"  Porta Remota: {neighbor['port_id']}")
-                return
-        except Exception as e:
-            pass
-        
-        # Fallback para parser manual
-        manual_parse(cdp_output)
-    
-    except FileNotFoundError:
-        print("Erro: Arquivo mock não encontrado")
-    except Exception as e:
-        print(f"Erro inesperado: {str(e)}")
-
-if __name__ == "__main__":
-    main()
+[01] import json
+[02] from genie.libs.parser.iosxe.show_cdp import ShowCdpNeighborsDetail
+[03]
+[04] def main():
+[05]     # Lê o mock file com a saída simulada do comando
+[06]     with open('show_cdp_neighbors_detail.txt') as f:
+[07]         output = f.read()
+[08] 
+[09]     # Instancia o parser
+[10]     parser = ShowCdpNeighborsDetail(device=None)
+[11] 
+[12]     # Faz o parsing manual da saída
+[13]     parsed_output = parser.parse(output=output)
+[14]
+[15]     # Exibe no terminal de forma legível
+[16]     print(json.dumps(parsed_output, indent=2))
+[17] 
+[18]     # Salva o resultado em um arquivo .json
+[19]     with open('parsed_cdp_neighbors.json', 'w') as json_file:
+[20]         json.dump(parsed_output, json_file, indent=2)
+[21] 
+[22]     print("\n✅ Resultado salvo em 'parsed_cdp_neighbors.json'")
+[23]
+[24] if __name__ == '__main__':
+[25]     main()
 ```
 
 **Saída**
 
 ```bash
-(genie310) alcancil@linux:~/automacoes/genie/04$ python3 parse_show_cdp_neighbors.py 
-=== Dispositivos Vizinhos via CDP ===
-Dispositivo Local: R1
-
-=== Usando Parser Manual ===
-
-Interface: Gig1/0/1,  Port ID (outgoing port): Gi1/0/24
-  Vizinho: SW1.example.com
-  IP: 192.168.10.2
-  Plataforma: cisco WS-C2960X,  Capabilities: Switch IGMP
-  Porta Remota: N/A
-  Capacidades: 
-
-Interface: Gig0/0,  Port ID (outgoing port): Gi0/1
-  Vizinho: R2.example.com
-  IP: 192.168.20.2
-  Plataforma: cisco ISR4321,  Capabilities: Router
-  Porta Remota: N/A
-  Capacidades: 
-(genie310) alcancil@linux:~/automacoes/genie/04$ cat mock_data/show_cdp_neighbors.txt 
-Device ID: SW1.example.com
-Entry address(es):
-  IP address: 192.168.10.2
-Platform: cisco WS-C2960X,  Capabilities: Switch IGMP
-Interface: Gig1/0/1,  Port ID (outgoing port): Gi1/0/24
-Holdtime : 145 sec
-
-Device ID: R2.example.com
-Entry address(es):
-  IP address: 192.168.20.2
-Platform: cisco ISR4321,  Capabilities: Router
-Interface: Gig0/0,  Port ID (outgoing port): Gi0/1
-Holdtime : 156 sec
+alcancil@linux:~/automacoes/genie/04$ python3 -m venv genie310
+alcancil@linux:~/automacoes/genie/04$ pip install pyats[full]
+Collecting pyats[full]
+  Using cached pyats-25.6-cp310-cp310-manylinux2014_x86_64.whl (4.8 MB)
+Collecting pyats.utils<25.7.0,>=25.6.0
+  Using cached pyats.utils-25.6-cp310-cp310-manylinux2014_x86_64.whl (6.2 MB)
+Collecting pyats.connections<25.7.0,>=25.6.0
+  Downloading pyats.connections-25.6-cp310-cp310-manylinux2014_x86_64.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 15.3 MB/s eta 0:00:00
+Collecting packaging>=20.0
+  Using cached packaging-25.0-py3-none-any.whl (66 kB)
+...
+nicon.plugins-25.6 urllib3-2.5.0 wcwidth-0.2.13 websocket-client-1.8.0 wheel-0.45.1 wsproto-1.2.0 xlrd-1.2.0 xlsxwriter-3.2.5 xlwt-1.3.0 xmltodict-0.12.0 yamllint-1.37.1 yang.connector-25.6 yarl-1.20.1
+alcancil@linux:~/automacoes/genie/04$ source genie310/bin/activate
 (genie310) alcancil@linux:~/automacoes/genie/04$ 
+(genie310) alcancil@linux:~/automacoes/genie/04$ python3 parse_show_cdp_neighbors_detail.py 
+{
+  "total_entries_displayed": 2,
+  "index": {
+    "1": {
+      "device_id": "SW1.example.com",
+      "duplex_mode": "",
+      "vtp_management_domain": "",
+      "native_vlan": "",
+      "management_addresses": {},
+      "entry_addresses": {
+        "192.168.10.2": {}
+      },
+      "capabilities": "Switch IGMP",
+      "platform": "cisco WS-C2960X",
+      "port_id": "Gi1/0/24",
+      "local_interface": "Gig1/0/1",
+      "hold_time": 145
+    },
+    "2": {
+      "device_id": "R2.example.com",
+      "duplex_mode": "",
+      "vtp_management_domain": "",
+      "native_vlan": "",
+      "management_addresses": {},
+      "entry_addresses": {
+        "192.168.20.2": {}
+      },
+      "capabilities": "Router",
+      "platform": "cisco ISR4321",
+      "port_id": "Gi0/1",
+      "local_interface": "Gig0/0",
+      "hold_time": 156
+    }
+  }
+}
+
+✅ Resultado salvo em 'parsed_cdp_neighbors.json'
+
+```
+
+**Explicação**
+
+```python
+ Bloco 1 — Importações
+
+[01] import json                                                          # Importa a biblioteca JSON para exibir e salvar os dados de forma legível
+[02] from genie.libs.parser.iosxe.show_cdp import ShowCdpNeighborsDetail  # Importa o parser específico para o comando "show cdp neighbors detail"
+
+Bloco 2 — Função principal
+
+[04] def main():                                                          # Define a função principal do script
+
+Bloco 3 — Leitura do mock file
+
+[05]     # Lê o mock file com a saída simulada do comando
+[06]     with open('show_cdp_neighbors_detail.txt') as f:                 # Abre o arquivo com a saída simulada do comando CDP detail
+[07]         output = f.read()                                            # Lê todo o conteúdo do arquivo como string
+
+Bloco 4 — Parser do Genie
+
+[09]     # Instancia o parser
+[10]     parser = ShowCdpNeighborsDetail(device=None)                     # Cria o objeto do parser (sem conexão com dispositivo real)
+
+Bloco 5 — Parsing manual
+
+[12]     # Faz o parsing manual da saída
+[13]     parsed_output = parser.parse(output=output)                      # Chama o método parse() passando a saída do comando para processar os dados
+
+Bloco 6 — Exibir saída formatada na tela
+
+[15]     # Exibe no terminal de forma legível
+[16]     print(json.dumps(parsed_output, indent=2))                       # Converte o dicionário em string JSON formatada com indentação de 2 espaços e imprime
+
+Bloco 7 — Gravar saída em arquivo .json
+
+[18]     # Salva o resultado em um arquivo .json
+[19]     with open('parsed_cdp_neighbors.json', 'w') as json_file:        # Abre (ou cria) o arquivo JSON para escrita
+[20]         json.dump(parsed_output, json_file, indent=2)                # Salva o dicionário como JSON formatado no arquivo
+
+Bloco 8 — Confirmação
+
+[22]     print("\n✅ Resultado salvo em 'parsed_cdp_neighbors.json'")    # Informa o usuário que o arquivo foi salvo com sucesso
+
+Bloco 9 — Ponto de entrada
+
+[24] if __name__ == '__main__':                                          # Verifica se o script está sendo executado diretamente (e não importado como módulo)
+[25]     main()                                                          # Chama a função principal
 ```
 
 ---
