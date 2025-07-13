@@ -55,6 +55,7 @@
     - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
     - [Exemplo 05: show ip ospf neighbor](#exemplo-05-show-ip-ospf-neighbor)
     - [Exemplo 06: show ip eigrp neighbors](#exemplo-06-show-ip-eigrp-neighbors)
+    - [Exemplo 07: show bgp summary](#exemplo-07-show-bgp-summary)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -2380,6 +2381,297 @@ Bloco 6: Salvamento e Tratamento de Erros
 [78] except Exception as e:                                                                        # Qualquer outro erro
 [79]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                                   # Log de erro genérico
 ```
+
+### Exemplo 07: show bgp summary
+
+**📁 Estrtura do Projeto**
+
+```bash
+06_bgp_monitoring/
+├── mock_data/
+│   └── show_bgp_summary.txt          # Arquivo com saída simulada do comando
+├── logs/
+│   └── bgp_summary_parser.log        # Arquivo de logs (gerado automaticamente)
+├── parsed_bgp_summary.json           # Resultado do parsing (gerado automaticamente)
+└── parse_bgp_summary.py              # Script principal
+```
+
+**mock_data/show_bgp_summary.txt**
+
+```bash
+# =============================================
+# Mock Data: show bgp all summary
+# Sistema Operacional: Cisco IOS-XE 17.06.01
+# Comando gerador: 'show bgp all summary'
+# Formato compatível com Genie Parser
+# Última atualização: 2025-07-14
+# =============================================
+
+BGP router identifier 10.0.0.1, local AS number 65001
+BGP table version is 42, main routing table version 42
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.0.2       4         65002     150     155       42    0    0 01:30:00       10
+10.0.0.3       4         65003     200     210       42    0    0 02:15:00       20
+
+# =============================================
+# Legenda:
+# - V: Versão BGP (4 para IPv4)
+# - AS: Número do Autonomous System
+# - MsgRcvd/MsgSent: Mensagens BGP recebidas/enviadas
+# - TblVer: Versão da tabela BGP
+# - InQ/OutQ: Tamanho das filas de entrada/saída
+# - Up/Down: Tempo de estabelecimento da sessão
+# - State/PfxRcd: Estado da sessão e prefixos recebidos
+#   (Número indica Established, 'Active' indica tentativas)
+# =============================================
+```
+
+**parse_show_bgp_summary.py**
+
+```python
+# ==================================================================
+# Script: parse_show_bgp_summary.py 
+# Descrição: Parsing de 'show bgp summary' com tratamento robusto
+# ==================================================================
+
+import logging
+from genie.libs.parser.iosxe.show_bgp import ShowBgpSummary
+import json
+import os
+from pyats.datastructures import AttrDict
+
+# --- Configuração do Logging ---
+os.makedirs('logs', exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/bgp_summary_parser.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# --- Dispositivo Simulado ---
+class DummyDevice:
+    def __init__(self, os='iosxe'):
+        self.os = os
+        self.custom = {'abstraction': {'order': ['os']}}
+
+# --- Função de Parsing Robustecida ---
+def parse_bgp_output(raw_output):
+    try:
+        device = DummyDevice()
+        
+        # Tenta primeiro com o parser do Genie
+        try:
+            parsed = ShowBgpSummary(device).parse(output=raw_output)
+            logger.info("Parseado com sucesso usando ShowBgpSummary")
+            return parsed
+            
+        except Exception as genie_error:
+            logger.warning(f"Parser Genie falhou: {str(genie_error)}")
+            logger.info("Tentando parser alternativo...")
+            return custom_bgp_parser(raw_output)
+            
+    except Exception as e:
+        logger.error(f"Falha crítica no parsing: {str(e)}", exc_info=True)
+        raise
+
+def custom_bgp_parser(raw_output):
+    """Parser alternativo personalizado"""
+    parsed = {
+        'bgp_id': None,
+        'vrf': {
+            'default': {
+                'neighbor': {}
+            }
+        }
+    }
+    
+    for line in raw_output.splitlines():
+        line = line.strip()
+        
+        # Extrai BGP Router ID
+        if 'BGP router identifier' in line:
+            parsed['bgp_id'] = line.split()[3].rstrip(',')
+            continue
+            
+        # Extrai vizinhos BGP
+        parts = line.split()
+        if len(parts) >= 10 and parts[0].count('.') == 3:
+            neighbor_ip = parts[0]
+            neighbor_data = {
+                'address_family': {
+                    '': {
+                        'version': int(parts[1]),
+                        'as': int(parts[2]),
+                        'msg_rcvd': int(parts[3]),
+                        'msg_sent': int(parts[4]),
+                        'tbl_ver': int(parts[5]),
+                        'input_queue': int(parts[6]),
+                        'output_queue': int(parts[7]),
+                        'up_down': parts[8],
+                        'state_pfxrcd': parts[9],
+                        'bgp_table_version': 42,  # Valor padrão
+                        'routing_table_version': 42
+                    }
+                }
+            }
+            parsed['vrf']['default']['neighbor'][neighbor_ip] = neighbor_data
+    
+    return parsed
+
+# --- Processamento Principal ---
+try:
+    logger.info("Iniciando parsing de BGP summary...")
+    
+    # 1. Carrega o mock file
+    with open('mock_data/show_bgp_summary.txt') as f:
+        raw_output = f.read()
+    logger.debug(f"Conteúdo do mock file:\n{raw_output}")
+
+    # 2. Parsing robusto
+    parsed = parse_bgp_output(raw_output)
+    
+    # 3. Garante estrutura mínima válida
+    if 'vrf' not in parsed:
+        parsed['vrf'] = {'default': {'neighbor': {}}}
+    elif 'default' not in parsed['vrf']:
+        parsed['vrf']['default'] = {'neighbor': {}}
+
+    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
+
+    # 4. Processa peers BGP (versão corrigida)
+    print("\n=== Resumo BGP ===")
+    print(f"BGP Router ID: {parsed.get('bgp_id', 'N/A')}\n")
+    
+    for vrf, vrf_data in parsed.get('vrf', {}).items():
+        print(f"VRF: {vrf}")
+        print("-" * 40)
+        
+        for neighbor, data in vrf_data.get('neighbor', {}).items():
+            # Acessa os dados na estrutura correta
+            af_data = data.get('address_family', {}).get('', {})
+            
+            # Determina estado
+            state_pfx = af_data.get('state_pfxrcd', '')
+            if isinstance(state_pfx, str) and state_pfx.isdigit():
+                state = "✅ ESTABLISHED"
+                prefixes = int(state_pfx)
+            elif state_pfx == 'Established':
+                state = "✅ ESTABLISHED"
+                prefixes = 0
+            else:
+                state = f"❌ {state_pfx}"
+                prefixes = 0
+                
+            # Obtém demais campos
+            as_number = af_data.get('as', 'N/A')
+            uptime = af_data.get('up_down', 'N/A')
+            
+            print(f"Peer: {neighbor}")
+            print(f"  AS: {as_number}")
+            print(f"  Estado: {state}")
+            print(f"  Uptime: {uptime}")
+            print(f"  Prefixos recebidos: {prefixes}")
+            print("-" * 30)
+
+    # 5. Salva em JSON
+    with open('parsed_bgp_summary.json', 'w') as f:
+        json.dump(parsed, f, indent=2)
+    logger.info("Resultados salvos em 'parsed_bgp_summary.json'")
+
+except FileNotFoundError:
+    logger.error("Arquivo mock não encontrado!", exc_info=True)
+except Exception as e:
+    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/07$ python3 parse_show_bgp_summary.py 
+2025-07-13 18:57:16,472 - INFO - Iniciando parsing de BGP summary...
+2025-07-13 18:57:16,477 - INFO - Parseado com sucesso usando ShowBgpSummary
+2025-07-13 18:57:16,477 - INFO - Dados parseados:
+{
+  "bgp_id": 65001,
+  "vrf": {
+    "default": {
+      "neighbor": {
+        "10.0.0.2": {
+          "address_family": {
+            "": {
+              "version": 4,
+              "as": 65002,
+              "msg_rcvd": 150,
+              "msg_sent": 155,
+              "tbl_ver": 42,
+              "input_queue": 0,
+              "output_queue": 0,
+              "up_down": "01:30:00",
+              "state_pfxrcd": "10",
+              "route_identifier": "10.0.0.1",
+              "local_as": 65001,
+              "bgp_table_version": 42,
+              "routing_table_version": 42
+            }
+          }
+        },
+        "10.0.0.3": {
+          "address_family": {
+            "": {
+              "version": 4,
+              "as": 65003,
+              "msg_rcvd": 200,
+              "msg_sent": 210,
+              "tbl_ver": 42,
+              "input_queue": 0,
+              "output_queue": 0,
+              "up_down": "02:15:00",
+              "state_pfxrcd": "20",
+              "route_identifier": "10.0.0.1",
+              "local_as": 65001,
+              "bgp_table_version": 42,
+              "routing_table_version": 42
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+=== Resumo BGP ===
+BGP Router ID: 65001
+
+VRF: default
+----------------------------------------
+Peer: 10.0.0.2
+  AS: 65002
+  Estado: ✅ ESTABLISHED
+  Uptime: 01:30:00
+  Prefixos recebidos: 10
+------------------------------
+Peer: 10.0.0.3
+  AS: 65003
+  Estado: ✅ ESTABLISHED
+  Uptime: 02:15:00
+  Prefixos recebidos: 20
+------------------------------
+2025-07-13 18:57:16,478 - INFO - Resultados salvos em 'parsed_bgp_summary.json'
+(genie310) alcancil@linux:~/automacoes/genie/07$ 
+```
+
+**Explicação**
 
 ---
 Continuar
