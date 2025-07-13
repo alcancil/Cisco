@@ -2125,84 +2125,184 @@ H   Address                 Interface       Hold Uptime   SRTT   RTO  Q  Seq
 **parse_eigrp_neighbors.py**
 
 ```python
-import logging
-from genie.libs.parser.iosxe.show_eigrp import ShowIpEigrpNeighbors
-import json
-import os
+[01] import logging
+[02] from genie.libs.parser.iosxe.show_eigrp import ShowIpEigrpNeighbors
+[03] import json
+[04] import os
+[05] 
+[06] # --- Configuração do Logging ---
+[07] os.makedirs('logs', exist_ok=True)
+[08] 
+[09] logging.basicConfig(
+[10]     level=logging.INFO,
+[11]     format='%(asctime)s - %(levelname)s - %(message)s',
+[12]     handlers=[
+[13]         logging.FileHandler('logs/eigrp_parser.log'),
+[14]         logging.StreamHandler()
+[16]     ]
+[17] )
+[18] logger = logging.getLogger(__name__)
+[19] 
+[20] # --- Dispositivo Simulado ---
+[21] class DummyDevice:
+[22]     def __init__(self, os='iosxe'):
+[23]         self.os = os
+[24] 
+[25] # --- Parsing ---
+[26] try:
+[27]     logger.info("Iniciando parsing de vizinhos EIGRP...")
+[28]     
+[29]     # 1. Carrega o mock file
+[30]     with open('mock_data/show_ip_eigrp_neighbors.txt') as f:
+[31]         raw_output = f.read()
+[32]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")
+[33] 
+[34]     # 2. Parsing com Genie
+[35]     device = DummyDevice()
+[36]     parsed = ShowIpEigrpNeighbors(device).parse(output=raw_output)
+[37]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
+[38] 
+[39]     # 3. Validação da estrutura
+[40]     if not isinstance(parsed, dict) or 'eigrp_instance' not in parsed:
+[41]         raise ValueError("Estrutura parseada inválida: falta chave 'eigrp_instance'")
+[42] 
+[43]     # 4. Processa vizinhos (adaptado para a nova estrutura)
+[44]     print("\n=== Vizinhos EIGRP ===")
+[45]     for as_number, instance_data in parsed['eigrp_instance'].items():
+[46]         print(f"\nAutonomous System: {as_number}")
+[47]         for vrf, vrf_data in instance_data['vrf'].items():
+[48]             print(f"  VRF: {vrf}")
+[49]             
+[50]             # Acesso à nova estrutura: vrf_data['address_family']['ipv4']['eigrp_interface']
+[51]             if 'address_family' not in vrf_data or 'ipv4' not in vrf_data['address_family']:
+[52]                 logger.warning(f"Sem dados IPv4 para VRF {vrf}")
+[53]                 continue
+[54]                 
+[55]             eigrp_interfaces = vrf_data['address_family']['ipv4'].get('eigrp_interface', {})
+[56]             
+[57]             for interface, interface_data in eigrp_interfaces.items():
+[58]                 print(f"    Interface: {interface}")
+[59]                 
+[60]                 if 'eigrp_nbr' not in interface_data:
+[61]                     logger.warning(f"Sem vizinhos na interface {interface}")
+[62]                     continue
+[63]                     
+[64]                 for neighbor_ip, neighbor_data in interface_data['eigrp_nbr'].items():
+[65]                     state = "✅ UP" if int(neighbor_data.get('hold', 0)) > 0 else "❌ DOWN"
+[66]                     print(f"      - Neighbor: {neighbor_ip}")
+[67]                     print(f"        Hold Time: {neighbor_data.get('hold', 'N/A')}s {state}")
+[68]                     print(f"        Uptime: {neighbor_data.get('uptime', 'N/A')}")
+[69]                     print(f"        SRTT: {neighbor_data.get('srtt', 'N/A')}ms")
+[70] 
+[71]     # 5. Salva em JSON
+[72]     with open('parsed_eigrp_neighbors.json', 'w') as f:
+[73]         json.dump(parsed, f, indent=2)
+[74]     logger.info("Resultados salvos em 'parsed_eigrp_neighbors.json'")
+[75] 
+[76] except FileNotFoundError:
+[77]     logger.error("Arquivo mock não encontrado!", exc_info=True)
+[78] except Exception as e:
+[79]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+```
 
-# --- Configuração do Logging ---
-os.makedirs('logs', exist_ok=True)
+**Explicação**
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/eigrp_parser.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
+```Python
+Bloco 1: Importações
 
-# --- Dispositivo Simulado ---
-class DummyDevice:
-    def __init__(self, os='iosxe'):
-        self.os = os
+[01] import logging                                                                                # Biblioteca para registro de logs
+[02] from genie.libs.parser.iosxe.show_eigrp import ShowIpEigrpNeighbors                           # Parser específico para EIGRP
+[03] import json                                                                                   # Manipulação de dados JSON
+[04] import os                                                                                     # Operações com sistema de arquivos
 
-# --- Parsing ---
-try:
-    logger.info("Iniciando parsing de vizinhos EIGRP...")
-    
-    # 1. Carrega o mock file
-    with open('mock_data/show_ip_eigrp_neighbors.txt') as f:
-        raw_output = f.read()
-    logger.debug(f"Conteúdo do mock file:\n{raw_output}")
+Bloco 2: Configuração de Logging
 
-    # 2. Parsing com Genie
-    device = DummyDevice()
-    parsed = ShowIpEigrpNeighbors(device).parse(output=raw_output)
-    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
+[06] # --- Configuração do Logging ---
+[07] os.makedirs('logs', exist_ok=True)                                                            # Cria a pasta 'logs' se não existir
+[08] 
+[09] logging.basicConfig(                                                                          # Configuração global do logging
+[10]     level=logging.INFO,                                                                       # Nível mínimo de log (INFO, WARNING, ERROR)
+[11]     format='%(asctime)s - %(levelname)s - %(message)s',                                       # Formato das mensagens
+[12]     handlers=[                                                                                # Destinos dos logs
+[13]         logging.FileHandler('logs/eigrp_parser.log'),                                         # Arquivo de log
+[14]         logging.StreamHandler()                                                               # Saída no terminal
+[16]     ]
+[17] )
+[18] logger = logging.getLogger(__name__)                                                          # Cria o logger com nome do módulo atual
 
-    # 3. Validação da estrutura
-    if not isinstance(parsed, dict) or 'eigrp_instance' not in parsed:
-        raise ValueError("Estrutura parseada inválida: falta chave 'eigrp_instance'")
+Bloco 3: Dispositivo Simulado (Dummy Device)
 
-    # 4. Processa vizinhos (adaptado para a nova estrutura)
-    print("\n=== Vizinhos EIGRP ===")
-    for as_number, instance_data in parsed['eigrp_instance'].items():
-        print(f"\nAutonomous System: {as_number}")
-        for vrf, vrf_data in instance_data['vrf'].items():
-            print(f"  VRF: {vrf}")
-            
-            # Acesso à nova estrutura: vrf_data['address_family']['ipv4']['eigrp_interface']
-            if 'address_family' not in vrf_data or 'ipv4' not in vrf_data['address_family']:
-                logger.warning(f"Sem dados IPv4 para VRF {vrf}")
-                continue
-                
-            eigrp_interfaces = vrf_data['address_family']['ipv4'].get('eigrp_interface', {})
-            
-            for interface, interface_data in eigrp_interfaces.items():
-                print(f"    Interface: {interface}")
-                
-                if 'eigrp_nbr' not in interface_data:
-                    logger.warning(f"Sem vizinhos na interface {interface}")
-                    continue
-                    
-                for neighbor_ip, neighbor_data in interface_data['eigrp_nbr'].items():
-                    state = "✅ UP" if int(neighbor_data.get('hold', 0)) > 0 else "❌ DOWN"
-                    print(f"      - Neighbor: {neighbor_ip}")
-                    print(f"        Hold Time: {neighbor_data.get('hold', 'N/A')}s {state}")
-                    print(f"        Uptime: {neighbor_data.get('uptime', 'N/A')}")
-                    print(f"        SRTT: {neighbor_data.get('srtt', 'N/A')}ms")
+[20] # --- Dispositivo Simulado ---
+[21] class DummyDevice:                                                                            # Classe que emula um dispositivo de rede
+[22]     def __init__(self, os='iosxe'):                                                           # Construtor com OS padrão 'iosxe'
+[23]         self.os = os                                                                          # Atributo obrigatório para o Genie selecionar o parser
 
-    # 5. Salva em JSON
-    with open('parsed_eigrp_neighbors.json', 'w') as f:
-        json.dump(parsed, f, indent=2)
-    logger.info("Resultados salvos em 'parsed_eigrp_neighbors.json'")
+Bloco 4: Processamento Principal (Parsing)
 
-except FileNotFoundError:
-    logger.error("Arquivo mock não encontrado!", exc_info=True)
-except Exception as e:
-    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+[25] # --- Parsing ---
+[26] try:  # Bloco try-except para capturar erros
+[27]     logger.info("Iniciando parsing de vizinhos EIGRP...")                                     # Log de início
+[28]     
+[29]     # 1. Carrega o mock file
+[30]     with open('mock_data/show_ip_eigrp_neighbors.txt') as f:                                  # Abre o arquivo mock
+[31]         raw_output = f.read()                                                                 # Lê o conteúdo
+[32]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")                                     # Debug: exibe conteúdo bruto
+[33] 
+[34]     # 2. Parsing com Genie
+[35]     device = DummyDevice()                                                                    # Instancia o dispositivo simulado
+[36]     parsed = ShowIpEigrpNeighbors(device).parse(output=raw_output)                            # Executa o parsing
+[37]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")                          # Debug: exibe JSON parseado
+[38] 
+[39]     # 3. Validação da estrutura
+[40]     if not isinstance(parsed, dict) or 'eigrp_instance' not in parsed:                        # Verifica estrutura
+[41]         raise ValueError("Estrutura parseada inválida: falta chave 'eigrp_instance'")         # Lança um erro do tipo ValueError com mensagem explicativa se:
+                                                                                                   # 1. 'parsed' NÃO for um dicionário (dict) OU
+                                                                                                   # 2. A chave 'eigrp_instance' NÃO existir em 'parsed'
+                                                                                                   # Isso garante que o parsing retornou a estrutura mínima exigida para o processamento
+
+Bloco 5: Processamento dos Vizinhos EIGRP
+
+[43]     # 4. Processa vizinhos (adaptado para a nova estrutura)
+[44]     print("\n=== Vizinhos EIGRP ===")                                                         # Cabeçalho
+[45]     for as_number, instance_data in parsed['eigrp_instance'].items():                         # Itera sobre AS numbers
+[46]         print(f"\nAutonomous System: {as_number}")                                            # Exibe AS number
+[47]         for vrf, vrf_data in instance_data['vrf'].items():                                    # Itera sobre VRFs
+[48]             print(f"  VRF: {vrf}")                                                            # Exibe nome da VRF
+[49]             
+[50]             # Acesso à nova estrutura: vrf_data['address_family']['ipv4']['eigrp_interface']
+[51]             if 'address_family' not in vrf_data or 'ipv4' not in vrf_data['address_family']:  # Verifica se a chave 'address_family' NÃO existe em vrf_data OU
+                                                                                                   # se a chave 'ipv4' NÃO existe dentro de vrf_data['address_family']
+                                                                                                   # Isso previne erros ao acessar dicionários aninhados (KeyError)
+[52]                 logger.warning(f"Sem dados IPv4 para VRF {vrf}")                              # Log de aviso
+[53]                 continue                                                                      # Pula para próxima VRF
+[54]                 
+[55]             eigrp_interfaces = vrf_data['address_family']['ipv4'].get('eigrp_interface', {})  # Obtém interfaces
+[56]             
+[57]             for interface, interface_data in eigrp_interfaces.items():                        # Itera interfaces
+[58]                 print(f"    Interface: {interface}")                                          # Exibe nome da interface
+[59]                 
+[60]                 if 'eigrp_nbr' not in interface_data:                                         # Verifica se há vizinhos
+[61]                     logger.warning(f"Sem vizinhos na interface {interface}")                  # Log de aviso
+[62]                     continue                                                                  # Pula para próxima interface
+[63]                     
+[64]                 for neighbor_ip, neighbor_data in interface_data['eigrp_nbr'].items():        # Itera vizinhos
+[65]                     state = "✅ UP" if int(neighbor_data.get('hold', 0)) > 0 else "❌ DOWN"  # Determina estado
+[66]                     print(f"      - Neighbor: {neighbor_ip}")                                 # Exibe IP do vizinho
+[67]                     print(f"        Hold Time: {neighbor_data.get('hold', 'N/A')}s {state}")  # Exibe hold time
+[68]                     print(f"        Uptime: {neighbor_data.get('uptime', 'N/A')}")            # Exibe uptime
+[69]                     print(f"        SRTT: {neighbor_data.get('srtt', 'N/A')}ms")              # Exibe SRTT
+
+Bloco 6: Salvamento e Tratamento de Erros
+
+[71]     # 5. Salva em JSON
+[72]     with open('parsed_eigrp_neighbors.json', 'w') as f:                                       # Abre arquivo para escrita
+[73]         json.dump(parsed, f, indent=2)                                                        # Salva dados parseados (formatados)
+[74]     logger.info("Resultados salvos em 'parsed_eigrp_neighbors.json'")                         # Log de confirmação
+[75] 
+[76] except FileNotFoundError:                                                                     # Se o mock file não existir
+[77]     logger.error("Arquivo mock não encontrado!", exc_info=True)                               # Log de erro com stack trace
+[78] except Exception as e:                                                                        # Qualquer outro erro
+[79]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                                   # Log de erro genérico
 ```
 
 **Saída**
