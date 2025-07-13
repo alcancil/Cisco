@@ -1869,79 +1869,79 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 **parse_ospf_neighbors.py**
 
 ```python
-import logging
-from genie.libs.parser.iosxe.show_ospf import ShowIpOspfNeighbor
-import json
-import os
-
-# --- Configuração do Logging ---
-os.makedirs('logs', exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/ospf_parser.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
-
-# --- Dispositivo Simulado ---
-class DummyDevice:
-    def __init__(self, os='iosxe'):
-        self.os = os
-
-# --- Parsing ---
-try:
-    logger.info("Iniciando parsing de OSPF neighbors...")
-    
-    # 1. Carrega o mock file
-    with open('mock_data/show_ip_ospf_neighbor.txt') as f:
-        raw_output = f.read()
-    logger.debug(f"Conteúdo do mock file:\n{raw_output}")  # Debug útil
-
-    # 2. Parsing com Genie
-    device = DummyDevice()
-    parsed = ShowIpOspfNeighbor(device).parse(output=raw_output)
-    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")  # Debug da estrutura
-
-    # 3. Validação da estrutura
-    if not isinstance(parsed, dict) or 'interfaces' not in parsed:
-        raise ValueError("Estrutura parseada inválida: falta chave 'interfaces'")
-
-    # 4. Processa vizinhos
-    print("\n=== Vizinhos OSPF ===")
-    for interface, data in parsed['interfaces'].items():
-        print(f"\nInterface: {interface}")
-        
-        # Verifica se 'neighbors' existe e é uma lista
-        neighbors = data.get('neighbors', [])
-        if isinstance(neighbors, str):  # Caso o Genie retorne uma string
-            logger.warning(f"Vizinho em formato inesperado (string): {neighbors}")
-            continue
-            
-        for neighbor in neighbors if isinstance(neighbors, list) else []:
-            # Verifica se neighbor é um dicionário
-            if not isinstance(neighbor, dict):
-                logger.warning(f"Vizinho ignorado (formato inválido): {neighbor}")
-                continue
-                
-            state = neighbor.get('state', 'UNKNOWN')
-            status = "✅ UP" if "FULL" in state else "❌ DOWN"
-            print(f"  - Neighbor: {neighbor.get('neighbor_id', 'N/A')}")
-            print(f"    State: {state} {status}")
-            print(f"    Priority: {neighbor.get('priority', 'N/A')}")
-
-    # 5. Salva em JSON
-    with open('parsed_ospf_neighbor.json', 'w') as f:
-        json.dump(parsed, f, indent=2)
-    logger.info("Resultados salvos em 'parsed_ospf_neighbor.json'")
-
-except FileNotFoundError:
-    logger.error("Arquivo mock não encontrado!", exc_info=True)
-except Exception as e:
-    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+[01] import logging
+[02] from genie.libs.parser.iosxe.show_ospf import ShowIpOspfNeighbor
+[03] import json
+[04] import os
+[05]
+[06] # --- Configuração do Logging ---
+[07] os.makedirs('logs', exist_ok=True)
+[08] 
+[09] logging.basicConfig(
+[10]     level=logging.INFO,
+[11]     format='%(asctime)s - %(levelname)s - %(message)s',
+[12]     handlers=[
+[13]         logging.FileHandler('logs/ospf_parser.log'),
+[14]         logging.StreamHandler()
+[15]     ]
+[16] )
+[17] logger = logging.getLogger(__name__)
+[18] 
+[19] # --- Dispositivo Simulado ---
+[20] class DummyDevice:
+[21]     def __init__(self, os='iosxe'):
+[22]         self.os = os
+[23] 
+[24] # --- Parsing ---
+[25] try:
+[26]     logger.info("Iniciando parsing de OSPF neighbors...")
+[27]     
+[28]     # 1. Carrega o mock file
+[29]     with open('mock_data/show_ip_ospf_neighbor.txt') as f:
+[30]         raw_output = f.read()
+[31]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")  # Debug útil
+[32] 
+[33]     # 2. Parsing com Genie
+[34]     device = DummyDevice()
+[35]     parsed = ShowIpOspfNeighbor(device).parse(output=raw_output)
+[36]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")  # Debug da estrutura
+[37] 
+[38]     # 3. Validação da estrutura
+[39]     if not isinstance(parsed, dict) or 'interfaces' not in parsed:
+[40]         raise ValueError("Estrutura parseada inválida: falta chave 'interfaces'")
+[41]
+[42]     # 4. Processa vizinhos
+[43]     print("\n=== Vizinhos OSPF ===")
+[44]     for interface, data in parsed['interfaces'].items():
+[45]         print(f"\nInterface: {interface}")
+[46]         
+[47]         # Verifica se 'neighbors' existe e é uma lista
+[48]         neighbors = data.get('neighbors', [])
+[49]         if isinstance(neighbors, str):  # Caso o Genie retorne uma string
+[50]             logger.warning(f"Vizinho em formato inesperado (string): {neighbors}")
+[51]             continue
+[52]             
+[53]         for neighbor in neighbors if isinstance(neighbors, list) else []:
+[54]             # Verifica se neighbor é um dicionário
+[55]             if not isinstance(neighbor, dict):
+[56]                 logger.warning(f"Vizinho ignorado (formato inválido): {neighbor}")
+[57]                 continue
+[58]                 
+[59]             state = neighbor.get('state', 'UNKNOWN')
+[60]             status = "✅ UP" if "FULL" in state else "❌ DOWN"
+[61]             print(f"  - Neighbor: {neighbor.get('neighbor_id', 'N/A')}")
+[62]             print(f"    State: {state} {status}")
+[63]             print(f"    Priority: {neighbor.get('priority', 'N/A')}")
+[64] 
+[65]     # 5. Salva em JSON
+[66]     with open('parsed_ospf_neighbor.json', 'w') as f:
+[67]         json.dump(parsed, f, indent=2)
+[68]     logger.info("Resultados salvos em 'parsed_ospf_neighbor.json'")
+[69] 
+[70] except FileNotFoundError:
+[71]     logger.error("Arquivo mock não encontrado!", exc_info=True)
+[72] except Exception as e:
+[73]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)
 ```
 
 **saída**
@@ -2002,6 +2002,96 @@ Interface: GigabitEthernet0/2
 ```
 
 **Explicação**
+
+```python
+Bloco 1: Importações
+
+[01] import logging                                                                     # Biblioteca para registro de logs
+[02] from genie.libs.parser.iosxe.show_ospf import ShowIpOspfNeighbor                   # Parser específico para OSPF da Cisco IOS-XE
+[03] import json                                                                        # Para manipular dados no formato JSON
+[04] import os                                                                          # Para operações com sistema de arquivos
+
+Bloco 2: Configuração de Logging
+
+[06] # --- Configuração do Logging ---
+[07] os.makedirs('logs', exist_ok=True)                                                 # Cria a pasta 'logs' se não existir (evita erros)
+[08] 
+[09] logging.basicConfig(                                                               # Configuração global do logging
+[10]     level=logging.INFO,                                                            # Nível mínimo de log (INFO, WARNING, ERROR, etc.)
+[11]     format='%(asctime)s - %(levelname)s - %(message)s',                            # Formato das mensagens
+[12]     handlers=[                                                                     # Destinos dos logs
+[13]         logging.FileHandler('logs/ospf_parser.log'),                               # Salva em arquivo
+[14]         logging.StreamHandler()                                                    # Exibe no terminal
+[15]     ]
+[16] )
+[17] logger = logging.getLogger(__name__)                                               # Cria um logger com o nome do módulo atual
+
+Bloco 3: Dispositivo Simulado (Dummy Device)
+
+[19] # --- Dispositivo Simulado ---
+[20] class DummyDevice:                                                                 # Classe que emula um dispositivo de rede
+[21]     def __init__(self, os='iosxe'):                                                # Construtor com OS padrão 'iosxe'
+[22]         self.os = os                                                               # Atributo obrigatório para o Genie selecionar o parser correto
+
+Bloco 4: Processamento Principal (Parsing)
+
+[24] # --- Parsing ---
+[25] try:  # Bloco try-except para capturar erros
+[26]     logger.info("Iniciando parsing de OSPF neighbors...")                          # Log de início
+[27]     
+[28]     # 1. Carrega o mock file
+[29]     with open('mock_data/show_ip_ospf_neighbor.txt') as f:                         # Abre o arquivo mock
+[30]         raw_output = f.read()                                                      # Lê todo o conteúdo
+[31]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")                          # Debug: exibe conteúdo bruto
+[32] 
+[33]     # 2. Parsing com Genie
+[34]     device = DummyDevice()                                                         # Instancia o dispositivo simulado
+[35]     parsed = ShowIpOspfNeighbor(device).parse(output=raw_output)                   # Executa o parsing
+[36]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")               # Debug: exibe JSON parseado
+[37] 
+[38]     # 3. Validação da estrutura
+[39]     if not isinstance(parsed, dict) or 'interfaces' not in parsed:                 # Verifica se o parsing retornou um dicionário com a chave 'interfaces'
+[40]         raise ValueError("Estrutura parseada inválida: falta chave 'interfaces'")  # Erro personalizado
+
+Bloco 5: Processamento dos Vizinhos OSPF
+
+[42]     # 4. Processa vizinhos
+[43]     print("\n=== Vizinhos OSPF ===")                                               # Cabeçalho para saída no terminal
+[44]     for interface, data in parsed['interfaces'].items():                           # Itera sobre interfaces
+[45]         print(f"\nInterface: {interface}")                                         # Exibe o nome da interface
+[46]         
+[47]         # Verifica se 'neighbors' existe e é uma lista
+[48]         neighbors = data.get('neighbors', [])                                      # Obtém vizinhos ou lista vazia se não existir
+[49]         if isinstance(neighbors, str):                                             # Se for string (formato inesperado)
+[50]             logger.warning(f"Vizinho em formato inesperado (string): {neighbors}") # Log de aviso
+[51]             continue                                                               # Pula para a próxima interface
+[52]             
+[53]         for neighbor in neighbors if isinstance(neighbors, list) else []:          # Itera só se neighbors for lista
+[54]             # Verifica se neighbor é um dicionário
+[55]             if not isinstance(neighbor, dict):                                     # Se não for dicionário (formato inválido)
+[56]                 logger.warning(f"Vizinho ignorado (formato inválido): {neighbor}") # Log de aviso
+[57]                 continue                                                           # Pula para o próximo vizinho
+[58]                 
+[59]             state = neighbor.get('state', 'UNKNOWN')                               # Obtém estado ou 'UNKNOWN' se não existir
+[60]             status = "✅ UP" if "FULL" in state else "❌ DOWN"                    # Emoji para status
+[61]             print(f"  - Neighbor: {neighbor.get('neighbor_id', 'N/A')}")           # Exibe ID do vizinho
+[62]             print(f"    State: {state} {status}")                                  # Exibe estado
+[63]             print(f"    Priority: {neighbor.get('priority', 'N/A')}")              # Exibe prioridade
+
+Bloco 6: Salvamento e Tratamento de Erros
+
+[65]     # 5. Salva em JSON
+[66]     with open('parsed_ospf_neighbor.json', 'w') as f:                              # Abre arquivo para escrita
+[67]         json.dump(parsed, f, indent=2)                                             # Salva os dados parseados (formatados)
+[68]     logger.info("Resultados salvos em 'parsed_ospf_neighbor.json'")                # Log de confirmação
+[69] 
+[70] except FileNotFoundError:                                                          # Se o mock file não existir
+[71]     logger.error("Arquivo mock não encontrado!", exc_info=True)                    # Log de erro com stack trace
+[72] except Exception as e:                                                             # Qualquer outro erro
+[73]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                        # Log de erro genérico
+```
+
+
 
 ---
 Continuar
