@@ -2205,6 +2205,82 @@ H   Address                 Interface       Hold Uptime   SRTT   RTO  Q  Seq
 [79]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)
 ```
 
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/06$ python3 parse_eigrp_neighbors.py 
+/home/alcancil/.pyenv/versions/3.12.3/lib/python3.12/site-packages/pyats/tcl/__init__.py:38: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from .interpreter import Interpreter, _global_interpreter
+2025-07-13 14:51:27,424 - INFO - Iniciando parsing de vizinhos EIGRP...
+2025-07-13 14:51:27,427 - INFO - Dados parseados:
+{
+  "eigrp_instance": {
+    "100": {
+      "vrf": {
+        "default": {
+          "address_family": {
+            "ipv4": {
+              "name": "EIGRP-TEST",
+              "named_mode": true,
+              "eigrp_interface": {
+                "GigabitEthernet0/0/0": {
+                  "eigrp_nbr": {
+                    "10.1.1.2": {
+                      "peer_handle": 0,
+                      "hold": 14,
+                      "uptime": "00:01:45",
+                      "srtt": 0.01,
+                      "rto": 200,
+                      "q_cnt": 0,
+                      "last_seq_number": 15
+                    }
+                  }
+                },
+                "GigabitEthernet0/0/1": {
+                  "eigrp_nbr": {
+                    "10.1.2.2": {
+                      "peer_handle": 1,
+                      "hold": 12,
+                      "uptime": "00:02:30",
+                      "srtt": 0.015,
+                      "rto": 300,
+                      "q_cnt": 0,
+                      "last_seq_number": 22
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+=== Vizinhos EIGRP ===
+
+Autonomous System: 100
+  VRF: default
+    Interface: GigabitEthernet0/0/0
+      - Neighbor: 10.1.1.2
+        Hold Time: 14s ✅ UP
+        Uptime: 00:01:45
+        SRTT: 0.01ms
+    Interface: GigabitEthernet0/0/1
+      - Neighbor: 10.1.2.2
+        Hold Time: 12s ✅ UP
+        Uptime: 00:02:30
+        SRTT: 0.015ms
+2025-07-13 14:51:27,429 - INFO - Resultados salvos em 'parsed_eigrp_neighbors.json'
+(genie310) alcancil@linux:~/automacoes/genie/06$ 
+```
+
 **Explicação**
 
 ```Python
@@ -2303,82 +2379,6 @@ Bloco 6: Salvamento e Tratamento de Erros
 [77]     logger.error("Arquivo mock não encontrado!", exc_info=True)                               # Log de erro com stack trace
 [78] except Exception as e:                                                                        # Qualquer outro erro
 [79]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                                   # Log de erro genérico
-```
-
-**Saída**
-
-1. Criar o ambiente virtual
-2. Setar o python para a versão do **python3.10.18**
-3. Habilitar o ambiente
-4. Instalar o **pyats[full]
-
-```bash
-(genie310) alcancil@linux:~/automacoes/genie/06$ python3 parse_eigrp_neighbors.py 
-/home/alcancil/.pyenv/versions/3.12.3/lib/python3.12/site-packages/pyats/tcl/__init__.py:38: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-  from .interpreter import Interpreter, _global_interpreter
-2025-07-13 14:51:27,424 - INFO - Iniciando parsing de vizinhos EIGRP...
-2025-07-13 14:51:27,427 - INFO - Dados parseados:
-{
-  "eigrp_instance": {
-    "100": {
-      "vrf": {
-        "default": {
-          "address_family": {
-            "ipv4": {
-              "name": "EIGRP-TEST",
-              "named_mode": true,
-              "eigrp_interface": {
-                "GigabitEthernet0/0/0": {
-                  "eigrp_nbr": {
-                    "10.1.1.2": {
-                      "peer_handle": 0,
-                      "hold": 14,
-                      "uptime": "00:01:45",
-                      "srtt": 0.01,
-                      "rto": 200,
-                      "q_cnt": 0,
-                      "last_seq_number": 15
-                    }
-                  }
-                },
-                "GigabitEthernet0/0/1": {
-                  "eigrp_nbr": {
-                    "10.1.2.2": {
-                      "peer_handle": 1,
-                      "hold": 12,
-                      "uptime": "00:02:30",
-                      "srtt": 0.015,
-                      "rto": 300,
-                      "q_cnt": 0,
-                      "last_seq_number": 22
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-=== Vizinhos EIGRP ===
-
-Autonomous System: 100
-  VRF: default
-    Interface: GigabitEthernet0/0/0
-      - Neighbor: 10.1.1.2
-        Hold Time: 14s ✅ UP
-        Uptime: 00:01:45
-        SRTT: 0.01ms
-    Interface: GigabitEthernet0/0/1
-      - Neighbor: 10.1.2.2
-        Hold Time: 12s ✅ UP
-        Uptime: 00:02:30
-        SRTT: 0.015ms
-2025-07-13 14:51:27,429 - INFO - Resultados salvos em 'parsed_eigrp_neighbors.json'
-(genie310) alcancil@linux:~/automacoes/genie/06$ 
 ```
 
 ---
