@@ -54,6 +54,7 @@
     - [Exemplo 03: Parsing de show vlan brief com Genie + pyenv](#exemplo-03-parsing-de-show-vlan-brief-com-genie--pyenv)
     - [Exemplo 04: show cdp neighbors detail](#exemplo-04-show-cdp-neighbors-detail)
     - [Exemplo 05: show ip ospf neighbor](#exemplo-05-show-ip-ospf-neighbor)
+    - [Exemplo 06: show ip eigrp neighbors](#exemplo-06-show-ip-eigrp-neighbors)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -2092,7 +2093,193 @@ Bloco 6: Salvamento e Tratamento de Erros
 [73]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                        # Log de erro genérico
 ```
 
+### Exemplo 06: show ip eigrp neighbors
 
+**📁 Estrutura do Projeto**
+
+```bash
+06_eigrp_neighbor/
+├── mock_data/
+│   └── show_ip_eigrp_neighbors.txt    # Arquivo mock
+├── logs/
+│   └── eigrp_parser.log               # Logs (gerado automaticamente)
+└── parse_eigrp_neighbors.py           # Script principal
+```
+
+**mock_data/show_ip_eigrp_neighbors.txt (formato Cisco IOS-XE)**
+
+```bash
+# =============================================
+# MOCK FILE - show ip eigrp neighbors
+# Sistema Operacional: Cisco IOS-XE 17.03.04
+# Dispositivo: Cisco ISR 4451
+# =============================================
+
+EIGRP-IPv4 VR(EIGRP-TEST) Address-Family Neighbors for AS(100)
+H   Address                 Interface       Hold Uptime   SRTT   RTO  Q  Seq
+                                            (sec)         (ms)       Cnt Num
+0   10.1.1.2                Gi0/0/0        14  00:01:45  10     200  0  15
+1   10.1.2.2                Gi0/0/1        12  00:02:30  15     300  0  22
+```
+
+**parse_eigrp_neighbors.py**
+
+```python
+import logging
+from genie.libs.parser.iosxe.show_eigrp import ShowIpEigrpNeighbors
+import json
+import os
+
+# --- Configuração do Logging ---
+os.makedirs('logs', exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/eigrp_parser.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# --- Dispositivo Simulado ---
+class DummyDevice:
+    def __init__(self, os='iosxe'):
+        self.os = os
+
+# --- Parsing ---
+try:
+    logger.info("Iniciando parsing de vizinhos EIGRP...")
+    
+    # 1. Carrega o mock file
+    with open('mock_data/show_ip_eigrp_neighbors.txt') as f:
+        raw_output = f.read()
+    logger.debug(f"Conteúdo do mock file:\n{raw_output}")
+
+    # 2. Parsing com Genie
+    device = DummyDevice()
+    parsed = ShowIpEigrpNeighbors(device).parse(output=raw_output)
+    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
+
+    # 3. Validação da estrutura
+    if not isinstance(parsed, dict) or 'eigrp_instance' not in parsed:
+        raise ValueError("Estrutura parseada inválida: falta chave 'eigrp_instance'")
+
+    # 4. Processa vizinhos (adaptado para a nova estrutura)
+    print("\n=== Vizinhos EIGRP ===")
+    for as_number, instance_data in parsed['eigrp_instance'].items():
+        print(f"\nAutonomous System: {as_number}")
+        for vrf, vrf_data in instance_data['vrf'].items():
+            print(f"  VRF: {vrf}")
+            
+            # Acesso à nova estrutura: vrf_data['address_family']['ipv4']['eigrp_interface']
+            if 'address_family' not in vrf_data or 'ipv4' not in vrf_data['address_family']:
+                logger.warning(f"Sem dados IPv4 para VRF {vrf}")
+                continue
+                
+            eigrp_interfaces = vrf_data['address_family']['ipv4'].get('eigrp_interface', {})
+            
+            for interface, interface_data in eigrp_interfaces.items():
+                print(f"    Interface: {interface}")
+                
+                if 'eigrp_nbr' not in interface_data:
+                    logger.warning(f"Sem vizinhos na interface {interface}")
+                    continue
+                    
+                for neighbor_ip, neighbor_data in interface_data['eigrp_nbr'].items():
+                    state = "✅ UP" if int(neighbor_data.get('hold', 0)) > 0 else "❌ DOWN"
+                    print(f"      - Neighbor: {neighbor_ip}")
+                    print(f"        Hold Time: {neighbor_data.get('hold', 'N/A')}s {state}")
+                    print(f"        Uptime: {neighbor_data.get('uptime', 'N/A')}")
+                    print(f"        SRTT: {neighbor_data.get('srtt', 'N/A')}ms")
+
+    # 5. Salva em JSON
+    with open('parsed_eigrp_neighbors.json', 'w') as f:
+        json.dump(parsed, f, indent=2)
+    logger.info("Resultados salvos em 'parsed_eigrp_neighbors.json'")
+
+except FileNotFoundError:
+    logger.error("Arquivo mock não encontrado!", exc_info=True)
+except Exception as e:
+    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/06$ python3 parse_eigrp_neighbors.py 
+/home/alcancil/.pyenv/versions/3.12.3/lib/python3.12/site-packages/pyats/tcl/__init__.py:38: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from .interpreter import Interpreter, _global_interpreter
+2025-07-13 14:51:27,424 - INFO - Iniciando parsing de vizinhos EIGRP...
+2025-07-13 14:51:27,427 - INFO - Dados parseados:
+{
+  "eigrp_instance": {
+    "100": {
+      "vrf": {
+        "default": {
+          "address_family": {
+            "ipv4": {
+              "name": "EIGRP-TEST",
+              "named_mode": true,
+              "eigrp_interface": {
+                "GigabitEthernet0/0/0": {
+                  "eigrp_nbr": {
+                    "10.1.1.2": {
+                      "peer_handle": 0,
+                      "hold": 14,
+                      "uptime": "00:01:45",
+                      "srtt": 0.01,
+                      "rto": 200,
+                      "q_cnt": 0,
+                      "last_seq_number": 15
+                    }
+                  }
+                },
+                "GigabitEthernet0/0/1": {
+                  "eigrp_nbr": {
+                    "10.1.2.2": {
+                      "peer_handle": 1,
+                      "hold": 12,
+                      "uptime": "00:02:30",
+                      "srtt": 0.015,
+                      "rto": 300,
+                      "q_cnt": 0,
+                      "last_seq_number": 22
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+=== Vizinhos EIGRP ===
+
+Autonomous System: 100
+  VRF: default
+    Interface: GigabitEthernet0/0/0
+      - Neighbor: 10.1.1.2
+        Hold Time: 14s ✅ UP
+        Uptime: 00:01:45
+        SRTT: 0.01ms
+    Interface: GigabitEthernet0/0/1
+      - Neighbor: 10.1.2.2
+        Hold Time: 12s ✅ UP
+        Uptime: 00:02:30
+        SRTT: 0.015ms
+2025-07-13 14:51:27,429 - INFO - Resultados salvos em 'parsed_eigrp_neighbors.json'
+(genie310) alcancil@linux:~/automacoes/genie/06$ 
+```
 
 ---
 Continuar
