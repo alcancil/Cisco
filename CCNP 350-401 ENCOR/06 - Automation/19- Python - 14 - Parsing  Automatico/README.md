@@ -2430,164 +2430,160 @@ Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State
 **parse_show_bgp_summary.py**
 
 ```python
-# ==================================================================
-# Script: parse_show_bgp_summary.py 
-# Descrição: Parsing de 'show bgp summary' com tratamento robusto
-# ==================================================================
-
-import logging
-from genie.libs.parser.iosxe.show_bgp import ShowBgpSummary
-import json
-import os
-from pyats.datastructures import AttrDict
-
-# --- Configuração do Logging ---
-os.makedirs('logs', exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/bgp_summary_parser.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
-
-# --- Dispositivo Simulado ---
-class DummyDevice:
-    def __init__(self, os='iosxe'):
-        self.os = os
-        self.custom = {'abstraction': {'order': ['os']}}
-
-# --- Função de Parsing Robustecida ---
-def parse_bgp_output(raw_output):
-    try:
-        device = DummyDevice()
-        
-        # Tenta primeiro com o parser do Genie
-        try:
-            parsed = ShowBgpSummary(device).parse(output=raw_output)
-            logger.info("Parseado com sucesso usando ShowBgpSummary")
-            return parsed
-            
-        except Exception as genie_error:
-            logger.warning(f"Parser Genie falhou: {str(genie_error)}")
-            logger.info("Tentando parser alternativo...")
-            return custom_bgp_parser(raw_output)
-            
-    except Exception as e:
-        logger.error(f"Falha crítica no parsing: {str(e)}", exc_info=True)
-        raise
-
-def custom_bgp_parser(raw_output):
-    """Parser alternativo personalizado"""
-    parsed = {
-        'bgp_id': None,
-        'vrf': {
-            'default': {
-                'neighbor': {}
-            }
-        }
-    }
-    
-    for line in raw_output.splitlines():
-        line = line.strip()
-        
-        # Extrai BGP Router ID
-        if 'BGP router identifier' in line:
-            parsed['bgp_id'] = line.split()[3].rstrip(',')
-            continue
-            
-        # Extrai vizinhos BGP
-        parts = line.split()
-        if len(parts) >= 10 and parts[0].count('.') == 3:
-            neighbor_ip = parts[0]
-            neighbor_data = {
-                'address_family': {
-                    '': {
-                        'version': int(parts[1]),
-                        'as': int(parts[2]),
-                        'msg_rcvd': int(parts[3]),
-                        'msg_sent': int(parts[4]),
-                        'tbl_ver': int(parts[5]),
-                        'input_queue': int(parts[6]),
-                        'output_queue': int(parts[7]),
-                        'up_down': parts[8],
-                        'state_pfxrcd': parts[9],
-                        'bgp_table_version': 42,  # Valor padrão
-                        'routing_table_version': 42
-                    }
-                }
-            }
-            parsed['vrf']['default']['neighbor'][neighbor_ip] = neighbor_data
-    
-    return parsed
-
-# --- Processamento Principal ---
-try:
-    logger.info("Iniciando parsing de BGP summary...")
-    
-    # 1. Carrega o mock file
-    with open('mock_data/show_bgp_summary.txt') as f:
-        raw_output = f.read()
-    logger.debug(f"Conteúdo do mock file:\n{raw_output}")
-
-    # 2. Parsing robusto
-    parsed = parse_bgp_output(raw_output)
-    
-    # 3. Garante estrutura mínima válida
-    if 'vrf' not in parsed:
-        parsed['vrf'] = {'default': {'neighbor': {}}}
-    elif 'default' not in parsed['vrf']:
-        parsed['vrf']['default'] = {'neighbor': {}}
-
-    logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
-
-    # 4. Processa peers BGP (versão corrigida)
-    print("\n=== Resumo BGP ===")
-    print(f"BGP Router ID: {parsed.get('bgp_id', 'N/A')}\n")
-    
-    for vrf, vrf_data in parsed.get('vrf', {}).items():
-        print(f"VRF: {vrf}")
-        print("-" * 40)
-        
-        for neighbor, data in vrf_data.get('neighbor', {}).items():
-            # Acessa os dados na estrutura correta
-            af_data = data.get('address_family', {}).get('', {})
-            
-            # Determina estado
-            state_pfx = af_data.get('state_pfxrcd', '')
-            if isinstance(state_pfx, str) and state_pfx.isdigit():
-                state = "✅ ESTABLISHED"
-                prefixes = int(state_pfx)
-            elif state_pfx == 'Established':
-                state = "✅ ESTABLISHED"
-                prefixes = 0
-            else:
-                state = f"❌ {state_pfx}"
-                prefixes = 0
-                
-            # Obtém demais campos
-            as_number = af_data.get('as', 'N/A')
-            uptime = af_data.get('up_down', 'N/A')
-            
-            print(f"Peer: {neighbor}")
-            print(f"  AS: {as_number}")
-            print(f"  Estado: {state}")
-            print(f"  Uptime: {uptime}")
-            print(f"  Prefixos recebidos: {prefixes}")
-            print("-" * 30)
-
-    # 5. Salva em JSON
-    with open('parsed_bgp_summary.json', 'w') as f:
-        json.dump(parsed, f, indent=2)
-    logger.info("Resultados salvos em 'parsed_bgp_summary.json'")
-
-except FileNotFoundError:
-    logger.error("Arquivo mock não encontrado!", exc_info=True)
-except Exception as e:
-    logger.error(f"Falha crítica: {str(e)}", exc_info=True)
+[001] #----Seção de Iportação ----
+[002] import logging
+[003] from genie.libs.parser.iosxe.show_bgp import ShowBgpSummary
+[004] import json
+[005] import os
+[006] from pyats.datastructures import AttrDict
+[007] 
+[008] # --- Configuração do Logging ---
+[009] os.makedirs('logs', exist_ok=True)
+[010] 
+[011] logging.basicConfig(
+[012]     level=logging.INFO,
+[013]     format='%(asctime)s - %(levelname)s - %(message)s',
+[014]     handlers=[
+[015]         logging.FileHandler('logs/bgp_summary_parser.log'),
+[016]         logging.StreamHandler()
+[017]     ]
+[018] )
+[019] logger = logging.getLogger(__name__)
+[020]
+[021] # --- Dispositivo Simulado ---
+[022] class DummyDevice:
+[023]     def __init__(self, os='iosxe'):
+[024]         self.os = os
+[025]         self.custom = {'abstraction': {'order': ['os']}}
+[026] 
+[027] # --- Função de Parsing Robustecida ---
+[028] def parse_bgp_output(raw_output):
+[029]     try:
+[030]         device = DummyDevice()
+[031]         
+[032]         # Tenta primeiro com o parser do Genie
+[033]         try:
+[034]             parsed = ShowBgpSummary(device).parse(output=raw_output)
+[035]             logger.info("Parseado com sucesso usando ShowBgpSummary")
+[036]             return parsed
+[037]             
+[038]         except Exception as genie_error:
+[039]             logger.warning(f"Parser Genie falhou: {str(genie_error)}")
+[040]             logger.info("Tentando parser alternativo...")
+[041]             return custom_bgp_parser(raw_output)
+[042]             
+[043]    except Exception as e:
+[044]         logger.error(f"Falha crítica no parsing: {str(e)}", exc_info=True)
+[045]         raise
+[046]
+[047] def custom_bgp_parser(raw_output):
+[048]     """Parser alternativo personalizado"""
+[049]     parsed = {
+[050]         'bgp_id': None,
+[051]         'vrf': {
+[052]             'default': {
+[053]                 'neighbor': {}
+[054]             }
+[055]         }
+[056]     }
+[057]    
+[058]     for line in raw_output.splitlines():
+[059]         line = line.strip()
+[060]         
+[061]         # Extrai BGP Router ID
+[062]         if 'BGP router identifier' in line:
+[063]             parsed['bgp_id'] = line.split()[3].rstrip(',')
+[064]             continue
+[065]             
+[066]         # Extrai vizinhos BGP
+[067]         parts = line.split()
+[068]         if len(parts) >= 10 and parts[0].count('.') == 3:
+[069]             neighbor_ip = parts[0]
+[070]             neighbor_data = {
+[071]                 'address_family': {
+[072]                     '': {
+[073]                         'version': int(parts[1]),
+[074]                         'as': int(parts[2]),
+[075]                         'msg_rcvd': int(parts[3]),
+[076]                         'msg_sent': int(parts[4]),
+[077]                         'tbl_ver': int(parts[5]),
+[078]                         'input_queue': int(parts[6]),
+[079]                         'output_queue': int(parts[7]),
+[080]                         'up_down': parts[8],
+[081]                         'state_pfxrcd': parts[9],
+[082]                         'bgp_table_version': 42,  # Valor padrão
+[083]                         'routing_table_version': 42
+[084]                     }
+[085]                 }
+[086]             }
+[087]             parsed['vrf']['default']['neighbor'][neighbor_ip] = neighbor_data
+[088]     
+[089]     return parsed
+[090] 
+[091] # --- Processamento Principal ---
+[092] try:
+[093]     logger.info("Iniciando parsing de BGP summary...")
+[094]     
+[095]     # 1. Carrega o mock file
+[096]     with open('mock_data/show_bgp_summary.txt') as f:
+[097]         raw_output = f.read()
+[098]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")
+[099]
+[100]     # 2. Parsing robusto
+[101]     parsed = parse_bgp_output(raw_output)
+[102]    
+[103]     # 3. Garante estrutura mínima válida
+[104]     if 'vrf' not in parsed:
+[105]         parsed['vrf'] = {'default': {'neighbor': {}}}
+[106]     elif 'default' not in parsed['vrf']:
+[107]         parsed['vrf']['default'] = {'neighbor': {}}
+[108] 
+[109]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")
+[110] 
+[112]     # 4. Processa peers BGP (versão corrigida)
+[113]     print("\n=== Resumo BGP ===")
+[114]     print(f"BGP Router ID: {parsed.get('bgp_id', 'N/A')}\n")
+[115]     
+[116]     for vrf, vrf_data in parsed.get('vrf', {}).items():
+[117]         print(f"VRF: {vrf}")
+[118]         print("-" * 40)
+[119]         
+[120]         for neighbor, data in vrf_data.get('neighbor', {}).items():
+[121]             # Acessa os dados na estrutura correta
+[122]             af_data = data.get('address_family', {}).get('', {})
+[123]             
+[124]             # Determina estado
+[125]             state_pfx = af_data.get('state_pfxrcd', '')
+[126]             if isinstance(state_pfx, str) and state_pfx.isdigit():
+[127]                 state = "✅ ESTABLISHED"
+[128]                 prefixes = int(state_pfx)
+[129]             elif state_pfx == 'Established':
+[130]                 state = "✅ ESTABLISHED"
+[131]                 prefixes = 0
+[132]             else:
+[133]                 state = f"❌ {state_pfx}"
+[134]                 prefixes = 0
+[135]                 
+[136]             # Obtém demais campos
+[137]             as_number = af_data.get('as', 'N/A')
+[138]             uptime = af_data.get('up_down', 'N/A')
+[139]             
+[140]             print(f"Peer: {neighbor}")
+[141]             print(f"  AS: {as_number}")
+[142]             print(f"  Estado: {state}")
+[143]             print(f"  Uptime: {uptime}")
+[144]             print(f"  Prefixos recebidos: {prefixes}")
+[145]             print("-" * 30)
+[146] 
+[147]     # 5. Salva em JSON
+[148]     with open('parsed_bgp_summary.json', 'w') as f:
+[149]         json.dump(parsed, f, indent=2)
+[150]     logger.info("Resultados salvos em 'parsed_bgp_summary.json'")
+[151] 
+[152] except FileNotFoundError:
+[153]     logger.error("Arquivo mock não encontrado!", exc_info=True)
+[154] except Exception as e:
+[155]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)
 ```
 
 **Saída**
@@ -2672,6 +2668,159 @@ Peer: 10.0.0.3
 ```
 
 **Explicação**
+
+```python
+Bloco 1: Importações de bibliotecas
+
+[001] #----Seção de Importação ----
+[002] import logging                                                              # Biblioteca padrão para registro de logs
+[003] from genie.libs.parser.iosxe.show_bgp import ShowBgpSummary                 # Parser Genie para BGP
+[004] import json                                                                 # Manipulação de arquivos JSON
+[005] import os                                                                   # Operações do sistema operacional
+[006] from pyats.datastructures import AttrDict                                   # Estrutura de dados do pyATS
+
+Bloco 2: Configuração de Logging
+
+[008] # --- Configuração do Logging ---
+[009] os.makedirs('logs', exist_ok=True)                                          # Cria diretório de logs se não existir
+[011] logging.basicConfig(                                                        # Configuração básica do sistema de logs
+[012]     level=logging.INFO,                                                     # Nível de log (INFO)
+[013]     format='%(asctime)s - %(levelname)s - %(message)s',                     # Formato da mensagem
+[014]     handlers=[                                                              # Destinos dos logs
+[015]         logging.FileHandler('logs/bgp_summary_parser.log'),                 # Arquivo de log
+[016]         logging.StreamHandler()                                             # Saída no console
+[017]     ]
+[018] )
+[019] logger = logging.getLogger(__name__)                                        # Cria o logger principal
+
+Bloco 3: Dispositivo Simulado
+
+[021] # --- Dispositivo Simulado ---
+[022] class DummyDevice:                                                          # Simula um dispositivo de rede para o parser Genie
+[023]     def __init__(self, os='iosxe'):                                         # Construtor com OS padrão IOS-XE
+[024]         self.os = os                                                        # Define o sistema operacional
+[025]         self.custom = {'abstraction': {'order': ['os']}}                    # Estrutura necessária para o Genie
+
+Bloco 4: Funções de Parsing
+
+[027] # --- Função de Parsing Robustecida ---
+[028] def parse_bgp_output(raw_output):                                           # Função principal de parsing
+[029]     try:                                                                    # Início do bloco try para tratamento de erros
+[030]         device = DummyDevice()                                              # Cria dispositivo simulado
+[032]         # Tenta primeiro com o parser do Genie
+[033]         try:                                                                # Bloco try aninhado para parser Genie
+[034]             parsed = ShowBgpSummary(device).parse(output=raw_output)        # Parse com Genie
+[035]             logger.info("Parseado com sucesso usando ShowBgpSummary")       # Log de sucesso no parsing
+[036]             return parsed                                                   # Retorna resultado parseado
+[038]         except Exception as genie_error:                                    # Fallback se o Genie falhar
+[039]             logger.warning(f"Parser Genie falhou: {str(genie_error)}")      # Log do erro específico do Genie
+[040]             logger.info("Tentando parser alternativo...")                   # Log informativo sobre fallback
+[041]             return custom_bgp_parser(raw_output)                            # Usa parser customizado
+[043]     except Exception as e:                                                  # Tratamento de erros globais
+[044]         logger.error(f"Falha crítica no parsing: {str(e)}", exc_info=True)  # Log de erro com stacktrace completo
+[045]         raise                                                               # Relança a exceção para tratamento externo
+
+[047]  def custom_bgp_parser(raw_output):                                         # Parser alternativo
+[048]     """Parser alternativo personalizado"""
+[049]     parsed = {                                                              # Estrutura básica de retorno
+[050]         'bgp_id': None,                                                     # Router ID do BGP
+[051]         'vrf': {                                                            # Virtual Routing Forwarding
+[052]             'default': {                                                    # VRF padrão
+[053]                 'neighbor': {}                                              # Dicionário de vizinhos
+[054]             }
+[055]         }
+[056]     }
+[058]     for line in raw_output.splitlines():                                    # Processa cada linha
+[059]         line = line.strip()                                                 # Remove espaços extras
+[061]         # Extrai BGP Router ID
+[062]         if 'BGP router identifier' in line:                                 # Linha com Router ID
+[063]             parsed['bgp_id'] = line.split()[3].rstrip(',')                  # Extrai o IP
+[064]             continue
+[066]         # Extrai vizinhos BGP
+[067]         parts = line.split()                                                # Divide a linha em partes
+[068]         if len(parts) >= 10 and parts[0].count('.') == 3:                   # Verifica formato de IP
+[069]             neighbor_ip = parts[0]                                          # IP do vizinho
+[070]             neighbor_data = {                                               # Estrutura dos dados do vizinho
+[071]                 'address_family': {
+[072]                     '': {                                                   # Address family vazio (padrão)
+[073]                         'version': int(parts[1]),                           # Versão BGP
+[074]                         'as': int(parts[2]),                                # Número do AS
+[075]                         'msg_rcvd': int(parts[3]),                          # Mensagens recebidas
+[076]                         'msg_sent': int(parts[4]),                          # Mensagens enviadas
+[077]                         'tbl_ver': int(parts[5]),                           # Versão da tabela
+[078]                         'input_queue': int(parts[6]),                       # Fila de entrada
+[079]                         'output_queue': int(parts[7]),                      # Fila de saída
+[080]                         'up_down': parts[8],                                # Tempo de conexão
+[081]                         'state_pfxrcd': parts[9],                           # Estado e prefixos
+[082]                         'bgp_table_version': 42,                            # Valor padrão
+[083]                         'routing_table_version': 42                         # Valor padrão
+[084]                     }
+[085]                 }
+[086]             }
+[087]             parsed['vrf']['default']['neighbor'][neighbor_ip] = neighbor_data # Armazena dados do vizinho na estrutura
+[089]     return parsed
+
+Bloco 5: Processamento Principal
+
+[092] try:  # Bloco principal try-catch
+[093]     logger.info("Iniciando parsing de BGP summary...")                      # Registra início do processo no log com nível INFO
+[095]     # 1. Carrega o mock file
+[096]     with open('mock_data/show_bgp_summary.txt') as f:                       # Abre arquivo mock
+[097]         raw_output = f.read()                                               # Lê todo o conteúdo
+[098]     logger.debug(f"Conteúdo do mock file:\n{raw_output}")                   # Log do conteúdo
+[101]     # 2. Parsing robusto
+[102]     parsed = parse_bgp_output(raw_output)                                   # Chama função de parsing
+[104]     # 3. Garante estrutura mínima válida
+[105]     if 'vrf' not in parsed:                                                 # Verifica se existe VRF
+[106]         parsed['vrf'] = {'default': {'neighbor': {}}}                       # Cria se não existir
+[107]     elif 'default' not in parsed['vrf']:                                    # Verifica VRF default
+[108]         parsed['vrf']['default'] = {'neighbor': {}}                         # Cria se não existir
+[109]     logger.info(f"Dados parseados:\n{json.dumps(parsed, indent=2)}")        # Log dos dados
+[112]     # 4. Processa peers BGP (versão corrigida)
+[113]     print("\n=== Resumo BGP ===")                                           # Cabeçalho de saída
+[114]     print(f"BGP Router ID: {parsed.get('bgp_id', 'N/A')}\n")                # Mostra Router ID
+[116]     for vrf, vrf_data in parsed.get('vrf', {}).items():                     # Itera VRFs
+[117]         print(f"VRF: {vrf}")                                                # Nome da VRF
+[118]         print("-" * 40)                                                     # Linha separadora
+[120]         for neighbor, data in vrf_data.get('neighbor', {}).items():         # Itera vizinhos
+[121]             # Acessa os dados na estrutura correta
+[122]             af_data = data.get('address_family', {}).get('', {})            # Dados do AF
+[125]             # Determina estado
+[126]             state_pfx = af_data.get('state_pfxrcd', '')                     # Estado e prefixos
+[127]             if isinstance(state_pfx, str) and state_pfx.isdigit():          # Established com prefixos
+[128]                 state = "✅ ESTABLISHED"                                    # Define estado da sessão BGP como estabelecida com emoji de confirmação
+[129]                 prefixes = int(state_pfx)                                   # Converte o número de prefixos recebidos para inteiro
+[130]             elif state_pfx == 'Established':                                # Established sem contador
+[131]                 state = "✅ ESTABLISHED"                                    # Define o estado da sessão BGP como estabelecida (com ícone visual de sucesso)
+[132]                 prefixes = 0                                                # Inicializa contador de prefixos com zero (estado não estabelecido ou sem rotas)
+[133]             else:                                                           # Outros estados
+[134]                 state = f"❌ {state_pfx}"                                   # Marca estado da sessão como falha (com ícone) e mostra o código de erro BGP
+[135]                 prefixes = 0                                                # Inicializa contador de prefixos com zero (estado não estabelecido ou sem rotas)
+[137]             # Obtém demais campos
+[138]             as_number = af_data.get('as', 'N/A')                            # Número do AS
+[139]             uptime = af_data.get('up_down', 'N/A')                          # Tempo de conexão
+[140]             print(f"Peer: {neighbor}")                                      # IP do vizinho
+[141]             print(f"  AS: {as_number}")                                     # AS do vizinho
+[142]             print(f"  Estado: {state}")                                     # Estado da sessão
+[143]             print(f"  Uptime: {uptime}")                                    # Tempo de conexão
+[144]             print(f"  Prefixos recebidos: {prefixes}")                      # Prefixos recebidos
+[145]             print("-" * 30)                                                 # Separador
+[147]     # 5. Salva em JSON
+[148]     with open('parsed_bgp_summary.json', 'w') as f:                         # Abre arquivo JSON
+[149]         json.dump(parsed, f, indent=2)                                      # Escreve dados formatados
+[150]     logger.info("Resultados salvos em 'parsed_bgp_summary.json'")           # Log de confirmação
+[152] except FileNotFoundError:                                                   # Tratamento de arquivo não encontrado
+[153]     logger.error("Arquivo mock não encontrado!", exc_info=True)             # Log de erro crítico com stacktrace completo (arquivo de dados ausente)
+                                                                                           # 1 .Nível de log - Especifica que é um erro crítico
+                                                                                           # 2. Recurso técnico - Menciona a inclusão do stacktrace (exc_info)
+                                                                                           # 3. Contexto - Indica que se trata de um arquivo de dados mockados
+                                                                                           # 4. Formato - Alinhamento na coluna 80 e estrutura concisa
+[154] except Exception as e:                                                      # Tratamento de outros erros
+[155]     logger.error(f"Falha crítica: {str(e)}", exc_info=True)                 # Registra erro não tratado com mensagem e stacktrace completo no log
+                                                                                           # 1. Tipo de log - Identifica como registro de erro não tratado
+                                                                                           # 2. Conteúdo - Explica que inclui mensagem de erro + stacktrace
+                                                                                           # 3. Técnica - Menciona o uso de f-string para formatação dinâmica
+```
 
 ---
 Continuar
