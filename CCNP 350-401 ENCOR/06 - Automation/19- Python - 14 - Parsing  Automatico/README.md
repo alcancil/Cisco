@@ -1822,8 +1822,9 @@ Bloco 9 — Ponto de entrada
 **📁 Estrutura do Projeto**
 
 ```bash
-ospf_neighbor_example/
+05_show_ip_ospf_neighbor/
 ├── mock_data/
+│   ├── parsed_ospf_neighbor.json    # Arquivo .json com a saída parseada do comando show ip ospf neighbor    
 │   └── show_ip_ospf_neighbor.txt    # Saída simulada do comando
 ├── logs/
 │   └── ospf_parser.log              # Arquivo de logs (será criado automaticamente)
