@@ -56,6 +56,7 @@
     - [Exemplo 05: show ip ospf neighbor](#exemplo-05-show-ip-ospf-neighbor)
     - [Exemplo 06: show ip eigrp neighbors](#exemplo-06-show-ip-eigrp-neighbors)
     - [Exemplo 07: show bgp summary](#exemplo-07-show-bgp-summary)
+    - [Exemplo 08: show ip route](#exemplo-08-show-ip-route)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -2820,6 +2821,224 @@ Bloco 5: Processamento Principal
                                                                                            # 1. Tipo de log - Identifica como registro de erro não tratado
                                                                                            # 2. Conteúdo - Explica que inclui mensagem de erro + stacktrace
                                                                                            # 3. Técnica - Menciona o uso de f-string para formatação dinâmica
+```
+
+### Exemplo 08: show ip route
+
+**Objetivo:**
+
+**📁 Estrtura do projeto**
+
+```bash
+07_show_ip_route/
+├── mock_data/
+│   └── show_ip_route.txt            # Arquivo com saída simulada do comando
+├── logs/
+│   └── ip_route_parser.log          # Arquivo de logs (gerado automaticamente)
+├── parsed_ip_route.json             # Resultado do parsing (gerado automaticamente)
+└── parse_ip_route.py                # Script principal
+```
+
+**mock_data/show_ip_route.txt**
+
+```bash
+# =============================================
+# MOCK: show ip route
+# Dispositivo: Cisco IOS-XE 17.06.01 (Catalyst 9300)
+# Comando exato: show ip route | exclude Codes
+# Última atualização: 2025-07-14
+# Formato compatível com Genie Parser v22.4
+# =============================================
+
+O      10.1.1.0/24 [110/5] via 192.168.1.1, 00:30:15, GigabitEthernet0/1
+C      192.168.1.0/24 is directly connected, GigabitEthernet0/1
+S      203.0.113.0/24 [1/0] via 192.168.1.2
+```
+
+**parse_ip_route.py**
+
+```python
+[01] import logging
+[02] from genie.libs.parser.iosxe.show_routing import ShowIpRoute
+[03] import json
+[04] import os
+[05] 
+[06] # Configuração completa do logging
+[07] os.makedirs('logs', exist_ok=True)
+[08] logging.basicConfig(
+[09]     level=logging.INFO,
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',
+[11]     handlers=[
+[12]         logging.FileHandler('logs/ip_route_parser.log'),
+[13]         logging.StreamHandler()
+[14]     ]
+[15] )
+[16] logger = logging.getLogger(__name__)
+[17] 
+[18] class DummyDevice:
+[19]     def __init__(self):
+[20]         self.os = 'iosxe'
+[21]         self.custom = {'abstraction': {'order': ['os']}}
+[22] 
+[23] def parse_ip_route():
+[24]     try:
+[25]         # 1. Carrega mock file
+[26]         with open('mock_data/show_ip_route.txt') as f:
+[27]             output = f.read()
+[28]             logger.info(f"Processando saída de:\n{output.split('# =')[0]}")
+[29]         
+[30]         # 2. Parsing com Genie
+[31]         parsed = ShowIpRoute(DummyDevice()).parse(output=output)
+[32]         
+[33]         # 3. Exibe resumo simplificado
+[34]         print("\n=== Rotas Detectadas ===")
+[35]         for route in parsed['vrf']['default']['address_family']['ipv4']['routes'].values():
+[36]             next_hop = route.get('next_hop', {}).get('next_hop', 'Direct')
+[37]             print(f"{route['source_protocol'].upper()}: {route['route']}")
+[38]             print(f"Saída: {next_hop}")
+[39]             print(f"Interface: {route.get('next_hop', {}).get('outgoing_interface', 'N/A')}")
+[40]             print("-" * 30)
+[41]         
+[42]         # 4. Salva JSON completo
+[43]         os.makedirs('output', exist_ok=True)
+[44]         with open('parsed_ip_route.json', 'w') as f:
+[45]             json.dump(parsed, f, indent=2)
+[46]             logger.info("JSON salvo em: output/parsed_ip_route.json")
+[47]         
+[48]         # 5. Mostra JSON parseado (opcional)
+[49]         print("\n=== Estrutura JSON Completa ===")
+[50]         print(json.dumps(parsed, indent=2)[:500] + "...")  # Mostra apenas início do JSON
+[51] 
+[52]     except Exception as e:
+[53]         logger.error(f"Erro: {str(e)}", exc_info=True)
+[54] 
+[55] if __name__ == '__main__':
+[56]     parse_ip_route()
+```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/08$ python3 parse_ip_route.py 
+2025-07-14 12:03:24,473 - INFO - Processando saída de:
+
+
+=== Rotas Detectadas ===
+OSPF: 10.1.1.0/24
+Saída: Direct
+Interface: N/A
+------------------------------
+CONNECTED: 192.168.1.0/24
+Saída: Direct
+Interface: {'GigabitEthernet0/1': {'outgoing_interface': 'GigabitEthernet0/1'}}
+------------------------------
+STATIC: 203.0.113.0/24
+Saída: Direct
+Interface: N/A
+------------------------------
+2025-07-14 12:03:24,481 - INFO - JSON salvo em: output/parsed_ip_route.json
+
+=== Estrutura JSON Completa ===
+{
+  "vrf": {
+    "default": {
+      "address_family": {
+        "ipv4": {
+          "routes": {
+            "10.1.1.0/24": {
+              "route": "10.1.1.0/24",
+              "active": true,
+              "metric": 5,
+              "route_preference": 110,
+              "source_protocol_codes": "O",
+              "source_protocol": "ospf",
+              "next_hop": {
+                "next_hop_list": {
+                  "1": {
+                    "index": 1,
+                    "next_hop": "192...
+(genie310) alcancil@linux:~/automacoes/genie/08$ 
+```
+
+**Explicação**
+
+```python
+
+Bloco 1: Importações
+
+[01] import logging                                                                                # Biblioteca padrão para registro de logs
+[02] from genie.libs.parser.iosxe.show_routing import ShowIpRoute                                  # Parser Genie para 'show ip route'
+[03] import json                                                                                   # Manipulação de arquivos JSON
+[04] import os                                                                                     # Operações do sistema de arquivos
+[05] 
+
+Bloco 2: Configuração de Logging
+
+[06] # Configuração completa do logging                                         
+[07] os.makedirs('logs', exist_ok=True)                                                            # Cria diretório de logs se não existir
+[08] logging.basicConfig(                                                                          # Configuração básica do logging
+[09]     level=logging.INFO,                                                                       # Nível de log (INFO)
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',                                       # Formato das mensagens
+[11]     handlers=[                                                                                # Destinos dos logs
+[12]         logging.FileHandler('logs/ip_route_parser.log'),                                      # Arquivo de log
+[13]         logging.StreamHandler()                                                               # Saída no console
+[14]     ]
+[15] )
+[16] logger = logging.getLogger(__name__)                                                          # Cria o logger principal
+[17] 
+
+Bloco 3: Dispositivo Simulado
+
+[18] class DummyDevice:                                                                            # Classe que simula dispositivo de rede
+[19]     def __init__(self):                                                                       # Método construtor
+[20]         self.os = 'iosxe'                                                                     # Define sistema operacional como IOS-XE
+[21]         self.custom = {'abstraction': {'order': ['os']}}                                      # Estrutura exigida pelo Genie
+[22] 
+
+Bloco 4: Função Principal
+
+[23] def parse_ip_route():                                                                         # Função principal de parsing
+[24]     try:                                                                                      # Início do bloco try-catch
+[25]         # 1. Carrega mock file                                                                # Seção de carregamento do arquivo
+[26]         with open('mock_data/show_ip_route.txt') as f:                                        # Abre arquivo mock em modo leitura
+[27]             output = f.read()                                                                 # Lê todo o conteúdo do arquivo
+[28]             logger.info(f"Processando saída de:\n{output.split('# =')[0]}")                   # Log do cabeçalho do mock
+[29]         
+[30]         # 2. Parsing com Genie                                                                # Seção de parsing principal
+[31]         parsed = ShowIpRoute(DummyDevice()).parse(output=output)                              # Executa o parser Genie
+[32]         
+[33]         # 3. Exibe resumo simplificado                                                        # Seção de exibição de resultados
+[34]         print("\n=== Rotas Detectadas ===")                                                   # Cabeçalho da saída
+[35]         for route in parsed['vrf']['default']['address_family']['ipv4']['routes'].values():   # Itera sobre todas as rotas
+[36]             next_hop = route.get('next_hop', {}).get('next_hop', 'Direct')                    # Obtém next_hop com fallback seguro
+[37]             print(f"{route['source_protocol'].upper()}: {route['route']}")                    # Exibe protocolo e rota
+[38]             print(f"Saída: {next_hop}")                                                       # Exibe próximo salto
+[39]             print(f"Interface: {route.get('next_hop', {}).get('outgoing_interface', 'N/A')}") # Exibe interface de saída
+[40]             print("-" * 30)                                                                   # Separador visual
+[41]         
+[42]         # 4. Salva JSON completo                                                              # Seção de persistência dos dados
+[43]         os.makedirs('output', exist_ok=True)                                                  # Cria diretório de output se necessário
+[44]         with open('parsed_ip_route.json', 'w') as f:                                          # Abre arquivo JSON para escrita
+[45]             json.dump(parsed, f, indent=2)                                                    # Escreve dados formatados
+[46]             logger.info("JSON salvo em: output/parsed_ip_route.json")                         # Log de confirmação
+[47]         
+[48]         # 5. Mostra JSON parseado (opcional)                                         
+[49]         print("\n=== Estrutura JSON Completa ===")                                            # Cabeçalho do JSON
+[50]         print(json.dumps(parsed, indent=2)[:500] + "...")                                     # Exibe início do JSON (limitado a 500 chars)
+[51] 
+[52]     except Exception as e:                                                                    # Tratamento de erros globais
+[53]         logger.error(f"Erro: {str(e)}", exc_info=True)                                        # Log do erro com stacktrace
+[54] 
+
+Bloco 5: Ponto de Entrada
+
+[55] if __name__ == '__main__':                                                                    # Verifica se é execução direta
+[56]     parse_ip_route()                                                                          # Chama função principal
 ```
 
 ---
