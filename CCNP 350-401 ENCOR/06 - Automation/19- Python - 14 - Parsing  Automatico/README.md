@@ -1822,6 +1822,9 @@ Bloco 9 — Ponto de entrada
 
 ### Exemplo 05: show ip ospf neighbor
 
+**Objetivo:**  
+Utilizar o parser do Genie para interpretar a saída do comando show ip ospf neighbor, identificando o estado das vizinhanças OSPF (FULL, BDR, DOWN, etc.) em diferentes interfaces. O script exibe um resumo no terminal e salva a saída estruturada em formato JSON para posterior análise ou automação.
+
 **📁 Estrutura do Projeto**
 
 ```bash
@@ -2385,6 +2388,9 @@ Bloco 6: Salvamento e Tratamento de Erros
 
 ### Exemplo 07: show bgp summary
 
+**Objetivo:**  
+Demonstrar como utilizar o parser do Genie para interpretar a saída do comando show bgp summary em dispositivos Cisco IOS-XE. O script analisa os dados de vizinhança BGP, exibe um resumo do estado das sessões (AS, uptime, prefixos), e salva o resultado completo em formato JSON para fins de validação ou monitoramento.
+
 **📁 Estrtura do Projeto**
 
 ```bash
@@ -2825,7 +2831,9 @@ Bloco 5: Processamento Principal
 
 ### Exemplo 08: show ip route
 
-**Objetivo:**
+**Objetivo:**  
+Demonstrar como utilizar o Genie Parser para extrair, interpretar e exibir rotas de um dispositivo Cisco IOS-XE a partir de uma saída simulada do comando show ip route.
+O script realiza o parsing da saída mock, exibe um resumo das rotas detectadas no terminal e salva o resultado completo em formato JSON para análise posterior
 
 **📁 Estrtura do projeto**
 
