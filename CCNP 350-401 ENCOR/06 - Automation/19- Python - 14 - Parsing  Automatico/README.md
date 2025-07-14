@@ -57,6 +57,7 @@
     - [Exemplo 06: show ip eigrp neighbors](#exemplo-06-show-ip-eigrp-neighbors)
     - [Exemplo 07: show bgp summary](#exemplo-07-show-bgp-summary)
     - [Exemplo 08: show ip route](#exemplo-08-show-ip-route)
+    - [Exemplo 09: show running-config](#exemplo-09-show-running-config)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -3047,6 +3048,226 @@ Bloco 5: Ponto de Entrada
 
 [55] if __name__ == '__main__':                                                                    # Verifica se é execução direta
 [56]     parse_ip_route()                                                                          # Chama função principal
+```
+
+### Exemplo 09: show running-config 
+
+**Objetivo:**  
+Utilizar o parser do Genie para processar a saída do comando show running-config, com foco em auditoria de elementos críticos como ACLs, configurações de SNMP e descrições de interfaces. O script analisa e exibe possíveis pontos de verificação para segurança e compliance, salvando os dados estruturados em JSON para análise posterior.
+
+**📁 Estrutura do Projeto**
+
+```bash
+09_running_config_audit/
+├── mock_data/
+│   └── show_running_config.txt      # Saída simulada do comando
+├── logs/
+│   └── running_config_parser.log    # Arquivo de logs (gerado automaticamente)
+├── output/
+│   └──parsed_running_config.json    # Resultado do parsing (gerado automaticamente)
+└── parse_running_config.py          # Script principal
+```
+
+**mock_data/show_running_config.txt**
+
+```bash
+# =============================================
+# MOCK: show running-config (Formato Genie-Compatible)
+# =============================================
+!
+interface GigabitEthernet0/0
+ description Uplink para Core
+ ip address 192.168.0.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description Link para DMZ
+ ip address 10.0.0.1 255.255.255.0
+!
+router bgp 65000
+ bgp router-id 1.1.1.1
+ neighbor 192.168.1.2 remote-as 65001
+!
+end
+
+```
+
+**parse_running_config.py**
+
+```python
+[001] import logging
+[002] import json
+[003] import os
+[004] import datetime
+[005] from genie.libs.parser.iosxe.show_run import (
+[006]     ShowRunInterface,
+[007]    ShowRunSectionBgp,
+[008]    ShowRunSectionVrfDefinition
+[009] )
+[010] 
+[011] # --- Configuração de Logging ---
+[012] os.makedirs('logs', exist_ok=True)
+[013] logging.basicConfig(
+[014]     level=logging.INFO,
+[015]     format='%(asctime)s - %(levelname)s - %(message)s',
+[016]     handlers=[
+[017]         logging.FileHandler('logs/running_config_parser.log'),
+[018]         logging.StreamHandler()
+[019]     ]
+[020] )
+[021] logger = logging.getLogger(__name__)
+[022] 
+[023] class DummyDevice:
+[024]     def __init__(self):
+[025]         self.os = 'iosxe'
+[026]         self.custom = {'abstraction': {'order': ['os']}}
+[027] 
+[028] def parse_config_safely(parser, config, section_name):
+[029]     """Parsing robusto com tratamento de erros"""
+[030]     try:
+[031]         device = DummyDevice()
+[032]         result = parser(device).parse(output=config)
+[033]         if not result:
+[034]             logger.debug(f"Seção {section_name} vazia")
+[035]             return {}
+[036]         return result
+[038]     except Exception as e:
+[039]         logger.debug(f"Seção {section_name} não analisada - {str(e)}")
+[040]         return {}
+[041] 
+[042] def get_bgp_info(bgp_data):
+[043]     """Extrai informações BGP da estrutura complexa"""
+[044]     if not bgp_data or 'bgp' not in bgp_data:
+[045]         return None, None
+[046]     
+[047]     bgp_info = bgp_data['bgp']
+[048]     # Para estrutura {'bgp': {'65000': {'as_number': 65000, ...}}}
+[049]     if isinstance(bgp_info, dict) and len(bgp_info) > 0:
+[050]         first_as = next(iter(bgp_info.values()))
+[051]         return first_as.get('as_number'), first_as.get('router_id')
+[052]     
+[053]     return None, None
+[054] 
+[055] def parse_running_config():
+[056]     try:
+[057]         logger.info("Iniciando análise de configuração...")
+[058]         
+[059]         # 1. Carrega configuração
+[060]         with open('mock_data/show_running_config.txt', 'r') as f:
+[061]             config = f.read()
+[062]         
+[063]         # 2. Parsing seletivo
+[064]         parsed_data = {
+[065]             'interfaces': parse_config_safely(ShowRunInterface, config, 'Interfaces'),
+[066]             'bgp': parse_config_safely(ShowRunSectionBgp, config, 'BGP'),
+[067]             'vrf': parse_config_safely(ShowRunSectionVrfDefinition, config, 'VRF'),
+[068]             'metadata': {
+[069]                 'source_file': 'show_running_config.txt',
+[070]                 'parse_time': datetime.datetime.now().isoformat()
+[071]             }
+[072]         }
+[073]         
+[074]         # 3. Exibe resultados
+[075]         print("\n=== RESUMO DA CONFIGURAÇÃO ===")
+[076]        
+[077]         # Interfaces
+[078]         interfaces = parsed_data['interfaces'].get('interfaces', {})
+[079]         print(f"\n🔌 Interfaces ({len(interfaces)}):")
+[080]         for intf, cfg in interfaces.items():
+[081]             print(f"  - {intf}: {cfg.get('description', 'Sem descrição')}")
+[082]         
+[083]         # BGP (extração correta dos dados)
+[084]         as_number, router_id = get_bgp_info(parsed_data['bgp'])
+[085]         print("\n🔄 Configuração BGP:")
+[086]         print(f"  AS: {as_number if as_number else 'N/A'}")
+[087]         print(f"  Router ID: {router_id if router_id else 'N/A'}")
+[088]         
+[089]         # 4. Salva resultados
+[090]         os.makedirs('output', exist_ok=True)
+[091]         output_file = 'output/parsed_running_config.json'
+[092]         with open(output_file, 'w') as f:
+[093]             json.dump(parsed_data, f, indent=2)
+[094]        
+[095]         logger.info(f"Análise concluída. Resultados em {output_file}")
+[096]         
+[097]     except Exception as e:
+[098]         logger.error(f"Falha na análise: {str(e)}", exc_info=True)
+[099] 
+[100] if __name__ == '__main__':
+[101]     parse_running_config()
+```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/09$ python3 parse_running_config.py 
+2025-07-14 15:56:37,248 - INFO - Iniciando análise de configuração...
+
+=== RESUMO DA CONFIGURAÇÃO ===
+
+🔌 Interfaces (2):
+  - GigabitEthernet0/0: Uplink para Core
+  - GigabitEthernet0/1: Link para DMZ
+
+🔄 Configuração BGP:
+  AS: 65000
+  Router ID: 1.1.1.1
+2025-07-14 15:56:37,268 - INFO - Análise concluída. Resultados em output/parsed_running_config.json
+(genie310) alcancil@linux:~/automacoes/genie/09$ ls -la
+total 32
+drwxrwxr-x  6 alcancil alcancil 4096 jul 14 15:51 .
+drwxrwxr-x 12 alcancil alcancil 4096 jul 14 14:56 ..
+drwxrwxr-x  6 alcancil alcancil 4096 jul 12 17:13 genie310
+drwxrwxr-x  2 alcancil alcancil 4096 jul 14 15:48 logs
+drwxrwxr-x  2 alcancil alcancil 4096 jul 14 15:33 mock_data
+drwxrwxr-x  2 alcancil alcancil 4096 jul 14 15:48 output
+-rw-r--r--  1 root     root     3395 jul 14 15:51 parse_running_config.py
+-rw-rw-r--  1 alcancil alcancil    8 jul 14 15:24 .python-version
+(genie310) alcancil@linux:~/automacoes/genie/09$ cat output/parsed_running_config.json 
+{
+  "interfaces": {
+    "interfaces": {
+      "GigabitEthernet0/0": {
+        "description": "Uplink para Core",
+        "ipv4": {
+          "ip": "192.168.0.1",
+          "netmask": "255.255.255.0"
+        }
+      },
+      "GigabitEthernet0/1": {
+        "description": "Link para DMZ",
+        "ipv4": {
+          "ip": "10.0.0.1",
+          "netmask": "255.255.255.0"
+        }
+      }
+    }
+  },
+  "bgp": {
+    "bgp": {
+      "65000": {
+        "as_number": 65000,
+        "router_id": "1.1.1.1",
+        "neighbors": {
+          "192.168.1.2": {
+            "peer_as_number": "65001"
+          }
+        }
+      }
+    }
+  },
+  "vrf": {},
+  "metadata": {
+    "source_file": "show_running_config.txt",
+    "parse_time": "2025-07-14T15:56:37.267606"
+  }
+}(genie310) alcancil@linux:~/automacoes/genie/09$ 
 ```
 
 ---
