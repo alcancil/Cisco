@@ -3270,6 +3270,126 @@ drwxrwxr-x  2 alcancil alcancil 4096 jul 14 15:48 output
 }(genie310) alcancil@linux:~/automacoes/genie/09$ 
 ```
 
+**Explicação**
+
+```python
+Bloco 1 – Importações
+
+[001] import logging                                                                          # Para gerar logs de execução
+[002] import json                                                                             # Para salvar e manipular os dados em formato JSON
+[003] import os                                                                               # Para manipulação de arquivos e diretórios
+[004] import datetime                                                                         # Para registrar a data/hora da análise
+[005] from genie.libs.parser.iosxe.show_run import (                                          # Importa parsers específicos do show running-config
+[006]     ShowRunInterface,                                                                   # Parser da seção de interfaces
+[007]     ShowRunSectionBgp,                                                                  # Parser da seção BGP
+[008]     ShowRunSectionVrfDefinition                                                         # Parser da seção VRF
+[009] )
+
+Bloco 2 – Configuração do Logging
+
+[011] # --- Configuração de Logging ---
+[012] os.makedirs('logs', exist_ok=True)                                                      # Garante que o diretório de logs existe
+[013] logging.basicConfig(                                                                    # Define o formato e destino dos logs
+[014]     level=logging.INFO,                                                                 # Nível de log (INFO)
+[015]     format='%(asctime)s - %(levelname)s - %(message)s',                                 # Formato de saída
+[016]     handlers=[                                                                          # Lista de destinos para onde os logs serão enviados
+[017]         logging.FileHandler('logs/running_config_parser.log'),                          # Log em arquivo
+[018]         logging.StreamHandler()                                                         # Log no console
+[019]     ]                                                                                   # Fim da lista de handlers
+[020] )                                                                                       # Finaliza a configuração de logging
+[021] logger = logging.getLogger(__name__)                                                    # Cria o logger
+
+Bloco 3 – Classe DummyDevice para simulação offline
+
+[023] class DummyDevice:                                                                      # Dispositivo fictício para parsing offline com Genie
+[024]     def __init__(self):                                                                 # Método construtor da classe (executado na criação da instância)
+[025]         self.os = 'iosxe'                                                               # Define o sistema operacional
+[026]         self.custom = {'abstraction': {'order': ['os']}}                                # Necessário para os parsers Genie
+
+Bloco 4 – Função de parsing seguro
+
+[028] def parse_config_safely(parser, config, section_name):                                  # Abstrai a lógica de parsing com tratamento de erro
+[029]     """Parsing robusto com tratamento de erros"""
+[030]     try:                                                                                # Início do bloco try para capturar falhas
+[031]         device = DummyDevice()                                                          # Instancia o dummy device
+[032]         result = parser(device).parse(output=config)                                    # Executa o parser com a saída simulada
+[033]         if not result:                                                                  # Verifica se o parser retornou dados
+[034]             logger.debug(f"Seção {section_name} vazia")                                 # Log se nenhum resultado
+[035]             return {}                                                                   # Retorna dicionário vazio se a seção estiver vazia
+[036]         return result                                                                   # Retorna o resultado se bem-sucedido
+[038]     except Exception as e:                                                              # Captura qualquer exceção que ocorra durante o parsing
+[039]         logger.debug(f"Seção {section_name} não analisada - {str(e)}")                  # Log de erro (modo debug)
+[040]         return {}                                                                       # Retorna estrutura vazia se falhar
+
+Bloco 5 – Função para extrair info BGP
+
+[042] def get_bgp_info(bgp_data):                                                             # Função para extrair AS e Router ID da estrutura BGP
+[043]     """Extrai informações BGP da estrutura complexa"""
+[044]     if not bgp_data or 'bgp' not in bgp_data:                                           # Verifica se BGP está presente
+[045]         return None, None                                                               # Retorna valores nulos se não houver dados BGP
+[047]     bgp_info = bgp_data['bgp']                                                          # Acessa o conteúdo da chave 'bgp'
+[049]     if isinstance(bgp_info, dict) and len(bgp_info) > 0:                                # Se estrutura válida
+[050]         first_as = next(iter(bgp_info.values()))                                        # Pega o primeiro AS definido
+[051]         return first_as.get('as_number'), first_as.get('router_id')                     # Retorna AS e Router ID
+[053]     return None, None                                                                   # Se falhar
+
+Bloco 6 – Função principal do script
+
+[055] def parse_running_config():                                                             # Define a função principal de parsing
+[056]     try:                                                                                # Bloco try para capturar falhas durante o processo
+[057]         logger.info("Iniciando análise de configuração...")                             # Log inicial indicando início do processo
+
+Bloco 7 – Leitura da saída simulada
+
+[059]         # 1. Carrega configuração
+[060]         with open('mock_data/show_running_config.txt', 'r') as f:                       # Abre o arquivo mock com a saída do comando
+[061]             config = f.read()                                                           # Lê todo o conteúdo do arquivo
+
+Bloco 8 – Parsing com módulos específicos
+
+[063]         # 2. Parsing seletivo
+[064]         parsed_data = {                                                                  # Cria um dicionário com as seções parseadas
+[065]             'interfaces': parse_config_safely(ShowRunInterface, config, 'Interfaces'),   # Interfaces
+[066]             'bgp': parse_config_safely(ShowRunSectionBgp, config, 'BGP'),                # BGP
+[067]             'vrf': parse_config_safely(ShowRunSectionVrfDefinition, config, 'VRF'),      # VRFs
+[068]             'metadata': {                                                                # Dados de contexto
+[069]                 'source_file': 'show_running_config.txt',                                # Nome do mock
+[070]                 'parse_time': datetime.datetime.now().isoformat()                        # Timestamp
+[071]             }
+[072]         }
+
+Bloco 9 – Exibição de resultados
+
+[074]         # 3. Exibe resultados
+[075]         print("\n=== RESUMO DA CONFIGURAÇÃO ===")                                        # Título da seção de saída
+[078]         interfaces = parsed_data['interfaces'].get('interfaces', {})                     # Extrai interfaces parseadas
+[079]         print(f"\n🔌 Interfaces ({len(interfaces)}):")                                   # Exibe a quantidade de interfaces encontradas
+[080]         for intf, cfg in interfaces.items():                                             # Percorre e exibe as descrições
+[081]             print(f"  - {intf}: {cfg.get('description', 'Sem descrição')}")              # Mostra o nome da interface e sua descrição
+[084]         as_number, router_id = get_bgp_info(parsed_data['bgp'])                          # Extrai AS e Router ID
+[085]         print("\n🔄 Configuração BGP:")                                                  # Título da seção BGP
+[086]         print(f"  AS: {as_number if as_number else 'N/A'}")                              # Mostra o número do AS ou N/A
+[087]         print(f"  Router ID: {router_id if router_id else 'N/A'}")                       # Mostra o Router ID ou N/A
+
+Bloco 10 – Salvando resultado em JSON
+
+[090]         os.makedirs('output', exist_ok=True)                                              # Garante que a pasta output existe
+[091]         output_file = 'output/parsed_running_config.json'                                 # Nome do arquivo de saída
+[092]         with open(output_file, 'w') as f:                                                 # Abre o arquivo
+[093]             json.dump(parsed_data, f, indent=2)                                           # Salva em formato JSON indentado
+[095]         logger.info(f"Análise concluída. Resultados em {output_file}")                    # Log final
+
+Bloco 11 – Tratamento de erros
+
+[097]     except Exception as e:                                                                # Captura qualquer erro durante a execução
+[098]         logger.error(f"Falha na análise: {str(e)}", exc_info=True)                        # Log de erro completo
+
+Bloco 12 – Execução
+
+[100] if __name__ == '__main__':                                                                # Garante que só será executado se chamado diretamente
+[101]     parse_running_config()                                                                # Chama a função principal
+```
+
 ---
 Continuar
 
