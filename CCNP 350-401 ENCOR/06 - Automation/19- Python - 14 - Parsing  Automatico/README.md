@@ -619,6 +619,35 @@ device = DummyDevice(os='iosxe')
 parser = ShowVersion(device=device)  # O parser usa 'os' para selecionar a implementação correta
 ```
 
+**Exemplo Prático e Atributos Essenciais:**
+
+Para que sua classe `DummyDevice` funcione corretamente com os parsers do Genie, ela precisa simular o comportamento de um objeto de dispositivo real do pyATS. 
+
+```python
+# Exemplo da classe DummyDevice para simulação offline:
+class DummyDevice:
+    # Dispositivo fictício para parsing offline com Genie
+    def __init__(self):
+        # Método construtor da classe (executado na criação da instância)
+        self.os = 'iosxe'  # Define o sistema operacional
+        self.custom = {'abstraction': {'order': ['os']}} # Necessário para os parsers Genie
+```
+
+**Entendendo os atributos chave do DummyDevice para o Genie:**
+
+Para que o Genie consiga usar seu DummyDevice para o parsing, alguns atributos são cruciais:
+
+  - **O atributo self.os**: O Genie utiliza o atributo os do objeto Device (ou de qualquer classe que você use como um dispositivo) para determinar qual parser específico usar para um dado comando (show ...). É o mínimo necessário para o Genie saber qual sistema operacional ele está "interagindo" e, consequentemente, qual lógica de parsing aplicar.
+
+  - **O atributo self.custom = {'abstraction': {'order': ['os']}}:** Este é um detalhe mais avançado do pyATS, o framework base do Genie. Ele se refere ao sistema de abstração do pyATS, que permite definir a ordem de prioridade na qual as capacidades (como os, platform, type) de um dispositivo são consideradas para resolver operações e selecionar o parser correto. Ao definir {'abstraction': {'order': ['os']}}, você está garantindo que o os seja o primeiro (e principal) atributo usado para a resolução de abstrações, o que é fundamental para o Genie localizar o parser correto.
+
+**Uso típico:**
+
+```python
+device = DummyDevice(os='iosxe')
+parser = ShowVersion(device=device)  # O parser usa 'os' para selecionar a implementação 
+```
+
 ### Relação entre os Conceitos
 
 ```mermaid
