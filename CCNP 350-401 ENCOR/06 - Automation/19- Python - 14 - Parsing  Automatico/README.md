@@ -3453,67 +3453,67 @@ Pruning VLANs Enabled: 2-1001
 **parse_sitchport.py**
 
 ```python
-import logging
-import os
-import json
-from genie.libs.parser.iosxe.show_interface import ShowInterfacesSwitchport
-
-# --- Configuração de Logging ---
-os.makedirs('logs', exist_ok=True)
-logging.basicConfig(
-    level=logging.DEBUG,  # <--- Ativa DEBUG para ver tudo no log
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/switchport_parser.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
-
-# --- Dummy Device para parsing offline ---
-class DummyDevice:
-    def __init__(self):
-        self.os = 'iosxe'
-        self.custom = {'abstraction': {'order': ['os']}}
-
-# --- Parsing principal ---
-def parse_switchport():
-    try:
-        logger.info("Iniciando análise de switchport...")
-
-        # Lê o arquivo de saída simulada
-        with open('mock_data/show_interfaces_switchport.txt', 'r') as f:
-            raw_output = f.read()
-
-        # Parsing com Genie
-        device = DummyDevice()
-        parsed_data = ShowInterfacesSwitchport(device).parse(output=raw_output)
-
-        logger.debug("Dicionário bruto retornado pelo parser:")
-        logger.debug(json.dumps(parsed_data, indent=2))
-
-        # Exibe resultados no terminal
-        print("\n=== INTERFACES SWITCHPORT ===\n")
-        for intf, data in parsed_data.items():
-            print(f"🔌 Interface: {intf}")
-            print(f"  Modo Operacional: {data.get('operational_mode', 'N/A')}")
-            print(f"  Encapsulamento: {data.get('encapsulation', 'N/A')}")
-            print(f"  VLAN de acesso: {data.get('access_vlan', 'N/A')}")
-            print(f"  VLANs permitidas: {data.get('trunk_vlans', 'N/A')}")
-            print()
-
-        # Salva a saída em JSON
-        os.makedirs('output', exist_ok=True)
-        with open('output/parsed_switchport.json', 'w') as f:
-            json.dump(parsed_data, f, indent=2)
-
-        logger.info("Análise concluída com sucesso.")
-
-    except Exception as e:
-        logger.error(f"Erro ao processar o mock: {str(e)}", exc_info=True)
-
-if __name__ == '__main__':
-    parse_switchport()
+[01] import logging
+[02] import os
+[03] import json
+[04] from genie.libs.parser.iosxe.show_interface import ShowInterfacesSwitchport
+[05] 
+[06] # --- Configuração de Logging ---
+[07] os.makedirs('logs', exist_ok=True)
+[08] logging.basicConfig(
+[09]     level=logging.DEBUG,  # <--- Ativa DEBUG para ver tudo no log
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',
+[11]     handlers=[
+[12]         logging.FileHandler('logs/switchport_parser.log'),
+[13]         logging.StreamHandler()
+[14]     ]
+[15] )
+[16] logger = logging.getLogger(__name__)
+[17] 
+[18] # --- Dummy Device para parsing offline ---
+[19] class DummyDevice:
+[20]     def __init__(self):
+[21]         self.os = 'iosxe'
+[22]         self.custom = {'abstraction': {'order': ['os']}}
+[23] 
+[24] # --- Parsing principal ---
+[25] def parse_switchport():
+[26]     try:
+[27]         logger.info("Iniciando análise de switchport...")
+[28] 
+[29]         # Lê o arquivo de saída simulada
+[30]         with open('mock_data/show_interfaces_switchport.txt', 'r') as f:
+[31]             raw_output = f.read()
+[32] 
+[33]         # Parsing com Genie
+[34]         device = DummyDevice()
+[35]         parsed_data = ShowInterfacesSwitchport(device).parse(output=raw_output)
+[36] 
+[37]         logger.debug("Dicionário bruto retornado pelo parser:")
+[38]         logger.debug(json.dumps(parsed_data, indent=2))
+[39] 
+[40]         # Exibe resultados no terminal
+[41]         print("\n=== INTERFACES SWITCHPORT ===\n")
+[42]         for intf, data in parsed_data.items():
+[43]             print(f"🔌 Interface: {intf}")
+[44]             print(f"  Modo Operacional: {data.get('operational_mode', 'N/A')}")
+[45]             print(f"  Encapsulamento: {data.get('encapsulation', 'N/A')}")
+[46]             print(f"  VLAN de acesso: {data.get('access_vlan', 'N/A')}")
+[47]             print(f"  VLANs permitidas: {data.get('trunk_vlans', 'N/A')}")
+[48]             print()
+[49] 
+[50]         # Salva a saída em JSON
+[51]         os.makedirs('output', exist_ok=True)
+[52]         with open('output/parsed_switchport.json', 'w') as f:
+[53]             json.dump(parsed_data, f, indent=2)
+[54] 
+[55]         logger.info("Análise concluída com sucesso.")
+[56] 
+[57]     except Exception as e:
+[58]         logger.error(f"Erro ao processar o mock: {str(e)}", exc_info=True)
+[59] 
+[60] if __name__ == '__main__':
+[61]     parse_switchport()
 ```
 
 **Saída**
@@ -3605,6 +3605,96 @@ if __name__ == '__main__':
 }
 2025-07-15 12:16:35,819 - INFO - Análise concluída com sucesso.
 (genie310) alcancil@linux:~/automacoes/genie/10$ 
+```
+
+**Explicação**
+
+```python
+Bloco 1 – Importações
+
+[01] import logging                                                                   # Módulo padrão para geração de logs
+[02] import os                                                                        # Usado para manipulação de diretórios e caminhos de arquivos
+[03] import json                                                                      # Usado para salvar os dados parseados em formato JSON
+[04] from genie.libs.parser.iosxe.show_interface import ShowInterfacesSwitchport      # Importa o parser específico para o comando "show interfaces switchport"
+
+Bloco 2 – Configuração de Logging
+
+[06] # --- Configuração de Logging ---
+[07] os.makedirs('logs', exist_ok=True)                                               # Cria a pasta 'logs' se ela ainda não existir
+[08] logging.basicConfig(                                                             # Configuração geral do logging
+[09]     level=logging.DEBUG,                                                         # Define o nível de log como DEBUG para mostrar tudo
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',                          # Define o formato de cada mensagem no log
+[11]     handlers=[                                                                   # Define os destinos de saída dos logs
+[12]         logging.FileHandler('logs/switchport_parser.log'),                       # Log será salvo no arquivo especificado
+[13]         logging.StreamHandler()                                                  # Log também será exibido no terminal
+[14]     ]
+[15] )
+[16] logger = logging.getLogger(__name__)                                             # Cria o objeto de logger para este módulo
+
+Bloco 3 – Dummy Device
+
+[18] # --- Dummy Device para parsing offline ---
+[19] class DummyDevice:                                                               # Classe que simula um dispositivo para uso com o Genie offline
+[20]     def __init__(self):                                                          # Construtor da classe DummyDevice
+[21]         self.os = 'iosxe'                                                        # Define o sistema operacional simulado como IOS-XE
+[22]         self.custom = {'abstraction': {'order': ['os']}}                         # Configuração necessária para o parser funcionar corretamente
+
+Bloco 4 – Função principal de parsing
+
+[24] # --- Parsing principal ---
+[25] def parse_switchport():                                                          # Define a função principal que realiza o parsing
+[26]     try:                                                                         # Inicia o bloco de tratamento de erro
+[27]         logger.info("Iniciando análise de switchport...")                        # Loga o início da análise
+
+Bloco 5 – Leitura do mock file
+
+[29]         # Lê o arquivo de saída simulada
+[30]         with open('mock_data/show_interfaces_switchport.txt', 'r') as f:         # Abre o arquivo mock para leitura
+[31]             raw_output = f.read()                                                # Lê todo o conteúdo do arquivo para uma variável
+
+Bloco 6 – Parsing com Genie
+
+[33]         # Parsing com Genie
+[34]         device = DummyDevice()                                                   # Instancia o dummy device
+[35]         parsed_data = ShowInterfacesSwitchport(device).parse(output=raw_output)  # Executa o parser com o conteúdo simulado
+
+Bloco 7 – Log de depuração do dicionário
+
+[37]         logger.debug("Dicionário bruto retornado pelo parser:")                  # Loga uma mensagem de debug antes de exibir o conteúdo
+[38]         logger.debug(json.dumps(parsed_data, indent=2))                          # Loga o conteúdo do dicionário de forma formatada
+
+Bloco 8 – Exibição formatada no terminal
+
+[40]         # Exibe resultados no terminal
+[41]         print("\n=== INTERFACES SWITCHPORT ===\n")                               # Título de seção no terminal
+[42]         for intf, data in parsed_data.items():                                   # Itera sobre as interfaces retornadas no parser
+[43]             print(f"🔌 Interface: {intf}")                                       # Mostra o nome da interface
+[44]             print(f"  Modo Operacional: {data.get('operational_mode', 'N/A')}")  # Mostra o modo (trunk/access)
+[45]             print(f"  Encapsulamento: {data.get('encapsulation', 'N/A')}")       # Mostra o tipo de encapsulamento
+[46]             print(f"  VLAN de acesso: {data.get('access_vlan', 'N/A')}")         # Mostra a VLAN de acesso
+[47]             print(f"  VLANs permitidas: {data.get('trunk_vlans', 'N/A')}")       # Mostra as VLANs permitidas no trunk
+[48]             print()                                                              # Linha em branco entre interfaces
+
+Bloco 9 – Salvando os dados parseados
+
+[50]         # Salva a saída em JSON
+[51]         os.makedirs('output', exist_ok=True)                                     # Garante que o diretório de saída existe
+[52]         with open('output/parsed_switchport.json', 'w') as f:                    # Abre arquivo de saída para escrita
+[53]             json.dump(parsed_data, f, indent=2)                                  # Salva os dados parseados com indentação
+
+Bloco 10 – Conclusão da análise
+
+[55]         logger.info("Análise concluída com sucesso.")                            # Loga o fim do processo com sucesso
+
+Bloco 11 – Tratamento de exceções
+
+[57]     except Exception as e:                                                       # Captura qualquer exceção que ocorra
+[58]         logger.error(f"Erro ao processar o mock: {str(e)}", exc_info=True)       # Loga o erro com rastreamento completo
+
+Bloco 12 – Execução direta do script
+
+[60] if __name__ == '__main__':                                                       # Verifica se o script está sendo executado diretamente
+[61]     parse_switchport()                                                           # Chama a função principal
 ```
 
 ---
