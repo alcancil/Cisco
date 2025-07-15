@@ -58,6 +58,7 @@
     - [Exemplo 07: show bgp summary](#exemplo-07-show-bgp-summary)
     - [Exemplo 08: show ip route](#exemplo-08-show-ip-route)
     - [Exemplo 09: show running-config](#exemplo-09-show-running-config)
+    - [Exemplo 10: show interfaces switchport](#exemplo-10-show-interfaces-switchport)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -451,20 +452,20 @@ Legenda: ✅✅✅ = Suporte nativo completo | ✅ = Suporte básico
 
 ### Casos de Uso do Genie (do Básico ao Avançado)
 
-| Comando                 | Protocolo/Feature | Aplicação Típica                                                             |
-|-------------------------|-------------------|------------------------------------------------------------------------------|
-| show ip interface brief | Interfaces        | Verificar status (up/down) e endereços IP das interfaces.                    |
-| show version            | Sistema           | Coletar modelo, versão do IOS e tempo de operação (uptime).                  |
-| show vlan brief         | VLANs (Switches)  | Listar VLANs configuradas e portas associadas.                               |
-| show cdp neighbors      | Topologia         | Mapear dispositivos vizinhos e conexões.                                     |
-| show ip ospf neighbor   | OSPF              | Verificar adjacências (FULL/DOWN) e problemas de vizinhança.                 |
-| show ip eigrp neighbors | EIGRP             | Monitorar estabilidade de vizinhos EIGRP.                                    |
-| show bgp summary        | BGP               | Checar sessões com peers (estabelecidas/pendentes) e contagem de rotas.      |
-| show ip route	          | Roteamento	      | Analisar rotas (OSPF, EIGRP, estáticas) e métricas.                          |
-| show running-config     | Configuração      | Auditoria de segurança (ACLs, SNMP) ou compliance (descrição de interfaces). |
-| show interface trunk    | VLANs (Trunks)    | Verificar trunks configurados e modo de encapsulamento (802.1Q).             |
-| Snapshot (antes/depois) | Todos             | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).      |
-| show tech-support       | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).              |
+| Comando                    | Protocolo/Feature  | Aplicação Típica                                                                         |
+|----------------------------|--------------------|------------------------------------------------------------------------------------------|
+| show ip interface brief    | Interfaces         | Verificar status (up/down) e endereços IP das interfaces.                                |
+| show version               | Sistema            | Coletar modelo, versão do IOS e tempo de operação (uptime).                              |
+| show vlan brief            | VLANs (Switches)   | Listar VLANs configuradas e portas associadas.                                           |
+| show cdp neighbors         | Topologia          | Mapear dispositivos vizinhos e conexões.                                                 |
+| show ip ospf neighbor      | OSPF               | Verificar adjacências (FULL/DOWN) e problemas de vizinhança.                             |
+| show ip eigrp neighbors    | EIGRP              | Monitorar estabilidade de vizinhos EIGRP.                                                |
+| show bgp summary           | BGP                | Checar sessões com peers (estabelecidas/pendentes) e contagem de rotas.                  |
+| show ip route	             | Roteamento	        | Analisar rotas (OSPF, EIGRP, estáticas) e métricas.                                      |
+| show running-config        | Configuração       | Auditoria de segurança (ACLs, SNMP) ou compliance (descrição de interfaces).             |
+| show interfaces switchport | VLANs (Switchport) | Verificar se as interfaces estão em modo trunk, modo access e o encapsulamento (802.1Q). |
+| Snapshot (antes/depois)    | Todos              | Validar impactos de mudanças (ex.: interfaces que caíram após upgrade).                  |
+| show tech-support          | Diagnóstico	      | Troubleshooting avançado (combina dados de múltiplos comandos).                          |
 
 ### Usando pyATS + Genie - testbed.yaml
 
@@ -3388,6 +3389,222 @@ Bloco 12 – Execução
 
 [100] if __name__ == '__main__':                                                                # Garante que só será executado se chamado diretamente
 [101]     parse_running_config()                                                                # Chama a função principal
+```
+
+### Exemplo 10: show interfaces switchport
+
+✅ Seção: Objetivo
+
+Objetivo:
+Utilizar o parser do Genie para analisar a saída do comando **show interfaces switchport** em um dispositivo Cisco com sistema operacional IOS-XE, a fim de extrair:
+
+  - Modo de operação da interface (access, trunk, etc.)
+
+  - Encapsulamento 802.1Q (quando aplicável)
+
+  - VLANs permitidas
+
+  - VLAN de acesso
+
+**📁 Estrutura do Projeto**
+
+```bash
+10_switchport/
+├── logs
+│   └── switchport_parser.log              # Logs de saída em nível debug
+├── mock_data
+│   └── show_interfaces_switchport.txt     # Saída bruta do comando
+├── output
+│   ├── parsed_switchport_config.json      # Resultado processado
+│   └── parsed_switchport.json             # Resultado processado
+└── parse_switchport.py                    # Script Principal
+
+```
+
+**Mock File – show_interfaces_switchport.txt**
+
+```bash
+# Sistema Operacional: IOS-XE
+# Comando gerado: show interfaces switchport
+
+Name: GigabitEthernet1/0/1
+Switchport: Enabled
+Administrative Mode: dynamic desirable
+Operational Mode: trunk
+Administrative Trunking Encapsulation: dot1q
+Operational Trunking Encapsulation: dot1q
+Negotiation of Trunking: On
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: 10-20,30
+Pruning VLANs Enabled: 2-1001
+
+Name: GigabitEthernet1/0/2
+Switchport: Enabled
+Administrative Mode: static access
+Operational Mode: static access
+Access Mode VLAN: 30 (VLAN0030)
+Trunking Native Mode VLAN: 1 (default)
+Trunking VLANs Enabled: ALL
+Pruning VLANs Enabled: 2-1001
+
+```
+
+**parse_sitchport.py**
+
+```python
+import logging
+import os
+import json
+from genie.libs.parser.iosxe.show_interface import ShowInterfacesSwitchport
+
+# --- Configuração de Logging ---
+os.makedirs('logs', exist_ok=True)
+logging.basicConfig(
+    level=logging.DEBUG,  # <--- Ativa DEBUG para ver tudo no log
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/switchport_parser.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# --- Dummy Device para parsing offline ---
+class DummyDevice:
+    def __init__(self):
+        self.os = 'iosxe'
+        self.custom = {'abstraction': {'order': ['os']}}
+
+# --- Parsing principal ---
+def parse_switchport():
+    try:
+        logger.info("Iniciando análise de switchport...")
+
+        # Lê o arquivo de saída simulada
+        with open('mock_data/show_interfaces_switchport.txt', 'r') as f:
+            raw_output = f.read()
+
+        # Parsing com Genie
+        device = DummyDevice()
+        parsed_data = ShowInterfacesSwitchport(device).parse(output=raw_output)
+
+        logger.debug("Dicionário bruto retornado pelo parser:")
+        logger.debug(json.dumps(parsed_data, indent=2))
+
+        # Exibe resultados no terminal
+        print("\n=== INTERFACES SWITCHPORT ===\n")
+        for intf, data in parsed_data.items():
+            print(f"🔌 Interface: {intf}")
+            print(f"  Modo Operacional: {data.get('operational_mode', 'N/A')}")
+            print(f"  Encapsulamento: {data.get('encapsulation', 'N/A')}")
+            print(f"  VLAN de acesso: {data.get('access_vlan', 'N/A')}")
+            print(f"  VLANs permitidas: {data.get('trunk_vlans', 'N/A')}")
+            print()
+
+        # Salva a saída em JSON
+        os.makedirs('output', exist_ok=True)
+        with open('output/parsed_switchport.json', 'w') as f:
+            json.dump(parsed_data, f, indent=2)
+
+        logger.info("Análise concluída com sucesso.")
+
+    except Exception as e:
+        logger.error(f"Erro ao processar o mock: {str(e)}", exc_info=True)
+
+if __name__ == '__main__':
+    parse_switchport()
+```
+
+**Saída**
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/10$ python3 parse_switchport.py 
+2025-07-15 12:16:35,812 - INFO - Iniciando análise de switchport...
+2025-07-15 12:16:35,818 - DEBUG - Dicionário bruto retornado pelo parser:
+2025-07-15 12:16:35,819 - DEBUG - {
+  "GigabitEthernet1/0/1": {
+    "switchport_enable": true,
+    "switchport_mode": "dynamic desirable",
+    "operational_mode": "trunk",
+    "encapsulation": {
+      "administrative_encapsulation": "dot1q",
+      "operational_encapsulation": "dot1q",
+      "native_vlan": "1",
+      "native_vlan_name": "default"
+    },
+    "negotiation_of_trunk": true,
+    "access_vlan": "1",
+    "access_vlan_name": "default",
+    "trunk_vlans": "10-20,30",
+    "pruning_vlans": "2-1001"
+  },
+  "GigabitEthernet1/0/2": {
+    "switchport_enable": true,
+    "switchport_mode": "static access",
+    "operational_mode": "static access",
+    "access_vlan": "30",
+    "access_vlan_name": "VLAN0030",
+    "encapsulation": {
+      "native_vlan": "1",
+      "native_vlan_name": "default"
+    },
+    "trunk_vlans": "all",
+    "pruning_vlans": "2-1001"
+  }
+}
+
+=== INTERFACES SWITCHPORT ===
+
+🔌 Interface: GigabitEthernet1/0/1
+  Modo Operacional: trunk
+  Encapsulamento: {'administrative_encapsulation': 'dot1q', 'operational_encapsulation': 'dot1q', 'native_vlan': '1', 'native_vlan_name': 'default'}
+  VLAN de acesso: 1
+  VLANs permitidas: 10-20,30
+
+🔌 Interface: GigabitEthernet1/0/2
+  Modo Operacional: static access
+  Encapsulamento: {'native_vlan': '1', 'native_vlan_name': 'default'}
+  VLAN de acesso: 30
+  VLANs permitidas: all
+
+2025-07-15 12:16:35,819 - INFO - Análise concluída com sucesso.
+(genie310) alcancil@linux:~/automacoes/genie/10$ cat logs/switchport_parser.log 
+2025-07-15 12:16:35,812 - INFO - Iniciando análise de switchport...
+2025-07-15 12:16:35,818 - DEBUG - Dicionário bruto retornado pelo parser:
+2025-07-15 12:16:35,819 - DEBUG - {
+  "GigabitEthernet1/0/1": {
+    "switchport_enable": true,
+    "switchport_mode": "dynamic desirable",
+    "operational_mode": "trunk",
+    "encapsulation": {
+      "administrative_encapsulation": "dot1q",
+      "operational_encapsulation": "dot1q",
+      "native_vlan": "1",
+      "native_vlan_name": "default"
+    },
+    "negotiation_of_trunk": true,
+    "access_vlan": "1",
+    "access_vlan_name": "default",
+    "trunk_vlans": "10-20,30",
+    "pruning_vlans": "2-1001"
+  },
+  "GigabitEthernet1/0/2": {
+    "switchport_enable": true,
+    "switchport_mode": "static access",
+    "operational_mode": "static access",
+    "access_vlan": "30",
+    "access_vlan_name": "VLAN0030",
+    "encapsulation": {
+      "native_vlan": "1",
+      "native_vlan_name": "default"
+    },
+    "trunk_vlans": "all",
+    "pruning_vlans": "2-1001"
+  }
+}
+2025-07-15 12:16:35,819 - INFO - Análise concluída com sucesso.
+(genie310) alcancil@linux:~/automacoes/genie/10$ 
 ```
 
 ---
