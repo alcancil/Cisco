@@ -3935,6 +3935,105 @@ alcancil@linux:~/automacoes/genie/11$ python3 parse_snapshot.py
 alcancil@linux:~/automacoes/genie/11$
 ```
 
+**Explicação**
+
+```python
+Bloco 1 – Importações
+
+[01] import logging                                                                              # Módulo para registrar logs do processo
+[02] import os                                                                                   # Módulo para manipulação de diretórios e arquivos
+[03] import json                                                                                 # Módulo para leitura e escrita em formato JSON
+[04] from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief                     # Importa o parser Genie para 'show ip interface brief'
+
+Bloco 2 – Configuração de Logging
+
+[06] # --- Configuração de logging ---
+[07] os.makedirs('logs', exist_ok=True)                                                          # Cria a pasta de logs, se ainda não existir
+[08] logging.basicConfig(                                                                        # Define configurações para o logging
+[09]     level=logging.DEBUG,                                                                    # Define o nível como DEBUG para registrar tudo
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',                                     # Formato do log com data, nível e mensagem
+[11]     handlers=[                                                                              # Define os manipuladores de saída para os logs
+[12]         logging.FileHandler('logs/snapshot_diff.log'),                                      # Grava os logs em arquivo
+[13]         logging.StreamHandler()                                                             # Também exibe logs no terminal
+[14]     ]                                                                                       # Fecha a lista de manipuladores de log
+[15] )                                                                                           # Finaliza a configuração do logging
+[16] logger = logging.getLogger(__name__)                                                        # Cria o logger para ser usado ao longo do script
+
+Bloco 3 – Dummy Device (Simulação Offline)
+
+[18] # --- Dummy device ---
+[19] class DummyDevice:                                                                          # Classe que simula um dispositivo Cisco
+[21]     def __init__(self):                                                                     # Método construtor da classe DummyDevice
+[22]         self.os = 'iosxe'                                                                   # Define o sistema operacional como IOS-XE
+[23]         self.custom = {'abstraction': {'order': ['os']}}                                    # Necessário para o parser funcionar corretamente
+
+Bloco 4 – Função de Parsing Individual
+
+[25] # --- Função para carregar e fazer o parse de uma saída ---
+[26] def parse_file(file_path):                                                                  # Função que recebe o caminho do mock file
+[27]     with open(file_path, 'r') as f:                                                         # Abre o arquivo para leitura
+[28]         output = f.read()                                                                   # Lê todo o conteúdo (saída bruta do comando)
+[29]     device = DummyDevice()                                                                  # Cria um dummy device
+[30]     return ShowIpInterfaceBrief(device).parse(output=output)                                # Faz o parsing com Genie e retorna dicionário
+
+Bloco 5 – Função de Comparação de Snapshots
+
+[32] # --- Função para comparar duas saídas parseadas ---
+[33] def compare_snapshots(before, after):                                                       # Compara os dados antes e depois da mudança
+[34]     diffs = []                                                                              # Lista para armazenar diferenças encontradas
+[35]     for iface, data in before.items():                                                      # Itera pelas interfaces na saída 'before'
+[36]         if iface not in after:                                                              # Verifica se a interface sumiu depois
+[37]             diffs.append(f"❌ Interface {iface} não existe após a mudança.")                # Adiciona alerta de interface ausente
+[38]             continue                                                                        # Pula para próxima interface
+[39]         a = after[iface]                                                                    # Dados da mesma interface na saída 'after'
+[40]         if data['status'] != a['status'] or data['protocol'] != a['protocol']:              # Detecta mudança de status
+[41]             diffs.append(f"⚠️ {iface}: status {data['status']}/{data['protocol']} ➡ {a['status']}/{a['protocol']}") # Adiciona alerta de mudança de status
+[42]         elif data['ip_address'] != a['ip_address']:                                         # Detecta mudança no IP
+[43]             diffs.append(f"🔄 {iface}: IP mudou de {data['ip_address']} para {a['ip_address']}") # Adiciona alerta de mudança de IP
+[44]    return diffs                                                                             # Retorna todas as diferenças encontradas
+
+Bloco 6 – Execução Principal
+
+[46] # --- Execução principal ---
+[47] def main():                                                                                 # Função principal do script
+[48]     try:
+[49]         logger.info("Iniciando análise de snapshot (antes/depois)...")                      # Log de início
+[50] 
+[51]         # Parsing das saídas mock
+[52]         before = parse_file('mock_data/show_ip_interface_brief_before.txt')                 # Faz parsing da saída "antes"
+[53]         after = parse_file('mock_data/show_ip_interface_brief_after.txt')                   # Faz parsing da saída "depois"
+[54] 
+[55]         # Debug opcional
+[56]         logger.debug("Before:\n" + json.dumps(before, indent=2))                            # Log detalhado da saída "antes"
+[57]         logger.debug("After:\n" + json.dumps(after, indent=2))                              # Log detalhado da saída "depois"
+[58] 
+[59]         # Comparação
+[60]         diffs = compare_snapshots(before.get('interface', {}), after.get('interface', {}))  # Compara as duas saídas
+[61] 
+[62]         # Exibição no terminal
+[63]         print("\n=== MUDANÇAS DETECTADAS ===\n")                                            # Cabeçalho no terminal
+[64]         if not diffs:                                                                       # Se não houver mudanças
+[65]             print("✅ Nenhuma mudança relevante detectada.")                                # Mensagem amigável
+[66]         else:
+[67]             for diff in diffs:                                                              # Itera pelas diferenças
+[68]                 print(diff)                                                                 # Exibe cada mudança
+[69] 
+[70]         # Salva os resultados
+[71]         os.makedirs('output', exist_ok=True)                                                # Garante existência da pasta de saída
+[72]         with open('output/snapshot_diff.json', 'w') as f:                                   # Cria arquivo de saída JSON
+[73]             json.dump({'diffs': diffs}, f, indent=2)                                        # Escreve as diferenças no arquivo
+[74] 
+[75]         logger.info("Análise concluída com sucesso.")                                       # Log final
+[76] 
+[77]     except Exception as e:                                                                  # Captura erros
+[78]         logger.error(f"Erro ao executar análise de snapshot: {str(e)}", exc_info=True)      # Loga com stack trace
+
+Bloco 7 – Execução Direta
+
+[80] if __name__ == '__main__':                                                                  # Verifica se o script foi executado diretamente
+[81]     main()                                                                                  # Chama a função principal
+```
+
 ---
 Continuar
 
