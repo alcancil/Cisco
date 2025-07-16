@@ -59,6 +59,7 @@
     - [Exemplo 08: show ip route](#exemplo-08-show-ip-route)
     - [Exemplo 09: show running-config](#exemplo-09-show-running-config)
     - [Exemplo 10: show interfaces switchport](#exemplo-10-show-interfaces-switchport)
+    - [Exemplo 11: Snapshot (antes/depois)](#exemplo-11-snapshot-antesdepois)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -3724,6 +3725,214 @@ Bloco 12 – Execução direta do script
 
 [60] if __name__ == '__main__':                                                       # Verifica se o script está sendo executado diretamente
 [61]     parse_switchport()                                                           # Chama a função principal
+```
+
+### Exemplo 11: Snapshot (antes/depois)
+
+**Objetivo**
+
+Neste exemplo, vamos usar o Genie para comparar duas saídas de show ip interface brief antes e depois de uma alteração (ex: upgrade de software ou mudança de configuração). O foco será detectar interfaces que:
+
+  - Estavam up/up antes e estão down/down depois.
+
+  - Mudaram de IP ou status.
+
+Esse tipo de análise ajuda em auditorias e validações pós-mudança em ambientes de rede.
+
+**📁 Estrutura do Projeto**
+
+```bash
+11_snapshot_diff/
+├── logs
+│   └── snapshot_diff.log                       # Log de saída
+├── mock_data
+│   ├── show_ip_interface_brief_after.txt       # Saída bruta do comando - Antes da Mudança
+│   └── show_ip_interface_brief_before.txt      # Saída bruta do comando - Depois da Mudança
+├── output
+│   └── snapshot_diff.json                      # Resultado Processado
+└── parse_snapshot.py                           # Script Principal
+
+```
+
+**Mock File**
+
+**mock_data/show_ip_interface_brief_before.txt**
+
+```bash
+# Sistema Operacional: Cisco IOS-XE
+# Comando: show ip interface brief
+
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.1.1     YES manual up                    up
+GigabitEthernet2       192.168.2.1     YES manual up                    up
+GigabitEthernet3       unassigned      YES unset  administratively down down
+```
+
+**mock_data/show_ip_interface_brief_after.txt**
+
+```bash
+# Sistema Operacional: Cisco IOS-XE
+# Comando: show ip interface brief
+
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.1.1     YES manual up                    up
+GigabitEthernet2       192.168.2.1     YES manual down                  down
+GigabitEthernet3       unassigned      YES unset  administratively down down
+```
+
+**parse_snapshot.py**
+
+```python
+[01] import logging
+[02] import os
+[03] import json
+[04] from genie.libs.parser.iosxe.show_interface import ShowIpInterfaceBrief
+[05] 
+[06] # --- Configuração de logging ---
+[07] os.makedirs('logs', exist_ok=True)
+[08] logging.basicConfig(
+[09]     level=logging.DEBUG,
+[10]     format='%(asctime)s - %(levelname)s - %(message)s',
+[11]     handlers=[
+[12]         logging.FileHandler('logs/snapshot_diff.log'),
+[13]         logging.StreamHandler()
+[14]     ]
+[15] )
+[16] logger = logging.getLogger(__name__)
+[17] 
+[18] # --- Dummy device ---
+[19] class DummyDevice:
+[21]     def __init__(self):
+[22]         self.os = 'iosxe'
+[23]         self.custom = {'abstraction': {'order': ['os']}}
+[24] 
+[25] # --- Função para carregar e fazer o parse de uma saída ---
+[26] def parse_file(file_path):
+[27]     with open(file_path, 'r') as f:
+[28]         output = f.read()
+[29]     device = DummyDevice()
+[30]     return ShowIpInterfaceBrief(device).parse(output=output)
+[31] 
+[32] # --- Função para comparar duas saídas parseadas ---
+[33] def compare_snapshots(before, after):
+[34]     diffs = []
+[35]     for iface, data in before.items():
+[36]         if iface not in after:
+[37]             diffs.append(f"❌ Interface {iface} não existe após a mudança.")
+[38]             continue
+[39]         a = after[iface]
+[40]         if data['status'] != a['status'] or data['protocol'] != a['protocol']:
+[41]             diffs.append(f"⚠️ {iface}: status {data['status']}/{data['protocol']} ➡ {a['status']}/{a['protocol']}")
+[42]         elif data['ip_address'] != a['ip_address']:
+[43]             diffs.append(f"🔄 {iface}: IP mudou de {data['ip_address']} para {a['ip_address']}")
+[44]    return diffs
+[45] 
+[46] # --- Execução principal ---
+[47] def main():
+[48]     try:
+[49]         logger.info("Iniciando análise de snapshot (antes/depois)...")
+[50] 
+[51]         # Parsing das saídas mock
+[52]         before = parse_file('mock_data/show_ip_interface_brief_before.txt')
+[53]         after = parse_file('mock_data/show_ip_interface_brief_after.txt')
+[54] 
+[55]         # Debug opcional
+[56]         logger.debug("Before:\n" + json.dumps(before, indent=2))
+[57]         logger.debug("After:\n" + json.dumps(after, indent=2))
+[58] 
+[59]         # Comparação
+[60]         diffs = compare_snapshots(before.get('interface', {}), after.get('interface', {}))
+[61] 
+[62]         # Exibição no terminal
+[63]         print("\n=== MUDANÇAS DETECTADAS ===\n")
+[64]         if not diffs:
+[65]             print("✅ Nenhuma mudança relevante detectada.")
+[66]         else:
+[67]             for diff in diffs:
+[68]                 print(diff)
+[69] 
+[70]         # Salva os resultados
+[71]         os.makedirs('output', exist_ok=True)
+[72]         with open('output/snapshot_diff.json', 'w') as f:
+[73]             json.dump({'diffs': diffs}, f, indent=2)
+[74] 
+[75]         logger.info("Análise concluída com sucesso.")
+[76] 
+[77]     except Exception as e:
+[78]         logger.error(f"Erro ao executar análise de snapshot: {str(e)}", exc_info=True)
+[79] 
+[80] if __name__ == '__main__':
+[81]     main()
+```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]**
+
+```bash
+alcancil@linux:~/automacoes/genie/11$ python3 parse_snapshot.py 
+2025-07-16 10:39:00,958 - INFO - Iniciando análise de snapshot (antes/depois)...
+2025-07-16 10:39:00,961 - DEBUG - Before:
+{
+  "interface": {
+    "GigabitEthernet1": {
+      "ip_address": "192.168.1.1",
+      "interface_is_ok": "YES",
+      "method": "manual",
+      "status": "up",
+      "protocol": "up"
+    },
+    "GigabitEthernet2": {
+      "ip_address": "192.168.2.1",
+      "interface_is_ok": "YES",
+      "method": "manual",
+      "status": "up",
+      "protocol": "up"
+    },
+    "GigabitEthernet3": {
+      "ip_address": "unassigned",
+      "interface_is_ok": "YES",
+      "method": "unset",
+      "status": "administratively down",
+      "protocol": "down"
+    }
+  }
+}
+2025-07-16 10:39:00,961 - DEBUG - After:
+{
+  "interface": {
+    "GigabitEthernet1": {
+      "ip_address": "192.168.1.1",
+      "interface_is_ok": "YES",
+      "method": "manual",
+      "status": "up",
+      "protocol": "up"
+    },
+    "GigabitEthernet2": {
+      "ip_address": "192.168.2.1",
+      "interface_is_ok": "YES",
+      "method": "manual",
+      "status": "down",
+      "protocol": "down"
+    },
+    "GigabitEthernet3": {
+      "ip_address": "unassigned",
+      "interface_is_ok": "YES",
+      "method": "unset",
+      "status": "administratively down",
+      "protocol": "down"
+    }
+  }
+}
+
+=== MUDANÇAS DETECTADAS ===
+
+⚠️ GigabitEthernet2: status up/up ➡ down/down
+2025-07-16 10:39:00,962 - INFO - Análise concluída com sucesso.
+alcancil@linux:~/automacoes/genie/11$
 ```
 
 ---
