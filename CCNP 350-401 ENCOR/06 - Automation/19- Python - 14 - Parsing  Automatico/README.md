@@ -4117,6 +4117,7 @@ show tech-support > flash:/tech_support_$(date +%F).txt
 ```
 
 Deixo aqui um exemplo de uma saída completa do comando: `show tech-support ospf`  
+**OBS:** a versão do IOS em que foi retirada a saída é: `Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)`
 
 [R01_ospf_diag.txt](Arquivos/R01_ospf_diag.txt)
 
