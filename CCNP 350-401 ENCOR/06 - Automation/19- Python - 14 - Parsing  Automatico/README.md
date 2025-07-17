@@ -4116,6 +4116,10 @@ show tech-support | include error|fail|down  # Filtra apenas problemas
 show tech-support > flash:/tech_support_$(date +%F).txt
 ```
 
+Deixo aqui um exemplo de uma saída completa do comando: `show tech-support ospf`  
+
+[R01_ospf_diag.txt](Arquivos/R01_ospf_diag.txt)
+
 ---
 Continuar
 
