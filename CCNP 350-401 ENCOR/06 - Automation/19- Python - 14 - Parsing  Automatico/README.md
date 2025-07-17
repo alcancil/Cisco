@@ -4090,6 +4090,32 @@ style E fill:#006400,stroke:#00ff00,color:#ffffff
     style F fill:#ffc107,stroke:#ffcc00,color:#000000
 ```
 
+**Dados Coletados (Estrutura Típica)**
+
+```bash
+1. System Info          # show version, show inventory
+2. CPU/Memory           # show processes cpu, show memory
+3. Interfaces           # show interfaces, show ip interface brief
+4. Routing              # show ip route, show ip protocols
+5. ACLs/NAT             # show access-lists, show ip nat translations
+6. Logs                 # show logging
+... (50+ seções)
+```
+
+**Boas Práticas**
+
+- Filtragem:
+
+```bash
+show tech-support | include error|fail|down  # Filtra apenas problemas
+```
+
+- Redirecionamento:
+
+```bash
+show tech-support > flash:/tech_support_$(date +%F).txt
+```
+
 ---
 Continuar
 
