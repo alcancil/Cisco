@@ -60,6 +60,8 @@
     - [Exemplo 09: show running-config](#exemplo-09-show-running-config)
     - [Exemplo 10: show interfaces switchport](#exemplo-10-show-interfaces-switchport)
     - [Exemplo 11: Snapshot (antes/depois)](#exemplo-11-snapshot-antesdepois)
+    - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
+      - [Comando show tech-support](#comando-show-tech-support)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -4032,6 +4034,55 @@ Bloco 7 – Execução Direta
 
 [80] if __name__ == '__main__':                                                                  # Verifica se o script foi executado diretamente
 [81]     main()                                                                                  # Chama a função principal
+```
+
+### Exemplo 12: Parsing de show tech-support
+
+#### Comando show tech-support
+
+**O Que É?**
+
+O show tech-support é um comando **omnibus** (tudo-em-um, agregador de comandos) dos dispositivos Cisco que coleta automaticamente:
+
+  - Saídas de 50+ comandos críticos (show version, show running-config, show interfaces, etc.)
+
+  - Status operacional de todos os principais protocolos
+
+  - Logs e mensagens de erro recentes
+
+  - Estatísticas de hardware e desempenho
+
+```bash
+Router# show tech-support**
+! Saída consolidada de dezenas de comandos show
+```
+
+**Quando Usar? (Casos Ideais)**
+
+| Cenário                  | Benefício                                            | Exemplo Prático                                 |
+|--------------------------|------------------------------------------------------|-------------------------------------------------|
+| Troubleshooting complexo | Elimina necessidade de executar comandos manualmente | Investigar flapping de interfaces + BGP resets  |
+| Pós-falha                | Captura estado do sistema antes de reinicialização   | Crash do dispositivo                            |
+| Auditoria periódica      | Baseline de configuração e performance               | Comparação trimestral                           |
+| Suporte TAC Cisco        | Requisito obrigatório para abertura de casos         | Ticket para falha de hardware                   |
+
+**Quando Evitar?**
+
+| Situação                          | Problema                           | Alternativa Recomendada                               |
+|------------------------------------------------------------------------|-------------------------------------------------------| 
+| Dispositivos sob carga (>70% CPU) | Pode causar instabilidade          | Coletar comandos individuais prioritários             |
+| Links lentos (WAN < 1Mbps)        | Gera tráfego excessivo             | Usar `show tech-support	redirect` para arquivo local |
+| Monitoramento rotineiro           | Overkill para verificações simples | Comandos específicos (show interface summary)         |
+| Ambientes não-Cisco               | Incompatibilidade	                 | Comandos vendor-specific equivalentes                 |
+
+**Fluxo de Decisão**
+
+```flowchart TD
+    A[Precisa diagnosticar problema?] --> B{É complexo/multiplas áreas?}
+    B -->|Sim| C{Dispositivo estável?}
+    B -->|Não| D[Use comandos específicos]
+    C -->|Sim| E[Execute show tech-support]
+    C -->|Não| F[Coletar comandos críticos separadamente]
 ```
 
 ---
