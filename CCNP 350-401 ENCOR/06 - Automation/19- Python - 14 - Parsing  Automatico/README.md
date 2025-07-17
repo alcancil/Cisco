@@ -4069,7 +4069,7 @@ Router# show tech-support**
 **Quando Evitar?**
 
 | Situação                          | Problema                           | Alternativa Recomendada                               |
-|------------------------------------------------------------------------|-------------------------------------------------------| 
+|-----------------------------------|------------------------------------|-------------------------------------------------------| 
 | Dispositivos sob carga (>70% CPU) | Pode causar instabilidade          | Coletar comandos individuais prioritários             |
 | Links lentos (WAN < 1Mbps)        | Gera tráfego excessivo             | Usar `show tech-support	redirect` para arquivo local |
 | Monitoramento rotineiro           | Overkill para verificações simples | Comandos específicos (show interface summary)         |
