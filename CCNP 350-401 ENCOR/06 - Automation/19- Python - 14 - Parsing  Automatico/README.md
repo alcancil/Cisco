@@ -4077,12 +4077,17 @@ Router# show tech-support**
 
 **Fluxo de Decisão**
 
-```flowchart TD
+```mermaid
+flowchart TD
     A[Precisa diagnosticar problema?] --> B{É complexo/multiplas áreas?}
     B -->|Sim| C{Dispositivo estável?}
     B -->|Não| D[Use comandos específicos]
     C -->|Sim| E[Execute show tech-support]
     C -->|Não| F[Coletar comandos críticos separadamente]
+
+style E fill:#006400,stroke:#00ff00,color:#ffffff 
+    style D fill:#dc3545,stroke:#ff0000,color:#ffffff
+    style F fill:#ffc107,stroke:#ffcc00,color:#000000
 ```
 
 ---
