@@ -4053,7 +4053,7 @@ O show tech-support é um comando **omnibus** (tudo-em-um, agregador de comandos
   - Estatísticas de hardware e desempenho
 
 ```bash
-Router# show tech-support**
+Router# show tech-support
 ! Saída consolidada de dezenas de comandos show
 ```
 
