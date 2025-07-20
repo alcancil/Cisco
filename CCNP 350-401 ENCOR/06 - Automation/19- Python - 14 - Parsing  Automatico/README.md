@@ -62,6 +62,7 @@
     - [Exemplo 11: Snapshot (antes/depois)](#exemplo-11-snapshot-antesdepois)
     - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
       - [Comando show tech-support](#comando-show-tech-support)
+    - [Exemplo 12 Avançado: Parsing de show tech-support com Genie](#exemplo-12-avançado-parsing-de-show-tech-support-com-genie)
     - [📚 Glossário](#-glossário)
   - [A](#a)
   - [C](#c)
@@ -179,24 +180,18 @@ pyATS (Framework de Teste e Automação)
 
   - Implementar automação operacional
 
----
-Arrumar
-
 ### O que vamos estudar
 
-  - Parsing de JSON: APIs Cisco (DNA Center, Meraki), extração de dados estruturados.
+  - **Parsing de comandos Cisco (CLI)**: Extração estruturada de dados a partir de `show tech-support`, com foco em OSPF, interfaces e roteamento.
 
-  - Parsing de XML: Configurações NETCONF e arquivos legados.
+  - **Uso de parsers automáticos do Genie**: Implementação de parsers nativos do `pyATS / Genie` para IOS e IOS-XE, explorando sua integração com scripts Python.
 
-  - Parsing de YAML: Inventários do Ansible e templates declarativos.
+  - **Organização de logs e exportação JSON**: Cada execução gera arquivos de log e resultados parseados em `JSON`, prontos para integração com outras ferramentas.
 
-  - Regex para CLI: Análise de comandos show e logs (ex: BGP, interfaces).
+  - **Fundamentos para automação de auditorias**: Base para aplicar automação em tarefas recorrentes de coleta, inspeção e validação de configuração de rede.
 
-  - Integração com ferramentas: SIEMs (Graylog/Splunk) e parsers automáticos (Genie).
-
----
-Arrumar
-
+> 📎 Em breve: exemplos comparativos entre parsing com regex vs Genie automático, com gráficos `mermaid` para ilustrar o fluxo de dados.
+  
 ### Para que serve o Genie?
 
 Principais objetivos:
@@ -4121,9 +4116,21 @@ Deixo aqui um exemplo de uma saída completa do comando: `show tech-support ospf
 
 [R01_ospf_diag.txt](Arquivos/R01_ospf_diag.txt)
 
----
-Continuar
 
+### Exemplo 12 Avançado: Parsing de show tech-support com Genie
+
+O comando `show tech-support` combina a saída de diversos comandos show em uma única resposta extensa e é amplamente utilizado para diagnóstico e troubleshooting avançado.
+
+Neste projeto, o parsing dessa saída foi implementado para extrair dados relacionados ao OSPF, como:
+
+- Versão do IOS e Data/Hora
+- ID do processo OSPF
+- Vizinhos OSPF
+- Rotas OSPF
+
+Para lidar com as múltiplas seções contidas no `show tech-support`, foi aplicado um processo de separação por blocos antes da aplicação dos parsers automáticos do Genie.
+
+> 📁 Este exemplo foi colocado em um arquivo separado para facilitar a leitura, testes e expansão futura.  
 
 ### 📚 Glossário
 
