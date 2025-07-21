@@ -13,6 +13,7 @@
       - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe)
     - [Objetivo didático](#objetivo-didático)
     - [Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)](#fluxo-de-decisão---quando-utilizar-parsing-manual-regex-x-parsing-automático-genie)
+    - [Exemplo 12: Parsing de show tech-support (comparativo) 🔹 Cenário 1 — Cisco IOS (legado)](#exemplo-12-parsing-de-show-tech-support-comparativo--cenário-1--cisco-ios-legado)
 
 ### Exemplo 12: Parsing de show tech-support
 
@@ -157,4 +158,6 @@ graph TD
 **Observação Importante:**
 
 > Ao trabalhar com parsers automáticos do Genie, é fundamental sempre consultar a documentação oficial e o repositório do projeto para verificar a disponibilidade e compatibilidade dos > parsers para os comandos e sistemas operacionais específicos. Nem todo comando possui um parser nativo para todas as versões de IOS ou IOS-XE. Em casos onde um parser automático não  > está disponível ou não se adequa à saída do seu dispositivo, o parsing manual com regex se torna uma alternativa necessária e válida.
-> Você pode encontrar os parsers disponíveis e contribuir para o projeto no repositório oficial do Genie Parser: https://github.com/CiscoTestAutomation/genieparser
+> Você pode encontrar os parsers disponíveis e contribuir para o projeto no repositório oficial do Genie Parser: https://github.com/CiscoTestAutomation/genieparser  
+
+### Exemplo 12: Parsing de show tech-support (comparativo) 🔹 Cenário 1 — Cisco IOS (legado)
