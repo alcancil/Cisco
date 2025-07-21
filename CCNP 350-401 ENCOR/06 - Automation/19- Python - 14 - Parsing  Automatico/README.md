@@ -60,8 +60,6 @@
     - [Exemplo 09: show running-config](#exemplo-09-show-running-config)
     - [Exemplo 10: show interfaces switchport](#exemplo-10-show-interfaces-switchport)
     - [Exemplo 11: Snapshot (antes/depois)](#exemplo-11-snapshot-antesdepois)
-    - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
-      - [Comando show tech-support](#comando-show-tech-support)
     - [Exemplo 12 Avançado: Parsing de show tech-support com Genie](#exemplo-12-avançado-parsing-de-show-tech-support-com-genie)
     - [📚 Glossário](#-glossário)
   - [A](#a)
@@ -4031,92 +4029,6 @@ Bloco 7 – Execução Direta
 [81]     main()                                                                                  # Chama a função principal
 ```
 
-### Exemplo 12: Parsing de show tech-support
-
-#### Comando show tech-support
-
-**O Que É?**
-
-O show tech-support é um comando **omnibus** (tudo-em-um, agregador de comandos) dos dispositivos Cisco que coleta automaticamente:
-
-  - Saídas de 50+ comandos críticos (show version, show running-config, show interfaces, etc.)
-
-  - Status operacional de todos os principais protocolos
-
-  - Logs e mensagens de erro recentes
-
-  - Estatísticas de hardware e desempenho
-
-```bash
-Router# show tech-support
-! Saída consolidada de dezenas de comandos show
-```
-
-**Quando Usar? (Casos Ideais)**
-
-| Cenário                  | Benefício                                            | Exemplo Prático                                 |
-|--------------------------|------------------------------------------------------|-------------------------------------------------|
-| Troubleshooting complexo | Elimina necessidade de executar comandos manualmente | Investigar flapping de interfaces + BGP resets  |
-| Pós-falha                | Captura estado do sistema antes de reinicialização   | Crash do dispositivo                            |
-| Auditoria periódica      | Baseline de configuração e performance               | Comparação trimestral                           |
-| Suporte TAC Cisco        | Requisito obrigatório para abertura de casos         | Ticket para falha de hardware                   |
-
-**Quando Evitar?**
-
-| Situação                          | Problema                           | Alternativa Recomendada                               |
-|-----------------------------------|------------------------------------|-------------------------------------------------------| 
-| Dispositivos sob carga (>70% CPU) | Pode causar instabilidade          | Coletar comandos individuais prioritários             |
-| Links lentos (WAN < 1Mbps)        | Gera tráfego excessivo             | Usar `show tech-support	redirect` para arquivo local |
-| Monitoramento rotineiro           | Overkill para verificações simples | Comandos específicos (show interface summary)         |
-| Ambientes não-Cisco               | Incompatibilidade	                 | Comandos vendor-specific equivalentes                 |
-
-**Fluxo de Decisão**
-
-```mermaid
-flowchart TD
-    A[Precisa diagnosticar problema?] --> B{É complexo/multiplas áreas?}
-    B -->|Sim| C{Dispositivo estável?}
-    B -->|Não| D[Use comandos específicos]
-    C -->|Sim| E[Execute show tech-support]
-    C -->|Não| F[Coletar comandos críticos separadamente]
-
-style E fill:#006400,stroke:#00ff00,color:#ffffff 
-    style D fill:#dc3545,stroke:#ff0000,color:#ffffff
-    style F fill:#ffc107,stroke:#ffcc00,color:#000000
-```
-
-**Dados Coletados (Estrutura Típica)**
-
-```bash
-1. System Info          # show version, show inventory
-2. CPU/Memory           # show processes cpu, show memory
-3. Interfaces           # show interfaces, show ip interface brief
-4. Routing              # show ip route, show ip protocols
-5. ACLs/NAT             # show access-lists, show ip nat translations
-6. Logs                 # show logging
-... (50+ seções)
-```
-
-**Boas Práticas**
-
-- Filtragem:
-
-```bash
-show tech-support | include error|fail|down  # Filtra apenas problemas
-```
-
-- Redirecionamento:
-
-```bash
-show tech-support > flash:/tech_support_$(date +%F).txt
-```
-
-Deixo aqui um exemplo de uma saída completa do comando: `show tech-support ospf`  
-**OBS:** a versão do IOS em que foi retirada a saída é: `Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)`
-
-[R01_ospf_diag.txt](Arquivos/R01_ospf_diag.txt)
-
-
 ### Exemplo 12 Avançado: Parsing de show tech-support com Genie
 
 O comando `show tech-support` combina a saída de diversos comandos show em uma única resposta extensa e é amplamente utilizado para diagnóstico e troubleshooting avançado.
@@ -4131,6 +4043,7 @@ Neste projeto, o parsing dessa saída foi implementado para extrair dados relaci
 Para lidar com as múltiplas seções contidas no `show tech-support`, foi aplicado um processo de separação por blocos antes da aplicação dos parsers automáticos do Genie.
 
 > 📁 Este exemplo foi colocado em um arquivo separado para facilitar a leitura, testes e expansão futura.  
+> Então iremos continuar a explicação em um novo capítulo.
 
 ### 📚 Glossário
 
