@@ -4043,7 +4043,7 @@ Neste projeto, o parsing dessa saída foi implementado para extrair dados relaci
 Para lidar com as múltiplas seções contidas no `show tech-support`, foi aplicado um processo de separação por blocos antes da aplicação dos parsers automáticos do Genie.
 
 > 📁 Este exemplo foi colocado em um arquivo separado para facilitar a leitura, testes e expansão futura.  
-> Então iremos continuar a explicação em um novo capítulo.
+> 📁 Então iremos continuar a explicação no próximo capítulo.
 
 ### 📚 Glossário
 
