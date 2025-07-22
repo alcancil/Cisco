@@ -707,188 +707,55 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
 
 ```mermaid
 graph TD
-    A[Início do Script] --> B(Inicialização e Setup);
+    A[Início do Script] --> B(Inicialização e Setup)
 
-    subgraph "Setup (Blocos 1-5)"
-        B --> C[Importar Módulos\n(Bloco 1)];
-        C --> D[Configurar Logging\n(Cria 'logs' dir, arquivo log, console)\n(Bloco 2)];
-        D --> E[Configurar Diretorios de Saída\n(Cria 'output' dir)\n(Bloco 3)];
-        E --> F[Definir Classe DummyDevice\n(Bloco 4)];
-        F --> G[Definir Funções de Parsing Manual\n(extract_section, parse_..._manualmente)\n(Bloco 5)];
+    subgraph Setup (Blocos 1-5)
+        B --> C[Importar Módulos<br>(Bloco 1)]
+        C --> D[Configurar Logging<br>(Cria 'logs' dir, arquivo log, console)<br>(Bloco 2)]
+        D --> E[Configurar Diretórios de Saída<br>(Cria 'output' dir)<br>(Bloco 3)]
+        E --> F[Definir Classe DummyDevice<br>(Bloco 4)]
+        F --> G[Definir Funções de Parsing Manual<br>(extract_section, parse_..._manualmente)<br>(Bloco 5)]
     end
 
-    G --> H[Chamar parse_tech_support_ospf_data()\n(Bloco 9)];
+    G --> H[Chamar parse_tech_support_ospf_data()<br>(Bloco 9)]
 
-    subgraph "Fluxo Principal (parse_tech_support_ospf_data)"
-        H --> I[Início do Parsing];
-        I --> J[Carregar Arquivo Mock\nR01_ospf_diag.txt];
-        J -- Erro? --> K{Erro de Arquivo?};
-        K -- Sim --> L[Log Erro & Sair];
-        K -- Não --> M[Instanciar DummyDevice];
-        M --> N[Inicializar parsed_data_collection];
+    subgraph Fluxo Principal (parse_tech_support_ospf_data)
+        H --> I[Início do Parsing]
+        I --> J[Carregar Arquivo Mock<br>R01_ospf_diag.txt]
+        J --> K{Erro de Arquivo?}
+        K -->|Sim| L[Log Erro & Sair]
+        K -->|Não| M[Instanciar DummyDevice]
+        M --> N[Inicializar parsed_data_collection]
 
-        N --> P(Loop: Processar Comandos OSPF);
-        P --> Q[Extrair Seção do Comando\n(e.g., show version, show clock, etc.)\n(Chamada a 'extract_section')];
-        Q --> R{Seção Encontrada?};
-        R -- Sim --> S[Chamar Função de Parsing Manual\n(e.g., parse_show_version_manualmente)];
-        S -- Erro Parsing? --> T{Erro de Parsing?};
-        T -- Sim --> U[Log Erro de Parsing];
-        S -- Não --> V[Armazenar Dados Parseados];
-        R -- Não --> W[Log Seção Não Encontrada];
+        N --> P(Loop: Processar Comandos OSPF)
+        P --> Q[Extrair Seção do Comando<br>(e.g., show version, show clock, etc.)<br>(extract_section)]
+        Q --> R{Seção Encontrada?}
+        R -->|Sim| S[Chamar Parsing Manual<br>(e.g., parse_show_version_manualmente)]
+        S --> T{Erro de Parsing?}
+        T -->|Sim| U[Log Erro de Parsing]
+        T -->|Não| V[Armazenar Dados Parseados]
+        R -->|Não| W[Log Seção Não Encontrada]
 
-        V --> P;
-        U --> P;
-        W --> P;
-        P --> X[Fim do Loop de Processamento];
+        V --> P
+        U --> P
+        W --> P
+        P --> X[Fim do Loop de Processamento]
 
-        X --> Y[Salvar Dados Parseados em JSON\noutput/...json\n(Bloco 7)];
-        Y -- Erro? --> Z{Erro ao Salvar JSON?};
-        Z -- Sim --> AA[Log Erro];
-        Z -- Não --> BB[Gerar Resumo Final no Console\n(Bloco 8)];
+        X --> Y[Salvar Dados Parseados em JSON<br>output/parsed_....json<br>(Bloco 7)]
+        Y --> Z{Erro ao Salvar JSON?}
+        Z -->|Sim| AA[Log Erro]
+        Z -->|Não| BB[Gerar Resumo Final no Console<br>(Bloco 8)]
 
-        BB --> CC[Exibir Versão IOS];
-        BB --> CD[Exibir Data e Hora];
-        BB --> CE[Exibir ID OSPF];
-        BB --> CF[Exibir Vizinhos OSPF];
-        BB --> CG[Exibir Rotas OSPF];
-        CG --> CH[Log: Parsing Concluído];
+        BB --> CC[Exibir Versão IOS]
+        BB --> CD[Exibir Data e Hora]
+        BB --> CE[Exibir ID OSPF]
+        BB --> CF[Exibir Vizinhos OSPF]
+        BB --> CG[Exibir Rotas OSPF]
+        CG --> CH[Log: Parsing Concluído]
     end
 
-    CH --> D_END[Fim do Script];
-    AA --> CH;
-    L --> D_END;
-```
+    CH --> D_END[Fim do Script]
+    AA --> CH
+    L --> D_END
 
-```mermaid
-title Fluxo de Parsing de Tech-Support OSPF Cisco
-direction right
-
-// Grupos e nós
-Inicialização e Configuração [color: blue, icon: settings] {
-  Importações [icon: file-text, color: lightblue]
-  Configurar logging [icon: file-text, color: orange]
-  Criar diretório de logs [icon: folder, color: orange]
-  Criar diretório de saída [icon: folder, color: orange]
-}
-
-Funções Auxiliares [color: teal, icon: code] {
-  Classe DummyDevice [icon: cpu, color: lightblue]
-  Extrair seção de comando [icon: search, color: yellow]
-  Parser manual show version [icon: file-text, color: green]
-  Parser manual show clock [icon: clock, color: green]
-  Parser manual show ip route ospf [icon: map, color: green]
-  Parser manual show ip ospf [icon: globe, color: green]
-  Parser manual show ip ospf neighbor [icon: users, color: green]
-}
-
-Execução Principal [color: purple, icon: play] {
-  Início do programa [shape: oval, icon: play, color: lightblue]
-  Carregar arquivo de entrada [icon: file, color: blue]
-  Arquivo encontrado? [shape: diamond, icon: file, color: orange]
-  Instanciar DummyDevice [icon: cpu, color: lightblue]
-  Preparar coleção de dados [icon: database, color: blue]
-  Processar show version [icon: file-text, color: green]
-  Seção show version encontrada? [shape: diamond, icon: file-text, color: orange]
-  Parsing manual show version [icon: file-text, color: green]
-  Erro parsing show version? [shape: diamond, icon: alert-triangle, color: red]
-  Processar show clock [icon: clock, color: green]
-  Seção show clock encontrada? [shape: diamond, icon: clock, color: orange]
-  Parsing manual show clock [icon: clock, color: green]
-  Erro parsing show clock? [shape: diamond, icon: alert-triangle, color: red]
-  Processar show ip route ospf [icon: map, color: green]
-  Seção show ip route ospf encontrada? [shape: diamond, icon: map, color: orange]
-  Parsing manual show ip route ospf [icon: map, color: green]
-  Erro parsing show ip route ospf? [shape: diamond, icon: alert-triangle, color: red]
-  Processar show ip ospf [icon: globe, color: green]
-  Seção show ip ospf encontrada? [shape: diamond, icon: globe, color: orange]
-  Parsing manual show ip ospf [icon: globe, color: green]
-  Erro parsing show ip ospf? [shape: diamond, icon: alert-triangle, color: red]
-  Processar show ip ospf neighbor [icon: users, color: green]
-  Seção show ip ospf neighbor encontrada? [shape: diamond, icon: users, color: orange]
-  Parsing manual show ip ospf neighbor [icon: users, color: green]
-  Erro parsing show ip ospf neighbor? [shape: diamond, icon: alert-triangle, color: red]
-  Salvar JSON estruturado [icon: file, color: blue]
-  Erro ao salvar JSON? [shape: diamond, icon: alert-triangle, color: red]
-  Gerar resumo no log [icon: list, color: purple]
-  Fim [shape: oval, icon: check, color: lightgreen]
-  Fim com erro [shape: oval, icon: x, color: red]
-}
-
-// Relações
-Início do programa > Importações
-Importações > Configurar logging
-Configurar logging > Criar diretório de logs
-Criar diretório de logs > Criar diretório de saída
-Criar diretório de saída > Carregar arquivo de entrada
-
-Carregar arquivo de entrada > Arquivo encontrado?
-Arquivo encontrado? > Instanciar DummyDevice: Sim
-Arquivo encontrado? > Fim com erro: Não
-
-Instanciar DummyDevice > Preparar coleção de dados
-
-Preparar coleção de dados > Processar show version
-Processar show version > Seção show version encontrada?
-Seção show version encontrada? > Parsing manual show version: Sim
-Seção show version encontrada? > Processar show clock: Não
-Parsing manual show version > Erro parsing show version?
-Erro parsing show version? > Processar show clock: Não
-Erro parsing show version? > Processar show clock: Sim
-
-Processar show clock > Seção show clock encontrada?
-Seção show clock encontrada? > Parsing manual show clock: Sim
-Seção show clock encontrada? > Processar show ip route ospf: Não
-Parsing manual show clock > Erro parsing show clock?
-Erro parsing show clock? > Processar show ip route ospf: Não
-Erro parsing show clock? > Processar show ip route ospf: Sim
-
-Processar show ip route ospf > Seção show ip route ospf encontrada?
-Seção show ip route ospf encontrada? > Parsing manual show ip route ospf: Sim
-Seção show ip route ospf encontrada? > Processar show ip ospf: Não
-Parsing manual show ip route ospf > Erro parsing show ip route ospf?
-Erro parsing show ip route ospf? > Processar show ip ospf: Não
-Erro parsing show ip route ospf? > Processar show ip ospf: Sim
-
-Processar show ip ospf > Seção show ip ospf encontrada?
-Seção show ip ospf encontrada? > Parsing manual show ip ospf: Sim
-Seção show ip ospf encontrada? > Processar show ip ospf neighbor: Não
-Parsing manual show ip ospf > Erro parsing show ip ospf?
-Erro parsing show ip ospf? > Processar show ip ospf neighbor: Não
-Erro parsing show ip ospf? > Processar show ip ospf neighbor: Sim
-
-Processar show ip ospf neighbor > Seção show ip ospf neighbor encontrada?
-Seção show ip ospf neighbor encontrada? > Parsing manual show ip ospf neighbor: Sim
-Seção show ip ospf neighbor encontrada? > Salvar JSON estruturado: Não
-Parsing manual show ip ospf neighbor > Erro parsing show ip ospf neighbor?
-Erro parsing show ip ospf neighbor? > Salvar JSON estruturado: Não
-Erro parsing show ip ospf neighbor? > Salvar JSON estruturado: Sim
-
-Salvar JSON estruturado > Erro ao salvar JSON?
-Erro ao salvar JSON? > Gerar resumo no log: Não
-Erro ao salvar JSON? > Fim com erro: Sim
-
-Gerar resumo no log > Fim
-
-// Ligações com Funções Auxiliares
-Parsing manual show version > Parser manual show version
-Parsing manual show clock > Parser manual show clock
-Parsing manual show ip route ospf > Parser manual show ip route ospf
-Parsing manual show ip ospf > Parser manual show ip ospf
-Parsing manual show ip ospf neighbor > Parser manual show ip ospf neighbor
-
-Extrair seção de comando > Processar show version
-Extrair seção de comando > Processar show clock
-Extrair seção de comando > Processar show ip route ospf
-Extrair seção de comando > Processar show ip ospf
-Extrair seção de comando > Processar show ip ospf neighbor
-
-Instanciar DummyDevice > Classe DummyDevice
-
-// Entrada/Saída
-Carregar arquivo de entrada > Arquivo de entrada [icon: file, color: blue]
-Salvar JSON estruturado > Arquivo JSON de saída [icon: file, color: green]
-Configurar logging > Logs [icon: file-text, color: orange]
-Gerar resumo no log > Logs
-Fim > Logs
-Fim com erro > Logs
 ```
