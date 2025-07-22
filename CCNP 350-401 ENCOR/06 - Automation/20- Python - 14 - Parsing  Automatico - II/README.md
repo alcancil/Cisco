@@ -760,94 +760,135 @@ graph TD
 ```
 
 ```mermaid
-title Cisco OSPF Tech-Support Parser - High-Level Architecture
+title Fluxo de Parsing de Tech-Support OSPF Cisco
+direction right
 
-// --- Setup & Imports ---
-Setup [icon: settings, color: blue] {
-  Import Modules [icon: package]
-  Setup Logging [icon: file-text]
-  Create Folders [icon: folder]
-  DummyDevice Class [icon: cpu]
+// Grupos e nós
+Inicialização e Configuração [color: blue, icon: settings] {
+  Importações [icon: file-text, color: lightblue]
+  Configurar logging [icon: file-text, color: orange]
+  Criar diretório de logs [icon: folder, color: orange]
+  Criar diretório de saída [icon: folder, color: orange]
 }
 
-// --- Parsing Utilities ---
-Parsing Utilities [icon: code, color: orange] {
-  extract_section [icon: scissors]
-  Manual Parsers [icon: terminal] {
-    parse_show_version [icon: terminal, label: "parse_show_version_manualmente"]
-    parse_show_clock [icon: terminal, label: "parse_show_clock_manualmente"]
-    parse_show_ip_route_ospf [icon: terminal, label: "parse_show_ip_route_ospf_manualmente"]
-    parse_show_ip_ospf [icon: terminal, label: "parse_show_ip_ospf_manualmente"]
-    parse_show_ip_ospf_neighbor [icon: terminal, label: "parse_show_ip_ospf_neighbor_manualmente"]
-  }
+Funções Auxiliares [color: teal, icon: code] {
+  Classe DummyDevice [icon: cpu, color: lightblue]
+  Extrair seção de comando [icon: search, color: yellow]
+  Parser manual show version [icon: file-text, color: green]
+  Parser manual show clock [icon: clock, color: green]
+  Parser manual show ip route ospf [icon: map, color: green]
+  Parser manual show ip ospf [icon: globe, color: green]
+  Parser manual show ip ospf neighbor [icon: users, color: green]
 }
 
-// --- Main Parsing Flow ---
-Main Flow [icon: play, color: green] {
-  parse_tech_support_ospf_data [icon: play-circle]
-  Load Mock File [icon: file]
-  Instantiate DummyDevice [icon: cpu]
-  For Each Command [icon: repeat] {
-    Extract Section [icon: scissors]
-    Parse Section [icon: terminal]
-    Store Result [icon: database]
-  }
-  Save JSON Output [icon: save]
-  Log Final Summary [icon: file-text]
+Execução Principal [color: purple, icon: play] {
+  Início do programa [shape: oval, icon: play, color: lightblue]
+  Carregar arquivo de entrada [icon: file, color: blue]
+  Arquivo encontrado? [shape: diamond, icon: file, color: orange]
+  Instanciar DummyDevice [icon: cpu, color: lightblue]
+  Preparar coleção de dados [icon: database, color: blue]
+  Processar show version [icon: file-text, color: green]
+  Seção show version encontrada? [shape: diamond, icon: file-text, color: orange]
+  Parsing manual show version [icon: file-text, color: green]
+  Erro parsing show version? [shape: diamond, icon: alert-triangle, color: red]
+  Processar show clock [icon: clock, color: green]
+  Seção show clock encontrada? [shape: diamond, icon: clock, color: orange]
+  Parsing manual show clock [icon: clock, color: green]
+  Erro parsing show clock? [shape: diamond, icon: alert-triangle, color: red]
+  Processar show ip route ospf [icon: map, color: green]
+  Seção show ip route ospf encontrada? [shape: diamond, icon: map, color: orange]
+  Parsing manual show ip route ospf [icon: map, color: green]
+  Erro parsing show ip route ospf? [shape: diamond, icon: alert-triangle, color: red]
+  Processar show ip ospf [icon: globe, color: green]
+  Seção show ip ospf encontrada? [shape: diamond, icon: globe, color: orange]
+  Parsing manual show ip ospf [icon: globe, color: green]
+  Erro parsing show ip ospf? [shape: diamond, icon: alert-triangle, color: red]
+  Processar show ip ospf neighbor [icon: users, color: green]
+  Seção show ip ospf neighbor encontrada? [shape: diamond, icon: users, color: orange]
+  Parsing manual show ip ospf neighbor [icon: users, color: green]
+  Erro parsing show ip ospf neighbor? [shape: diamond, icon: alert-triangle, color: red]
+  Salvar JSON estruturado [icon: file, color: blue]
+  Erro ao salvar JSON? [shape: diamond, icon: alert-triangle, color: red]
+  Gerar resumo no log [icon: list, color: purple]
+  Fim [shape: oval, icon: check, color: lightgreen]
+  Fim com erro [shape: oval, icon: x, color: red]
 }
 
-// --- Outputs ---
-Outputs [icon: folder, color: purple] {
-  Logs Folder [icon: folder, label: "logs/"]
-  Output Folder [icon: folder, label: "output/"]
-  JSON Output File [icon: file, label: "parsed_tech_support_ospf_*.json"]
-  Log File [icon: file-text, label: "parse_tech_support_ospf_*.log"]
-}
+// Relações
+Início do programa > Importações
+Importações > Configurar logging
+Configurar logging > Criar diretório de logs
+Criar diretório de logs > Criar diretório de saída
+Criar diretório de saída > Carregar arquivo de entrada
 
-// --- Entry Point ---
-Script Entry [icon: play, label: "__main__"]
+Carregar arquivo de entrada > Arquivo encontrado?
+Arquivo encontrado? > Instanciar DummyDevice: Sim
+Arquivo encontrado? > Fim com erro: Não
 
-// --- Connections ---
+Instanciar DummyDevice > Preparar coleção de dados
 
-// Entry point
-Script Entry > parse_tech_support_ospf_data
+Preparar coleção de dados > Processar show version
+Processar show version > Seção show version encontrada?
+Seção show version encontrada? > Parsing manual show version: Sim
+Seção show version encontrada? > Processar show clock: Não
+Parsing manual show version > Erro parsing show version?
+Erro parsing show version? > Processar show clock: Não
+Erro parsing show version? > Processar show clock: Sim
 
-// Setup used by main flow
-parse_tech_support_ospf_data > Load Mock File
-parse_tech_support_ospf_data > Instantiate DummyDevice
-parse_tech_support_ospf_data > For Each Command
-parse_tech_support_ospf_data > Save JSON Output
-parse_tech_support_ospf_data > Log Final Summary
+Processar show clock > Seção show clock encontrada?
+Seção show clock encontrada? > Parsing manual show clock: Sim
+Seção show clock encontrada? > Processar show ip route ospf: Não
+Parsing manual show clock > Erro parsing show clock?
+Erro parsing show clock? > Processar show ip route ospf: Não
+Erro parsing show clock? > Processar show ip route ospf: Sim
 
-// Setup dependencies
-Load Mock File > Create Folders: ensure output/logs exist
-Instantiate DummyDevice > DummyDevice Class
+Processar show ip route ospf > Seção show ip route ospf encontrada?
+Seção show ip route ospf encontrada? > Parsing manual show ip route ospf: Sim
+Seção show ip route ospf encontrada? > Processar show ip ospf: Não
+Parsing manual show ip route ospf > Erro parsing show ip route ospf?
+Erro parsing show ip route ospf? > Processar show ip ospf: Não
+Erro parsing show ip route ospf? > Processar show ip ospf: Sim
 
-// For each command: extract and parse
-Extract Section > extract_section
-Extract Section > Setup Logging: logs extraction
-Extract Section > Load Mock File: uses loaded text
+Processar show ip ospf > Seção show ip ospf encontrada?
+Seção show ip ospf encontrada? > Parsing manual show ip ospf: Sim
+Seção show ip ospf encontrada? > Processar show ip ospf neighbor: Não
+Parsing manual show ip ospf > Erro parsing show ip ospf?
+Erro parsing show ip ospf? > Processar show ip ospf neighbor: Não
+Erro parsing show ip ospf? > Processar show ip ospf neighbor: Sim
 
-// Each parse step
-Extract Section > Parse Section
-Parse Section > Manual Parsers
-Parse Section > Setup Logging: logs parsing
+Processar show ip ospf neighbor > Seção show ip ospf neighbor encontrada?
+Seção show ip ospf neighbor encontrada? > Parsing manual show ip ospf neighbor: Sim
+Seção show ip ospf neighbor encontrada? > Salvar JSON estruturado: Não
+Parsing manual show ip ospf neighbor > Erro parsing show ip ospf neighbor?
+Erro parsing show ip ospf neighbor? > Salvar JSON estruturado: Não
+Erro parsing show ip ospf neighbor? > Salvar JSON estruturado: Sim
 
-// Store result
-Parse Section > Store Result
-Store Result > Save JSON Output
+Salvar JSON estruturado > Erro ao salvar JSON?
+Erro ao salvar JSON? > Gerar resumo no log: Não
+Erro ao salvar JSON? > Fim com erro: Sim
 
-// Output writing
-Save JSON Output > JSON Output File
-Save JSON Output > Output Folder
-Log Final Summary > Log File
-Log Final Summary > Logs Folder
+Gerar resumo no log > Fim
 
-// Logging is used throughout
-Setup Logging --> Log File: continuous
-Setup Logging --> Logs Folder: continuous
-parse_tech_support_ospf_data --> Setup Logging: logs all steps
-Manual Parsers --> Setup Logging: logs parsing steps
-extract_section --> Setup Logging: logs extraction steps
+// Ligações com Funções Auxiliares
+Parsing manual show version > Parser manual show version
+Parsing manual show clock > Parser manual show clock
+Parsing manual show ip route ospf > Parser manual show ip route ospf
+Parsing manual show ip ospf > Parser manual show ip ospf
+Parsing manual show ip ospf neighbor > Parser manual show ip ospf neighbor
 
+Extrair seção de comando > Processar show version
+Extrair seção de comando > Processar show clock
+Extrair seção de comando > Processar show ip route ospf
+Extrair seção de comando > Processar show ip ospf
+Extrair seção de comando > Processar show ip ospf neighbor
+
+Instanciar DummyDevice > Classe DummyDevice
+
+// Entrada/Saída
+Carregar arquivo de entrada > Arquivo de entrada [icon: file, color: blue]
+Salvar JSON estruturado > Arquivo JSON de saída [icon: file, color: green]
+Configurar logging > Logs [icon: file-text, color: orange]
+Gerar resumo no log > Logs
+Fim > Logs
+Fim com erro > Logs
 ```
