@@ -706,84 +706,6 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
 ### Fluxograma
 
 ```mermaid
-graph TD
-    A[Início do Script] --> B[Inicialização e Setup]
-
-    subgraph SetupBlocos1a5
-        B --> C[Importar Módulos\nBloco 1]
-        C --> D[Configurar Logging\nCria 'logs' dir, arquivo log, console\nBloco 2]
-        D --> E[Configurar Diretórios de Saída\nCria 'output' dir\nBloco 3]
-        E --> F[Definir Classe DummyDevice\nBloco 4]
-        F --> G[Definir Funções de Parsing Manual\nextract_section, etc.\nBloco 5]
-    end
-
-    G --> H[Chamar função parse_tech_support_ospf_data\nBloco 9]
-
-    subgraph FluxoPrincipalParseTechSupport
-        H --> I[Início do Parsing]
-        I --> J[Carregar Arquivo Mock\nR01_ospf_diag.txt]
-        J --> K{Erro de Arquivo?}
-        K -->|Sim| L[Log Erro e Sair]
-        K -->|Não| M[Instanciar DummyDevice]
-        M --> N[Inicializar parsed_data_collection]
-
-        N --> P[Loop: Processar Comandos OSPF]
-        P --> Q[Extrair Seção do Comando\nex: show version, show clock]
-        Q --> R{Seção Encontrada?}
-        R -->|Sim| S[Chamar função parse_show_version_manualmente]
-        S --> T{Erro de Parsing?}
-        T -->|Sim| U[Log Erro de Parsing]
-        T -->|Não| V[Armazenar Dados Parseados]
-        R -->|Não| W[Log Seção Não Encontrada]
-
-        V --> P
-        U --> P
-        W --> P
-        P --> X[Fim do Loop de Processamento]
-
-        X --> Y[Salvar JSON\noutput/parsed.json\nBloco 7]
-        Y --> Z{Erro ao Salvar JSON?}
-        Z -->|Sim| AA[Log Erro]
-        Z -->|Não| BB[Gerar Resumo Final no Console\nBloco 8]
-
-        BB --> CC[Exibir Versão IOS]
-        BB --> CD[Exibir Data e Hora]
-        BB --> CE[Exibir ID OSPF]
-        BB --> CF[Exibir Vizinhos OSPF]
-        BB --> CG[Exibir Rotas OSPF]
-        CG --> CH[Log: Parsing Concluído]
-    end
-
-    CH --> D_END[Fim do Script]
-    AA --> CH
-    L --> D_END
-```
-
-```mermaid
-graph TD
-    A[Início Parsing] --> B[Carregar Arquivo Mock]
-    B --> C{Arquivo Existe?}
-    C -->|Sim| D[Instanciar DummyDevice]
-    C -->|Não| E[Log de Erro e Saída]
-    D --> F[Loop pelos comandos OSPF]
-    F --> G[Extrair Seção via regex]
-    G --> H{Seção encontrada?}
-    H -->|Sim| I[Chamar Parser Manual]
-    H -->|Não| J[Log: Seção ausente]
-    I --> K{Parsing OK?}
-    K -->|Sim| L[Salvar Dados]
-    K -->|Não| M[Log: Erro no Parsing]
-    L --> F
-    M --> F
-    J --> F
-    F --> N[Fim do Parsing]
-
-style B fill:#add8e6,stroke:#000,color:#000
-style C fill:#90ee90,stroke:#000,color:#000
-style D fill:#f0e68c,stroke:#000,color:#000
-```
-
-```mermaid
 flowchart TD
     A[Inicio do Script] --> B[Setup: imports, logging, diretorios]
     B --> C[Funcoes auxiliares: regex e parsing]
@@ -807,3 +729,5 @@ style H fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style I fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style J fill:#0dcaf0,stroke:#17a2b8,color:#000000
 ```
+
+**OBS:** essa é uma visão "macro" do código. Por ele ser um pouco complexo vamos abordar por partes.
