@@ -707,30 +707,30 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
 
 ```mermaid
 graph TD
-    A[Início do Script] --> B(Inicialização e Setup)
+    A[Início do Script] --> B[Inicialização e Setup]
 
-    subgraph Setup (Blocos 1-5)
-        B --> C[Importar Módulos<br>(Bloco 1)]
-        C --> D[Configurar Logging<br>(Cria 'logs' dir, arquivo log, console)<br>(Bloco 2)]
-        D --> E[Configurar Diretórios de Saída<br>(Cria 'output' dir)<br>(Bloco 3)]
-        E --> F[Definir Classe DummyDevice<br>(Bloco 4)]
-        F --> G[Definir Funções de Parsing Manual<br>(extract_section, parse_..._manualmente)<br>(Bloco 5)]
+    subgraph SetupBlocos1a5
+        B --> C[Importar Módulos\nBloco 1]
+        C --> D[Configurar Logging\nCria 'logs' dir, arquivo log, console\nBloco 2]
+        D --> E[Configurar Diretórios de Saída\nCria 'output' dir\nBloco 3]
+        E --> F[Definir Classe DummyDevice\nBloco 4]
+        F --> G[Definir Funções de Parsing Manual\nextract_section, etc.\nBloco 5]
     end
 
-    G --> H[Chamar parse_tech_support_ospf_data()<br>(Bloco 9)]
+    G --> H[Chamar função parse_tech_support_ospf_data\nBloco 9]
 
-    subgraph Fluxo Principal (parse_tech_support_ospf_data)
+    subgraph FluxoPrincipalParseTechSupport
         H --> I[Início do Parsing]
-        I --> J[Carregar Arquivo Mock<br>R01_ospf_diag.txt]
+        I --> J[Carregar Arquivo Mock\nR01_ospf_diag.txt]
         J --> K{Erro de Arquivo?}
-        K -->|Sim| L[Log Erro & Sair]
+        K -->|Sim| L[Log Erro e Sair]
         K -->|Não| M[Instanciar DummyDevice]
         M --> N[Inicializar parsed_data_collection]
 
-        N --> P(Loop: Processar Comandos OSPF)
-        P --> Q[Extrair Seção do Comando<br>(e.g., show version, show clock, etc.)<br>(extract_section)]
+        N --> P[Loop: Processar Comandos OSPF]
+        P --> Q[Extrair Seção do Comando\nex: show version, show clock]
         Q --> R{Seção Encontrada?}
-        R -->|Sim| S[Chamar Parsing Manual<br>(e.g., parse_show_version_manualmente)]
+        R -->|Sim| S[Chamar função parse_show_version_manualmente]
         S --> T{Erro de Parsing?}
         T -->|Sim| U[Log Erro de Parsing]
         T -->|Não| V[Armazenar Dados Parseados]
@@ -741,10 +741,10 @@ graph TD
         W --> P
         P --> X[Fim do Loop de Processamento]
 
-        X --> Y[Salvar Dados Parseados em JSON<br>output/parsed_....json<br>(Bloco 7)]
+        X --> Y[Salvar JSON\noutput/parsed.json\nBloco 7]
         Y --> Z{Erro ao Salvar JSON?}
         Z -->|Sim| AA[Log Erro]
-        Z -->|Não| BB[Gerar Resumo Final no Console<br>(Bloco 8)]
+        Z -->|Não| BB[Gerar Resumo Final no Console\nBloco 8]
 
         BB --> CC[Exibir Versão IOS]
         BB --> CD[Exibir Data e Hora]
@@ -757,5 +757,4 @@ graph TD
     CH --> D_END[Fim do Script]
     AA --> CH
     L --> D_END
-
 ```
