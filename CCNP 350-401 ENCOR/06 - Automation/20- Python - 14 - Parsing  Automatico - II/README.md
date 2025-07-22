@@ -784,3 +784,14 @@ style D fill:#f0e68c,stroke:#000,color:#000
 ```
 
 ```mermaid
+flowchart TD
+    A[Inicio do Script] --> B[Setup: imports, logging, diretorios]
+    B --> C[Funcoes auxiliares: regex e parsing]
+    C --> D[Carregar arquivo .txt]
+    D --> E[Instanciar DummyDevice]
+    E --> F[Loop sobre comandos: show version, show ip ospf...]
+    F --> G[Parsing manual ou Genie]
+    G --> H[Salvar JSON e logs]
+    H --> I[Resumo final: IOS, Data, OSPF, Vizinhos, Rotas]
+    I --> J[Fim]
+```
