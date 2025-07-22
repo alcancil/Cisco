@@ -11,6 +11,7 @@
       - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado)
       - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe)
     - [Objetivo didático](#objetivo-didático)
+    - [Aplicando na Prática](#aplicando-na-prática)
     - [Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)](#fluxo-de-decisão---quando-utilizar-parsing-manual-regex-x-parsing-automático-genie)
     - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
     - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado-1)
@@ -128,7 +129,15 @@ O foco não é ensinar regex, mas demonstrar que:
 - O uso de parsers automáticos como o Genie é **mais prático, confiável e sustentável**
 - Quando não há parser disponível (como em versões IOS mais antigas), é possível recorrer ao regex como fallback
 
-### Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)
+---
+
+### Aplicando na Prática
+
+A seguir, apresentamos um exemplo real em que foi necessário processar a saída extensa do comando `show tech-support ospf`. O objetivo principal é demonstrar **as diferenças práticas** entre utilizar expressões regulares manuais e parsers automáticos do Genie.
+
+O foco aqui não é aprofundar o uso de regex, mas sim ilustrar como ela pode ser usada como alternativa em ambientes **sem suporte oficial** do Genie (como IOS legado). Em contrapartida, no cenário com suporte Genie (IOS-XE), mostramos como os parsers automáticos oferecem **maior produtividade, confiabilidade e reutilização.**
+
+### Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)  
 
 ```mermaid
 graph TD
@@ -165,6 +174,8 @@ graph TD
 **Objetivo**  
 
 Interpretar a saída do comando show tech-support em dispositivos Cisco IOS (legado) utilizando Python e Genie, com foco na extração e estruturação de informações chave sobre o estado operacional do OSPF, incluindo ID do roteador, vizinhanças e rotas. O script extrai seções específicas do show tech-support (como show version, show clock, show ip ospf, show ip ospf neighbor e show ip route ospf), exibe um resumo no terminal e salva os dados parseados em formato JSON para análise e auditoria.
+
+**Nota:** Este exemplo foi adaptado a partir de um modelo genérico anterior, focando especificamente no protocolo OSPF para demonstrar parsing manual versus automático com Genie.
 
 **📁 Estrutura do Projeto**
 
@@ -534,4 +545,156 @@ http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
 [318] if __name__ == "__main__":
 [319]     parse_tech_support_ospf_data()
 
+```
+
+**saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/12$ python3 parse_tech_support_ospf.py 
+2025-07-22 11:46:13,586 - INFO - Iniciando o parsing do show tech-support OSPF.
+2025-07-22 11:46:13,586 - INFO - Mock file 'Arquivos/R01_ospf_diag.txt' carregado com sucesso.
+2025-07-22 11:46:13,587 - INFO - DummyDevice criado para OS: ios
+2025-07-22 11:46:13,587 - INFO - Processando: Versão do Sistema Operacional (show version)...
+2025-07-22 11:46:13,587 - INFO - Tentando extrair seção para o comando: 'show version'
+2025-07-22 11:46:13,587 - INFO - Seção 'show version' extraída com sucesso (tamanho: 2587 caracteres).
+2025-07-22 11:46:13,587 - INFO - Realizando parsing manual para 'show version'.
+2025-07-22 11:46:13,587 - INFO - Versão do SO parseada manualmente com sucesso.
+2025-07-22 11:46:13,587 - INFO - Processando: Data e Hora (show clock)...
+2025-07-22 11:46:13,587 - INFO - Tentando extrair seção para o comando: 'show clock'
+2025-07-22 11:46:13,588 - INFO - Seção 'show clock' extraída com sucesso (tamanho: 33 caracteres).
+2025-07-22 11:46:13,588 - INFO - Realizando parsing manual para 'show clock'.
+2025-07-22 11:46:13,588 - INFO - Data e Hora parseadas manualmente com sucesso.
+2025-07-22 11:46:13,588 - INFO - Processando: Tabela de Roteamento OSPF (show ip route ospf)...
+2025-07-22 11:46:13,588 - INFO - Tentando extrair seção para o comando: 'show ip route ospf'
+2025-07-22 11:46:13,588 - INFO - Seção 'show ip route ospf' extraída com sucesso (tamanho: 705 caracteres).
+2025-07-22 11:46:13,588 - INFO - Realizando parsing manual para 'show ip route ospf'.
+2025-07-22 11:46:13,588 - INFO - Tabela de roteamento OSPF parseada manualmente com sucesso.
+2025-07-22 11:46:13,588 - INFO - Processando: Estado Geral do Protocolo OSPF (show ip ospf)...
+2025-07-22 11:46:13,588 - INFO - Tentando extrair seção para o comando: 'show ip ospf'
+2025-07-22 11:46:13,589 - INFO - Seção 'show ip ospf' extraída com sucesso (tamanho: 1649 caracteres).
+2025-07-22 11:46:13,589 - INFO - Realizando parsing manual para 'show ip ospf'.
+2025-07-22 11:46:13,589 - INFO - Estado geral do OSPF parseado manualmente com sucesso.
+2025-07-22 11:46:13,589 - INFO - Processando: Vizinhos OSPF (show ip ospf neighbor)...
+2025-07-22 11:46:13,589 - INFO - Tentando extrair seção para o comando: 'show ip ospf neighbor'
+2025-07-22 11:46:13,590 - INFO - Seção 'show ip ospf neighbor' extraída com sucesso (tamanho: 157 caracteres).
+2025-07-22 11:46:13,590 - INFO - Realizando parsing manual para 'show ip ospf neighbor'.
+2025-07-22 11:46:13,590 - INFO - Conteúdo recebido para 'show ip ospf neighbor':
+---
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:33    172.16.0.2      FastEthernet0/0
+---
+2025-07-22 11:46:13,590 - INFO - Vizinho encontrado: {'neighbor_id': '2.2.2.2', 'priority': '0', 'state': 'FULL/  -', 'dead_time': '00:00:33', 'address': '172.16.0.2', 'interface': 'FastEthernet0/0'}
+2025-07-22 11:46:13,590 - INFO - Vizinhos OSPF parseados manualmente com sucesso.
+2025-07-22 11:46:13,591 - INFO - Dados parseados salvos com sucesso em 'output/parsed_tech_support_ospf_20250722_114613.json'.
+2025-07-22 11:46:13,591 - INFO - 
+2025-07-22 11:46:13,591 - INFO - ==== RESUMO FINAL ====
+2025-07-22 11:46:13,591 - INFO - Versão do Cisco IOS: Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)
+2025-07-22 11:46:13,591 - INFO - Data e Hora: 18:00:49.603 UTC Thu Jul 17 2025
+2025-07-22 11:46:13,591 - INFO - ID do Roteador OSPF: 1.1.1.1
+2025-07-22 11:46:13,591 - INFO - Vizinhos OSPF: 1 vizinho(s) detectado(s)
+2025-07-22 11:46:13,591 - INFO -  - ID: 2.2.2.2, Estado: FULL/  -, Endereço: 172.16.0.2, Interface: FastEthernet0/0
+2025-07-22 11:46:13,591 - INFO - Tabela de Roteamento OSPF:
+2025-07-22 11:46:13,592 - INFO -  - O        192.168.0.2 [110/2] via 172.16.0.2, 00:00:35, FastEthernet0/0
+2025-07-22 11:46:13,592 - INFO - Parsing concluído com sucesso.
+(genie310) alcancil@linux:~/automacoes/genie/12$ 
+```
+
+**OBS:** o script apresenta o log em tela para facilitar o entendimento no final do processo. Ele também gera duas pastas: **logs** e **output**.
+
+**logs**
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat logs/parse_tech_support_ospf_202507
+parse_tech_support_ospf_20250718_185431.log  parse_tech_support_ospf_20250722_101515.log  parse_tech_support_ospf_20250722_114613.log
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat logs/parse_tech_support_ospf_20250722_114613.log 
+2025-07-22 11:46:13,586 - INFO - Iniciando o parsing do show tech-support OSPF.
+2025-07-22 11:46:13,586 - INFO - Mock file 'Arquivos/R01_ospf_diag.txt' carregado com sucesso.
+2025-07-22 11:46:13,587 - INFO - DummyDevice criado para OS: ios
+2025-07-22 11:46:13,587 - INFO - Processando: Versão do Sistema Operacional (show version)...
+2025-07-22 11:46:13,587 - INFO - Tentando extrair seção para o comando: 'show version'
+2025-07-22 11:46:13,587 - INFO - Seção 'show version' extraída com sucesso (tamanho: 2587 caracteres).
+2025-07-22 11:46:13,587 - INFO - Realizando parsing manual para 'show version'.
+2025-07-22 11:46:13,587 - INFO - Versão do SO parseada manualmente com sucesso.
+2025-07-22 11:46:13,587 - INFO - Processando: Data e Hora (show clock)...
+2025-07-22 11:46:13,587 - INFO - Tentando extrair seção para o comando: 'show clock'
+2025-07-22 11:46:13,588 - INFO - Seção 'show clock' extraída com sucesso (tamanho: 33 caracteres).
+2025-07-22 11:46:13,588 - INFO - Realizando parsing manual para 'show clock'.
+2025-07-22 11:46:13,588 - INFO - Data e Hora parseadas manualmente com sucesso.
+2025-07-22 11:46:13,588 - INFO - Processando: Tabela de Roteamento OSPF (show ip route ospf)...
+2025-07-22 11:46:13,588 - INFO - Tentando extrair seção para o comando: 'show ip route ospf'
+2025-07-22 11:46:13,588 - INFO - Seção 'show ip route ospf' extraída com sucesso (tamanho: 705 caracteres).
+2025-07-22 11:46:13,588 - INFO - Realizando parsing manual para 'show ip route ospf'.
+2025-07-22 11:46:13,588 - INFO - Tabela de roteamento OSPF parseada manualmente com sucesso.
+2025-07-22 11:46:13,588 - INFO - Processando: Estado Geral do Protocolo OSPF (show ip ospf)...
+2025-07-22 11:46:13,588 - INFO - Tentando extrair seção para o comando: 'show ip ospf'
+2025-07-22 11:46:13,589 - INFO - Seção 'show ip ospf' extraída com sucesso (tamanho: 1649 caracteres).
+2025-07-22 11:46:13,589 - INFO - Realizando parsing manual para 'show ip ospf'.
+2025-07-22 11:46:13,589 - INFO - Estado geral do OSPF parseado manualmente com sucesso.
+2025-07-22 11:46:13,589 - INFO - Processando: Vizinhos OSPF (show ip ospf neighbor)...
+2025-07-22 11:46:13,589 - INFO - Tentando extrair seção para o comando: 'show ip ospf neighbor'
+2025-07-22 11:46:13,590 - INFO - Seção 'show ip ospf neighbor' extraída com sucesso (tamanho: 157 caracteres).
+2025-07-22 11:46:13,590 - INFO - Realizando parsing manual para 'show ip ospf neighbor'.
+2025-07-22 11:46:13,590 - INFO - Conteúdo recebido para 'show ip ospf neighbor':
+---
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:33    172.16.0.2      FastEthernet0/0
+---
+2025-07-22 11:46:13,590 - INFO - Vizinho encontrado: {'neighbor_id': '2.2.2.2', 'priority': '0', 'state': 'FULL/  -', 'dead_time': '00:00:33', 'address': '172.16.0.2', 'interface': 'FastEthernet0/0'}
+2025-07-22 11:46:13,590 - INFO - Vizinhos OSPF parseados manualmente com sucesso.
+2025-07-22 11:46:13,591 - INFO - Dados parseados salvos com sucesso em 'output/parsed_tech_support_ospf_20250722_114613.json'.
+2025-07-22 11:46:13,591 - INFO - 
+2025-07-22 11:46:13,591 - INFO - ==== RESUMO FINAL ====
+2025-07-22 11:46:13,591 - INFO - Versão do Cisco IOS: Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)
+2025-07-22 11:46:13,591 - INFO - Data e Hora: 18:00:49.603 UTC Thu Jul 17 2025
+2025-07-22 11:46:13,591 - INFO - ID do Roteador OSPF: 1.1.1.1
+2025-07-22 11:46:13,591 - INFO - Vizinhos OSPF: 1 vizinho(s) detectado(s)
+2025-07-22 11:46:13,591 - INFO -  - ID: 2.2.2.2, Estado: FULL/  -, Endereço: 172.16.0.2, Interface: FastEthernet0/0
+2025-07-22 11:46:13,591 - INFO - Tabela de Roteamento OSPF:
+2025-07-22 11:46:13,592 - INFO -  - O        192.168.0.2 [110/2] via 172.16.0.2, 00:00:35, FastEthernet0/0
+2025-07-22 11:46:13,592 - INFO - Parsing concluído com sucesso.
+(genie310) alcancil@linux:~/automacoes/genie/12$ 
+```
+
+**output**
+
+```json
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_202507
+parsed_tech_support_ospf_20250718_185431.json  parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722_114613.json
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_20250722_1
+parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722_114613.json  
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_20250722_114613.json 
+{
+    "version": {
+        "full_version_string": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)"
+    },
+    "clock": {
+        "utc_time": "18:00:49.603 UTC Thu Jul 17 2025"
+    },
+    "ip_route_ospf": {
+        "routes": [
+            "O        192.168.0.2 [110/2] via 172.16.0.2, 00:00:35, FastEthernet0/0"
+        ]
+    },
+    "ospf_general_state": {
+        "router_id": "1.1.1.1",
+        "number_of_areas": 1
+    },
+    "ospf_neighbors": {
+        "neighbors": [
+            {
+                "neighbor_id": "2.2.2.2",
+                "priority": "0",
+                "state": "FULL/  -",
+                "dead_time": "00:00:33",
+                "address": "172.16.0.2",
+                "interface": "FastEthernet0/0"
+            }
+        ]
+    }
+}(genie310) alcancil@linux:~/automacoes/genie/12$ 
 ```
