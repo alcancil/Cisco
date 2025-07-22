@@ -709,7 +709,7 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
 graph TD
     A[Início do Script] --> B(Inicialização e Setup);
 
-    subgraph Setup (Blocos 1, 2, 3, 4, 5)
+    subgraph "Setup (Blocos 1, 2, 3, 4, 5)"
         B --> C[Importar Módulos\n(Bloco 1)];
         C --> D[Configurar Logging\n(Cria 'logs' dir, arquivo log, console)\n(Bloco 2)];
         D --> E[Configurar Diretorios de Saída\n(Cria 'output' dir)\n(Bloco 3)];
@@ -719,7 +719,7 @@ graph TD
 
     G --> H[Chamar parse_tech_support_ospf_data()\n(Bloco 9)];
 
-    subgraph Fluxo Principal (parse_tech_support_ospf_data() - Bloco 6)
+    subgraph "Fluxo Principal (parse_tech_support_ospf_data() - Bloco 6)"
         H --> I[Início do Parsing];
         I --> J[Carregar Arquivo Mock\nR01_ospf_diag.txt];
         J -- Erro? --> K{Erro de Arquivo?};
