@@ -758,3 +758,96 @@ graph TD
     AA --> CH;
     L --> D_END;
 ```
+
+```mermaid
+title Cisco OSPF Tech-Support Parser - High-Level Architecture
+
+// --- Setup & Imports ---
+Setup [icon: settings, color: blue] {
+  Import Modules [icon: package]
+  Setup Logging [icon: file-text]
+  Create Folders [icon: folder]
+  DummyDevice Class [icon: cpu]
+}
+
+// --- Parsing Utilities ---
+Parsing Utilities [icon: code, color: orange] {
+  extract_section [icon: scissors]
+  Manual Parsers [icon: terminal] {
+    parse_show_version [icon: terminal, label: "parse_show_version_manualmente"]
+    parse_show_clock [icon: terminal, label: "parse_show_clock_manualmente"]
+    parse_show_ip_route_ospf [icon: terminal, label: "parse_show_ip_route_ospf_manualmente"]
+    parse_show_ip_ospf [icon: terminal, label: "parse_show_ip_ospf_manualmente"]
+    parse_show_ip_ospf_neighbor [icon: terminal, label: "parse_show_ip_ospf_neighbor_manualmente"]
+  }
+}
+
+// --- Main Parsing Flow ---
+Main Flow [icon: play, color: green] {
+  parse_tech_support_ospf_data [icon: play-circle]
+  Load Mock File [icon: file]
+  Instantiate DummyDevice [icon: cpu]
+  For Each Command [icon: repeat] {
+    Extract Section [icon: scissors]
+    Parse Section [icon: terminal]
+    Store Result [icon: database]
+  }
+  Save JSON Output [icon: save]
+  Log Final Summary [icon: file-text]
+}
+
+// --- Outputs ---
+Outputs [icon: folder, color: purple] {
+  Logs Folder [icon: folder, label: "logs/"]
+  Output Folder [icon: folder, label: "output/"]
+  JSON Output File [icon: file, label: "parsed_tech_support_ospf_*.json"]
+  Log File [icon: file-text, label: "parse_tech_support_ospf_*.log"]
+}
+
+// --- Entry Point ---
+Script Entry [icon: play, label: "__main__"]
+
+// --- Connections ---
+
+// Entry point
+Script Entry > parse_tech_support_ospf_data
+
+// Setup used by main flow
+parse_tech_support_ospf_data > Load Mock File
+parse_tech_support_ospf_data > Instantiate DummyDevice
+parse_tech_support_ospf_data > For Each Command
+parse_tech_support_ospf_data > Save JSON Output
+parse_tech_support_ospf_data > Log Final Summary
+
+// Setup dependencies
+Load Mock File > Create Folders: ensure output/logs exist
+Instantiate DummyDevice > DummyDevice Class
+
+// For each command: extract and parse
+Extract Section > extract_section
+Extract Section > Setup Logging: logs extraction
+Extract Section > Load Mock File: uses loaded text
+
+// Each parse step
+Extract Section > Parse Section
+Parse Section > Manual Parsers
+Parse Section > Setup Logging: logs parsing
+
+// Store result
+Parse Section > Store Result
+Store Result > Save JSON Output
+
+// Output writing
+Save JSON Output > JSON Output File
+Save JSON Output > Output Folder
+Log Final Summary > Log File
+Log Final Summary > Logs Folder
+
+// Logging is used throughout
+Setup Logging --> Log File: continuous
+Setup Logging --> Logs Folder: continuous
+parse_tech_support_ospf_data --> Setup Logging: logs all steps
+Manual Parsers --> Setup Logging: logs parsing steps
+extract_section --> Setup Logging: logs extraction steps
+
+```
