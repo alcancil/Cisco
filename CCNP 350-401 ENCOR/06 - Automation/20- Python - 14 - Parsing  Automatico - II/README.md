@@ -758,3 +758,57 @@ graph TD
     AA --> CH;
     L --> D_END;
 ```
+
+```mermaid
+graph TD
+    A[Início do Script] --> B(Inicialização e Setup)
+
+    subgraph Setup
+        B --> C[Importar Módulos (Bloco 1)]
+        C --> D[Configurar Logging (Bloco 2)]
+        D --> E[Configurar Diretórios de Saída (Bloco 3)]
+        E --> F[Definir Classe DummyDevice (Bloco 4)]
+        F --> G[Definir Funções de Parsing Manual (Bloco 5)]
+    end
+
+    G --> H[Chamar parse_tech_support_ospf_data() (Bloco 9)]
+
+    subgraph "Fluxo Principal (parse_tech_support_ospf_data() - Bloco 6)"
+        H --> I[Início do Parsing]
+        I --> J[Carregar Arquivo Mock (R01_ospf_diag.txt)]
+        J --> K{Erro de Arquivo?}
+        K -- Sim --> L[Log Erro & Sair]
+        K -- Não --> M[Instanciar DummyDevice]
+        M --> N[Inicializar parsed_data_collection]
+
+        N --> P(Loop: Processar Comandos OSPF)
+        P --> Q[Extrair Seção do Comando (extract_section)]
+        Q --> R{Seção Encontrada?}
+        R -- Sim --> S[Chamar Função de Parsing Manual]
+        S --> T{Erro de Parsing?}
+        T -- Sim --> U[Log Erro de Parsing]
+        T -- Não --> V[Armazenar Dados Parseados]
+        R -- Não --> W[Log Seção Não Encontrada]
+
+        V --> P
+        U --> P
+        W --> P
+        P --> X[Fim do Loop de Processamento]
+
+        X --> Y[Salvar Dados Parseados em JSON (Bloco 7)]
+        Y --> Z{Erro ao Salvar JSON?}
+        Z -- Sim --> AA[Log Erro]
+        Z -- Não --> BB[Gerar Resumo Final no Console (Bloco 8)]
+
+        BB --> CC[Exibir Versão IOS]
+        BB --> CD[Exibir Data e Hora]
+        BB --> CE[Exibir ID OSPF]
+        BB --> CF[Exibir Vizinhos OSPF]
+        BB --> CG[Exibir Rotas OSPF]
+        CG --> CH[Log: Parsing Concluído]
+    end
+
+    CH --> D_END[Fim do Script]
+    AA --> CH
+    L --> D_END
+    ```
