@@ -15,6 +15,7 @@
     - [Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)](#fluxo-de-decisão---quando-utilizar-parsing-manual-regex-x-parsing-automático-genie)
     - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
     - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado-1)
+    - [Fluxograma](#fluxograma)
 
 #### Comando show tech-support
 
@@ -700,4 +701,60 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
         ]
     }
 } 
+```
+
+### Fluxograma
+
+```mermaid
+graph TD
+    A[Início do Script] --> B(Inicialização e Setup);
+
+    subgraph Setup (Blocos 1, 2, 3, 4, 5)
+        B --> C[Importar Módulos<br>(Bloco 1)];
+        C --> D[Configurar Logging<br>(Cria 'logs' dir, arquivo log, console)<br>(Bloco 2)];
+        D --> E[Configurar Diretorios de Saída<br>(Cria 'output' dir)<br>(Bloco 3)];
+        E --> F[Definir Classe DummyDevice<br>(Bloco 4)];
+        F --> G[Definir Funções de Parsing Manual<br>(extract_section, parse_..._manualmente)<br>(Bloco 5)];
+    end
+
+    G --> H[Chamar parse_tech_support_ospf_data()<br>(Bloco 9)];
+
+    subgraph Fluxo Principal (parse_tech_support_ospf_data() - Bloco 6)
+        H --> I[Início do Parsing];
+        I --> J[Carregar Arquivo Mock<br>Arquivos/R01_ospf_diag.txt];
+        J -- Erro? --> K{Erro de Arquivo?};
+        K -- Sim --> L[Log Erro & Sair];
+        K -- Não --> M[Instanciar DummyDevice];
+        M --> N[Inicializar parsed_data_collection];
+
+        N --> P(Loop: Processar Comandos OSPF);
+        P --> Q[Extrair Seção do Comando<br>(e.g., show version, show clock, etc.)<br>(Chamada a 'extract_section')];
+        Q --> R{Seção Encontrada?};
+        R -- Sim --> S[Chamar Função de Parsing Manual<br>(e.g., parse_show_version_manualmente)];
+        S -- Erro Parsing? --> T{Erro de Parsing?};
+        T -- Sim --> U[Log Erro de Parsing];
+        S -- Não --> V[Armazenar Dados Parseados];
+        R -- Não --> W[Log Seção Não Encontrada];
+
+        V --> P;
+        U --> P;
+        W --> P;
+        P --> X[Fim do Loop de Processamento];
+
+        X --> Y[Salvar Dados Parseados em JSON<br>output/...json<br>(Bloco 7)];
+        Y -- Erro? --> Z{Erro ao Salvar JSON?};
+        Z -- Sim --> AA[Log Erro];
+        Z -- Não --> BB[Gerar Resumo Final no Console<br>(Bloco 8)];
+
+        BB --> CC[Exibir Versão IOS];
+        BB --> CD[Exibir Data e Hora];
+        BB --> CE[Exibir ID OSPF];
+        BB --> CF[Exibir Vizinhos OSPF];
+        BB --> CG[Exibir Rotas OSPF];
+        CG --> CH[Log: Parsing Concluído];
+    end
+
+    CH --> D_END[Fim do Script];
+    AA --> CH;
+    L --> D_END;
 ```
