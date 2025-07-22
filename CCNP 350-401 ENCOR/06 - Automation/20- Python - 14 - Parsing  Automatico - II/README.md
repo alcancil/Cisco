@@ -709,7 +709,7 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
 graph TD
     A[Início do Script] --> B(Inicialização e Setup);
 
-    subgraph Setup (Blocos 1, 2, 3, 4, 5)
+    subgraph Setup
         B --> C[Importar Módulos<br>(Bloco 1)];
         C --> D[Configurar Logging<br>(Cria 'logs' dir, arquivo log, console)<br>(Bloco 2)];
         D --> E[Configurar Diretorios de Saída<br>(Cria 'output' dir)<br>(Bloco 3)];
