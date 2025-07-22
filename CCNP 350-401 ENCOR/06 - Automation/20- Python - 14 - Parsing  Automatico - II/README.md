@@ -6,16 +6,14 @@
 - [Python - 15](#python---15)
   - [Parsing Automático - Genie](#parsing-automático---genie)
   - [Sumário](#sumário)
-    - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
       - [Comando show tech-support](#comando-show-tech-support)
-    - [Exemplo 12: Parsing de show tech-support (comparativo)](#exemplo-12-parsing-de-show-tech-support-comparativo)
+    - [Parsing de show tech-support (comparativo)](#parsing-de-show-tech-support-comparativo)
       - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado)
       - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe)
     - [Objetivo didático](#objetivo-didático)
     - [Fluxo de decisão - Quando utilizar: Parsing Manual (Regex) X Parsing Automático (Genie)](#fluxo-de-decisão---quando-utilizar-parsing-manual-regex-x-parsing-automático-genie)
-    - [Exemplo 12: Parsing de show tech-support (comparativo) 🔹 Cenário 1 — Cisco IOS (legado)](#exemplo-12-parsing-de-show-tech-support-comparativo--cenário-1--cisco-ios-legado)
-
-### Exemplo 12: Parsing de show tech-support
+    - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
+    - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado-1)
 
 #### Comando show tech-support
 
@@ -106,7 +104,7 @@ Deixo aqui um exemplo de uma saída completa do comando: `show tech-support ospf
 
 
 
-### Exemplo 12: Parsing de show tech-support (comparativo)
+### Parsing de show tech-support (comparativo)
 
 Neste exemplo avançado, vamos explorar como processar a saída extensa do comando `show tech-support ospf` de forma estruturada. Esse comando combina dezenas de seções (show version, show ip ospf, show ip route, etc.) e é amplamente utilizado para diagnósticos, auditorias e troubleshooting.
 
@@ -160,4 +158,6 @@ graph TD
 > Ao trabalhar com parsers automáticos do Genie, é fundamental sempre consultar a documentação oficial e o repositório do projeto para verificar a disponibilidade e compatibilidade dos > parsers para os comandos e sistemas operacionais específicos. Nem todo comando possui um parser nativo para todas as versões de IOS ou IOS-XE. Em casos onde um parser automático não  > está disponível ou não se adequa à saída do seu dispositivo, o parsing manual com regex se torna uma alternativa necessária e válida.
 > Você pode encontrar os parsers disponíveis e contribuir para o projeto no repositório oficial do Genie Parser: https://github.com/CiscoTestAutomation/genieparser  
 
-### Exemplo 12: Parsing de show tech-support (comparativo) 🔹 Cenário 1 — Cisco IOS (legado)
+### Exemplo 12: Parsing de show tech-support  
+
+### 🔹 Cenário 1 — Cisco IOS (legado)
