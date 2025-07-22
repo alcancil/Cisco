@@ -662,12 +662,15 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 
 **output**
 
-```json
+```bash
 (genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_202507
 parsed_tech_support_ospf_20250718_185431.json  parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722_114613.json
 (genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_20250722_1
 parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722_114613.json  
-(genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_20250722_114613.json 
+(genie310) alcancil@linux:~/automacoes/genie/12$ cat output/parsed_tech_support_ospf_20250722_114613.json
+```
+
+```json
 {
     "version": {
         "full_version_string": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4)"
@@ -696,5 +699,5 @@ parsed_tech_support_ospf_20250722_101515.json  parsed_tech_support_ospf_20250722
             }
         ]
     }
-}(genie310) alcancil@linux:~/automacoes/genie/12$ 
+} 
 ```
