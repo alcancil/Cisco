@@ -758,3 +758,29 @@ graph TD
     AA --> CH
     L --> D_END
 ```
+
+```mermaid
+graph TD
+    A[Início Parsing] --> B[Carregar Arquivo Mock]
+    B --> C{Arquivo Existe?}
+    C -->|Sim| D[Instanciar DummyDevice]
+    C -->|Não| E[Log de Erro e Saída]
+    D --> F[Loop pelos comandos OSPF]
+    F --> G[Extrair Seção via regex]
+    G --> H{Seção encontrada?}
+    H -->|Sim| I[Chamar Parser Manual]
+    H -->|Não| J[Log: Seção ausente]
+    I --> K{Parsing OK?}
+    K -->|Sim| L[Salvar Dados]
+    K -->|Não| M[Log: Erro no Parsing]
+    L --> F
+    M --> F
+    J --> F
+    F --> N[Fim do Parsing]
+
+style B fill:#add8e6,stroke:#000,color:#000
+style C fill:#90ee90,stroke:#000,color:#000
+style D fill:#f0e68c,stroke:#000,color:#000
+```
+
+```mermaid
