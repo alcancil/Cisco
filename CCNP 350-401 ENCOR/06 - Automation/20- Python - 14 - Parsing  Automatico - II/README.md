@@ -731,3 +731,315 @@ style J fill:#0dcaf0,stroke:#17a2b8,color:#000000
 ```
 
 **OBS:** essa é uma visão "macro" do código. Por ele ser um pouco complexo vamos abordar por partes.
+
+**Explicação**
+
+```python
+[001] # Bloco 1: Importações
+[002] import os                                                                                   # Importa o módulo 'os' para interagir com o sistema operacional, como criar diretórios.
+[003] import re                                                                                   # Importa o módulo 're' para usar expressões regulares na busca e extração de texto.
+[004] import json                                                                                 # Importa o módulo 'json' para trabalhar com dados no formato JSON, como salvar a saída estruturada.
+[005] import logging                                                                              # Importa o módulo 'logging' para configurar e gerenciar logs de eventos e mensagens.
+[006] from datetime import datetime                                                               # Importa a classe 'datetime' do módulo 'datetime' para obter a data e hora atuais.
+[007]
+[008] # Bloco 2: Configuração de Logging
+[009] log_dir = 'logs'                                                                            # Define o nome do diretório onde os arquivos de log serão armazenados.
+[010] os.makedirs(log_dir, exist_ok=True)                                                         # Cria o diretório de logs se ele não existir; 'exist_ok=True' evita erro se já existir.
+[011]
+[012] log_file_name = datetime.now().strftime("parse_tech_support_ospf_%Y%m%d_%H%M%S.log")        # Gera um nome único para o arquivo de log com timestamp.
+[013] log_file_path = os.path.join(log_dir, log_file_name)                                        # Combina o diretório de logs com o nome do arquivo para obter o caminho completo.
+[014]
+[015] logging.basicConfig(                                                                        # Configura as opções básicas do sistema de logging.
+[016]     level=logging.DEBUG,                                                                    # Define o nível mínimo de mensagens a serem registradas (DEBUG inclui todos os níveis).
+[017]     format='%(asctime)s - %(levelname)s - %(message)s',                                     # Define o formato das mensagens de log (data/hora, nível, mensagem).
+[018]     handlers=[                                                                              # Define os manipuladores de onde as mensagens de log serão enviadas.
+[019]         logging.FileHandler(log_file_path),                                                 # Um manipulador para enviar logs para um arquivo.
+[020]         logging.StreamHandler()                                                             # Um manipulador para enviar logs para o console (saída padrão).
+[021]     ]                                                                                       # Fecha a lista de manipuladores.
+[022] )                                                                                           # Fecha a configuração básica do logging.
+[023] log = logging.getLogger(__name__)                                                           # Cria um logger com o nome do módulo atual para registrar mensagens.
+[024]
+[025] # Bloco 3: Configuração de Pastas de Saída
+[026] output_dir = 'output'                                                                       # Define o nome do diretório onde os arquivos de saída (JSON) serão salvos.
+[027] os.makedirs(output_dir, exist_ok=True)                                                      # Cria o diretório de saída se ele não existir.
+[028]
+[029] # Bloco 4: Classe Dummy Device (para simulação local)
+[030] class DummyDevice:                                                                          # Define a classe 'DummyDevice'.
+[031]     """[032]     Classe que simula um dispositivo Cisco para fins de parsing offline com Genie. # Docstring: Descreve o propósito da classe.
+[033]     [034]     Fornece os atributos mínimos necessários (como 'os') para o Genie selecionar  # Docstring: Explica que fornece atributos essenciais para o Genie.
+[035]     o parser correto. # Docstring: Continuação da explicação.
+[036]     """                                                                                     # Fecha o docstring.
+[037]     def __init__(self, os='ios'):                                                           # Define o método construtor da classe, inicializando com 'os' padrão como 'ios'.
+[038]         self.os = os                                                                        # Atribui o sistema operacional (OS) ao atributo 'os' da instância.
+[039]         self.custom = {'abstraction': {'order': ['os']}}                                    # Define um atributo 'custom' exigido pelo Genie para abstração.
+[040]         log.info(f"DummyDevice criado para OS: {self.os}")                                  # Registra uma mensagem informativa sobre a criação do DummyDevice.
+[041]
+[042] # Bloco 5: Funções Auxiliares para Extrair Seções e Parsing Manual
+[043] def extract_section(full_output_text, command_name):                                        # Define a função para extrair uma seção específica da saída.
+[044]     """[046]     Extrai a saída de um comando específico de um show tech-support completo.  # Docstring: Descreve o que a função faz.
+[047]     Procura por '------------------ COMMAND_NAME ------------------' # Docstring: Explica o padrão de busca.
+[048]     e captura o conteúdo até o próximo '------------------' ou fim do arquivo. # Docstring: Descreve o limite da extração.
+[049]     [050]     CORREÇÃO: Ajustado para ser mais flexível com espaços após o nome do comando. # Docstring: Menciona uma correção ou melhoria.
+[051]     """                                                                                     # Fecha o docstring.
+[052]     escaped_command_name = re.escape(command_name)                                          # Escapa caracteres especiais no nome do comando para uso em regex.
+[053]     # Usa '\s*' para zero ou mais espaços, e '\s*\n' para a quebra de linha # Comentário: Explica partes da expressão regular.
+[054]     pattern = rf'------------------ {escaped_command_name}\s*------------------\s*\n(.*?)(?=\n------------------|\Z)' # Define a expressão regular para encontrar a seção do comando.
+[055]
+[056]     log.info(f"Tentando extrair seção para o comando: '{command_name}'")                    # Registra o comando que está sendo extraído.
+[057]     match = re.search(pattern, full_output_text, re.DOTALL)                                 # Tenta encontrar o padrão no texto completo da saída.
+[058]
+[059]     if match:                                                                               # Verifica se um padrão foi encontrado.
+[060]         extracted_content = match.group(1).strip()                                          # Extrai o conteúdo da seção (grupo 1 da regex) e remove espaços em branco.
+[061]         log.info(f"Seção '{command_name}' extraída com sucesso (tamanho: {len(extracted_content)} caracteres).") # Registra o sucesso da extração e o tamanho do conteúdo.
+[062]         return extracted_content                                                            # Retorna o conteúdo extraído.
+[063]     else:                                                                                   # Se nenhum padrão for encontrado.
+[064]         log.warning(f"Seção '{command_name}' NÃO encontrada no show tech-support.")         # Registra um aviso de que a seção não foi encontrada.
+[065]         return ""                                                                           # Retorna uma string vazia se a seção não for encontrada.
+[066]
+[067] # Função para parsing manual de 'show version'
+[068] # Função para parsing manual de 'show version'
+[069] def parse_show_version_manualmente(output):                                                 # Define a função para parsear manualmente a saída de 'show version'.
+[070]     """[071]     Parseia a saída do comando 'show version' manualmente para extrair a linha completa da versão do IOS. # Docstring: Descreve a função.
+[072]     Exemplo de saída: Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S7, RELEASE SOFTWARE (fc4) # Docstring: Fornece um exemplo de saída.
+[073]     """                                                                                     # Fecha o docstring.
+[074]     log.info("Realizando parsing manual para 'show version'.")                              # Registra que o parsing manual de 'show version' está sendo feito.
+[075]     # Captura a linha que começa com "Cisco IOS Software" 
+[076]     match = re.search(r'Cisco IOS Software,.*', output, re.IGNORECASE)                      # Procura a linha que começa com "Cisco IOS Software" (ignorando maiúsculas/minúsculas).
+[077]     if match:                                                                               # Se uma correspondência for encontrada.
+[078]         return {"full_version_string": match.group(0).strip()}                              # Retorna um dicionário com a string completa da versão.
+[079]     return {"error": "Linha da versão do IOS não encontrada ou formato inesperado."}        # Retorna um erro se a linha não for encontrada.
+[080]
+[081] # Função para parsing manual de 'show clock'
+[082] def parse_show_clock_manualmente(output):                                                   # Define a função para parsear manualmente a saída de 'show clock'.
+[083]     """[084]     Parseia a saída do comando 'show clock' manualmente para extrair o timestamp. # Docstring: Descreve a função.
+[085]     Exemplo de saída: *18:00:49.603 UTC Thu Jul 17 2025                                     # Docstring: Fornece um exemplo de saída.
+[086]     """                                                                                     # Fecha o docstring.
+[087]     log.info("Realizando parsing manual para 'show clock'.")                                # Registra que o parsing manual de 'show clock' está sendo feito.
+[088]     match = re.search(r'\*(\d{2}:\d{2}:\d{2}\.\d{3} UTC \w{3} \w{3} \d{1,2} \d{4})', output) # Procura o timestamp no formato específico.
+[089]     if match:                                                                               # Se uma correspondência for encontrada.
+[090]         return {"utc_time": match.group(1)}                                                 # Retorna um dicionário com o timestamp UTC.
+[091]     return {"error": "Timestamp não encontrado ou formato inesperado."}                     # Retorna um erro se o timestamp não for encontrado.
+[092]
+[093] # Função para parsing manual de 'show ip route ospf'
+[094] def parse_show_ip_route_ospf_manualmente(output):                                           # Define a função para parsear manualmente a saída de 'show ip route ospf'.
+[095]     """[096]     Parseia a saída do comando 'show ip route ospf' manualmente.               # Docstring: Descreve a função.
+[097]     Retorna uma lista de strings, uma para cada rota OSPF.                                  # Docstring: Descreve o formato de retorno.
+[098]     """                                                                                     # Fecha o docstring.
+[099]     log.info("Realizando parsing manual para 'show ip route ospf'.")                        # Registra que o parsing manual de 'show ip route ospf' está sendo feito.
+[100]     routes = []                                                                             # Inicializa uma lista vazia para armazenar as rotas.
+[101]     # Expressão regular para capturar linhas de rota OSPF # Comentário: Explica o objetivo da regex.
+[102]     # Ex: O        192.168.0.2 [110/2] via 172.16.0.2, 00:00:35, FastEthernet0/0 
+[103]     # Captura linhas que começam com 'O' seguido de espaços e o resto da linha 
+[104]     for line in output.splitlines():                                                         # Itera sobre cada linha da saída do comando.
+[105]         if re.match(r'^O\s+', line.strip()):                                                 # Verifica se a linha começa com 'O' (indicando uma rota OSPF).
+[106]             routes.append(line.strip())                                                      # Adiciona a linha da rota (sem espaços extras) à lista de rotas.
+[107]     return {"routes": routes}                                                                # Retorna um dicionário contendo a lista de rotas.
+[108]
+[109] # Função para parsing manual de 'show ip ospf' (estado geral)
+[110] def parse_show_ip_ospf_manualmente(output):                                                  # Define a função para parsear manualmente a saída de 'show ip ospf'.
+[111]     """[112]     Parseia a saída do comando 'show ip ospf' manualmente para extrair informações gerais. # Docstring: Descreve a função.
+[113]     Esta é uma versão simplificada para este exemplo.                                        # Docstring: Observa que é uma versão simplificada.
+[114]     """                                                                                      # Fecha o docstring.
+[115]     log.info("Realizando parsing manual para 'show ip ospf'.")                               # Registra que o parsing manual de 'show ip ospf' está sendo feito.
+[116]     # log.debug(f"Conteúdo recebido para 'show ip ospf':\n---\n{output}\n---") # Log de depuração (comentado).
+[117]     parsed_data = {}                                                                         # Inicializa um dicionário vazio para armazenar os dados parseados.
+[118]
+[119]     # Regex ajustada para corresponder ao formato real da linha no mock file 
+[120]     # O mock file tem "Routing Process "ospf 100" with ID 1.1.1.1" 
+[121]     match_router_id = re.search(r'Routing Process "ospf \d+" with ID\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', output) # Procura o ID do roteador OSPF.
+[122]     if match_router_id:                                                                      # Se o ID do roteador for encontrado.
+[123]         parsed_data['router_id'] = match_router_id.group(1)                                  # Extrai e armazena o ID do roteador.
+[124]                                                                                              # log.debug(f"Router ID encontrado: {parsed_data['router_id']}") # Log de depuração (comentado).
+[125]                                                                                              # else: # Bloco else (comentado).
+[126]                                                                                              # log.debug("Router ID não encontrado com a regex atual.") # Log de depuração (comentado).
+[127]
+[128]     # Exemplo: Extrair número de áreas
+[129]     match_areas = re.search(r'Number of areas in this router is (\d+)\.', output)            # Procura o número de áreas OSPF.
+[130]     if match_areas:                                                                          # Se o número de áreas for encontrado.
+[131]         parsed_data['number_of_areas'] = int(match_areas.group(1))                           # Extrai e converte para inteiro o número de áreas.
+[132]
+[133]     # Sempre retorna parsed_data, mesmo que esteja vazio ou parcial. 
+[134]     return parsed_data                                                                       # Retorna o dicionário com os dados parseados.
+[135]
+[136] # Função para parsing manual de 'show ip ospf neighbor'
+[137] def parse_show_ip_ospf_neighbor_manualmente(output):                                         # Define a função para parsear manualmente a saída de 'show ip ospf neighbor'.
+[138]     """[139]     Parseia a saída do comando 'show ip ospf neighbor' manualmente.             # Docstring: Descreve a função.
+[140]     Retorna uma lista de dicionários para cada vizinho.                                      # Docstring: Descreve o formato de retorno.
+[141]     """                                                                                      # Fecha o docstring.
+[142]     log.info("Realizando parsing manual para 'show ip ospf neighbor'.")                      # Registra que o parsing manual de vizinhos OSPF está sendo feito.
+[143]     log.info(f"Conteúdo recebido para 'show ip ospf neighbor':\n---\n{output}\n---")         # ALTERADO PARA INFO # Registra o conteúdo recebido para depuração (nível INFO).
+[144]     neighbors = []                                                                           # Inicializa uma lista vazia para armazenar os vizinhos.
+[145]     # CORREÇÃO: Ajuste na regex para ser mais flexível com o campo 'State' 
+[146]     # O seu mock tem: 2.2.2.2           0   FULL/  -        00:00:33    172.16.0.2      FastEthernet0/0 # Comentário: Fornece o formato esperado no mock file.
+[147]     # Ajustado para: 
+[148]     pattern = re.compile(                                                                    # Compila a expressão regular para melhor performance.
+[149]         r'^(?P<neighbor_id>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+'                           # Neighbor ID # Define o grupo nomeado para Neighbor ID.
+[150]         r'(?P<priority>\d+)\s+'                                                              # Priority # Define o grupo nomeado para Priority.
+[151]         r'(?P<state>[\w\/]+\s*[\w\-]*)?\s+'                                                  # State (e.g., FULL/  -, FULL/BDR) - mais flexível # Define o grupo nomeado para State (mais flexível).
+[152]         r'(?P<dead_time>\d{2}:\d{2}:\d{2})\s+'                                               # Dead Time # Define o grupo nomeado para Dead Time.
+[153]         r'(?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+'                                # Address # Define o grupo nomeado para Address.
+[154]         r'(?P<interface>\S+)$'                                                               # Interface # Define o grupo nomeado para Interface (até o final da linha).
+[155]     )                                                                                        # Fecha a compilação da expressão regular.
+[156]
+[157]     # Ignora a linha de cabeçalho e processa as linhas de dados 
+[158]     for line in output.splitlines():                                                         # Itera sobre cada linha da saída do comando.
+[159]         if "Neighbor ID" in line or "---" in line or not line.strip():                       # Ignora linhas de cabeçalho e linhas vazias # Verifica se a linha é um cabeçalho ou está vazia.
+[160]             continue                                                                         # Pula para a próxima iteração se for uma linha a ser ignorada.
+[161]         match = pattern.match(line.strip())                                                  # Tenta fazer a correspondência da linha com o padrão regex (a partir do início da linha).
+[162]         if match:                                                                            # Se uma correspondência for encontrada.
+[163]             neighbors.append(match.groupdict())                                              # Adiciona um dicionário com os grupos nomeados do match à lista de vizinhos.
+[164]             log.info(f"Vizinho encontrado: {match.groupdict()}")                             # Registra as informações do vizinho encontrado.
+[165]         else:                                                                                # Se nenhuma correspondência for encontrada.
+[166]             log.debug(f"Linha de vizinho não corresponde ao padrão: '{line.strip()}'")       # Registra uma mensagem de depuração se a linha não corresponder.
+[167]
+[168]     return {"neighbors": neighbors} if neighbors else {"message": "Nenhum vizinho OSPF detectado ou formato inesperado."} # Retorna os vizinhos ou uma mensagem de que nenhum foi encontrado.
+[169]
+[170] # Bloco 6: Função Principal de Parsing ('parse_tech_support_ospf_data')
+[171] def parse_tech_support_ospf_data():                                                          # Define a função principal que orquestra todo o processo de parsing.
+[172]     """[173]     Função principal que orquestra o carregamento do mock file,                 # Docstring: Descreve o propósito principal da função.
+[174]     a extração de seções e o parsing com Genie (onde possível) e parsing manual.             # Docstring: Detalha as ações da função.
+[175]     """                                                                                      # Fecha o docstring.
+[176]     log.info("Iniciando o parsing do show tech-support OSPF.")                               # Registra o início do processo de parsing.
+[177]
+[178]     # 1. Carregar o mock file 
+[179]     mock_file_path = os.path.join('Arquivos', 'R01_ospf_diag.txt')                           # Define o caminho para o arquivo de entrada (mock file).
+[180]     try:                                                                                     # Inicia um bloco try para lidar com possíveis erros.
+[181]         with open(mock_file_path, 'r') as f:                                                 # Abre o arquivo mock no modo de leitura.
+[182]             full_tech_support_output = f.read()                                              # Lê todo o conteúdo do arquivo para uma string.
+[183]         log.info(f"Mock file '{mock_file_path}' carregado com sucesso.")                     # Registra o sucesso do carregamento do arquivo.
+[184]     except FileNotFoundError:                                                                # Captura o erro se o arquivo não for encontrado.
+[185]         log.error(f"Erro: O arquivo mock '{mock_file_path}' não foi encontrado. Verifique o caminho.") # Registra uma mensagem de erro.
+[186]         return                                                                               # Sai da função se o arquivo não for encontrado.
+[187]     except Exception as e:                                                                   # Captura qualquer outro erro inesperado.
+[188]         log.error(f"Erro inesperado ao ler o mock file: {e}")                                # Registra o erro inesperado.
+[189]         return                                                                               # Sai da função em caso de erro.
+[190]
+[191]
+[192]     # Instanciar o Dummy Device (ainda necessário para ShowPlatform, se fosse usado) 
+[193]     device = DummyDevice(os='ios')                                                           # Cria uma instância da classe DummyDevice, simulando um dispositivo IOS.
+[194]
+[195]     # Dicionário para armazenar todos os dados parseados 
+[196]     parsed_data_collection = {}                                                              # Inicializa um dicionário vazio para coletar todos os dados parseados.
+[197]
+[198]     # --- Bloco 6.1: Versão do Sistema Operacional ---
+[199]     log.info("Processando: Versão do Sistema Operacional (show version)...")                 # Registra o início do processamento da versão do SO.
+[200]     show_version_output = extract_section(full_tech_support_output, "show version")          # Extrai a seção "show version" do texto completo.
+[201]     if show_version_output:                                                                  # Verifica se a seção "show version" foi encontrada.
+[202]         try:                                                                                 # Inicia um bloco try para o parsing da versão.
+[203]             # Usando parsing manual para 'show version' 
+[204]             parsed_data_collection['version'] = parse_show_version_manualmente(show_version_output) # Chama a função de parsing manual e armazena o resultado.
+[205]             log.info("Versão do SO parseada manualmente com sucesso.")                       # Registra o sucesso do parsing manual.
+[206]         except Exception as e:                                                               # Captura erros durante o parsing da versão.
+[207]             log.error(f"Falha ao parsear 'show version' manualmente: {e}")                   # Registra o erro na falha do parsing.
+[208]     else:                                                                                    # Se a seção "show version" não for encontrada.
+[209]         log.warning("Seção 'show version' não encontrada ou vazia para parsing.")            # Registra um aviso.
+[210]
+[211]     # --- Bloco 6.2: Data e Hora ---
+[212]     log.info("Processando: Data e Hora (show clock)...")                                     # Registra o início do processamento de data e hora.
+[213]     show_clock_output = extract_section(full_tech_support_output, "show clock")              # Extrai a seção "show clock".
+[214]     if show_clock_output:                                                                    # Verifica se a seção "show clock" foi encontrada.
+[215]         try:                                                                                 # Inicia um bloco try para o parsing do relógio.
+[216]             # Usando parsing manual para 'show clock'
+[217]             parsed_data_collection['clock'] = parse_show_clock_manualmente(show_clock_output) # Chama a função de parsing manual e armazena o resultado.
+[218]             log.info("Data e Hora parseadas manualmente com sucesso.")                       # Registra o sucesso do parsing.
+[219]         except Exception as e:                                                               # Captura erros durante o parsing do relógio.
+[220]             log.error(f"Falha ao parsear 'show clock' manualmente: {e}")                     # Registra o erro.
+[221]     else:                                                                                    # Se a seção "show clock" não for encontrada.
+[222]         log.warning("Seção 'show clock' não encontrada ou vazia para parsing.")              # Registra um aviso.
+[223]
+[224]     # --- Bloco 6.3: Tabela de Roteamento OSPF ---
+[225]     log.info("Processando: Tabela de Roteamento OSPF (show ip route ospf)...")               # Registra o início do processamento da tabela de rotas OSPF.
+[226]     show_ip_route_ospf_output = extract_section(full_tech_support_output, "show ip route ospf") # Extrai a seção "show ip route ospf".
+[227]     if show_ip_route_ospf_output:                                                            # Verifica se a seção foi encontrada.
+[228]         try:                                                                                 # Inicia um bloco try para o parsing das rotas.
+[229]             # Usando parsing manual para 'show ip route ospf' 
+[230]             parsed_data_collection['ip_route_ospf'] = parse_show_ip_route_ospf_manualmente(show_ip_route_ospf_output) # Chama a função de parsing manual e armazena.
+[231]             log.info("Tabela de roteamento OSPF parseada manualmente com sucesso.")          # Registra o sucesso.
+[232]         except Exception as e:                                                               # Captura erros.
+[233]             log.error(f"Falha ao parsear 'show ip route ospf' manualmente: {e}")             # Registra o erro.
+[234]     else:                                                                                    # Se a seção não for encontrada.
+[235]         log.warning("Seção 'show ip route ospf' não encontrada ou vazia para parsing.")      # Registra um aviso.
+[236]
+[237]
+[238]     # --- Bloco 6.4: Estado Geral do Protocolo OSPF (show ip ospf) ---
+[239]     log.info("Processando: Estado Geral do Protocolo OSPF (show ip ospf)...")                 # Registra o início do processamento do estado geral do OSPF.
+[240]     # Passando apenas "show ip ospf" para extract_section, que agora é mais flexível Observa a flexibilidade de extract_section.
+[241]     show_ip_ospf_output = extract_section(full_tech_support_output, "show ip ospf")           # Extrai a seção "show ip ospf".
+[242]     if show_ip_ospf_output:                                                                   # Verifica se a seção foi encontrada.
+[243]         try:                                                                                  # Inicia um bloco try.
+[244]             # Usando parsing manual para 'show ip ospf' 
+[245]             parsed_data_collection['ospf_general_state'] = parse_show_ip_ospf_manualmente(show_ip_ospf_output) # Chama a função de parsing manual e armazena.
+[246]             log.info("Estado geral do OSPF parseado manualmente com sucesso.")                # Registra o sucesso.
+[247]         except Exception as e:                                                                # Captura erros.
+[248]             log.error(f"Falha ao parsear 'show ip ospf' manualmente: {e}")                    # Registra o erro.
+[249]     else:                                                                                     # Se a seção não for encontrada.
+[250]         log.warning("Seção 'show ip ospf' não encontrada ou vazia para parsing.")             # Registra um aviso.
+[251]
+[252]     # --- Bloco 6.5: Vizinhos OSPF (show ip ospf neighbor) ---
+[253]     log.info("Processando: Vizinhos OSPF (show ip ospf neighbor)...")                         # Registra o início do processamento de vizinhos OSPF.
+[254]     show_ip_ospf_neighbor_output = extract_section(full_tech_support_output, "show ip ospf neighbor") # Extrai a seção "show ip ospf neighbor".
+[255]     if show_ip_ospf_neighbor_output:                                                          # Verifica se a seção foi encontrada.
+[256]         try:                                                                                  # Inicia um bloco try.
+[257]             # Usando parsing manual para 'show ip ospf neighbor'
+[258]             parsed_data_collection['ospf_neighbors'] = parse_show_ip_ospf_neighbor_manualmente(show_ip_ospf_neighbor_output) # Chama a função de parsing manual e armazena.
+[259]             log.info("Vizinhos OSPF parseados manualmente com sucesso.")                      # Registra o sucesso.
+[260]         except Exception as e:                                                                # Captura erros.
+[261]             log.error(f"Falha ao parsear 'show ip ospf neighbor' manualmente: {e}")           # Registra o erro.
+[262]     else:                                                                                     # Se a seção não for encontrada.
+[263]         log.warning("Seção 'show ip ospf neighbor' não encontrada ou vazia para parsing.")    # Registra um aviso.
+[264]
+[265]     # --- Bloco 7: Salvar a saída estruturada em JSON ---
+[266]     output_file_name = datetime.now().strftime("parsed_tech_support_ospf_%Y%m%d_%H%M%S.json") # Gera um nome único para o arquivo JSON com timestamp.
+[267]     output_file_path = os.path.join(output_dir, output_file_name)                             # Combina o diretório de saída com o nome do arquivo JSON.
+[268]
+[269]     try: # Inicia um bloco try para salvar o arquivo JSON.
+[270]         with open(output_file_path, 'w') as json_file:                                        # Abre o arquivo JSON no modo de escrita.
+[271]             json.dump(parsed_data_collection, json_file, indent=4)                            # Escreve os dados parseados no arquivo JSON, formatados com indentação.
+[272]         log.info(f"Dados parseados salvos com sucesso em '{output_file_path}'.")              # Registra o sucesso ao salvar o arquivo.
+[273]     except Exception as e:                                                                    # Captura qualquer erro ao salvar o arquivo.
+[274]         log.error(f"Erro ao salvar o arquivo JSON: {e}")                                      # Registra o erro.
+[275]
+[276]     # --- Bloco 8: Gerar Resumo Final para o Console ---
+[277]     log.info("")                                                                              # Linha em branco para separação visual # Registra uma linha vazia para formatação.
+[278]     log.info("==== RESUMO FINAL ====")                                                        # Registra um cabeçalho para o resumo final.
+[279]
+[280]     # Versão do Cisco IOS # Comentário: Seção do resumo para a versão do IOS.
+[281]     version_info = parsed_data_collection.get('version', {})                                  # Obtém as informações de versão do dicionário parseado, ou um dicionário vazio se não existir.
+[282]    # Agora a função parse_show_version_manualmente retorna 'full_version_string' 
+[283]     ios_version = version_info.get('full_version_string', 'Desconhecida')                     # Obtém a string da versão completa, ou 'Desconhecida' se não encontrada.
+[284]     log.info(f"Versão do Cisco IOS: {ios_version}")                                           # Registra a versão do Cisco IOS no resumo.
+[285]
+[286]     # Data e Hora # Comentário: Seção do resumo para data e hora.
+[287]     clock_info = parsed_data_collection.get('clock', {})                                      # Obtém as informações de relógio.
+[288]     utc_time = clock_info.get('utc_time', 'Desconhecida')                                     # Obtém o timestamp UTC.
+[289]     log.info(f"Data e Hora: {utc_time}")                                                      # Registra a data e hora no resumo.
+[290]
+[291]     # ID do Roteador OSPF # Comentário: Seção do resumo para o ID do roteador OSPF.
+[292]     ospf_general_info = parsed_data_collection.get('ospf_general_state', {})                  # Obtém as informações gerais do OSPF.
+[293]     router_id = ospf_general_info.get('router_id', 'Desconhecida')                            # Obtém o ID do roteador OSPF.
+[294]    log.info(f"ID do Roteador OSPF: {router_id}")                                              # Registra o ID do roteador OSPF no resumo.
+[295]
+[296]     # Vizinhos OSPF # Comentário: Seção do resumo para vizinhos OSPF.
+[297]     ospf_neighbors_info = parsed_data_collection.get('ospf_neighbors', {})                    # Obtém as informações dos vizinhos OSPF.
+[298]     neighbors_list = ospf_neighbors_info.get('neighbors', [])                                 # Obtém a lista de vizinhos.
+[299]     log.info(f"Vizinhos OSPF: {len(neighbors_list)} vizinho(s) detectado(s)")                 # Registra o número de vizinhos OSPF.
+[300]     for neighbor in neighbors_list:                                                           # Itera sobre cada vizinho na lista.
+[301]         log.info(f" - ID: {neighbor.get('neighbor_id', 'N/A')}, Estado: {neighbor.get('state', 'N/A')}, Endereço: {neighbor.get('address', 'N/A')}, Interface: {neighbor.get('interface', 'N/A')}")                                                                             # ADICIONADO: Interface no resumo # Registra os detalhes de cada vizinho.
+[302]
+[303]     # Tabela de Roteamento OSPF # Comentário: Seção do resumo para a tabela de roteamento OSPF.
+[304]     ip_route_ospf_info = parsed_data_collection.get('ip_route_ospf', {})                      # Obtém as informações de rota OSPF.
+[305]
+[306]     ospf_routes = ip_route_ospf_info.get('routes', [])                                        # Obtém a lista de rotas OSPF.
+[307]     log.info("Tabela de Roteamento OSPF:")                                                    # Registra o cabeçalho para a tabela de roteamento.
+[308]     if ospf_routes:                                                                           # Verifica se há rotas OSPF.
+[309]         for route in ospf_routes:                                                             # Itera sobre cada rota.
+[310]             log.info(f" - {route}")                                                           # Registra cada rota.
+[311]     else:                                                                                     # Se não houver rotas.
+[312]         log.info(" - Nenhuma rota OSPF encontrada.")                                          # Registra que nenhuma rota foi encontrada.
+[313]
+[314]     log.info("Parsing concluído com sucesso.")                                                # Registra a conclusão bem-sucedida do parsing.
+[315]
+[316]  # Bloco 9: Executar a função principal
+[317] if __name__ == "__main__":                                                                    # Verifica se o script está sendo executado diretamente (não importado como módulo).
+[318]     parse_tech_support_ospf_data()                                                            # Chama a função principal para iniciar o processo de parsing.
+```
