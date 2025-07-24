@@ -716,8 +716,7 @@ flowchart TD
     G --> H[Salvar JSON e logs]
     H --> I[Resumo final: IOS, Data, OSPF, Vizinhos, Rotas]
     I --> J[Fim]
-
-style A fill:#006400,stroke:#00ff00,color:#ffffff 
+ 
 style A fill:#000000,stroke:#ff0000,color:#ffffff
 style B fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style C fill:#dc3545,stroke:#ff0000,color:#ffffff
