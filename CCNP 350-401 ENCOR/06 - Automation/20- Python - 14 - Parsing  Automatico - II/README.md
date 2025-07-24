@@ -725,7 +725,6 @@ style E fill:#000000,stroke:#ff0000,color:#ffffff
 style F fill:#198754,stroke:#00ff00,color:#ffffff
 style G fill:#ffc107,stroke:#ffcc00,color:#000000
 style H fill:#6610f2,stroke:#9370DB,color:#ffffff
-style I fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style I fill:#006400,stroke:#00ff00,color:#ffffff
 style J fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style J fill:#000000,stroke:#ff0000,color:#ffffff
