@@ -1,0 +1,1664 @@
+------------------ show clock ------------------
+
+
+*16:53:38.344 UTC Sat Jul 19 2025
+
+
+------------------ show switch ------------------
+
+
+
+------------------ show module ------------------
+
+
+
+------------------ show version ------------------
+
+
+Cisco IOS Software [IOSXE], Linux Software (X86_64BI_LINUX-ADVENTERPRISEK9-M), Version 17.15.1, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2024 by Cisco Systems, Inc.
+Compiled Sun 11-Aug-24 22:07 by mcpre
+
+ROM: Bootstrap program is Linux
+
+R01 uptime is 1 hour, 39 minutes
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x9, BOOT_COUNT 0, BOOTDATA 19
+System image file is "unix:/x86_64_crb_linux-adventerprisek9-ms.iol"
+Last reload reason: Unknown reason
+
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Linux Unix (i686) processor with 800932K bytes of memory.
+Processor board ID 131184641
+4 Ethernet interfaces
+256K bytes of NVRAM.
+
+Configuration register is 0x0
+
+
+
+------------------ show running-config ------------------
+
+
+Building configuration...
+
+Current configuration : 1074 bytes
+!
+! Last configuration change at 16:39:39 UTC Sat Jul 19 2025
+!
+version 17.15
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname R01
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+login on-success log
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+memory free low-watermark processor 80093
+!
+!
+spanning-tree mode rapid-pvst
+!
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+!
+interface Ethernet0/0
+ ip address 192.168.0.1 255.255.255.0
+ ip ospf network point-to-point
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router ospf 100
+ router-id 1.1.1.1
+ network 1.1.1.1 0.0.0.0 area 0
+ network 192.168.0.1 0.0.0.0 area 0
+!
+ip forward-protocol nd
+!
+!
+ip http server
+ip http secure-server
+ip ssh bulk-mode 131072
+no logging btrace
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input ssh
+!
+!
+!
+!
+end
+
+
+------------------ show ip ospf  ------------------
+
+
+ Routing Process "ospf 100" with ID 1.1.1.1
+ Start time: 00:06:22.282, Time elapsed: 01:32:57.196
+ Supports only single TOS(TOS0) routes
+ Supports opaque LSA
+ Supports Link-local Signaling (LLS)
+ Supports area transit capability
+ Supports NSSA (compatible with RFC 3101)
+ Supports Database Exchange Summary List Optimization (RFC 5243)
+ Maximum number of non self-generated LSA allowed 50000
+    Current number of non self-generated LSA 1
+    Threshold for warning message 75%
+    Ignore-time 5 minutes, reset-time 10 minutes
+    Ignore-count allowed 5, current ignore-count 0
+ Event-log enabled, Maximum number of events: 1000, Mode: cyclic
+ Router is not originating router-LSAs with maximum metric
+ Initial SPF schedule delay 50 msecs
+ Minimum hold time between two consecutive SPFs 200 msecs
+ Maximum wait time between two consecutive SPFs 5000 msecs
+ Incremental-SPF disabled
+ Per-prefix-distribution disabled
+ Initial LSA throttle delay 50 msecs
+ Minimum hold time for LSA throttle 200 msecs
+ Maximum wait time for LSA throttle 5000 msecs
+ Minimum LSA arrival 100 msecs
+ LSA group pacing timer 240 secs
+ Interface flood pacing timer 33 msecs
+ Retransmission pacing timer 66 msecs
+ EXCHANGE/LOADING adjacency limit: initial 300, process maximum 300
+ Number of external LSA 0. Checksum Sum 0x000000
+ Number of opaque AS LSA 0. Checksum Sum 0x000000
+ Number of DCbitless external and opaque AS LSA 0
+ Number of DoNotAge external and opaque AS LSA 0
+ Number of areas in this router is 1. 1 normal 0 stub 0 nssa
+ Number of areas transit capable is 0
+ External flood list length 0
+ IETF NSF helper support enabled
+ Cisco NSF helper support enabled
+ Reference bandwidth unit is 100 mbps
+    Area BACKBONE(0)
+        Number of interfaces in this area is 2 (1 loopback)
+	Area has no authentication
+	SPF algorithm last executed 01:25:22.789 ago
+	SPF algorithm executed 6 times
+	Area ranges are
+	Number of LSA 2. Checksum Sum 0x010319
+	Number of opaque link LSA 0. Checksum Sum 0x000000
+	Number of DCbitless LSA 0
+	Number of indication LSA 0
+	Number of DoNotAge LSA 0
+	Flood list length 0
+ Maintenance Mode ID:     131987200812288
+ Maintenance Mode:        disabled
+ Maintenance Mode Timer:  stopped (0)
+  Graceful Reload FSU Global status : None (global: None)
+
+
+
+------------------ show ip ospf interface ------------------
+
+
+Loopback0 is up, line protocol is up 
+  Internet Address 1.1.1.1/32, Interface ID 7, Area 0
+  Attached via Network Statement
+  Process ID 100, Router ID 1.1.1.1, Network Type LOOPBACK, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Loopback interface is treated as a stub Host
+Ethernet0/0 is up, line protocol is up 
+  Internet Address 192.168.0.1/24, Interface ID 2, Area 0
+  Attached via Network Statement
+  Process ID 100, Router ID 1.1.1.1, Network Type POINT_TO_POINT, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:04
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Can be protected by per-prefix Loop-Free FastReroute
+  Can be used for per-prefix Loop-Free FastReroute repair paths
+  Not Protected by per-prefix TI-LFA
+  Index 1/2/2, flood queue length 0
+  Next 0x0(0)/0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 0 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1 
+    Adjacent with neighbor 2.2.2.2
+  Suppress hello for 0 neighbor(s)
+
+
+------------------ show ip ospf neighbor ------------------
+
+
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:31    192.168.0.2     Ethernet0/0
+
+
+------------------ show ip ospf neighbor detail ------------------
+
+
+ Neighbor 2.2.2.2, interface address 192.168.0.2, interface-id 2
+    In the area 0 via interface Ethernet0/0
+    Neighbor priority is 0, State is FULL, 6 state changes
+    DR is 0.0.0.0 BDR is 0.0.0.0
+    Options is 0x12 in Hello (E-bit, L-bit)
+    Options is 0x52 in DBD (E-bit, L-bit, O-bit)
+    LLS Options is 0x1 (LR)
+    Dead timer due in 00:00:31
+    Neighbor is up for 01:25:23
+    Index 1/1/1, retransmission queue length 0, number of retransmission 1
+    First 0x0(0)/0x0(0)/0x0(0) Next 0x0(0)/0x0(0)/0x0(0)
+    Last retransmission scan length is 1, maximum is 1
+    Last retransmission scan time is 0 msec, maximum is 0 msec
+
+
+------------------ show ip ospf max-metric ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+ Start time: 00:06:22.282, Time elapsed: 01:32:57.197
+ Router is not originating router-LSAs with maximum metric
+
+
+
+------------------ show ip ospf multi-area ------------------
+
+
+
+
+------------------ show ip ospf border-routers detail ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+Internal Router Routing Table
+Codes: i - Intra-area route, I - Inter-area route
+
+
+
+------------------ show ip ospf fast-reroute ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf fast-reroute prefix-summary ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf neighbor fast-reroute ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf fast-reroute remote-lfa tunnels internal ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf fast-reroute ti-lfa ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+OSPF                    IPFRR    SR       TI-LFA      TI-LFA        
+Object                  enabled  enabled  configured  enabled       
+--------------------------------------------------------------------
+Process ID (100)        no       no       no          no            
+Area 0                  no       no       no          no            
+Loopback0               no       no       no          no            
+Ethernet0/0             no       no       no          no            
+AS external             no       no       no          no            
+
+
+
+------------------ show ip ospf fast-reroute ti-lfa tunnels ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf fast-reroute ti-lfa tunnels internal all ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+Loop-free Fast Reroute not configured.
+
+
+
+------------------ show ip ospf summary-address ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+
+
+------------------ show ip ospf virtual-links ------------------
+
+
+
+
+------------------ show ip ospf statistic detail ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+  Area 0: SPF algorithm executed 6 times
+
+SPF 1 executed 01:32:26 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:1 N:0 Stub:1 SN:0 SA:0 X7:0
+  Change record 0x0
+  LSIDs changed 1
+  Changed LSAs. Recorded is LS ID and LS type:
+  1.1.1.1(R)
+
+SPF 2 executed 01:32:08 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:1 N:0 Stub:1 SN:0 SA:0 X7:0
+  Change record SN, SA
+  LSIDs changed 1
+  Changed LSAs. Recorded is LS ID and LS type:
+  1.1.1.1(R)
+
+SPF 3 executed 01:25:32 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:1 N:0 Stub:1 SN:0 SA:0 X7:0
+  Change record SN, SA
+  LSIDs changed 1
+  Changed LSAs. Recorded is LS ID and LS type:
+  1.1.1.1(R)
+
+SPF 4 executed 01:25:26 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:1 N:0 Stub:2 SN:0 SA:0 X7:0
+  Change record 0x0
+  LSIDs changed 1
+  Changed LSAs. Recorded is LS ID and LS type:
+  1.1.1.1(R)
+
+SPF 5 executed 01:25:22 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:1 N:0 Stub:2 SN:0 SA:0 X7:0
+  Change record 0x0
+  LSIDs changed 2
+  Changed LSAs. Recorded is LS ID and LS type:
+  2.2.2.2(R) 1.1.1.1(R)
+
+SPF 6 executed 01:25:22 ago, SPF type Full
+  SPF calculation time (in msec):
+  SPT    Intra  D-Intr Summ   D-Summ Ext7   D-Ext7 Total
+  0      0      0      0      0      0      0      0
+  LSIDs processed R:2 N:0 Stub:4 SN:0 SA:0 X7:0
+  Change record 0x0
+  LSIDs changed 1
+  Changed LSAs. Recorded is LS ID and LS type:
+  2.2.2.2(R)
+
+
+
+------------------ show ip ospf topology-info ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+ Topology priority is 64
+ Router is not originating router-LSAs with maximum metric
+ Number of areas transit capable is 0
+ Initial SPF schedule delay 50 msecs
+ Minimum hold time between two consecutive SPFs 200 msecs
+ Maximum wait time between two consecutive SPFs 5000 msecs
+    Area BACKBONE(0)
+	SPF algorithm last executed 01:25:22.795 ago
+	SPF algorithm executed 6 times
+	Area ranges are
+
+
+------------------ show ip ospf traffic ------------------
+
+
+
+OSPF statistics:
+  Last clearing of OSPF traffic counters never
+  Rcvd: 568 total, 0 checksum errors
+  	539 hello, 2 database desc, 1 link state req
+  	4 link state updates, 4 link state acks
+  Sent: 596 total
+  	584 hello, 3 database desc, 1 link state req
+  	5 link state updates, 3 link state acks
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+OSPF queue statistics for process ID 100:
+
+                   InputQ     UpdateQ    OutputQ
+  Limit            0          200        0         
+  Drops            0          0          0         
+  Max delay [msec] 1          0          1         
+  Max size         2          2          2         
+    Invalid        0          0          0         
+    Hello          0          0          1         
+    DB des         0          0          1         
+    LS req         1          1          0         
+    LS upd         1          1          0         
+    LS ack         0          0          0         
+  Current size     0          0          0         
+    Invalid        0          0          0         
+    Hello          0          0          0         
+    DB des         0          0          0         
+    LS req         0          0          0         
+    LS upd         0          0          0         
+    LS ack         0          0          0         
+
+
+Interface statistics:
+
+
+    Interface Ethernet0/0
+
+Last clearing of interface traffic counters never
+
+OSPF packets received/sent
+  Type          Packets              Bytes
+  RX Invalid    0                    0
+  RX Hello      539                  25872
+  RX DB des     2                    84
+  RX LS req     1                    36
+  RX LS upd     4                    340
+  RX LS ack     4                    196
+  RX Total      550                  26528
+
+  TX Failed     0                    0
+  TX Hello      541                  54096
+  TX DB des     3                    212
+  TX LS req     1                    56
+  TX LS upd     5                    496
+  TX LS ack     3                    212
+  TX Total      553                  55072
+
+OSPF header errors
+  Length 0, Instance ID 0, Checksum 0, Auth Type 0,
+  Version 0, Bad Source 0, No Virtual Link 0,
+  Area Mismatch 0, No Sham Link 0, Self Originated 0,
+  Duplicate ID 0, Hello 0, MTU Mismatch 0,
+  Nbr Ignored 0, LLS 0, Unknown Neighbor 0,
+  Authentication 0, TTL Check Fail 0, Adjacency Throttle 0,
+  BFD 0, Test discard 0
+
+OSPF LSA errors
+  Type 0, Length 0, Data 0, Checksum 0
+
+
+
+ Neighbor Statistics for interface Ethernet0/0
+
+ Neighbor 2.2.2.2 traffic statistics
+
+Last clearing of neighbor traffic counters never
+
+OSPF packets received/sent
+  Type          Packets              Bytes
+  RX Invalid    0                    0
+  RX Hello      538                  25824
+  RX DB des     2                    84
+  RX LS req     1                    36
+  RX LS upd     4                    340
+  RX LS ack     4                    196
+  RX Total      549                  26480
+
+  TX Failed     0                    0
+  TX Hello      1                    100
+  TX DB des     3                    212
+  TX LS req     1                    56
+  TX LS upd     2                    172
+  TX LS ack     0                    0
+  TX Total      7                    540
+
+OSPF header errors
+  Length 0, Instance ID 0, Checksum 0, Auth Type 0,
+  Version 0, Bad Source 0, No Virtual Link 0,
+  Area Mismatch 0, No Sham Link 0, Self Originated 0,
+  Duplicate ID 0, Hello 0, MTU Mismatch 0,
+  Nbr Ignored 0, LLS 0, Unknown Neighbor 0,
+  Authentication 0, TTL Check Fail 0, Adjacency Throttle 0,
+  BFD 0, Test discard 0
+
+OSPF LSA errors
+  Type 0, Length 0, Data 0, Checksum 0
+
+
+
+Summary traffic statistics for process ID 100:
+
+OSPF packets received/sent
+
+  Type          Packets              Bytes
+  RX Invalid    0                    0
+  RX Hello      539                  25872
+  RX DB des     2                    84
+  RX LS req     1                    36
+  RX LS upd     4                    340
+  RX LS ack     4                    196
+  RX Total      550                  26528
+
+  TX Failed     0                    0
+  TX Hello      541                  54096
+  TX DB des     3                    212
+  TX LS req     1                    56
+  TX LS upd     5                    496
+  TX LS ack     3                    212
+  TX Total      553                  55072
+
+OSPF header errors
+  Length 0, Instance ID 0, Checksum 0, Auth Type 0,
+  Version 0, Bad Source 0, No Virtual Link 0,
+  Area Mismatch 0, No Sham Link 0, Self Originated 0,
+  Duplicate ID 0, Hello 0, MTU Mismatch 0,
+  Nbr Ignored 0, LLS 0, Unknown Neighbor 0,
+  Authentication 0, TTL Check Fail 0, Adjacency Throttle 0,
+  BFD 0, Test discard 0
+
+OSPF LSA errors
+  Type 0, Length 0, Data 0, Checksum 0
+
+
+
+------------------ show ip ospf rib detail ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+OSPF local RIB
+Codes: * - Best, > - Installed in global RIB
+LSA: type/LSID/originator
+
+*   1.1.1.1/32, Intra, cost 1, area 0
+     SPF Instance 6, age 01:32:26
+     Flags: Connected, HiPrio
+      via 1.1.1.1, Loopback0
+       Flags: Connected
+       LSA: 1/1.1.1.1/1.1.1.1
+       Source: 1.1.1.1 (area 0)
+*>  2.2.2.2/32, Intra, cost 11, area 0
+     SPF Instance 6, age 01:25:22
+     Flags: RIB, HiPrio
+      via 192.168.0.2, Ethernet0/0, label 1048578, strict label 1048578
+       Flags: RIB
+       LSA: 1/2.2.2.2/2.2.2.2
+       Source: 2.2.2.2 (area 0)
+*   192.168.0.0/24, Intra, cost 10, area 0
+     SPF Instance 6, age 01:25:26
+     Flags: Connected
+      via 192.168.0.1, Ethernet0/0
+       Flags: Connected
+       LSA: 1/1.1.1.1/1.1.1.1
+       Source: 1.1.1.1 (area 0)
+
+
+------------------ show ip ospf rib redistribution detail ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+		Base Topology (MTID 0)
+
+OSPF Redistribution
+
+
+------------------ show ip route summary ------------------
+
+
+IP routing table name is default (0x0)
+IP routing table maximum-paths is 32
+Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)
+connected       0           3           0           336         936
+static          0           0           0           0           0
+application     0           0           0           0           0
+ospf 100        0           1           0           112         316
+  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0
+  NSSA External-1: 0 NSSA External-2: 0
+internal        3                                               1376
+Total           3           4           0           448         2628
+
+
+
+------------------ show ip route ospf ------------------
+
+
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is not set
+
+      2.0.0.0/32 is subnetted, 1 subnets
+O        2.2.2.2 [110/11] via 192.168.0.2, 01:25:23, Ethernet0/0
+
+
+------------------ show interfaces ------------------
+
+
+Ethernet0/0 is up, line protocol is up 
+  Hardware is AmdP2, address is aabb.cc00.0100 (bia aabb.cc00.0100)
+  Internet address is 192.168.0.1/24
+  MTU 1500 bytes, BW 10000 Kbit/sec, DLY 1000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:08, output 00:00:04, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     679 packets input, 107387 bytes, 0 no buffer
+     Received 674 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     1280 packets output, 146458 bytes, 0 underruns
+     Output 714 broadcasts (0 IP multicasts)
+     0 output errors, 0 collisions, 2 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+Ethernet0/1 is administratively down, line protocol is down 
+  Hardware is AmdP2, address is aabb.cc00.0110 (bia aabb.cc00.0110)
+  MTU 1500 bytes, BW 10000 Kbit/sec, DLY 1000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     Output 0 broadcasts (0 IP multicasts)
+     0 output errors, 0 collisions, 1 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+Ethernet0/2 is administratively down, line protocol is down 
+  Hardware is AmdP2, address is aabb.cc00.0120 (bia aabb.cc00.0120)
+  MTU 1500 bytes, BW 10000 Kbit/sec, DLY 1000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     Output 0 broadcasts (0 IP multicasts)
+     0 output errors, 0 collisions, 1 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+Ethernet0/3 is administratively down, line protocol is down 
+  Hardware is AmdP2, address is aabb.cc00.0130 (bia aabb.cc00.0130)
+  MTU 1500 bytes, BW 10000 Kbit/sec, DLY 1000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive set (10 sec)
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 input packets with dribble condition detected
+     0 packets output, 0 bytes, 0 underruns
+     Output 0 broadcasts (0 IP multicasts)
+     0 output errors, 0 collisions, 1 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier
+     0 output buffer failures, 0 output buffers swapped out
+Loopback0 is up, line protocol is up 
+  Hardware is Loopback
+  Internet address is 1.1.1.1/32
+  MTU 1514 bytes, BW 8000000 Kbit/sec, DLY 5000 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation LOOPBACK, loopback not set
+  Keepalive set (10 sec)
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/0 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     0 packets output, 0 bytes, 0 underruns
+     Output 0 broadcasts (0 IP multicasts)
+     0 output errors, 0 collisions, 0 interface resets
+     0 unknown protocol drops
+     0 output buffer failures, 0 output buffers swapped out
+
+
+------------------ show ip ospf flood-list ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+ Interface Loopback0, Queue length 0
+
+ Interface Ethernet0/0, Queue length 0
+
+
+------------------ show ip ospf request-list ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+ Neighbor 2.2.2.2, interface Ethernet0/0 address 192.168.0.2
+ Request list size 0, maximum list size 1
+
+
+------------------ show ip ospf retransmission-list ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+ Neighbor 2.2.2.2, interface Ethernet0/0 address 192.168.0.2
+
+
+------------------ show ip ospf segment-routing ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Global segment-routing state: Not configured
+
+
+------------------ show ip ospf segment-routing global-block ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+OSPF Segment Routing Global Blocks in Area 0
+
+  Router ID:      SR Capable: SR Algorithm: SRGB Base: SRGB Range:  SID/Label: 
+
+ *1.1.1.1         No         
+  2.2.2.2         No         
+
+
+------------------ show ip ospf segment-routing local-block ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+	OSPF Segment Routing Local Blocks in Area 0
+
+  Router ID        SR Capable   SRLB Base   SRLB Range  
+--------------------------------------------------------
+ *1.1.1.1          No         
+  2.2.2.2          No         
+
+
+
+------------------ show ip ospf segment-routing local-prefix ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Area 0:
+
+ Prefix:            Sid:   Index:          Type:      Algo: Source:
+
+AS external:
+
+ Prefix:            Sid:   Index:          Type:      Algo: Source:
+
+
+------------------ show ip ospf segment-routing mapping-server ------------------
+
+
+
+
+------------------ show ip ospf segment-routing adjacency-sid ------------------
+
+
+
+
+------------------ show ip ospf segment-routing adjacency-sid detail ------------------
+
+
+
+
+------------------ show ip ospf segment-routing sid-database internal ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf segment-routing conflicts ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show segment-routing mpls connected-prefix-sid-map ipv4 ------------------
+
+
+
+
+------------------ show segment-routing mpls connected-prefix-sid-map protocol backup ipv4 ------------------
+
+
+
+
+------------------ show segment-routing mpls mapping-server ipv4 ------------------
+
+
+
+
+------------------ show segment-routing mpls mapping-server remote backup ipv4 ------------------
+
+
+
+
+------------------ show mpls traffic-eng segment-routing ospf ------------------
+
+
+
+
+------------------ show mpls traffic-eng segment-routing prefix ------------------
+
+
+
+
+------------------ show ip ospf segment-routing microloop-avoidance ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf segment-routing microloop-avoidance tunnels ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf segment-routing microloop-avoidance tunnels internal all ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database dist-ls-pending ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf ls-distribution ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+OSPF LS Distribution is Disabled
+
+
+------------------ show ip ospf segment-routing policy detail ------------------
+
+
+
+
+------------------ show ip ospf database database-summary ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Area 0 database summary
+  LSA Type      Count    Delete   Maxage
+  Router        2        0        0       
+  Network       0        0        0       
+  Summary Net   0        0        0       
+  Summary ASBR  0        0        0       
+  Type-7 Ext    0        0        0       
+    Prefixes redistributed in Type-7  0
+  Opaque Link   0        0        0       
+  Opaque Area   0        0        0       
+  Subtotal      2        0        0       
+
+Process 100 database summary
+  LSA Type      Count    Delete   Maxage
+  Router        2        0        0       
+  Network       0        0        0       
+  Summary Net   0        0        0       
+  Summary ASBR  0        0        0       
+  Type-7 Ext    0        0        0       
+  Opaque Link   0        0        0       
+  Opaque Area   0        0        0       
+  Type-5 Ext    0        0        0       
+      Prefixes redistributed in Type-5  0
+  Opaque AS     0        0        0       
+  Total         2        0        0       
+  Non-self      1       
+
+
+------------------ show ip ospf database database-summary detail ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Router 2.2.2.2 LSA summary
+  LSA Type      Count    Delete   Maxage
+  Router        1        0        0       
+  Network       0        0        0       
+  Summary Net   0        0        0       
+  Summary ASBR  0        0        0       
+  Type-5 Ext    0        0        0       
+  Type-7 Ext    0        0        0       
+  Opaque Link   0        0        0       
+  Opaque Area   0        0        0       
+  Opaque AS     0        0        0       
+  Total         1        0        0       
+
+Router 1.1.1.1 LSA summary
+  LSA Type      Count    Delete   Maxage
+  Router        1        0        0       
+  Network       0        0        0       
+  Summary Net   0        0        0       
+  Summary ASBR  0        0        0       
+  Type-5 Ext    0        0        0       
+  Type-7 Ext    0        0        0       
+  Opaque Link   0        0        0       
+  Opaque Area   0        0        0       
+  Opaque AS     0        0        0       
+  Total         1        0        0       
+
+
+------------------ show ip ospf database ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+		Router Link States (Area 0)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+1.1.1.1         1.1.1.1         1292        0x80000007 0x00B061 3         
+2.2.2.2         2.2.2.2         1316        0x80000005 0x0052B8 3         
+
+
+------------------ show ip ospf database router ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+		Router Link States (Area 0)
+
+  LS age: 1292
+  Options: (No TOS-capability, DC)
+  LS Type: Router Links
+  Link State ID: 1.1.1.1
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000007
+  Checksum: 0xB061
+  Length: 60
+  Number of Links: 3
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 1.1.1.1
+     (Link Data) Network Mask: 255.255.255.255
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 1
+
+    Link connected to: another Router (point-to-point)
+     (Link ID) Neighboring Router ID: 2.2.2.2
+     (Link Data) Router Interface address: 192.168.0.1
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 192.168.0.0
+     (Link Data) Network Mask: 255.255.255.0
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+
+  LS age: 1316
+  Options: (No TOS-capability, DC)
+  LS Type: Router Links
+  Link State ID: 2.2.2.2
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000005
+  Checksum: 0x52B8
+  Length: 60
+  Number of Links: 3
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 2.2.2.2
+     (Link Data) Network Mask: 255.255.255.255
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 1
+
+    Link connected to: another Router (point-to-point)
+     (Link ID) Neighboring Router ID: 1.1.1.1
+     (Link Data) Router Interface address: 192.168.0.2
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 192.168.0.0
+     (Link Data) Network Mask: 255.255.255.0
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+
+
+
+------------------ show ip ospf database network ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database summary ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database external ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database asbr-summary ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database nssa-external ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database opaque-area ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database opaque-as ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf database opaque-link ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+
+------------------ show ip ospf mpls ldp interface ------------------
+
+
+Loopback0
+  Process ID 100, Area 0
+  LDP is not configured through LDP autoconfig
+  LDP-IGP Synchronization : Not required
+  Holddown timer is disabled
+  Interface is up 
+Ethernet0/0
+  Process ID 100, Area 0
+  LDP is not configured through LDP autoconfig
+  LDP-IGP Synchronization : Not required
+  Holddown timer is disabled
+  Interface is up 
+
+
+------------------ show ip ospf mpls traffic-eng fragment ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+  Area 0 MPLS TE not initialized
+
+
+------------------ show ip ospf mpls traffic-eng link ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+  Area 0 MPLS TE not initialized
+
+
+------------------ show ip ospf nsf ------------------
+
+
+ Routing Process "ospf 100"
+ IETF NSF helper support enabled
+ Cisco NSF helper support enabled
+  OSPF restart state is NO_RESTART 
+  Handle 131987307911880, Router ID 1.1.1.1, checkpoint Router ID 0.0.0.0
+  Config wait timer interval 10, timer not running
+  Dbase wait timer interval 120, timer not running
+
+
+------------------ show ip ospf sham-links ------------------
+
+
+
+
+------------------ show ip ospf timers rate-limit ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+List of LSAs that are in rate limit Queue
+
+
+
+------------------ show ip ospf timers lsa-group ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+Group size 5, Head 2, Search Index 4, Interval 240 sec 
+Next update due in 00:03:57
+Current time 5959
+Index 0 Timestamp 6196
+Index 1 Timestamp 6441
+Index 2 Timestamp 6704
+Index 3 Timestamp 6951
+Index 4 Timestamp 7213
+
+Failure Head 0, Last 0 LSA group failure logged
+
+
+------------------ show ip ospf events ------------------
+
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+1    *Jul 19 16:32:05.647: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000007, Age 0, Area 0
+2    *Jul 19 16:31:42.805: Rcv Unchanged Type-1 LSA, LSID 2.2.2.2, Adv-Rtr 2.2.2.2, Seq# 80000005, Age 1, Area 0
+3    *Jul 19 15:58:29.391: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000006, Age 0, Area 0
+4    *Jul 19 15:58:26.005: Rcv Unchanged Type-1 LSA, LSID 2.2.2.2, Adv-Rtr 2.2.2.2, Seq# 80000004, Age 1, Area 0
+5    *Jul 19 15:28:55.336: Timer Exp:  nbr_hold_dbd  0x2020202
+6    *Jul 19 15:28:15.586: End of SPF, Topo Base, SPF time 0ms, next wait-interval 400ms
+7    *Jul 19 15:28:15.586: Generic:  ospf_external_route_sync  0x0
+8    *Jul 19 15:28:15.586: Generic:  ospf_external_route_sync  0x0
+9    *Jul 19 15:28:15.586: Generic:  ospf_external_route_sync  0x0
+10   *Jul 19 15:28:15.586: Generic:  ospf_external_route_sync  0x0
+11   *Jul 19 15:28:15.586: Starting External processing, Topo Base in area 0
+12   *Jul 19 15:28:15.586: Starting External processing, Topo Base
+13   *Jul 19 15:28:15.586: Generic:  ospf_inter_route_sync  0x0
+14   *Jul 19 15:28:15.586: Generic:  ospf_inter_route_sync  0x0
+15   *Jul 19 15:28:15.586: Starting summary processing, Topo Base, Area 0
+16   *Jul 19 15:28:15.586: Generic:  post_spf_intra  0x0
+17   *Jul 19 15:28:15.586: Generic:  ospf_intra_route_sync  0x0
+18   *Jul 19 15:28:15.586: RIB Replace, Topo Base, dest 2.2.2.2, mask 255.255.255.255, gw 192.168.0.2, via Ethernet0/0, source 2.2.2.2, type Intra
+19   *Jul 19 15:28:15.586: Generic:  ospf_intra_route_sync  0x0
+20   *Jul 19 15:28:15.586: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+21   *Jul 19 15:28:15.586: Starting SPF, Topo Base, wait-interval 200ms
+22   *Jul 19 15:28:15.390: Rcv Changed Type-1 LSA, LSID 2.2.2.2, Adv-Rtr 2.2.2.2, Seq# 80000003, Age 1, Area 0
+23   *Jul 19 15:28:15.390: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 2.2.2.2, Adv-Rtr 2.2.2.2
+24   *Jul 19 15:28:15.387: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+25   *Jul 19 15:28:15.387: Generic:  ospf_external_route_sync  0x0
+26   *Jul 19 15:28:15.387: Generic:  ospf_external_route_sync  0x0
+27   *Jul 19 15:28:15.387: Generic:  ospf_external_route_sync  0x0
+28   *Jul 19 15:28:15.387: Generic:  ospf_external_route_sync  0x0
+29   *Jul 19 15:28:15.387: Starting External processing, Topo Base in area 0
+30   *Jul 19 15:28:15.387: Starting External processing, Topo Base
+31   *Jul 19 15:28:15.387: Generic:  ospf_inter_route_sync  0x0
+32   *Jul 19 15:28:15.387: Generic:  ospf_inter_route_sync  0x0
+33   *Jul 19 15:28:15.387: Starting summary processing, Topo Base, Area 0
+34   *Jul 19 15:28:15.387: Generic:  post_spf_intra  0x0
+35   *Jul 19 15:28:15.387: Generic:  ospf_intra_route_sync  0x0
+36   *Jul 19 15:28:15.387: Generic:  ospf_intra_route_sync  0x0
+37   *Jul 19 15:28:15.387: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+38   *Jul 19 15:28:15.387: Starting SPF, Topo Base, wait-interval 50ms
+39   *Jul 19 15:28:15.387: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+40   *Jul 19 15:28:15.387: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000005, Age 0, Area 0
+41   *Jul 19 15:28:15.337: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from LOADING to FULL
+42   *Jul 19 15:28:15.337: Rcv New Type-1 LSA, LSID 2.2.2.2, Adv-Rtr 2.2.2.2, Seq# 80000002, Age 169, Area 0
+43   *Jul 19 15:28:15.337: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 2.2.2.2, Adv-Rtr 2.2.2.2
+44   *Jul 19 15:28:15.336: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from EXCHANGE to LOADING
+45   *Jul 19 15:28:15.336: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from EXSTART to EXCHANGE
+46   *Jul 19 15:28:15.335: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from 2WAY to EXSTART
+47   *Jul 19 15:28:15.335: nbr state adjok:  2.2.2.2  0x3
+48   *Jul 19 15:28:15.335: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from INIT to 2WAY
+49   *Jul 19 15:28:15.335: Neighbor 2.2.2.2, Interface Ethernet0/0 state changes from DOWN to INIT
+50   *Jul 19 15:28:12.255: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+51   *Jul 19 15:28:12.255: Generic:  ospf_external_route_sync  0x0
+52   *Jul 19 15:28:12.255: Generic:  ospf_external_route_sync  0x0
+53   *Jul 19 15:28:12.255: Generic:  ospf_external_route_sync  0x0
+54   *Jul 19 15:28:12.255: Generic:  ospf_external_route_sync  0x0
+55   *Jul 19 15:28:12.255: Starting External processing, Topo Base in area 0
+56   *Jul 19 15:28:12.255: Starting External processing, Topo Base
+57   *Jul 19 15:28:12.255: Generic:  ospf_inter_route_sync  0x0
+58   *Jul 19 15:28:12.255: Generic:  ospf_inter_route_sync  0x0
+59   *Jul 19 15:28:12.255: Starting summary processing, Topo Base, Area 0
+60   *Jul 19 15:28:12.255: Generic:  post_spf_intra  0x0
+61   *Jul 19 15:28:12.255: Generic:  ospf_intra_route_sync  0x0
+62   *Jul 19 15:28:12.255: Generic:  ospf_intra_route_sync  0x0
+63   *Jul 19 15:28:12.255: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+64   *Jul 19 15:28:12.255: Starting SPF, Topo Base, wait-interval 50ms
+65   *Jul 19 15:28:12.204: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+66   *Jul 19 15:28:12.204: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000004, Age 0, Area 0
+67   *Jul 19 15:28:12.152: Interface Ethernet0/0 state changes from DOWN to POINT_TO_POINT
+68   *Jul 19 15:28:06.166: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+69   *Jul 19 15:28:06.166: Generic:  ospf_external_route_sync  0x0
+70   *Jul 19 15:28:06.166: Generic:  ospf_external_route_sync  0x0
+71   *Jul 19 15:28:06.166: Generic:  ospf_external_route_sync  0x0
+72   *Jul 19 15:28:06.166: Generic:  ospf_external_route_sync  0x0
+73   *Jul 19 15:28:06.166: Starting External processing, Topo Base in area 0
+74   *Jul 19 15:28:06.166: Starting External processing, Topo Base
+75   *Jul 19 15:28:06.166: Generic:  ospf_inter_route_sync  0x0
+76   *Jul 19 15:28:06.166: Generic:  ospf_inter_route_sync  0x0
+77   *Jul 19 15:28:06.166: Starting summary processing, Topo Base, Area 0
+78   *Jul 19 15:28:06.166: Generic:  post_spf_intra  0x0
+79   *Jul 19 15:28:06.166: Generic:  ospf_intra_route_sync  0x0
+80   *Jul 19 15:28:06.166: Generic:  ospf_intra_route_sync  0x0
+81   *Jul 19 15:28:06.166: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+82   *Jul 19 15:28:06.166: Starting SPF, Topo Base, wait-interval 0ms
+83   *Jul 19 15:28:06.166: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+84   *Jul 19 15:28:06.166: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000003, Age 0, Area 0
+85   *Jul 19 15:28:06.166: Forced SPF, Topo Base caller 0x63EF402AD8B0
+86   *Jul 19 15:28:06.166: Clean area:  0.0.0.1  0x0
+87   *Jul 19 15:28:06.166: Generic:  ospf_external_route_sync  0x1
+88   *Jul 19 15:28:06.166: Generic:  ospf_inter_route_sync  0x1
+89   *Jul 19 15:28:06.166: Generic:  ospf_intra_route_sync  0x1
+90   *Jul 19 15:28:06.098: Generic:  stop_sum_brtr  0x0
+91   *Jul 19 15:28:06.097: Interface Ethernet0/0 state changes from POINT_TO_POINT to DOWN
+92   *Jul 19 15:28:05.935: Bad pkt rcvd:  192.168.0.2  1
+93   *Jul 19 15:27:56.064: Bad pkt rcvd:  192.168.0.2  1
+94   *Jul 19 15:27:46.569: Bad pkt rcvd:  192.168.0.2  1
+95   *Jul 19 15:27:37.433: Bad pkt rcvd:  192.168.0.2  1
+96   *Jul 19 15:27:28.339: Bad pkt rcvd:  192.168.0.2  1
+97   *Jul 19 15:27:19.217: Bad pkt rcvd:  192.168.0.2  1
+98   *Jul 19 15:27:09.379: Bad pkt rcvd:  192.168.0.2  1
+99   *Jul 19 15:27:00.244: Bad pkt rcvd:  192.168.0.2  1
+100  *Jul 19 15:26:50.626: Bad pkt rcvd:  192.168.0.2  1
+101  *Jul 19 15:26:40.960: Bad pkt rcvd:  192.168.0.2  1
+102  *Jul 19 15:26:31.556: Bad pkt rcvd:  192.168.0.2  1
+103  *Jul 19 15:26:22.269: Bad pkt rcvd:  192.168.0.2  1
+104  *Jul 19 15:26:12.884: Bad pkt rcvd:  192.168.0.2  1
+105  *Jul 19 15:26:03.587: Bad pkt rcvd:  192.168.0.2  1
+106  *Jul 19 15:25:54.578: Bad pkt rcvd:  192.168.0.2  1
+107  *Jul 19 15:25:45.349: Bad pkt rcvd:  192.168.0.2  1
+108  *Jul 19 15:25:35.426: Bad pkt rcvd:  192.168.0.2  1
+109  *Jul 19 15:25:26.379: Bad pkt rcvd:  192.168.0.2  1
+110  *Jul 19 15:21:53.742: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+111  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x1
+112  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x1
+113  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x0
+114  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x0
+115  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x0
+116  *Jul 19 15:21:53.742: Generic:  ospf_external_route_sync  0x0
+117  *Jul 19 15:21:53.742: Starting External processing, Topo Base in area 1
+118  *Jul 19 15:21:53.742: Starting External processing, Topo Base in area 0
+119  *Jul 19 15:21:53.742: Starting External processing, Topo Base
+120  *Jul 19 15:21:53.742: Generic:  ospf_inter_route_sync  0x1
+121  *Jul 19 15:21:53.742: Generic:  ospf_inter_route_sync  0x1
+122  *Jul 19 15:21:53.742: Starting summary processing, Topo Base, Area 1
+123  *Jul 19 15:21:53.742: Generic:  ospf_inter_route_sync  0x0
+124  *Jul 19 15:21:53.742: Generic:  ospf_inter_route_sync  0x0
+125  *Jul 19 15:21:53.742: Starting summary processing, Topo Base, Area 0
+126  *Jul 19 15:21:53.742: Generic:  post_spf_intra  0x0
+127  *Jul 19 15:21:53.742: Generic:  ospf_intra_route_sync  0x1
+128  *Jul 19 15:21:53.742: Generic:  ospf_intra_route_sync  0x1
+129  *Jul 19 15:21:53.742: Starting Intra-Area SPF, Topo Base, Area 1, spf_type Full
+130  *Jul 19 15:21:53.742: Starting SPF, Topo Base, wait-interval 50ms
+131  *Jul 19 15:21:53.692: Schedule SPF, Topo Base, Area 1, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+132  *Jul 19 15:21:53.692: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000002, Age 0, Area 1
+133  *Jul 19 15:21:53.640: Interface Ethernet0/0 state changes from DOWN to POINT_TO_POINT
+134  *Jul 19 15:21:53.640: Interface Ethernet0/0 state changes from WAITING to DOWN
+135  *Jul 19 15:21:29.882: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+136  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x1
+137  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x1
+138  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x0
+139  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x0
+140  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x0
+141  *Jul 19 15:21:29.882: Generic:  ospf_external_route_sync  0x0
+142  *Jul 19 15:21:29.882: Starting External processing, Topo Base in area 1
+143  *Jul 19 15:21:29.882: Starting External processing, Topo Base in area 0
+144  *Jul 19 15:21:29.882: Starting External processing, Topo Base
+145  *Jul 19 15:21:29.882: Generic:  post_spf_intra  0x0
+146  *Jul 19 15:21:29.882: Starting SPF, Topo Base, wait-interval 200ms
+147  *Jul 19 15:21:29.831: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+148  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x1
+149  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x1
+150  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x0
+151  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x0
+152  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x0
+153  *Jul 19 15:21:29.831: Generic:  ospf_external_route_sync  0x0
+154  *Jul 19 15:21:29.831: Starting External processing, Topo Base in area 1
+155  *Jul 19 15:21:29.831: Starting External processing, Topo Base in area 0
+156  *Jul 19 15:21:29.831: Starting External processing, Topo Base
+157  *Jul 19 15:21:29.831: Generic:  ospf_inter_route_sync  0x1
+158  *Jul 19 15:21:29.831: Generic:  ospf_inter_route_sync  0x1
+159  *Jul 19 15:21:29.831: Starting summary processing, Topo Base, Area 1
+160  *Jul 19 15:21:29.831: Generic:  ospf_inter_route_sync  0x0
+161  *Jul 19 15:21:29.831: Generic:  ospf_inter_route_sync  0x0
+162  *Jul 19 15:21:29.831: Starting summary processing, Topo Base, Area 0
+163  *Jul 19 15:21:29.831: Generic:  post_spf_intra  0x0
+164  *Jul 19 15:21:29.831: Generic:  ospf_intra_route_sync  0x0
+165  *Jul 19 15:21:29.831: Generate New Type-3 LSA, LSID 1.1.1.1, Seq# 80000001, Age 0, Area 1
+166  *Jul 19 15:21:29.831: Generic:  ospf_intra_route_sync  0x0
+167  *Jul 19 15:21:29.831: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+168  *Jul 19 15:21:29.831: Generate New Type-3 LSA, LSID 192.168.0.0, Seq# 80000001, Age 0, Area 0
+169  *Jul 19 15:21:29.831: Generic:  ospf_intra_route_sync  0x1
+170  *Jul 19 15:21:29.831: Generic:  ospf_intra_route_sync  0x1
+171  *Jul 19 15:21:29.831: Starting Intra-Area SPF, Topo Base, Area 1, spf_type Full
+172  *Jul 19 15:21:29.831: Starting SPF, Topo Base, wait-interval 0ms
+173  *Jul 19 15:21:29.831: Schedule SPF, Topo Base, Area 1, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+174  *Jul 19 15:21:29.831: Generate New Type-1 LSA, LSID 1.1.1.1, Seq# 80000001, Age 0, Area 1
+175  *Jul 19 15:21:29.831: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+176  *Jul 19 15:21:29.831: Generate Changed Type-1 LSA, LSID 1.1.1.1, Seq# 80000002, Age 0, Area 0
+177  *Jul 19 15:21:29.831: Generic:  nssa_default  0x1
+178  *Jul 19 15:21:29.831: Generic:  nssa_default  0x0
+179  *Jul 19 15:21:29.831: Forced SPF, Topo Base caller 0x63EF402AD8B0
+180  *Jul 19 15:21:29.831: Interface Ethernet0/0 state changes from DOWN to WAITING
+181  *Jul 19 15:21:29.831: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type R, N
+182  *Jul 19 15:21:13.273: RIB Redist, Topo Base, dest 0.0.0.0, mask 0.0.0.0, Up
+183  *Jul 19 15:21:13.273: RIB Redist, Topo Base, dest 192.168.0.0, mask 255.255.255.0, Up
+184  *Jul 19 15:21:13.273: RIB Redist, Topo Base, dest 1.1.1.1, mask 255.255.255.255, Up
+185  *Jul 19 15:21:13.273: Rescanning RIB:  0x0  0x0
+186  *Jul 19 15:21:13.273: Service Redist scan:  0x0  0x0
+187  *Jul 19 15:21:12.324: End of SPF, Topo Base, SPF time 0ms, next wait-interval 200ms
+188  *Jul 19 15:21:12.324: Generic:  ospf_external_route_sync  0x0
+189  *Jul 19 15:21:12.324: Generic:  ospf_external_route_sync  0x0
+190  *Jul 19 15:21:12.324: Generic:  ospf_external_route_sync  0x0
+191  *Jul 19 15:21:12.324: Generic:  ospf_external_route_sync  0x0
+192  *Jul 19 15:21:12.324: Starting External processing, Topo Base in area 0
+193  *Jul 19 15:21:12.324: Starting External processing, Topo Base
+194  *Jul 19 15:21:12.324: Generic:  ospf_inter_route_sync  0x0
+195  *Jul 19 15:21:12.324: Generic:  ospf_inter_route_sync  0x0
+196  *Jul 19 15:21:12.324: Starting summary processing, Topo Base, Area 0
+197  *Jul 19 15:21:12.324: Generic:  post_spf_intra  0x0
+198  *Jul 19 15:21:12.324: Generic:  ospf_intra_route_sync  0x0
+199  *Jul 19 15:21:12.324: Generic:  ospf_intra_route_sync  0x0
+200  *Jul 19 15:21:12.324: Starting Intra-Area SPF, Topo Base, Area 0, spf_type Full
+201  *Jul 19 15:21:12.324: Starting SPF, Topo Base, wait-interval 50ms
+202  *Jul 19 15:21:12.273: Schedule SPF, Topo Base, Area 0, spf-type Full, Change in LSA Type RLSID 1.1.1.1, Adv-Rtr 1.1.1.1
+203  *Jul 19 15:21:12.273: Generate New Type-1 LSA, LSID 1.1.1.1, Seq# 80000001, Age 0, Area 0
+204  *Jul 19 15:21:12.272: Interface Loopback0 state changes from DOWN to LOOPBACK
+
+
+------------------ show ip ospf flex-algo ------------------
+
+
+
+
+------------------ show ip ospf topology internal ------------------
+
+
+        Process OSPF-100
+
+
+Neighbors:
+
+  Instance : global
+   Router ID : 1.1.1.1
+
+    Area : 0
+
+      Neighbor 2.2.2.2 : count 1
+        [1]: 192.168.0.2 via Ethernet0/0
+
+Interfaces:
+
+  Instance : global
+   Router ID : 1.1.1.1
+
+    Area : 0
+
+      Interface Ethernet0/0 :
+        Address 192.168.0.1/24, state up, index 0x2, handle 0x2, LC node id 0x0,
+        num labels without tunnel 0
+        FRR enabled:n, TI-LFA enabled:n, node protection:n, srlg protection:n
+        can be protected:n, can be backup:n, skip LFA:n
+        Tiebreaks:
+
+      Interface Loopback0 :
+        Address 1.1.1.1/32, state up, index 0x7, handle 0x7, LC node id 0x0,
+        num labels without tunnel 0
+        FRR enabled:n, TI-LFA enabled:n, node protection:n, srlg protection:n
+        can be protected:n, can be backup:n, skip LFA:n
+        Tiebreaks:
+
+
+------------------ show ip ospf topology summary internal ------------------
+
+
+
+
+------------------ show ip ospf topology detail ------------------
+
+
+        Process OSPF-100
+
+  Instance : global
+   Router ID : 1.1.1.1
+    Area : 0 (0 nodes)
+
+
+------------------ show ip ospf topology prefix detail ------------------
+
+
+        Process OSPF-100
+
+  Instance : global
+   Router ID : 1.1.1.1
+    Area : 0 (0 nodes)
+
+
+------------------ show ip ospf topology path detail ------------------
+
+
+
+
+------------------ show ip ospf topology route detail ------------------
+
+
+ Route Table of OSPF-100 with router ID 1.1.1.1 (VRF global)
+
+
+
+------------------ show ip ospf topology fast-reroute tunnel internal ------------------
+
+
+
+
+------------------ show ip ospf topology fast-reroute internal all ------------------
+
+
+        Process OSPF-100
+
+  Instance : global
+   Router ID : 1.1.1.1
+    Area : 0
+
+
+
