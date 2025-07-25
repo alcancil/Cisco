@@ -1297,3 +1297,16 @@ Neste ponto, fica evidente a vantagem de se utilizar ferramentas de parseamento 
 
 #### 🔹 Cenário 2 — Cisco IOS-XE
 
+Objetivo
+
+O objetivo deste exemplo é demonstrar a eficiência e a simplicidade do parsing automático com o Genie em dispositivos Cisco IOS-XE. Diferente do método manual com regex, o foco aqui é utilizar os parsers nativos da biblioteca para extrair informações chave da saída do comando show tech-support ospf.
+
+O script irá:
+
+  - Utilizar os modelos de parser pré-definidos do Genie para extrair dados estruturados sobre a versão do IOS, data/hora, ID do roteador OSPF, vizinhos e rotas.
+
+  - Exibir um resumo claro e conciso das informações no terminal.
+
+  - Salvar os dados estruturados em um arquivo JSON para futuras análises ou integrações com outras ferramentas de automação.
+
+A principal meta é ilustrar como o Genie automatiza o processo de parsing, reduzindo a complexidade, o esforço de manutenção e a necessidade de conhecimento aprofundado em expressões regulares, o que o torna ideal para automação em larga escala.
