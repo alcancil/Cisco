@@ -147,7 +147,7 @@ pip install pyats
 
 **Observação:**
 
-Para seguir este exemplo de forma eficaz, você precisará dos seguintes componentes:
+Como vamos utilizar o pyATS localmente de inicio, precisamos deixar ele compatível com a versão do Genie que utilizamos até aqui.
 
 - Python: Versão 3.10.18. É altamente recomendado o uso de um ambiente virtual (venv ou pyenv) para isolar as bibliotecas do projeto.
 
@@ -160,6 +160,8 @@ Para seguir este exemplo de forma eficaz, você precisará dos seguintes compone
 📊 Casos de Uso pyATS: Do Básico ao Avançado
 
 ## 🧪 Casos de Uso do pyATS (Progressão Didática)
+
+Abaixo estão cinco exemplos organizados em ordem crescente de complexidade, do mais simples ao mais completo. Eles servirão de base para os exemplos práticos a seguir.
 
 | Nível | Objetivo                                      | Benefício                                         | Exemplo Prático                                       |
 |-------|-----------------------------------------------|---------------------------------------------------|-------------------------------------------------------|
