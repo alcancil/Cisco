@@ -14,6 +14,7 @@
   - [Fluxograma do `pyATS`](#fluxograma-do-pyats)
     - [Requisitos](#requisitos)
     - [Instalação](#instalação)
+  - [🧪 Casos de Uso do pyATS (Progressão Didática)](#-casos-de-uso-do-pyats-progressão-didática)
 
 ### O Que É Orquestração?
 
@@ -137,10 +138,45 @@ pip install pyats
 
 Para seguir este exemplo de forma eficaz, você precisará dos seguintes componentes:
 
-  - Python: Versão 3.10.18. É altamente recomendado o uso de um ambiente virtual (venv ou pyenv) para isolar as bibliotecas do projeto.
+- Python: Versão 3.10.18. É altamente recomendado o uso de um ambiente virtual (venv ou pyenv) para isolar as bibliotecas do projeto.
 
-  - Acesso à Internet: Para instalar as bibliotecas necessárias.
+- Acesso à Internet: Para instalar as bibliotecas necessárias.
 
-  - pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
+- pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
 
-  - Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
+- Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
+
+📊 Casos de Uso pyATS: Do Básico ao Avançado
+
+## 🧪 Casos de Uso do pyATS (Progressão Didática)
+
+| Nível | Objetivo                                      | Benefício                                         | Exemplo Prático                                       |
+|-------|-----------------------------------------------|---------------------------------------------------|-------------------------------------------------------|
+| 1     | Obter saída CLI de um dispositivo remoto      | Coleta estruturada sem precisar de SSH manual     | `device.execute("show version")`                     |
+| 2     | Parsing automático com Genie                  | Transformar CLI em dicionário estruturado         | `device.parse("show ip ospf neighbor")`              |
+| 3     | Estrutura de teste com `pyats.aetest`         | Framework modular com setup/teardown              | Scripts com `class CommonSetup`, `testcases`         |
+| 4     | Testes sem código com `blitz`                 | Execução via YAML, ideal para CI/CD               | `job/blitz_ospf_health.yaml` + parser Genie          |
+| 5     | Integração com Jenkins, XPRESSO ou GitHub CI  | Execuções programadas, histórico e dashboards     | Health-check automático semanal com logs e status    |
+
+🧭 Fluxo de Evolução com Mermaid
+
+flowchart TD
+    A[CLI Manual] --> B[Testbed + Execução CLI]
+    B --> C[Parsing com Genie]
+    C --> D[Testes com aetest]
+    D --> E[Testes com Blitz via YAML]
+    E --> F[Integração CI/CD (XPRESSO/Jenkins)]
+
+📚 Documentação Oficial pyATS
+
+📘 [Visão Geral pyATS (Cisco DevNet)](https://developer.cisco.com/docs/pyats/)
+
+    🧰 Getting Started com pyATS
+
+    🧪 API Reference (pyATS core)
+
+    🧾 Documentação do Testbed YAML
+
+    🧬 Exemplo: Blitz YAML + Genie Parser
+
+    🧑‍💻 Repositório oficial de exemplos (GitHub)
