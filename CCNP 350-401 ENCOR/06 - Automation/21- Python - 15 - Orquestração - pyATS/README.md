@@ -166,19 +166,19 @@ flowchart TD
     B --> C[Parsing com Genie]
     C --> D[Testes com aetest]
     D --> E[Testes com Blitz via YAML]
-    E --> F[Integração CI/CD (XPRESSO/Jenkins)]
+    E --> F[Integração CI/CD XPRESSO/Jenkins]
 ``` 
 
 📚 Documentação Oficial pyATS
 
-    📘 [Visão Geral pyATS (Cisco DevNet)](https://developer.cisco.com/docs/pyats/)
+📘 [Visão Geral pyATS (Cisco DevNet)](https://developer.cisco.com/docs/pyats/)
 
-    🧰 [Getting Started com pyATS](https://xrdocs.io/programmability/tutorials/pyats-series-install-and-use-pyats/)
+🧰 [Getting Started com pyATS](https://xrdocs.io/programmability/tutorials/pyats-series-install-and-use-pyats/)
 
-    🧪 [API Reference (pyATS core)](https://developer.cisco.com/docs/pyats/api/)
+🧪 [API Reference (pyATS core)](https://developer.cisco.com/docs/pyats/api/)
 
-    🧾 [Documentação do Testbed YAML](https://developer.cisco.com/docs/pyats/testbed/?utm_source=chatgpt.com)
+🧾 [Documentação do Testbed YAML](https://developer.cisco.com/docs/pyats/testbed/?utm_source=chatgpt.com)
 
-    🧬 [Exemplo: Blitz YAML + Genie Parser](https://developer.cisco.com/docs/pyats/tutorials/blitz-test/)
+🧬 [Exemplo: Blitz YAML + Genie Parser](https://developer.cisco.com/docs/pyats/tutorials/blitz-test/)
 
-    🧑‍💻 [Repositório oficial de exemplos (GitHub)](https://github.com/CiscoTestAutomation/solutions_examples)
+🧑‍💻 [Repositório oficial de exemplos (GitHub)](https://github.com/CiscoTestAutomation/solutions_examples)
