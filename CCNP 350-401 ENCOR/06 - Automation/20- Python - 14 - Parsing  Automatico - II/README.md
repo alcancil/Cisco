@@ -1364,3 +1364,173 @@ use. Delivery of Cisco cryptographic products does not imply
 third-party authority to import, export, distribute or use encryption.
 Importers, exporters, distributors and users are responsible for
 ```
+
+**parse_ospf_diag.py**
+
+
+```Python
+[001] import json
+[002] import logging
+[003] from datetime import datetime
+[004] from genie.conf.base import Device
+[005] from genie.libs.parser.iosxe.show_ospf import ShowIpOspf, ShowIpOspfNeighbor
+[006] import os
+[007] import sys
+[008] import re
+[009] 
+[010] # Configurar logs
+[011] data_execucao = datetime.now().strftime('%Y%m%d_%H%M%S')
+[012] 
+[013] # Definir e criar o diretório de logs
+[014] log_dir = 'logs'
+[015] os.makedirs(log_dir, exist_ok=True)
+[016] log_file = os.path.join(log_dir, f'parse_iosxe_{data_execucao}.log')
+[017]
+[018] # Configurar o logger para gravar em arquivo
+[019] logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filename=log_file)
+[020]
+[021] # Adicionar um handler para exibir logs no console
+[022] console_handler = logging.StreamHandler(sys.stdout)
+[023] console_handler.setLevel(logging.INFO)
+[024] formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+[025] console_handler.setFormatter(formatter)
+[026] logging.getLogger().addHandler(console_handler)
+[027] 
+[028] # Definir e criar o diretório de saída
+[029] output_dir = 'output'
+[030] os.makedirs(output_dir, exist_ok=True)
+[031]
+[032] # DummyDevice com IOS-XE
+[033] device = Device(name='dummy', os='iosxe')
+[034] device.custom.setdefault('abstraction', {})['order'] = ['os']
+[035] device.cli = lambda *args, **kwargs: output # Mock do método cli
+[036] 
+[037] # Carregar mock e dividir as seções
+[038] with open('Arquivos/R01_ospf_diag_iosxe.txt') as f:
+[039]     full_output = f.read()
+[040] 
+[041] command_outputs = {}
+[042] current_command_key = None
+[043] current_output_lines = []
+[044] 
+[045] # Dividir o conteúdo do arquivo por seções de comando
+[046] lines = full_output.splitlines()
+[047] for line in lines:
+[048]     if line.strip().startswith('------------------ show') and line.strip().endswith('------------------'):
+[049]         if current_command_key:
+[050]             command_outputs[current_command_key] = "\n".join(current_output_lines).strip()
+[051]         
+[052]         # FIX AQUI: Adicionar .strip() final para remover espaços extras no nome da chave
+[053]         current_command_key = line.strip().replace('------------------ show ', '').replace(' ------------------', '').strip()
+[054]         current_output_lines = []
+[055]     else:
+[056]         current_output_lines.append(line)
+[057] 
+[058] # Adiciona a última seção de comando após o loop
+[059] if current_command_key:
+[060]    command_outputs[current_command_key] = "\n".join(current_output_lines).strip()
+[061]
+[062] parsed_data = {}
+[063]
+[064] try:
+[065]     # Usando device.parse() para show version
+[066]     version_output = command_outputs.get('version', '')
+[067]     parsed_data['version'] = device.parse("show version", output=version_output)
+[068]     version = parsed_data['version'].get('version', {}).get('version_short', 'Desconhecida')
+[069]     logging.info(f'Versão IOS: {version}')
+[070] except Exception as e:
+[071]     logging.warning(f'Erro ao parsear show version: {e}')
+[072]     version = 'Desconhecida'
+[073] 
+[074] try:
+[075]     # Usando device.parse() para show clock
+[076]     clock_output = command_outputs.get('clock', '')
+[077]     parsed_data['clock'] = device.parse("show clock", output=clock_output)
+[078]     # Ajustado para a chave correta 'time' ou 'clock_time'
+[079]     clock_raw = parsed_data['clock'].get('time', parsed_data['clock'].get('clock_time', 'Desconhecida'))
+[080]     logging.info(f'Hora: {clock_raw}')
+[081] except Exception as e:
+[082]     logging.warning(f'Erro ao parsear show clock: {e}')
+[083]     clock_raw = 'Desconhecida'
+[084] 
+[085] try:
+[087]     # Usando device.parse() para show ip ospf
+[088]     ospf_output = command_outputs.get('ip ospf', '')
+[089]     
+[090]     # Adicionando log para verificar o conteúdo de ospf_output
+[091]     if not ospf_output:
+[092]         logging.warning("Conteúdo para 'show ip ospf' está vazio na entrada do mock. Verifique a extração.")
+[093]     # else:
+[094]     #     logging.info(f"Conteúdo de 'show ip ospf' (primeiras 100 chars): {ospf_output[:100]}...") # Comentei para evitar logs muito grandes, mas pode descomentar se precisar depurar o conteúdo
+[095] 
+[096]     parsed_data['ospf'] = device.parse("show ip ospf", output=ospf_output)
+[097]     
+[098]     ospf_id = 'Desconhecida' # Valor padrão caso não seja encontrado
+[099]     
+[100]     # Tentar extrair do parser Genie primeiro
+[101]     if parsed_data['ospf']:
+[102]         ospf_id = parsed_data['ospf'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('instance', {}).get('100', {}).get('router_id', 'Desconhecida')
+[103]         if ospf_id != 'Desconhecida': # Se o parser Genie encontrou, não precisa do fallback
+[104]             logging.info("Router ID OSPF encontrado pelo parser Genie.")
+[105] 
+[106]     # FALLBACK: Se o parser Genie não encontrou, tentar com regex
+[107]     # O regex pode precisar de ajuste se a linha exata no mock for diferente, mas o padrão é comum.
+[108]     if ospf_id == 'Desconhecida' and ospf_output:
+[109]         match = re.search(r'Routing Process "ospf \d+" with ID (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', ospf_output)
+[110]         if match:
+[111]            ospf_id = match.group(1)
+[112]            logging.info("Router ID OSPF encontrado via regex fallback.")
+[113]         else:
+[114]             logging.warning("Regex fallback também não encontrou o Router ID OSPF.")
+[115]    
+[116]     logging.info(f'Router ID OSPF: {ospf_id}')
+[117]
+[118] except Exception as e:
+[119]     logging.warning(f'Erro ao parsear show ip ospf: {e} - O Router ID permanecerá Desconhecida.')
+[120]     ospf_id = 'Desconhecida' # Garante que seja Desconhecida em caso de exceção
+[121] 
+[122] try:
+[123]     # Mantido o uso explícito de ShowIpOspfNeighbor().cli()
+[124]     neighbor_output = command_outputs.get('ip ospf neighbor', '')
+[125]     parsed_data['neighbors'] = ShowIpOspfNeighbor(device=device).cli(output=neighbor_output)
+[126]     neighbor_count = 0
+[127]     
+[128]     # Lógica de contagem de vizinhos ajustada para corresponder à estrutura do JSON
+[129]     if 'interfaces' in parsed_data['neighbors']:
+[130]         for interface_data in parsed_data['neighbors']['interfaces'].values():
+[131]             if 'neighbors' in interface_data:
+[132]                 neighbor_count += len(interface_data['neighbors'])
+[133]    
+[134]     logging.info(f'Vizinhos OSPF: {neighbor_count}')
+[135] except Exception as e:
+[136]     logging.warning(f'Erro ao parsear vizinhos OSPF: {e}')
+[137]     neighbor_count = 0
+[138]
+[139] try: 
+[140]     # Usando device.parse() para show ip route ospf, com o comando exato do mock
+[141]     route_ospf_output = command_outputs.get('ip route ospf', '')
+[142]     parsed_data['route_ospf'] = device.parse("show ip route ospf", output=route_ospf_output)
+[143]     
+[144]     routes = parsed_data['route_ospf'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('routes', {})
+[145]     route_list = list(routes.keys())
+[146]     logging.info(f'Tabela OSPF: {route_list}')
+[147] except Exception as e:
+[148]     logging.warning(f'Erro ao parsear show ip route ospf: {e}')
+[149]     route_list = []
+[150] 
+[151] # Exibir resumo
+[152] print(f"\n=== RESUMO IOS-XE ===")
+[153] print(f"Versão IOS: {version}")
+[154] print(f"Data/Hora: {clock_raw}")
+[155] print(f"Router ID OSPF: {ospf_id}")
+[156] print(f"Vizinhos OSPF: {neighbor_count}")
+[157] print(f"Rotas OSPF:")
+[158] for route in route_list:
+[159]     print(f" - {route}")
+[160] 
+[161] # Salvar JSON
+[162] output_json_file = os.path.join(output_dir, f'parsed_iosxe_{data_execucao}.json')
+[163] with open(output_json_file, 'w') as f:
+[164]     json.dump(parsed_data, f, indent=4)
+[165] logging.info(f'Dados parseados salvos em {output_json_file}')
+```
