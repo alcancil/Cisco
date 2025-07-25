@@ -21,13 +21,13 @@ No contexto da automação de redes, orquestração é o processo de coordenar e
 
 Em um script de automação, a orquestração envolve:
 
-  - Gerenciar o fluxo: Definir a ordem em que os comandos são executados.
+- Gerenciar o fluxo: Definir a ordem em que os comandos são executados.
 
-  - Interagir com o ambiente: Conectar-se e autenticar-se nos dispositivos de rede.
+- Interagir com o ambiente: Conectar-se e autenticar-se nos dispositivos de rede.
 
-  - Tratar falhas: Decidir o que fazer se uma etapa falhar.
+- Tratar falhas: Decidir o que fazer se uma etapa falhar.
 
-  - Coletar e consolidar resultados: Juntar todas as informações de volta.
+- Coletar e consolidar resultados: Juntar todas as informações de volta.
 
 O **pyATS** é a ferramenta que assume o papel do "maestro", cuidando de toda essa coordenação e permitindo que você se concentre na lógica principal do seu script, em vez de se preocupar com os detalhes de baixo nível da execução.
 
@@ -54,10 +54,10 @@ Para ajudá-lo a decidir quando o `pyATS` é a escolha certa para a sua tarefa, 
 
 O `pyATS` facilita a automação de rede de várias maneiras:
 
-* **Testbed (Ambiente de Teste):** Um dos conceitos mais poderosos do `pyATS`. O `testbed` é um arquivo YAML que define toda a sua topologia de rede: dispositivos, IPs, credenciais, links, sistemas operacionais, etc. Isso permite que seu código de automação seja totalmente agnóstico ao ambiente, tornando-o portátil e reutilizável.
-* **Conexão Abstrata:** O `pyATS` gerencia todas as conexões (SSH, Telnet) para você. Seus scripts simplesmente se referem a um dispositivo pelo nome, e o framework cuida de todo o processo de conexão e autenticação.
-* **Execução de Testes (`pyats.aetest`):** Ele fornece uma estrutura para você escrever testes de forma organizada (em `stages` ou `sections`), com relatórios automáticos em formato HTML que detalham o que foi feito, o que passou e o que falhou.
-* **Integração com Genie:** O `pyATS` e o Genie são "irmãos" na Cisco. O `pyATS` executa o comando e obtém a saída, e o Genie (que já vem integrado no pacote) a parseia automaticamente. Essa sinergia é a principal razão pela qual eles são usados juntos.
+- **Testbed (Ambiente de Teste):** Um dos conceitos mais poderosos do `pyATS`. O `testbed` é um arquivo YAML que define toda a sua topologia de rede: dispositivos, IPs, credenciais, links, sistemas operacionais, etc. Isso permite que seu código de automação seja totalmente agnóstico ao ambiente, tornando-o portátil e reutilizável.
+- **Conexão Abstrata:** O `pyATS` gerencia todas as conexões (SSH, Telnet) para você. Seus scripts simplesmente se referem a um dispositivo pelo nome, e o framework cuida de todo o processo de conexão e autenticação.
+- **Execução de Testes (`pyats.aetest`):** Ele fornece uma estrutura para você escrever testes de forma organizada (em `stages` ou `sections`), com relatórios automáticos em formato HTML que detalham o que foi feito, o que passou e o que falhou.
+- **Integração com Genie:** O `pyATS` e o Genie são "irmãos" na Cisco. O `pyATS` executa o comando e obtém a saída, e o Genie (que já vem integrado no pacote) a parseia automaticamente. Essa sinergia é a principal razão pela qual eles são usados juntos.
 
 ## Fluxograma do `pyATS`
 
@@ -96,19 +96,19 @@ style L fill:#006400,stroke:#00ff00,color:#ffffff
 
 Para seguir este exemplo de forma eficaz, você precisará dos seguintes componentes:
 
-  - Python: Versão 3.6 ou superior (o pyATS é compatível com as versões mais recentes). É altamente recomendado o uso de um ambiente virtual (venv ou conda).
+- Python: Versão 3.6 ou superior (o pyATS é compatível com as versões mais recentes). É altamente recomendado o uso de um ambiente virtual (venv ou conda).
 
-  - Acesso à Internet: Para instalar as bibliotecas necessárias.
+- Acesso à Internet: Para instalar as bibliotecas necessárias.
 
-  - pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
+- pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
 
-  - Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
+- Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
 
 ### Instalação
 
 Siga estes passos para configurar seu ambiente virtual e instalar o pyATS.
 
-* **Passo 1:** Criar e Ativar o Ambiente Virtual
+- **Passo 1:** Criar e Ativar o Ambiente Virtual
 
 Navegue até a pasta do seu projeto e execute os seguintes comandos no terminal:
 
@@ -124,7 +124,7 @@ source venv_pyats/bin/activate
 venv_pyats\Scripts\activate
 ```
 
-* **Passo 2:** Instalar o pyATS
+- **Passo 2:** Instalar o pyATS
 
 Com o ambiente virtual ativado, você pode instalar o pyATS. A instalação da biblioteca principal já traz o Genie e o Unicon como dependências, então você só precisa de um comando:
 
@@ -132,3 +132,15 @@ Com o ambiente virtual ativado, você pode instalar o pyATS. A instalação da b
 # Instala o pacote pyATS, que inclui o Genie
 pip install pyats
 ```
+
+**Observação:**
+
+Para seguir este exemplo de forma eficaz, você precisará dos seguintes componentes:
+
+  - Python: Versão 3.10.18. É altamente recomendado o uso de um ambiente virtual (venv ou pyenv) para isolar as bibliotecas do projeto.
+
+  - Acesso à Internet: Para instalar as bibliotecas necessárias.
+
+  - pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
+
+  - Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
