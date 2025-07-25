@@ -20,6 +20,8 @@
       - [Bloco Loop sobre comandos: show version, show ip ospf...](#bloco-loop-sobre-comandos-show-version-show-ip-ospf)
       - [Explicação Detalhada do Bloco 5 do Código](#explicação-detalhada-do-bloco-5-do-código)
     - [Quando usar o `while` em vez do `for`?](#quando-usar-o-while-em-vez-do-for)
+    - [Exemplo 12B: Parsing de show tech-support](#exemplo-12b-parsing-de-show-tech-support)
+      - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe-1)
 
 #### Comando show tech-support
 
@@ -1284,3 +1286,14 @@ Use `while` quando:
 
 - Não souber o número exato de repetições.
 - Precisar monitorar uma condição que muda ao longo do tempo (como o estado de uma conexão de rede, por exemplo).
+
+**Observação sobre o Parsing Manual**  
+
+É importante notar que, embora o parsing manual com expressões regulares seja uma ferramenta poderosa, ele pode se tornar excessivamente complexo e frágil. A complexidade do regex aumenta exponencialmente com a variação das saídas de comando, exigindo manutenção constante.   
+
+Neste ponto, fica evidente a vantagem de se utilizar ferramentas de parseamento automático como o Genie. No próximo exemplo, exploraremos como o Genie simplifica drasticamente a extração de informações, tornando o processo mais robusto e eficiente.  
+
+### Exemplo 12B: Parsing de show tech-support
+
+#### 🔹 Cenário 2 — Cisco IOS-XE
+
