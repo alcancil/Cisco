@@ -16,6 +16,8 @@
     - [Exemplo 12: Parsing de show tech-support](#exemplo-12-parsing-de-show-tech-support)
     - [🔹 Cenário 1 — Cisco IOS (legado)](#-cenário-1--cisco-ios-legado-1)
     - [Fluxograma](#fluxograma)
+    - [Expandindo a explicação](#expandindo-a-explicação)
+      - [Bloco Loop sobre comandos: show version, show ip ospf...](#bloco-loop-sobre-comandos-show-version-show-ip-ospf)
 
 #### Comando show tech-support
 
@@ -1041,4 +1043,22 @@ style J fill:#000000,stroke:#ff0000,color:#ffffff
 [316]  # Bloco 9: Executar a função principal
 [317] if __name__ == "__main__":                                                                    # Verifica se o script está sendo executado diretamente (não importado como módulo).
 [318]     parse_tech_support_ospf_data()                                                            # Chama a função principal para iniciar o processo de parsing.
+```
+
+### Expandindo a explicação
+
+#### Bloco Loop sobre comandos: show version, show ip ospf...
+
+```mermaid
+flowchart TD
+    A[Inicio do Script] --> B[...]
+    B --> F[Loop sobre comandos: show version, show ip ospf...]
+    F --> I[...]
+    I --> J[Fim]
+ 
+style A fill:#000000,stroke:#ff0000,color:#ffffff
+style B fill:#0dcaf0,stroke:#17a2b8,color:#000000
+style F fill:#198754,stroke:#00ff00,color:#ffffff
+style I fill:#006400,stroke:#00ff00,color:#ffffff
+style J fill:#000000,stroke:#ff0000,color:#ffffff
 ```
