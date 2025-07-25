@@ -19,6 +19,7 @@
     - [Expandindo a explicação](#expandindo-a-explicação)
       - [Bloco Loop sobre comandos: show version, show ip ospf...](#bloco-loop-sobre-comandos-show-version-show-ip-ospf)
       - [Explicação Detalhada do Bloco 5 do Código](#explicação-detalhada-do-bloco-5-do-código)
+    - [Quando usar o `while` em vez do `for`?](#quando-usar-o-while-em-vez-do-for)
 
 #### Comando show tech-support
 
@@ -1276,3 +1277,10 @@ A Expressão Regular Multi-linhas (r'...')
 - **$**: Âncora que corresponde ao final da linha.  
 
 Cada vez que o pattern.match(line.strip()) encontra uma correspondência, match.groupdict() é usado para retornar um dicionário onde as chaves são os nomes dos grupos (neighbor_id, priority, etc.) e os valores são o texto capturado por cada grupo. Isso facilita muito a organização dos dados parseados.
+
+### Quando usar o `while` em vez do `for`?
+
+Use `while` quando:
+
+- Não souber o número exato de repetições.
+- Precisar monitorar uma condição que muda ao longo do tempo (como o estado de uma conexão de rede, por exemplo).
