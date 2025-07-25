@@ -1817,3 +1817,172 @@ style F fill:#6610f2,stroke:#6f42c1,color:#ffffff
 style G fill:#20c997,stroke:#28a745,color:#000000
 style H fill:#006400,stroke:#00ff00,color:#ffffff
 ```
+
+**Explicação**
+
+```Python
+[001] import json                                                                                        # Importa o módulo 'json' para trabalhar com dados estruturados no formato JSON.
+[002] import logging                                                                                     # Importa o módulo 'logging' para gerenciar logs de eventos e mensagens.
+[003] from datetime import datetime                                                                      # Importa a classe 'datetime' do módulo 'datetime' para obter a data e a hora atuais.
+[004] from genie.conf.base import Device                                                                 # Importa a classe 'Device' da biblioteca Genie, que representa um dispositivo de rede.
+[005] from genie.libs.parser.iosxe.show_ospf import ShowIpOspf, ShowIpOspfNeighbor                       # Importa os parsers específicos do Genie para os comandos 'show ip ospf' e 'show ip ospf neighbor' de dispositivos IOS-XE.
+[006] import os                                                                                          # Importa o módulo 'os' para interagir com o sistema operacional, como criar diretórios.
+[007] import sys                                                                                         # Importa o módulo 'sys' para interagir com o sistema, como acessar a saída padrão do console.
+[008] import re                                                                                          # Importa o módulo 're' para usar expressões regulares, neste caso para um fallback de parsing.
+[009]
+[010] # Configurar logs
+[011] data_execucao = datetime.now().strftime('%Y%m%d_%H%M%S')                                           # Gera uma string de data e hora para ser usada nos nomes dos arquivos de log e saída.
+[012]
+[013] # Definir e criar o diretório de logs
+[014] log_dir = 'logs'                                                                                   # Define o nome do diretório para os logs.
+[015] os.makedirs(log_dir, exist_ok=True)                                                                # Cria o diretório de logs se ele ainda não existir.
+[016] log_file = os.path.join(log_dir, f'parse_iosxe_{data_execucao}.log')                               # Cria o caminho completo para o arquivo de log, usando a data e hora.
+[017]
+[018] # Configurar o logger para gravar em arquivo
+[019] logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filename=log_file) # Configura o logger para salvar mensagens de nível INFO ou superior em um arquivo.
+[020]
+[021] # Adicionar um handler para exibir logs no console
+[022] console_handler = logging.StreamHandler(sys.stdout)                                                # Cria um handler que direciona os logs para a saída padrão do console.
+[023] console_handler.setLevel(logging.INFO)                                                             # Define o nível mínimo de log para o console como INFO.
+[024] formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')                         # Cria um formatador para as mensagens de log.
+[025] console_handler.setFormatter(formatter)                                                            # Aplica o formatador ao handler do console.
+[026] logging.getLogger().addHandler(console_handler)                                                    # Adiciona o handler do console ao logger principal.
+[027]
+[028] # Definir e criar o diretório de saída
+[029] output_dir = 'output'                                                                              # Define o nome do diretório para os arquivos de saída.
+[030] os.makedirs(output_dir, exist_ok=True)                                                             # Cria o diretório de saída se ele ainda não existir.
+[031]
+[032] # DummyDevice com IOS-XE
+[033] device = Device(name='dummy', os='iosxe')                                                          # Cria uma instância de Device, simulando um dispositivo de nome 'dummy' e sistema operacional 'iosxe'.
+[034] device.custom.setdefault('abstraction', {})['order'] = ['os']                                      # Configura a ordem de abstração do Genie, garantindo que o OS seja o primeiro a ser considerado.
+[035] device.cli = lambda *args, **kwargs: output                                                        # Cria um método 'cli' simulado (mock) que retorna a saída de comando fornecida.
+[036]
+[037] # Carregar mock e dividir as seções
+[038] with open('Arquivos/R01_ospf_diag_iosxe.txt') as f:                                                # Abre o arquivo de entrada mock.
+[039]      full_output = f.read()                                                                        # Lê todo o conteúdo do arquivo em uma única string.
+[040]
+[041] command_outputs = {}                                                                               # Inicializa um dicionário para armazenar a saída de cada comando.
+[042] current_command_key = None                                                                         # Variável para armazenar a chave (nome do comando) da seção atual.
+[043] current_output_lines = []                                                                          # Lista temporária para armazenar as linhas de saída da seção atual.
+[044]
+[045] # Dividir o conteúdo do arquivo por seções de comando
+[046] lines = full_output.splitlines()                                                                   # Divide o conteúdo completo do arquivo em uma lista de linhas.
+[047] for line in lines:                                                                                 # Itera sobre cada linha do arquivo.
+[048]      if line.strip().startswith('------------------ show') and line.strip().endswith('------------------'): # Verifica se a linha é um delimitador de início de comando.
+[049]          if current_command_key:                                                                   # Se já houver um comando anterior sendo processado...
+[050]              command_outputs[current_command_key] = "\n".join(current_output_lines).strip()        # ...junta as linhas da saída e as armazena no dicionário.
+[051]
+[052]          # FIX AQUI: Adicionar .strip() final para remover espaços extras no nome da chave
+[053]          current_command_key = line.strip().replace('------------------ show ', '').replace(' ------------------', '').strip() # Extrai o nome do comando da linha delimitadora e remove espaços extras.
+[054]          current_output_lines = []                                                                 # Reseta a lista de linhas para o novo comando.
+[055]      else:                                                                                         # Se a linha não for um delimitador...
+[056]          current_output_lines.append(line)                                                         # ...adiciona a linha à lista de linhas da saída atual.
+[057]
+[058] # Adiciona a última seção de comando após o loop
+[059] if current_command_key:                                                                            # Verifica se há um último comando a ser salvo. 
+[060]    command_outputs[current_command_key] = "\n".join(current_output_lines).strip()                  # Salva a saída do último comando no dicionário.
+[061]
+[062] parsed_data = {}                                                                                   # Inicializa um dicionário para armazenar todos os dados parseados pelo Genie.
+[063]
+[064] try:                                                                                               # Inicia um bloco try-except para lidar com erros de parsing do 'show version'.
+[065]      # Usando device.parse() para show version
+[066]      version_output = command_outputs.get('version', '')                                           # Obtém a saída do comando 'show version'.
+[067]      parsed_data['version'] = device.parse("show version", output=version_output)                  # Usa o parser do Genie para o comando 'show version'.
+[068]      version = parsed_data['version'].get('version', {}).get('version_short', 'Desconhecida')      # Extrai a versão curta do dicionário estruturado retornado pelo parser.
+[069]      logging.info(f'Versão IOS: {version}')                                                        # Registra a versão do IOS.
+[070] except Exception as e:                                                                             # Captura qualquer exceção durante o parsing.
+[071]      logging.warning(f'Erro ao parsear show version: {e}')                                         # Registra um aviso sobre o erro.
+[072]      version = 'Desconhecida'                                                                      # Define a versão como 'Desconhecida' em caso de erro.
+[073]
+[074] try:                                                                                               # Inicia um bloco try-except para lidar com erros de parsing do 'show clock'.
+[075]      # Usando device.parse() para show clock
+[076]      clock_output = command_outputs.get('clock', '')                                               # Obtém a saída do comando 'show clock'.
+[077]      parsed_data['clock'] = device.parse("show clock", output=clock_output)                        # Usa o parser do Genie para o comando 'show clock'.
+[078]      # Ajustado para a chave correta 'time' ou 'clock_time'
+[079]      clock_raw = parsed_data['clock'].get('time', parsed_data['clock'].get('clock_time', 'Desconhecida')) # Extrai a hora do dicionário, tentando chaves alternativas.
+[080]      logging.info(f'Hora: {clock_raw}')                                                            # Registra a hora.
+[081] except Exception as e:                                                                             # Captura qualquer exceção durante o parsing.
+[082]      logging.warning(f'Erro ao parsear show clock: {e}')                                           # Registra um aviso.
+[083]      clock_raw = 'Desconhecida'                                                                    # Define a hora como 'Desconhecida' em caso de erro.
+[084]
+[085] try:                                                                                               # Inicia um bloco try-except para lidar com erros de parsing do 'show ip ospf'.
+[086]      # Usando device.parse() para show ip ospf
+[087]      ospf_output = command_outputs.get('ip ospf', '')                                              # Obtém a saída do comando 'show ip ospf'.
+[088]
+[089]      # Adicionando log para verificar o conteúdo de ospf_output
+[090]      if not ospf_output:                                                                           # Verifica se a saída do comando está vazia.
+[091]          logging.warning("Conteúdo para 'show ip ospf' está vazio na entrada do mock. Verifique a extração.") # Registra um aviso se a saída estiver vazia.
+[092]      # else: # Bloco else comentado.
+[093]      #     logging.info(f"Conteúdo de 'show ip ospf' (primeiras 100 chars): {ospf_output[:100]}...") # Comentei para evitar logs muito grandes, mas pode descomentar se precisar depurar o conteúdo
+[094]
+[095]      parsed_data['ospf'] = device.parse("show ip ospf", output=ospf_output)                        # Usa o parser do Genie para o comando 'show ip ospf'.
+[096]
+[097]      ospf_id = 'Desconhecida'                                                                      # Inicializa a variável com valor padrão.
+[098]
+[099]      # Tentar extrair do parser Genie primeiro
+[100]      if parsed_data['ospf']:                                                                       # Verifica se o parser do Genie retornou dados.
+[101]          ospf_id = parsed_data['ospf'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('instance', {}).get('100', {}).get('router_id', 'Desconhecida')                                                                                          # Extrai o Router ID navegando pelo dicionário aninhado retornado pelo parser.
+[102]          if ospf_id != 'Desconhecida':                                                             # Se o Router ID foi encontrado...
+[103]              logging.info("Router ID OSPF encontrado pelo parser Genie.")                          # ...registra que o Genie encontrou o ID.
+[104]
+[105]      # FALLBACK: Se o parser Genie não encontrou, tentar com regex
+[106]      # O regex pode precisar de ajuste se a linha exata no mock for diferente, mas o padrão é comum.
+[107]      if ospf_id == 'Desconhecida' and ospf_output:                                                 # Se o ID ainda for 'Desconhecida' e houver saída do comando.
+[108]          match = re.search(r'Routing Process "ospf \d+" with ID (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', ospf_output) # Tenta encontrar o Router ID com uma expressão regular (fallback).
+[109]          if match:                                                                                 # Se o regex encontrar uma correspondência...
+[110]             ospf_id = match.group(1)                                                               # ...extrai o ID do grupo de captura.
+[111]             logging.info("Router ID OSPF encontrado via regex fallback.")                          # Registra que o fallback funcionou.
+[112]          else:                                                                                     # Se o regex também falhar.
+[113]              logging.warning("Regex fallback também não encontrou o Router ID OSPF.")              # Registra um aviso.
+[114]
+[115]      logging.info(f'Router ID OSPF: {ospf_id}')                                                    # Registra o Router ID final.
+[116]
+[117] except Exception as e:                                                                             # Captura exceções do bloco 'show ip ospf'.
+[118]      logging.warning(f'Erro ao parsear show ip ospf: {e} - O Router ID permanecerá Desconhecida.') # Registra um aviso sobre o erro.
+[119]      ospf_id = 'Desconhecida'                                                                      # Garante que o ID seja 'Desconhecida' em caso de erro.
+[120]
+[121] try:                                                                                               # Inicia um bloco try-except para lidar com erros de parsing do 'show ip ospf neighbor'.
+[122]      # Mantido o uso explícito de ShowIpOspfNeighbor().cli()
+[123]      neighbor_output = command_outputs.get('ip ospf neighbor', '')                                 # Obtém a saída do comando.
+[124]      parsed_data['neighbors'] = ShowIpOspfNeighbor(device=device).cli(output=neighbor_output)      # Cria uma instância do parser e a executa com a saída mock.
+[125]      neighbor_count = 0                                                                            # Inicializa um contador para os vizinhos.
+[126]
+[127]      # Lógica de contagem de vizinhos ajustada para corresponder à estrutura do JSON
+[128]      if 'interfaces' in parsed_data['neighbors']:                                                  # Verifica se a chave 'interfaces' existe nos dados parseados.
+[129]          for interface_data in parsed_data['neighbors']['interfaces'].values():                    # Itera sobre os valores (dados) de cada interface.
+[130]              if 'neighbors' in interface_data:                                                     # Verifica se a interface possui vizinhos.
+[131]                  neighbor_count += len(interface_data['neighbors'])                                # Adiciona o número de vizinhos encontrados ao contador.
+[132]
+[133]      logging.info(f'Vizinhos OSPF: {neighbor_count}')                                              # Registra o número total de vizinhos.
+[134] except Exception as e:                                                                             # Captura exceções.
+[135]      logging.warning(f'Erro ao parsear vizinhos OSPF: {e}')                                        # Registra um aviso.
+[136]      neighbor_count = 0                                                                            # Define o contador como 0 em caso de erro.
+[137]
+[138] try:
+[139]      # Usando device.parse() para show ip route ospf, com o comando exato do mock
+[140]      route_ospf_output = command_outputs.get('ip route ospf', '')                                  # Obtém a saída do comando 'show ip route ospf'.
+[141]      parsed_data['route_ospf'] = device.parse("show ip route ospf", output=route_ospf_output)      # Usa o parser do Genie para o comando.
+[142]
+[143]      routes = parsed_data['route_ospf'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('routes', {}) # Navega pela estrutura aninhada para obter o dicionário de rotas.
+[144]      route_list = list(routes.keys())                                                              # Cria uma lista com as chaves (os endereços das rotas).
+[145]      logging.info(f'Tabela OSPF: {route_list}')                                                    # Registra a lista de rotas.
+[146] except Exception as e:                                                                             # Captura exceções.
+[147]      logging.warning(f'Erro ao parsear show ip route ospf: {e}')                                   # Registra um aviso.
+[148]      route_list = []                                                                               # Define a lista de rotas como vazia em caso de erro.
+[149]
+[150] # Exibir resumo
+[151] print(f"\n=== RESUMO IOS-XE ===")                                                                  # Imprime o cabeçalho do resumo.
+[152] print(f"Versão IOS: {version}")                                                                    # Imprime a versão do IOS.
+[153] print(f"Data/Hora: {clock_raw}")                                                                   # Imprime a data e hora.
+[154] print(f"Router ID OSPF: {ospf_id}")                                                                # Imprime o Router ID OSPF.
+[155] print(f"Vizinhos OSPF: {neighbor_count}")                                                          # Imprime o número de vizinhos.
+[156] print(f"Rotas OSPF:")                                                                              # Imprime o cabeçalho das rotas.
+[157] for route in route_list:                                                                           # Itera sobre a lista de rotas.
+[158]      print(f" - {route}")                                                                          # Imprime cada rota.
+[159]
+[160] # Salvar JSON
+[161] output_json_file = os.path.join(output_dir, f'parsed_iosxe_{data_execucao}.json')                  # Define o caminho para o arquivo JSON de saída.
+[162] with open(output_json_file, 'w') as f:                                                             # Abre o arquivo JSON para escrita.
+[163]      json.dump(parsed_data, f, indent=4)                                                           # Salva o dicionário 'parsed_data' no arquivo JSON, formatado.
+[164] logging.info(f'Dados parseados salvos em {output_json_file}')                                      # Registra que o arquivo foi salvo com sucesso.
+```
