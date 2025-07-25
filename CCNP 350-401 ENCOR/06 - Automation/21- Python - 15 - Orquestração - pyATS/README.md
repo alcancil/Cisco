@@ -7,6 +7,7 @@
 - [Python - 16](#python---16)
   - [pyATS: Orquestração e Validação de Testes de Rede](#pyats-orquestração-e-validação-de-testes-de-rede)
   - [Sumário](#sumário)
+    - [📚 Documentação Oficial pyATS](#-documentação-oficial-pyats)
     - [O Que É Orquestração?](#o-que-é-orquestração)
   - [Contextualização: O Universo do `pyATS`](#contextualização-o-universo-do-pyats)
   - [Quando Usar e Quando Não Usar `pyATS`](#quando-usar-e-quando-não-usar-pyats)
@@ -15,6 +16,16 @@
     - [Requisitos](#requisitos)
     - [Instalação](#instalação)
   - [🧪 Casos de Uso do pyATS (Progressão Didática)](#-casos-de-uso-do-pyats-progressão-didática)
+
+### 📚 Documentação Oficial pyATS
+
+📘 [Visão Geral pyATS (Cisco DevNet)](https://developer.cisco.com/docs/pyats/)
+
+🧰 [Getting Started com pyATS](https://xrdocs.io/programmability/tutorials/pyats-series-install-and-use-pyats/)
+
+🧪 [API Reference (pyATS core)](https://developer.cisco.com/docs/pyats/api/)
+
+🧑‍💻 [Repositório oficial de exemplos (GitHub)](https://github.com/CiscoTestAutomation/solutions_examples)
 
 ### O Que É Orquestração?
 
@@ -167,18 +178,13 @@ flowchart TD
     C --> D[Testes com aetest]
     D --> E[Testes com Blitz via YAML]
     E --> F[Integração CI/CD XPRESSO/Jenkins]
+
+style A fill:#006400,stroke:#00ff00,color:#ffffff
+style B fill:#ffc107,stroke:#ffcc00,color:#000000
+style C fill:#0dcaf0,stroke:#17a2b8,color:#000000
+style D fill:#198754,stroke:#00ff00,color:#ffffff
+style E fill:#fd7e14,stroke:#e83e8c,color:#000000
+style F fill:#6f42c1,stroke:#6610f2,color:#ffffff
 ``` 
 
-📚 Documentação Oficial pyATS
 
-📘 [Visão Geral pyATS (Cisco DevNet)](https://developer.cisco.com/docs/pyats/)
-
-🧰 [Getting Started com pyATS](https://xrdocs.io/programmability/tutorials/pyats-series-install-and-use-pyats/)
-
-🧪 [API Reference (pyATS core)](https://developer.cisco.com/docs/pyats/api/)
-
-🧾 [Documentação do Testbed YAML](https://developer.cisco.com/docs/pyats/testbed/?utm_source=chatgpt.com)
-
-🧬 [Exemplo: Blitz YAML + Genie Parser](https://developer.cisco.com/docs/pyats/tutorials/blitz-test/)
-
-🧑‍💻 [Repositório oficial de exemplos (GitHub)](https://github.com/CiscoTestAutomation/solutions_examples)
