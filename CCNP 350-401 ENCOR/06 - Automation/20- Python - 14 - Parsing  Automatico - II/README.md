@@ -1534,3 +1534,286 @@ Importers, exporters, distributors and users are responsible for
 [164]     json.dump(parsed_data, f, indent=4)
 [165] logging.info(f'Dados parseados salvos em {output_json_file}')
 ```
+
+**Saída**
+
+1. Criar o ambiente virtual
+2. Setar o python para a versão do **python3.10.18**
+3. Habilitar o ambiente
+4. Instalar o **pyats[full]
+
+```bash
+alcancil@linux:~/automacoes/genie/12b$ source genie310/bin/activate
+(genie310) alcancil@linux:~/automacoes/genie/12b$ pyenv versions
+  system
+* 3.10.18 (set by /home/alcancil/automacoes/genie/12b/.python-version)
+  3.12.3
+(genie310) alcancil@linux:~/automacoes/genie/12b$ python3 parse_ospf_diag.py 
+2025-07-25 13:16:22,768 - INFO - Versão IOS: 17.15
+2025-07-25 13:16:22,770 - INFO - Hora: 16:53:38.344
+2025-07-25 13:16:22,789 - INFO - Router ID OSPF encontrado pelo parser Genie.
+2025-07-25 13:16:22,789 - INFO - Router ID OSPF: 1.1.1.1
+2025-07-25 13:16:22,789 - INFO - Vizinhos OSPF: 1
+2025-07-25 13:16:22,815 - INFO - Tabela OSPF: ['2.2.2.2/32']
+
+=== RESUMO IOS-XE ===
+Versão IOS: 17.15
+Data/Hora: 16:53:38.344
+Router ID OSPF: 1.1.1.1
+Vizinhos OSPF: 1
+Rotas OSPF:
+ - 2.2.2.2/32
+2025-07-25 13:16:22,816 - INFO - Dados parseados salvos em output/parsed_iosxe_20250725_131622.json
+(genie310) alcancil@linux:~/automacoes/genie/12b$ 
+```
+
+**logs**
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/12b$ cat logs/parse_iosxe_20250725_131622.log 
+2025-07-25 13:16:22,768 - INFO - Versão IOS: 17.15
+2025-07-25 13:16:22,770 - INFO - Hora: 16:53:38.344
+2025-07-25 13:16:22,789 - INFO - Router ID OSPF encontrado pelo parser Genie.
+2025-07-25 13:16:22,789 - INFO - Router ID OSPF: 1.1.1.1
+2025-07-25 13:16:22,789 - INFO - Vizinhos OSPF: 1
+2025-07-25 13:16:22,815 - INFO - Tabela OSPF: ['2.2.2.2/32']
+2025-07-25 13:16:22,816 - INFO - Dados parseados salvos em output/parsed_iosxe_20250725_131622.json
+(genie310) alcancil@linux:~/automacoes/genie/12b$
+```
+
+**output**
+
+```bash
+(genie310) alcancil@linux:~/automacoes/genie/12b$ cat output/parsed_iosxe_20250725_131622.json
+```
+
+```json 
+{
+    "version": {
+        "version": {
+            "version_short": "17.15",
+            "platform": "Linux",
+            "version": "17.15.1",
+            "image_id": "X86_64BI_LINUX-ADVENTERPRISEK9-M",
+            "label": "RELEASE SOFTWARE (fc4)",
+            "os": "IOS",
+            "location": "IOSXE",
+            "image_type": "production image",
+            "copyright_years": "1986-2024",
+            "compiled_date": "Sun 11-Aug-24 22:07",
+            "compiled_by": "mcpre",
+            "rom": "Bootstrap program is Linux",
+            "hostname": "R01",
+            "uptime": "1 hour, 39 minutes",
+            "system_image": "unix:/x86_64_crb_linux-adventerprisek9-ms.iol",
+            "last_reload_reason": "Unknown reason",
+            "chassis_sn": "131184641",
+            "number_of_intfs": {
+                "Ethernet": "4"
+            },
+            "processor_board_flash": "256K",
+            "curr_config_register": "0x0"
+        }
+    },
+    "clock": {
+        "time": "16:53:38.344",
+        "timezone": "UTC",
+        "day_of_week": "Sat",
+        "month": "Jul",
+        "day": "19",
+        "year": "2025"
+    },
+    "ospf": {
+        "vrf": {
+            "default": {
+                "address_family": {
+                    "ipv4": {
+                        "instance": {
+                            "100": {
+                                "router_id": "1.1.1.1",
+                                "enable": true,
+                                "nsr": {
+                                    "enable": false
+                                },
+                                "bfd": {
+                                    "enable": false
+                                },
+                                "start_time": "00:06:22.282",
+                                "elapsed_time": "01:32:57.196",
+                                "opqaue_lsa": true,
+                                "lls": true,
+                                "area_transit": true,
+                                "nssa": true,
+                                "db_exchange_summary_list_optimization": true,
+                                "database_control": {
+                                    "max_lsa": 50000,
+                                    "max_lsa_current": 1,
+                                    "max_lsa_threshold_value": 75,
+                                    "max_lsa_ignore_time": 300,
+                                    "max_lsa_reset_time": 600,
+                                    "max_lsa_ignore_count": 5,
+                                    "max_lsa_current_count": 0
+                                },
+                                "event_log": {
+                                    "enable": true,
+                                    "max_events": 1000,
+                                    "mode": "cyclic"
+                                },
+                                "stub_router": {
+                                    "always": {
+                                        "always": false,
+                                        "include_stub": false,
+                                        "summary_lsa": false,
+                                        "external_lsa": false
+                                    }
+                                },
+                                "spf_control": {
+                                    "throttle": {
+                                        "spf": {
+                                            "start": 50,
+                                            "hold": 200,
+                                            "maximum": 5000
+                                        },
+                                        "lsa": {
+                                            "start": 50,
+                                            "hold": 200,
+                                            "maximum": 5000,
+                                            "arrival": 100
+                                        }
+                                    },
+                                    "incremental_spf": false
+                                },
+                                "lsa_group_pacing_timer": 240,
+                                "interface_flood_pacing_timer": 33,
+                                "retransmission_pacing_timer": 66,
+                                "adjacency_stagger": {
+                                    "initial_number": 300,
+                                    "maximum_number": 300
+                                },
+                                "numbers": {
+                                    "external_lsa": 0,
+                                    "external_lsa_checksum": "0x000000",
+                                    "opaque_as_lsa": 0,
+                                    "opaque_as_lsa_checksum": "0x000000",
+                                    "dc_bitless": 0,
+                                    "do_not_age": 0
+                                },
+                                "total_areas": 1,
+                                "total_normal_areas": 1,
+                                "total_stub_areas": 0,
+                                "total_nssa_areas": 0,
+                                "total_areas_transit_capable": 0,
+                                "external_flood_list_length": 0,
+                                "graceful_restart": {
+                                    "ietf": {
+                                        "type": "ietf",
+                                        "helper_enable": true,
+                                        "enable": false
+                                    },
+                                    "cisco": {
+                                        "type": "cisco",
+                                        "helper_enable": true,
+                                        "enable": false
+                                    }
+                                },
+                                "auto_cost": {
+                                    "reference_bandwidth": 100,
+                                    "bandwidth_unit": "mbps",
+                                    "enable": false
+                                },
+                                "areas": {
+                                    "0.0.0.0": {
+                                        "area_id": "0.0.0.0",
+                                        "area_type": "normal",
+                                        "statistics": {
+                                            "interfaces_count": 2,
+                                            "loopback_count": 1,
+                                            "spf_last_executed": "01:25:22.789",
+                                            "spf_runs_count": 6,
+                                            "area_scope_lsa_count": 2,
+                                            "area_scope_lsa_cksum_sum": "0x010319",
+                                            "area_scope_opaque_lsa_count": 0,
+                                            "area_scope_opaque_lsa_cksum_sum": "0x000000",
+                                            "dcbitless_lsa_count": 0,
+                                            "indication_lsa_count": 0,
+                                            "donotage_lsa_count": 0,
+                                            "flood_list_length": 0
+                                        },
+                                        "ranges": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "neighbors": {
+        "interfaces": {
+            "Ethernet0/0": {
+                "neighbors": {
+                    "2.2.2.2": {
+                        "priority": 0,
+                        "state": "FULL/  -",
+                        "dead_time": "00:00:31",
+                        "address": "192.168.0.2"
+                    }
+                }
+            }
+        }
+    },
+    "route_ospf": {
+        "vrf": {
+            "default": {
+                "address_family": {
+                    "ipv4": {
+                        "routes": {
+                            "2.2.2.2/32": {
+                                "route": "2.2.2.2/32",
+                                "active": true,
+                                "metric": 11,
+                                "route_preference": 110,
+                                "source_protocol_codes": "O",
+                                "source_protocol": "ospf",
+                                "next_hop": {
+                                    "next_hop_list": {
+                                        "1": {
+                                            "index": 1,
+                                            "next_hop": "192.168.0.2",
+                                            "updated": "01:25:23",
+                                            "outgoing_interface": "Ethernet0/0"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+**Fluxograma**
+
+```mermaid
+flowchart TD
+    A[Início do Script] --> B[Setup: Configuração de Logging e Diretórios]
+    B --> C[Carregar arquivo R01_iosxe_diag.txt]
+    C --> D[Instanciar o DummyDevice]
+    D --> E[Executar Parsing com Genie.parse ]
+    E --> F[Gerar Resumo Final para o Console]
+    F --> G[Salvar o JSON com os dados parseados]
+    G --> H[Fim]
+
+style A fill:#006400,stroke:#00ff00,color:#ffffff
+style B fill:#ffc107,stroke:#ffcc00,color:#000000
+style C fill:#6f42c1,stroke:#6610f2,color:#ffffff
+style D fill:#fd7e14,stroke:#e83e8c,color:#000000
+style E fill:#0d6efd,stroke:#0d6efd,color:#ffffff
+style F fill:#6610f2,stroke:#6f42c1,color:#ffffff
+style G fill:#20c997,stroke:#28a745,color:#000000
+style H fill:#006400,stroke:#00ff00,color:#ffffff
+```
