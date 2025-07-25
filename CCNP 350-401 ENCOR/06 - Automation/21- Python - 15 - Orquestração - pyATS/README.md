@@ -1,19 +1,17 @@
 # Python - 16
 
-## Parsing Automático - Genie
+## pyATS: Orquestração e Validação de Testes de Rede
 
 ## Sumário
+
 - [Python - 16](#python---16)
-  - [Parsing Automático - Genie](#parsing-automático---genie)
+  - [pyATS: Orquestração e Validação de Testes de Rede](#pyats-orquestração-e-validação-de-testes-de-rede)
   - [Sumário](#sumário)
-    - [pyATS: Orquestração e Validação de Testes de Rede](#pyats-orquestração-e-validação-de-testes-de-rede)
     - [O Que É Orquestração?](#o-que-é-orquestração)
   - [Contextualização: O Universo do `pyATS`](#contextualização-o-universo-do-pyats)
   - [Quando Usar e Quando Não Usar `pyATS`](#quando-usar-e-quando-não-usar-pyats)
   - [O Que `pyATS` Faz e Como Ele Ajuda](#o-que-pyats-faz-e-como-ele-ajuda)
   - [Fluxograma do `pyATS`](#fluxograma-do-pyats)
-
-### pyATS: Orquestração e Validação de Testes de Rede
 
 ### O Que É Orquestração?
 
