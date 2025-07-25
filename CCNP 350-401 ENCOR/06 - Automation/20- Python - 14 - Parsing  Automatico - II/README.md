@@ -2003,7 +2003,4 @@ style B fill:#ffc107,stroke:#ffcc00,color:#000000
 style C fill:#6f42c1,stroke:#6610f2,color:#ffffff
 style D fill:#fd7e14,stroke:#e83e8c,color:#000000
 style E fill:#0d6efd,stroke:#0d6efd,color:#ffffff
-style F fill:#6610f2,stroke:#6f42c1,color:#ffffff
-style G fill:#20c997,stroke:#28a745,color:#000000
-style H fill:#006400,stroke:#00ff00,color:#ffffff
 ```
