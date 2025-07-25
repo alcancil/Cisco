@@ -22,6 +22,7 @@
     - [Quando usar o `while` em vez do `for`?](#quando-usar-o-while-em-vez-do-for)
     - [Exemplo 12B: Parsing de show tech-support](#exemplo-12b-parsing-de-show-tech-support)
       - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe-1)
+    - [Expandindo a Explicação](#expandindo-a-explicação-1)
 
 #### Comando show tech-support
 
@@ -1985,4 +1986,15 @@ style H fill:#006400,stroke:#00ff00,color:#ffffff
 [162] with open(output_json_file, 'w') as f:                                                             # Abre o arquivo JSON para escrita.
 [163]      json.dump(parsed_data, f, indent=4)                                                           # Salva o dicionário 'parsed_data' no arquivo JSON, formatado.
 [164] logging.info(f'Dados parseados salvos em {output_json_file}')                                      # Registra que o arquivo foi salvo com sucesso.
+```
+
+### Expandindo a Explicação
+
+```mermaid
+graph TD
+    A[Extrair Seção do Comando] --> B{Parser disponível no Genie?}
+    B -- Sim --> C[Usar parser automático do Genie]
+    B -- Não --> D[Log: Parser não disponível / usar fallback]
+    C --> E[Armazenar dados estruturados em dicionário]
+    D --> E
 ```
