@@ -12,6 +12,8 @@
   - [Quando Usar e Quando Não Usar `pyATS`](#quando-usar-e-quando-não-usar-pyats)
   - [O Que `pyATS` Faz e Como Ele Ajuda](#o-que-pyats-faz-e-como-ele-ajuda)
   - [Fluxograma do `pyATS`](#fluxograma-do-pyats)
+    - [Requisitos](#requisitos)
+    - [Instalação](#instalação)
 
 ### O Que É Orquestração?
 
@@ -88,4 +90,45 @@ style I fill:#20c997,stroke:#28a745,color:#000000
 style J fill:#dc3545,stroke:#ff0000,color:#ffffff
 style K fill:#6610f2,stroke:#6f42c1,color:#ffffff
 style L fill:#006400,stroke:#00ff00,color:#ffffff
+```
+
+### Requisitos
+
+Para seguir este exemplo de forma eficaz, você precisará dos seguintes componentes:
+
+  - Python: Versão 3.6 ou superior (o pyATS é compatível com as versões mais recentes). É altamente recomendado o uso de um ambiente virtual (venv ou conda).
+
+  - Acesso à Internet: Para instalar as bibliotecas necessárias.
+
+  - pyATS e Genie: As bibliotecas da Cisco. A instalação do pyATS já inclui o Genie e outras dependências, como o Unicon (para conectividade).
+
+  - Arquivo testbed.yaml: Um arquivo de configuração para o ambiente de automação.
+
+### Instalação
+
+Siga estes passos para configurar seu ambiente virtual e instalar o pyATS.
+
+* **Passo 1:** Criar e Ativar o Ambiente Virtual
+
+Navegue até a pasta do seu projeto e execute os seguintes comandos no terminal:
+
+```Bash
+
+# Cria o ambiente virtual
+python3 -m venv venv_pyats
+
+# Ativa o ambiente virtual (no Linux/macOS)
+source venv_pyats/bin/activate
+
+# Ativa o ambiente virtual (no Windows)
+venv_pyats\Scripts\activate
+```
+
+* **Passo 2:** Instalar o pyATS
+
+Com o ambiente virtual ativado, você pode instalar o pyATS. A instalação da biblioteca principal já traz o Genie e o Unicon como dependências, então você só precisa de um comando:
+
+```Bash
+# Instala o pacote pyATS, que inclui o Genie
+pip install pyats
 ```
