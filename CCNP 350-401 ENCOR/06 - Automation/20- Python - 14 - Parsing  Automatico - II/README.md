@@ -18,6 +18,7 @@
     - [Fluxograma](#fluxograma)
     - [Expandindo a explicação](#expandindo-a-explicação)
       - [Bloco Loop sobre comandos: show version, show ip ospf...](#bloco-loop-sobre-comandos-show-version-show-ip-ospf)
+    - [Explicação Detalhada do Bloco 5 do Código](#explicação-detalhada-do-bloco-5-do-código)
 
 #### Comando show tech-support
 
@@ -1053,12 +1054,225 @@ style J fill:#000000,stroke:#ff0000,color:#ffffff
 flowchart TD
     A[Inicio do Script] --> B[...]
     B --> F[Loop sobre comandos: show version, show ip ospf...]
-    F --> I[...]
+    F --> G_Start(Iniciar Parsing)
+
+    subgraph G[Parsing manual regex ou Genie]
+        direction TB
+        G_Start --> G1{Decidir Método de Parsing}
+        G1 -- Usar Regex Manualmente --> G_Manual(Executar Funções de Parsing Manual)
+        G_Manual --> G_Manual_Detail(Detalhes do Regex para cada Comando)
+        G_Manual_Detail --> G_End(Parsing Concluído)
+        G1 -- Usar Genie (Futuro) --> G_Genie(Executar Parsing com Genie)
+        G_Genie --> G_End
+    end
+
+    G_End --> H[Salvar JSON e logs]
+    H --> I[Resumo final: IOS, Data, OSPF, Vizinhos, Rotas]
     I --> J[Fim]
- 
-style A fill:#000000,stroke:#ff0000,color:#ffffff
-style B fill:#0dcaf0,stroke:#17a2b8,color:#000000
+
+style A fill:#006400,stroke:#00ff00,color:#ffffff
+style B fill:#ffc107,stroke:#ffcc00,color:#000000
+
 style F fill:#198754,stroke:#00ff00,color:#ffffff
-style I fill:#006400,stroke:#00ff00,color:#ffffff
-style J fill:#000000,stroke:#ff0000,color:#ffffff
+style G_Start fill:#f8f9fa,stroke:#6c757d,color:#000000
+style G_End fill:#f8f9fa,stroke:#6c757d,color:#000000
+style G1 fill:#0dcaf0,stroke:#17a2b8,color:#000000
+style G_Manual fill:#dc3545,stroke:#ff0000,color:#ffffff
+style G_Manual_Detail fill:#dc3545,stroke:#ff0000,color:#ffffff
+style G_Genie fill:#0d6efd,stroke:#0d6efd,color:#ffffff
+style H fill:#20c997,stroke:#28a745,color:#000000
+style I fill:#6610f2,stroke:#6f42c1,color:#ffffff
+style J fill:#006400,stroke:#00ff00,color:#ffffff
 ```
+
+### Explicação Detalhada do Bloco 5 do Código
+
+Este bloco contém as funções auxiliares que realizam o trabalho "pesado" de extrair e parsear as informações dos comandos usando expressões regulares.
+
+1. **extract_section(full_output_text, command_name)**
+
+Esta função é a primeira etapa para qualquer parsing, manual ou futuro com Genie. Ela encontra e isola a saída de um comando específico dentro de um show tech-support completo, usando um padrão delimitador.
+
+```python
+    escaped_command_name = re.escape(command_name)
+```
+
+- **re.escape()** é usado para "escapar" quaisquer caracteres especiais no command_name (por exemplo, . , * , + , ? , ( , ) , etc.) para que eles sejam interpretados literalmente pela regex e não como metacaracteres. Isso é crucial para garantir que a busca pelo nome do comando seja precisa.
+
+```Python
+    pattern = rf'------------------ {escaped_command_name}\s*------------------\s*\n(.*?)(?=\n------------------|\Z)'
+```
+
+- rf'': Define uma f-string (permite incluir variáveis diretamente) e uma raw string (ignora caracteres de escape normais como \n ou \t dentro da string, úteis para regex).
+
+- **------------------** : Literalmente busca a linha de delimitador.
+
+- **${escaped_command_name}**: Insere o nome do comando de forma segura.
+
+- \s*: Corresponde a zero ou mais caracteres de espaço em branco (espaços, tabs). Adicionado para flexibilidade, caso haja espaços extras antes do próximo delimitador.
+
+- **\n**: Corresponde a uma quebra de linha.
+
+- **(.*?)**: Este é o grupo de captura (grupo 1).
+
+- **.**: Corresponde a qualquer caractere (exceto nova linha por padrão, mas re.DOTALL muda isso).
+
+- *: Corresponde a zero ou mais ocorrências do caractere anterior (.).
+
+- ?: Torna o * "não-guloso" (non-greedy). Isso significa que ele vai corresponder ao menor número possível de caracteres até encontrar o próximo padrão, em vez de o máximo possível. Isso é essencial para capturar o conteúdo até o próximo delimitador, e não o resto do arquivo.
+
+- **(?=\n------------------|\Z)**: Este é um lookahead positivo.
+
+- **(?=...)**: Significa "olhe para frente e veja se o que está dentro corresponde, mas não inclua isso na minha correspondência". Não consome caracteres.
+
+- **\n------------------**: Corresponde a uma quebra de linha seguida pelo próximo delimitador de seção.
+
+- **|**: Operador "OU".
+
+- **\Z**: Corresponde ao final da string (final do arquivo).
+
+- Combinado, ele diz: "Capture tudo (não-guloso) até que você veja o próximo delimitador de seção OU o final do arquivo".
+
+- **re.DOTALL**: Flag que faz com que o . corresponda a qualquer caractere, incluindo quebras de linha (\n). Sem isso, . não capturaria conteúdo multilinhas.
+
+2. **parse_show_version_manualmente(output)**
+
+Esta função extrai a linha completa que descreve a versão do software IOS.
+
+```Python
+    match = re.search(r'Cisco IOS Software,.*', output, re.IGNORECASE)
+```
+
+- **r''**: Raw string.
+
+- **Cisco IOS Software,**: Corresponde literalmente a esta string.
+
+- .*: Corresponde a qualquer caractere (.) zero ou mais vezes (*) até o final da linha. Como re.search procura a primeira ocorrência, ele captura a linha inteira a partir desse ponto.
+
+- **re.IGNORECASE**: Flag que faz com que a correspondência não diferencie maiúsculas de minúsculas (ex: "cisco" ou "Cisco").
+
+1. **parse_show_clock_manualmente(output)**
+
+Esta função extrai o timestamp de show clock.
+
+```Python
+    match = re.search(r'\*(\d{2}:\d{2}:\d{2}\.\d{3} UTC \w{3} \w{3} \d{1,2} \d{4})', output)
+```
+
+- \*: Corresponde a um asterisco literal (*). O asterisco é um metacaractere em regex, então precisa ser escapado com \.
+
+- **(\d{2}:\d{2}:\d{2}\.\d{3} UTC \w{3} \w{3} \d{1,2} \d{4})**: Este é o grupo de captura (grupo 1). Ele define o formato exato do timestamp:
+
+- **\d{2}**: Dois dígitos numéricos (0-9). Usado para horas, minutos, segundos.
+
+- **:**: Caractere literal dois pontos.
+
+- **\.**: Caractere literal ponto. O ponto é um metacaractere em regex, então precisa ser escapado.
+
+- **\d{3}**: Três dígitos numéricos (para milissegundos).
+
+- **UTC**: Literalmente a string " UTC ".
+
+- **\w{3}**: Três caracteres alfanuméricos (letras, números ou underscore). Usado para o dia da semana abreviado (ex: "Thu") e o mês abreviado (ex: "Jul").
+
+- **\d{1,2}**: Um ou dois dígitos numéricos (para o dia do mês).
+
+- **\d{4}**: Quatro dígitos numéricos (para o ano).
+
+4. **parse_show_ip_route_ospf_manualmente(output)**
+
+Esta função identifica e captura cada linha que representa uma rota OSPF.
+
+```Python
+    if re.match(r'^O\s+', line.strip()):
+```
+
+- **re.match()**: Diferente de re.search(), re.match() tenta corresponder o padrão apenas no início da string.
+
+- **^**: Âncora que corresponde ao início da string.
+
+- **O**: Corresponde ao caractere literal 'O' (indicando uma rota OSPF).
+
+- **\s+**: Corresponde a um ou mais caracteres de espaço em branco. Isso captura os espaços após o 'O'.
+
+- **line.strip()**: Remove quaisquer espaços em branco do início e do fim da linha antes de tentar a correspondência, garantindo que ^O\s+ funcione corretamente mesmo se a linha tiver espaços iniciais.
+
+5. **parse_show_ip_ospf_manualmente(output)
+
+Esta função extrai informações gerais sobre o processo OSPF, como o ID do roteador e o número de áreas.
+
+```Python
+    match_router_id = re.search(r'Routing Process "ospf \d+" with ID\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', output)
+```
+
+- **Routing Process "ospf** : Corresponde a esta string literal.
+
+- **\d+**: Um ou mais dígitos (para o número do processo OSPF, ex: "100").
+
+- **" with ID**: Corresponde a esta string literal.
+
+- \s*: Zero ou mais caracteres de espaço em branco.
+
+- **(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})**: Este é o grupo de captura (grupo 1). Corresponde a um endereço IP IPv4:
+
+- **\d{1,3}**: Um a três dígitos (para cada octeto do IP).
+
+- **\.**: Caractere literal ponto (escapado).
+
+- Cada parte é repetida para formar o endereço IP completo.
+
+- **match_areas** = re.search(r'Number of areas in this router is (\d+)\.', output)
+
+- **Number of areas in this router is** : Corresponde a esta string literal.
+
+- **(\d+)**: Este é o grupo de captura (grupo 1). Corresponde a um ou mais dígitos (para o número de áreas).
+
+- **\.**: Caractere literal ponto final (escapado).
+
+6. **parse_show_ip_ospf_neighbor_manualmente(output)**
+
+Esta é a função mais complexa, pois parseia uma tabela formatada de vizinhos OSPF, extraindo múltiplos campos por linha.
+
+```Python
+    pattern = re.compile(...): O re.compile() é usado para pré-compilar a expressão regular. Isso melhora o desempenho se a mesma regex for usada várias vezes (como em um loop for line in output.splitlines():).
+```
+
+A Expressão Regular Multi-linhas (r'...')
+
+- **^**: Corresponde ao início da linha (devido ao re.match() usado no loop).
+
+- **(?P<neighbor_id>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})**: Grupo nomeado neighbor_id. Captura um endereço IP IPv4. (?P<name>...) define um grupo de captura que pode ser acessado pelo nome.
+
+- **\s+**: Um ou mais espaços em branco (para separar os campos).
+
+- **(?P<priority>\d+)**: Grupo nomeado priority. Captura um ou mais dígitos para a prioridade.
+
+- **\s+**: Um ou mais espaços em branco.
+
+- **(?P<state>[\w\/]+\s*[\w\-]*)?**: Grupo nomeado state. Captura o estado do vizinho (ex: "FULL/ -", "FULL/BDR").
+
+- **[\w\/]+**: Um ou mais caracteres alfanuméricos (\w) ou barras (/).
+
+- \s*: Zero ou mais espaços.
+
+- [\w\-]*: Zero ou mais caracteres alfanuméricos ou hifens (-).
+
+- **?**: Torna todo o grupo de estado opcional, caso o campo possa estar vazio em algumas saídas.
+
+- **\s+**: Um ou mais espaços em branco.
+
+- **(?P<dead_time>\d{2}:\d{2}:\d{2})**: Grupo nomeado dead_time. Captura o tempo de "dead timer" no formato HH:MM:SS.
+
+- **\s+**: Um ou mais espaços em branco.
+
+- **(?P<address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})**: Grupo nomeado address. Captura o endereço IP do vizinho.
+
+- **\s+**: Um ou mais espaços em branco.
+
+- **(?P<interface>\S+)$**: Grupo nomeado interface. Captura a interface.
+
+- **\S+**: Um ou mais caracteres não-espaço em branco.
+
+- **$**: Âncora que corresponde ao final da linha.  
+
+Cada vez que o pattern.match(line.strip()) encontra uma correspondência, match.groupdict() é usado para retornar um dicionário onde as chaves são os nomes dos grupos (neighbor_id, priority, etc.) e os valores são o texto capturado por cada grupo. Isso facilita muito a organização dos dados parseados.
