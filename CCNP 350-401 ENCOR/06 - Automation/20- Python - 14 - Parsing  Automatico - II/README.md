@@ -23,6 +23,7 @@
     - [Exemplo 12B: Parsing de show tech-support](#exemplo-12b-parsing-de-show-tech-support)
       - [🔹 Cenário 2 — Cisco IOS-XE](#-cenário-2--cisco-ios-xe-1)
     - [Expandindo a Explicação](#expandindo-a-explicação-1)
+    - [Vantagem Prática: Comparando Parsing Manual x Genie](#vantagem-prática-comparando-parsing-manual-x-genie)
 
 #### Comando show tech-support
 
@@ -2004,3 +2005,46 @@ style C fill:#6f42c1,stroke:#6610f2,color:#ffffff
 style D fill:#fd7e14,stroke:#e83e8c,color:#000000
 style E fill:#0d6efd,stroke:#0d6efd,color:#ffffff
 ```
+
+### Vantagem Prática: Comparando Parsing Manual x Genie
+
+**Exemplo real de código com Regex manual:**
+
+```Python
+def parse_show_version_manualmente(section_text):
+    match = re.search(r'Cisco IOS Software, .+?, Version ([\d().A-Z]+),', section_text)
+    return {'version': match.group(1)} if match else {'version': 'Desconhecida'}
+```
+
+⚠️ Esse método:
+
+  - Exige conhecer bem regex
+
+  - É sensível a variações na saída do comando
+
+  - Pode quebrar se o formato do texto mudar com uma atualização
+
+**Exemplo equivalente com Genie:**
+
+```python
+parsed_output = device.parse("show version")
+ios_version = parsed_output.get('version', 'Desconhecida')
+```
+
+✅ Esse método:
+
+  - Não usa regex
+
+  - Retorna um dicionário estruturado, validado
+
+  - É muito mais legível, robusto e fácil de manter
+
+**🧠 Conclusão Didática**
+
+Mesmo que o parsing manual funcione, a adoção dos parsers do Genie deve ser priorizada sempre que disponível, especialmente quando:
+
+- Trabalhamos com automação em escala
+
+- Precisamos manter o código ao longo do tempo
+
+- Integramos com outras ferramentas (ex: SIEM, dashboards)
