@@ -18,7 +18,7 @@
     - [Fluxograma](#fluxograma)
     - [Expandindo a explicação](#expandindo-a-explicação)
       - [Bloco Loop sobre comandos: show version, show ip ospf...](#bloco-loop-sobre-comandos-show-version-show-ip-ospf)
-    - [Explicação Detalhada do Bloco 5 do Código](#explicação-detalhada-do-bloco-5-do-código)
+      - [Explicação Detalhada do Bloco 5 do Código](#explicação-detalhada-do-bloco-5-do-código)
 
 #### Comando show tech-support
 
@@ -1085,7 +1085,7 @@ style I fill:#6610f2,stroke:#6f42c1,color:#ffffff
 style J fill:#006400,stroke:#00ff00,color:#ffffff
 ```
 
-### Explicação Detalhada do Bloco 5 do Código
+#### Explicação Detalhada do Bloco 5 do Código
 
 Este bloco contém as funções auxiliares que realizam o trabalho "pesado" de extrair e parsear as informações dos comandos usando expressões regulares.
 
