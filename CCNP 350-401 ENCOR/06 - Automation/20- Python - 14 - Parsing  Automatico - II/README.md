@@ -1310,3 +1310,57 @@ O script irá:
   - Salvar os dados estruturados em um arquivo JSON para futuras análises ou integrações com outras ferramentas de automação.
 
 A principal meta é ilustrar como o Genie automatiza o processo de parsing, reduzindo a complexidade, o esforço de manutenção e a necessidade de conhecimento aprofundado em expressões regulares, o que o torna ideal para automação em larga escala.
+
+**📁 Estrutura do Projeto**
+
+```bash
+12_show_tech_support_ios_xe                        # A pasta raiz do projeto de automação com Genie.
+├── Arquivos                                       # O diretório que armazena os arquivos de entrada.
+│   └── R01_iosxe_diag.txt                         # O arquivo de diagnóstico do dispositivo Cisco IOS-XE, que será o input para o Genie.
+├── logs                                           # O diretório que armazena os arquivos de log gerados pelo script.
+│   └── parse_ospf_diag_20250725_113243.log        # O arquivo de log do script, com a data e hora da execução.
+├── output                                         # O diretório de saída, onde os resultados do parsing são salvos.
+│   └── parsed_iosxe_20250725_113243.json          # O arquivo JSON que contém os dados estruturados parseados pelo Genie, nomeado com a data e hora da execução.
+└── parse_ospf_diag.py                             # O script Python que utiliza a biblioteca Genie para realizar o parsing.
+```
+
+**R01_ospf_diag_iosxe.txt**
+
+```bash
+------------------ show clock ------------------
+
+
+*16:53:38.344 UTC Sat Jul 19 2025
+
+
+------------------ show switch ------------------
+
+
+
+------------------ show module ------------------
+
+
+
+------------------ show version ------------------
+
+
+Cisco IOS Software [IOSXE], Linux Software (X86_64BI_LINUX-ADVENTERPRISEK9-M), Version 17.15.1, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2024 by Cisco Systems, Inc.
+Compiled Sun 11-Aug-24 22:07 by mcpre
+
+ROM: Bootstrap program is Linux
+
+R01 uptime is 1 hour, 39 minutes
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x9, BOOT_COUNT 0, BOOTDATA 19
+System image file is "unix:/x86_64_crb_linux-adventerprisek9-ms.iol"
+Last reload reason: Unknown reason
+
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+```
