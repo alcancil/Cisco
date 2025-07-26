@@ -16,6 +16,7 @@
     - [Requisitos](#requisitos)
     - [Instalação](#instalação)
   - [🧪 Casos de Uso do pyATS (Progressão Didática)](#-casos-de-uso-do-pyats-progressão-didática)
+    - [📦 Relação entre pyATS e Genie](#-relação-entre-pyats-e-genie)
 
 ### 📚 Documentação Oficial pyATS
 
@@ -187,6 +188,54 @@ style C fill:#0dcaf0,stroke:#17a2b8,color:#000000
 style D fill:#198754,stroke:#00ff00,color:#ffffff
 style E fill:#fd7e14,stroke:#e83e8c,color:#000000
 style F fill:#6f42c1,stroke:#6610f2,color:#ffffff
-``` 
+```
 
+### 📦 Relação entre pyATS e Genie
 
+O pyATS é uma plataforma modular de automação de testes de redes, mantida pela Cisco. Um de seus grandes diferenciais é que ele atua como um **metapacote**, ou seja, ao ser instalado, ele traz consigo um conjunto completo de bibliotecas que trabalham em conjunto para facilitar o desenvolvimento, execução e análise de testes.
+
+**✅ Explicação técnica**
+
+Quando você executa o comando:
+
+```Python
+pip install pyats
+```
+
+O seguinte conjunto de bibliotecas é instalado automaticamente:
+
+- **genie** – Módulo para parsing automático de comandos, geração de configurações e diffs.
+
+- **unicon** – Interface de conexão com dispositivos (CLI/SSH/telnet).
+
+- **pyats.aetest** – Framework de testes modulares baseado em funções.
+
+- **pyats.easypy** – Execução simplificada de testes e agendamento.
+
+- **pyats.topology** – Gerenciamento de conexões e ambientes.
+
+- **pyats.reporter, pyats.kleenex, pyats.log** – Ferramentas auxiliares de logging e relatórios.
+
+- Outros módulos internos da Cisco.
+
+Ou seja: ao instalar o pyATS, o Genie é incluído automaticamente, sem a necessidade de instalá-lo separadamente.  
+
+**🔁 Genie também pode ser instalado isoladamente**
+
+Apesar disso, o Genie também pode ser instalado de forma independente caso o foco esteja apenas no uso dos parsers automáticos e geração de configurações, sem necessidade de usar o restante da estrutura de testes do pyATS.
+
+```python
+pip install genie
+```
+
+Isso pode ser útil em cenários menores ou scripts que só precisem dos parsers Genie para processar comandos show.
+
+**✅ Conclusão**
+
+- Se você pretende utilizar parsing automático, testes, topologias e relatórios integrados:
+    > instale o pyATS completo (pip install pyats).
+
+- Se você só precisa dos parsers ou gerador de configuração para automação simples:
+    > o Genie isolado já pode atender (pip install genie).
+
+Dessa forma, o desenvolvedor tem flexibilidade total para escolher a abordagem mais adequada ao seu projeto.
