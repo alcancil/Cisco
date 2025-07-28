@@ -170,8 +170,8 @@ Como vamos utilizar o pyATS localmente de inicio, precisamos deixar ele compatí
 
 Abaixo estão cinco exemplos organizados em ordem crescente de complexidade, do mais simples ao mais completo. Eles servirão de base para os exemplos práticos a seguir.
 
-| Nível | Objetivo                                      | Benefício                                         | Exemplo Prático                                       |
-|-------|-----------------------------------------------|---------------------------------------------------|-------------------------------------------------------|
+| Nível | Objetivo                                      | Benefício                                         | Exemplo Prático                                      |
+|-------|-----------------------------------------------|---------------------------------------------------|------------------------------------------------------|
 | 1     | Obter saída CLI de um dispositivo remoto      | Coleta estruturada sem precisar de SSH manual     | `device.execute("show version")`                     |
 | 2     | Parsing automático com Genie                  | Transformar CLI em dicionário estruturado         | `device.parse("show ip ospf neighbor")`              |
 | 3     | Estrutura de teste com `pyats.aetest`         | Framework modular com setup/teardown              | Scripts com `class CommonSetup`, `testcases`         |
@@ -311,26 +311,36 @@ O objetivo final de estruturar a coleta e parsing de dados com o pyATS é transf
 
 **Objetivo**
 
-O objetivo deste exemplo é demonstrar a sinergia entre o pyATS e o Genie para a coleta e o parsing de dados de forma automatizada, ainda em um ambiente local com arquivos de mock. O script irá:
+Este exemplo introdutório demonstra o fluxo básico de coleta de saídas CLI usando pyATS em um ambiente local com mock files, preparando o terreno para a evolução natural com parsing do Genie. O script irá:
 
-  - Usar um arquivo testbed.yaml para definir um dispositivo dummy (simulado).
+**Fase 1** - Coleta Bruta (Este Exemplo)
 
-  - Carregar uma saída de comando (show version) de um arquivo mock.
+  - Usar um testbed.yaml com dispositivo dummy para simular conexões.
 
-  - Utilizar a função pyATS device.parse() para converter essa saída de texto não estruturado em um dicionário Python.
+  - Carregar a saída do comando show version de um arquivo mock (show_version.txt).
 
-  - Exibir a versão do IOS-XE parseada de forma estruturada.
+  - Exibir a saída bruta do comando, ainda não parseada.
+
+**Fase 2** - Evolução para Parsing (Próximo Exemplo)
+No próximo passo, o mesmo código será estendido para:
+
+  - Usar device.parse() do Genie para converter a saída bruta em um dicionário Python.
+
+  - Extrair campos específicos (ex.: versão do IOS-XE) de forma estruturada.
 
 **📁 Estrutura do Projeto**
 
 Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml e o arquivo de mock são os novos componentes que definem nosso ambiente simulado.
 
 ```Bash
-.
-├── Arquivos/
-│   └── R01_iosxe_diag.txt         # Arquivo de mock contendo a saída dos comandos
-├── pyats_exemplo_1.py             # Nosso script python
-└── testbed.yaml                   # Arquivo de configuração do ambiente (manual)
+
+1
+├── get_cli_output.py                 # Nosso script python
+├── mock_files                        # pasta raiz do diretório dos arquivos mock
+│   └── R01                           # Nome do dispositivo, no nosso caso somente um roteador
+│       └── exec                      # estrutura de diretórios da caixa - modo exec privilegiado
+│           └── show_version.txt      # Arquivo de mock contendo a saída dos comandos
+└── testbed.yaml                      # Arquivo de configuração do ambiente (manual)
 ```
 
 **testbed.yaml**
@@ -339,75 +349,110 @@ Este arquivo define o nosso dispositivo virtual. Note que a ip e as credentials 
 YAML
 
 ```yaml
-# testbed.yaml
+---
 devices:
   R01:
     os: iosxe
     type: router
     connections:
       cli:
-        protocol: ssh
-        ip: 10.1.1.1
+        protocol: none   # Ou "mock" (ambos funcionam para cenários locais)
+        ip: 192.0.2.1    # IP fictício (ignorado em modo mock)
     credentials:
       default:
-        username: cisco
-        password: cisco
+        username: dummy  # Ignorado
+        password: dummy  # Ignorado
 ```
 
-**Conteúdo do Mock File (Arquivos/R01_iosxe_diag.txt)**
+**OBS:** para testar o arquivo **testbed.yaml** ou outros arquivos **.yaml** e ver se a estrutura digitada estácorreta, utilizar o comando **yamllint**
+
+> Observe um exemplo do uso, um com erro e outro depois de arrumar o erro
+
+```bash
+(pyats) alcancil@linux:~/automacoes/pyats/01$ yamllint testbed.yaml 
+testbed.yaml
+  1:1       error    too many blank lines (1 > 0)  (empty-lines)
+  2:1       warning  missing document start "---"  (document-start)
+
+(pyats) alcancil@linux:~/automacoes/pyats/01$ sudo nano testbed.yaml 
+(pyats) alcancil@linux:~/automacoes/pyats/01$ yamllint testbed.yaml 
+(pyats) alcancil@linux:~/automacoes/pyats/01$ 
+```
+
+**Conteúdo do Mock File (show_version.txt)**
 
 Este arquivo simula a saída de um comando show version de um roteador Cisco IOS-XE.
 
 ```bash
-# Arquivos/R01_iosxe_diag.txt
-Cisco IOS Software, IOS-XE Software, Version 17.15.01a
-Cisco IOS Software, IOS-XE Software (PIM-2-C-17-06), Version 17.15.01a
-Copyright (c) 1986-2023 by Cisco Systems, Inc.
-Compiled Wed 20-Feb-2023 15:00 by prod_rel_team
+(pyats) alcancil@linux:~/automacoes/pyats/01$ cat mock_files/R01/exec/show_version.txt 
+Cisco IOS Software [IOSXE], Linux Software (X86_64BI_LINUX-ADVENTERPRISEK9-M), Version 17.15.1, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2024 by Cisco Systems, Inc.
+Compiled Sun 11-Aug-24 22:07 by mcpre
+
+ROM: Bootstrap program is Linux
+
+R02 uptime is 1 minute
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x9, BOOT_COUNT 0, BOOTDATA 19
+System image file is "unix:/x86_64_crb_linux-adventerprisek9-ms.iol"
+Last reload reason: Unknown reason
+
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Linux Unix (i686) processor with 800932K bytes of memory.
+Processor board ID 131184643
+4 Ethernet interfaces
+256K bytes of NVRAM.
+
+Configuration register is 0x0
 ```
 
-**Script Python (pyats_exemplo_1.py)**
+**Script Python (get_cli_output.py)**
 
 O script está dividido em blocos comentados para facilitar o entendimento do fluxo de trabalho.
 
 ```Python
 import logging
-import os
-from pyats.topology import Testbed
-from pyats.async_ import pcall
+from pyats.topology import loader
 
-# Bloco 1: Configurar logging e testbed
+# Configura logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# O pyATS usa o arquivo testbed.yaml para carregar a topologia.
-testbed_file = "testbed.yaml"
-testbed = Testbed(testbed_file)
-logging.info(f"Testbed '{testbed_file}' carregado.")
+def main():
+    # Carrega o testbed em modo mock
+    testbed = loader.load("testbed.yaml")
+    device = testbed.devices["R01"]
 
-# Bloco 2: Mock do dispositivo e carregamento da saída
-# Para simular, conectamos a um "dummy device" e injetamos a saída.
-device = testbed.devices['R01']
-mock_file = "Arquivos/R01_iosxe_diag.txt"
+    # Lê o mock file
+    with open("mock_files/R01/exec/show_version.txt", "r") as f:
+        mock_output = f.read().strip()
 
-# Abrimos o arquivo mock e injetamos o conteúdo na conexão do dispositivo.
-with open(mock_file, 'r') as f:
-    device.connections['cli'].command_history = f.read()
+    # Define a saída mockada diretamente (simula device.execute)
+    logger.info(f"Simulando 'show version' no dispositivo {device.name}...")
+    cli_output = mock_output
 
-# Bloco 3: Conectar e executar o comando
-logging.info(f"Conectando ao dispositivo: {device.name}")
-device.connect(learn_hostname=True, init_config_commands=[])
-# O método 'execute' envia o comando e retorna a saída bruta.
-output_bruto = device.execute("show version")
+    # Exibe a saída
+    logger.info("Saída do comando:\n" + "-" * 50)
+    print(cli_output)
+    logger.info("-" * 50)
 
-# Bloco 4: Parsing com o Genie
-# 'device.parse()' usa os parsers do Genie para converter a saída em um dicionário.
-parsed_output = device.parse("show version", output=output_bruto)
+if __name__ == "__main__":
+    main()
 
-# Bloco 5: Exibir os dados parseados e desconectar
-version = parsed_output['version']['version_short']
-logging.info(f"Versão do IOS-XE (parseada pelo Genie): {version}")
-
-# Desconecta do dispositivo.
-device.disconnect()
-logging.info(f"Dispositivo '{device.name}' desconectado.")
 ```
