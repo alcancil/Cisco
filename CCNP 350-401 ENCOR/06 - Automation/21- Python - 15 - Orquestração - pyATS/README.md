@@ -427,32 +427,122 @@ Configuration register is 0x0
 O script está dividido em blocos comentados para facilitar o entendimento do fluxo de trabalho.
 
 ```Python
-import logging
-from pyats.topology import loader
+[001] import logging
+[002] from pyats.topology import loader
+[003] 
+[004] # Configura logging
+[005] logging.basicConfig(level=logging.INFO)
+[006] logger = logging.getLogger(__name__)
+[007] 
+[008] def main():
+[009]     # Carrega o testbed em modo mock
+[010]     testbed = loader.load("testbed.yaml")
+[011]     device = testbed.devices["R01"]
+[012] 
+[013]     # Lê o mock file
+[014]     with open("mock_files/R01/exec/show_version.txt", "r") as f:
+[015]         mock_output = f.read().strip()
+[016]
+[017]     # Define a saída mockada diretamente (simula device.execute)
+[018]     logger.info(f"Simulando 'show version' no dispositivo {device.name}...")
+[019]     cli_output = mock_output
+[020] 
+[021]     # Exibe a saída
+[022]     logger.info("Saída do comando:\n" + "-" * 50)
+[023]     print(cli_output)
+[024]     logger.info("-" * 50)
+[025] 
+[026] if __name__ == "__main__":
+[027]     main()
+```
 
-# Configura logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+**saída**
 
-def main():
-    # Carrega o testbed em modo mock
-    testbed = loader.load("testbed.yaml")
-    device = testbed.devices["R01"]
+```bash
+(pyats) alcancil@linux:~/automacoes/pyats/01$ python3 get_cli_output.py 
+INFO:__main__:Simulando 'show version' no dispositivo R01...
+INFO:__main__:Saída do comando:
+--------------------------------------------------
+Cisco IOS Software [IOSXE], Linux Software (X86_64BI_LINUX-ADVENTERPRISEK9-M), Version 17.15.1, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2024 by Cisco Systems, Inc.
+Compiled Sun 11-Aug-24 22:07 by mcpre
 
-    # Lê o mock file
-    with open("mock_files/R01/exec/show_version.txt", "r") as f:
-        mock_output = f.read().strip()
+ROM: Bootstrap program is Linux
 
-    # Define a saída mockada diretamente (simula device.execute)
-    logger.info(f"Simulando 'show version' no dispositivo {device.name}...")
-    cli_output = mock_output
+R02 uptime is 1 minute
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x9, BOOT_COUNT 0, BOOTDATA 19
+System image file is "unix:/x86_64_crb_linux-adventerprisek9-ms.iol"
+Last reload reason: Unknown reason
 
-    # Exibe a saída
-    logger.info("Saída do comando:\n" + "-" * 50)
-    print(cli_output)
-    logger.info("-" * 50)
 
-if __name__ == "__main__":
-    main()
 
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+Linux Unix (i686) processor with 800932K bytes of memory.
+Processor board ID 131184643
+4 Ethernet interfaces
+256K bytes of NVRAM.
+
+Configuration register is 0x0
+INFO:__main__:--------------------------------------------------
+(pyats) alcancil@linux:~/automacoes/pyats/01$ 
+```
+
+**Explicação**
+
+```python
+# Bloco 01 - Importações
+[001] import logging                                                                # [001] Importa módulo para registro de mensagens durante execução
+[002] from pyats.topology import loader                                             # [002] Importa função para carregar arquivo testbed do pyATS
+
+# Bloco 02 - Configuração de Logging  
+[003]                                                                               # [003] (Linha vazia para organização)
+[004] # Configura logging                                                           # [004] Seção de configuração do sistema de logs
+[005] logging.basicConfig(level=logging.INFO)                                       # [005] Define nível mínimo de log como INFO
+[006] logger = logging.getLogger(__name__)                                          # [006] Cria logger específico para este módulo
+
+# Bloco 03 - Função Principal
+[007]                                                                               # [007] (Linha vazia para organização)
+[008] def main():                                                                   # [008] Define função principal do script
+[009]     # Carrega o testbed em modo mock                                          # [009] Seção de carregamento do ambiente
+[010]     testbed = loader.load("testbed.yaml")                                     # [010] Carrega definições do arquivo testbed.yaml
+[011]     device = testbed.devices["R01"]                                           # [011] Acessa dispositivo R01 do testbed
+
+# Bloco 04 - Leitura do Mock File
+[012]                                                                               # [012] (Linha vazia para organização)
+[013]     # Lê o mock file                                                          # [013] Seção de manipulação do arquivo de mock
+[014]     with open("mock_files/R01/exec/show_version.txt", "r") as f:              # [014] Abre arquivo em modo leitura
+[015]         mock_output = f.read().strip()                                        # [015] Lê conteúdo e remove espaços extras
+
+# Bloco 05 - Simulação de Execução
+[016]                                                                               # [016] (Linha vazia para organização)
+[017]     # Define a saída mockada                                                  # [017] Seção de simulação do comando CLI
+[018]     logger.info(f"Simulando 'show version' no dispositivo {device.name}...")  # [018] Log de simulação
+[019]     cli_output = mock_output                                                  # [019] Armazena saída mockada como resultado
+
+# Bloco 06 - Exibição de Resultados
+[020]                                                                               # [020] (Linha vazia para organização)
+[021]     # Exibe a saída                                                           # [021] Seção de apresentação dos resultados
+[022]     logger.info("Saída do comando:\n" + "-" * 50)                             # [022] Cabeçalho visual no log
+[023]     print(cli_output)                                                         # [023] Imprime saída bruta no console
+[024]     logger.info("-" * 50)                                                     # [024] Rodapé visual no log
+
+# Bloco 07 - Execução do Script
+[025]                                                                               # [025] (Linha vazia para organização)
+[026] if __name__ == "__main__":                                                    # [026] Verifica se script está sendo executado diretamente
+[027]     main()                                                                    # [027] Chama função principal
 ```
