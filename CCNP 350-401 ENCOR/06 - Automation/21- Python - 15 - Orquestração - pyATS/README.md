@@ -790,3 +790,9 @@ Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml 
 [067] if __name__ == "__main__":                                                                           # Verifica se o script está sendo executado diretamente
 [068]     main()                                                                                           # Chama a função principal
 ```
+
+**📌 Por Dentro do Parsing com Genie**  
+O método `device.parse()` do Genie converte a saída CLI em um dicionário Python seguindo este processo:
+1. **Identificação do Parser**: Usa o campo `os: iosxe` do `testbed.yaml` para selecionar o parser correto.
+2. **Estrutura Hierárquica**: Organiza os dados em chaves lógicas (ex.: `version`, `interfaces`).
+3. **Tipagem Automática**: Converte strings para tipos nativos (booleanos, inteiros) quando possível.
