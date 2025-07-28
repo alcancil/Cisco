@@ -568,74 +568,74 @@ Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml 
 
 ```python
 # Bloco 01 - Importações
-import logging
-import json
-import os
-from datetime import datetime
-from pyats.topology import loader
-
-# Bloco 02 - Configuração de Pastas
-LOG_DIR = "logs"
-OUTPUT_DIR = "output"
-os.makedirs(LOG_DIR, exist_ok=True)    # Cria pasta de logs se não existir
-os.makedirs(OUTPUT_DIR, exist_ok=True) # Cria pasta de outputs se não existir
-
-# Bloco 03 - Configuração de Logging
-log_file = f"{LOG_DIR}/script_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),  # Log para arquivo
-        logging.StreamHandler()        # Log para console
-    ]
-)
-logger = logging.getLogger(__name__)
-
-# Bloco 04 - Função Principal
-def main():
-    try:
-        logger.info("="*50)
-        logger.info("Iniciando Fase 2 - Parsing com Genie")
-        logger.info("="*50)
-
-        # Carrega testbed
-        testbed = loader.load("testbed.yaml")
-        device = testbed.devices["R01"]
-        logger.info(f"Dispositivo carregado: {device.name}")
-
-        # Leitura do mock file
-        with open("mock_files/R01/exec/show_version.txt", "r") as f:
-            mock_output = f.read().strip()
-        logger.info("Mock file carregado com sucesso")
-
-        # Parsing com Genie
-        logger.info("Iniciando parsing com Genie...")
-        parsed_data = device.parse("show version", output=mock_output)
-        
-        # Saída estruturada
-        output_file = f"{OUTPUT_DIR}/parsed_{device.name}_{datetime.now().strftime('%Y%m%d')}.json"
-        with open(output_file, 'w') as f:
-            json.dump(parsed_data, f, indent=4)
-        logger.info(f"Saída parseada salva em: {output_file}")
-
-        # Resumo em tela
-        logger.info("\n" + "="*50)
-        logger.info("RESUMO DA EXECUÇÃO")
-        logger.info("="*50)
-        logger.info(f"Dispositivo: {device.name}")
-        logger.info(f"Versão do IOS: {parsed_data['version']['version_short']}")
-        logger.info(f"OS: {parsed_data['version']['os']}")
-        logger.info(f"Arquivo de Log: {log_file}")
-        logger.info(f"Arquivo de Output: {output_file}")
-        logger.info("="*50 + "\n")
-
-    except Exception as e:
-        logger.error(f"Erro durante execução: {str(e)}", exc_info=True)
-
-# Bloco 05 - Execução
-if __name__ == "__main__":
-    main()
+[001] import logging
+[002] import json
+[003] import os
+[004] from datetime import datetime
+[005] from pyats.topology import loader
+[006] 
+[007] # Bloco 02 - Configuração de Pastas
+[008] LOG_DIR = "logs"
+[009] OUTPUT_DIR = "output"
+[010] os.makedirs(LOG_DIR, exist_ok=True)    # Cria pasta de logs se não existir
+[011] os.makedirs(OUTPUT_DIR, exist_ok=True) # Cria pasta de outputs se não existir
+[012] 
+[013] # Bloco 03 - Configuração de Logging
+[014] log_file = f"{LOG_DIR}/script_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+[015] logging.basicConfig(
+[016]     level=logging.INFO,
+[017]     format='%(asctime)s - %(levelname)s - %(message)s',
+[018]     handlers=[
+[019]         logging.FileHandler(log_file),  # Log para arquivo
+[020]         logging.StreamHandler()        # Log para console
+[021]     ]
+[022] )
+[023] logger = logging.getLogger(__name__)
+[024] 
+[025] # Bloco 04 - Função Principal
+[026] def main():
+[027]     try:
+[028]         logger.info("="*50)
+[029]         logger.info("Iniciando Fase 2 - Parsing com Genie")
+[030]         logger.info("="*50)
+[031] 
+[032]         # Carrega testbed
+[033]         testbed = loader.load("testbed.yaml")
+[034]         device = testbed.devices["R01"]
+[035]         logger.info(f"Dispositivo carregado: {device.name}")
+[036] 
+[037]         # Leitura do mock file
+[038]         with open("mock_files/R01/exec/show_version.txt", "r") as f:
+[039]             mock_output = f.read().strip()
+[040]         logger.info("Mock file carregado com sucesso")
+[041] 
+[042]         # Parsing com Genie
+[043]         logger.info("Iniciando parsing com Genie...")
+[044]         parsed_data = device.parse("show version", output=mock_output)
+[045]         
+[046]         # Saída estruturada
+[047]         output_file = f"{OUTPUT_DIR}/parsed_{device.name}_{datetime.now().strftime('%Y%m%d')}.json"
+[048]         with open(output_file, 'w') as f:
+[049]             json.dump(parsed_data, f, indent=4)
+[050]         logger.info(f"Saída parseada salva em: {output_file}")
+[051] 
+[052]         # Resumo em tela
+[053]         logger.info("\n" + "="*50)
+[054]         logger.info("RESUMO DA EXECUÇÃO")
+[055]         logger.info("="*50)
+[056]         logger.info(f"Dispositivo: {device.name}")
+[057]         logger.info(f"Versão do IOS: {parsed_data['version']['version_short']}")
+[058]         logger.info(f"OS: {parsed_data['version']['os']}")
+[059]         logger.info(f"Arquivo de Log: {log_file}")
+[060]         logger.info(f"Arquivo de Output: {output_file}")
+[061]         logger.info("="*50 + "\n")
+[062] 
+[063]     except Exception as e:
+[064]         logger.error(f"Erro durante execução: {str(e)}", exc_info=True)
+[065] 
+[066] # Bloco 05 - Execução
+[067] if __name__ == "__main__":
+[068]     main()
 ```
 
 **Saída**
@@ -718,3 +718,75 @@ if __name__ == "__main__":
 ```
 
 **Explicação**
+
+```Python
+# Bloco 01 - Importações
+[001] import logging                                                                                       # Importa módulo para registro de logs
+[002] import json                                                                                          # Importa módulo para manipulação de JSON
+[003] import os                                                                                            # Importa módulo para operações com sistema de arquivos
+[004] from datetime import datetime                                                                        # Importa classe para manipulação de datas/horas
+[005] from pyats.topology import loader                                                                    # Importa função para carregar testbed do pyATS
+[006] 
+[007] # Bloco 02 - Configuração de Pastas
+[008] LOG_DIR = "logs"                                                                                     # Define nome da pasta para arquivos de log
+[009] OUTPUT_DIR = "output"                                                                                # Define nome da pasta para arquivos de saída
+[010] os.makedirs(LOG_DIR, exist_ok=True)                                                                  # Cria pasta de logs (se não existir)
+[011] os.makedirs(OUTPUT_DIR, exist_ok=True)                                                               # Cria pasta de outputs (se não existir)
+[012] 
+[013] # Bloco 03 - Configuração de Logging
+[014] log_file = f"{LOG_DIR}/script_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"                        # Gera nome do arquivo de log com timestamp
+[015] logging.basicConfig(                                                                                 # Configura sistema de logging
+[016]     level=logging.INFO,                                                                              # Define nível mínimo de log como INFO
+[017]     format='%(asctime)s - %(levelname)s - %(message)s',                                              # Formato das mensagens de log
+[018]     handlers=[                                                                                       # Define handlers (destinos) dos logs
+[019]         logging.FileHandler(log_file),                                                               # Handler para gravar em arquivo
+[020]         logging.StreamHandler()                                                                      # Handler para exibir no console
+[021]     ]
+[022] )
+[023] logger = logging.getLogger(__name__)                                                                 # Cria logger específico para este módulo
+[024] 
+[025] # Bloco 04 - Função Principal
+[026] def main():                                                                                          # Define função principal do script
+[027]     try:                                                                                             # Inicia bloco de tratamento de exceções
+[028]         logger.info("="*50)                                                                          # Linha separadora no log
+[029]         logger.info("Iniciando Fase 2 - Parsing com Genie")                                          # Mensagem de início
+[030]         logger.info("="*50)                                                                          # Linha separadora no log
+[031] 
+[032]         # Carrega testbed
+[033]         testbed = loader.load("testbed.yaml")                                                        # Carrega configurações do testbed
+[034]         device = testbed.devices["R01"]                                                              # Obtém dispositivo R01 do testbed
+[035]         logger.info(f"Dispositivo carregado: {device.name}")                                         # Log do dispositivo
+[036] 
+[037]         # Leitura do mock file
+[038]         with open("mock_files/R01/exec/show_version.txt", "r") as f:                                 # Abre arquivo de mock
+[039]             mock_output = f.read().strip()                                                           # Lê conteúdo e remove espaços extras
+[040]         logger.info("Mock file carregado com sucesso")                                               # Confirmação de leitura
+[041] 
+[042]         # Parsing com Genie
+[043]         logger.info("Iniciando parsing com Genie...")                                                # Mensagem de início do parsing
+[044]         parsed_data = device.parse("show version", output=mock_output)                               # Converte saída CLI para JSON
+[045]         
+[046]         # Saída estruturada
+[047]         output_file = f"{OUTPUT_DIR}/parsed_{device.name}_{datetime.now().strftime('%Y%m%d')}.json"  # Gera nome do arquivo de saída
+[048]         with open(output_file, 'w') as f:                                                            # Abre arquivo para escrita
+[049]             json.dump(parsed_data, f, indent=4)                                                      # Salva dados parseados como JSON formatado
+[050]         logger.info(f"Saída parseada salva em: {output_file}")                                       # Log com local do arquivo
+[051] 
+[052]         # Resumo em tela
+[053]         logger.info("\n" + "="*50)                                                                   # Linha separadora
+[054]         logger.info("RESUMO DA EXECUÇÃO")                                                            # Cabeçalho do resumo
+[055]         logger.info("="*50)                                                                          # Linha separadora
+[056]         logger.info(f"Dispositivo: {device.name}")                                                   # Exibe nome do dispositivo
+[057]         logger.info(f"Versão do IOS: {parsed_data['version']['version_short']}")                     # Exibe versão do IOS
+[058]         logger.info(f"OS: {parsed_data['version']['os']}")                                           # Exibe sistema operacional
+[059]         logger.info(f"Arquivo de Log: {log_file}")                                                   # Exibe caminho do log
+[060]         logger.info(f"Arquivo de Output: {output_file}")                                             # Exibe caminho do output
+[061]         logger.info("="*50 + "\n")                                                                   # Linha separadora final
+[062] 
+[063]     except Exception as e:                                                                           # Captura qualquer exceção
+[064]         logger.error(f"Erro durante execução: {str(e)}", exc_info=True)                              # Log detalhado do erro
+[065] 
+[066] # Bloco 05 - Execução
+[067] if __name__ == "__main__":                                                                           # Verifica se o script está sendo executado diretamente
+[068]     main()                                                                                           # Chama a função principal
+```
