@@ -17,6 +17,12 @@
     - [Instalação](#instalação)
   - [🧪 Casos de Uso do pyATS (Progressão Didática)](#-casos-de-uso-do-pyats-progressão-didática)
     - [📦 Relação entre pyATS e Genie](#-relação-entre-pyats-e-genie)
+    - [🎯 Estrutura de Mock Files e Evolução Natural da Automação com pyATS](#-estrutura-de-mock-files-e-evolução-natural-da-automação-com-pyats)
+    - [📁 Organização Estruturada dos Mock Files](#-organização-estruturada-dos-mock-files)
+    - [🚀 pyats learn e pyats run job (Evolução Natural)](#-pyats-learn-e-pyats-run-job-evolução-natural)
+    - [📈 Integração com Ferramentas de Monitoramento e Observabilidade](#-integração-com-ferramentas-de-monitoramento-e-observabilidade)
+      - [Exemplos Práticos](#exemplos-práticos)
+    - [Exemplo 01: Obtendo Saída de Comando com pyATS](#exemplo-01-obtendo-saída-de-comando-com-pyats)
 
 ### 📚 Documentação Oficial pyATS
 
@@ -239,3 +245,169 @@ Isso pode ser útil em cenários menores ou scripts que só precisem dos parsers
     > o Genie isolado já pode atender (pip install genie).
 
 Dessa forma, o desenvolvedor tem flexibilidade total para escolher a abordagem mais adequada ao seu projeto.
+
+### 🎯 Estrutura de Mock Files e Evolução Natural da Automação com pyATS
+
+Antes de explorarmos os exemplos práticos, é fundamental entender a lógica e a estrutura por trás da criação dos arquivos mock. Esses arquivos simulam a saída real de comandos dos dispositivos de rede e permitem testes totalmente locais, mesmo sem conexão com os equipamentos.
+
+### 📁 Organização Estruturada dos Mock Files
+
+Os mock files devem ser organizados de forma padronizada e hierárquica, pois essa estrutura favorece a escalabilidade e a futura reutilização dos testes. Uma organização recomendada é:
+
+```bash
+mock_data/
+├── R01/
+│   └── exec/
+│       ├── show_version.txt
+│       ├── show_ip_ospf_neighbor.txt
+│       └── show_ip_route.txt
+```
+
+**🔍 Importante:** A pasta exec/ indica que os comandos simulados pertencem ao modo EXEC do equipamento. Essa convenção é importante para que o parser saiba como interpretar cada comando corretamente.  
+
+Essa estrutura permite que você monte "templates de coleta" para diferentes protocolos ou funcionalidades (ex: BGP, OSPF, interfaces, SNMP, etc), e aplique testes consistentes em diversos dispositivos.
+
+**🤔 Por que usar mock files manuais antes do pyats learn?**
+
+Neste momento, vamos criar os mock files manualmente: você coleta a saída de um comando real no dispositivo, salva em .txt e usa em seu script. Isso é ideal para:
+
+- Aprendizado didático do funcionamento do pyATS.
+
+- Montagem de ambientes locais para testes offline.
+
+- Criação de templates de análise reutilizáveis.
+
+- Controle preciso sobre o conteúdo e cenários de teste.
+
+**✍️ Exemplo:** Copiar a saída de show ip ospf neighbor de um equipamento e salvá-la em **mock_data/R01/exec/show_ip_ospf_neighbor.txt.**
+
+### 🚀 pyats learn e pyats run job (Evolução Natural)
+
+O pyATS possui ferramentas poderosas como:
+
+- **pyats learn**: conecta-se aos equipamentos reais e coleta automaticamente estados completos (roteamento, interfaces, OSPF, etc), gerando estrutura de dados rica e reutilizável.
+
+- **pyats run job**: executa scripts modulares com definição de etapas (setup, testcases, cleanup), ideal para uso profissional e ambientes de produção.
+
+Estes comandos serão introduzidos em etapas futuras, à medida que evoluímos para testes reais em ambientes maiores.
+
+### 📈 Integração com Ferramentas de Monitoramento e Observabilidade
+
+O objetivo final de estruturar a coleta e parsing de dados com o pyATS é transformar seu script em um coletor de dados inteligente, que pode:
+
+- Exportar dados em JSON estruturado.
+
+- Alimentar ferramentas como Graylog, Zabbix, Grafana.
+
+- Disparar alertas automáticos ou dashboards visuais com insights de rede.
+
+- Eliminar o uso de regex e tornar os dados legíveis e fáceis de automatizar.
+
+✅ Com isso em mente, estamos prontos para explorar nossos primeiros exemplos práticos utilizando mock files locais!
+
+#### Exemplos Práticos
+
+### Exemplo 01: Obtendo Saída de Comando com pyATS
+
+**Objetivo**
+
+O objetivo deste exemplo é demonstrar a sinergia entre o pyATS e o Genie para a coleta e o parsing de dados de forma automatizada, ainda em um ambiente local com arquivos de mock. O script irá:
+
+  - Usar um arquivo testbed.yaml para definir um dispositivo dummy (simulado).
+
+  - Carregar uma saída de comando (show version) de um arquivo mock.
+
+  - Utilizar a função pyATS device.parse() para converter essa saída de texto não estruturado em um dicionário Python.
+
+  - Exibir a versão do IOS-XE parseada de forma estruturada.
+
+**📁 Estrutura do Projeto**
+
+Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml e o arquivo de mock são os novos componentes que definem nosso ambiente simulado.
+
+```Bash
+.
+├── Arquivos/
+│   └── R01_iosxe_diag.txt         # Arquivo de mock contendo a saída dos comandos
+├── pyats_exemplo_1.py             # Nosso script python
+└── testbed.yaml                   # Arquivo de configuração do ambiente (manual)
+```
+
+**testbed.yaml**
+
+Este arquivo define o nosso dispositivo virtual. Note que a ip e as credentials são fictícias, mas o pyATS precisa delas para simular a conexão. O os é crucial para que o Genie saiba qual parser usar.
+YAML
+
+```yaml
+# testbed.yaml
+devices:
+  R01:
+    os: iosxe
+    type: router
+    connections:
+      cli:
+        protocol: ssh
+        ip: 10.1.1.1
+    credentials:
+      default:
+        username: cisco
+        password: cisco
+```
+
+**Conteúdo do Mock File (Arquivos/R01_iosxe_diag.txt)**
+
+Este arquivo simula a saída de um comando show version de um roteador Cisco IOS-XE.
+
+```bash
+# Arquivos/R01_iosxe_diag.txt
+Cisco IOS Software, IOS-XE Software, Version 17.15.01a
+Cisco IOS Software, IOS-XE Software (PIM-2-C-17-06), Version 17.15.01a
+Copyright (c) 1986-2023 by Cisco Systems, Inc.
+Compiled Wed 20-Feb-2023 15:00 by prod_rel_team
+```
+
+**Script Python (pyats_exemplo_1.py)**
+
+O script está dividido em blocos comentados para facilitar o entendimento do fluxo de trabalho.
+
+```Python
+import logging
+import os
+from pyats.topology import Testbed
+from pyats.async_ import pcall
+
+# Bloco 1: Configurar logging e testbed
+logging.basicConfig(level=logging.INFO)
+
+# O pyATS usa o arquivo testbed.yaml para carregar a topologia.
+testbed_file = "testbed.yaml"
+testbed = Testbed(testbed_file)
+logging.info(f"Testbed '{testbed_file}' carregado.")
+
+# Bloco 2: Mock do dispositivo e carregamento da saída
+# Para simular, conectamos a um "dummy device" e injetamos a saída.
+device = testbed.devices['R01']
+mock_file = "Arquivos/R01_iosxe_diag.txt"
+
+# Abrimos o arquivo mock e injetamos o conteúdo na conexão do dispositivo.
+with open(mock_file, 'r') as f:
+    device.connections['cli'].command_history = f.read()
+
+# Bloco 3: Conectar e executar o comando
+logging.info(f"Conectando ao dispositivo: {device.name}")
+device.connect(learn_hostname=True, init_config_commands=[])
+# O método 'execute' envia o comando e retorna a saída bruta.
+output_bruto = device.execute("show version")
+
+# Bloco 4: Parsing com o Genie
+# 'device.parse()' usa os parsers do Genie para converter a saída em um dicionário.
+parsed_output = device.parse("show version", output=output_bruto)
+
+# Bloco 5: Exibir os dados parseados e desconectar
+version = parsed_output['version']['version_short']
+logging.info(f"Versão do IOS-XE (parseada pelo Genie): {version}")
+
+# Desconecta do dispositivo.
+device.disconnect()
+logging.info(f"Dispositivo '{device.name}' desconectado.")
+```
