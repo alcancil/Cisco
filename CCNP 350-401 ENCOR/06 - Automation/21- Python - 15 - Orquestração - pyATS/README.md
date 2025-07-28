@@ -21,7 +21,7 @@
     - [📁 Organização Estruturada dos Mock Files](#-organização-estruturada-dos-mock-files)
     - [🚀 pyats learn e pyats run job (Evolução Natural)](#-pyats-learn-e-pyats-run-job-evolução-natural)
     - [📈 Integração com Ferramentas de Monitoramento e Observabilidade](#-integração-com-ferramentas-de-monitoramento-e-observabilidade)
-      - [Exemplos Práticos](#exemplos-práticos)
+  - [Exemplos Práticos](#exemplos-práticos)
     - [Exemplo 01: Obtendo Saída de Comando com pyATS](#exemplo-01-obtendo-saída-de-comando-com-pyats)
 
 ### 📚 Documentação Oficial pyATS
@@ -305,7 +305,7 @@ O objetivo final de estruturar a coleta e parsing de dados com o pyATS é transf
 
 ✅ Com isso em mente, estamos prontos para explorar nossos primeiros exemplos práticos utilizando mock files locais!
 
-#### Exemplos Práticos
+## Exemplos Práticos
 
 ### Exemplo 01: Obtendo Saída de Comando com pyATS
 
