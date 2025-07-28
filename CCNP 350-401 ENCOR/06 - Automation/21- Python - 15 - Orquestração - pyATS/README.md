@@ -321,13 +321,6 @@ Este exemplo introdutório demonstra o fluxo básico de coleta de saídas CLI us
 
   - Exibir a saída bruta do comando, ainda não parseada.
 
-**Fase 2** - Evolução para Parsing (Próximo Exemplo)
-No próximo passo, o mesmo código será estendido para:
-
-  - Usar device.parse() do Genie para converter a saída bruta em um dicionário Python.
-
-  - Extrair campos específicos (ex.: versão do IOS-XE) de forma estruturada.
-
 **📁 Estrutura do Projeto**
 
 Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml e o arquivo de mock são os novos componentes que definem nosso ambiente simulado.
@@ -546,3 +539,182 @@ INFO:__main__:--------------------------------------------------
 [026] if __name__ == "__main__":                                                    # [026] Verifica se script está sendo executado diretamente
 [027]     main()                                                                    # [027] Chama função principal
 ```
+
+**Fase 2** - Evolução para Parsing (Próximo Exemplo)
+No próximo passo, o mesmo código será estendido para:
+
+  - Usar device.parse() do Genie para converter a saída bruta em um dicionário Python.
+
+  - Extrair campos específicos (ex.: versão do IOS-XE) de forma estruturada.
+
+**📁 Estrutura do Projeto**
+
+Para este exemplo, a estrutura do projeto será a seguinte, onde o testbed.yaml e o arquivo de mock são os novos componentes que definem nosso ambiente simulado.
+
+```Bash
+01_b/
+├── get_cli_output.py                 # Nosso script python
+├── logs                              # Pasta raiz que vai conter os logs de execução do script
+│   └── script_20250728_171218.log    # Arquivo de log com Timestamp
+├── mock_files                        # pasta raiz do diretório dos arquivos mock
+│   └── R01                           # Nome do dispositivo, no nosso caso somente um roteador
+│       └── exec                      # estrutura de diretórios da caixa - modo exec privilegiado
+│           └── show_version.txt      # Arquivo de mock contendo a saída dos comandos  
+├── output                            # Pasta raiz para as saídas dos arquivos de dicionário .json                  
+│   └── parsed_R01_20250728.json      # Arquivo "parseado" em dicionário .json
+└── testbed.yaml                      # Arquivo de configuração do ambiente (manual)
+```
+**get_cli_output.py**
+
+```python
+# Bloco 01 - Importações
+import logging
+import json
+import os
+from datetime import datetime
+from pyats.topology import loader
+
+# Bloco 02 - Configuração de Pastas
+LOG_DIR = "logs"
+OUTPUT_DIR = "output"
+os.makedirs(LOG_DIR, exist_ok=True)    # Cria pasta de logs se não existir
+os.makedirs(OUTPUT_DIR, exist_ok=True) # Cria pasta de outputs se não existir
+
+# Bloco 03 - Configuração de Logging
+log_file = f"{LOG_DIR}/script_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),  # Log para arquivo
+        logging.StreamHandler()        # Log para console
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Bloco 04 - Função Principal
+def main():
+    try:
+        logger.info("="*50)
+        logger.info("Iniciando Fase 2 - Parsing com Genie")
+        logger.info("="*50)
+
+        # Carrega testbed
+        testbed = loader.load("testbed.yaml")
+        device = testbed.devices["R01"]
+        logger.info(f"Dispositivo carregado: {device.name}")
+
+        # Leitura do mock file
+        with open("mock_files/R01/exec/show_version.txt", "r") as f:
+            mock_output = f.read().strip()
+        logger.info("Mock file carregado com sucesso")
+
+        # Parsing com Genie
+        logger.info("Iniciando parsing com Genie...")
+        parsed_data = device.parse("show version", output=mock_output)
+        
+        # Saída estruturada
+        output_file = f"{OUTPUT_DIR}/parsed_{device.name}_{datetime.now().strftime('%Y%m%d')}.json"
+        with open(output_file, 'w') as f:
+            json.dump(parsed_data, f, indent=4)
+        logger.info(f"Saída parseada salva em: {output_file}")
+
+        # Resumo em tela
+        logger.info("\n" + "="*50)
+        logger.info("RESUMO DA EXECUÇÃO")
+        logger.info("="*50)
+        logger.info(f"Dispositivo: {device.name}")
+        logger.info(f"Versão do IOS: {parsed_data['version']['version_short']}")
+        logger.info(f"OS: {parsed_data['version']['os']}")
+        logger.info(f"Arquivo de Log: {log_file}")
+        logger.info(f"Arquivo de Output: {output_file}")
+        logger.info("="*50 + "\n")
+
+    except Exception as e:
+        logger.error(f"Erro durante execução: {str(e)}", exc_info=True)
+
+# Bloco 05 - Execução
+if __name__ == "__main__":
+    main()
+```
+
+**Saída**
+
+```bash
+(pyats) alcancil@linux:~/automacoes/pyats/01_b$ python3 get_cli_output.py 
+2025-07-28 17:12:18,503 - INFO - ==================================================
+2025-07-28 17:12:18,503 - INFO - Iniciando Fase 2 - Parsing com Genie
+2025-07-28 17:12:18,503 - INFO - ==================================================
+2025-07-28 17:12:23,318 - INFO - Dispositivo carregado: R01
+2025-07-28 17:12:23,318 - INFO - Mock file carregado com sucesso
+2025-07-28 17:12:23,318 - INFO - Iniciando parsing com Genie...
+2025-07-28 17:12:24,163 - INFO - Saída parseada salva em: output/parsed_R01_20250728.json
+2025-07-28 17:12:24,163 - INFO - 
+==================================================
+2025-07-28 17:12:24,163 - INFO - RESUMO DA EXECUÇÃO
+2025-07-28 17:12:24,163 - INFO - ==================================================
+2025-07-28 17:12:24,163 - INFO - Dispositivo: R01
+2025-07-28 17:12:24,163 - INFO - Versão do IOS: 17.15
+2025-07-28 17:12:24,164 - INFO - OS: IOS
+2025-07-28 17:12:24,164 - INFO - Arquivo de Log: logs/script_20250728_171218.log
+2025-07-28 17:12:24,164 - INFO - Arquivo de Output: output/parsed_R01_20250728.json
+2025-07-28 17:12:24,164 - INFO - ==================================================
+
+(pyats) alcancil@linux:~/automacoes/pyats/01_b$ 
+```
+
+```Bash
+(pyats) alcancil@linux:~/automacoes/pyats/01_b$ cat logs/script_20250728_171218.log 
+2025-07-28 17:12:18,503 - INFO - ==================================================
+2025-07-28 17:12:18,503 - INFO - Iniciando Fase 2 - Parsing com Genie
+2025-07-28 17:12:18,503 - INFO - ==================================================
+2025-07-28 17:12:23,318 - INFO - Dispositivo carregado: R01
+2025-07-28 17:12:23,318 - INFO - Mock file carregado com sucesso
+2025-07-28 17:12:23,318 - INFO - Iniciando parsing com Genie...
+2025-07-28 17:12:24,163 - INFO - Saída parseada salva em: output/parsed_R01_20250728.json
+2025-07-28 17:12:24,163 - INFO - 
+==================================================
+2025-07-28 17:12:24,163 - INFO - RESUMO DA EXECUÇÃO
+2025-07-28 17:12:24,163 - INFO - ==================================================
+2025-07-28 17:12:24,163 - INFO - Dispositivo: R01
+2025-07-28 17:12:24,163 - INFO - Versão do IOS: 17.15
+2025-07-28 17:12:24,164 - INFO - OS: IOS
+2025-07-28 17:12:24,164 - INFO - Arquivo de Log: logs/script_20250728_171218.log
+2025-07-28 17:12:24,164 - INFO - Arquivo de Output: output/parsed_R01_20250728.json
+2025-07-28 17:12:24,164 - INFO - ==================================================
+```
+
+```bash
+(pyats) alcancil@linux:~/automacoes/pyats/01_b$ cat output/parsed_R01_20250728.json
+```
+
+```json
+{
+    "version": {
+        "version_short": "17.15",
+        "platform": "Linux",
+        "version": "17.15.1",
+        "image_id": "X86_64BI_LINUX-ADVENTERPRISEK9-M",
+        "label": "RELEASE SOFTWARE (fc4)",
+        "os": "IOS",
+        "location": "IOSXE",
+        "image_type": "production image",
+        "copyright_years": "1986-2024",
+        "compiled_date": "Sun 11-Aug-24 22:07",
+        "compiled_by": "mcpre",
+        "rom": "Bootstrap program is Linux",
+        "hostname": "R02",
+        "uptime": "1 minute",
+        "system_image": "unix:/x86_64_crb_linux-adventerprisek9-ms.iol",
+        "last_reload_reason": "Unknown reason",
+        "chassis_sn": "131184643",
+        "number_of_intfs": {
+            "Ethernet": "4"
+        },
+        "processor_board_flash": "256K",
+        "curr_config_register": "0x0"
+    }
+}
+```
+
+**Explicação**
