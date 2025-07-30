@@ -1,0 +1,155 @@
+R01#show ip protocols
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 15:58:15.263 BRA Wed Jul 30 2025
+------------------ show ip protocols  ------------------
+
+*** IP Routing is NSF aware ***
+
+Routing Protocol is "application"
+  Sending updates every 0 seconds
+  Invalid after 0 seconds, hold down 0, flushed after 0
+  Outgoing update filter list for all interfaces is not set
+  Incoming update filter list for all interfaces is not set
+  Maximum path: 32
+  Routing for Networks:
+  Routing Information Sources:
+    Gateway         Distance      Last Update
+  Distance: (default is 4)
+
+Routing Protocol is "ospf 100"
+  Outgoing update filter list for all interfaces is not set
+  Incoming update filter list for all interfaces is not set
+  Router ID 1.1.1.1
+  Number of areas in this router is 1. 1 normal 0 stub 0 nssa
+  Maximum path: 4
+    Gateway         Distance      Last Update
+  Routing for Networks:
+    1.1.1.1 0.0.0.0 area 0
+    192.168.10.1 0.0.0.0 area 0
+  Routing Information Sources:
+    Gateway         Distance      Last Update
+    2.2.2.2              110      01:32:27
+  Distance: (default is 110)
+
+R01#
+
+R01#show ip ospf
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 15:58:52.150 BRA Wed Jul 30 2025
+------------------ show ip ospf  ------------------
+
+ Routing Process "ospf 100" with ID 1.1.1.1
+ Start time: 00:14:38.485, Time elapsed: 01:34:11.872
+ Supports only single TOS(TOS0) routes
+ Supports opaque LSA
+ Supports Link-local Signaling (LLS)
+ Supports area transit capability
+ Supports NSSA (compatible with RFC 3101)
+ Supports Database Exchange Summary List Optimization (RFC 5243)
+ Maximum number of non self-generated LSA allowed 50000
+    Current number of non self-generated LSA 1
+    Threshold for warning message 75%
+    Ignore-time 5 minutes, reset-time 10 minutes
+    Ignore-count allowed 5, current ignore-count 0
+ Event-log enabled, Maximum number of events: 1000, Mode: cyclic
+ Router is not originating router-LSAs with maximum metric
+ Initial SPF schedule delay 50 msecs
+ Minimum hold time between two consecutive SPFs 200 msecs
+ Maximum wait time between two consecutive SPFs 5000 msecs
+ Incremental-SPF disabled
+ Per-prefix-distribution disabled
+ Initial LSA throttle delay 50 msecs
+ Minimum hold time for LSA throttle 200 msecs
+ Maximum wait time for LSA throttle 5000 msecs
+ Minimum LSA arrival 100 msecs
+ LSA group pacing timer 240 secs
+ Interface flood pacing timer 33 msecs
+ Retransmission pacing timer 66 msecs
+ EXCHANGE/LOADING adjacency limit: initial 300, process maximum 300
+ Number of external LSA 0. Checksum Sum 0x000000
+ Number of opaque AS LSA 0. Checksum Sum 0x000000
+ Number of DCbitless external and opaque AS LSA 0
+ Number of DoNotAge external and opaque AS LSA 0
+ Number of areas in this router is 1. 1 normal 0 stub 0 nssa
+ Number of areas transit capable is 0
+ External flood list length 0
+ IETF NSF helper support enabled
+ Cisco NSF helper support enabled
+ Reference bandwidth unit is 100 mbps
+    Area BACKBONE(0)
+        Number of interfaces in this area is 2 (1 loopback)
+        Area has no authentication
+        SPF algorithm last executed 01:31:25.171 ago
+        SPF algorithm executed 4 times
+        Area ranges are
+        Number of LSA 2. Checksum Sum 0x019263
+        Number of opaque link LSA 0. Checksum Sum 0x000000
+        Number of DCbitless LSA 0
+        Number of indication LSA 0
+        Number of DoNotAge LSA 0
+        Flood list length 0
+ Maintenance Mode ID:     137196467660032
+ Maintenance Mode:        disabled
+ Maintenance Mode Timer:  stopped (0)
+  Graceful Reload FSU Global status : None (global: None)
+
+R01
+
+R01#show ip ospf interface brief
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 16:01:38.424 BRA Wed Jul 30 2025
+------------------ show ip ospf interface brief  ------------------
+
+Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
+Lo0          100   0               1.1.1.1/32         1     LOOP  0/0
+Et0/0        100   0               192.168.10.1/24    10    P2P   1/1
+R01#
+
+R01#show ip ospf neighbor
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 16:02:54.312 BRA Wed Jul 30 2025
+------------------ show ip ospf neighbor  ------------------
+
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:35    192.168.10.2    Ethernet0/0
+R01#
+
+R01#show ip ospf database
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 16:03:33.718 BRA Wed Jul 30 2025
+------------------ show ip ospf database  ------------------
+
+
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+                Router Link States (Area 0)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+1.1.1.1         1.1.1.1         1924        0x80000005 0x00FA05 3         
+2.2.2.2         2.2.2.2         1994        0x80000005 0x00985E 3         
+R01#
+
+R01#show ip route ospf
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 0%
+Time source is NTP, 16:03:56.409 BRA Wed Jul 30 2025
+------------------ show ip route ospf  ------------------
+
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is 192.168.0.1 to network 0.0.0.0
+
+      2.0.0.0/32 is subnetted, 1 subnets
+O        2.2.2.2 [110/11] via 192.168.10.2, 01:38:09, Ethernet0/0
+R01#

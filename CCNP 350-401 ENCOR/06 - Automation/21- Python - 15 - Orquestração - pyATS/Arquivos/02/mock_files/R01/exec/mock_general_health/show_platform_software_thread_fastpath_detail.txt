@@ -1,0 +1,40 @@
+Statistics for FastPath thread activities:
+ 1 minimum packet received, 12 maximum packet received
+ -1 minimum message sent, 0 maximum message sent
+ 0 msec minimum clock runtime, 1 msec maximum clock runtime
+ 0 msec minimum cpu runtime, 1 msec maximum cpu runtime
+ 153704 fastpath invocation, 0 select timeout, 0 select intr
+ 0 fastpath sleep, 0 triggered, 0 sleep interruption
+ 145551 IOS signaled
+ 0 console data path invocation
+ 0 stdout data path invocation
+ 0 chasfs process thread event invocation
+ 0 memory allocation failures, 0 read pause, 0 read restore
+ Clock/CPU utilization with 5 seconds 0%/0%, 1 min 0%/0%, 5 min 0%/0%
+ Maximum task time: mutex 523, sleep 0
+
+Histogram for FastPath thread activities:
+ Packet 25 per entry, clock time 25 msec per entry
+ cpu time 3 msec per entry, 5 sec utilization 5% per entry
+
+        In-Packet   Out-Packet   Clock-Time     CPU-Time 5sec-Utilize
+   0       153704       153704       153704       153704          562
+   1            0            0            0            0            0
+   2            0            0            0            0            0
+   3            0            0            0            0            0
+   4            0            0            0            0            0
+   5            0            0            0            0            0
+   6            0            0            0            0            0
+   7            0            0            0            0            0
+   8            0            0            0            0            0
+   9            0            0            0            0            0
+  10            0            0            0            0            0
+  11            0            0            0            0            0
+  12            0            0            0            0            0
+  13            0            0            0            0            0
+  14            0            0            0            0            0
+  15            0            0            0            0            0
+  16            0            0            0            0            0
+  17            0            0            0            0            0
+  18            0            0            0            0            0
+  19            0            0            0            0            0

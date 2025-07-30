@@ -1,0 +1,203 @@
+Syslog logging: enabled (0 messages dropped, 2 messages rate-limited, 0 flushes, 0 overruns, xml disabled, filtering disabled)
+
+No Active Message Discriminator.
+
+
+
+No Inactive Message Discriminator.
+
+
+    Console logging: level debugging, 171 messages logged, xml disabled,
+                     filtering disabled
+    Monitor logging: level debugging, 0 messages logged, xml disabled,
+                     filtering disabled
+    Buffer logging:  level debugging, 171 messages logged, xml disabled,
+                    filtering disabled
+    Exception Logging: size (4096 bytes)
+    Count and timestamp logging messages: disabled
+    Persistent logging: disabled
+    Trap logging: level informational, 110 message lines logged
+        Logging Source-Interface:       VRF Name:
+          
+Log Buffer (214783647 bytes):
+
+*Jul 29 17:52:51.377: Bootstrap Emulator called with code 135
+*Jul 29 17:52:51.382: %CRYPTO-5-SELF_TEST_START: Crypto algorithms release (Rel5a), Entropy release (3.4.1)
+       begin Crypto Module self-tests
+*Jul 29 17:52:51.382: %CRYPTO-0-SELF_TEST_FAILURE: Crypto self-test - (Crypto Module Integrity Test Bypassed)
+*Jul 29 17:52:51.505: %CRYPTO-5-SELF_TEST_END: Crypto Algorithm self-test completed successfully
+       All tests passed.
+*Jul 29 17:52:51.949: TODCLK-STUB: REGISTERED
+*Jul 29 17:52:51.949: ISIS-GRACEFUL-RELOAD: Init State GR_NONE
+*Jul 29 17:52:51.950: PTP-ENGINE: REGISTERED
+*Jul 29 17:52:52.023: %TLSCLIENT-5-TLSCLIENT_IOS: TLS Client is IOS based
+*Jul 29 17:52:52.036: %CRYPTO_ENGINE-5-CSDL_COMPLIANCE_ENFORCED: Cisco PSB security compliance is being enforced
+*Jul 29 17:52:52.140: %PNP-6-PNP_DISCOVERY_STARTED: PnP Discovery started
+*Jul 29 17:52:52.171: %SYS-7-NVRAM_INIT_WAIT_TIME: Waited 0 seconds for NVRAM to be available
+*Jul 29 17:52:52.223: %CRYPTO_ENGINE-5-KEY_ADDITION: A key named TP-self-signed-131184642 has been generated or imported by crypto config
+*Jul 29 17:52:52.303 UTC: %SYS-5-LOG_CONFIG_CHANGE: Buffer logging: level debugging, xml disabled, filtering disabled, size (214783647)
+*Jul 29 17:52:52.304 UTC: %SYS-6-CLOCKUPDATE: System clock has been updated from 17:52:52 UTC Tue Jul 29 2025 to 14:52:52 BRA Tue Jul 29 2025, configured from console by vty0.
+*Jul 29 17:52:52.306 UTC: %PKI-6-TRUSTPOINT_CREATE: Trustpoint: TP-self-signed-131184642 created succesfully
+*Jul 29 17:52:52.308 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to up
+*Jul 29 17:52:52.336 UTC: %OSPF-6-DFT_OPT: Protocol timers for fast convergence are Enabled.
+*Jul 29 17:52:52.350 UTC: NTP Core (INFO): keys initilized.
+*Jul 29 17:52:52.355 UTC: NTP Core (NOTICE): proto: precision =  usec
+*Jul 29 17:52:52.355 UTC: NTP Core (NOTICE): ntpd  PPM
+*Jul 29 17:52:52.355 UTC: NTP Core (NOTICE): trans state : 1 
+*Jul 29 17:52:52.357 UTC: %SYS-5-CONFIG_I: Configured from memory by console
+*Jul 29 17:52:52.370 UTC: %SYS-5-RESTART: System restarted --
+Cisco IOS Software [IOSXE], Linux Software (X86_64BI_LINUX-ADVENTERPRISEK9-M), Version 17.15.1, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2024 by Cisco Systems, Inc.
+Compiled Sun 11-Aug-24 22:07 by mcpre
+*Jul 29 17:52:52.372 UTC: %CRYPTO-5-SELF_TEST_START: Crypto algorithms release (Rel5a), Entropy release (3.4.1)
+       begin Crypto Module self-tests
+*Jul 29 17:52:52.373 UTC: %CRYPTO-5-SELF_TEST_END: Crypto Algorithm self-test completed successfully
+       All tests passed.
+*Jul 29 17:52:52.384 UTC: %SSH-5-ENABLED: SSH 2.0 has been enabled
+*Jul 29 17:52:52.385 UTC: NTP Core (INFO): 127.127.1.1 8014 84 reachable
+*Jul 29 17:52:52.385 UTC: NTP Core (INFO): 127.127.1.1 962A 8A sys_peer
+*Jul 29 17:52:52.385 UTC: NTP Core (NOTICE): trans state : 4 
+*Jul 29 17:52:53.533 UTC: %LINK-5-UPDOWN: Interface Ethernet0/0, changed state to up
+*Jul 29 17:52:53.545 UTC: %LINK-5-UPDOWN: Interface Ethernet0/1, changed state to up
+*Jul 29 17:52:53.557 UTC: %LINK-5-CHANGED: Interface Ethernet0/2, changed state to administratively down
+*Jul 29 17:52:53.581 UTC: %LINK-5-CHANGED: Interface Ethernet0/3, changed state to administratively down
+*Jul 29 17:52:53.582 UTC: %CRYPTO_ENGINE-5-KEY_ADDITION: A key named TP-self-signed-131184642.server has been generated or imported by crypto-engine
+*Jul 29 17:52:54.533 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet0/0, changed state to up
+*Jul 29 17:52:54.545 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet0/1, changed state to up
+*Jul 29 17:52:54.557 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet0/2, changed state to down
+*Jul 29 17:52:54.581 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Ethernet0/3, changed state to down
+*Jul 29 17:52:58.141 UTC: %PNP-6-PNP_GOOD_UDI_UPDATE: Good UDI [PID:Unix,VID:,SN:131184642] identified via (platform-registry)
+*Jul 29 17:52:58.141 UTC: %PNP-6-PNP_CDP_UPDATE: Device UDI [PID:Unix,VID:,SN:131184642] identified for CDP
+*Jul 29 17:52:58.142 UTC: %PNP-6-PNP_DISCOVERY_STOPPED: PnP Discovery stopped (Startup Config Present)
+*Jul 29 17:52:59.435 UTC: %OSPF-5-ADJCHG: Process 100, Nbr 2.2.2.2 on Ethernet0/0 from LOADING to FULL, Loading Done
+*Jul 29 17:53:03.649 UTC: %DHCP-6-ADDRESS_ASSIGN: Interface Ethernet0/1 assigned DHCP address 192.168.0.74, mask 255.255.255.0, hostname R01
+
+*Jul 29 17:53:07.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:53:07.380 UTC: NTP Core (INFO): 200.160.7.186 8014 84 reachable
+*Jul 29 17:53:07.408 UTC: NTP Core (INFO): 200.192.232.8 8014 84 reachable
+*Jul 29 17:53:07.428 UTC: NTP Core (INFO): 200.189.40.8 8014 84 reachable
+*Jul 29 17:53:08.372 UTC: NTP Core (INFO): 200.192.232.8 963A 8A sys_peer
+*Jul 29 17:53:08.389 UTC: NTP Core (INFO): 200.186.125.195 8014 84 reachable
+*Jul 29 17:53:08.389 UTC: NTP Core (INFO): 200.189.40.8 963A 8A sys_peer
+*Jul 29 17:53:09.380 UTC: NTP Core (INFO): 200.160.7.186 963A 8A sys_peer
+*Jul 29 17:53:09.390 UTC: NTP Core (INFO): 200.20.186.76 8014 84 reachable
+*Jul 29 17:53:11.380 UTC: NTP Core (INFO): 200.160.7.197 8014 84 reachable
+*Jul 29 17:53:12.057 UTC: %PKI-6-SUDI_INFO: PKI: platform doesn't support sudi certificate
+*Jul 29 17:53:12.057 UTC: %PKI-6-SUDI_INFO: PKI: no sudi certificate is installed
+*Jul 29 17:53:12.057 UTC: %PKI-2-NON_AUTHORITATIVE_CLOCK: PKI functions can not be initialized until an authoritative time source, like NTP, can be obtained.
+*Jul 29 17:54:14.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:54:17.389 UTC: NTP Core (INFO): 200.186.125.195 962A 8A sys_peer
+*Jul 29 17:54:20.380 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+*Jul 29 17:55:16.372 UTC: NTP Core (INFO): 200.160.7.197 963A 8A sys_peer
+*Jul 29 17:55:18.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:55:19.408 UTC: NTP Core (INFO): 200.192.232.8 961A 8A sys_peer
+*Jul 29 17:55:22.390 UTC: NTP Core (INFO): 200.20.186.76 963A 8A sys_peer
+*Jul 29 17:55:24.390 UTC: NTP Core (INFO): 200.186.125.195 961A 8A sys_peer
+*Jul 29 17:55:27.381 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+*Jul 29 17:55:48.372 UTC: NTP Core (INFO): 200.160.7.197 961A 8A sys_peer
+*Jul 29 17:56:22.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:57:26.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:58:12.372 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+*Jul 29 17:58:31.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:59:35.373 UTC: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+*Jul 29 17:59:35.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 17:59:45.372 UTC: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+*Jul 29 18:00:04.373 UTC: NTP Core (INFO): 200.160.7.197 961A 8A sys_peer
+*Jul 29 18:00:36.373 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+*Jul 29 18:00:42.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:00:54.792 UTC: %SYS-5-CONFIG_I: Configured from console by console
+*Jul 29 18:01:48.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:02:53.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:03:57.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:04:40.381 UTC: NTP Core (INFO): 200.160.7.197 961A 8A sys_peer
+*Jul 29 18:05:02.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:06:08.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:06:41.388 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+*Jul 29 18:07:12.373 UTC: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+*Jul 29 18:07:12.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+*Jul 29 18:07:22.372 UTC: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+*Jul 29 18:07:50.390 UTC: NTP Core (INFO): 200.160.7.197 961A 8A sys_peer
+*Jul 29 18:07:59.381 UTC: NTP Core (NOTICE): ntpd  PPM
+*Jul 29 18:07:59.381 UTC: NTP Core (NOTICE): trans state : 5 
+*Jul 29 18:07:59.381 UTC: NTP Core (NOTICE): Clock is synchronized.
+Jul 29 18:07:59.381 UTC: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 18:07:59.383 UTC: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 18:08:19.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:09:25.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:10:29.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:11:33.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:12:07.408 UTC: NTP Core (NOTICE): Clock synchronization lost.
+.Jul 29 18:12:07.408 UTC: NTP Core (INFO): 200.160.7.186 961A 8A sys_peer
+.Jul 29 18:12:07.408 UTC: NTP Core (NOTICE): Clock is synchronized.
+Jul 29 18:12:07.408 UTC: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 18:12:08.915 UTC: %SYS-6-TTY_EXPIRE_TIMER: (exec timer expired, tty 0 (0.0.0.0)), user 
+Jul 29 18:12:39.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:13:37.435 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to down
+Jul 29 18:13:37.435 UTC: %LINK-5-CHANGED: Interface Loopback0, changed state to administratively down
+Jul 29 18:13:42.577 UTC: %SYS-5-CONFIG_I: Configured from console by console
+Jul 29 18:13:43.370 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to up
+Jul 29 18:13:43.370 UTC: %LINK-5-UPDOWN: Interface Loopback0, changed state to up
+Jul 29 18:13:44.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:14:48.373 UTC: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+Jul 29 18:14:48.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:14:58.372 UTC: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+Jul 29 18:15:55.373 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:17:02.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:18:03.155 UTC: %SYS-6-CLOCKUPDATE: System clock has been updated from 15:18:03 BRA Tue Jul 29 2025 to 16:18:03 BRA Tue Jul 29 2025, configured from console by console.
+Jul 29 18:18:06.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:19:10.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:19:22.444 UTC: NTP Core (INFO): 0.0.0.0 C61C 0C clock_step
+Jul 29 18:19:22.445 UTC: NTP Core (NOTICE): Clock synchronization lost.
+.Jul 29 18:19:24.390 UTC: NTP Core (INFO): 200.20.186.76 8044 84 reachable
+.Jul 29 18:19:24.390 UTC: NTP Core (INFO): 200.20.186.76 965A 8A sys_peer
+.Jul 29 18:19:24.390 UTC: NTP Core (NOTICE): Clock is synchronized.
+Jul 29 18:19:24.390 UTC: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 18:19:26.380 UTC: NTP Core (INFO): 200.160.7.197 8024 84 reachable
+Jul 29 18:19:27.379 UTC: NTP Core (INFO): 200.160.7.186 8024 84 reachable
+Jul 29 18:19:27.388 UTC: NTP Core (INFO): 200.186.125.195 8024 84 reachable
+Jul 29 18:19:27.406 UTC: NTP Core (INFO): 200.192.232.8 8024 84 reachable
+Jul 29 18:19:28.371 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 18:19:28.436 UTC: NTP Core (INFO): 200.189.40.8 8044 84 reachable
+Jul 29 18:19:46.316 UTC: %SYS-6-CLOCKUPDATE: System clock has been updated from 16:19:46 BRA Tue Jul 29 2025 to 17:19:46 BRA Tue Jul 29 2025, configured from console by console.
+Jul 29 18:19:56.794 UTC: %SYS-6-CLOCKUPDATE: System clock has been updated from 17:19:56 BRA Tue Jul 29 2025 to 15:19:56 BRA Tue Jul 29 2025, configured from console by console.
+Jul 29 18:20:29.444 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to down
+Jul 29 18:20:29.444 UTC: %LINK-5-CHANGED: Interface Loopback0, changed state to administratively down
+Jul 29 18:20:31.660 UTC: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to up
+Jul 29 18:20:31.660 UTC: %LINK-5-UPDOWN: Interface Loopback0, changed state to up
+Jul 29 18:20:35.372 UTC: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:21:41.372 BRA: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+Jul 29 2025 15:21:44.371 BRA: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+Jul 29 2025 15:21:44.371 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:22:01.528 BRA: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to down
+Jul 29 2025 15:22:01.528 BRA: %LINK-5-CHANGED: Interface Loopback0, changed state to administratively down
+Jul 29 2025 15:22:03.542 BRA: %LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback0, changed state to up
+Jul 29 2025 15:22:03.542 BRA: %LINK-5-UPDOWN: Interface Loopback0, changed state to up
+Jul 29 2025 15:22:09.103 BRA: %SYS-5-CONFIG_I: Configured from console by console
+Jul 29 2025 15:22:52.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:23:53.430 BRA: NTP Core (NOTICE): Clock synchronization lost.
+.Jul 29 2025 15:23:53.430 BRA: NTP Core (INFO): 200.160.7.186 963A 8A sys_peer
+.Jul 29 2025 15:23:53.430 BRA: NTP Core (NOTICE): Clock is synchronized.
+Jul 29 2025 15:23:53.430 BRA: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 2025 15:23:59.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:25:08.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:26:16.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:27:23.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:28:01.380 BRA: NTP Core (NOTICE): Clock synchronization lost.
+.Jul 29 2025 15:28:01.380 BRA: NTP Core (INFO): 200.160.7.197 963A 8A sys_peer
+.Jul 29 2025 15:28:01.380 BRA: NTP Core (NOTICE): Clock is synchronized.
+Jul 29 2025 15:28:01.380 BRA: %PKI-6-AUTHORITATIVE_CLOCK: The system clock has been set.
+Jul 29 2025 15:28:31.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:29:30.372 BRA: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+Jul 29 2025 15:29:38.372 BRA: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+Jul 29 2025 15:29:38.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:30:45.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:31:51.371 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:32:56.371 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:34:03.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:35:08.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:36:12.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:37:18.372 BRA: NTP Core (INFO): 201.49.148.135 8015 85 restart timeout
+Jul 29 2025 15:37:19.372 BRA: NTP Core (INFO): 2001:12FF::8 8015 85 restart timeout
+Jul 29 2025 15:37:19.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.
+Jul 29 2025 15:38:23.372 BRA: %NTP-4-V6DISABLED: IPv6 is not running on interface Ethernet0/1. Cannot send NTP message.

@@ -1,0 +1,7 @@
+            OSPF Router with ID (1.1.1.1) (Process ID 100)
+
+                Router Link States (Area 0)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+1.1.1.1         1.1.1.1         531         0x8000000F 0x007484 3         
+2.2.2.2         2.2.2.2         691         0x8000000C 0x008A65 3

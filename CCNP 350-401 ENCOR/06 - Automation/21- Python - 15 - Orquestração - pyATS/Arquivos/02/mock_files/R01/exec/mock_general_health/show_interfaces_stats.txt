@@ -1,0 +1,19 @@
+Ethernet0/0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor        330      50598        598      69346
+             Route cache          0          0          0          0
+                   Total        330      50598        598      69346
+Ethernet0/1
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor     194678   13496727        690      70768
+             Route cache          4        308          0          0
+                   Total     194682   13497035        690      70768
+Interface Ethernet0/2 is disabled
+
+Interface Ethernet0/3 is disabled
+
+Loopback0
+          Switching path    Pkts In   Chars In   Pkts Out  Chars Out
+               Processor          0          0          0          0
+             Route cache          0          0          0          0
+                   Total          0          0          0          0

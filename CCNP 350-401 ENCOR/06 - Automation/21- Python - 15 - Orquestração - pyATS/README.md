@@ -23,6 +23,10 @@
     - [📈 Integração com Ferramentas de Monitoramento e Observabilidade](#-integração-com-ferramentas-de-monitoramento-e-observabilidade)
   - [Exemplos Práticos](#exemplos-práticos)
     - [Exemplo 01: Obtendo Saída de Comando com pyATS](#exemplo-01-obtendo-saída-de-comando-com-pyats)
+    - [Exemplo 02: Obtendo Saída de Comando com pyATS e Parsing Genie com Templates](#exemplo-02-obtendo-saída-de-comando-com-pyats-e-parsing-genie-com-templates)
+      - [Breve Explicação: O pyATS e a Interação com Dispositivos](#breve-explicação-o-pyats-e-a-interação-com-dispositivos)
+- [Resumo dos Dados Parseados para o template 'GENERAL':](#resumo-dos-dados-parseados-para-o-template-general)
+- [Resumo dos Dados Parseados para o template 'OSPF':](#resumo-dos-dados-parseados-para-o-template-ospf)
 
 ### 📚 Documentação Oficial pyATS
 
@@ -796,3 +800,409 @@ O método `device.parse()` do Genie converte a saída CLI em um dicionário Pyth
 1. **Identificação do Parser**: Usa o campo `os: iosxe` do `testbed.yaml` para selecionar o parser correto.
 2. **Estrutura Hierárquica**: Organiza os dados em chaves lógicas (ex.: `version`, `interfaces`).
 3. **Tipagem Automática**: Converte strings para tipos nativos (booleanos, inteiros) quando possível.
+
+### Exemplo 02: Obtendo Saída de Comando com pyATS e Parsing Genie com Templates
+
+Este exemplo aprofunda o uso de pyATS e Genie para coletar e parsear saídas de comandos de dispositivos de rede, introduzindo o conceito de "templates" de comandos e detalhando como o Unicon interage com esses dados.
+
+#### Breve Explicação: O pyATS e a Interação com Dispositivos
+
+O **pyATS** é um framework robusto da Cisco para automação de testes e operações de rede. Dentro do ecossistema pyATS, duas bibliotecas são fundamentais para a interação com dispositivos e o processamento de dados:
+
+- **Unicon**: É a biblioteca de conectividade do pyATS. Sua principal função é estabelecer e gerenciar conexões com dispositivos de rede (via SSH, Telnet, Console, etc.). Ele atua como a "interface" entre o seu script Python e o equipamento, lidando com os detalhes de baixo nível da comunicação.
+
+- **Em acesso real**: O Unicon envia comandos para o dispositivo e dinamicamente coleta as saídas em um buffer temporário, identificando o prompt do dispositivo como o delimitador para saber quando a saída de um comando termina e a sessão está pronta para o próximo.
+
+- **Em modo mock**: Para simulações, o Unicon é configurado para ler comandos e suas saídas de um arquivo pré-gravado (o "mock file"). Ele ainda usa a lógica de identificação do prompt (ex: R1#, Switch#) dentro desse arquivo mock para distinguir onde um comando começa e onde sua respectiva saída termina. Tudo que está entre o comando enviado (R1#show version) e o próximo prompt (R1#) é considerado a saída daquele comando.
+
+- **Genie**: É a biblioteca de parsing e abstração de dados do pyATS. Uma vez que o Unicon coleta a saída bruta de um comando (seja de um dispositivo real ou de um mock file), o Genie entra em ação. Ele possui uma vasta coleção de parsers pré-construídos para comandos show de diversos sistemas operacionais de rede (IOS, IOS-XE, NX-OS, ASA, etc.). Sua função é transformar o texto bruto em um dicionário Python estruturado, facilitando a manipulação e análise dos dados.
+
+A combinação de Unicon e Genie permite que você escreva scripts que funcionam de forma idêntica, seja se conectando a um dispositivo real ou a um mock, bastando alterar a configuração no seu testbed.yaml e injetar o mock file (quando aplicável).
+
+1. **Objetivos**
+
+- Demonstrar a criação de múltiplos "templates" de comandos para diferentes cenários de troubleshooting.
+
+- Entender como o Unicon utiliza o prompt do dispositivo como delimitador nos mock files.
+
+- Coletar saídas de comandos de forma modular e parseá-las usando Genie.
+
+- Apresentar os dados parseados de forma clara e organizada.
+
+2. **Estrutura do Projeto**
+
+Vamos manter uma estrutura de diretórios organizada para separar os arquivos de configuração, scripts e arquivos de mock.
+
+```Bash
+automacoes/
+├── pyats/
+│   └──02/                                                                     
+│       ├── testbed.yaml                                                        # Define os detalhes do dispositivo, incluindo como o Unicon deve se conectar a ele.
+│       ├── parse_device_templates.py                                           # Script python para acesso ao equipamento e realizar o parser
+│       ├── logs                                                                # Pasta raiz que vai conter os logs de execução do script
+│       │    └── script_20250728_171218.log                                     # Arquivo de log com Timestamp
+│       ├── mock_files                                                          # pasta raiz do diretório dos arquivos mock
+│       │   └── R01                                                             # Nome do host (Hostname)
+│       │     └── exec                                                          # modo privilegiado (modo exec)
+│       │         ├── mock_general_health                                       # Diretório para saídas brutas separadas
+│       │         │   ├── show_interfaces_stats.txt                             # Saída bruta do comando show interfaces para análise
+│       │         │   ├── show_ip_interface_brief.txt                           # Saída bruta do comando show ip interface brief para análise
+│       │         │   ├── show_ip_protocols.txt                                 # Saída bruta do comando show ip protocols para anaálise
+│       │         │   ├── show_logging.txt                                      # Saída bruta do comando show logging para análise (logs armazenados no host)
+│       │         │   ├── show_platform_software_thread_fastpath_detail.txt     # Saída bruta do comando show plataform software thread fastpath detail para análise
+│       │         │   ├── show_processes_cpu_sorted.txt                         # Saída bruta do comando show processes cpu sortedpara análise
+│       │         │   ├── show_processes_memory_sorted.txt                      # Saída bruta do comando show processes memory sorted para análise
+│       │         │   └── show_version.txt                                      # Saída bruta do comando show version para análise 
+│       │         ├── mock_ospf_troubleshoot                                    # Diretório para saídas brutas OSPF separadas
+│       │         │   ├── show_ip_ospf_database.txt                             # Saída bruta do comando show ip ospf para análise
+│       │         │   ├── show_ip_ospf_interface_brief.txt                      # Saída bruta do comando show ip ospf interface brief para análise
+│       │         │   ├── show_ip_ospf_neighbor.txt                             # Saída bruta do comando show ip ospf neighbor para análise
+│       │         │   ├── show_ip_ospf.txt                                      # Saída bruta do comand show ip ospf para análise
+│       │         │   └── show_ip_route_ospf.txt                                # Saída bruta do comando show ip route ospf
+│       │         ├── R01_full_troubleshoot.txt                                 # <-- **Mock File Unificado 1**
+│       │         └── R01_ospf_troubleshoot.txt                                 # <-- **Mock File Unificado 2**
+│       ├── output                                                              # Pasta raiz para as saídas dos arquivos de dicionário .json                  
+│       └── parsed_R01_20250728.json                                            # Arquivo "parseado" em dicionário .json
+```
+
+**Explicação da Estrutura:**
+
+- **testbed.yaml**: Define os detalhes do dispositivo, incluindo como o Unicon deve se conectar a ele (neste caso, em modo mock).
+
+- **parse_device_templates.py**: É o script Python principal que irá carregar o testbed, se conectar (mock) e executar/parsear os comandos.
+
+- **Arquivos/**: Contém os dados dos mock files.
+
+- **mock_general_health e mock_ospf_troubleshoot**: Estes diretórios contêm as saídas individuais e brutas de cada comando, como você fez inicialmente. Eles servem para organizar as fontes de dados antes de serem combinadas.
+
+- **R01_full_troubleshoot.txt** e **R1_ospf_troubleshoot.txt**: Estes são os arquivos de mock unificados. Eles contêm as saídas de múltiplos comandos, formatadas com os prompts (R1#) para que o Unicon possa simular uma sessão completa para um tema específico (saúde geral ou OSPF).
+
+3. **Conteúdo dos Mock Files**
+
+Agora vou deixar o link dos arquivos para análise. Vou mostrar como os arquivos são obtidos de forma separada e depois de forma unificada. Fiz isso para dar o entendimento de como o módulo **unicon** faz para identificar os comandos. Ele identifica os prompts (ex: R01#) e ai ele identifica o comando e quendo chega no próximo prompt (R01#) ele identifica como início do próximo comando.
+
+[show_interfaces_stats.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_interfaces_stats.txt)
+[show_ip_interface_brief.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_ip_interface_brief.txt)
+[show_ip_protocols.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_ip_protocols.txt)
+[show_logging.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_logging.txt)
+[show_platform_software_thread_fastpath_detail.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_platform_software_thread_fastpath_detail.txt)
+[show_processes_cpu_sorted.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_processes_cpu_sorted.txt)
+[show_processes_memory_sorted.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_processes_memory_sorted.txt)
+[show_version.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_version.txt)
+[R01_full_troubleshoot.txt](/Arquivos/02/mock_files/R01/exec/R01_full_troubleshoot.txt)  
+
+[show_ip_ospf.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf.txt)
+[show_ip_ospf_database.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_database.txt)
+[show_ip_ospf_interface_brief.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_interface_brief.txt)
+[show_ip_ospf_neighbor.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_neighbor.txt)
+[show_ip_route_ospf.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_route_ospf.txt)
+[R01_ospf_troubleshoot.txt.txt](/Arquivos/02/mock_files/R01/exec/R01_ospf_troubleshoot.txt.txt)
+
+**Conteúdo do testbed.yaml**
+
+Este testbed.yaml será configurado para usar o Unicon MockConnection, que permite que o script leia os dados do arquivo de mock que especificaremos no script Python.
+
+```YAML
+# testbed.yaml
+# Configuração do Testbed para PyATS com conexão mock (simulada)
+
+devices:
+  R1:
+    os: iosxe
+    type: router
+    connections:
+      cli:
+        protocol: ssh
+        # Para mock, o IP real não é usado, mas é um bom placeholder para clareza
+        ip: 192.168.10.100
+        # O connection_provider especifica que usaremos o modo de simulação
+        connection_provider: unicon.mock.connection.MockConnection
+    # As credenciais são opcionais para mocking, mas boa prática manter
+    credentials:
+      default:
+        username: cisco
+        password: cisco
+```
+
+**Script Python (parse_device_templates.py)**
+
+Este script permitirá que você selecione qual template de mock file (geral ou OSPF) usar.
+
+```Python
+# parse_device_templates.py
+import logging
+import os
+import argparse  # Importar para lidar com argumentos de linha de comando
+from pyats.topology import loader
+
+# Bloco 1: Configurar logging
+# Configura o nível de log para INFO, mostrando mensagens informativas.
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+log = logging.getLogger(__name__)
+
+def run_template_parsing(template_name):
+    """
+    Função principal para carregar o testbed, conectar (mock) e parsear dados
+    com base no template selecionado.
+    """
+    testbed_file = os.path.join(os.path.dirname(__file__), "testbed.yaml")
+    # Define o caminho para o diretório Arquivos
+    arquivos_dir = os.path.join(os.path.dirname(__file__), "Arquivos")
+
+    if template_name == "general":
+        mock_file_name = "R1_general_health.txt"
+        commands_to_execute = {
+            "show ip protocols": "protocols",
+            "show ip interface brief": "ip_interface_brief",
+            "show interfaces stats": "interfaces_stats",
+            "show logging": "logging",
+            "show platform software thread fastpath detail": "platform_thread_detail",
+        }
+        log.info(f"*** Executando template: {template_name.upper()} (Saúde Geral) ***")
+    elif template_name == "ospf":
+        mock_file_name = "R1_ospf_troubleshoot.txt"
+        commands_to_execute = {
+            "show ip protocols": "protocols", # Pode ser comum a ambos os templates
+            "show ip ospf": "ospf_general",
+            "show ip ospf interface brief": "ospf_interface_brief",
+            "show ip ospf neighbor": "ospf_neighbor",
+            "show ip ospf database": "ospf_database",
+            "show ip route ospf": "ospf_routes",
+        }
+        log.info(f"*** Executando template: {template_name.upper()} (Troubleshooting OSPF) ***")
+    else:
+        log.error(f"Template '{template_name}' não reconhecido. Use 'general' ou 'ospf'.")
+        return
+
+    full_mock_file_path = os.path.join(arquivos_dir, mock_file_name)
+
+    # Bloco 2: Carregar testbed
+    log.info(f"Carregando testbed de: {testbed_file}")
+    try:
+        testbed = loader.load(testbed_file)
+        log.info(f"Testbed '{testbed_file}' carregado com sucesso. Dispositivos: {list(testbed.devices.keys())}")
+    except Exception as e:
+        log.error(f"Erro ao carregar o testbed: {e}", exc_info=True)
+        return
+
+    # Bloco 3: Definir dispositivo e injetar mock data
+    device = testbed.devices['R1'] # O nome do dispositivo no testbed.yaml
+    log.info(f"Dispositivo selecionado: {device.name}")
+
+    # Injeta o conteúdo do mock file no connection_provider do Unicon
+    try:
+        with open(full_mock_file_path, 'r') as f:
+            device.connections.cli.connection_provider.execute_payload = f.read()
+        log.info(f"Mock file '{mock_file_name}' injetado com sucesso.")
+    except FileNotFoundError:
+        log.error(f"Mock file não encontrado: {full_mock_file_path}", exc_info=True)
+        return
+    except Exception as e:
+        log.error(f"Erro ao injetar mock file: {e}", exc_info=True)
+        return
+
+    # Bloco 4: Conectar (modo mock)
+    log.info(f"Conectando ao dispositivo (modo mock): {device.name}")
+    try:
+        device.connect()
+        log.info(f"Conexão mock estabelecida com sucesso com {device.name}.")
+    except Exception as e:
+        log.error(f"Falha na conexão mock: {e}", exc_info=True)
+        return
+
+    # Bloco 5: Executar comandos e parsear
+    log.info("--- Coletando e parseando dados ---")
+    parsed_data = {}
+
+    for command, key in commands_to_execute.items():
+        try:
+            log.info(f"Executando e parseando comando: '{command}'")
+            output_raw = device.execute(command)
+            # Para depuração, você pode imprimir a saída bruta:
+            # log.debug(f"Saída bruta de '{command}':\n{output_raw}")
+            parsed_output = device.parse(command, output=output_raw)
+            parsed_data[key] = parsed_output
+            log.info(f"Comando '{command}' parseado com sucesso. Chaves principais: {list(parsed_output.keys())[:5]}...") # Limita para não poluir o log
+        except Exception as e:
+            log.warning(f"Falha ao executar ou parsear '{command}': {e}", exc_info=True)
+            parsed_data[key] = {"error": str(e), "raw_output": output_raw}
+
+    log.info("--- Coleta e Parsing Concluídos ---")
+
+    # Bloco 6: Desconectar (boa prática, mesmo em mock)
+    try:
+        device.disconnect()
+        log.info(f"Dispositivo '{device.name}' desconectado (mock).")
+    except Exception as e:
+        log.error(f"Erro ao desconectar (mock): {e}", exc_info=True)
+
+
+    # Bloco 7: Exibir Resumo dos Dados Parseados (exemplo)
+    log.info("\n" + "="*50)
+    log.info(f"Resumo dos Dados Parseados para o template '{template_name.upper()}':")
+    log.info("="*50)
+
+    if 'protocols' in parsed_data:
+        proto_data = parsed_data['protocols']
+        log.info(f"  - Router ID OSPF: {proto_data.get('router_id', 'N/A')}")
+        log.info(f"  - OSPF Areas: {proto_data.get('areas', 'N/A')}")
+
+    if 'ip_interface_brief' in parsed_data:
+        interface_count = len(parsed_data['ip_interface_brief'].get('interface', {}))
+        log.info(f"  - Total de Interfaces: {interface_count}")
+        # Exemplo: ver status de uma interface específica
+        eth0_0_status = parsed_data['ip_interface_brief'].get('interface', {}).get('Ethernet0/0', {}).get('status', 'N/A')
+        log.info(f"  - Status da Ethernet0/0: {eth0_0_status}")
+
+    if 'ospf_neighbor' in parsed_data and template_name == "ospf":
+        neighbors = parsed_data['ospf_neighbor'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('neighbors', {})
+        neighbor_count = len(neighbors)
+        log.info(f"  - Vizinhos OSPF Encontrados: {neighbor_count}")
+        for n_id, n_data in neighbors.items():
+            log.info(f"    - Vizinho {n_id}: Estado={n_data.get('state', 'N/A')}, Interface={n_data.get('interface', 'N/A')}")
+
+    if 'ospf_routes' in parsed_data and template_name == "ospf":
+        ospf_routes_info = parsed_data['ospf_routes'].get('vrf', {}).get('default', {}).get('address_family', {}).get('ipv4', {}).get('routes', {})
+        num_ospf_routes = len(ospf_routes_info)
+        log.info(f"  - Número de Rotas OSPF na Tabela de Roteamento: {num_ospf_routes}")
+
+
+    log.info("="*50)
+    log.info("Parsing e Resumo Concluídos.")
+
+
+# Bloco 8: Executar a função principal
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Executa parsing de comandos de dispositivo usando templates de mock files.")
+    parser.add_argument("template", choices=["general", "ospf"], help="Selecione o template a ser executado: 'general' ou 'ospf'.")
+    args = parser.parse_args()
+
+    run_template_parsing(args.template)
+```
+
+---
+Arrumar
+
+6. Como Executar o Script
+
+    Crie a Estrutura de Pastas:
+    Bash
+
+mkdir -p automacoes/pyats/02/Arquivos/mock_general_health
+mkdir -p automacoes/pyats/02/Arquivos/mock_ospf_troubleshoot
+
+Crie os Arquivos de Mock:
+
+    Crie automacoes/pyats/02/Arquivos/R1_general_health.txt e cole o conteúdo da Seção 3a.
+
+    Crie automacoes/pyats/02/Arquivos/R1_ospf_troubleshoot.txt e cole o conteúdo da Seção 3b.
+
+Crie o testbed.yaml:
+
+    Crie automacoes/pyats/02/testbed.yaml e cole o conteúdo da Seção 4.
+
+Crie o Script Python:
+
+    Crie automacoes/pyats/02/parse_device_templates.py e cole o conteúdo da Seção 5.
+
+Navegue até o diretório 02 no terminal:
+Bash
+
+cd automacoes/pyats/02
+
+Execute para o template "general":
+Bash
+
+python parse_device_templates.py general
+
+Execute para o template "ospf":
+Bash
+
+    python parse_device_templates.py ospf
+
+7. Saída Esperada (Exemplos)
+
+a) Saída para python parse_device_templates.py general:
+
+2025-07-30 16:38:25,000 - INFO - *** Executando template: GENERAL (Saúde Geral) ***
+2025-07-30 16:38:25,001 - INFO - Carregando testbed de: /home/user/automacoes/pyats/02/testbed.yaml
+2025-07-30 16:38:25,005 - INFO - Testbed 'testbed.yaml' carregado com sucesso. Dispositivos: ['R1']
+2025-07-30 16:38:25,005 - INFO - Dispositivo selecionado: R1
+2025-07-30 16:38:25,006 - INFO - Mock file 'R1_general_health.txt' injetado com sucesso.
+2025-07-30 16:38:25,006 - INFO - Conectando ao dispositivo (modo mock): R1
+2025-07-30 16:38:25,010 - INFO - Conexão mock estabelecida com sucesso com R1.
+2025-07-30 16:38:25,010 - INFO - --- Coletando e parseando dados ---
+2025-07-30 16:38:25,011 - INFO - Executando e parseando comando: 'show ip protocols'
+2025-07-30 16:38:25,020 - INFO - Comando 'show ip protocols' parseado com sucesso. Chaves principais: ['router_id', 'areas', 'maximum_paths', 'routing_information_sources', 'distance']...
+2025-07-30 16:38:25,021 - INFO - Executando e parseando comando: 'show ip interface brief'
+2025-07-30 16:38:25,025 - INFO - Comando 'show ip interface brief' parseado com sucesso. Chaves principais: ['interface']...
+2025-07-30 16:38:25,026 - INFO - Executando e parseando comando: 'show interfaces stats'
+2025-07-30 16:38:25,030 - INFO - Comando 'show interfaces stats' parseado com sucesso. Chaves principais: ['Ethernet0/0', 'Ethernet0/1', 'Ethernet0/2', 'Ethernet0/3', 'Loopback0']...
+2025-07-30 16:38:25,031 - INFO - Executando e parseando comando: 'show logging'
+2025-07-30 16:38:25,035 - INFO - Comando 'show logging' parseado com sucesso. Chaves principais: ['buffer_logging', 'console_logging', 'exception_logging', 'monitor_logging', 'persistent_logging']...
+2025-07-30 16:38:25,035 - INFO - Executando e parseando comando: 'show platform software thread fastpath detail'
+2025-07-30 16:38:25,040 - INFO - Comando 'show platform software thread fastpath detail' parseado com sucesso. Chaves principais: ['clock_cpu_utilization', 'fastpath_invocation', 'fastpath_sleep', 'histogram_for_fastpath_thread_activities']...
+2025-07-30 16:38:25,040 - INFO - --- Coleta e Parsing Concluídos ---
+2025-07-30 16:38:25,041 - INFO - Dispositivo 'R1' desconectado (mock).
+
+==================================================
+Resumo dos Dados Parseados para o template 'GENERAL':
+==================================================
+  - Router ID OSPF: 1.1.1.1
+  - OSPF Areas: ['0']
+  - Total de Interfaces: 5
+  - Status da Ethernet0/0: up
+==================================================
+Parsing e Resumo Concluídos.
+
+b) Saída para python parse_device_templates.py ospf:
+
+2025-07-30 16:38:25,000 - INFO - *** Executando template: OSPF (Troubleshooting OSPF) ***
+2025-07-30 16:38:25,001 - INFO - Carregando testbed de: /home/user/automacoes/pyats/02/testbed.yaml
+2025-07-30 16:38:25,005 - INFO - Testbed 'testbed.yaml' carregado com sucesso. Dispositivos: ['R1']
+2025-07-30 16:38:25,005 - INFO - Dispositivo selecionado: R1
+2025-07-30 16:38:25,006 - INFO - Mock file 'R1_ospf_troubleshoot.txt' injetado com sucesso.
+2025-07-30 16:38:25,006 - INFO - Conectando ao dispositivo (modo mock): R1
+2025-07-30 16:38:25,010 - INFO - Conexão mock estabelecida com sucesso com R1.
+2025-07-30 16:38:25,010 - INFO - --- Coletando e parseando dados ---
+2025-07-30 16:38:25,011 - INFO - Executando e parseando comando: 'show ip protocols'
+2025-07-30 16:38:25,020 - INFO - Comando 'show ip protocols' parseado com sucesso. Chaves principais: ['router_id', 'areas', 'maximum_paths', 'routing_information_sources', 'distance']...
+2025-07-30 16:38:25,021 - INFO - Executando e parseando comando: 'show ip ospf'
+2025-07-30 16:38:25,025 - INFO - Comando 'show ip ospf' parseado com sucesso. Chaves principais: ['router_id', 'start_time', 'time_elapsed', 'supports_single_tos_routes', 'supports_opaque_lsa']...
+2025-07-30 16:38:25,026 - INFO - Executando e parseando comando: 'show ip ospf interface brief'
+2025-07-30 16:38:25,030 - INFO - Comando 'show ip ospf interface brief' parseado com sucesso. Chaves principais: ['interface']...
+2025-07-30 16:38:25,031 - INFO - Executando e parseando comando: 'show ip ospf neighbor'
+2025-07-30 16:38:25,035 - INFO - Comando 'show ip ospf neighbor' parseado com sucesso. Chaves principais: ['vrf']...
+2025-07-30 16:38:25,036 - INFO - Executando e parseando comando: 'show ip ospf database'
+2025-07-30 16:38:25,040 - INFO - Comando 'show ip ospf database' parseado com sucesso. Chaves principais: ['vrf']...
+2025-07-30 16:38:25,041 - INFO - Executando e parseando comando: 'show ip route ospf'
+2025-07-30 16:38:25,045 - INFO - Comando 'show ip route ospf' parseado com sucesso. Chaves principais: ['routes', 'vrf']...
+2025-07-30 16:38:25,045 - INFO - --- Coleta e Parsing Concluídos ---
+2025-07-30 16:38:25,046 - INFO - Dispositivo 'R1' desconectado (mock).
+
+==================================================
+Resumo dos Dados Parseados para o template 'OSPF':
+==================================================
+  - Router ID OSPF: 1.1.1.1
+  - OSPF Areas: ['0']
+  - Total de Interfaces: 5
+  - Status da Ethernet0/0: up
+  - Vizinhos OSPF Encontrados: 1
+    - Vizinho 2.2.2.2: Estado=FULL/  -, Interface=Ethernet0/0
+  - Número de Rotas OSPF na Tabela de Roteamento: 1
+==================================================
+Parsing e Resumo Concluídos.
+
+8. Explicação do Exemplo
+
+Este exemplo aprimora o anterior ao introduzir:
+
+    Modularidade com Templates: Em vez de ter um único conjunto fixo de comandos, o script agora define diferentes listas de comandos (commands_to_execute) com base no template_name. Isso simula cenários de troubleshooting focados.
+
+    Seleção de Mock File Dinâmica: O script seleciona qual arquivo de mock (R1_general_health.txt ou R1_ospf_troubleshoot.txt) será injetado no Unicon com base no template escolhido.
+
+    Argumentos de Linha de Comando: O uso do módulo argparse permite que você passe o nome do template (e.g., general ou ospf) como um argumento ao executar o script. Isso torna o script mais flexível e reutilizável.
+
+    Reafirmação do Conceito de Mocking: O script demonstra claramente como o device.connections.cli.connection_provider.execute_payload é usado para "alimentar" o Unicon com a sessão simulada do mock file.
+
+Este é um passo importante para a construção de automações mais complexas e organizadas, permitindo que você adapte seus scripts para diferentes necessidades de diagnóstico sem modificar o código central da lógica de conexão e parsing.
