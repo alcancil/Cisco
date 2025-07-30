@@ -881,6 +881,8 @@ automacoes/
 
 Agora vou deixar o link dos arquivos para análise. Vou mostrar como os arquivos são obtidos de forma separada e depois de forma unificada. Fiz isso para dar o entendimento de como o módulo **unicon** faz para identificar os comandos. Ele identifica os prompts (ex: R01#) e ai ele identifica o comando e quendo chega no próximo prompt (R01#) ele identifica como início do próximo comando.
 
+**Parsers de saúde da caixa**  
+
 [show_interfaces_stats.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_interfaces_stats.txt)  
 [show_ip_interface_brief.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_ip_interface_brief.txt)  
 [show_ip_protocols.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_ip_protocols.txt)  
@@ -891,7 +893,7 @@ Agora vou deixar o link dos arquivos para análise. Vou mostrar como os arquivos
 [show_version.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_version.txt)  
 [R01_full_troubleshoot.txt](/Arquivos/02/mock_files/R01/exec/R01_full_troubleshoot.txt)    
 
-<br></br>
+**Parsers de saúde do protocolo OSPF**
 
 [show_ip_ospf.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf.txt)  
 [show_ip_ospf_database.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_database.txt)  
