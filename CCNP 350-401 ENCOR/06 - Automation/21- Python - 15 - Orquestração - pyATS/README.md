@@ -891,16 +891,16 @@ Agora vou deixar o link dos arquivos para análise. Vou mostrar como os arquivos
 [show_processes_cpu_sorted.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_processes_cpu_sorted.txt)  
 [show_processes_memory_sorted.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_processes_memory_sorted.txt)  
 [show_version.txt](/Arquivos/02/mock_files/R01/exec/mock_general_health/show_version.txt)  
-[R01_full_troubleshoot.txt](/Arquivos/02/mock_files/R01/exec/R01_full_troubleshoot.txt)    
+[R01_full_troubleshoot.txt](Arquivos/02/mock_files/R01/exec/R01_full_troubleshoot.txt)    
 
 **Parsers de saúde do protocolo OSPF**
 
-[show_ip_ospf.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf.txt)  
+[show_ip_ospf.txt](Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf.txt)  
 [show_ip_ospf_database.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_database.txt)  
 [show_ip_ospf_interface_brief.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_interface_brief.txt)  
 [show_ip_ospf_neighbor.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_ospf_neighbor.txt)  
 [show_ip_route_ospf.txt](/Arquivos/02/mock_files/R01/exec/mock_ospf_troubleshoot/show_ip_route_ospf.txt)  
-[R01_ospf_troubleshoot.txt.txt](/Arquivos/02/mock_files/R01/exec/R01_ospf_troubleshoot.txt.txt)  
+[R01_ospf_troubleshoot.txt.txt](Arquivos/02/mock_files/R01/exec/R01_ospf_troubleshoot.txt.txt)  
 
 **Conteúdo do testbed.yaml**
 
