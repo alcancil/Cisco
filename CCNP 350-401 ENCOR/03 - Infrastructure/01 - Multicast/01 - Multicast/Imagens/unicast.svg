@@ -1,0 +1,44 @@
+<svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+    <!-- Rótulo do tipo de tráfego, ajustado para ficar um pouco mais abaixo -->
+    <text x="50%" y="320" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" text-anchor="middle">
+        UNICAST - De um para um
+    </text>
+
+    <!-- Definição do caminho do pacote de dados -->
+    <path id="path-to-dest" d="M 50 150 C 150 100, 250 100, 350 150" fill="none" stroke="none" />
+
+    <!-- Nós da rede -->
+    <!-- Nó de origem -->
+    <circle cx="50" cy="150" r="25" fill="#3f51b5" />
+    <!-- Nó de destino -->
+    <circle cx="350" cy="150" r="25" fill="#3f51b5" />
+    <!-- Nó de destino ativo (verde) que aparece na chegada do pacote -->
+    <circle id="node-dest-active" cx="350" cy="150" r="25" fill="#4caf50" />
+    <!-- Outros nós (não-destinos) -->
+    <circle cx="200" cy="50" r="25" fill="#3f51b5" />
+    <circle cx="300" cy="75" r="25" fill="#3f51b5" />
+    <circle cx="200" cy="250" r="25" fill="#3f51b5" />
+    <circle cx="300" cy="225" r="25" fill="#3f51b5" />
+
+    <!-- Pacote de dados animado -->
+    <g>
+        <circle>
+            <animateMotion
+                dur="3s"
+                begin="0s; travel.end+1s"
+                fill="freeze"
+                repeatCount="indefinite"
+                keyPoints="0;1"
+                keyTimes="0;1">
+                <mpath href="#path-to-dest" />
+            </animateMotion>
+            <animate
+                attributeName="r"
+                values="5;10;5"
+                dur="3s"
+                begin="0s; travel.end+1s"
+                repeatCount="indefinite"
+            />
+        </circle>
+    </g>
+</svg>
