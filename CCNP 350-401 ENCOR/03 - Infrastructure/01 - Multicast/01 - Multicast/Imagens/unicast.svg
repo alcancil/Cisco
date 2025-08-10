@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animação Unicast</title>
+    <style>
+        /* Estilos básicos para o container e o SVG */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0; /* Cor de fundo para visualização */
+        }
+        svg {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            background-color: #1a1a1a; /* Fundo escuro para destacar a animação */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Definição das cores */
+        :root {
+            --node-color: #3f51b5; /* Azul para os nós */
+            --node-active-color: #4caf50; /* Verde para o nó de destino ativo */
+            --packet-color: #FFC107; /* Amarelo escuro para o pacote de dados */
+            --text-color: #ffffff; /* Branco para o texto */
+            --arrow-color: #f44336; /* Vermelho para a seta */
+        }
+
+        /* Animação para o pacote de dados */
+        @keyframes travel {
+            0% {
+                offset-distance: 0%;
+                fill-opacity: 1;
+                transform: scale(1);
+            }
+            70% {
+                offset-distance: 100%;
+                fill-opacity: 1;
+                transform: scale(1.1);
+            }
+            100% {
+                offset-distance: 100%;
+                fill-opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+
+        /* Animação para o nó de destino */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Oculta o nó de destino inicial e mostra o nó ativo durante a animação */
+        #node-dest-active {
+            opacity: 0;
+            transform-origin: center;
+            animation: pulse 1s ease-in-out infinite;
+            animation-delay: 2s; /* Atraso para começar depois que o pacote chegar */
+        }
+
+        /* Classe para o nó de origem */
+        .node-source {
+            fill: var(--node-color);
+        }
+        
+        /* Classe para os nós que não são de destino */
+        .node-other {
+            fill: var(--node-color);
+        }
+    </style>
+</head>
+<body>
+    <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <!-- Rótulo do tipo de tráfego, ajustado para ficar um pouco mais abaixo -->
+        <text x="50%" y="320" font-family="Arial, sans-serif" font-size="20" fill="var(--text-color)" text-anchor="middle">
+            UNICAST - De um para um
+        </text>
+
+        <!-- Definição do caminho do pacote de dados -->
+        <path id="path-to-dest" d="M 50 150 C 150 100, 250 100, 350 150" fill="none" stroke="none" />
+
+        <!-- Seta estática para mostrar a direção do tráfego. O ponto final foi ajustado para que a ponta da flecha fique na frente do círculo de destino, mas com um recuo. -->
+        <defs>
+            <!-- Definição da ponta da flecha. Tamanho e forma foram ajustados. -->
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="var(--arrow-color)" />
+            </marker>
+        </defs>
+        <!-- Linha da seta com espessura reduzida para 4. O ponto final (x2) foi ajustado para que a ponta da flecha termine mais perto do círculo de destino. -->
+        <line x1="50" y1="150" x2="329" y2="150" stroke="var(--arrow-color)" stroke-width="4" marker-end="url(#arrowhead)" />
+
+
+        <!-- Nós da rede -->
+        <!-- Nó de origem -->
+        <circle cx="50" cy="150" r="25" fill="var(--node-color)" />
+        <!-- Nó de destino -->
+        <circle cx="350" cy="150" r="25" fill="var(--node-color)" />
+        <!-- Nó de destino ativo (verde) que aparece na chegada do pacote -->
+        <circle id="node-dest-active" cx="350" cy="150" r="25" fill="var(--node-active-color)" />
+        <!-- Outros nós (não-destinos) -->
+        <circle cx="200" cy="50" r="25" fill="var(--node-other)" />
+        <circle cx="300" cy="75" r="25" fill="var(--node-other)" />
+        <circle cx="200" cy="250" r="25" fill="var(--node-other)" />
+        <circle cx="300" cy="225" r="25" fill="var(--node-other)" />
+
+        <!-- Pacote de dados animado -->
+        <g>
+            <circle>
+                <animateMotion
+                    dur="3s"
+                    begin="0s; travel.end+1s"
+                    fill="freeze"
+                    repeatCount="indefinite"
+                    keyPoints="0;1"
+                    keyTimes="0;1">
+                    <mpath href="#path-to-dest" />
+                </animateMotion>
+                <animate
+                    attributeName="r"
+                    values="5;10;5"
+                    dur="3s"
+                    begin="0s; travel.end+1s"
+                    repeatCount="indefinite"
+                />
+            </circle>
+        </g>
+    </svg>
+</body>
+</html>
