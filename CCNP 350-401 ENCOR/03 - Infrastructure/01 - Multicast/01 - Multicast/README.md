@@ -2,7 +2,7 @@
 
 Agora para falar sobre o tipo de comunicação **unicast** é preciso se fazer uma pequena revisão. Então primeiramente vamos observar os tipos de comunicação existentes.
 
-![UNICAST](Imagens/un)
+![UNICAST](Imagens/unicast.svg)
 
 | UNICAST                         | BROADCAST                            | MULTICAST                                     |
 |---------------------------------|--------------------------------------|-----------------------------------------------|
