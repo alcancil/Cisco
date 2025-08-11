@@ -180,3 +180,7 @@ Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a
 tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados. <br></br>
 
 Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.
+
+## Multicast - Árvore de Distribuição
+
+🌳 **[Ver Visualização Interativa da Árvore Multicast](Arquivos/multicast_tree.html)**
