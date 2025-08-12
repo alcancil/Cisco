@@ -4,6 +4,9 @@
     - [**IPV6**](#ipv6)
   - [Problemas de não utilizar o multicast](#problemas-de-não-utilizar-o-multicast)
   - [Endereçamento Multicast](#endereçamento-multicast)
+  - [Tipos de Endereço Multicast](#tipos-de-endereço-multicast)
+    - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
+  - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -168,6 +171,52 @@ Notas:
 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
 [Registro oficial de endereços multicast IPv6 pela IANA](https://www.iana.org/assignments/ipv6-multicast-addresses/ipv6-multicast-addresses.xhtml)
+
+## Tipos de Endereço Multicast
+
+Certo como já demonstrado, o **multicast** é separado em faixas bem definidas. Então vamos entender melhor os tipos de endereços.
+
+### Tipos de Endereço Multicast IPv4
+
+A primeira coisa que precisamos entender que em IPv4 os endereços são classificados em um bloco da **Classe D** que vai de: **224.0.0.0 a 239.255.255.255**  
+
+Esse bloco foi estruturado para que possam se ter subgrupos com finalidades específicas dentro dessa faixa.
+
+## 1. Endereços Bem Conhecidos (Well-Known)
+
+Dentro do bloco Classe D (224.0.0.0 a 239.255.255.255), existe uma faixa especial reservada para endereços multicast bem conhecidos que vai de 224.0.0.0 a 224.0.0.255. Esses endereços são padronizados pela IANA (Internet Assigned Numbers Authority) e têm propósitos específicos definidos globalmente.  
+
+**🎯 Principais Endereços Well-Known:**
+
+| Endereço    | Descrição              | Protocolo/Uso                        | 
+|-------------|------------------------|--------------------------------------|
+| 224.0.0.1   | All Systems            | Todos os hosts na subnet local       | 
+| 224.0.0.2   | All Routers            | Todos os roteadores na subnet        | 
+| 224.0.0.5   | OSPF All SPF Routers   | Protocolo OSPF - todos os roteadores |
+| 224.0.0.6   | OSPF Designated Routers| OSPF - roteadores designados         | 
+| 224.0.0.9   | RIPv2 Routers          | Protocolo RIPv2                      | 
+| 224.0.0.10  | EIGRP Routers          | Protocolo EIGRP da Cisco             |
+| 224.0.0.13  | PIM Routers            | Protocol Independent Multicast       | 
+| 224.0.0.22  | IGMP                   | Internet Group Management Protocol   |
+
+**📡 Características Importantes:**
+
+**Escopo Local:** Esses endereços não são roteados através da Internet  
+**TTL = 1:** Limitados à subnet local para evitar propagação desnecessária  
+**Reservados Permanentemente:** Não podem ser utilizados para aplicações customizadas  
+**Auto-Configuração:** Protocolos de rede os utilizam automaticamente  
+
+**💡 Exemplo Prático:**
+
+Quando um roteador Cisco executa OSPF, ele automaticamente:
+
+- Escuta no endereço 224.0.0.5 (All SPF Routers)
+- Se for eleito DR/BDR, também escuta em 224.0.0.6
+- Envia Hello packets para esses grupos multicast
+- Forma adjacências apenas com vizinhos que respondem
+
+**⚠️ Observação para CCNP:**
+Conhecer esses endereços é fundamental para troubleshooting de protocolos de roteamento. Quando analisamos captures com Wireshark, esses endereços aparecem frequentemente no tráfego de controle da rede.
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
