@@ -58,6 +58,16 @@ além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br
 
 ![TOPOLOGIA](Imagens/topologia.png) <br></br>
 
+- **Origem Multicast:** É o servidor que envia o tráfego multicast para o grupo.
+
+- **FHR (First Hop Router):** É o roteador de "primeiro salto" que está diretamente conectado à origem. Ele recebe o tráfego multicast primeiro e inicia o processo de roteamento PIM.
+
+- **Local Multicast Router:** Roteadores intermediários que participam da árvore PIM.
+
+- **Switch Layer 2 com IGMP Snooping:** Dispositivo que usa o IGMP Snooping para aprender quais portas têm hosts interessados em um grupo multicast específico, evitando inundações de tráfego na rede local.
+
+- **Hosts:** Recebem o tráfego multicast após enviarem uma Mensagem de Pedido IGMP (IGMP Join) para se juntar ao grupo.
+
 ## Problemas de não utilizar o multicast
 
 Depois de entender isso, vamos analisar um cenário onde eu tenho um servidor de vídeos e que esteja transmitindo para a rede toda em **broadcast**. Agora vamos supor que em cada salto,
