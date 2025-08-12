@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Árvore de Distribuição Multicast">
   <defs>
-    <!-- Gradiente de fundo azul -->
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1e3c72"/>
-      <stop offset="100%" stop-color="#2a5298"/>
+    <!-- Fundo degradê -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f4c81"/>
+      <stop offset="100%" stop-color="#1e3c72"/>
     </linearGradient>
-
     <linearGradient id="gRoot" x1="0" x2="1">
       <stop offset="0" stop-color="#ff6b35"/>
       <stop offset="1" stop-color="#ff8c42"/>
@@ -29,131 +28,122 @@
     <style type="text/css"><![CDATA[
       .title { font: 36px "Segoe UI", Tahoma, sans-serif; fill: #00d4ff; }
       .subtitle { font: 18px "Segoe UI", Tahoma, sans-serif; fill: #b8d4ff; }
-      .device { fill: white; font: 16px "Segoe UI", Tahoma, sans-serif; }
+      .device { fill: white; font: 14px "Segoe UI", Tahoma, sans-serif; }
       .device-bold { font-weight: 700; }
-      .protocol { font: 13px "Segoe UI", Tahoma, sans-serif; fill: #00d4ff; }
+      .protocol { font: 12px "Segoe UI", Tahoma, sans-serif; fill: #00d4ff; }
       .legend-text { font: 14px "Segoe UI", Tahoma, sans-serif; fill: #fff; }
     ]]></style>
   </defs>
 
-  <!-- Background -->
+  <!-- Fundo -->
   <rect width="100%" height="100%" fill="url(#bg)" />
 
-  <!-- Header -->
-  <text x="60" y="60" class="title">🌳 Árvore de Distribuição Multicast</text>
-  <text x="60" y="90" class="subtitle">Grupo: 239.1.1.1 | Cisco CCNP ENCOR 350-401</text>
+  <!-- Conteúdo centralizado e ampliado -->
+  <g transform="translate(300,80) scale(1.4)">
+    <!-- Título -->
+    <text x="400" y="30" class="title">🌳 Árvore de Distribuição Multicast</text>
+    <text x="400" y="60" class="subtitle">Grupo: 239.1.1.1 | Cisco CCNP ENCOR 350-401</text>
 
-  <!-- Root (Servidor) -->
-  <g transform="translate(820,140)">
-    <rect x="0" y="0" rx="12" ry="12" width="280" height="80" fill="url(#gRoot)" stroke="#ffffff" stroke-width="3" filter="url(#shadow)"/>
-    <text x="140" y="28" text-anchor="middle" class="device device-bold">📺 SERVIDOR DE VÍDEO</text>
-    <text x="140" y="50" text-anchor="middle" class="device">IP: 192.168.100.10 — Envia: 239.1.1.1</text>
-  </g>
-
-  <!-- Vertical line down from root -->
-  <line x1="960" y1="220" x2="960" y2="280" stroke="url(#gRouter)" stroke-width="4" stroke-linecap="round" />
-
-  <!-- Routers level -->
-  <g transform="translate(300,300)">
-    <!-- Router A -->
-    <g transform="translate(0,0)">
-      <rect x="0" y="0" rx="10" width="200" height="80" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="100" y="28" text-anchor="middle" class="device device-bold">🔄 ROUTER A</text>
-      <text x="100" y="50" text-anchor="middle" class="device">Core Router — 10.1.1.1</text>
-      <text x="100" y="68" text-anchor="middle" class="protocol">PIM • IGMP</text>
+    <!-- Servidor -->
+    <g transform="translate(300,90)">
+      <rect x="0" y="0" rx="12" ry="12" width="280" height="70" fill="url(#gRoot)" stroke="#ffffff" stroke-width="3" filter="url(#shadow)"/>
+      <text x="140" y="26" text-anchor="middle" class="device device-bold">📺 SERVIDOR DE VÍDEO</text>
+      <text x="140" y="46" text-anchor="middle" class="device">IP: 192.168.100.10 — Envia: 239.1.1.1</text>
     </g>
 
-    <!-- Router B -->
-    <g transform="translate(320,0)">
-      <rect x="0" y="0" rx="10" width="200" height="80" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="100" y="28" text-anchor="middle" class="device device-bold">🔄 ROUTER B</text>
-      <text x="100" y="50" text-anchor="middle" class="device">Core Router — 10.1.2.1</text>
-      <text x="100" y="68" text-anchor="middle" class="protocol">PIM • IGMP</text>
+    <!-- Linha para roteadores -->
+    <line x1="440" y1="160" x2="440" y2="210" stroke="url(#gRouter)" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Roteadores -->
+    <g transform="translate(0,230)">
+      <g transform="translate(100,0)">
+        <rect rx="10" width="180" height="70" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="90" y="24" text-anchor="middle" class="device device-bold">🔄 ROUTER A</text>
+        <text x="90" y="44" text-anchor="middle" class="device">Core Router — 10.1.1.1</text>
+        <text x="90" y="62" text-anchor="middle" class="protocol">PIM • IGMP</text>
+      </g>
+      <g transform="translate(380,0)">
+        <rect rx="10" width="180" height="70" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="90" y="24" text-anchor="middle" class="device device-bold">🔄 ROUTER B</text>
+        <text x="90" y="44" text-anchor="middle" class="device">Core Router — 10.1.2.1</text>
+        <text x="90" y="62" text-anchor="middle" class="protocol">PIM • IGMP</text>
+      </g>
+      <g transform="translate(660,0)">
+        <rect rx="10" width="180" height="70" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="90" y="24" text-anchor="middle" class="device device-bold">🔄 ROUTER C</text>
+        <text x="90" y="44" text-anchor="middle" class="device">Core Router — 10.1.3.1</text>
+        <text x="90" y="62" text-anchor="middle" class="protocol">PIM • IGMP</text>
+      </g>
     </g>
 
-    <!-- Router C -->
-    <g transform="translate(640,0)">
-      <rect x="0" y="0" rx="10" width="200" height="80" fill="url(#gRouter)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="100" y="28" text-anchor="middle" class="device device-bold">🔄 ROUTER C</text>
-      <text x="100" y="50" text-anchor="middle" class="device">Core Router — 10.1.3.1</text>
-      <text x="100" y="68" text-anchor="middle" class="protocol">PIM • IGMP</text>
-    </g>
-  </g>
+    <!-- Linhas para switches -->
+    <line x1="190" y1="300" x2="190" y2="350" stroke="#00d4ff" stroke-width="3" />
+    <line x1="470" y1="300" x2="470" y2="350" stroke="#00d4ff" stroke-width="3" />
+    <line x1="750" y1="300" x2="750" y2="350" stroke="#00d4ff" stroke-width="3" />
 
-  <!-- Lines to switches -->
-  <line x1="400" y1="380" x2="400" y2="440" stroke="#00d4ff" stroke-width="3" />
-  <line x1="720" y1="380" x2="720" y2="440" stroke="#00d4ff" stroke-width="3" />
-  <line x1="1040" y1="380" x2="1040" y2="440" stroke="#00d4ff" stroke-width="3" />
-
-  <!-- Switches level -->
-  <g transform="translate(300,460)">
-    <g transform="translate(0,0)">
-      <rect x="0" y="0" rx="8" width="180" height="70" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="90" y="28" text-anchor="middle" class="device device-bold">🔀 SWITCH 1</text>
-      <text x="90" y="50" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
-    </g>
-
-    <g transform="translate(320,0)">
-      <rect x="0" y="0" rx="8" width="180" height="70" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="90" y="28" text-anchor="middle" class="device device-bold">🔀 SWITCH 2</text>
-      <text x="90" y="50" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
+    <!-- Switches -->
+    <g transform="translate(0,370)">
+      <g transform="translate(110,0)">
+        <rect rx="8" width="160" height="60" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="80" y="25" text-anchor="middle" class="device device-bold">🔀 SWITCH 1</text>
+        <text x="80" y="44" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
+      </g>
+      <g transform="translate(390,0)">
+        <rect rx="8" width="160" height="60" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="80" y="25" text-anchor="middle" class="device device-bold">🔀 SWITCH 2</text>
+        <text x="80" y="44" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
+      </g>
+      <g transform="translate(670,0)">
+        <rect rx="8" width="160" height="60" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="80" y="25" text-anchor="middle" class="device device-bold">🔀 SWITCH 3</text>
+        <text x="80" y="44" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
+      </g>
     </g>
 
-    <g transform="translate(640,0)">
-      <rect x="0" y="0" rx="8" width="180" height="70" fill="url(#gSwitch)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="90" y="28" text-anchor="middle" class="device device-bold">🔀 SWITCH 3</text>
-      <text x="90" y="50" text-anchor="middle" class="device">Access Layer — IGMP Snooping</text>
-    </g>
-  </g>
+    <!-- Linhas para hosts -->
+    <line x1="170" y1="440" x2="130" y2="510" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
+    <line x1="290" y1="440" x2="290" y2="510" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
+    <line x1="490" y1="440" x2="490" y2="510" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
+    <line x1="710" y1="440" x2="710" y2="510" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
+    <line x1="890" y1="440" x2="890" y2="510" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
 
-  <!-- Lines to hosts -->
-  <line x1="380" y1="530" x2="340" y2="600" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
-  <line x1="480" y1="530" x2="480" y2="600" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
-  <line x1="800" y1="530" x2="800" y2="600" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
-  <line x1="1040" y1="530" x2="1040" y2="600" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
-  <line x1="1240" y1="530" x2="1240" y2="600" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 4" />
-
-  <!-- Hosts level -->
-  <g transform="translate(280,600)">
-    <g transform="translate(0,0)">
-      <rect x="0" y="0" rx="6" width="160" height="60" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="80" y="25" text-anchor="middle" class="device device-bold">💻 PC-A1</text>
-      <text x="80" y="45" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
-    </g>
-
-    <g transform="translate(200,0)">
-      <rect x="0" y="0" rx="6" width="160" height="60" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="80" y="25" text-anchor="middle" class="device device-bold">📱 Mobile-A2</text>
-      <text x="80" y="45" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
-    </g>
-
-    <g transform="translate(400,0)">
-      <rect x="0" y="0" rx="6" width="160" height="60" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="80" y="25" text-anchor="middle" class="device device-bold">💻 PC-B1</text>
-      <text x="80" y="45" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
-    </g>
-
-    <g transform="translate(600,0)">
-      <rect x="0" y="0" rx="6" width="160" height="60" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="80" y="25" text-anchor="middle" class="device device-bold">📺 TV-B2</text>
-      <text x="80" y="45" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+    <!-- Hosts -->
+    <g transform="translate(0,510)">
+      <g transform="translate(90,0)">
+        <rect rx="6" width="140" height="50" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="70" y="22" text-anchor="middle" class="device device-bold">💻 PC-A1</text>
+        <text x="70" y="40" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+      </g>
+      <g transform="translate(270,0)">
+        <rect rx="6" width="140" height="50" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="70" y="22" text-anchor="middle" class="device device-bold">📱 Mobile-A2</text>
+        <text x="70" y="40" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+      </g>
+      <g transform="translate(450,0)">
+        <rect rx="6" width="140" height="50" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="70" y="22" text-anchor="middle" class="device device-bold">💻 PC-B1</text>
+        <text x="70" y="40" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+      </g>
+      <g transform="translate(630,0)">
+        <rect rx="6" width="140" height="50" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="70" y="22" text-anchor="middle" class="device device-bold">📺 TV-B2</text>
+        <text x="70" y="40" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+      </g>
+      <g transform="translate(810,0)">
+        <rect rx="6" width="140" height="50" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
+        <text x="70" y="22" text-anchor="middle" class="device device-bold">💻 PC-C1</text>
+        <text x="70" y="40" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+      </g>
     </g>
 
-    <g transform="translate(800,0)">
-      <rect x="0" y="0" rx="6" width="160" height="60" fill="url(#gLeaf)" stroke="#fff" stroke-width="2" filter="url(#shadow)"/>
-      <text x="80" y="25" text-anchor="middle" class="device device-bold">💻 PC-C1</text>
-      <text x="80" y="45" text-anchor="middle" class="device">IGMP Join — 239.1.1.1</text>
+    <!-- Legenda -->
+    <g transform="translate(60,600)">
+      <rect x="0" y="0" rx="6" width="1040" height="90" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
+      <text x="20" y="26" class="legend-text" font-weight="700">Legenda</text>
+      <text x="20" y="50" class="legend-text">RAIZ (Source): Servidor que origina o conteúdo multicast</text>
+      <text x="360" y="50" class="legend-text">GALHOS (Routers): PIM constrói a árvore entre roteadores; IGMP comunica com hosts locais</text>
+      <text x="20" y="70" class="legend-text">RAMOS (Switches): IGMP Snooping otimiza entrega L2</text>
+      <text x="360" y="70" class="legend-text">FOLHAS (Hosts): IGMP Join — membros do grupo multicast</text>
     </g>
-  </g>
-
-  <!-- Legend -->
-  <g transform="translate(60,900)">
-    <rect x="0" y="0" rx="6" width="1800" height="120" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" />
-    <text x="20" y="28" class="legend-text" font-weight="700">Legenda</text>
-    <text x="20" y="55" class="legend-text">RAIZ (Source): Servidor que origina o conteúdo multicast</text>
-    <text x="480" y="55" class="legend-text">GALHOS (Routers): PIM constrói a árvore entre roteadores; IGMP comunica com hosts locais</text>
-    <text x="1060" y="55" class="legend-text">RAMOS (Switches): IGMP Snooping otimiza entrega L2</text>
-    <text x="20" y="85" class="legend-text">FOLHAS (Hosts): IGMP Join — membros do grupo multicast</text>
   </g>
 </svg>
-
