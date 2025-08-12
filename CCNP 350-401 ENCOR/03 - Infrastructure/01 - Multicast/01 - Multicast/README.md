@@ -6,7 +6,7 @@
   - [Endereçamento Multicast](#endereçamento-multicast)
   - [Tipos de Endereço Multicast](#tipos-de-endereço-multicast)
     - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
-  - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
+    - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -182,7 +182,7 @@ A primeira coisa que precisamos entender que em IPv4 os endereços são classifi
 
 Esse bloco foi estruturado para que possam se ter subgrupos com finalidades específicas dentro dessa faixa.
 
-## 1. Endereços Bem Conhecidos (Well-Known)
+### 1. Endereços Bem Conhecidos (Well-Known)
 
 Dentro do bloco Classe D (224.0.0.0 a 239.255.255.255), existe uma faixa especial reservada para endereços multicast bem conhecidos que vai de 224.0.0.0 a 224.0.0.255. Esses endereços são padronizados pela IANA (Internet Assigned Numbers Authority) e têm propósitos específicos definidos globalmente.  
 
