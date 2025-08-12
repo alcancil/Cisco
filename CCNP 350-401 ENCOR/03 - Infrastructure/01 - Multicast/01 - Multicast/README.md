@@ -7,6 +7,7 @@
   - [Tipos de Endereço Multicast](#tipos-de-endereço-multicast)
     - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
     - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
+    - [2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)](#2-escopo-global---22401024-internetwork-control-block)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -36,9 +37,9 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 
 | Classe de IP             | Faixa de Endereçamento         |
 |--------------------------|--------------------------------|
-| Classe A	               | 0.0.0.0 a 127.255.255.255      |  
-| Classe B	               | 128.0.0.0 a 191.255.255.255    |
-| Classe C	               | 192.0.0.0 a 223.255.255.255    |
+| Classe A                | 0.0.0.0 a 127.255.255.255      |  
+| Classe B                | 128.0.0.0 a 191.255.255.255    |
+| Classe C                | 192.0.0.0 a 223.255.255.255    |
 | **Classe D (Multicast)** | **224.0.0.0 a 239.255.255.255**|
 | Classe E (Reservado)     | 240.0.0.0 a 247.255.255.255    |
 
@@ -46,30 +47,30 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 
 ### **IPV6**
 
-| Tipo de Endereço	   |  Faixa de Endereçamento |	Descrição                                                                                                                          |
+| Tipo de Endereço    |  Faixa de Endereçamento | Descrição                                                                                                                          |
 | ------------------   | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------|
 | Unicast Global       |  2000::/3           | Usado para comunicação unicast na Internet. É equivalente aos endereços públicos no IPv4.                                               |
-| Unicast Link-Local   |  FE80::/10	         | Usado para comunicação dentro de um link (como em uma LAN). Esses endereços são configurados automaticamente em cada interface de rede. |
-| Unicast Unique Local |  FC00::/7	         | Endereços para redes privadas (semelhante a 192.168.0.0/16 no IPv4).                                                                    |
-| **Multicast**	       |  FF00::/8           | Usado para comunicação multicast.                                                                                                       |
+| Unicast Link-Local   |  FE80::/10          | Usado para comunicação dentro de um link (como em uma LAN). Esses endereços são configurados automaticamente em cada interface de rede. |
+| Unicast Unique Local |  FC00::/7          | Endereços para redes privadas (semelhante a 192.168.0.0/16 no IPv4).                                                                    |
+| **Multicast**        |  FF00::/8           | Usado para comunicação multicast.                                                                                                       |
 | Anycast              | Derivado de unicast | Endereços unicast atribuídos a vários nós, mas roteados para o mais próximo.                                                            |
-| Loopback	                | ::1            | Endereço para a própria máquina (equivalente a 127.0.0.1 no IPv4).                                                                      |
-| Endereço Não Especificado	| ::	         | Indica ausência de endereço (usado como fonte em algumas situações, como durante a autoconfiguração).                                   |
-| Reservado	           |4000::/2, 6000::/3 e outras faixas | Reservado pela IETF para uso futuro.                                                                                      |
-| Embedded IPv4	       | ::FFFF:0:0/96 e 2002::/16 | Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.                            |
+| Loopback                 | ::1            | Endereço para a própria máquina (equivalente a 127.0.0.1 no IPv4).                                                                      |
+| Endereço Não Especificado | ::          | Indica ausência de endereço (usado como fonte em algumas situações, como durante a autoconfiguração).                                   |
+| Reservado            |4000::/2, 6000::/3 e outras faixas | Reservado pela IETF para uso futuro.                                                                                      |
+| Embedded IPv4        | ::FFFF:0:0/96 e 2002::/16 | Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.                            |
 
 **Destaques sobre a tabela:** <br></br>
 
-* **Unicast Global:** Utilizado para endereços roteáveis na Internet.
-* **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
-* **Multicast:** Substitui a funcionalidade de broadcast no IPv6.
-* **Loopback:** Para testes internos no dispositivo.
+- **Unicast Global:** Utilizado para endereços roteáveis na Internet.
+- **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
+- **Multicast:** Substitui a funcionalidade de broadcast no IPv6.
+- **Loopback:** Para testes internos no dispositivo.
 <br></br>
 
-Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadcast e os roteadores não. Isso é importante de se lembrar pois o multicast vai 
-funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, o switches formam os grupos em que os hosts irão participar e o roteador é 
-quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** . 
-Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos 
+Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadcast e os roteadores não. Isso é importante de se lembrar pois o multicast vai
+funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, o switches formam os grupos em que os hosts irão participar e o roteador é
+quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** .
+Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos
 além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
 
 ![TOPOLOGIA](Imagens/topologia.png) <br></br>
@@ -96,10 +97,10 @@ podemos notar que a cada salto então teríamos que ter uma largura de banda 10 
 Portanto teríamos que ter 50 Mbps de largura de banda, mesmo para os hosts não interessados. Isso é refletido em desperdício de banda e, outro ponto é que os hosts finais não interessados
 necessariamente precisam processar esses pacotes consumindo mais processador e memória. <br></br>
 
-Como podemos observar nas duas topologias apresentadas, temos duas situações: a comunicação em camada 2 e a comunicação em camada 3. Para a comunicação em camada 2 iremos utilizar o 
+Como podemos observar nas duas topologias apresentadas, temos duas situações: a comunicação em camada 2 e a comunicação em camada 3. Para a comunicação em camada 2 iremos utilizar o
 **protocolo IGMP (Internet Group Management Protocol)** e em camada 3 o **protocolo PIM (Protocol Independent Multicast)** . <br></br>
 
-**OBS:** O protocolo IGMP é ativado em switches e tem a função ***snooping*** ( no sentido de escuta em inglês), ou seja, ele trabalha com  requisições e envios de informações. Já o protocolo 
+**OBS:** O protocolo IGMP é ativado em switches e tem a função ***snooping*** ( no sentido de escuta em inglês), ou seja, ele trabalha com  requisições e envios de informações. Já o protocolo
 ***PIM*** é ativado em roteadores.
 
 ## Endereçamento Multicast
@@ -137,7 +138,7 @@ são encaminhados para domínios de broadcast. São de escopo local. Exemplos de
 
 • ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.
  Em outras palavras os administradores de redes estão livres para poder utilizá-los dentro do próprio domínio sem se preocupar com conflitos
- em outras redes. 
+ em outras redes.
 
 **IPv6** <br></br>
 
@@ -156,7 +157,6 @@ são encaminhados para domínios de broadcast. São de escopo local. Exemplos de
 | FF0X::1:2                   | Todos os servidores e agentes de retransmissão DHCPv6   | Link-local (2)             |
 | FF0X::1:3                   | Todos os servidores DHCPv6 no site          | Site-local (5)                         |
 | FF0X::1:FFXX:XXXX           | Endereço multicast de nó solicitado         | Link-local (2)                         |
-
 
 Notas:
 
@@ -188,15 +188,15 @@ Dentro do bloco Classe D (224.0.0.0 a 239.255.255.255), existe uma faixa especia
 
 **🎯 Principais Endereços Well-Known:**
 
-| Endereço    | Descrição              | Protocolo/Uso                        | 
+| Endereço    | Descrição              | Protocolo/Uso                        |
 |-------------|------------------------|--------------------------------------|
-| 224.0.0.1   | All Systems            | Todos os hosts na subnet local       | 
-| 224.0.0.2   | All Routers            | Todos os roteadores na subnet        | 
+| 224.0.0.1   | All Systems            | Todos os hosts na subnet local       |
+| 224.0.0.2   | All Routers            | Todos os roteadores na subnet        |
 | 224.0.0.5   | OSPF All SPF Routers   | Protocolo OSPF - todos os roteadores |
-| 224.0.0.6   | OSPF Designated Routers| OSPF - roteadores designados         | 
-| 224.0.0.9   | RIPv2 Routers          | Protocolo RIPv2                      | 
+| 224.0.0.6   | OSPF Designated Routers| OSPF - roteadores designados         |
+| 224.0.0.9   | RIPv2 Routers          | Protocolo RIPv2                      |
 | 224.0.0.10  | EIGRP Routers          | Protocolo EIGRP da Cisco             |
-| 224.0.0.13  | PIM Routers            | Protocol Independent Multicast       | 
+| 224.0.0.13  | PIM Routers            | Protocol Independent Multicast       |
 | 224.0.0.22  | IGMP                   | Internet Group Management Protocol   |
 
 **📡 Características Importantes:**
@@ -218,12 +218,92 @@ Quando um roteador Cisco executa OSPF, ele automaticamente:
 **⚠️ Observação para CCNP:**
 Conhecer esses endereços é fundamental para troubleshooting de protocolos de roteamento. Quando analisamos captures com Wireshark, esses endereços aparecem frequentemente no tráfego de controle da rede.
 
+### 2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)
+
+O bloco **224.0.1.0/24** é designado pela IANA como Internetwork Control Block, sendo reservado para protocolos de controle que necessitam operar globalmente através de múltiplas redes interconectadas. Diferentemente dos endereços well-known locais, estes endereços **podem ser roteados entre diferentes subnets.**
+
+**🌐 Características do Escopo Global:**
+
+**Range:** 224.0.1.0 até 224.0.1.255 (256 endereços)
+**TTL:** Maior que 1 (permite roteamento inter-subnet)
+**Propagação:** Através de roteadores multicast habilitados
+**Controle:** Protocolos de gerenciamento e descoberta de rede
+
+**📋 Principais Endereços Utilizados:**
+
+| Endereço   | Protocolo/Serviço  | Descrição                                   |
+|------------|------------------- | --------------------------------------------|
+| 224.0.1.1  | NTP                | Network Time Protocol - Servidores de tempo |
+| 224.0.1.2S | GI-DogfightSilicon | Graphics - Jogos em rede                    |
+| 224.0.1.3  | RwhodBSD           | r-commands - Descoberta de hosts            |
+| 224.0.1.4  | VNP                | Virtual Network Protocol                    |
+| 224.0.1.22 | SVRLOC             | Service Location Protocol                   |
+| 224.0.1.24 | XinuexpansionXinu  | network services                            |
+| 224.0.1.25 | VRRPVirtual Router | Redundancy Protocol                         |
+| 224.0.1.39 | Cisco-RP-Announce  | Cisco PIM - Anúncio de Rendezvous Point     |
+|224.0.1.40  | Cisco-RP-Discovery | Cisco PIM - Descoberta de RP                |
+
+**🔧 Exemplo Prático - VRRP (224.0.1.25):**
+
+Cenário: Redundância de Gateway
+┌─────────────┐    ┌─────────────┐
+│   Router A  │    │   Router B  │
+│  (Master)   │    │  (Backup)   │
+│   VRRP ID:1 │    │   VRRP ID:1 │
+└─────────────┘    └─────────────┘
+       │                   │
+       └───────┬───────────┘
+               │
+       [224.0.1.25 - VRRP]
+               │
+    ┌─────────────────────┐
+    │    Subnet LAN       │
+    │   192.168.1.0/24    │
+    └─────────────────────┘
+
+**Funcionamento:**
+
+- Router Master anuncia via 224.0.1.25
+- Router Backup monitora anúncios multicast
+- Se Master falha, Backup assume automaticamente
+- Hosts mantêm conectividade sem reconfiguração
+
+**🚨 Considerações para Implementação:**  
+
+✅ Vantagens:
+
+- **Escalabilidade:** Funciona através de múltiplas subnets
+- **Eficiência:** Reduz broadcast desnecessário
+- **Padronização:** Protocolos reconhecidos globalmente
+
+**⚠️ Cuidados:**  
+
+**Firewall Rules:** Pode ser bloqueado por políticas de segurança  
+**Roteamento Multicast:** Requer PIM ou DVMRP habilitado  
+**Bandwidth:** Tráfego pode consumir banda em WANs  
+
+**🎯 Relevância para CCNP:**  
+No exame CCNP Enterprise, é comum encontrar questões sobre:
+
+- VRRP/HSRP utilizando endereços multicast globais
+- PIM Sparse Mode com RPs anunciados via 224.0.1.39/40
+- Troubleshooting de protocolos que dependem desses endereços
+
+**📊 Diferença: Local vs Global**
+
+| Aspecto | Well-Known (224.0.0.x) | Global (224.0.1.x) | 
+|---------|------------------------|--------------------|
+| Escopo  | Subnet local apenas    | Inter-subnet/WAN   | 
+| TTL     | 1 (não roteia)         | >1 (roteável)      | 
+| Uso     | Protocolos básicos     | Serviços avançados | 
+| Exemplos| OSPF Hello, EIGRP      | VRRP, NTP, PIM     |
+
 ## Formação de Endereços de Camada 02 (Mac Address)
 
 ## IPv4
 
 Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em multicast, os hosts
-tem que responder a um endereço de grupo de multicast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo 
+tem que responder a um endereço de grupo de multicast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo
 tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras. <br></br>
 
 Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 <br></br>
@@ -245,7 +325,7 @@ E por fim agora é só converter a parte em Binário para Hexadecimal. <br></br>
 
 ![MAC](Imagens/mac.png) <br></br>
 
-Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23 
+Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23
 últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo: <br></br>
 
 ![SOBRE](Imagens/sobre.png) <br></br>
@@ -265,11 +345,11 @@ O endereço IPv6 multicast é sempre do tipo **ff00::/8**, o que significa que o
 
 O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [group ID]**
 
-  - **FF (8 bits):** É o prefixo que identifica o endereço como multicast.
+- **FF (8 bits):** É o prefixo que identifica o endereço como multicast.
 
-  - **flags (4 bits):** Indicam o tipo do endereço multicast. Os dois primeiros bits são reservados (sempre 0), e os outros dois indicam se o endereço é permanente (0) ou temporário (1), e se ele é atribuído com base em um prefixo unicast (1).
+- **flags (4 bits):** Indicam o tipo do endereço multicast. Os dois primeiros bits são reservados (sempre 0), e os outros dois indicam se o endereço é permanente (0) ou temporário (1), e se ele é atribuído com base em um prefixo unicast (1).
 
-  - **scope (4 bits):** Define o escopo de atuação do grupo multicast, limitando a propagação do tráfego. Alguns escopos comuns são:
+- **scope (4 bits):** Define o escopo de atuação do grupo multicast, limitando a propagação do tráfego. Alguns escopos comuns são:
 
         **1 (Interface-Local):** Válido apenas na interface.
 
@@ -279,15 +359,15 @@ O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [grou
 
         **E (Global):** Endereço publicamente roteável pela Internet.
 
-  - **group ID (112 bits):** É o identificador único do grupo multicast.
+- **group ID (112 bits):** É o identificador único do grupo multicast.
 
 ### Mapeamento de IPv6 Multicast para MAC Address
 
 Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
 
-  - O prefixo MAC para multicast IPv6 é fixo: **33:33:00:00:00:00**.
+- O prefixo MAC para multicast IPv6 é fixo: **33:33:00:00:00:00**.
 
-  - Para criar o endereço MAC completo, os últimos **32 bits (a parte do group ID)** do endereço IPv6 multicast são copiados e anexados aos últimos 32 bits do endereço MAC, substituindo os zeros.
+- Para criar o endereço MAC completo, os últimos **32 bits (a parte do group ID)** do endereço IPv6 multicast são copiados e anexados aos últimos 32 bits do endereço MAC, substituindo os zeros.
 
 **Exemplo:**
 
