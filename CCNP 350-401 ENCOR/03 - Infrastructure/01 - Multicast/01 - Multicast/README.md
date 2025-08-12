@@ -1,3 +1,16 @@
+- [01 - Multicast](#01---multicast)
+  - [Faixas de Endereçamento IP](#faixas-de-endereçamento-ip)
+    - [**IPV4**](#ipv4)
+    - [**IPV6**](#ipv6)
+  - [Problemas de não utilizar o multicast](#problemas-de-não-utilizar-o-multicast)
+  - [Endereçamento Multicast](#endereçamento-multicast)
+  - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
+  - [IPv4](#ipv4-1)
+  - [IPv6](#ipv6-1)
+    - [Estrutura do Endereço Multicast IPv6](#estrutura-do-endereço-multicast-ipv6)
+    - [Mapeamento de IPv6 Multicast para MAC Address](#mapeamento-de-ipv6-multicast-para-mac-address)
+  - [Multicast - Árvore de Distribuição](#multicast---árvore-de-distribuição)
+
 # 01 - Multicast
 
 Agora para falar sobre o tipo de comunicação **unicast** é preciso se fazer uma pequena revisão. Então primeiramente vamos observar os tipos de comunicação existentes.
@@ -160,8 +173,8 @@ Para informações mais detalhadas e atualizadas, consulte o registro oficial da
 
 ## IPv4
 
-Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em múlticast, os hosts
-tem que responder a um endereço de grupo de múlticast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo 
+Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em multicast, os hosts
+tem que responder a um endereço de grupo de multicast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo 
 tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras. <br></br>
 
 Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 <br></br>
