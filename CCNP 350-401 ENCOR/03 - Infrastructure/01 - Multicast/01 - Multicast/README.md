@@ -195,6 +195,54 @@ Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinit
 
 ## IPv6
 
+A formação de endereços IPv6 em multicast é estruturada de forma diferente do IPv4, e uma das principais vantagens é a forma como o mapeamento para endereços MAC de camada 2 é feito, eliminando a colisão que acontece no IPv4.  
+
+O endereço IPv6 multicast é sempre do tipo **ff00::/8**, o que significa que os primeiros **8 bits** são fixos em **1111 1111 (ff em hexadecimal)**. O restante do endereço é dividido em campos que definem a finalidade e o escopo do grupo multicast.
+
+### Estrutura do Endereço Multicast IPv6
+
+O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [group ID]**
+
+  - **FF (8 bits):** É o prefixo que identifica o endereço como multicast.
+
+  - **flags (4 bits):** Indicam o tipo do endereço multicast. Os dois primeiros bits são reservados (sempre 0), e os outros dois indicam se o endereço é permanente (0) ou temporário (1), e se ele é atribuído com base em um prefixo unicast (1).
+
+  - **scope (4 bits):** Define o escopo de atuação do grupo multicast, limitando a propagação do tráfego. Alguns escopos comuns são:
+
+        **1 (Interface-Local):** Válido apenas na interface.
+
+        **2 (Link-Local):** Válido apenas no link (rede local).
+
+        **5 (Site-Local):** Válido apenas dentro de uma empresa ou campus.
+
+        **E (Global):** Endereço publicamente roteável pela Internet.
+
+  - **group ID (112 bits):** É o identificador único do grupo multicast.
+
+### Mapeamento de IPv6 Multicast para MAC Address
+
+Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
+
+  - O prefixo MAC para multicast IPv6 é fixo: **33:33:00:00:00:00**.
+
+  - Para criar o endereço MAC completo, os últimos **32 bits (a parte do group ID)** do endereço IPv6 multicast são copiados e anexados aos últimos 32 bits do endereço MAC, substituindo os zeros.
+
+**Exemplo:**
+
+    Endereço IPv6 Multicast: ff02::1:ff1e:8899
+
+    Endereço MAC de Destino:
+
+        O prefixo fixo é 33:33:.
+
+        Os últimos 32 bits do endereço IPv6 são ff:1e:88:99.
+
+        O endereço MAC final será 33:33:ff:1e:88:99.
+
+**Vantagem sobre o IPv4:**
+
+Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o MAC (o que causa o problema de múltiplos endereços IP mapearem para o mesmo endereço MAC), no IPv6, todos os 32 bits do group ID são usados. Isso significa que cada endereço IPv6 multicast corresponde a um único endereço MAC multicast, eliminando a possibilidade de colisões de endereçamento na camada 2.
+
 ## Multicast - Árvore de Distribuição
 
 🌳 **[Ver Visualização Interativa da Árvore Multicast](Arquivos/multicast_tree.html)**  
