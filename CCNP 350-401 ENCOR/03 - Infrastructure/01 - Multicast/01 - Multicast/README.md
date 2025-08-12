@@ -156,7 +156,9 @@ Notas:
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
 [Registro oficial de endereços multicast IPv6 pela IANA](https://www.iana.org/assignments/ipv6-multicast-addresses/ipv6-multicast-addresses.xhtml)
 
-# Endereços de Camada 02 (Mac Address)
+## Formação de Endereços de Camada 02 (Mac Address)
+
+## IPv4
 
 Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em múlticast, os hosts
 tem que responder a um endereço de grupo de múlticast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo 
@@ -189,7 +191,9 @@ Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode g
 Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitados e isso dificulta a gerência dos grupos multicast. Para solucionar esse
 tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados. <br></br>
 
-Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.
+Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.  
+
+## IPv6
 
 ## Multicast - Árvore de Distribuição
 
