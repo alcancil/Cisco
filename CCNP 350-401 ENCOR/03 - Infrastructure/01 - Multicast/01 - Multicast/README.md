@@ -359,13 +359,13 @@ Aplicação: Sistema SCADA em fábrica
 
 **🔧 Configuração de Boundary (Cisco):**
 
-> ! Interface conectada à Internet/WAN
-> interface GigabitEthernet0/1
-> description "Conexao WAN - Internet"
-> ip multicast boundary 239.0.0.0 8
-> 
-> ! Bloqueia todo tráfego 239.x.x.x de sair
-> ! Permite entrada de multicast global (224.x.x.x)
+> ! Interface conectada à Internet/WAN  
+> interface GigabitEthernet0/1  
+> description "Conexao WAN - Internet"  
+> ip multicast boundary 239.0.0.0 8  
+>   
+> ! Bloqueia todo tráfego 239.x.x.x de sair  
+> ! Permite entrada de multicast global (224.x.x.x)  
 
 **📋 Casos de Uso Corporativo:**
 
