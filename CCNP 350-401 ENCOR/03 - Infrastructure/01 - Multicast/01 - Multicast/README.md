@@ -246,6 +246,8 @@ O bloco **224.0.1.0/24** é designado pela IANA como Internetwork Control Block,
 
 **🔧 Exemplo Prático - VRRP (224.0.1.25):**
 
+```text
+
 Cenário: Redundância de Gateway  
 ┌─────────────┐    ┌─────────────┐  
 │   Router A  │    │   Router B  │  
@@ -261,6 +263,7 @@ Cenário: Redundância de Gateway
     │    Subnet LAN       │  
     │   192.168.1.0/24    │  
     └─────────────────────┘  
+```
 
 **Funcionamento:**
 
