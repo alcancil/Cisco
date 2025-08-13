@@ -327,6 +327,7 @@ Os Endereços Multicast Administrativamente Escalonados ocupam o range 239.0.0.0
 
 **📺 Streaming Corporativo:**
 
+```text
 Cenário: Transmissão de treinamento interno
 ┌─────────────────┐  
 │   Servidor de   │ ──→ 239.100.1.10 (Treinamento Vendas)  
@@ -344,6 +345,7 @@ Cenário: Transmissão de treinamento interno
 │ Funcionários RH,  │  
 │   TI, Vendas      │  
 └───────────────────┘  
+```
 
 **🏭 Automação Industrial:**
 
