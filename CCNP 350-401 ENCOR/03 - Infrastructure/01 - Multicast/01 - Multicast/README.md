@@ -9,6 +9,7 @@
     - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
     - [2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)](#2-escopo-global---22401024-internetwork-control-block)
     - [3. Endereços Multicast Privados ("Administratively Scoped Addresses")](#3-endereços-multicast-privados-administratively-scoped-addresses)
+    - [4 Source-Specific Multicast (SSM)](#4-source-specific-multicast-ssm)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -418,6 +419,65 @@ Aplicação: Sistema SCADA em fábrica
 | Roteamento | Através da Internet | Bloqueado por boundary  |
 | Conflito   | Coordenação global  | Sem conflito entre orgs |
 | Uso        | Protocolos padrão   | Aplicações customizadas |
+
+### 4 Source-Specific Multicast (SSM)
+
+O Source-Specific Multicast (SSM) é uma evolução do multicast tradicional que utiliza o range 232.0.0.0/8 e representa um paradigma mais eficiente e seguro. Diferentemente do Any-Source Multicast (ASM) tradicional, o SSM permite que os receptores especifiquem exatamente qual fonte desejam receber dados, eliminando problemas de flooding e melhorando significativamente a performance da rede.  
+
+**🎯 Características Fundamentais do SSM:**
+
+**Range Dedicado:** 232.0.0.0 até 232.255.255.255
+**Identificação:** (S,G) = Source + Group (ao invés de apenas Group)
+**Controle Granular:** Cliente escolhe fonte específica
+**Sem RP:** Não necessita Rendezvous Point
+**Eficiência:** Elimina tráfego desnecessário  
+
+**📊 Comparativo: ASM vs SSM**  
+
+| Aspecto               | ASM (Traditional)            | SSM (232.x.x.x)           |
+|-----------------------|------------------------------|---------------------------|
+| Identificação         | (*, G) - Qualquer fonte      | (S, G) - Fonte específica |
+| IGMP                  | IGMPv2 suficiente            | IGMPv3 obrigatório        |
+| RP (Rendezvous Point) | Necessário                   | Não necessário            |
+| Shared Tree           | Sim (*, G)                   | Não usa                   |
+| Flooding              | Possível de múltiplas fontes | Eliminado                 |
+| Segurança             | Menor controle               | Maior controle            |
+
+**🔧 Funcionamento Técnico:**  
+
+**📡 Processo de Join (IGMPv3):**  
+
+1. Cliente especifica: "Quero grupo 232.1.1.1 APENAS da fonte 10.1.1.100"
+2. IGMPv3 Report: INCLUDE (10.1.1.100, 232.1.1.1)
+3. Roteador cria estado: (10.1.1.100, 232.1.1.1)
+4. PIM Join enviado diretamente para 10.1.1.100
+5. Tráfego flui apenas dessa fonte específica
+
+**🌐 Exemplo de Rede SSM:**  
+
+```text
+Cenário: Streaming de Vídeo Corporativo
+
+         [Fonte A: 192.168.1.100]──┐
+                                   │
+         [Fonte B: 192.168.1.200]──┤
+                                   │
+         [Fonte C: 192.168.1.300]──┤
+                                   │
+                              ┌────┴────┐
+                              │ Router  │
+                              │   PIM   │
+                              └────┬────┘
+                                   │
+                    ┌──────────────┼──────────────┐
+                    │              │              │
+            ┌───────┴──┐   ┌───────┴──┐   ┌───────┴──┐
+            │Cliente 1 │   │Cliente 2 │   │Cliente 3 │
+            │IGMPv3:   │   │IGMPv3:   │   │IGMPv3:   │
+            │(A,232.1) │   │(B,232.1) │   │(A,232.1) │
+            │(C,232.2) │   │          │   │(B,232.2) │
+            └──────────┘   └──────────┘   └──────────┘
+```
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
