@@ -618,6 +618,7 @@ AS Number: 65100
 Conversão: 65100 = 0xFE0C = 254.12
 Faixa GLOP: 233.254.12.0/24
 
+```text
 Aplicações:
 ┌─────────────────────────────────────────────┐
 │ 233.254.12.1  - Video Conferencing          │
@@ -626,6 +627,7 @@ Aplicações:
 │ 233.254.12.50 - Network Monitoring          │
 │ 233.254.12.100- Backup Replication          │
 └─────────────────────────────────────────────┘
+```
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
