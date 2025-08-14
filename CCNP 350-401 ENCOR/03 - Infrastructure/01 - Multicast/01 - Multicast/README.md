@@ -479,6 +479,51 @@ Cenário: Streaming de Vídeo Corporativo
             └──────────┘   └──────────┘   └──────────┘
 ```
 
+Resultado: Cada cliente recebe apenas o tráfego das fontes solicitadas!  
+
+**🏢 Casos de Uso Empresariais:**  
+
+**📺 IPTV e Streaming:**  
+
+> Canal 1: (Servidor_A, 232.10.1.1) → CNN Internacional
+> Canal 2: (Servidor_B, 232.10.1.2) → Canal Corporativo  
+> Canal 3: (Servidor_C, 232.10.1.3) → Treinamentos RH
+
+Vantagem: Cliente sintoniza canal específico sem receber outros  
+
+**🚀 Software Distribution:**  
+
+> Update Windows: (WSUS_Server, 232.20.1.1)
+> Update Linux:   (Linux_Repo, 232.20.1.2)  
+> Update Adobe:   (Adobe_Server, 232.20.1.3)
+
+Benefício: Máquinas recebem apenas updates relevantes
+
+**📊 Financial Data Feeds:**  
+
+> Bloomberg:  (Bloomberg_Feed, 232.50.1.1)
+> Reuters:    (Reuters_Feed, 232.50.1.2)
+> Nasdaq:     (Nasdaq_Feed, 232.50.1.3)
+
+Controle: Aplicação subscreve apenas feeds pagos/autorizados
+
+**⚙️ Configuração Cisco (PIM-SSM):**  
+
+```ios
+! Habilitando SSM globalmente
+ip pim ssm default
+
+! Ou definindo range específico
+ip pim ssm range 10
+!
+access-list 10 permit 232.0.0.0 0.255.255.255
+
+! Interface configuração
+interface GigabitEthernet0/1
+ ip pim sparse-mode
+ ip igmp version 3
+```
+
 ## Formação de Endereços de Camada 02 (Mac Address)
 
 ## IPv4
