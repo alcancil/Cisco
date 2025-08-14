@@ -10,6 +10,7 @@
     - [2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)](#2-escopo-global---22401024-internetwork-control-block)
     - [3. Endereços Multicast Privados ("Administratively Scoped Addresses")](#3-endereços-multicast-privados-administratively-scoped-addresses)
     - [4 Source-Specific Multicast (SSM)](#4-source-specific-multicast-ssm)
+    - [5 GLOP Addressing](#5-glop-addressing)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -582,6 +583,49 @@ O SSM representa a direção futura do multicast corporativo, especialmente em:
 - Financial Trading Systems  
 - Industrial IoT Applications  
 - 5G Network Slicing  
+
+### 5 GLOP Addressing
+
+**Conceito Fundamental**
+
+O GLOP Addressing é um esquema de endereçamento multicast que utiliza a faixa 233.0.0.0/8 para mapear números de Sistema Autônomo (AS) em endereços multicast únicos globalmente. Esta abordagem garante que organizações com números AS válidos possam usar endereços multicast sem conflitos.
+Estrutura do Endereçamento GLOP
+
+**Formato do Endereço**  
+
+**233.X.Y.Z**  
+
+Onde:  
+
+- 233: Prefixo fixo GLOP
+- X.Y: Representação em 16 bits do número AS
+- Z: Identificador local da aplicação (0-255)
+
+**Mapeamento AS para GLOP**
+
+| Número AS | Binário (16 bits) | Octetos X.Y | Faixa GLOP       |
+|-----------|-------------------|-------------|------------------|
+| AS 1234   | 0000010011010010  | 4.210       | 233.4.210.0/24   |
+| AS 65001  | 1111110111101001  | 253.233     | 233.253.233.0/24 |
+| AS 64512  | 1111110000000000  | 252.0       | 233.252.0.0/24   |
+
+**Exemplo Prático: Implementação Empresarial**
+
+**Cenário: Empresa com AS 65100**
+
+Empresa XYZ Corporation
+AS Number: 65100
+Conversão: 65100 = 0xFE0C = 254.12
+Faixa GLOP: 233.254.12.0/24
+
+Aplicações:
+┌─────────────────────────────────────────────┐
+│ 233.254.12.1  - Video Conferencing          │
+│ 233.254.12.2  - Financial Data Feed         │
+│ 233.254.12.10 - Software Updates            │
+│ 233.254.12.50 - Network Monitoring          │
+│ 233.254.12.100- Backup Replication          │
+└─────────────────────────────────────────────┘
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
