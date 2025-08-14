@@ -360,13 +360,15 @@ Aplicação: Sistema SCADA em fábrica
 
 **🔧 Configuração de Boundary (Cisco):**
 
-> ! Interface conectada à Internet/WAN  
-> interface GigabitEthernet0/1  
-> description "Conexao WAN - Internet"  
-> ip multicast boundary 239.0.0.0 8  
->   
-> ! Bloqueia todo tráfego 239.x.x.x de sair  
-> ! Permite entrada de multicast global (224.x.x.x)  
+```ios
+! Interface conectada à Internet/WAN  
+interface GigabitEthernet0/1  
+description "Conexao WAN - Internet"  
+ip multicast boundary 239.0.0.0 8  
+   
+! Bloqueia todo tráfego 239.x.x.x de sair  
+! Permite entrada de multicast global (224.x.x.x)  
+```
 
 **📋 Casos de Uso Corporativo:**
 
@@ -523,6 +525,63 @@ interface GigabitEthernet0/1
  ip pim sparse-mode
  ip igmp version 3
 ```
+
+**🛡️ Vantagens de Segurança SSM:**    
+
+**✅ Controle de Fonte:**  
+
+**Whitelist de Fontes:** Cliente define fontes confiáveis  
+**Prevenção de Spoofing:** Dificulta ataques de fonte falsa  
+**Auditoria:** Log detalhado de (Fonte, Grupo, Cliente)  
+
+**✅ Eficiência de Rede:**  
+
+**Zero Flooding:** Elimina tráfego não solicitado  
+**Bandwidth Optimized:** Apenas tráfego necessário  
+**CPU Efficiency:** Menos processamento nos roteadores  
+
+**🎯 Relevância para CCNP Enterprise:**  
+
+**📚 Tópicos Críticos:**  
+
+- IGMPv3 configuration e troubleshooting
+- PIM-SSM vs PIM-SM differences
+- SSM Mapping para compatibilidade com IGMPv2
+- Anycast RP não aplicável em SSM
+
+**🔍 Troubleshooting SSM:**  
+
+- **Problema:** "SSM não funciona com aplicação legada"
+- **Causa:** Aplicação usa IGMPv2 (não suporta source filtering)
+- **Solução:** Configurar SSM Mapping no roteador
+
+```ios
+Router(config)# ip igmp ssm-map enable
+Router(config)# ip igmp ssm-map static 232.1.1.1 10.1.1.100
+```
+
+**⚠️ Limitações e Considerações:**  
+
+**❌ Desafios:**  
+
+- **IGMPv3 Required:** Aplicações legadas podem não suportar  
+- **Client-Side Support:** SO deve suportar source filtering  
+- **Learning Curve:** Paradigma diferente do multicast tradicional  
+
+**✅ Soluções:**
+
+- **SSM Mapping:** Compatibilidade com IGMPv2  
+- **Application Updates:** Migração gradual para IGMPv3  
+- **Hybrid Approach:** SSM + ASM coexistindo  
+
+**📈 Futuro do Multicast:**  
+
+O SSM representa a direção futura do multicast corporativo, especialmente em:  
+
+- Content Delivery Networks (CDN)  
+- Financial Trading Systems  
+- Industrial IoT Applications  
+- 5G Network Slicing  
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
