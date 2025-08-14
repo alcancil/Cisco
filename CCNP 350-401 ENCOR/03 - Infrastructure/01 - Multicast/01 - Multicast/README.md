@@ -629,6 +629,177 @@ Aplicações:
 └─────────────────────────────────────────────┘
 ```
 
+**Diagrama de Rede**  
+
+```text
+Internet
+    │
+    ├─ AS 65100 (233.254.12.0/24)  ─┐
+    │                               │
+[Core Router]              [Multicast Source]
+    │                         233.254.12.1
+    │                              │
+    ├─ VLAN 10 ────────────────────┼─ [Receivers]
+    │  (Escritório SP)             │   │
+    │                              │   ├─ PC1 (Join)
+    │                              │   ├─ PC2 (Join)
+    │                              │   └─ PC3 (Leave)
+    │
+    └─ VLAN 20 ─────────────────────── [Receivers]
+       (Escritório RJ)                  │
+                                        ├─ PC4 (Join)
+                                        └─ PC5 (Join)
+```
+
+**Configuração Cisco**
+
+**Router de Borda (Edge Router)**  
+
+```ios
+! Habilitação de multicast
+ip multicast-routing
+
+! Interface para Internet
+interface GigabitEthernet0/0
+ ip address 200.1.1.1 255.255.255.252
+ ip pim sparse-mode
+ 
+! Interface interna
+interface GigabitEthernet0/1
+ ip address 10.1.1.1 255.255.255.0
+ ip pim sparse-mode
+
+! Configuração RP para faixa GLOP
+ip pim rp-address 10.1.1.10 233.254.12.0 8
+```
+
+**Servidor Multicast (Source)**  
+
+```python
+# Exemplo em Python - Transmissor GLOP
+import socket
+import struct
+
+# AS 65100 = 233.254.12.x
+GLOP_ADDRESS = '233.254.12.1'
+PORT = 9999
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 64)
+
+message = "Financial Data Update - GLOP Stream"
+while True:
+    sock.sendto(message.encode(), (GLOP_ADDRESS, PORT))
+    time.sleep(1)
+```
+
+**Vantagens do GLOP Addressing**  
+
+1. Unicidade Global
+
+Cada AS tem sua faixa exclusiva
+Eliminação de conflitos entre organizações
+Facilita interconexão entre redes
+
+2. Organização Hierárquica  
+
+AS 1234 → 233.4.210.0/24
+├─ Aplicação A: 233.4.210.1
+├─ Aplicação B: 233.4.210.2
+├─ Departamento X: 233.4.210.10-19
+└─ Departamento Y: 233.4.210.20-29
+
+3. Compatibilidade com BGP
+
+- Facilita roteamento inter-AS
+- Melhor agregação de rotas
+- Suporte nativo em protocolos de roteamento
+
+**Limitações e Considerações**  
+
+**Restrições Técnicas**  
+
+| Aspecto       | Limitação                 | Impacto                             |
+|---------------|---------------------------|-------------------------------------|
+| Faixa por AS  | Apenas 256 endereços      | Requer planejamento cuidadoso       |
+| AS de 32 bits | Não suportado nativamente | Requer mapeamento especial          |
+| Scope         | Apenas global             | Não adequado para aplicações locais |
+
+**⚠️ Alertas Importantes**  
+
+1. AS Privados (64512-65534)
+
+- Podem causar conflitos
+- Usar apenas em ambientes controlados
+
+2. Documentação RFC 3180
+
+- Considerado "Historical"
+- Preferir outras abordagens para novos projetos
+
+3. Migração IPv6
+
+- GLOP não tem equivalente direto
+- Planejar transição para embedded-RP
+
+**Monitoramento e Troubleshooting**  
+
+**Comandos de Diagnóstico**  
+
+```ios
+! Verificar tabela multicast
+show ip mroute 233.254.12.1
+
+! Status PIM
+show ip pim neighbor
+show ip pim rp mapping
+
+! Estatísticas de interface
+show ip multicast interface GigabitEthernet0/1
+
+! Debug (usar com cuidado)
+debug ip pim
+debug ip mpacket 233.254.12.1
+```
+
+**Análise de Tráfego**  
+
+```bash
+# Wireshark filter para GLOP
+ip.dst >= 233.0.0.0 && ip.dst <= 233.255.255.255
+
+# tcpdump para captura GLOP
+tcpdump -i eth0 'dst net 233.254.12.0/24'
+```
+
+**Cenário de Migração**  
+
+**De Administratively Scoped para GLOP**  
+
+```ios
+! Antes (Admin Scoped)
+ip pim rp-address 10.1.1.10 239.1.1.0 8
+
+! Depois (GLOP - AS 65100)
+ip pim rp-address 10.1.1.10 233.254.12.0 8
+
+! Período de transição (ambos ativos)
+ip pim rp-address 10.1.1.10 239.1.1.0 8
+ip pim rp-address 10.1.1.10 233.254.12.0 8
+```
+
+**Comparativo: GLOP vs Outros Esquemas**  
+
+| Característica           | GLOP              | Admin Scoped         | SSM        |
+|--------------------------|-------------------|----------------------|------------|
+| Unicidade                | Global (por AS)   | Local apenas         | Global     |
+| Complexidade             | Média             | Baixa                | Alta       |
+| Escalabilidade           | Limitada (256/AS) | Alta (16M endereços) | Muito Alta |
+| Interoperabilidade       | Boa               | Limitada             | Excelente  |
+| Status RFC               | Historical        | Standard             | Preferred  |
+
+**💡 Dica Profissional:** Embora GLOP seja considerado "historical", ainda é encontrado em redes corporativas legadas. Conhecer sua implementação demonstra experiência com diferentes gerações de tecnologia multicast.
+
 ## Formação de Endereços de Camada 02 (Mac Address)
 
 ## IPv4
