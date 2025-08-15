@@ -11,6 +11,7 @@
     - [3. Endereços Multicast Privados ("Administratively Scoped Addresses")](#3-endereços-multicast-privados-administratively-scoped-addresses)
     - [4 Source-Specific Multicast (SSM)](#4-source-specific-multicast-ssm)
     - [5 GLOP Addressing](#5-glop-addressing)
+    - [6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)](#6-multicast-com-prefixo-unicast-embedded-rp-ou-ipv4-multicast-prefix-based)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -799,6 +800,399 @@ ip pim rp-address 10.1.1.10 233.254.12.0 8
 | Status RFC               | Historical        | Standard             | Preferred  |
 
 **💡 Dica Profissional:** Embora GLOP seja considerado "historical", ainda é encontrado em redes corporativas legadas. Conhecer sua implementação demonstra experiência com diferentes gerações de tecnologia multicast.
+
+### 6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)
+
+**Conceito Fundamental**
+
+O Embedded-RP (também conhecido como IPv4 Multicast prefix-based) é uma técnica avançada que embute o endereço do Rendezvous Point (RP) diretamente no endereço multicast. Esta abordagem elimina a necessidade de configuração manual ou descoberta dinâmica de RP, facilitando a implementação de multicast em redes complexas.
+
+**Estrutura do Endereçamento Embedded-RP**  
+
+**Formato Padrão IPv4**  
+
+Endereço Multicast: **232.R.R.R.0/24**  
+
+Onde:  
+
+- 232: Prefixo reservado para Embedded-RP
+- R.R.R: Últimos 3 octetos do endereço RP
+- Faixa utilizável: 232.0.0.1 até 232.255.255.254
+
+**Mapeamento RP para Multicast**  
+
+| Endereço RP   | Embedded Multicast | Faixa Disponível |
+|---------------|--------------------|------------------|
+| 10.1.1.100    | 232.1.1.100/32     | 232.1.1.100      |
+| 192.168.50.1  | 232.168.50.1/32    | 232.168.50.1     |
+| 172.16.200.10 | 232.16.200.10/32   | 232.16.200.10    |
+
+**Exemplo Prático: Data Center Multicast**  
+
+**Cenário: Streaming Financeiro Distribuído**  
+
+```text
+Topology: Multi-Site Financial Trading Platform
+
+Site Principal (São Paulo):
+├─ RP Primary: 10.10.10.100
+├─ Embedded Group: 232.10.10.100
+└─ Applications:
+   ├─ Market Data: 232.10.10.100 (port 5000)
+   ├─ Trade Alerts: 232.10.10.100 (port 5001)
+   └─ Risk Updates: 232.10.10.100 (port 5002)
+
+Site Backup (Rio de Janeiro):
+├─ RP Secondary: 10.20.20.200
+├─ Embedded Group: 232.20.20.200
+└─ Failover ready for all applications
+```
+
+**Diagrama de Arquitetura**  
+
+```text
+Internet/WAN
+                          │
+            ┌─────────────┼────────────┐
+            │             │            │
+        [SP-Core]    [Backbone]   [RJ-Core]
+     RP: 10.10.10.100     │    RP: 10.20.20.200
+     Group: 232.10.10.100 │    Group: 232.20.20.200
+            │             │            │
+    ┌───────┼───────┐     │     ┌──────┼───────┐
+    │       │       │     │     │      │       │
+[Source1][Source2][RP1]   │   [RP2][Source3][Source4]
+    │       │       │     │     │      │       │
+    └───┬───┴───┬───┘     │     └──┬───┴───┬───┘
+        │       │         │        │       │
+    [Receivers] │         │        │   [Receivers]
+                │         │        │
+            [PIM Join]    │    [PIM Join]
+          232.10.10.100   │    232.20.20.200
+```
+
+**Configuração Avançada Cisco**  
+
+**Core Router (RP Principal)**  
+
+```ios
+! Habilitar multicast routing
+ip multicast-routing
+
+! Configurar interface loopback como RP
+interface Loopback100
+ ip address 10.10.10.100 255.255.255.255
+ ip pim sparse-mode
+
+! Interfaces de rede
+interface GigabitEthernet0/0
+ description "Link para WAN"
+ ip address 200.1.1.1 255.255.255.252
+ ip pim sparse-mode
+ 
+interface GigabitEthernet0/1
+ description "LAN Interna"
+ ip address 10.1.1.1 255.255.255.0
+ ip pim sparse-mode
+
+! Configuração Embedded-RP
+ip pim rp-address 10.10.10.100 232.10.10.100 32 override
+ip pim accept-rp 10.10.10.100 232.10.10.100 32
+
+! Redundância com Anycast RP
+ip pim anycast-rp 10.10.10.100 10.20.20.200
+ip pim anycast-rp 10.10.10.100 10.10.10.100
+```
+
+**Servidor de Aplicação (Source)**  
+
+```python
+#!/usr/bin/env python3
+# Embedded-RP Multicast Sender - Market Data
+
+import socket
+import struct
+import time
+import json
+from datetime import datetime
+
+class EmbeddedRPSender:
+    def __init__(self, rp_address, port):
+        # Construir endereço embedded-RP
+        rp_octets = rp_address.split('.')
+        self.mcast_addr = f"232.{rp_octets[1]}.{rp_octets[2]}.{rp_octets[3]}"
+        self.port = port
+        
+        # Criar socket UDP
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 64)
+        
+        print(f"Embedded-RP Sender iniciado:")
+        print(f"  RP Address: {rp_address}")
+        print(f"  Multicast: {self.mcast_addr}:{port}")
+    
+    def send_market_data(self):
+        sequence = 0
+        while True:
+            # Dados simulados de mercado
+            market_data = {
+                "timestamp": datetime.now().isoformat(),
+                "symbol": "PETR4",
+                "price": 28.50 + (sequence % 100) * 0.01,
+                "volume": 1000 + (sequence * 100),
+                "sequence": sequence
+            }
+            
+            message = json.dumps(market_data).encode()
+            self.sock.sendto(message, (self.mcast_addr, self.port))
+            
+            print(f"Sent seq {sequence}: {market_data['symbol']} @ {market_data['price']}")
+            sequence += 1
+            time.sleep(0.1)  # 10 msgs/sec
+
+# Uso
+if __name__ == "__main__":
+    sender = EmbeddedRPSender("10.10.10.100", 5000)
+    sender.send_market_data()
+```
+
+**Cliente Receiver**  
+
+
+```Python
+#!/usr/bin/env python3
+# Embedded-RP Multicast Receiver
+
+import socket
+import struct
+import json
+
+class EmbeddedRPReceiver:
+    def __init__(self, rp_address, port):
+        # Construir endereço embedded-RP
+        rp_octets = rp_address.split('.')
+        self.mcast_addr = f"232.{rp_octets[1]}.{rp_octets[2]}.{rp_octets[3]}"
+        self.port = port
+        
+        # Criar e configurar socket
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind(('', port))
+        
+        # Join no grupo multicast
+        mreq = struct.pack("4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+        
+        print(f"Receiver conectado em {self.mcast_addr}:{port}")
+    
+    def receive_data(self):
+        while True:
+            data, addr = self.sock.recvfrom(1024)
+            market_data = json.loads(data.decode())
+            
+            print(f"[{market_data['sequence']:06d}] {market_data['symbol']}: "
+                  f"${market_data['price']:.2f} Vol:{market_data['volume']:,}")
+
+# Uso
+if __name__ == "__main__":
+    receiver = EmbeddedRPReceiver("10.10.10.100", 5000)
+    receiver.receive_data()
+```
+
+**Vantagens do Embedded-RP**  
+
+1. Auto-Configuração  
+
+Benefícios:
+├─ Eliminação de BSR (Bootstrap Router)
+├─ Sem necessidade de static RP mapping
+├─ Descoberta automática do RP
+└─ Redução de overhead de controle
+
+2. Escalabilidade Aprimorada
+
+- Suporte a múltiplos RPs simultâneos
+- Balanceamento automático de carga
+- Failover transparente
+
+3. Compatibilidade IPv6
+
+- Base para IPv6 Embedded-RP (RFC 3956)
+- Facilita migração dual-stack
+- Padrão para redes modernas
+
+**Implementação com Anycast RP**  
+
+**Configuração de Redundância**  
+
+```ios
+! Router SP (Primary)
+ip pim anycast-rp 10.99.99.99 10.10.10.100
+ip pim anycast-rp 10.99.99.99 10.20.20.200
+
+interface Loopback99
+ ip address 10.99.99.99 255.255.255.255
+ description "Anycast RP Address"
+
+! Embedded-RP com Anycast
+ip pim rp-address 10.99.99.99 232.99.99.99 32
+
+! Router RJ (Secondary)  
+ip pim anycast-rp 10.99.99.99 10.10.10.100
+ip pim anycast-rp 10.99.99.99 10.20.20.200
+
+interface Loopback99
+ ip address 10.99.99.99 255.255.255.255
+ description "Anycast RP Address"
+```
+
+**Monitoramento e Troubleshooting** 
+
+**Comandos de Diagnóstico Específicos**  
+
+```ios
+! Verificar mapeamento Embedded-RP
+show ip pim rp mapping
+
+! Status específico do grupo embedded
+show ip mroute 232.10.10.100 detail
+
+! Informações do RP
+show ip pim rp 10.10.10.100
+
+! Debugging avançado
+debug ip pim rp
+debug ip pim auto-rp
+debug ip pim bsr
+```
+
+**Script de Monitoramento**  
+
+```python
+#!/usr/bin/env python3
+# Monitor Embedded-RP Health
+
+import subprocess
+import re
+import time
+
+def check_embedded_rp_status():
+    try:
+        # Verificar conectividade com RP
+        result = subprocess.run(['ping', '-c', '1', '10.10.10.100'], 
+                              capture_output=True, text=True)
+        rp_reachable = result.returncode == 0
+        
+        # Verificar grupos ativos
+        mroute_cmd = "show ip mroute | include 232\\."
+        # Simular output para exemplo
+        active_groups = ["232.10.10.100", "232.20.20.200"]
+        
+        status = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "rp_reachable": rp_reachable,
+            "active_embedded_groups": len(active_groups),
+            "groups": active_groups
+        }
+        
+        return status
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+# Monitoramento contínuo
+if __name__ == "__main__":
+    while True:
+        status = check_embedded_rp_status()
+        print(f"[{status.get('timestamp')}] RP Status: {status}")
+        time.sleep(30)
+```
+
+**Considerações de Segurança**  
+
+**Controle de Acesso**  
+
+```ios
+! ACL para controlar sources
+ip access-list extended EMBEDDED_RP_SOURCES
+ permit ip 10.1.0.0 0.0.255.255 host 232.10.10.100
+ permit ip 192.168.0.0 0.0.255.255 host 232.10.10.100
+ deny ip any host 232.10.10.100
+
+! Aplicar na interface
+interface GigabitEthernet0/1
+ ip multicast boundary EMBEDDED_RP_SOURCES in
+```
+
+**Rate Limiting**  
+
+```ios
+! Controle de taxa por grupo
+ip multicast rate-limit in group-list EMBEDDED_RP_GROUPS 1000
+
+ip access-list extended EMBEDDED_RP_GROUPS
+ permit ip any 232.0.0.0 0.255.255.255
+```
+
+**Comparativo: Embedded-RP vs Outras Abordagens**  
+
+| Característica | Embedded-RP | Static RP | Auto-RP    | BSR        |
+|----------------|-------------|-----------|------------|------------|
+| Configuração   | Mínima      | Manual    | Automática | Automática |
+| Escalabilidade | Alta        | Baixa     | Média      | Alta       |
+| Convergência   | Rápida      | N/A       | Lenta      | Média      |
+| Overhead       | Baixo       | Nenhum    | Alto       | Médio      |
+| IPv6 Ready     | Sim         | Sim       | Não        | Sim        |
+| Vendor Support | Universal   | Universal | Cisco      | Universal  |
+
+**Troubleshooting Avançado**  
+
+**Problemas Comuns e Soluções**  
+
+| Problema         | Sintoma           | Diagnóstico            | Solução                        |
+|------------------|-------------------|------------------------|--------------------------------|
+| RP Unreachable   | No multicast flow | ping RP_IP             | Verificar roteamento unicast   |
+| Wrong RP mapping | Joins to wrong RP | show ip pim rp mapping | Corrigir configuração embedded |
+| MTU Issues       | Packet loss       | show ip mroute count   | Ajustar MTU path discovery     |
+| TTL Boundary     | Scope limitation  | show ip mroute         | Verificar TTL scoping          |
+
+**Script de Health Check**  
+
+```bash
+#!/bin/bash
+# Embedded-RP Health Check
+
+EMBEDDED_GROUPS=(
+    "232.10.10.100"
+    "232.20.20.200" 
+    "232.99.99.99"
+)
+
+echo "=== Embedded-RP Health Check ==="
+echo "Timestamp: $(date)"
+
+for group in "${EMBEDDED_GROUPS[@]}"; do
+    echo "Checking group: $group"
+    
+    # Extrair RP do endereço embedded
+    IFS='.' read -ra ADDR <<< "$group"
+    rp_ip="10.${ADDR[1]}.${ADDR[2]}.${ADDR[3]}"
+    
+    # Verificar conectividade RP
+    if ping -c 1 -W 2 "$rp_ip" >/dev/null 2>&1; then
+        echo "  ✓ RP $rp_ip reachable"
+    else
+        echo "  ✗ RP $rp_ip unreachable"
+    fi
+    
+    # Verificar grupo ativo (simulado)
+    echo "  ℹ Active receivers: 3"
+    echo "  ℹ Data rate: 1.2 Mbps"
+    echo ""
+done
+```
+
+**💡 Dica Profissional:** Embedded-RP representa o estado da arte em multicast enterprise, oferecendo auto-configuração sem sacrificar controle. É a base para implementações IPv6 e arquiteturas SD-WAN modernas.
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
