@@ -13,6 +13,7 @@
     - [5 GLOP Addressing](#5-glop-addressing)
     - [6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)](#6-multicast-com-prefixo-unicast-embedded-rp-ou-ipv4-multicast-prefix-based)
     - [Tipos de Endereço Multicast IPv6](#tipos-de-endereço-multicast-ipv6)
+    - [1. Escopo IPv6 Multicast (Scope Field)](#1-escopo-ipv6-multicast-scope-field)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -1212,7 +1213,7 @@ Onde:
 - **Scope:** Definição de alcance (4 bits) 
 - **Group ID:** Identificador do grupo (112 bits)
 
-**1. Escopo IPv6 Multicast (Scope Field)**  
+### 1. Escopo IPv6 Multicast (Scope Field) 
 
 O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permitindo controle granular sobre a propagação do tráfego sem depender de configurações complexas de boundary. Este mecanismo built-in facilita significativamente o design e troubleshooting de redes multicast.
 
