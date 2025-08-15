@@ -1,0 +1,5 @@
+Criar Tópico.
+
+
+imperativa --- onde todas as variáveis são declaradas dentro do próprio script
+declarativa -- as variáveis são declaradas em outros arquivos, como .yaml ou .json porém eles tem que fazer uma pré checagem.
