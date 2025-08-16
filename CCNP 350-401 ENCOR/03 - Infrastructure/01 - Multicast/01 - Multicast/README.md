@@ -14,7 +14,7 @@
     - [6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)](#6-multicast-com-prefixo-unicast-embedded-rp-ou-ipv4-multicast-prefix-based)
   - [Tipos de Endereço Multicast IPv6](#tipos-de-endereço-multicast-ipv6)
     - [1. Escopo IPv6 Multicast (Scope Field)](#1-escopo-ipv6-multicast-scope-field)
-    - [MLD (Multicast Listener Discovery)](#mld-multicast-listener-discovery)
+    - [2. MLD (Multicast Listener Discovery)](#2-mld-multicast-listener-discovery)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -1529,7 +1529,7 @@ print(select_ipv6_scope('corporate_updates'))  # ff08::
 
 **💡 Dica Profissional:** O sistema de escopo IPv6 representa uma evolução significativa sobre IPv4. Dominar essa hierarquia é essencial para arquiteturas multicast modernas e migrações para IPv6 bem-sucedidas.
 
-### MLD (Multicast Listener Discovery)  
+### 2. MLD (Multicast Listener Discovery)  
 
 **Conceito Fundamental**  
 
