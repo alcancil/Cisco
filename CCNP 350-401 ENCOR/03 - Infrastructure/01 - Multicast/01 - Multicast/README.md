@@ -14,6 +14,7 @@
     - [6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)](#6-multicast-com-prefixo-unicast-embedded-rp-ou-ipv4-multicast-prefix-based)
   - [Tipos de Endereço Multicast IPv6](#tipos-de-endereço-multicast-ipv6)
     - [1. Escopo IPv6 Multicast (Scope Field)](#1-escopo-ipv6-multicast-scope-field)
+    - [MLD (Multicast Listener Discovery)](#mld-multicast-listener-discovery)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
   - [IPv6](#ipv6-1)
@@ -1527,6 +1528,295 @@ print(select_ipv6_scope('corporate_updates'))  # ff08::
 - Resposta: FF08:: (Organization-Local)  
 
 **💡 Dica Profissional:** O sistema de escopo IPv6 representa uma evolução significativa sobre IPv4. Dominar essa hierarquia é essencial para arquiteturas multicast modernas e migrações para IPv6 bem-sucedidas.
+
+### MLD (Multicast Listener Discovery)  
+
+**Conceito Fundamental**  
+
+O MLD (Multicast Listener Discovery) é o protocolo IPv6 equivalente ao IGMP para IPv4, responsável por gerenciar a associação de hosts a grupos multicast em redes IPv6. Imagine o MLD como um "sistema de inscrição inteligente" que permite que dispositivos IPv6 se inscrevam para receber apenas o conteúdo multicast que realmente desejam, evitando desperdício de banda.
+
+**Estrutura e Versões do MLD**  
+
+**MLDv1 (RFC 2710)**  
+
+Versão básica baseada no **IGMPv2:**
+
+- **Query Messages:** "Alguém ainda quer receber este conteúdo?"
+- **Report Messages:** "Sim, eu quero receber!"
+- **Done Messages:** "Não preciso mais, obrigado!"
+
+**MLDv2 (RFC 3810)**  
+
+Versão avançada com filtragem por fonte:
+
+- **Source Filtering:** "Quero este conteúdo, mas apenas desta fonte específica"
+- **Include/Exclude Lists:** "Aceito de todos, exceto desta lista" ou "Apenas destas fontes"
+- **Query Types:** Consultas gerais, específicas por grupo, ou por grupo e fonte
+
+**Tipos de Mensagens MLD**  
+
+| Tipo      | Função                                | Exemplo Prático                             |
+|-----------|---------------------------------------|---------------------------------------------|
+| Query     | Roteador pergunta quem quer conteúdo" | "Alguém ainda assiste o canal de notícias?" |
+| Report    | Cliente confirma interesse            | "Eu ainda assisto!"                         |
+| Done      | Cliente cancela inscrição             | "Não assisto mais"                          |
+| Report v2 | Confirma com filtros de fonte         | "Assisto, mas só da fonte confiável X"      |
+
+**Exemplo Prático: Videoconferência Corporativa**  
+
+**Cenário: Empresa Multi-Andares**  
+
+```text
+Prédio Corporativo IPv6:
+
+Andar 3 - Diretoria:
+├─ Rede: 2001:db8:100:3::/64
+├─ Reunião Diretoria: ff3e::1:1000 (restrita ao prédio)
+└─ Alertas Emergência: ff0e::1:9999 (global)
+
+Andar 2 - Engenharia:  
+├─ Rede: 2001:db8:100:2::/64
+├─ Tech Talks: ff3e::2:1000
+└─ Code Reviews: ff3e::2:2000
+
+Andar 1 - Geral:
+├─ Rede: 2001:db8:100:1::/64
+├─ All Hands: ff0e::1:1000 (global)
+└─ Treinamentos: ff3e::1:3000
+```
+
+**Como Funciona na Prática**  
+
+1. João (Diretor) quer assistir a reunião da diretoria
+2. Seu computador IPv6 envia MLD Report para **ff3e::1:1000**
+3. O roteador anota: "João quer conteúdo do grupo diretoria"
+4. Quando alguém transmite para o grupo, o roteador entrega para João
+5. Se João sair da reunião, envia MLD Done e para de receber
+
+**Configuração Simplificada - Roteador Cisco**  
+
+```ios
+! Habilitar IPv6 e multicast
+ipv6 unicast-routing  
+ipv6 multicast-routing
+
+! Interface para Andar 3 (Diretoria)
+interface GigabitEthernet0/1
+ ipv6 address 2001:db8:100:3::1/64
+ ipv6 mld version 2
+ ipv6 mld query-interval 60
+ ipv6 enable
+
+! Interface para demais andares...
+```
+
+**Aplicação Prática - Servidor de Vídeo**  
+
+```python
+# Servidor que transmite vídeo para grupos IPv6
+import socket
+import json
+import time
+
+class ServidorVideoIPv6:
+    def __init__(self, grupo_ipv6, porta):
+        self.grupo = grupo_ipv6
+        self.porta = porta
+        
+        # Criar socket IPv6
+        self.socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        
+    def transmitir_video(self):
+        frame = 0
+        while True:
+            # Criar frame de vídeo simulado
+            dados_video = {
+                "timestamp": time.time(),
+                "frame": frame,
+                "qualidade": "HD",
+                "conteudo": "Reunião Diretoria"
+            }
+            
+            # Enviar para o grupo multicast
+            mensagem = json.dumps(dados_video)
+            self.socket.sendto(mensagem.encode(), 
+                             (self.grupo, self.porta))
+            
+            print(f"Frame {frame} enviado para {self.grupo}")
+            frame += 1
+            time.sleep(0.033)  # ~30 FPS
+
+# Uso: transmitir para grupo da diretoria
+servidor = ServidorVideoIPv6("ff3e::1:1000", 5000)
+# servidor.transmitir_video()
+```
+
+**Cliente Receptor**  
+
+```python
+# Cliente que recebe vídeo de grupos IPv6  
+import socket
+import json
+
+class ClienteVideoIPv6:
+    def __init__(self, grupo_ipv6, porta):
+        self.grupo = grupo_ipv6
+        self.porta = porta
+        
+    def se_inscrever(self):
+        # Criar socket e fazer bind
+        self.socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        self.socket.bind(('', self.porta))
+        
+        # Entrar no grupo multicast (envia MLD Report automaticamente)
+        grupo_binario = socket.inet_pton(socket.AF_INET6, self.grupo)
+        self.socket.setsockopt(socket.IPPROTO_IPV6, 
+                              socket.IPV6_JOIN_GROUP, 
+                              grupo_binario + b'\x00' * 4)
+        
+        print(f"Inscrito no grupo {self.grupo}")
+        
+    def assistir(self):
+        while True:
+            # Receber dados do grupo
+            dados, origem = self.socket.recvfrom(1024)
+            video = json.loads(dados.decode())
+            
+            print(f"Frame {video['frame']}: {video['conteudo']} "
+                  f"({video['qualidade']})")
+
+# Uso: assistir reunião da diretoria
+cliente = ClienteVideoIPv6("ff3e::1:1000", 5000)
+# cliente.se_inscrever()
+# cliente.assistir()
+```
+
+**Estrutura das Mensagens MLD**  
+
+**Flags e Parâmetros Importantes**  
+
+| Campo         | Tamanho  | Função                                   |
+|---------------|----------|------------------------------------------|
+| Type          | 8 bits   | Tipo da mensagem (Query=130, Report=143) |
+| Hop Limit     | 8 bits   | Alcance da mensagem (1=link-local)       |
+| Group Address | 128 bits | Endereço do grupo IPv6                   |
+| Source List   | Variável | Lista de fontes (MLDv2 apenas)           |
+
+**Monitoramento Simplificado**  
+
+```Python
+# Monitor básico de grupos MLD
+import time
+
+class MonitorMLD:
+    def __init__(self):
+        self.grupos_ativos = {}
+        
+    def verificar_status(self):
+        # Simular dados reais de um roteador
+        status = {
+            'ff3e::1:1000': {'ouvintes': 5, 'ativo': True},
+            'ff0e::1:1000': {'ouvintes': 15, 'ativo': True},
+            'ff0e::1:9999': {'ouvintes': 25, 'ativo': True}
+        }
+        
+        print(f"\n=== STATUS MLD - {time.strftime('%H:%M:%S')} ===")
+        for grupo, info in status.items():
+            emoji = "✅" if info['ativo'] else "❌"
+            print(f"{emoji} {grupo}: {info['ouvintes']} ouvintes")
+            
+        return status
+
+# Uso
+monitor = MonitorMLD()
+# status = monitor.verificar_status()
+```
+
+**Comandos Úteis para Diagnóstico**  
+
+```ios
+! Ver grupos MLD ativos
+show ipv6 mld groups
+
+! Ver estatísticas por interface  
+show ipv6 mld interface
+
+! Debug de mensagens MLD
+debug ipv6 mld
+```
+
+**Segurança e Controle de Acesso**  
+
+```ios
+! Controlar quais grupos são permitidos
+ipv6 access-list GRUPOS-PERMITIDOS
+ permit ipv6 any ff3e::/16  ! Grupos do prédio
+ permit ipv6 any ff0e::1:1000/128  ! All hands específico
+ deny ipv6 any ff0e::/16  ! Bloquear outros grupos globais
+
+interface GigabitEthernet0/1
+ ipv6 traffic-filter GRUPOS-PERMITIDOS in
+```
+
+**Comparação: MLD vs IGMP**  
+
+| Aspecto             | MLD (IPv6)   | IGMP (IPv4)  |
+|---------------------|--------------|--------------|
+| Protocolo Base      | ICMPv6       | IGMP próprio |
+| Tamanho Endereço    | 128 bits     | 32 bits      |
+| Filtragem por Fonte | MLDv2        | IGMPv3       |
+| Alcance             | Hop Limit    | TTL          |
+| Futuro              | Padrão atual | Legacy       |
+
+**Vantagens do MLD**  
+
+- **Nativo IPv6:** Integrado ao protocolo IPv6
+- **Maior Alcance:** Endereçamento hierárquico melhor
+- **Segurança:** IPSec nativo no IPv6
+- **Eficiência:** Menos overhead que IGMP+IPv4
+
+**Casos de Uso Típicos**  
+
+- **Videoconferência Corporativa:** Diferentes grupos por departamento
+- **IPTV Residencial:** Canais sob demanda
+- **Streaming de Jogos:** Múltiplas partidas simultâneas
+- **IoT Industrial:** Sensores enviando dados para grupos específicos
+- **Educação:** Aulas ao vivo para turmas diferentes
+
+**Troubleshooting Básico**  
+
+| Problema               | Solução Rápida                          |
+|------------------------|-----------------------------------------|
+| "Não recebo multicast" | Verificar se fez join no grupo correto  |
+| "Muito tráfego"        | Implementar filtragem por fonte (MLDv2) |
+| "Conexão instável"     | Ajustar intervalos de query             |
+| "Grupos não funcionam" | Verificar roteamento IPv6 multicast     |
+
+**Script de Diagnóstico Rápido**  
+
+```bash
+#!/bin/bash
+# Verificação rápida MLD
+
+echo "=== DIAGNÓSTICO MLD ==="
+
+# Verificar IPv6 ativo
+if ping6 -c 1 ::1 > /dev/null 2>&1; then
+    echo "✅ IPv6 funcionando"
+else
+    echo "❌ IPv6 com problemas"
+fi
+
+# Verificar grupos multicast (simulado)
+echo "📡 Grupos MLD ativos:"
+echo "  ff3e::1:1000 - Reunião Diretoria (5 membros)"
+echo "  ff0e::1:1000 - All Hands (15 membros)"
+echo "  ff0e::1:9999 - Emergências (25 membros)"
+
+echo "✅ Diagnóstico concluído"
+```
+
+**💡 Dica Prática:** MLD é como uma "lista de transmissão inteligente" para IPv6. Quando você quer receber um stream de vídeo específico, seu dispositivo automaticamente se inscreve usando MLD, e quando não quer mais, se desinscreve. É simples, eficiente e economiza banda da rede!
 
 ## Formação de Endereços de Camada 02 (Mac Address)
 
