@@ -5,7 +5,7 @@
   - [Problemas de não utilizar o multicast](#problemas-de-não-utilizar-o-multicast)
   - [Endereçamento Multicast](#endereçamento-multicast)
   - [Tipos de Endereço Multicast](#tipos-de-endereço-multicast)
-    - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
+  - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
     - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
     - [2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)](#2-escopo-global---22401024-internetwork-control-block)
     - [3. Endereços Multicast Privados ("Administratively Scoped Addresses")](#3-endereços-multicast-privados-administratively-scoped-addresses)
@@ -182,7 +182,7 @@ Para informações mais detalhadas e atualizadas, consulte o registro oficial da
 
 Certo como já demonstrado, o **multicast** é separado em faixas bem definidas. Então vamos entender melhor os tipos de endereços.
 
-### Tipos de Endereço Multicast IPv4
+## Tipos de Endereço Multicast IPv4
 
 A primeira coisa que precisamos entender que em IPv4 os endereços são classificados em um bloco da **Classe D** que vai de: **224.0.0.0 a 239.255.255.255**  
 
