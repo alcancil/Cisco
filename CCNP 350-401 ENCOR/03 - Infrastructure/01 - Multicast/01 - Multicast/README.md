@@ -1616,4 +1616,4 @@ Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o 
 🌳 **[Ver Visualização Interativa da Árvore Multicast](Imagens/multicast_tree.svg)**
 
 
-**[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.htm)
+[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.htm)
