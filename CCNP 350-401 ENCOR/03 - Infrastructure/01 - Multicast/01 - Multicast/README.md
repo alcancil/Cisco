@@ -1200,7 +1200,7 @@ done
 
 **Estrutura Fundamental do Endereçamento IPv6 Multicast**  
 
-O endereçamento multicast IPv6 utiliza uma abordagem mais sofisticada e flexível comparado ao IPv4, eliminando muitas limitações e ambiguidades do sistema anterior. Todos os endereços multicast IPv6 começam com o prefixo FF00::/8, proporcionando um espaço de endereçamento vastamente superior.
+O endereçamento multicast IPv6 utiliza uma abordagem mais sofisticada e flexível comparado ao IPv4, eliminando muitas limitações e ambiguidades do sistema anterior. Todos os endereços multicast IPv6 começam com o prefixo **FF00::/8**, proporcionando um espaço de endereçamento vastamente superior.
 
 **Formato Padrão IPv6 Multicast**  
 
