@@ -12,7 +12,7 @@
     - [4 Source-Specific Multicast (SSM)](#4-source-specific-multicast-ssm)
     - [5 GLOP Addressing](#5-glop-addressing)
     - [6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)](#6-multicast-com-prefixo-unicast-embedded-rp-ou-ipv4-multicast-prefix-based)
-    - [Tipos de Endereço Multicast IPv6](#tipos-de-endereço-multicast-ipv6)
+  - [Tipos de Endereço Multicast IPv6](#tipos-de-endereço-multicast-ipv6)
     - [1. Escopo IPv6 Multicast (Scope Field)](#1-escopo-ipv6-multicast-scope-field)
   - [Formação de Endereços de Camada 02 (Mac Address)](#formação-de-endereços-de-camada-02-mac-address)
   - [IPv4](#ipv4-1)
@@ -1196,7 +1196,7 @@ done
 
 **💡 Dica Profissional:** Embedded-RP representa o estado da arte em multicast enterprise, oferecendo auto-configuração sem sacrificar controle. É a base para implementações IPv6 e arquiteturas SD-WAN modernas.
 
-### Tipos de Endereço Multicast IPv6
+## Tipos de Endereço Multicast IPv6
 
 **Estrutura Fundamental do Endereçamento IPv6 Multicast**  
 
