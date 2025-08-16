@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Interativo de Multicast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-option.selected {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+            border-color: #2563eb; /* border-blue-700 */
+        }
+        .quiz-option.correct {
+            background-color: #22c55e; /* bg-green-500 */
+            color: white;
+        }
+        .quiz-option.incorrect {
+            background-color: #ef4444; /* bg-red-500 */
+            color: white;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container" class="w-full max-w-3xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 transition-all duration-500">
+        
+        <!-- Tela de Início -->
+        <div id="start-screen">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">Simulado de Multicast</h1>
+            <p class="text-center text-slate-600 mb-8">Teste seus conhecimentos sobre os conceitos de Multicast abordados no material. Você terá 10 minutos para completar 10 questões.</p>
+            <div class="text-center">
+                <button id="start-quiz-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                    Iniciar Simulado
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela do Quiz -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Questão <span id="question-number"></span> de 10</h2>
+                </div>
+                <div class="flex items-center space-x-2 bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timer">10:00</span>
+                </div>
+            </div>
+
+            <div id="question-area">
+                <p id="question-text" class="text-lg md:text-xl font-semibold mb-6"></p>
+                <div id="options-container" class="space-y-3">
+                    <!-- Opções serão inseridas aqui -->
+                </div>
+            </div>
+
+            <div class="mt-8 text-right">
+                <button id="next-question-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>
+                    Próxima Questão
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela de Resultados -->
+        <div id="results-screen" class="hidden">
+            <h2 class="text-3xl font-bold text-center text-slate-900 mb-4">Resultado Final</h2>
+            <div class="bg-slate-200 rounded-lg p-6 text-center mb-8">
+                <p class="text-lg text-slate-700">Sua pontuação foi:</p>
+                <p class="text-5xl font-extrabold text-blue-600 my-2"><span id="score"></span>%</p>
+                <p class="text-slate-600"><span id="correct-answers"></span> de 10 questões corretas</p>
+                <p class="text-slate-600 mt-2">Tempo restante: <span id="time-taken"></span></p>
+            </div>
+            
+            <div id="detailed-results" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                <!-- Resultados detalhados serão inseridos aqui -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="restart-quiz-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DADOS DO QUIZ ---
+        // Perguntas extraídas do conteúdo do arquivo README.md
+        const quizData = [
+            {
+                question: "Qual faixa de endereçamento IPv4 é designada como Classe D e reservada para Multicast?",
+                options: [
+                    "192.0.0.0 a 223.255.255.255",
+                    "224.0.0.0 a 239.255.255.255",
+                    "128.0.0.0 a 191.255.255.255",
+                    "240.0.0.0 a 247.255.255.255"
+                ],
+                answer: "224.0.0.0 a 239.255.255.255"
+            },
+            {
+                question: "No IPv6, qual prefixo identifica um endereço como sendo Multicast?",
+                options: [
+                    "FE80::/10",
+                    "2000::/3",
+                    "FC00::/7",
+                    "FF00::/8"
+                ],
+                answer: "FF00::/8"
+            },
+            {
+                question: "Para evitar o flooding de tráfego multicast em uma rede local (camada 2), qual protocolo é ativado nos switches?",
+                options: [
+                    "PIM (Protocol Independent Multicast)",
+                    "IGMP Snooping (Internet Group Management Protocol)",
+                    "OSPF (Open Shortest Path First)",
+                    "BGP (Border Gateway Protocol)"
+                ],
+                answer: "IGMP Snooping (Internet Group Management Protocol)"
+            },
+            {
+                question: "Qual endereço multicast bem-conhecido (well-known) é utilizado por todos os roteadores que executam o protocolo PIM?",
+                options: [
+                    "224.0.0.5",
+                    "224.0.0.10",
+                    "224.0.0.13",
+                    "224.0.0.2"
+                ],
+                answer: "224.0.0.13"
+            },
+            {
+                question: "Os endereços da faixa 239.0.0.0/8 são conhecidos como 'Administratively Scoped'. Qual é a sua principal característica?",
+                options: [
+                    "São roteáveis globalmente na Internet.",
+                    "São reservados para uso interno de organizações, similar à RFC 1918 para unicast.",
+                    "São utilizados exclusivamente para o protocolo NTP.",
+                    "São obrigatórios para a comunicação entre roteadores de diferentes sistemas autônomos."
+                ],
+                answer: "São reservados para uso interno de organizações, similar à RFC 1918 para unicast."
+            },
+            {
+                question: "Qual é o principal problema do mapeamento de endereços multicast IPv4 para endereços MAC, que é resolvido no IPv6?",
+                options: [
+                    "A necessidade de usar ARP para cada endereço multicast.",
+                    "A lentidão do processo de conversão de 48 bits.",
+                    "A possibilidade de sobreposição, onde múltiplos endereços IP multicast podem mapear para o mesmo endereço MAC.",
+                    "A limitação de apenas 256 endereços MAC multicast possíveis."
+                ],
+                answer: "A possibilidade de sobreposição, onde múltiplos endereços IP multicast podem mapear para o mesmo endereço MAC."
+            },
+            {
+                question: "O Source-Specific Multicast (SSM), que utiliza a faixa 232.0.0.0/8, depende de qual versão do IGMP para que os clientes possam especificar a fonte do tráfego?",
+                options: [
+                    "IGMPv1",
+                    "IGMPv2",
+                    "IGMPv3",
+                    "Qualquer versão do IGMP"
+                ],
+                answer: "IGMPv3"
+            },
+            {
+                question: "Na estrutura de um endereço multicast IPv6, o campo 'scope' é fundamental. Qual o valor de 'scope' para tráfego Link-Local, como o usado por OSPFv3 e EIGRP?",
+                options: [
+                    "1 (Interface-Local)",
+                    "2 (Link-Local)",
+                    "5 (Site-Local)",
+                    "E (Global)"
+                ],
+                answer: "2 (Link-Local)"
+            },
+            {
+                question: "Qual é o prefixo MAC fixo utilizado para todos os endereços multicast em redes IPv6?",
+                options: [
+                    "01:00:5E",
+                    "FF:FF:FF",
+                    "33:33:00",
+                    "33:33"
+                ],
+                answer: "33:33"
+            },
+            {
+                question: "O que é GLOP Addressing?",
+                options: [
+                    "Um método para criptografar tráfego multicast.",
+                    "Um esquema que mapeia um Número de Sistema Autônomo (AS) para um endereço multicast globalmente único.",
+                    "Um protocolo para balanceamento de carga entre servidores multicast.",
+                    "Uma técnica para limitar o tráfego multicast a uma única VLAN."
+                ],
+                answer: "Um esquema que mapeia um Número de Sistema Autônomo (AS) para um endereço multicast globalmente único."
+            }
+        ];
+
+        // --- ELEMENTOS DO DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        
+        const startBtn = document.getElementById('start-quiz-btn');
+        const nextBtn = document.getElementById('next-question-btn');
+        const restartBtn = document.getElementById('restart-quiz-btn');
+
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const timerEl = document.getElementById('timer');
+
+        const scoreEl = document.getElementById('score');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const timeTakenEl = document.getElementById('time-taken');
+        const detailedResultsEl = document.getElementById('detailed-results');
+
+        // --- ESTADO DO QUIZ ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 600; // 10 minutos em segundos
+        let userAnswers = [];
+
+        // --- FUNÇÕES DO QUIZ ---
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 600;
+            userAnswers = [];
+            
+            startTimer();
+            showQuestion();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionNumberEl.textContent = currentQuestionIndex + 1;
+            questionTextEl.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = '';
+
+            // Embaralhar opções para não ficarem sempre na mesma ordem
+            const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('quiz-option', 'w-full', 'text-left', 'p-4', 'border-2', 'rounded-lg', 'transition-colors', 'duration-200', 'hover:bg-blue-100', 'hover:border-blue-400');
+                button.onclick = () => selectOption(button, option);
+                optionsContainer.appendChild(button);
+            });
+
+            // Altera o texto do botão para a última questão
+            if (currentQuestionIndex === quizData.length - 1) {
+                nextBtn.textContent = 'Ver Resultados';
+            } else {
+                nextBtn.textContent = 'Próxima Questão';
+            }
+            
+            nextBtn.disabled = true;
+        }
+
+        function selectOption(selectedButton, selectedOption) {
+            // Desmarcar outras opções
+            Array.from(optionsContainer.children).forEach(btn => btn.classList.remove('selected'));
+            // Marcar a opção clicada
+            selectedButton.classList.add('selected');
+            nextBtn.disabled = false;
+
+            // Armazena a resposta do usuário
+            userAnswers[currentQuestionIndex] = selectedOption;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            // Calcular pontuação
+            score = 0;
+            quizData.forEach((question, index) => {
+                if (userAnswers[index] === question.answer) {
+                    score++;
+                }
+            });
+
+            const scorePercentage = Math.round((score / quizData.length) * 100);
+            scoreEl.textContent = scorePercentage;
+            correctAnswersEl.textContent = score;
+            
+            const minutesLeft = Math.floor(timeLeft / 60);
+            const secondsLeft = timeLeft % 60;
+            timeTakenEl.textContent = `${minutesLeft}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+
+            // Exibir resultados detalhados
+            detailedResultsEl.innerHTML = '';
+            quizData.forEach((question, index) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('p-4', 'rounded-lg', 'border');
+                
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+
+                // Adiciona as classes CSS corretamente
+                if (isCorrect) {
+                    resultDiv.classList.add('bg-green-50', 'border-green-300');
+                } else {
+                    resultDiv.classList.add('bg-red-50', 'border-red-300');
+                }
+
+                resultDiv.innerHTML = `
+                    <p class="font-bold text-slate-800 mb-2">Questão ${index + 1}: ${question.question}</p>
+                    <p class="text-sm ${isCorrect ? 'text-green-700' : 'text-red-700'}">
+                        Sua resposta: <span class="font-semibold">${userAnswer || 'Não respondida'}</span>
+                    </p>
+                    ${!isCorrect ? `<p class="text-sm text-green-800 mt-1">Resposta correta: <span class="font-semibold">${question.answer}</span></p>` : ''}
+                `;
+                detailedResultsEl.appendChild(resultDiv);
+            });
+        }
+
+        // --- EVENT LISTENERS ---
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+    </script>
+</body>
+</html>
