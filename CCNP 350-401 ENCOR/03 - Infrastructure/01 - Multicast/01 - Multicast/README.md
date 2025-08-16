@@ -1213,7 +1213,15 @@ Onde:
 - **Scope:** Definição de alcance (4 bits) 
 - **Group ID:** Identificador do grupo (112 bits)
 
-### 1. Escopo IPv6 Multicast (Scope Field) 
+**Flags:**  
+
+| Flag | Valores  | Descrição                                                                         |
+|------|----------|-----------------------------------------------------------------------------------|
+| T    | 0 ou 1   | 0 = endereços permanentemente atribuídos ou 1 = endereços temporários/transientes |
+| P    | 0 ou 1   | Indica se o grupo é baseado em um prefixo unicast (1) ou não (0)                  |
+| R    | 0 ou 1   | Indica se o grupo tem um RP (1) ou não (0) Z-Reservado                            |
+ 
+### 1. Escopo IPv6 Multicast (Scope Field)  
 
 O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permitindo controle granular sobre a propagação do tráfego sem depender de configurações complexas de boundary. Este mecanismo built-in facilita significativamente o design e troubleshooting de redes multicast.
 
