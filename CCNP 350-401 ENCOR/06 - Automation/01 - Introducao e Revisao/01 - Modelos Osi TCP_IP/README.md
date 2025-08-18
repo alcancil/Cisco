@@ -167,7 +167,28 @@ O modelo OSI divide a comunicação de rede em 7 camadas independentes, cada uma
 
 # MODELO TCP/IP
 
+**Características Fundamentais**  
+
+O modelo TCP/IP é a implementação prática que dominou o mercado devido a:  
+
+✅ Simplicidade: Apenas 4 camadas  
+✅ Flexibilidade: Menos rígido que OSI  
+✅ Pragmatismo: Baseado em protocolos reais  
+✅ Interoperabilidade: Adoção universal  
+
 ![TCP_IP](Imagens/tcp_ip.png)  
+
+```text
+┌─────────────────────────────────────┐
+│   4. APLICAÇÃO    │  Dados          │  ← Combina OSI 7+6+5
+├─────────────────────────────────────┤
+│   3. TRANSPORTE   │  Segmentos      │  ← Igual OSI 4
+├─────────────────────────────────────┤
+│   2. INTERNET     │  Pacotes        │  ← Igual OSI 3
+├─────────────────────────────────────┤
+│   1. ACESSO REDE  │  Quadros/Bits   │  ← Combina OSI 2+1
+└─────────────────────────────────────┘
+```
 
 **Camada 4 : Aplicação**  
 
