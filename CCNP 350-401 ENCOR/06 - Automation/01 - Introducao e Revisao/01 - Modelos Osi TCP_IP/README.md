@@ -194,7 +194,26 @@ O modelo TCP/IP é a implementação prática que dominou o mercado devido a:
 
     Corresponde às camadas de Aplicação, Apresentação e Sessão do modelo OSI.
     Oferece serviços de rede diretamente para as aplicações do usuário.
-    Exemplos de protocolos: HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, SSH, DNS, SNMP.  
+    Exemplos de protocolos: HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, SSH, DNS, SNMP.
+
+- Equivale a OSI 7+6+5 combinadas  
+
+Concentra todas as funcionalidades de:
+
+- Interface com usuário (OSI 7)
+- Criptografia/compressão (OSI 6)  
+- Controle de sessão (OSI 5)
+
+Protocolos Principais:  
+
+```text
+HTTP/HTTPS  → Web e APIs REST
+SSH         → Automação segura
+SNMP        → Monitoramento
+DNS         → Resolução de nomes
+SMTP        → Email
+FTP/SFTP    → Transferência de arquivos
+```
 
 **Camada 3 : Transporte**  
 
