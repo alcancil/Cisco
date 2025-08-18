@@ -488,9 +488,9 @@ Resultado: Cada cliente recebe apenas o tráfego das fontes solicitadas!
 
 **📺 IPTV e Streaming:**  
 
-> Canal 1: (Servidor_A, 232.10.1.1) → CNN Internacional  
+> Canal 1: (Servidor_A, 232.10.1.1) → CNN Internacional
 > Canal 2: (Servidor_B, 232.10.1.2) → Canal Corporativo  
-> Canal 3: (Servidor_C, 232.10.1.3) → Treinamentos RH  
+> Canal 3: (Servidor_C, 232.10.1.3) → Treinamentos RH
 
 Vantagem: Cliente sintoniza canal específico sem receber outros  
 
