@@ -44,10 +44,10 @@ Paralelamente, o DoD (Department of Defense) americano desenvolveu a stack TCP/I
 
 **Para Automação de Redes:**  
 
-✅ **Troubleshooting estruturado:** Identificar em qual camada está o problema
-✅ **Desenvolvimento de scripts:** Entender como acessar equipamentos programaticamente
-✅ **APIs e protocolos:** Conhecer onde operam (HTTP/HTTPS na camada de aplicação)
-✅ **Segurança:** Implementar controles apropriados por camada
+✅ **Troubleshooting estruturado:** Identificar em qual camada está o problema  
+✅ **Desenvolvimento de scripts:** Entender como acessar equipamentos programaticamente  
+✅ **APIs e protocolos:** Conhecer onde operam (HTTP/HTTPS na camada de aplicação)  
+✅ **Segurança:** Implementar controles apropriados por camada  
 
 # MODELO OSI
 
