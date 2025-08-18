@@ -182,9 +182,9 @@ O modelo TCP/IP é a implementação prática que dominou o mercado devido a:
 ┌─────────────────────────────────────┐
 │   4. APLICAÇÃO    │  Dados          │  ← Combina OSI 7+6+5
 ├─────────────────────────────────────┤
-│   3. TRANSPORTE   │  Segmentos      │  ← Igual OSI 4
+│   3. TRANSPORTE   │  TRANSPORTE     │  ← Igual OSI 4
 ├─────────────────────────────────────┤
-│   2. INTERNET     │  Pacotes        │  ← Igual OSI 3
+│   2. INTERNET     │  REDE           │  ← Igual OSI 3
 ├─────────────────────────────────────┤
 │   1. ACESSO REDE  │  Quadros/Bits   │  ← Combina OSI 2+1
 └─────────────────────────────────────┘
