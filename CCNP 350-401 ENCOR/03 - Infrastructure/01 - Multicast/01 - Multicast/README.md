@@ -1252,7 +1252,7 @@ O multicast utiliza o conceito de árvores de distribuição, que representam o 
 
 - Embora o multicast possa funcionar sem **IGMP** (com joins estáticos configurados manualmente no roteador), em redes reais o IGMP é o mecanismo padrão para os hosts se inscreverem em grupos.
 
-Em resumo: o PIM é necessário para formar a árvore multicast; o IGMP é opcional, mas quase sempre presente para permitir a inscrição dinâmica dos hosts.
+**Em resumo:** o PIM é necessário para formar a árvore multicast; o IGMP é opcional, mas quase sempre presente para permitir a inscrição dinâmica dos hosts.  
 
 🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/multicast_tree.html)**  
 
