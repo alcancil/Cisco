@@ -32,7 +32,7 @@ Agora para falar sobre o tipo de comunicação **unicast** é preciso se fazer u
 
 Como podemos observar, quando o tráfego vai de um emissor para um receptor podemos chamar de **unicast**, ou seja, é um tráfego direto. Um exemplo que podemos citar desse tipo de comunicação é a ligação telefônica por exemplo, ou mesmo quando se faz um acesso via ssh para algum equipamento.  
 
-Depois temos o **broadcast**. Diferente do primeiro tipo de comunicação, esse é um tipo de comunicação onde um envia e todos recebem. Podemos citar o exemplo do protocolo arp onde os equipamentos precisam mapear o endereço mac com o endereço IP. Para o protocolo arp poder descobrir a quem pertence um endereço IP por exemplo, ele faz um "flood" para todos os equipamentos na rede e com isso a comunicação se dá de forma conhecida por **broadcast**.   
+Depois temos o **broadcast**. Diferente do primeiro tipo de comunicação, esse é um tipo de comunicação onde um envia e todos recebem. Podemos citar o exemplo do protocolo arp onde os equipamentos precisam mapear o endereço mac com o endereço IP. Para o protocolo arp poder descobrir a quem pertence um endereço IP por exemplo, ele faz um "flood" para todos os equipamentos na rede e com isso a comunicação se dá de forma conhecida por **broadcast**.
 
 Agora se analisarmos bem esses dois tipos de comunicação iremos perceber que no unicast a comunicação se dá de uma forma mais eficiente pois ela entrega os pacotes somente para o destinatário escolhido. Já no broadcast, todos recebem os pacotes independentemente se eles precisam ou não receber tal pacote. Isso faz com que o host que receba o pacote tenha que analisar o mesmo, verificar se ele é o destinatário e se não for, descartar o mesmo. Essa forma de comunicação não é muito eficiente pois em ambientes muito grandes ocupa banda muitas vezes desnecessárias e faz com que o host tenha que processar o pacote e consumir memória e processador.  
 
@@ -297,11 +297,11 @@ No exame CCNP Enterprise, é comum encontrar questões sobre:
 
 **📊 Diferença: Local vs Global**
 
-| Aspecto | Well-Known (224.0.0.x) | Global (224.0.1.x) | 
+| Aspecto | Well-Known (224.0.0.x) | Global (224.0.1.x) |
 |---------|------------------------|--------------------|
-| Escopo  | Subnet local apenas    | Inter-subnet/WAN   | 
-| TTL     | 1 (não roteia)         | >1 (roteável)      | 
-| Uso     | Protocolos básicos     | Serviços avançados | 
+| Escopo  | Subnet local apenas    | Inter-subnet/WAN   |
+| TTL     | 1 (não roteia)         | >1 (roteável)      |
+| Uso     | Protocolos básicos     | Serviços avançados |
 | Exemplos| OSPF Hello, EIGRP      | VRRP, NTP, PIM     |
 
 ### 3. Endereços Multicast Privados ("Administratively Scoped Addresses")
@@ -527,7 +527,7 @@ interface GigabitEthernet0/1
  ip igmp version 3
 ```
 
-**🛡️ Vantagens de Segurança SSM:**    
+**🛡️ Vantagens de Segurança SSM:**
 
 **✅ Controle de Fonte:**  
 
@@ -586,7 +586,7 @@ O SSM representa a direção futura do multicast corporativo, especialmente em:
 
 ### 5 GLOP Addressing
 
-**Conceito Fundamental**
+**Conceito Fundamental**  
 
 O GLOP Addressing é um esquema de endereçamento multicast que utiliza a faixa 233.0.0.0/8 para mapear números de Sistema Autônomo (AS) em endereços multicast únicos globalmente. Esta abordagem garante que organizações com números AS válidos possam usar endereços multicast sem conflitos.
 Estrutura do Endereçamento GLOP
@@ -601,7 +601,7 @@ Onde:
 - X.Y: Representação em 16 bits do número AS
 - Z: Identificador local da aplicação (0-255)
 
-**Mapeamento AS para GLOP**
+**Mapeamento AS para GLOP**  
 
 | Número AS | Binário (16 bits) | Octetos X.Y | Faixa GLOP       |
 |-----------|-------------------|-------------|------------------|
@@ -609,9 +609,9 @@ Onde:
 | AS 65001  | 1111110111101001  | 253.233     | 233.253.233.0/24 |
 | AS 64512  | 1111110000000000  | 252.0       | 233.252.0.0/24   |
 
-**Exemplo Prático: Implementação Empresarial**
+**Exemplo Prático: Implementação Empresarial**  
 
-**Cenário: Empresa com AS 65100**
+**Cenário: Empresa com AS 65100**  
 
 Empresa XYZ Corporation
 AS Number: 65100
@@ -638,59 +638,17 @@ Internet
     │                               │
 [Core Router]              [Multicast Source]
     │                         233.254.12.1
-    │                              │
-    ├─ VLAN 10 ────────────────────┼─ [Receivers]
-    │  (Escritório SP)             │   │
-    │                              │   ├─ PC1 (Join)
-    │                              │   ├─ PC2 (Join)
-    │                              │   └─ PC3 (Leave)
-    │
-    └─ VLAN 20 ─────────────────────── [Receivers]
+    │                               │
+    ├─ VLAN 10 ─────────────────────┼─ [Receivers]
+    │  (Escritório SP)              │   │
+    │                               │   ├─ PC1 (Join)
+    │                               │   ├─ PC2 (Join)
+    │                               │   └─ PC3 (Leave)
+    │                               │
+    └─ VLAN 20 ─────────────────────┼── [Receivers]
        (Escritório RJ)                  │
                                         ├─ PC4 (Join)
                                         └─ PC5 (Join)
-```
-
-**Configuração Cisco**
-
-**Router de Borda (Edge Router)**  
-
-```ios
-! Habilitação de multicast
-ip multicast-routing
-
-! Interface para Internet
-interface GigabitEthernet0/0
- ip address 200.1.1.1 255.255.255.252
- ip pim sparse-mode
- 
-! Interface interna
-interface GigabitEthernet0/1
- ip address 10.1.1.1 255.255.255.0
- ip pim sparse-mode
-
-! Configuração RP para faixa GLOP
-ip pim rp-address 10.1.1.10 233.254.12.0 8
-```
-
-**Servidor Multicast (Source)**  
-
-```python
-# Exemplo em Python - Transmissor GLOP
-import socket
-import struct
-
-# AS 65100 = 233.254.12.x
-GLOP_ADDRESS = '233.254.12.1'
-PORT = 9999
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 64)
-
-message = "Financial Data Update - GLOP Stream"
-while True:
-    sock.sendto(message.encode(), (GLOP_ADDRESS, PORT))
-    time.sleep(1)
 ```
 
 **Vantagens do GLOP Addressing**  
@@ -742,52 +700,6 @@ AS 1234 → 233.4.210.0/24
 - GLOP não tem equivalente direto
 - Planejar transição para embedded-RP
 
-**Monitoramento e Troubleshooting**  
-
-**Comandos de Diagnóstico**  
-
-```ios
-! Verificar tabela multicast
-show ip mroute 233.254.12.1
-
-! Status PIM
-show ip pim neighbor
-show ip pim rp mapping
-
-! Estatísticas de interface
-show ip multicast interface GigabitEthernet0/1
-
-! Debug (usar com cuidado)
-debug ip pim
-debug ip mpacket 233.254.12.1
-```
-
-**Análise de Tráfego**  
-
-```bash
-# Wireshark filter para GLOP
-ip.dst >= 233.0.0.0 && ip.dst <= 233.255.255.255
-
-# tcpdump para captura GLOP
-tcpdump -i eth0 'dst net 233.254.12.0/24'
-```
-
-**Cenário de Migração**  
-
-**De Administratively Scoped para GLOP**  
-
-```ios
-! Antes (Admin Scoped)
-ip pim rp-address 10.1.1.10 239.1.1.0 8
-
-! Depois (GLOP - AS 65100)
-ip pim rp-address 10.1.1.10 233.254.12.0 8
-
-! Período de transição (ambos ativos)
-ip pim rp-address 10.1.1.10 239.1.1.0 8
-ip pim rp-address 10.1.1.10 233.254.12.0 8
-```
-
 **Comparativo: GLOP vs Outros Esquemas**  
 
 | Característica           | GLOP              | Admin Scoped         | SSM        |
@@ -802,7 +714,7 @@ ip pim rp-address 10.1.1.10 233.254.12.0 8
 
 ### 6 Multicast com Prefixo Unicast (Embedded-RP ou IPv4 Multicast prefix-based)
 
-**Conceito Fundamental**
+**Conceito Fundamental**  
 
 O Embedded-RP (também conhecido como IPv4 Multicast prefix-based) é uma técnica avançada que embute o endereço do Rendezvous Point (RP) diretamente no endereço multicast. Esta abordagem elimina a necessidade de configuração manual ou descoberta dinâmica de RP, facilitando a implementação de multicast em redes complexas.
 
@@ -870,134 +782,6 @@ Internet/WAN
           232.10.10.100   │    232.20.20.200
 ```
 
-**Configuração Avançada Cisco**  
-
-**Core Router (RP Principal)**  
-
-```ios
-! Habilitar multicast routing
-ip multicast-routing
-
-! Configurar interface loopback como RP
-interface Loopback100
- ip address 10.10.10.100 255.255.255.255
- ip pim sparse-mode
-
-! Interfaces de rede
-interface GigabitEthernet0/0
- description "Link para WAN"
- ip address 200.1.1.1 255.255.255.252
- ip pim sparse-mode
- 
-interface GigabitEthernet0/1
- description "LAN Interna"
- ip address 10.1.1.1 255.255.255.0
- ip pim sparse-mode
-
-! Configuração Embedded-RP
-ip pim rp-address 10.10.10.100 232.10.10.100 32 override
-ip pim accept-rp 10.10.10.100 232.10.10.100 32
-
-! Redundância com Anycast RP
-ip pim anycast-rp 10.10.10.100 10.20.20.200
-ip pim anycast-rp 10.10.10.100 10.10.10.100
-```
-
-**Servidor de Aplicação (Source)**  
-
-```python
-#!/usr/bin/env python3
-# Embedded-RP Multicast Sender - Market Data
-
-import socket
-import struct
-import time
-import json
-from datetime import datetime
-
-class EmbeddedRPSender:
-    def __init__(self, rp_address, port):
-        # Construir endereço embedded-RP
-        rp_octets = rp_address.split('.')
-        self.mcast_addr = f"232.{rp_octets[1]}.{rp_octets[2]}.{rp_octets[3]}"
-        self.port = port
-        
-        # Criar socket UDP
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 64)
-        
-        print(f"Embedded-RP Sender iniciado:")
-        print(f"  RP Address: {rp_address}")
-        print(f"  Multicast: {self.mcast_addr}:{port}")
-    
-    def send_market_data(self):
-        sequence = 0
-        while True:
-            # Dados simulados de mercado
-            market_data = {
-                "timestamp": datetime.now().isoformat(),
-                "symbol": "PETR4",
-                "price": 28.50 + (sequence % 100) * 0.01,
-                "volume": 1000 + (sequence * 100),
-                "sequence": sequence
-            }
-            
-            message = json.dumps(market_data).encode()
-            self.sock.sendto(message, (self.mcast_addr, self.port))
-            
-            print(f"Sent seq {sequence}: {market_data['symbol']} @ {market_data['price']}")
-            sequence += 1
-            time.sleep(0.1)  # 10 msgs/sec
-
-# Uso
-if __name__ == "__main__":
-    sender = EmbeddedRPSender("10.10.10.100", 5000)
-    sender.send_market_data()
-```
-
-**Cliente Receiver**  
-
-
-```Python
-#!/usr/bin/env python3
-# Embedded-RP Multicast Receiver
-
-import socket
-import struct
-import json
-
-class EmbeddedRPReceiver:
-    def __init__(self, rp_address, port):
-        # Construir endereço embedded-RP
-        rp_octets = rp_address.split('.')
-        self.mcast_addr = f"232.{rp_octets[1]}.{rp_octets[2]}.{rp_octets[3]}"
-        self.port = port
-        
-        # Criar e configurar socket
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(('', port))
-        
-        # Join no grupo multicast
-        mreq = struct.pack("4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        
-        print(f"Receiver conectado em {self.mcast_addr}:{port}")
-    
-    def receive_data(self):
-        while True:
-            data, addr = self.sock.recvfrom(1024)
-            market_data = json.loads(data.decode())
-            
-            print(f"[{market_data['sequence']:06d}] {market_data['symbol']}: "
-                  f"${market_data['price']:.2f} Vol:{market_data['volume']:,}")
-
-# Uso
-if __name__ == "__main__":
-    receiver = EmbeddedRPReceiver("10.10.10.100", 5000)
-    receiver.receive_data()
-```
-
 **Vantagens do Embedded-RP**  
 
 1. Auto-Configuração  
@@ -1019,119 +803,6 @@ Benefícios:
 - Base para IPv6 Embedded-RP (RFC 3956)
 - Facilita migração dual-stack
 - Padrão para redes modernas
-
-**Implementação com Anycast RP**  
-
-**Configuração de Redundância**  
-
-```ios
-! Router SP (Primary)
-ip pim anycast-rp 10.99.99.99 10.10.10.100
-ip pim anycast-rp 10.99.99.99 10.20.20.200
-
-interface Loopback99
- ip address 10.99.99.99 255.255.255.255
- description "Anycast RP Address"
-
-! Embedded-RP com Anycast
-ip pim rp-address 10.99.99.99 232.99.99.99 32
-
-! Router RJ (Secondary)  
-ip pim anycast-rp 10.99.99.99 10.10.10.100
-ip pim anycast-rp 10.99.99.99 10.20.20.200
-
-interface Loopback99
- ip address 10.99.99.99 255.255.255.255
- description "Anycast RP Address"
-```
-
-**Monitoramento e Troubleshooting** 
-
-**Comandos de Diagnóstico Específicos**  
-
-```ios
-! Verificar mapeamento Embedded-RP
-show ip pim rp mapping
-
-! Status específico do grupo embedded
-show ip mroute 232.10.10.100 detail
-
-! Informações do RP
-show ip pim rp 10.10.10.100
-
-! Debugging avançado
-debug ip pim rp
-debug ip pim auto-rp
-debug ip pim bsr
-```
-
-**Script de Monitoramento**  
-
-```python
-#!/usr/bin/env python3
-# Monitor Embedded-RP Health
-
-import subprocess
-import re
-import time
-
-def check_embedded_rp_status():
-    try:
-        # Verificar conectividade com RP
-        result = subprocess.run(['ping', '-c', '1', '10.10.10.100'], 
-                              capture_output=True, text=True)
-        rp_reachable = result.returncode == 0
-        
-        # Verificar grupos ativos
-        mroute_cmd = "show ip mroute | include 232\\."
-        # Simular output para exemplo
-        active_groups = ["232.10.10.100", "232.20.20.200"]
-        
-        status = {
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "rp_reachable": rp_reachable,
-            "active_embedded_groups": len(active_groups),
-            "groups": active_groups
-        }
-        
-        return status
-        
-    except Exception as e:
-        return {"error": str(e)}
-
-# Monitoramento contínuo
-if __name__ == "__main__":
-    while True:
-        status = check_embedded_rp_status()
-        print(f"[{status.get('timestamp')}] RP Status: {status}")
-        time.sleep(30)
-```
-
-**Considerações de Segurança**  
-
-**Controle de Acesso**  
-
-```ios
-! ACL para controlar sources
-ip access-list extended EMBEDDED_RP_SOURCES
- permit ip 10.1.0.0 0.0.255.255 host 232.10.10.100
- permit ip 192.168.0.0 0.0.255.255 host 232.10.10.100
- deny ip any host 232.10.10.100
-
-! Aplicar na interface
-interface GigabitEthernet0/1
- ip multicast boundary EMBEDDED_RP_SOURCES in
-```
-
-**Rate Limiting**  
-
-```ios
-! Controle de taxa por grupo
-ip multicast rate-limit in group-list EMBEDDED_RP_GROUPS 1000
-
-ip access-list extended EMBEDDED_RP_GROUPS
- permit ip any 232.0.0.0 0.255.255.255
-```
 
 **Comparativo: Embedded-RP vs Outras Abordagens**  
 
@@ -1155,42 +826,6 @@ ip access-list extended EMBEDDED_RP_GROUPS
 | MTU Issues       | Packet loss       | show ip mroute count   | Ajustar MTU path discovery     |
 | TTL Boundary     | Scope limitation  | show ip mroute         | Verificar TTL scoping          |
 
-**Script de Health Check**  
-
-```bash
-#!/bin/bash
-# Embedded-RP Health Check
-
-EMBEDDED_GROUPS=(
-    "232.10.10.100"
-    "232.20.20.200" 
-    "232.99.99.99"
-)
-
-echo "=== Embedded-RP Health Check ==="
-echo "Timestamp: $(date)"
-
-for group in "${EMBEDDED_GROUPS[@]}"; do
-    echo "Checking group: $group"
-    
-    # Extrair RP do endereço embedded
-    IFS='.' read -ra ADDR <<< "$group"
-    rp_ip="10.${ADDR[1]}.${ADDR[2]}.${ADDR[3]}"
-    
-    # Verificar conectividade RP
-    if ping -c 1 -W 2 "$rp_ip" >/dev/null 2>&1; then
-        echo "  ✓ RP $rp_ip reachable"
-    else
-        echo "  ✗ RP $rp_ip unreachable"
-    fi
-    
-    # Verificar grupo ativo (simulado)
-    echo "  ℹ Active receivers: 3"
-    echo "  ℹ Data rate: 1.2 Mbps"
-    echo ""
-done
-```
-
 **💡 Dica Profissional:** Embedded-RP representa o estado da arte em multicast enterprise, oferecendo auto-configuração sem sacrificar controle. É a base para implementações IPv6 e arquiteturas SD-WAN modernas.
 
 ## Tipos de Endereço Multicast IPv6
@@ -1207,7 +842,7 @@ Onde:
 
 - **FF:** Prefixo fixo multicast (8 bits)
 - **Flags:** Indicadores de tipo (4 bits)
-- **Scope:** Definição de alcance (4 bits) 
+- **Scope:** Definição de alcance (4 bits)
 - **Group ID:** Identificador do grupo (112 bits)
 
 **Flags:**  
@@ -1217,7 +852,7 @@ Onde:
 | T    | 0 ou 1   | 0 = endereços permanentemente atribuídos ou 1 = endereços temporários/transientes |
 | P    | 0 ou 1   | Indica se o grupo é baseado em um prefixo unicast (1) ou não (0)                  |
 | R    | 0 ou 1   | Indica se o grupo tem um RP (1) ou não (0) Z-Reservado                            |
- 
+
 ### 1. Escopo IPv6 Multicast (Scope Field)  
 
 O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permitindo controle granular sobre a propagação do tráfego sem depender de configurações complexas de boundary. Este mecanismo built-in facilita significativamente o design e troubleshooting de redes multicast.
@@ -1254,30 +889,6 @@ O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permit
 - Equivalente ao loopback multicast
 - Zero overhead de rede
 
-**Exemplo Prático:**
-
-```python
-#!/usr/bin/env python3
-# Interface-Local Multicast Test
-
-import socket
-import struct
-
-def test_interface_local():
-    # FF01::1 = All Nodes Interface-Local
-    mcast_addr = 'ff01::1'
-    port = 12345
-    
-    sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-    sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, 0)
-    
-    message = "Interface-Local Test Message"
-    sock.sendto(message.encode(), (mcast_addr, port))
-    print(f"Sent to {mcast_addr} - stays on interface only")
-    
-test_interface_local()
-```
-
 **🏢 Escopo 2: Link-Local (FF02::)**  
 
 O escopo mais utilizado em redes **enterprise** para protocolos de descoberta e controle local.
@@ -1310,20 +921,6 @@ VLAN 200 (Produção):
 └─ Zero configuração adicional
 ```
 
-**Configuração Cisco:**
-
-```ios
-! Interface VLAN 100
-interface Vlan100
- ipv6 address 2001:db8:100::1/64
- ipv6 enable
- ipv6 multicast-routing
- ipv6 pim sparse-mode
-
-! Automático: FF02:: limitado a este link
-! Não precisa configurar boundary manualmente
-```
-
 **🏫 Escopo 5: Site-Local (FF05::)**  
 
 Ideal para aplicações corporativas que precisam operar em todo o campus mas não na Internet.  
@@ -1346,41 +943,6 @@ Propagação:
 ├─ Prédio B (VLAN 20-29)  ✓  
 ├─ Biblioteca (VLAN 30)   ✓
 └─ Internet Gateway       ✗ (bloqueado automaticamente)
-```
-
-**🔄 Sincronização de Dados:**  
-
-```python
-#!/usr/bin/env python3
-# Site-Local Backup Replication
-
-import socket
-import json
-import time
-
-class SiteLocalSync:
-    def __init__(self):
-        self.mcast_addr = 'ff05::sync:1'  # Site-local sync group
-        self.port = 8888
-        
-    def broadcast_backup_status(self, server_id, status):
-        sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, 15)
-        
-        sync_data = {
-            'server_id': server_id,
-            'timestamp': time.time(),
-            'backup_status': status,
-            'scope': 'site-local-only'
-        }
-        
-        message = json.dumps(sync_data).encode()
-        sock.sendto(message, (self.mcast_addr, self.port))
-        print(f"Backup status sent - Site scope only")
-
-# Automático: não sai do site/campus
-sync = SiteLocalSync()
-sync.broadcast_backup_status("SRV-001", "completed")
 ```
 
 **🌐 Escopo 8: Organization-Local (FF08::)**  
@@ -1406,43 +968,9 @@ Internet:
 └─ Bloqueado automaticamente ✗
 ```
 
-**Configuração Avançada:**  
-
-```ios
-! Roteador WAN (Matriz)
-interface GigabitEthernet0/0
- description "Link para Filiais"
- ipv6 address 2001:db8:wan::1/64
- ipv6 multicast-routing
- ipv6 pim sparse-mode
- 
-! Organization-local permitido
-! Global scope bloqueado por padrão
-
-interface GigabitEthernet0/1  
- description "Link Internet"
- ipv6 address 2001:db8:pub::1/64
- ! FF08:: automaticamente bloqueado para Internet
-```
-
 **🌍 Escopo E: Global (FFE::)**  
 
 **Alcance irrestrito** - pode ser roteado através da Internet pública.  
-
-**⚠️ Considerações Críticas de Segurança:**
-
-Controle de Acesso:
-
-```ios
-! Firewall rules para scope global
-ipv6 access-list GLOBAL_MULTICAST_IN
- deny ipv6 any ffe0::/16 log
- permit ipv6 any any
-
-interface GigabitEthernet0/0
- description "Internet Connection"
- ipv6 multicast boundary GLOBAL_MULTICAST_IN in
-```
 
 **Casos de Uso Legítimos:**
 
@@ -1487,26 +1015,6 @@ ipv6.dst >= ff05:: and ipv6.dst < ff06::  # Site-local
 | "Tráfego sai para Internet"   | FFE::          | Scope global        | Mudar para FF08::        |
 | "Filial não recebe"           | FF05::         | Scope site-local    | Usar FF08:: organization |
 | "Sobrecarga de tráfego"       | FF0E::         | Scope muito amplo   | Reduzir para FF05::      |
-
-**Implementação Boas Práticas**  
-
-**📋 Guia de Seleção de Escopo:**
-
-```python
-def select_ipv6_scope(use_case):
-    scope_guide = {
-        'device_discovery': 'ff02::',      # Link-local
-        'campus_iptv': 'ff05::',           # Site-local  
-        'corporate_updates': 'ff08::',     # Organization-local
-        'public_streaming': 'ffe0::',      # Global
-        'debug_testing': 'ff01::'          # Interface-local
-    }
-    return scope_guide.get(use_case, 'ff02::')  # Default: link-local
-
-# Exemplos de uso
-print(select_ipv6_scope('campus_iptv'))        # ff05::
-print(select_ipv6_scope('corporate_updates'))  # ff08::
-```
 
 **🎯 Relevância para CCNP Enterprise:**  
 
@@ -1589,104 +1097,6 @@ Andar 1 - Geral:
 4. Quando alguém transmite para o grupo, o roteador entrega para João
 5. Se João sair da reunião, envia MLD Done e para de receber
 
-**Configuração Simplificada - Roteador Cisco**  
-
-```ios
-! Habilitar IPv6 e multicast
-ipv6 unicast-routing  
-ipv6 multicast-routing
-
-! Interface para Andar 3 (Diretoria)
-interface GigabitEthernet0/1
- ipv6 address 2001:db8:100:3::1/64
- ipv6 mld version 2
- ipv6 mld query-interval 60
- ipv6 enable
-
-! Interface para demais andares...
-```
-
-**Aplicação Prática - Servidor de Vídeo**  
-
-```python
-# Servidor que transmite vídeo para grupos IPv6
-import socket
-import json
-import time
-
-class ServidorVideoIPv6:
-    def __init__(self, grupo_ipv6, porta):
-        self.grupo = grupo_ipv6
-        self.porta = porta
-        
-        # Criar socket IPv6
-        self.socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        
-    def transmitir_video(self):
-        frame = 0
-        while True:
-            # Criar frame de vídeo simulado
-            dados_video = {
-                "timestamp": time.time(),
-                "frame": frame,
-                "qualidade": "HD",
-                "conteudo": "Reunião Diretoria"
-            }
-            
-            # Enviar para o grupo multicast
-            mensagem = json.dumps(dados_video)
-            self.socket.sendto(mensagem.encode(), 
-                             (self.grupo, self.porta))
-            
-            print(f"Frame {frame} enviado para {self.grupo}")
-            frame += 1
-            time.sleep(0.033)  # ~30 FPS
-
-# Uso: transmitir para grupo da diretoria
-servidor = ServidorVideoIPv6("ff3e::1:1000", 5000)
-# servidor.transmitir_video()
-```
-
-**Cliente Receptor**  
-
-```python
-# Cliente que recebe vídeo de grupos IPv6  
-import socket
-import json
-
-class ClienteVideoIPv6:
-    def __init__(self, grupo_ipv6, porta):
-        self.grupo = grupo_ipv6
-        self.porta = porta
-        
-    def se_inscrever(self):
-        # Criar socket e fazer bind
-        self.socket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        self.socket.bind(('', self.porta))
-        
-        # Entrar no grupo multicast (envia MLD Report automaticamente)
-        grupo_binario = socket.inet_pton(socket.AF_INET6, self.grupo)
-        self.socket.setsockopt(socket.IPPROTO_IPV6, 
-                              socket.IPV6_JOIN_GROUP, 
-                              grupo_binario + b'\x00' * 4)
-        
-        print(f"Inscrito no grupo {self.grupo}")
-        
-    def assistir(self):
-        while True:
-            # Receber dados do grupo
-            dados, origem = self.socket.recvfrom(1024)
-            video = json.loads(dados.decode())
-            
-            print(f"Frame {video['frame']}: {video['conteudo']} "
-                  f"({video['qualidade']})")
-
-# Uso: assistir reunião da diretoria
-cliente = ClienteVideoIPv6("ff3e::1:1000", 5000)
-# cliente.se_inscrever()
-# cliente.assistir()
-```
-
 **Estrutura das Mensagens MLD**  
 
 **Flags e Parâmetros Importantes**  
@@ -1697,36 +1107,6 @@ cliente = ClienteVideoIPv6("ff3e::1:1000", 5000)
 | Hop Limit     | 8 bits   | Alcance da mensagem (1=link-local)       |
 | Group Address | 128 bits | Endereço do grupo IPv6                   |
 | Source List   | Variável | Lista de fontes (MLDv2 apenas)           |
-
-**Monitoramento Simplificado**  
-
-```Python
-# Monitor básico de grupos MLD
-import time
-
-class MonitorMLD:
-    def __init__(self):
-        self.grupos_ativos = {}
-        
-    def verificar_status(self):
-        # Simular dados reais de um roteador
-        status = {
-            'ff3e::1:1000': {'ouvintes': 5, 'ativo': True},
-            'ff0e::1:1000': {'ouvintes': 15, 'ativo': True},
-            'ff0e::1:9999': {'ouvintes': 25, 'ativo': True}
-        }
-        
-        print(f"\n=== STATUS MLD - {time.strftime('%H:%M:%S')} ===")
-        for grupo, info in status.items():
-            emoji = "✅" if info['ativo'] else "❌"
-            print(f"{emoji} {grupo}: {info['ouvintes']} ouvintes")
-            
-        return status
-
-# Uso
-monitor = MonitorMLD()
-# status = monitor.verificar_status()
-```
 
 **Comandos Úteis para Diagnóstico**  
 
@@ -1739,19 +1119,6 @@ show ipv6 mld interface
 
 ! Debug de mensagens MLD
 debug ipv6 mld
-```
-
-**Segurança e Controle de Acesso**  
-
-```ios
-! Controlar quais grupos são permitidos
-ipv6 access-list GRUPOS-PERMITIDOS
- permit ipv6 any ff3e::/16  ! Grupos do prédio
- permit ipv6 any ff0e::1:1000/128  ! All hands específico
- deny ipv6 any ff0e::/16  ! Bloquear outros grupos globais
-
-interface GigabitEthernet0/1
- ipv6 traffic-filter GRUPOS-PERMITIDOS in
 ```
 
 **Comparação: MLD vs IGMP**  
@@ -1788,30 +1155,6 @@ interface GigabitEthernet0/1
 | "Conexão instável"     | Ajustar intervalos de query             |
 | "Grupos não funcionam" | Verificar roteamento IPv6 multicast     |
 
-**Script de Diagnóstico Rápido**  
-
-```bash
-#!/bin/bash
-# Verificação rápida MLD
-
-echo "=== DIAGNÓSTICO MLD ==="
-
-# Verificar IPv6 ativo
-if ping6 -c 1 ::1 > /dev/null 2>&1; then
-    echo "✅ IPv6 funcionando"
-else
-    echo "❌ IPv6 com problemas"
-fi
-
-# Verificar grupos multicast (simulado)
-echo "📡 Grupos MLD ativos:"
-echo "  ff3e::1:1000 - Reunião Diretoria (5 membros)"
-echo "  ff0e::1:1000 - All Hands (15 membros)"
-echo "  ff0e::1:9999 - Emergências (25 membros)"
-
-echo "✅ Diagnóstico concluído"
-```
-
 **💡 Dica Prática:** MLD é como uma "lista de transmissão inteligente" para IPv6. Quando você quer receber um stream de vídeo específico, seu dispositivo automaticamente se inscreve usando MLD, e quando não quer mais, se desinscreve. É simples, eficiente e economiza banda da rede!
 
 ## Formação de Endereços de Camada 02 (Mac Address)
@@ -1847,7 +1190,7 @@ Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode g
 
 Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitados e isso dificulta a gerência dos grupos multicast. Para solucionar esse tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados.  
 
-Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.    
+Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.
 
 ## IPv6
 
