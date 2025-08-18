@@ -83,11 +83,25 @@ O modelo OSI divide a comunicação de rede em 7 camadas independentes, cada uma
     Converte formatos de arquivos entre sistemas diferentes.
     Exemplos de formatos e protocolos: SSL/TLS, JPEG, GIF, MP3, MPEG, ASCII, Unicode.
 
+| Função       | Exemplos             | Aplicação Prática            |
+|--------------|----------------------|------------------------------|
+| Criptografia | SSL/TLS, IPSec       | HTTPS para APIs seguras      |
+| Compressão   | ZIP, GZIP            | Otimização de transferências |
+| Codificação  | ASCII, UTF-8, Base64 | Formatação de dados          |
+| Formatos     | JPEG, MP3, PDF       | Multimedia                   |
+
 **Camada 5 : Sessão**  
 
     Controla o estabelecimento, manutenção e encerramento de sessões de comunicação entre dispositivos.
     Garante a sincronização e o gerenciamento das conexões.
     Exemplos de protocolos: RPC, NetBIOS, PPTP, SIP.
+
+| Protocolo | Função                           | Exemplo de Uso               |
+|-----------|----------------------------------|------------------------------|
+| NetBIOS   | Serviços de rede Windows         | Compartilhamento de arquivos |
+| RPC       | Chamadas remotas de procedimento | APIs distribuídas            |
+| PPTP/L2TP | Túneis VPN                       | Conexões seguras             |
+| SIP       | Sinalização VoIP                 | Telefonia IP                 |
 
 **Camada 4 : Transporte**  
 
@@ -95,11 +109,29 @@ O modelo OSI divide a comunicação de rede em 7 camadas independentes, cada uma
     Controla o fluxo de dados e pode realizar a retransmissão de pacotes perdidos.
     Protocolos principais: TCP (confiável, orientado à conexão) e UDP (rápido, sem conexão).
 
+| Protocolo | Características       | Quando Usar          |
+|-----------|-----------------------|----------------------|
+| TCP       | • Confiável           | SSH, HTTP, FTP       |
+|           | • Orientado à conexão | APIs críticas        |
+|           | • Controle de fluxo   |                      |
+|           | • Retransmissão       |                      |
+| UDP       | • Rápido              | DNS, SNMP, Streaming |
+|           | • Sem conexão         | Monitoramento        |
+|           | • Sem garantias       |                      |
+|           | • Baixo overhead      |                      |
+
 **Camada 3 : Rede**  
 
     Responsável pelo roteamento e endereçamento dos pacotes de dados entre redes diferentes.
     Define os caminhos para a entrega eficiente dos pacotes.
     Protocolos e tecnologias: IP, ICMP, ARP, RIP, OSPF, BGP.  
+
+| Protocolo        | Categoria            | FunçãoIPv4/IPv6                     |
+|------------------|----------------------|-------------------------------------|
+| IPv4/IPv6        | Endereçamento        | Identificação única de dispositivos |
+| ICMP             | Diagnóstico          | Ping, traceroute                    |
+| OSPF, BGP, EIGRP | Roteamento           | Determinação de melhores caminhos   |
+| ARP              | Resolução            | IP para MAC address                 |
 
 **Camada 2 : Enlace de Dados**  
 
@@ -108,11 +140,30 @@ O modelo OSI divide a comunicação de rede em 7 camadas independentes, cada uma
     Dividida em duas subcamadas: LLC (Logical Link Control) e MAC (Media Access Control).
     Exemplos de protocolos e tecnologias: Ethernet, Wi-Fi (802.11), PPP, VLAN (802.1Q), ARP.  
 
+| Subcamada                  | Função                    | Tecnologias     |
+|----------------------------|---------------------------|-----------------|
+| LLC (Logical Link Control) | Controle de enlace lógico | IEEE 802.2      |
+| MAC (Media Access Control) | Acesso ao meio físico     | Ethernet, Wi-Fi |
+
+**Principais Tecnologias:**
+
+- **Ethernet (802.3):** Padrão cabeado
+- **Wi-Fi (802.11):** Padrão wireless
+- **VLAN (802.1Q):** Segmentação lógica
+- **STP:** Prevenção de loops
+
 **Camada 1 : Física**  
 
     Responsável pela transmissão de bits no meio físico (cabos, ondas de rádio, fibra óptica).
     Define características elétricas e mecânicas da conexão.
     Exemplos de tecnologias: Cabo UTP, Fibra Óptica, Bluetooth, Wi-Fi, RS-232, DSL.  
+
+| Meio         | Características     | Aplicação         |
+|--------------|---------------------|-------------------|
+| Cabo UTP     | Cat 5e, 6, 6a, etc. | LANs corporativas |
+| Fibra Óptica | Monomodo, multimodo | Backbone, WANs    |
+| Wireless     | 2.4GHz, 5GHz, 6GHz  | Mobilidade        |
+| Coaxial      | RG-58, RG-59        | Legacy, CATV      |
 
 # MODELO TCP/IP
 
