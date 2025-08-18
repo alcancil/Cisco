@@ -30,13 +30,13 @@ Agora para falar sobre o tipo de comunicação **unicast** é preciso se fazer u
 |---------------------------------|--------------------------------------|-----------------------------------------------|
 |![UNICAST](Imagens/unicast.png)  | ![BROADCAST](Imagens/broadcast.png)  | ![MULTICAST](Imagens/multicast.png)           |
 
-Como podemos observar, quando o tráfego vai de um emissor para um receptor podemos chamar de **unicast**, ou seja, é um tráfego direto. Um exemplo que podemos citar desse tipo de comunicação é a ligação telefônica por exemplo, ou mesmo quando se faz um acesso via ssh para algum equipamento. <br></br>
+Como podemos observar, quando o tráfego vai de um emissor para um receptor podemos chamar de **unicast**, ou seja, é um tráfego direto. Um exemplo que podemos citar desse tipo de comunicação é a ligação telefônica por exemplo, ou mesmo quando se faz um acesso via ssh para algum equipamento.  
 
-Depois temos o **broadcast**. Diferente do primeiro tipo de comunicação, esse é um tipo de comunicação onde um envia e todos recebem. Podemos citar o exemplo do protocolo arp onde os equipamentos precisam mapear o endereço mac com o endereço IP. Para o protocolo arp poder descobrir a quem pertence um endereço IP por exemplo, ele faz um "flood" para todos os equipamentos na rede e com isso a comunicação se dá de forma conhecida por **broadcast**. <br></br>
+Depois temos o **broadcast**. Diferente do primeiro tipo de comunicação, esse é um tipo de comunicação onde um envia e todos recebem. Podemos citar o exemplo do protocolo arp onde os equipamentos precisam mapear o endereço mac com o endereço IP. Para o protocolo arp poder descobrir a quem pertence um endereço IP por exemplo, ele faz um "flood" para todos os equipamentos na rede e com isso a comunicação se dá de forma conhecida por **broadcast**.   
 
-Agora se analisarmos bem esses dois tipos de comunicação iremos perceber que no unicast a comunicação se dá de uma forma mais eficiente pois ela entrega os pacotes somente para o destinatário escolhido. Já no broadcast, todos recebem os pacotes independentemente se eles precisam ou não receber tal pacote. Isso faz com que o host que receba o pacote tenha que analisar o mesmo, verificar se ele é o destinatário e se não for, descartar o mesmo. Essa forma de comunicação não é muito eficiente pois em ambientes muito grandes ocupa banda muitas vezes desnecessárias e faz com que o host tenha que processar o pacote e consumir memória e processador. <br></br>
+Agora se analisarmos bem esses dois tipos de comunicação iremos perceber que no unicast a comunicação se dá de uma forma mais eficiente pois ela entrega os pacotes somente para o destinatário escolhido. Já no broadcast, todos recebem os pacotes independentemente se eles precisam ou não receber tal pacote. Isso faz com que o host que receba o pacote tenha que analisar o mesmo, verificar se ele é o destinatário e se não for, descartar o mesmo. Essa forma de comunicação não é muito eficiente pois em ambientes muito grandes ocupa banda muitas vezes desnecessárias e faz com que o host tenha que processar o pacote e consumir memória e processador.  
 
-Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunicação, existe uma fonte de envio de dados mas somente um grupo, ou grupos de hosts que irão receber esses dados. Com isso, o consumo de banda do meio é utilizada de forma mais eficiente e não força quem não tem que fazer parte da conversa receber dados indesejados. <br></br>
+Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunicação, existe uma fonte de envio de dados mas somente um grupo, ou grupos de hosts que irão receber esses dados. Com isso, o consumo de banda do meio é utilizada de forma mais eficiente e não força quem não tem que fazer parte da conversa receber dados indesejados.  
 
 ## Faixas de Endereçamento IP
 
@@ -49,8 +49,6 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 | Classe C                | 192.0.0.0 a 223.255.255.255    |
 | **Classe D (Multicast)** | **224.0.0.0 a 239.255.255.255**|
 | Classe E (Reservado)     | 240.0.0.0 a 247.255.255.255    |
-
-<br></br>
 
 ### **IPV6**
 
@@ -66,21 +64,20 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 | Reservado            |4000::/2, 6000::/3 e outras faixas | Reservado pela IETF para uso futuro.                                                                                      |
 | Embedded IPv4        | ::FFFF:0:0/96 e 2002::/16 | Usado para compatibilidade com IPv4, como no caso de NAT64 (endereço mapeado para IPv4) ou redes 6to4.                            |
 
-**Destaques sobre a tabela:** <br></br>
+**Destaques sobre a tabela:**  
 
 - **Unicast Global:** Utilizado para endereços roteáveis na Internet.
 - **Link-Local:** Necessário para operações básicas dentro de uma rede local; todos os dispositivos IPv6 têm um endereço link-local automaticamente.
-- **Multicast:** Substitui a funcionalidade de broadcast no IPv6.
-- **Loopback:** Para testes internos no dispositivo.
-<br></br>
+- **Multicast:** Substitui a funcionalidade de broadcast no IPv6.  
+- **Loopback:** Para testes internos no dispositivo.  
 
 Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadcast e os roteadores não. Isso é importante de se lembrar pois o multicast vai
-funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, o switches formam os grupos em que os hosts irão participar e o roteador é
-quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** .
+funcionar de forma semelhante nesse aspecto. Então para se poder ter comunicação em ***unicast***, os switches formam os grupos em que os hosts irão participar e o roteador é
+quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** .  
 Mas se precisarmos enviar a comunicação para outras redes quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**. **OBS:** existem vários outros protocolos
-além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br>
+além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia.  
 
-![TOPOLOGIA](Imagens/topologia.png) <br></br>
+![TOPOLOGIA](Imagens/topologia.png)  
 
 - **Origem Multicast:** É o servidor que envia o tráfego multicast para o grupo.
 
@@ -95,26 +92,26 @@ além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia. <br></br
 ## Problemas de não utilizar o multicast
 
 Depois de entender isso, vamos analisar um cenário onde eu tenho um servidor de vídeos e que esteja transmitindo para a rede toda em **broadcast**. Agora vamos supor que em cada salto,
-eu ocupe 10mbs de largura de banda. <br> </br>
+eu ocupe 10mbs de largura de banda.  
 
-![TOPOLOGIA2](Imagens/topologia2.png) <br></br>
+![TOPOLOGIA2](Imagens/topologia2.png)  
 
 Como podemos perceber, o servidor de vídeos envia os pacotes para todos os computadores da rede. Vamos imaginar que o servidor de vídeos ocupe 10 Mbps para enviar os dados. Rapidamente
 podemos notar que a cada salto então teríamos que ter uma largura de banda 10 Mbps no mínimo para cada salto. Agora vamos imaginar que cada host resolva assistir a 5 vídeos ao mesmo tempo.
 Portanto teríamos que ter 50 Mbps de largura de banda, mesmo para os hosts não interessados. Isso é refletido em desperdício de banda e, outro ponto é que os hosts finais não interessados
-necessariamente precisam processar esses pacotes consumindo mais processador e memória. <br></br>
+necessariamente precisam processar esses pacotes consumindo mais processador e memória.  
 
 Como podemos observar nas duas topologias apresentadas, temos duas situações: a comunicação em camada 2 e a comunicação em camada 3. Para a comunicação em camada 2 iremos utilizar o
-**protocolo IGMP (Internet Group Management Protocol)** e em camada 3 o **protocolo PIM (Protocol Independent Multicast)** . <br></br>
+**protocolo IGMP (Internet Group Management Protocol)** e em camada 3 o **protocolo PIM (Protocol Independent Multicast)** .  
 
 **OBS:** O protocolo IGMP é ativado em switches e tem a função ***snooping*** ( no sentido de escuta em inglês), ou seja, ele trabalha com  requisições e envios de informações. Já o protocolo
 ***PIM*** é ativado em roteadores.
 
 ## Endereçamento Multicast
 
-Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para a comunicação multicast. Seguem as faixa de endereços definidas pela IANA. <br></br>
+Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para a comunicação multicast. Seguem as faixa de endereços definidas pela IANA.  
 
-**IPv4** <br></br>
+**IPv4**  
 
 | Designation                                      | Multicast Address Range                 |
 |--------------------------------------------------|-----------------------------------------|
@@ -135,19 +132,18 @@ Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para 
 | Organization-Local Scope (Administratively scoped block) | 239.0.0.0 to 239.255.255.255    |
 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
-[Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml) <br></br>
+[Registro oficial de endereços multicast IPv4 pela IANA](https://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml)  
 
-• **Local network control block (224.0.0.0/24):** Endereços de controle no bloco de rede local são utilizados pelo ***protocolo de controle de tráfego*** e não
-são encaminhados para domínios de broadcast. São de escopo local. Exemplos desses endereços são o ***todos os hosts nessa sub-rede (2240.0.0.2) e todos os roteadores PIM (224.0.0.13)***
+• **Local network control block (224.0.0.0/24):** Endereços de controle no bloco de rede local são utilizados pelo ***protocolo de controle de tráfego*** e não são encaminhados para domínios de broadcast. São de escopo local. Exemplos desses endereços são o ***todos os hosts nessa sub-rede (224.0.0.0.2) e todos os roteadores PIM (224.0.0.13)***  
 
-• **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce***
- ***(224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***
+• **Internetwork control block (224.0.1.0/24):** Esse é um bloco de endereços que pode ser transmitidos através da Internet. Exemplos incluem ***Network Time Protocol (NTP), (224.0.1.1), Cisco-RP-Announce (224.0.1.39), e Cisco-RP-Discovery (224.0.1.40).***  
 
-• ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.
+• ***Organization-Local Scope (239.0.0.0/8):*** São endereços definidos na RFC 2365 e tem escopo local. São similares aos endereços da ***RFC 1918**.  
+
  Em outras palavras os administradores de redes estão livres para poder utilizá-los dentro do próprio domínio sem se preocupar com conflitos
- em outras redes.
+ em outras redes.  
 
-**IPv6** <br></br>
+**IPv6**  
 
 | **Endereço Multicast IPv6** | **Descrição**                               | **Escopo Disponível**                  |
 |-----------------------------|---------------------------------------------|----------------------------------------|
@@ -1824,42 +1820,40 @@ echo "✅ Diagnóstico concluído"
 
 Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em multicast, os hosts
 tem que responder a um endereço de grupo de multicast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo
-tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras. <br></br>
+tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras.  
 
-Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 <br></br>
+Primeiro precisamos lembrar que o mac address é um endereço de 12 dígitos em hexadecimal, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55  
 
 - Os **primeiros 24 bits** de um Mac Address de multicast sempre serão **01:00:5E**
 - O primeiro bit mais à esquerda é conhecido como **individual/group bit (I/G)** e sempre que ele for o valor **1**, isso indica que ele é um multicast.
 - O vigésimo quinto bit sempre será setado em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
 - O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast.
 
-Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .<br></br>
+Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .  
 
-![IP](Imagens/ip.png) <br></br>
+![IP](Imagens/ip.png)  
 
-Certo agora aplicamos a regra. <br></br>
+Certo agora aplicamos a regra.  
 
-![FÓRMULA](Imagens/formula.png) <br></br>
+![FÓRMULA](Imagens/formula.png)  
 
-E por fim agora é só converter a parte em Binário para Hexadecimal. <br></br>
+E por fim agora é só converter a parte em Binário para Hexadecimal.  
 
-![MAC](Imagens/mac.png) <br></br>
+![MAC](Imagens/mac.png)  
 
-Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23
-últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo: <br></br>
+Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23 últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo:  
 
-![SOBRE](Imagens/sobre.png) <br></br>
+![SOBRE](Imagens/sobre.png)  
 
-Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitados e isso dificulta a gerência dos grupos multicast. Para solucionar esse
-tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados. <br></br>
+Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitados e isso dificulta a gerência dos grupos multicast. Para solucionar esse tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados.  
 
-Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.  
+Por outro lado, se pensarmos em IPv6, o espaçamento de endereços IP é infinitamente maior e esse tipo de problema é evitado. Então a recomendação é sempre se utilizar IPv6 quando puder.    
 
 ## IPv6
 
 A formação de endereços IPv6 em multicast é estruturada de forma diferente do IPv4, e uma das principais vantagens é a forma como o mapeamento para endereços MAC de camada 2 é feito, eliminando a colisão que acontece no IPv4.  
 
-O endereço IPv6 multicast é sempre do tipo **ff00::/8**, o que significa que os primeiros **8 bits** são fixos em **1111 1111 (ff em hexadecimal)**. O restante do endereço é dividido em campos que definem a finalidade e o escopo do grupo multicast.
+O endereço IPv6 multicast é sempre do tipo **ff00::/8**, o que significa que os primeiros **8 bits** são fixos em **1111 1111 (ff em hexadecimal)**. O restante do endereço é dividido em campos que definem a finalidade e o escopo do grupo multicast.  
 
 ### Estrutura do Endereço Multicast IPv6
 
@@ -1869,7 +1863,7 @@ O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [grou
 
 - **flags (4 bits):** Indicam o tipo do endereço multicast. Os dois primeiros bits são reservados (sempre 0), e os outros dois indicam se o endereço é permanente (0) ou temporário (1), e se ele é atribuído com base em um prefixo unicast (1).
 
-- **scope (4 bits):** Define o escopo de atuação do grupo multicast, limitando a propagação do tráfego. Alguns escopos comuns são:
+- **scope (4 bits):** Define o escopo de atuação do grupo multicast, limitando a propagação do tráfego. Alguns escopos comuns são:  
 
         **1 (Interface-Local):** Válido apenas na interface.
 
@@ -1883,11 +1877,11 @@ O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [grou
 
 ### Mapeamento de IPv6 Multicast para MAC Address
 
-Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
+Este é o ponto principal e uma melhoria significativa em relação ao IPv4.  
 
 - O prefixo MAC para multicast IPv6 é fixo: **33:33:00:00:00:00**.
 
-- Para criar o endereço MAC completo, os últimos **32 bits (a parte do group ID)** do endereço IPv6 multicast são copiados e anexados aos últimos 32 bits do endereço MAC, substituindo os zeros.
+- Para criar o endereço MAC completo, os últimos **32 bits (a parte do group ID)** do endereço IPv6 multicast são copiados e anexados aos últimos 32 bits do endereço MAC, substituindo os zeros.  
 
 **Exemplo:**
 
