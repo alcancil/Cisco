@@ -1242,7 +1242,17 @@ Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
 
 Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o MAC (o que causa o problema de múltiplos endereços IP mapearem para o mesmo endereço MAC), no IPv6, todos os 32 bits do group ID são usados. Isso significa que cada endereço IPv6 multicast corresponde a um único endereço MAC multicast, eliminando a possibilidade de colisões de endereçamento na camada 2.
 
-## Multicast - Árvore de Distribuição
+## Multicast - Árvore de Distribuição  
+
+O multicast utiliza o conceito de árvores de distribuição, que representam o caminho percorrido pelos pacotes desde a fonte até os receptores interessados.
+
+- **O PIM (Protocol Independent Multicast)** é indispensável para construir essa árvore entre os roteadores. Sem PIM, o tráfego multicast não é encaminhado corretamente entre diferentes redes.
+
+- **O IGMP (Internet Group Management Protocol)**, por sua vez, é usado na borda da rede: ele permite que os hosts indiquem aos roteadores se desejam participar de um grupo multicast.
+
+- Embora o multicast possa funcionar sem **IGMP** (com joins estáticos configurados manualmente no roteador), em redes reais o IGMP é o mecanismo padrão para os hosts se inscreverem em grupos.
+
+Em resumo: o PIM é necessário para formar a árvore multicast; o IGMP é opcional, mas quase sempre presente para permitir a inscrição dinâmica dos hosts.
 
 🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/multicast_tree.html)**  
 
