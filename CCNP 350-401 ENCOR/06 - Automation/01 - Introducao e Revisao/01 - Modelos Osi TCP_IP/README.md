@@ -219,7 +219,14 @@ FTP/SFTP    → Transferência de arquivos
 
     Responsável pela comunicação fim a fim entre dispositivos.
     Garante a entrega confiável dos dados ou o envio rápido sem conexão.
-    Protocolos principais: TCP (confiável, orientado à conexão) e UDP (rápido, sem conexão).  
+    Protocolos principais: TCP (confiável, orientado à conexão) e UDP (rápido, sem conexão). 
+
+Idêntica à camada 4 do OSI  
+
+| Protocolo   | Características     | Automação          |
+|-------------|---------------------|--------------------|
+| TCP         | Confiável, conexão  | APIs críticas, SSH |
+| UDP         | Rápido, sem conexão | SNMP, logs         |
 
 **Camada 2 : Internet**  
 
@@ -227,11 +234,27 @@ FTP/SFTP    → Transferência de arquivos
     Define endereçamento, roteamento e empacotamento dos dados para envio entre redes diferentes.
     Protocolos e tecnologias: IP, ICMP, ARP, RIP, OSPF, BGP.  
 
+Idêntica à camada 3 do OSI (Rede)  
+
+Protocolos Essenciais:  
+
+- IPv4/IPv6: Endereçamento global
+- ICMP: Diagnóstico de rede
+- Protocolos de Roteamento: OSPF, BGP, EIGRP
+
 **Camada 1 : Acesso à Rede**  
 
     Combina as camadas de Enlace de Dados e Física do modelo OSI.
     Define como os dados são transmitidos fisicamente pelo meio de comunicação.
     Exemplos de tecnologias: Ethernet, Wi-Fi (802.11), PPP, VLAN (802.1Q), DSL, Fibra Óptica.  
+
+Combina OSI camadas 2+1  
+
+Engloba tudo relacionado ao acesso local:  
+
+- Tecnologias Ethernet, Wi-Fi
+- Controle de acesso ao meio (MAC)
+- Transmissão física de bits
 
 Aqui vale notar que algumas camadas dos dois modelos são iguais. Já o modelo TCP/IP tem a camada **APRESENTAÇÃO, camada 4**, que é referente as camadas **APLICAÇÃO, APRESENTAÇÃO e SESSÃO** do modelo OSI, ou seja, **as camadas 7, 6 e 5**. A **camada 4** do OSI é igual a **camada 3** do modelo TCP/IP.  
 Agora a **camada 3** do OSI é igual a **camada 2** do TCP/IP porém uma é chamada de REDE e a outra de INTERNET.  
@@ -248,3 +271,10 @@ Já a **camada 1** do modelo TCP/IP (Acesso à Rede) engloba as **camadas 1 (Fí
 | 3. Rede                 | 2. Internet               | IP, ICMP, OSPF, BGP               |
 | 2. Enlace de Dados      | 1. Acesso à Rede          | Ethernet, Wi-Fi, VLAN, PPP        |
 | 1. Física               | 1. Acesso à Rede          | Cabo UTP, Fibra Óptica, DSL       |
+
+💡 **Dica:** Na automação de redes, o entendimento dos modelos é fundamental para: 
+
+- Escolher o protocolo correto para cada tarefa
+- Implementar tratamento de erros adequado por camada
+- Otimizar performance conhecendo as limitações de cada nível
+- Desenvolver ferramentas de diagnóstico eficientes
