@@ -762,7 +762,7 @@ Site Backup (Rio de Janeiro):
 **Diagrama de Arquitetura**  
 
 ```text
-Internet/WAN
+                     Internet/WAN
                           │
             ┌─────────────┼────────────┐
             │             │            │
@@ -786,11 +786,11 @@ Internet/WAN
 
 1. Auto-Configuração  
 
-Benefícios:
-├─ Eliminação de BSR (Bootstrap Router)
-├─ Sem necessidade de static RP mapping
-├─ Descoberta automática do RP
-└─ Redução de overhead de controle
+Benefícios:  
+├─ Eliminação de BSR (Bootstrap Router)  
+├─ Sem necessidade de static RP mapping  
+├─ Descoberta automática do RP  
+└─ Redução de overhead de controle  
 
 2. Escalabilidade Aprimorada
 
