@@ -2,6 +2,8 @@
 
 - [Índice](#índice)
 - [01 - Revisão](#01---revisão)
+  - [Contexto Histórico](#contexto-histórico)
+  - [Por que Estudar os Modelos?](#por-que-estudar-os-modelos)
 - [MODELO OSI](#modelo-osi)
 - [MODELO TCP/IP](#modelo-tcpip)
 - [Comparação OSI x TCP/IP](#comparação-osi-x-tcpip)
@@ -19,15 +21,61 @@ Foi então que em 1984, a ISO (International Organization for Standardization) l
 Porém, depois de algum tempo surgiu o padrão TCP/IP que é uma pilha de protocolos. Então, por mais que já existisse o modelo anterior, o mercado adotou e implementou o TCP/IP porém,
 como os equipamentos são referenciados através do modelo OSI, os dois coexistem até hoje.
 
+## Contexto Histórico
+
+No início da era das redes de computadores (décadas de 1960-1970), não existiam padrões universais de comunicação. Cada fabricante (IBM, DEC, Xerox, etc.) desenvolvia seus próprios protocolos proprietários, resultando em:  
+
+- **Incompatibilidade** total entre equipamentos de fabricantes diferentes
+- **Vendor Lock-in:** Organizações ficavam "presas" a um único fornecedor
+- **Custos elevados** de integração e manutenção
+- **Limitações de escalabilidade** das redes
+
+**Marco Histórico: 1984**  
+
+A ISO (International Organization for Standardization) lançou o modelo OSI (Open Systems Interconnection), revolucionando a padronização de redes:  
+
+**🎯 Objetivo:** Criar um modelo de referência universal para interoperabilidade entre sistemas de diferentes fabricantes  
+
+**Evolução Paralela: TCP/IP**  
+
+Paralelamente, o DoD (Department of Defense) americano desenvolveu a stack TCP/IP para a ARPANET (precursora da Internet), que eventualmente se tornou o padrão de facto mundial.
+
+## Por que Estudar os Modelos?
+
+**Para Automação de Redes:**  
+
+✅ **Troubleshooting estruturado:** Identificar em qual camada está o problema
+✅ **Desenvolvimento de scripts:** Entender como acessar equipamentos programaticamente
+✅ **APIs e protocolos:** Conhecer onde operam (HTTP/HTTPS na camada de aplicação)
+✅ **Segurança:** Implementar controles apropriados por camada
+
 # MODELO OSI
+
+**Visão Geral**  
+
+O modelo OSI divide a comunicação de rede em 7 camadas independentes, cada uma com responsabilidades específicas:
 
 ![OSI](Imagens/osi.png)
 
-**Camada 7 : Aplicação**
+**Camada 7 : Aplicação**  
 
     Interface entre o usuário e a rede.
     Proporciona serviços como e-mail, navegação na web, transferência de arquivos.
     Exemplos de protocolos: HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, SSH, DNS.
+
+| Categoria     | Protocolos        | Porta Padrão | Uso                  |
+|---------------|-------------------|--------------|----------------------|
+| Web           | HTTP, HTTPS       | 80, 443      | Navegação, APIs REST |
+| Email         | SMTP, POP3, IMAP  | 25, 110, 143 | Correio eletrônico   |
+| Transferência | FTP, SFTP         | 21, 22       | Arquivos             |
+| Administração | SSH, Telnet, SNMP | 22, 23, 161  | Automação de redes   |
+| DNS           | DNS               | 53           | Resolução de nomes   |
+
+**💡 Relevância para Automação:**
+
+- **APIs REST/RESTCONF** operam nesta camada
+- **SSH para automação** via scripts Python/Ansible
+- **SNMP para monitoramento** automatizado
 
 **Camada 6 : Apresentação**  
 
