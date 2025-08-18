@@ -1908,10 +1908,11 @@ Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o 
 ## Multicast - Árvore de Distribuição
 
 🌳 **[Ver Visualização Interativa da Árvore Multicast](Arquivos/multicast_tree.html)**  
-🌳 **[Ver Visualização Interativa da Árvore Multicast](Arquivos/index.html)**  
+🌳 **[Ver Visualização Interativa da Árvore Multicast](Arquivos/index.html)**
+🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/multicast_tree.html)**  
 🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcanci.github.io/Cisco/03-Infrastructure/01-Multicast/Arquivos/multicast_tree.html)**  
 🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcanci.github.io/Cisco/03-Infrastructure/01-Multicast/Arquivos/index.html)**  
 🌳 **[Ver Visualização Interativa da Árvore Multicast](Imagens/multicast_tree.svg)**
 
 
-[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.htm)
+**[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.htm)**
