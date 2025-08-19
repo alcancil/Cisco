@@ -72,58 +72,65 @@
         answer: "IGMPv3",
         explanation: "O Source-Specific Multicast requer IGMPv3, pois ele permite que os hosts especifiquem a fonte (S,G)."
       },
-
-
       { 
         question: "Qual faixa de endereçamento IPv4 é Classe D para Multicast?",
         options: ["192.0.0.0 a 223.255.255.255","224.0.0.0 a 239.255.255.255","128.0.0.0 a 191.255.255.255","240.0.0.0 a 247.255.255.255"],
         answer: "224.0.0.0 a 239.255.255.255", 
-        explanation: " "
+        explanation: "A Classe D é especificamente reservada para multicast IPv4, abrangendo toda a faixa de 224.0.0.0 a 239.255.255.255. Esta faixa foi estruturada para permitir subgrupos com finalidades específicas, incluindo endereços"
       },
       { 
         question: "No IPv6, qual prefixo identifica Multicast?",
         options: ["FE80::/10","2000::/3","FC00::/7","FF00::/8"],
-        answer: "FF00::/8" 
+        answer: "FF00::/8",
+        explanation: " " 
       },
       { 
         question: "Qual protocolo evita flooding de tráfego multicast em switches?",
         options: ["PIM","IGMP Snooping","OSPF","BGP"],
-        answer: "IGMP Snooping" 
+        answer: "IGMP Snooping",
+        explanation: " " 
       },
       { 
         question: "Qual endereço multicast bem-conhecido é usado pelo PIM?",
         options: ["224.0.0.5","224.0.0.10","224.0.0.13","224.0.0.2"],
-        answer: "224.0.0.13" 
+        answer: "224.0.0.13",
+        explanation: " " 
       },
       { 
         question: "Os endereços 239.0.0.0/8 são?",
         options: ["Roteáveis na Internet","Reservados para uso interno","Exclusivos do NTP","Obrigatórios entre AS"],
-        answer: "Reservados para uso interno" 
+        answer: "Reservados para uso interno",
+        explanation: " " 
       },
       { 
         question: "Qual problema do mapeamento IPv4 Multicast para MAC foi resolvido no IPv6?",
         options: ["Necessidade de ARP","Lentidão na conversão","Sobreposição de IPs em MACs","Limite de 256 endereços"],
-        answer: "Sobreposição de IPs em MACs" 
+        answer: "Sobreposição de IPs em MACs",
+        explanation: " " 
       },
       { 
         question: "O SSM (232.0.0.0/8) depende de qual versão IGMP?",
         options: ["IGMPv1","IGMPv2","IGMPv3","Qualquer"],
-        answer: "IGMPv3" 
+        answer: "IGMPv3",
+        explanation: " ", 
       },
       { 
         question: "Qual valor de 'scope' no IPv6 para Link-Local?",
         options: ["1 (Interface)","2 (Link-Local)","5 (Site)","E (Global)"],
-        answer: "2 (Link-Local)" 
+        answer: "2 (Link-Local)",
+        explanation: " " 
       },
       { 
         question: "Qual prefixo MAC é usado para Multicast IPv6?",
         options: ["01:00:5E","FF:FF:FF","33:33:00","33:33"],
-        answer: "33:33" 
+        answer: "33:33",
+        explanation: " "
       },
       { 
         question: "O que é GLOP Addressing?",
         options: ["Criptografia","Mapeamento de ASN para Multicast","Balanceamento de carga","Limitar tráfego a VLAN"],
-        answer: "Mapeamento de ASN para Multicast" 
+        answer: "Mapeamento de ASN para Multicast",
+        explanation: " " 
       },
       // 👉 Adicione mais questões aqui
     ];
