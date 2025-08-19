@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel de Estatísticas dos Simulados</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header class="bg-white border-b sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-bold">Painel de Estatísticas dos Simulados</h1>
+      <div class="flex items-center gap-2">
+        <button id="exportBtn" class="px-3 py-2 text-sm bg-slate-900 text-white rounded-lg">Exportar JSON</button>
+        <label class="px-3 py-2 text-sm bg-slate-200 text-slate-900 rounded-lg cursor-pointer">
+          Importar JSON
+          <input id="importInput" type="file" accept="application/json" class="hidden"/>
+        </label>
+        <button id="clearBtn" class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg">Limpar histórico</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Resumo -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Simulados feitos</p>
+        <p id="kpi-total" class="text-3xl font-semibold mt-1">0</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Questões respondidas (total)</p>
+        <p id="kpi-questions" class="text-3xl font-semibold mt-1">0</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">% de acerto (geral)</p>
+        <p id="kpi-accuracy" class="text-3xl font-semibold mt-1">0%</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Tempo médio por simulado</p>
+        <p id="kpi-avgtime" class="text-3xl font-semibold mt-1">00:00</p>
+      </div>
+    </section>
+
+    <!-- Gráficos -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Nota por tentativa</h2>
+        <canvas id="scoresChart" height="160"></canvas>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Tempo por tentativa</h2>
+        <canvas id="timeChart" height="160"></canvas>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Acertos x Erros (geral)</h2>
+        <canvas id="pieChart" height="160"></canvas>
+      </div>
+    </section>
+
+    <!-- Filtros e Tabela -->
+    <section class="bg-white rounded-xl p-4 shadow-sm border">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+        <input id="search" type="text" placeholder="Filtrar por nome/simulado..." class="w-full sm:w-72 px-3 py-2 rounded-lg border" />
+        <select id="sort" class="w-full sm:w-56 px-3 py-2 rounded-lg border">
+          <option value="date_desc">Mais recentes primeiro</option>
+          <option value="date_asc">Mais antigos primeiro</option>
+          <option value="score_desc">Maior nota</option>
+          <option value="score_asc">Menor nota</option>
+          <option value="time_desc">Maior tempo</option>
+          <option value="time_asc">Menor tempo</option>
+        </select>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left bg-slate-100">
+              <th class="p-2">Data</th>
+              <th class="p-2">Simulado</th>
+              <th class="p-2">Nome</th>
+              <th class="p-2">Nota</th>
+              <th class="p-2">Percentual</th>
+              <th class="p-2">Tempo</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Utils ----------
+    function loadResults() {
+      try {
+        const raw = localStorage.getItem("simulados");
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch(e) { return []; }
+    }
+    function saveResults(arr) {
+      localStorage.setItem("simulados", JSON.stringify(arr));
+    }
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`;
+    }
+    function toPercent(num) {
+      return (Math.round(num * 10) / 10).toFixed(1);
+    }
+    function localeDate(iso) {
+      try { return new Date(iso).toLocaleString('pt-BR'); } catch(e) { return iso; }
+    }
+    function uniqueById(arr) {
+      const map = new Map();
+      for (const r of arr) map.set(r.id || r.date, r);
+      return Array.from(map.values());
+    }
+
+    // ---------- State ----------
+    let DATA = loadResults();
+    let scoresChart, timeChart, pieChart;
+
+    // ---------- KPIs ----------
+    function renderKPIs() {
+      const total = DATA.length;
+      const totalQuestions = DATA.reduce((a, r) => a + (r.total || 0), 0);
+      const totalCorrect = DATA.reduce((a, r) => a + (r.score || 0), 0);
+      const totalTime = DATA.reduce((a, r) => a + (r.timeSeconds || 0), 0);
+      const avgTime = total ? Math.round(totalTime / total) : 0;
+      const accuracy = totalQuestions ? (totalCorrect / totalQuestions) * 100 : 0;
+
+      document.getElementById("kpi-total").textContent = total;
+      document.getElementById("kpi-questions").textContent = totalQuestions;
+      document.getElementById("kpi-accuracy").textContent = toPercent(accuracy) + "%";
+      document.getElementById("kpi-avgtime").textContent = formatSeconds(avgTime);
+    }
+
+    // ---------- Charts ----------
+    function destroyCharts() {
+      [scoresChart, timeChart, pieChart].forEach(c => c && c.destroy && c.destroy());
+    }
+
+    function renderCharts(filtered = DATA) {
+      destroyCharts();
+      const labels = filtered.map((r, i) => `${i+1} • ${r.simuladoId || r.simuladoTitle || 'Simulado'}`);
+      const scores = filtered.map(r => r.score || 0);
+      const totals = filtered.map(r => r.total || 0);
+      const times = filtered.map(r => r.timeSeconds || 0);
+      const overallCorrect = DATA.reduce((a, r) => a + (r.score || 0), 0);
+      const overallTotal = DATA.reduce((a, r) => a + (r.total || 0), 0);
+      const overallWrong = Math.max(overallTotal - overallCorrect, 0);
+
+      const ctx1 = document.getElementById('scoresChart').getContext('2d');
+      scoresChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Acertos', data: scores },
+            { label: 'Total de Questões', data: totals }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const ctx2 = document.getElementById('timeChart').getContext('2d');
+      timeChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Tempo (s)', data: times }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const ctx3 = document.getElementById('pieChart').getContext('2d');
+      pieChart = new Chart(ctx3, {
+        type: 'doughnut',
+        data: {
+          labels: ['Acertos', 'Erros'],
+          datasets: [ { data: [overallCorrect, overallWrong] } ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    // ---------- Table ----------
+    function renderTable(filtered = DATA) {
+      const tbody = document.getElementById('tableBody');
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td class="p-3 text-slate-500 italic" colspan="6">Sem registros ainda. Faça um simulado e volte aqui.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(r => `
+        <tr class="border-b hover:bg-slate-50">
+          <td class="p-2 whitespace-nowrap">${localeDate(r.date)}</td>
+          <td class="p-2 whitespace-nowrap">${r.simuladoTitle || r.simuladoId || '-'}</td>
+          <td class="p-2 whitespace-nowrap">${r.name || '-'}</td>
+          <td class="p-2 whitespace-nowrap">${r.score ?? 0}/${r.total ?? 0}</td>
+          <td class="p-2 whitespace-nowrap">${toPercent((r.percent ?? ((r.score||0)/(r.total||1)*100)))}%</td>
+          <td class="p-2 whitespace-nowrap">${r.timeFormatted || formatSeconds(r.timeSeconds || 0)}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ---------- Filters & Sort ----------
+    function applyFilters() {
+      const q = (document.getElementById('search').value || '').trim().toLowerCase();
+      const sort = document.getElementById('sort').value;
+      let arr = [...DATA];
+
+      if (q) {
+        arr = arr.filter(r => 
+          (r.name || '').toLowerCase().includes(q) ||
+          (r.simuladoTitle || r.simuladoId || '').toLowerCase().includes(q)
+        );
+      }
+      switch (sort) {
+        case 'date_desc': arr.sort((a,b)=> new Date(b.date)-new Date(a.date)); break;
+        case 'date_asc': arr.sort((a,b)=> new Date(a.date)-new Date(b.date)); break;
+        case 'score_desc': arr.sort((a,b)=> (b.score||0)-(a.score||0)); break;
+        case 'score_asc': arr.sort((a,b)=> (a.score||0)-(b.score||0)); break;
+        case 'time_desc': arr.sort((a,b)=> (b.timeSeconds||0)-(a.timeSeconds||0)); break;
+        case 'time_asc': arr.sort((a,b)=> (a.timeSeconds||0)-(b.timeSeconds||0)); break;
+      }
+
+      renderTable(arr);
+      renderCharts(arr);
+    }
+
+    // ---------- Export / Import / Clear ----------
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const dataStr = JSON.stringify(DATA, null, 2);
+      const blob = new Blob([dataStr], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'simulados_backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importInput').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+          if (!Array.isArray(imported)) throw new Error('Formato inválido');
+          const merged = uniqueById([...(DATA||[]), ...imported]);
+          DATA = merged;
+          saveResults(DATA);
+          renderKPIs(); applyFilters();
+          alert('Importação concluída!');
+        } catch (err) {
+          alert('Falha ao importar: ' + err.message);
+        }
+        e.target.value = '';
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (!confirm('Tem certeza que deseja excluir TODO o histórico dos simulados deste navegador?')) return;
+      DATA = [];
+      saveResults(DATA);
+      renderKPIs(); applyFilters();
+    });
+
+    document.getElementById('search').addEventListener('input', applyFilters);
+    document.getElementById('sort').addEventListener('change', applyFilters);
+
+    // ---------- Init ----------
+    renderKPIs();
+    applyFilters();
+  </script>
+</body>
+</html>

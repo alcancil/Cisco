@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <!-- Tela inicial -->
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Multicast. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <!-- Tela do Quiz -->
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <!-- Barra de Progresso -->
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <!-- Tela de Resultados -->
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual endereço multicast é reservado para todos os roteadores IPv4?",
+        options: ["224.0.0.1", "224.0.0.2", "224.0.0.5", "239.255.255.250"],
+        answer: "224.0.0.2",
+        explanation: "O endereço 224.0.0.2 é reservado para todos os roteadores IPv4 no segmento local."
+      },
+      {
+        question: "Qual é a principal desvantagem da comunicação Broadcast em redes grandes, que o Multicast busca resolver?",
+        options: [
+                    "Aumento da latência nas conexões",
+                    "Obrigar todos os hosts a processar pacotes indesejados, consumindo CPU e memória",
+                    "Perda de pacotes em sub-redes com muitos dispositivos",
+                    "Vulnerabilidade a ataques de negação de serviço (DDoS)"
+                  ],
+        answer: "Obrigar todos os hosts a processar pacotes indesejados, consumindo CPU e memória",
+        explanation: "No Broadcast, todos os hosts da rede recebem os pacotes, independentemente de estarem interessados. Isso força os hosts a processar e descartar pacotes desnecessários, resultando em desperdício de banda e consumo de recursos de processamento e memória."
+      },
+      {
+        question: "Em IPv4, qual faixa de endereçamento é especificamente designada para endereços Multicast?",
+        options: [
+                    "192.0.0.0 a 223.255.255.255 (Classe C)",
+                    "224.0.0.0 a 239.255.255.255 (Classe D)",
+                    "128.0.0.0 a 191.255.255.255 (Classe B)",
+                    "240.0.0.0 a 247.255.255.255 (Classe E)"
+                  ],
+          answer: "224.0.0.0 a 239.255.255.255 (Classe D)",
+          explanation: "A faixa de endereçamento IPv4 para Multicast é a Classe D, que vai de 224.0.0.0 até 239.255.255.255."
+      },
+      {
+          question: "Qual protocolo é utilizado na camada 3 (em roteadores) para gerenciar o tráfego e construir a árvore de distribuição Multicast entre diferentes redes?",
+          options: [
+                      "IGMP",
+                      "OSPF",
+                      "PIM (Protocol Independent Multicast)",
+                      "MLD"
+                    ],
+            answer: "PIM (Protocol Independent Multicast)",
+            explanation: "O PIM é ativado em roteadores e é o responsável por gerenciar a comunicação Multicast na camada 3, formando a árvore de distribuição entre redes. O IGMP é para a camada 2 e MLD para IPv6."
+      },
+      {
+            question: "Qual endereço IPv4 Multicast é reservado para todos os roteadores em uma sub-rede local?",
+            options: [
+                        "224.0.0.1",
+                        "224.0.0.2",
+                        "224.0.0.5",
+                        "224.0.0.13"
+                      ],
+            answer: "224.0.0.2",
+            explanation: "O endereço 224.0.0.2 é um endereço 'Well-Known' reservado para todos os roteadores em uma sub-rede local."
+      },
+      {
+            question: "Qual é a principal diferença de escopo entre os endereços IPv4 'Well-Known' (224.0.0.0/24) e os endereços de 'Escopo Global' (224.0.1.0/24)?",
+            options: [
+                        "Os endereços Well-Known são usados para testes, enquanto os de Escopo Global são para produção.",
+                        "Os endereços Well-Known são usados apenas por roteadores, enquanto os de Escopo Global são usados por hosts.",
+                        "Os endereços Well-Known são limitados à sub-rede local (TTL=1) e não são roteáveis, enquanto os de Escopo Global podem ser roteados pela Internet (TTL>1).",
+                        "Os endereços Well-Known são exclusivos para protocolos de roteamento, enquanto os de Escopo Global são para aplicações."
+                      ],
+            answer: "Os endereços Well-Known são limitados à sub-rede local (TTL=1) e não são roteáveis, enquanto os de Escopo Global podem ser roteados pela Internet (TTL>1).",
+            explanation: "A principal diferença é que endereços Well-Known têm TTL fixo de 1 e não são roteados, enquanto os de Escopo Global têm TTL maior que 1 e são roteáveis, permitindo comunicação entre redes."
+      },
+      {
+            question: "Os endereços 'Administratively Scoped Addresses' na faixa 239.0.0.0/8 são equivalentes a qual faixa de endereços Unicast em IPv4?",
+            options: [
+                        "Endereços de loopback (127.0.0.0/8)",
+                        "Endereços de Classe C (192.0.0.0/8)",
+                        "Endereços IP privados (RFC 1918)",
+                        "Endereços de escopo público"
+                     ],
+            answer: "Endereços IP privados (RFC 1918)",
+            explanation: "Os endereços 239.0.0.0/8 são reservados para uso interno de organizações, assim como os endereços privados da RFC 1918 (10.x.x.x, 172.16-31.x.x, 192.168.x.x)."
+      },
+      {
+            question: "Qual é o principal benefício do Source-Specific Multicast (SSM) em comparação com o Any-Source Multicast (ASM) tradicional?",
+            options: [
+                        "Ele exige menos banda total na rede.",
+                        "Ele permite que os receptores especifiquem a fonte exata dos dados, eliminando o tráfego desnecessário de outras fontes.",
+                        "Ele é compatível com todas as versões do IGMP, tornando a implementação mais fácil.",
+                        "Ele é totalmente roteável na Internet sem qualquer restrição de segurança."
+                     ],
+            answer: "Ele permite que os receptores especifiquem a fonte exata dos dados, eliminando o tráfego desnecessário de outras fontes.",
+            explanation: "O SSM (Source-Specific Multicast) permite que os receptores se inscrevam em um grupo Multicast e especifiquem a fonte exata (S,G) de onde desejam receber o tráfego, evitando o flooding de tráfego de outras fontes."
+      },
+      {
+            question: "Qual protocolo IGMP é obrigatório para que o Source-Specific Multicast (SSM) funcione corretamente, permitindo que os hosts especifiquem a fonte?",
+            options: [
+                        "IGMPv1",
+                        "IGMPv2",
+                        "IGMPv3",
+                        "Qualquer versão do IGMP"
+                     ],
+            answer: "IGMPv3",
+            explanation: "O SSM requer o IGMPv3, pois esta é a versão que introduziu a capacidade de filtrar fontes, permitindo a comunicação entre hosts e roteadores para especificar a fonte e o grupo (S,G)."
+      },
+      {
+            question: "Em IPv6, qual prefixo identifica todos os endereços Multicast?",
+            options: [
+                        "FE80::/10",
+                        "2000::/3",
+                        "FF00::/8",
+                        "FC00::/7"
+                     ],
+            answer: "FF00::/8",
+            explanation: "A faixa de endereçamento Multicast em IPv6 é identificada pelo prefixo FF00::/8."
+      },
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste02";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        return `
+          <div class="p-4 border rounded-lg">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
