@@ -1259,7 +1259,7 @@ O multicast utiliza o conceito de árvores de distribuição, que representam o 
 
 ## Simualados
 
-| **[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/teste01_com_save.html)** |  **[Simulado 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/teste02_com_save.html)** |
+| **[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.html)** |  **[Simulado 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/02.html)** |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
 
-| **[DASHBOARD](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/dashboard.html)** |----------|
+| **[DASHBOARD](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/dashboard.html)** |          |
