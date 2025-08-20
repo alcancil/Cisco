@@ -20,8 +20,8 @@
   - [IPv6](#ipv6-1)
     - [Estrutura do Endereço Multicast IPv6](#estrutura-do-endereço-multicast-ipv6)
     - [Mapeamento de IPv6 Multicast para MAC Address](#mapeamento-de-ipv6-multicast-para-mac-address)
+  - [Simulados](#simulados)
   - [Multicast - Árvore de Distribuição](#multicast---árvore-de-distribuição)
-  - [Simualados](#simualados)
 
 # 01 - Multicast
 
@@ -45,9 +45,9 @@ Pensando nisso, foi desenvolvido o **multicast**. Agora, nesse tipo de comunica�
 
 | Classe de IP             | Faixa de Endereçamento         |
 |--------------------------|--------------------------------|
-| Classe A                | 0.0.0.0 a 127.255.255.255      |  
-| Classe B                | 128.0.0.0 a 191.255.255.255    |
-| Classe C                | 192.0.0.0 a 223.255.255.255    |
+| Classe A                 | 0.0.0.0 a 127.255.255.255      |  
+| Classe B                 | 128.0.0.0 a 191.255.255.255    |
+| Classe C                 | 192.0.0.0 a 223.255.255.255    |
 | **Classe D (Multicast)** | **224.0.0.0 a 239.255.255.255**|
 | Classe E (Reservado)     | 240.0.0.0 a 247.255.255.255    |
 
@@ -114,7 +114,7 @@ Como citado anteriormente, foram definidas faixas de endereço IPv4 e IPv6 para 
 
 **IPv4**  
 
-| Designation                                      | Multicast Address Range                 |
+| Designação                                       | Faixa de endereços Multicast            |
 |--------------------------------------------------|-----------------------------------------|
 | Local network control block                      | 224.0.0.0 to 224.0.0.255                |
 | Internetwork control block                       | 224.0.1.0 to 224.0.1.255                |
@@ -296,7 +296,7 @@ No exame CCNP Enterprise, é comum encontrar questões sobre:
 - PIM Sparse Mode com RPs anunciados via 224.0.1.39/40
 - Troubleshooting de protocolos que dependem desses endereços
 
-**📊 Diferença: Local vs Global**
+**📊 Diferença: Local vs Global**  
 
 | Aspecto | Well-Known (224.0.0.x) | Global (224.0.1.x) |
 |---------|------------------------|--------------------|
@@ -997,7 +997,7 @@ ping6 ff02::1  # Link-local: deve responder
 ping6 ff05::1  # Site-local: pode responder  
 ping6 ffe0::1  # Global: geralmente bloqueado
 
-# Wireshark filter por escopo
+# Whireshark filter por escopo
 ipv6.dst >= ff02:: and ipv6.dst < ff03::  # Link-local
 ipv6.dst >= ff05:: and ipv6.dst < ff06::  # Site-local
 ```
@@ -1243,6 +1243,14 @@ Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
 
 Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o MAC (o que causa o problema de múltiplos endereços IP mapearem para o mesmo endereço MAC), no IPv6, todos os 32 bits do group ID são usados. Isso significa que cada endereço IPv6 multicast corresponde a um único endereço MAC multicast, eliminando a possibilidade de colisões de endereçamento na camada 2.
 
+## Simulados
+
+- **[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.html)**
+- **[Simulado 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/02.html)**  
+- **[DASHBOARD](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/dashboard.html)**  
+
+--- Arrumar (Colocar depois de PIM)
+
 ## Multicast - Árvore de Distribuição  
 
 O multicast utiliza o conceito de árvores de distribuição, que representam o caminho percorrido pelos pacotes desde a fonte até os receptores interessados.
@@ -1255,11 +1263,4 @@ O multicast utiliza o conceito de árvores de distribuição, que representam o 
 
 **Em resumo:** o PIM é necessário para formar a árvore multicast; o IGMP é opcional, mas quase sempre presente para permitir a inscrição dinâmica dos hosts.  
 
-🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/multicast_tree.html)**  
-
-## Simualados
-
-| **[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/01.html)** |  **[Simulado 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/02.html)** |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
-
-| **[DASHBOARD](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/Simulado/dashboard.html)** |     1     |
+🌳 **[Ver Visualização Interativa da Árvore Multicast](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/01%20-%20Multicast/Arquivos/multicast_tree.html)** 
