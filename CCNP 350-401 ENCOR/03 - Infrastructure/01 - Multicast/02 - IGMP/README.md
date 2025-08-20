@@ -4,35 +4,33 @@ Esse é um protocolo criado para os hosts e os roteadores adjacentes para criare
 pacotes e dados. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) 
 que é um protocolo que gerência membros multicast IPv6. <br></br>
 
-Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada e 
-**RFC 3376** definida na RFC 3376. <br></br>
+Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada na **RFC 3376**.  
 
 # Aplicações
 
 * **Streaming:** o IGMP é muito utilizado em streaming de áudio e vídeo onde uma pessoa transmite um único fluxo de comunicação para um grupo em específico.
 * **Jogos Online:** esse também é um uso comum para esse protocolo onde hoje em dia cada vez mais os usuários de jogos se tornaram mais exigentes e com a utilização do IGMP a comunicação se dá de forma mais eficiente.
-* **Videoconferência:** essa é uma modalidade de comunicação que vem se tornando cada vez mais popular e exige também um uso mais eficiente de banda.
+* **Videoconferência:** essa é uma modalidade de comunicação que vem se tornando cada vez mais popular e exige também um uso mais eficiente de banda.  
 
 # IGMPv1
 
-![IGMP](Imagens/igmpv1.png) <br></br>
+![IGMP](Imagens/igmpv1.png)  
 
-* **VERSÂO:** Campo configurado em 1. Versão do protocolo.
+* **VERSÃO:** Campo configurado em 1. Versão do protocolo.
 * **TIPO:** 1 para consulta de associação e relatório de associação de destinatário. 
-* **NÂO UTILIZADO:** campo não utilizado preenchido com zeros.
+* **NÃO UTILIZADO:** campo não utilizado preenchido com zeros.
 * **CHECKSUM:** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP 
-* **ENDEREÇO DE GRUPO:** O campo de endereço do grupo é zero quando enviado e ignorado quando recebido na mensagem de consulta de associação. Em uma mensagem de relatório de associação, 
-o campo de endereço do grupo utiliza o endereço do grupo de hosts IP do grupo que está sendo relatado
+* **ENDEREÇO DE GRUPO:** O campo de endereço do grupo é zero quando enviado e ignorado quando recebido na mensagem de consulta de associação. Em uma mensagem de relatório de associação, o campo de endereço do grupo utiliza o endereço do grupo de hosts IP do grupo que está sendo relatado
 
 # IGMPv2
 
 ![IGMP](Imagens/igmpv2.png) <br></br>
 
-A mensagens são encapsulados dentro do protocolo  **IP com a marcação de número 2** . Ela possui um TTL (Time To Live) de 1, ou seja, essas mensagens tem escopo local. Só conseguem ser encaminhadas 
+As mensagens são encapsulados dentro do protocolo  **IP com a marcação de número 2** . Ela possui um TTL (Time To Live) de 1, ou seja, essas mensagens tem escopo local. Só conseguem ser encaminhadas 
 para os roteadores locais e não são roteadas para outras redes uma vez que para o próximo salto o TTL é decrementado para 0 e a mensagem é descartada. <br></br>
 
 * **TIPO:** esse campo indica **5** tipos de mensagens IGMP diferentes:
-    * **1 - Relatório de adesão versão 2:** essa é uma mensagem com o valor *0x16* que é enviada para os destinatários para se juntar ao grupo IGMP ou uma resposta de consulta feita pelos destinatárioes. É referida como IGMP join.
+    * **1 - Relatório de adesão versão 2:** essa é uma mensagem com o valor *0x16* que é enviada para os destinatários para se juntar ao grupo IGMP ou uma resposta de consulta feita pelos destinatários. É referida como IGMP join.
     * **2 - Relatório de adesão versão 1:** é uma mensagem com o valor 0x12 para fins de compatibilidade com o IGMPv1.
     * **3 - Consulta geral de associação:** é uma mensagem com o valor 0x11 enviada para todos os hosts de 224.0.0.1 para verificar se existem hosts nessa sub-rede. Ela seta o campo de endereço de grupo para 0.0.0.0
     * **4 - Consulta específica do grupo:** é uma mensagem com o valor 0x11 e é uma mensagem de resposta para o endereço que pediu para sair do grupo. O endereço do grupo é o IP de destino
@@ -79,8 +77,8 @@ padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, 
 
 # IGMPv3
 
-O IGMPv3 é uma evolução da versão 2 e agora é possível qual é a fonte que quer receber o tráfego multicast. Com isso agora é possível fazer um filtro de origem de tráfego multicast. 
-Com isso, os destinatários podem escolher as fontes de onde desejam receber o trafego multicast. <br></br>
+O IGMPv3 é uma evolução da versão 2 e agora é possível qual é a fonte que deseja receber o tráfego multicast. Com isso agora é possível fazer um filtro de origem de tráfego multicast. 
+Com isso, os destinatários podem escolher as fontes de onde desejam receber o tráfego multicast. <br></br>
 
 Essa versão foi desenvolvida para coexistir junto das outras. A diferença da versão 3 para 2 é que na versão 3 foram acrescentados novos campos na consulta de adesão e um novo tipo de 
 mensagem IGMP chamado relatório de associação da versão 3 para oferecer suporte à filtragem de origem. <br></br>
@@ -95,7 +93,7 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 ![IGMP](Imagens/igmpv3.png) <br></br>
 
 
-* **CÓDIGO MÁXMIO DE RESPOSTA :** Este campo é ignorado para tipos de mensagens diferentes de consulta de associação. Para o tipo de consulta de adesão, é o tempo máximo permitido antes de enviar um relatório de resposta. O valor está em unidades de 0,1 segundos.
+* **CÓDIGO MÁXIMO DE RESPOSTA :** Este campo é ignorado para tipos de mensagens diferentes de consulta de associação. Para o tipo de consulta de adesão, é o tempo máximo permitido antes de enviar um relatório de resposta. O valor está em unidades de 0,1 segundos.
 * **CHECKSUM :** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP.
 * **ENDEREÇO DE GRUPO :** É definido como 0 ao enviar uma consulta geral. Caso contrário, endereço multicast para consultas específicas de grupo ou de origem.
 * **RESV :** É configurado em 0 e é ignorado quando recebido
