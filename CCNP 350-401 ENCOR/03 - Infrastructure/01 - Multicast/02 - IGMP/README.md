@@ -1,8 +1,6 @@
 # 02 - Internet Group Management Protocol
 
-Esse é um protocolo criado para os hosts e os roteadores adjacentes para criarem uma comunicação multicast entre redes IP e para utilizarem de forma mais eficiente as transmissões de
-pacotes e dados. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) 
-que é um protocolo que gerência membros multicast IPv6. <br></br>
+Esse protocolo permite que hosts e roteadores adjacentes estabeleçam comunicação multicast em redes IP, otimizando o uso de banda e a transmissão de pacotes. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) que é um protocolo que gerência membros multicast IPv6.  
 
 Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada na **RFC 3376**.  
 
@@ -17,17 +15,16 @@ Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 q
 ![IGMP](Imagens/igmpv1.png)  
 
 * **VERSÃO:** Campo configurado em 1. Versão do protocolo.
-* **TIPO:** 1 para consulta de associação e relatório de associação de destinatário. 
+* **TIPO:** 1 para consulta de associação e relatório de associação de destinatário.  
 * **NÃO UTILIZADO:** campo não utilizado preenchido com zeros.
 * **CHECKSUM:** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP 
 * **ENDEREÇO DE GRUPO:** O campo de endereço do grupo é zero quando enviado e ignorado quando recebido na mensagem de consulta de associação. Em uma mensagem de relatório de associação, o campo de endereço do grupo utiliza o endereço do grupo de hosts IP do grupo que está sendo relatado
 
 # IGMPv2
 
-![IGMP](Imagens/igmpv2.png) <br></br>
+![IGMP](Imagens/igmpv2.png)  
 
-As mensagens são encapsulados dentro do protocolo  **IP com a marcação de número 2** . Ela possui um TTL (Time To Live) de 1, ou seja, essas mensagens tem escopo local. Só conseguem ser encaminhadas 
-para os roteadores locais e não são roteadas para outras redes uma vez que para o próximo salto o TTL é decrementado para 0 e a mensagem é descartada. <br></br>
+As mensagens IGMPv2 são encapsuladas no protocolo **IP com a marcação de número 2** e possuem um TTL (Time To Live) igual a 1, limitando seu alcance à rede local. Quando o pacote chega ao próximo salto, o TTL é decrementado para 0 e descartado.
 
 * **TIPO:** esse campo indica **5** tipos de mensagens IGMP diferentes:
     * **1 - Relatório de adesão versão 2:** essa é uma mensagem com o valor *0x16* que é enviada para os destinatários para se juntar ao grupo IGMP ou uma resposta de consulta feita pelos destinatários. É referida como IGMP join.
@@ -39,9 +36,9 @@ endereço do pacote IP e o campo de endereço do grupo.
 relatório de resposta em unidades de um décimo de segundo. Em todos as outras mensagens, é definido como 0x00 pelo remetente e ignorado pelos destinatários.
 * **CHECKSUM:** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP
 * **ENDEREÇO DE GRUPO:** Este campo é definido como 0.0.0.0 nas mensagens de consulta geral e é definido para o endereço do grupo em configurações de mensagens específicas do grupo. As mensagens de relatório de adesão contém
-o endereço do grupo que está sendo reportado neste campo; as mensagens de saída do grupo contém o endereço do grupo que está sendo deixado neste campo. <br></br>
+o endereço do grupo que está sendo reportado neste campo; as mensagens de saída do grupo contém o endereço do grupo que está sendo deixado neste campo.  
 
-**OBS:** <br></br>
+**OBS:**  
     **Tipos**
 
     0x11 for Membership Query
@@ -50,12 +47,14 @@ o endereço do grupo que está sendo reportado neste campo; as mensagens de saí
     0x22 for IGMPv3 Membership Report
     0x17 for Leave Group  
 
-Quando um destinatário quer receber um fluxo multicast, ele envia um relatório de adesão não solicitado para o roteador local, para o grupo que ele deseja se juntar. Esse termo: "relatório de adesão não solicitado"
-é o termo oficial porém é comum se ouvir falar IGMP Join pois é mais fácil de falar e escrever, porém IGMP Join não é o termo oficial. Então o roteador local envia uma mensagem PIM Join
-em direção á origem para solicitar um fluxo multicast. Quando o roteador local começa a receber o fluxo multicast, ele envia de volta o fluxo para a sub-rede que o destinatário está. <br></br>
+Quando um destinatário quer receber um fluxo multicast, ele envia um relatório de adesão não solicitado para o roteador local, para o grupo que ele deseja se juntar.  
+
+O termo oficial é ‘relatório de adesão não solicitado’. No entanto, é comum ouvir a expressão IGMP Join, por ser mais simples de usar — embora não seja o termo padronizado.  
+
+Então o roteador local envia uma mensagem PIM Join em direção á origem para solicitar um fluxo multicast. Quando o roteador local começa a receber o fluxo multicast, ele envia de volta o fluxo para a sub-rede que o destinatário está.  
 
 Então o roteador começa a enviar mensagens de consulta de associação para a sub-rede, com o endereço de todos os hosts 224.0.0.1 para descobrir quais são os hosts presentes.
-Essas mensagens de consulta gerais possuem um tempo padrão de resposta de 10 segundos por padrão. <br></br>
+Essas mensagens de consulta gerais possuem um tempo padrão de resposta de 10 segundos por padrão.  
 
 Em resposta a essas consultas, os destinatários configuram um timer entre 0 e 10 segundos. Quando esse timer expira, os destinatários enviam de volta um relatório de adesão informando a qual
 grupo pertencem. Se um destinatário receber o relatório de outro destinatário para um dos grupos ao qual pertence enquanto estiver com um timer em execução, ele interrompe seu 
