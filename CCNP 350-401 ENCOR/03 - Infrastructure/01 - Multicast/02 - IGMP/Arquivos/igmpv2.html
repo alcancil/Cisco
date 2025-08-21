@@ -31,286 +31,288 @@
     </marker>
   </defs>
   
-  <!-- Background -->
-  <rect width="800" height="650" fill="#f5f5f5" stroke="#ddd" stroke-width="1"/>
-  
-  <!-- Title -->
-  <text x="400" y="30" text-anchor="middle" class="title">Processo IGMPv2 - Internet Group Management Protocol v2</text>
-  
-  <!-- Router -->
-  <rect x="350" y="60" width="100" height="60" rx="10" class="router"/>
-  <text x="400" y="85" text-anchor="middle" class="text" fill="white">Router</text>
-  <text x="400" y="100" text-anchor="middle" class="text" fill="white">Multicast</text>
-  
-  <!-- Hosts -->
-  <rect x="50" y="200" width="80" height="50" rx="8" class="host"/>
-  <text x="90" y="220" text-anchor="middle" class="text" fill="white">Host A</text>
-  <text x="90" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
-  
-  <rect x="200" y="200" width="80" height="50" rx="8" class="host"/>
-  <text x="240" y="220" text-anchor="middle" class="text" fill="white">Host B</text>
-  <text x="240" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
-  
-  <rect x="620" y="200" width="80" height="50" rx="8" class="host"/>
-  <text x="660" y="220" text-anchor="middle" class="text" fill="white">Host C</text>
-  <text x="660" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
-  
-  <!-- Multicast Group -->
-  <ellipse cx="400" cy="350" rx="80" ry="40" class="multicast-group"/>
-  <text x="400" y="345" text-anchor="middle" class="text" fill="white">Grupo</text>
-  <text x="400" y="360" text-anchor="middle" class="text" fill="white">224.1.1.1</text>
-  
-  <!-- Network Line -->
-  <line x1="50" y1="150" x2="750" y2="150" stroke="#666" stroke-width="3"/>
-  <text x="400" y="140" text-anchor="middle" class="text">Rede Local (LAN)</text>
-  
-  <!-- Connection lines from hosts to network -->
-  <line x1="90" y1="150" x2="90" y2="200" stroke="#666" stroke-width="2"/>
-  <line x1="240" y1="150" x2="240" y2="200" stroke="#666" stroke-width="2"/>
-  <line x1="660" y1="150" x2="660" y2="200" stroke="#666" stroke-width="2"/>
-  <line x1="400" y1="120" x2="400" y2="150" stroke="#666" stroke-width="2"/>
-  
-  <!-- Phase indicators - separate boxes for each phase with better sizing and positioning -->
-  
-  <!-- Phase 1 Box - moved up -->
-  <rect x="10" y="420" width="350" height="40" rx="5" fill="#E8F5E8" stroke="#4CAF50" opacity="0">
-    <animate attributeName="opacity" values="0;1;1;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-  </rect>
-  <text x="185" y="445" text-anchor="middle" class="phase-text" opacity="0">
-    <animate attributeName="opacity" values="0;1;1;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-    Fase 1: Query Inicial - Router para Hosts
-  </text>
-  
-  <!-- Phase 2 Box -->
-  <rect x="10" y="465" width="350" height="40" rx="5" fill="#E3F2FD" stroke="#2196F3" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-  </rect>
-  <text x="185" y="490" text-anchor="middle" class="phase-text" fill="#1565C0" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-    Fase 2: Reports - Hosts para Router
-  </text>
-  
-  <!-- Phase 3 Box -->
-  <rect x="10" y="510" width="350" height="40" rx="5" fill="#FFF3E0" stroke="#FF9800" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;0;0;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-  </rect>
-  <text x="185" y="535" text-anchor="middle" class="phase-text" fill="#F57C00" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;0;0;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-    Fase 3: Leave Group - Host sai do grupo
-  </text>
-  
-  <!-- Phase 4 Box - moved below others instead of to the side -->
-  <rect x="10" y="555" width="350" height="40" rx="5" fill="#E8F5E8" stroke="#4CAF50" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-  </rect>
-  <text x="185" y="580" text-anchor="middle" class="phase-text" opacity="0">
-    <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" dur="8s" begin="0s" repeatCount="indefinite"/>
-    Fase 4: Specific Query - Verifica membros
-  </text>
-  
-  <!-- Legend moved and adjusted for new layout -->
-  <text x="400" y="420" class="text" font-weight="bold">Legenda:</text>
-  <line x1="400" y1="435" x2="430" y2="435" class="query-arrow"/>
-  <text x="435" y="440" class="text">General Query</text>
-  <line x1="400" y1="450" x2="430" y2="450" class="report-arrow"/>
-  <text x="435" y="455" class="text">Membership Report</text>
-  <line x1="400" y1="465" x2="430" y2="465" class="leave-arrow"/>
-  <text x="435" y="470" class="text">Leave Group</text>
-  
-  <!-- Message descriptions adjusted for new layout -->
-  <text x="400" y="495" class="text">Q = Query packet (Router → Host)</text>
-  <text x="400" y="515" class="text">R = Report packet (Host → Router)</text>
-  <text x="400" y="535" class="text">L = Leave packet (Host → Router)</text>
-  <text x="400" y="555" class="text">S = Specific Query packet (Router → Host)</text>
-  
-  <!-- Animated Packets -->
-  
-  <!-- Phase 1: General Query Packets -->
-  <g id="query-packets">
-    <!-- Query packet to Host A -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
-        <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite" path="M400,120 L90,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        Q
-        <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite" path="M400,120 L90,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.5s" repeatCount="indefinite"/>
-      </text>
+  <g transform="scale(0.7) translate(120, 97.5)">
+    <!-- Background -->
+    <rect width="800" height="650" fill="#f5f5f5" stroke="#ddd" stroke-width="1"/>
+    
+    <!-- Title -->
+    <text x="400" y="30" text-anchor="middle" class="title">Processo IGMPv2 - Internet Group Management Protocol v2</text>
+    
+    <!-- Router -->
+    <rect x="350" y="60" width="100" height="60" rx="10" class="router"/>
+    <text x="400" y="85" text-anchor="middle" class="text" fill="white">Router</text>
+    <text x="400" y="100" text-anchor="middle" class="text" fill="white">Multicast</text>
+    
+    <!-- Hosts -->
+    <rect x="50" y="200" width="80" height="50" rx="8" class="host"/>
+    <text x="90" y="220" text-anchor="middle" class="text" fill="white">Host A</text>
+    <text x="90" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
+    
+    <rect x="200" y="200" width="80" height="50" rx="8" class="host"/>
+    <text x="240" y="220" text-anchor="middle" class="text" fill="white">Host B</text>
+    <text x="240" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
+    
+    <rect x="620" y="200" width="80" height="50" rx="8" class="host"/>
+    <text x="660" y="220" text-anchor="middle" class="text" fill="white">Host C</text>
+    <text x="660" y="235" text-anchor="middle" class="text" fill="white">Cliente</text>
+    
+    <!-- Multicast Group -->
+    <ellipse cx="400" cy="350" rx="80" ry="40" class="multicast-group"/>
+    <text x="400" y="345" text-anchor="middle" class="text" fill="white">Grupo</text>
+    <text x="400" y="360" text-anchor="middle" class="text" fill="white">224.1.1.1</text>
+    
+    <!-- Network Line -->
+    <line x1="50" y1="150" x2="750" y2="150" stroke="#666" stroke-width="3"/>
+    <text x="400" y="140" text-anchor="middle" class="text">Rede Local (LAN)</text>
+    
+    <!-- Connection lines from hosts to network -->
+    <line x1="90" y1="150" x2="90" y2="200" stroke="#666" stroke-width="2"/>
+    <line x1="240" y1="150" x2="240" y2="200" stroke="#666" stroke-width="2"/>
+    <line x1="660" y1="150" x2="660" y2="200" stroke="#666" stroke-width="2"/>
+    <line x1="400" y1="120" x2="400" y2="150" stroke="#666" stroke-width="2"/>
+    
+    <!-- Phase indicators - separate boxes for each phase with better sizing and positioning -->
+    
+    <!-- Phase 1 Box - moved up -->
+    <rect x="10" y="420" width="350" height="40" rx="5" fill="#E8F5E8" stroke="#4CAF50" opacity="0">
+      <animate attributeName="opacity" values="0;1;1;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+    </rect>
+    <text x="185" y="445" text-anchor="middle" class="phase-text" opacity="0">
+      <animate attributeName="opacity" values="0;1;1;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+      Fase 1: Query Inicial - Router para Hosts
+    </text>
+    
+    <!-- Phase 2 Box -->
+    <rect x="10" y="465" width="350" height="40" rx="5" fill="#E3F2FD" stroke="#2196F3" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+    </rect>
+    <text x="185" y="490" text-anchor="middle" class="phase-text" fill="#1565C0" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;1;1;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+      Fase 2: Reports - Hosts para Router
+    </text>
+    
+    <!-- Phase 3 Box -->
+    <rect x="10" y="510" width="350" height="40" rx="5" fill="#FFF3E0" stroke="#FF9800" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;0;0;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+    </rect>
+    <text x="185" y="535" text-anchor="middle" class="phase-text" fill="#F57C00" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;0;0;1;1;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+      Fase 3: Leave Group - Host sai do grupo
+    </text>
+    
+    <!-- Phase 4 Box - moved below others instead of to the side -->
+    <rect x="10" y="555" width="350" height="40" rx="5" fill="#E8F5E8" stroke="#4CAF50" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+    </rect>
+    <text x="185" y="580" text-anchor="middle" class="phase-text" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;0;0;0;0;1" dur="8s" begin="0s" repeatCount="indefinite"/>
+      Fase 4: Specific Query - Verifica membros
+    </text>
+    
+    <!-- Legend moved and adjusted for new layout -->
+    <text x="400" y="420" class="text" font-weight="bold">Legenda:</text>
+    <line x1="400" y1="435" x2="430" y2="435" class="query-arrow"/>
+    <text x="435" y="440" class="text">General Query</text>
+    <line x1="400" y1="450" x2="430" y2="450" class="report-arrow"/>
+    <text x="435" y="455" class="text">Membership Report</text>
+    <line x1="400" y1="465" x2="430" y2="465" class="leave-arrow"/>
+    <text x="435" y="470" class="text">Leave Group</text>
+    
+    <!-- Message descriptions adjusted for new layout -->
+    <text x="400" y="495" class="text">Q = Query packet (Router → Host)</text>
+    <text x="400" y="515" class="text">R = Report packet (Host → Router)</text>
+    <text x="400" y="535" class="text">L = Leave packet (Host → Router)</text>
+    <text x="400" y="555" class="text">S = Specific Query packet (Router → Host)</text>
+    
+    <!-- Animated Packets -->
+    
+    <!-- Phase 1: General Query Packets -->
+    <g id="query-packets">
+      <!-- Query packet to Host A -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
+          <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite" path="M400,120 L90,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.5s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          Q
+          <animateMotion dur="2s" begin="1.5s" repeatCount="indefinite" path="M400,120 L90,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.5s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Query packet to Host B -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
+          <animateMotion dur="2s" begin="1.7s" repeatCount="indefinite" path="M400,120 L240,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.7s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          Q
+          <animateMotion dur="2s" begin="1.7s" repeatCount="indefinite" path="M400,120 L240,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.7s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Query packet to Host C -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
+          <animateMotion dur="2s" begin="1.9s" repeatCount="indefinite" path="M400,120 L660,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.9s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          Q
+          <animateMotion dur="2s" begin="1.9s" repeatCount="indefinite" path="M400,120 L660,200"/>
+          <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.9s" repeatCount="indefinite"/>
+        </text>
+      </g>
     </g>
     
-    <!-- Query packet to Host B -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
-        <animateMotion dur="2s" begin="1.7s" repeatCount="indefinite" path="M400,120 L240,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.7s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        Q
-        <animateMotion dur="2s" begin="1.7s" repeatCount="indefinite" path="M400,120 L240,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.7s" repeatCount="indefinite"/>
-      </text>
+    <!-- Phase 2: Report Packets -->
+    <g id="report-packets">
+      <!-- Report packet from Host A -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-report">
+          <animateMotion dur="2s" begin="3.5s" repeatCount="indefinite" path="M90,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.5s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          R
+          <animateMotion dur="2s" begin="3.5s" repeatCount="indefinite" path="M90,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.5s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Report packet from Host B -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-report">
+          <animateMotion dur="2s" begin="3.7s" repeatCount="indefinite" path="M240,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.7s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          R
+          <animateMotion dur="2s" begin="3.7s" repeatCount="indefinite" path="M240,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.7s" repeatCount="indefinite"/>
+        </text>
+      </g>
     </g>
     
-    <!-- Query packet to Host C -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
-        <animateMotion dur="2s" begin="1.9s" repeatCount="indefinite" path="M400,120 L660,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.9s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        Q
-        <animateMotion dur="2s" begin="1.9s" repeatCount="indefinite" path="M400,120 L660,200"/>
-        <animate attributeName="opacity" values="1;1;1;0;0;0;0;0" dur="8s" begin="1.9s" repeatCount="indefinite"/>
-      </text>
-    </g>
-  </g>
-  
-  <!-- Phase 2: Report Packets -->
-  <g id="report-packets">
-    <!-- Report packet from Host A -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-report">
-        <animateMotion dur="2s" begin="3.5s" repeatCount="indefinite" path="M90,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        R
-        <animateMotion dur="2s" begin="3.5s" repeatCount="indefinite" path="M90,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.5s" repeatCount="indefinite"/>
-      </text>
+    <!-- Phase 3: Leave Packet -->
+    <g id="leave-packet">
+      <!-- Leave packet from Host B -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-leave">
+          <animateMotion dur="2s" begin="5.5s" repeatCount="indefinite" path="M240,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;1;1;0" dur="8s" begin="5.5s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          L
+          <animateMotion dur="2s" begin="5.5s" repeatCount="indefinite" path="M240,200 L400,120"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;1;1;0" dur="8s" begin="5.5s" repeatCount="indefinite"/>
+        </text>
+      </g>
     </g>
     
-    <!-- Report packet from Host B -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-report">
-        <animateMotion dur="2s" begin="3.7s" repeatCount="indefinite" path="M240,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.7s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        R
-        <animateMotion dur="2s" begin="3.7s" repeatCount="indefinite" path="M240,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="8s" begin="3.7s" repeatCount="indefinite"/>
-      </text>
+    <!-- Phase 4: Specific Query Packet -->
+    <g id="specific-query-packet">
+      <!-- Specific query packet to Host A -->
+      <g>
+        <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
+          <animateMotion dur="2s" begin="7s" repeatCount="indefinite" path="M400,120 L90,200"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="8s" begin="7s" repeatCount="indefinite"/>
+        </rect>
+        <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
+          S
+          <animateMotion dur="2s" begin="7s" repeatCount="indefinite" path="M400,120 L90,200"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="8s" begin="7s" repeatCount="indefinite"/>
+        </text>
+      </g>
     </g>
-  </g>
-  
-  <!-- Phase 3: Leave Packet -->
-  <g id="leave-packet">
-    <!-- Leave packet from Host B -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-leave">
-        <animateMotion dur="2s" begin="5.5s" repeatCount="indefinite" path="M240,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;0;0;1;1;0" dur="8s" begin="5.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        L
-        <animateMotion dur="2s" begin="5.5s" repeatCount="indefinite" path="M240,200 L400,120"/>
-        <animate attributeName="opacity" values="0;0;0;0;0;1;1;0" dur="8s" begin="5.5s" repeatCount="indefinite"/>
-      </text>
+    
+    <!-- Phase 1: General Query -->
+    <g id="phase1" opacity="0">
+      <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="1s" repeatCount="indefinite"/>
+      
+      <!-- Query messages from router to all hosts -->
+      <line x1="380" y1="120" x2="110" y2="200" class="query-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="400" y1="120" x2="240" y2="200" class="query-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.7s" repeatCount="indefinite"/>
+      </line>
+      <line x1="420" y1="120" x2="640" y2="200" class="query-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.9s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- Query message labels -->
+      <rect x="150" y="160" width="120" height="25" rx="3" fill="white" stroke="#4CAF50"/>
+      <text x="210" y="175" text-anchor="middle" class="text">General Query</text>
     </g>
-  </g>
-  
-  <!-- Phase 4: Specific Query Packet -->
-  <g id="specific-query-packet">
-    <!-- Specific query packet to Host A -->
-    <g>
-      <rect x="0" y="0" width="20" height="15" rx="3" class="packet-query">
-        <animateMotion dur="2s" begin="7s" repeatCount="indefinite" path="M400,120 L90,200"/>
-        <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="8s" begin="7s" repeatCount="indefinite"/>
-      </rect>
-      <text x="10" y="10" class="text" font-size="12" fill="white" text-anchor="middle">
-        S
-        <animateMotion dur="2s" begin="7s" repeatCount="indefinite" path="M400,120 L90,200"/>
-        <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="8s" begin="7s" repeatCount="indefinite"/>
-      </text>
+    
+    <!-- Phase 2: Membership Reports -->
+    <g id="phase2" opacity="0">
+      <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="3s" repeatCount="indefinite"/>
+      
+      <!-- Report messages from hosts to router -->
+      <line x1="110" y1="200" x2="380" y2="120" class="report-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="3.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="240" y1="200" x2="400" y2="120" class="report-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="3.7s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- Report message labels -->
+      <rect x="250" y="160" width="140" height="25" rx="3" fill="white" stroke="#2196F3"/>
+      <text x="320" y="175" text-anchor="middle" class="text">Membership Report</text>
+      
+      <!-- Show group membership -->
+      <line x1="90" y1="250" x2="350" y2="330" stroke="#FF9800" stroke-width="3" stroke-dasharray="5,5">
+        <animate attributeName="opacity" values="0;1" dur="1s" begin="4s" repeatCount="indefinite"/>
+      </line>
+      <line x1="240" y1="250" x2="360" y2="330" stroke="#FF9800" stroke-width="3" stroke-dasharray="5,5">
+        <animate attributeName="opacity" values="0;1" dur="1s" begin="4.2s" repeatCount="indefinite"/>
+      </line>
     </g>
+    
+    <!-- Phase 3: Leave Group -->
+    <g id="phase3" opacity="0">
+      <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="5s" repeatCount="indefinite"/>
+      
+      <!-- Leave message from Host B -->
+      <line x1="240" y1="200" x2="400" y2="120" class="leave-arrow">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="5.5s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- Leave message label -->
+      <rect x="280" y="160" width="100" height="25" rx="3" fill="white" stroke="#FF5722"/>
+      <text x="330" y="175" text-anchor="middle" class="text">Leave Group</text>
+      
+      <!-- Remove Host B from group -->
+      <line x1="240" y1="250" x2="360" y2="330" stroke="#999" stroke-width="2" stroke-dasharray="10,5" opacity="0.3">
+        <animate attributeName="opacity" values="1;0.3" dur="1s" begin="6s" repeatCount="indefinite"/>
+      </line>
+    </g>
+    
+    <!-- Phase 4: Specific Query -->
+    <g id="phase4" opacity="0">
+      <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="6.5s" repeatCount="indefinite"/>
+      
+      <!-- Specific query to remaining members -->
+      <line x1="380" y1="120" x2="110" y2="200" class="query-arrow" stroke-dasharray="3,3">
+        <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="7s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- Specific query label -->
+      <rect x="180" y="160" width="120" height="25" rx="3" fill="white" stroke="#4CAF50"/>
+      <text x="240" y="175" text-anchor="middle" class="text">Specific Query</text>
+    </g>
+    
+  
+    
+    <!-- Timer indicators -->
+    <circle cx="750" cy="90" r="25" fill="none" stroke="#4CAF50" stroke-width="3">
+      <animate attributeName="stroke-dasharray" values="0,157;157,0" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="750" y="95" text-anchor="middle" class="text" font-size="10">Timer</text>
   </g>
-  
-  <!-- Phase 1: General Query -->
-  <g id="phase1" opacity="0">
-    <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="1s" repeatCount="indefinite"/>
-    
-    <!-- Query messages from router to all hosts -->
-    <line x1="380" y1="120" x2="110" y2="200" class="query-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.5s" repeatCount="indefinite"/>
-    </line>
-    <line x1="400" y1="120" x2="240" y2="200" class="query-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.7s" repeatCount="indefinite"/>
-    </line>
-    <line x1="420" y1="120" x2="640" y2="200" class="query-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="1.9s" repeatCount="indefinite"/>
-    </line>
-    
-    <!-- Query message labels -->
-    <rect x="150" y="160" width="120" height="25" rx="3" fill="white" stroke="#4CAF50"/>
-    <text x="210" y="175" text-anchor="middle" class="text">General Query</text>
-  </g>
-  
-  <!-- Phase 2: Membership Reports -->
-  <g id="phase2" opacity="0">
-    <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="3s" repeatCount="indefinite"/>
-    
-    <!-- Report messages from hosts to router -->
-    <line x1="110" y1="200" x2="380" y2="120" class="report-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="3.5s" repeatCount="indefinite"/>
-    </line>
-    <line x1="240" y1="200" x2="400" y2="120" class="report-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="3.7s" repeatCount="indefinite"/>
-    </line>
-    
-    <!-- Report message labels -->
-    <rect x="250" y="160" width="140" height="25" rx="3" fill="white" stroke="#2196F3"/>
-    <text x="320" y="175" text-anchor="middle" class="text">Membership Report</text>
-    
-    <!-- Show group membership -->
-    <line x1="90" y1="250" x2="350" y2="330" stroke="#FF9800" stroke-width="3" stroke-dasharray="5,5">
-      <animate attributeName="opacity" values="0;1" dur="1s" begin="4s" repeatCount="indefinite"/>
-    </line>
-    <line x1="240" y1="250" x2="360" y2="330" stroke="#FF9800" stroke-width="3" stroke-dasharray="5,5">
-      <animate attributeName="opacity" values="0;1" dur="1s" begin="4.2s" repeatCount="indefinite"/>
-    </line>
-  </g>
-  
-  <!-- Phase 3: Leave Group -->
-  <g id="phase3" opacity="0">
-    <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="5s" repeatCount="indefinite"/>
-    
-    <!-- Leave message from Host B -->
-    <line x1="240" y1="200" x2="400" y2="120" class="leave-arrow">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="5.5s" repeatCount="indefinite"/>
-    </line>
-    
-    <!-- Leave message label -->
-    <rect x="280" y="160" width="100" height="25" rx="3" fill="white" stroke="#FF5722"/>
-    <text x="330" y="175" text-anchor="middle" class="text">Leave Group</text>
-    
-    <!-- Remove Host B from group -->
-    <line x1="240" y1="250" x2="360" y2="330" stroke="#999" stroke-width="2" stroke-dasharray="10,5" opacity="0.3">
-      <animate attributeName="opacity" values="1;0.3" dur="1s" begin="6s" repeatCount="indefinite"/>
-    </line>
-  </g>
-  
-  <!-- Phase 4: Specific Query -->
-  <g id="phase4" opacity="0">
-    <animateTransform attributeName="opacity" values="0;1;1;0" dur="8s" begin="6.5s" repeatCount="indefinite"/>
-    
-    <!-- Specific query to remaining members -->
-    <line x1="380" y1="120" x2="110" y2="200" class="query-arrow" stroke-dasharray="3,3">
-      <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1s" begin="7s" repeatCount="indefinite"/>
-    </line>
-    
-    <!-- Specific query label -->
-    <rect x="180" y="160" width="120" height="25" rx="3" fill="white" stroke="#4CAF50"/>
-    <text x="240" y="175" text-anchor="middle" class="text">Specific Query</text>
-  </g>
-  
-
-  
-  <!-- Timer indicators -->
-  <circle cx="750" cy="90" r="25" fill="none" stroke="#4CAF50" stroke-width="3">
-    <animate attributeName="stroke-dasharray" values="0,157;157,0" dur="2s" begin="1s" repeatCount="indefinite"/>
-  </circle>
-  <text x="750" y="95" text-anchor="middle" class="text" font-size="10">Timer</text>
 </svg>
