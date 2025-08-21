@@ -20,7 +20,7 @@ Dessa forma, o roteador consegue identificar quais grupos multicast possuem memb
 
 Sem o IGMP, roteadores e switches não teriam como saber com precisão onde entregar o tráfego multicast, o que resultaria em desperdício de banda e, em cenários mais críticos, em inundações desnecessárias de tráfego na rede.
 
-Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada na **RFC 3376**.  
+Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada na **RFC 3376** e **IGMPv3** que é definida na rfc RFC 3376.  
 
 ## Aplicações
 
