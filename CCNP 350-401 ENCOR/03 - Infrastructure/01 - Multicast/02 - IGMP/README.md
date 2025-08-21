@@ -1,16 +1,24 @@
 # Índice
 
 - [Índice](#índice)
-  - [02 - Internet Group Management Protoco](#02---internet-group-management-protoco)
+  - [02 - Internet Group Management Protocol](#02---internet-group-management-protocol)
   - [Aplicações](#aplicações)
   - [IGMPv1](#igmpv1)
   - [IGMPv2](#igmpv2)
   - [IGMPv3](#igmpv3)
   - [Referências](#referências)
 
-## 02 - Internet Group Management Protoco
+## 02 - Internet Group Management Protocol
 
 Esse protocolo permite que hosts e roteadores adjacentes estabeleçam comunicação multicast em redes IP, otimizando o uso de banda e a transmissão de pacotes. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) que é um protocolo que gerência membros multicast IPv6.  
+
+O **IGMP (Internet Group Management Protocol)** é o protocolo responsável por permitir que os hosts informem ao roteador local sua intenção de ingressar ou sair de grupos multicast.  
+
+Ele opera na **Camada 3 (Rede) do modelo OSI**, mas sua função está voltada principalmente **ao controle e gerenciamento de grupos multicast**. O IGMP atua dentro de **uma sub-rede,** funcionando como um protocolo de vizinhança entre os hosts e o roteador multicast conectado ao mesmo segmento.
+
+Dessa forma, o roteador consegue identificar quais grupos multicast possuem membros ativos naquela rede local, garantindo que o tráfego seja encaminhado apenas para os segmentos onde realmente há receptores interessados.
+
+Sem o IGMP, roteadores e switches não teriam como saber com precisão onde entregar o tráfego multicast, o que resultaria em desperdício de banda e, em cenários mais críticos, em inundações desnecessárias de tráfego na rede.
 
 Atualmente existem 3 versões desse protocolo: **IGMPv1** definida na RFC 1112 que raramente é utilizada, **IGMPv2** definida na RFC 2236 que é a mais comum de ser encontrada na **RFC 3376**.  
 
