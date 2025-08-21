@@ -120,6 +120,8 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 - **NÚMERO DE FONTES :** Representa o número de endereços de origem presentes na consulta. Para consulta geral ou consulta específica de grupo, este campo é zero e para consulta específica de grupo e origem, este campo é diferente de zero.
 - **ENDEREÇO DE ORIGEM[N] :** Representa o endereço IP unicast para N campos.
 
+[IGMPv3 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv3.html)
+
 ## Referências
 
 | RFC   | Título                                                                 | Link                                                    |
