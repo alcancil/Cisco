@@ -69,18 +69,19 @@ algum destinatário interessado no grupo restante na sub-rede. Se não existir o
 Mas pode ocorrer que nessa sub-rede exista tenha mais do que somente um roteador. Nesse caso ocorrerá uma eleição para ver quem vai responder as consultas IGMP. Então os roteadores
 enviam mensagens de consultas genéricas de adesão contendo o endereço do seu IP com destino para 224.0.0.1 . Quando um roteador recebe uma mensagem dessas, ele compara o endereço IP
 da mensagem com o endereço IP da sua própria interface de rede. O roteador **com o menor endereço IP** então é eleito como o roteador que irá responder as consultas IGMP dessa sub-rede.
-Nesse momento, os outros roteadores iniciam um timer que reinicia toda a vez que ele recebe uma mensagem de consulta de adesão do roteador que venceu a eleição. <br></br>
+Nesse momento, os outros roteadores iniciam um timer que reinicia toda a vez que ele recebe uma mensagem de consulta de adesão do roteador que venceu a eleição.  
 
 Se por algum motivo o roteador que venceu a eleição para de enviar as mensagens, uma nova eleição ocorre. Um roteador que não responde as consultas, espera o dobro do tempo, que por
-padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP. <br></br>
+padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP.  
 
 # IGMPv3
 
-O IGMPv3 é uma evolução da versão 2 e agora é possível qual é a fonte que deseja receber o tráfego multicast. Com isso agora é possível fazer um filtro de origem de tráfego multicast. 
-Com isso, os destinatários podem escolher as fontes de onde desejam receber o tráfego multicast. <br></br>
+O IGMPv3 evolui em relação à versão 2 ao permitir identificar a origem desejada do tráfego multicast. Assim, os destinatários podem aplicar filtros de origem e escolher de quais fontes receber o tráfego.  
+
+Com isso, os destinatários podem escolher as fontes de onde desejam receber o tráfego multicast.  
 
 Essa versão foi desenvolvida para coexistir junto das outras. A diferença da versão 3 para 2 é que na versão 3 foram acrescentados novos campos na consulta de adesão e um novo tipo de 
-mensagem IGMP chamado relatório de associação da versão 3 para oferecer suporte à filtragem de origem. <br></br>
+mensagem IGMP chamado relatório de associação da versão 3 para oferecer suporte à filtragem de origem.  
 
 IGMPv3 oferece suporte a aplicativos que sinalizam fontes explicitamente do qual desejam receber tráfego. Com IGMPv3, os destinatários sinalizam a intenção de se associar a um endereço 
 de grupo multicast usando um relatório de associação nos dois modos a seguir:
@@ -89,8 +90,7 @@ de grupo multicast usando um relatório de associação nos dois modos a seguir:
 * **MODO DE EXCLUSÂO:** nesse modo, o destinatário anuncia a adesão para um endereço de grupo de multicast e fornece uma lista (exclude list) de endereços de quem ele não receber o tráfego.
 Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o destinatário utiliza **o modo de exclusão de adesão com um uma lista de exclusão vazia**
 
-![IGMP](Imagens/igmpv3.png) <br></br>
-
+![IGMP](Imagens/igmpv3.png)  
 
 * **CÓDIGO MÁXIMO DE RESPOSTA :** Este campo é ignorado para tipos de mensagens diferentes de consulta de associação. Para o tipo de consulta de adesão, é o tempo máximo permitido antes de enviar um relatório de resposta. O valor está em unidades de 0,1 segundos.
 * **CHECKSUM :** campo de 16 bits 1 que complementa a soma da mensagem IGMP. É o mesmo algoritmo utilizado pelo TCP/IP.
