@@ -174,17 +174,22 @@ Funciona assim: todos se apresentam, mas o que tem o menor IP na interface local
 
 Ou seja, não existe caos: o protocolo se organiza sozinho, mantendo a rede multicast funcional e estável.  
 
-**🔎 Resumo da Operação do IGMPv2**  
+**📝 Resumo da Operação do IGMPv2**  
 
-O IGMPv2 (Internet Group Management Protocol versão 2) é utilizado por hosts e roteadores para gerenciar a participação em grupos multicast na rede. Ele funciona em 3 pilares principais: adesão, saída e manutenção do grupo.
+🔹 Papéis  
 
-**📌 Tabela de mensagens IGMPv2**  
+- **Host (receptor):** informa ao roteador que deseja ou não participar de um grupo multicast.  
 
-| Mensagem IGMPv2   | Função                                                               |
-|-------------------|----------------------------------------------------------------------|
-| Membership Query  | Enviado pelo Querier para verificar quais hosts ainda querem o grupo |
-| Membership Report | Enviado pelo host para informar participação em um grupo multicast   |
-| Leave Group       | Enviado pelo host para indicar que está saindo do grupo              |
+- **Querier (roteador):** mantém a lista de grupos ativos na rede e envia mensagens de consulta.  
+
+🔹 Tipos de Mensagens  
+
+| Mensagem             | Origem  | Função                                                              |
+|----------------------|---------| --------------------------------------------------------------------|
+| Membership Report    | Host    | Anuncia participação em um grupo multicast.                         |
+| Leave Group          | Host    | Informa que não deseja mais receber o grupo.                        |
+| General Query        | Querier | Verifica se há hosts interessados em grupos.                        |
+| Group-Specific Query | Querier | Confirma se ainda existem hosts interessados em um grupo específico.|
 
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
 
