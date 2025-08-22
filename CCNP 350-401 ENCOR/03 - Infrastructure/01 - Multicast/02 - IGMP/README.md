@@ -127,41 +127,31 @@ sequenceDiagram
     Note right of Roteador: **Aguarda resposta...**
     Roteador->>Roteador: **Remove grupo da tabela<br>se não houver resposta**
 
-    %% === ESTILOS ===
-    style Host fill:#cce5ff,stroke:#004085,stroke-width:2px
-    style Switch fill:#e6ccff,stroke:#5a0085,stroke-width:2px
-    style Roteador fill:#d4edda,stroke:#155724,stroke-width:2px
+    %% --- Estilos ---
+    style Host fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#000,font-weight:bold;
+    style Switch fill:#e6ccff,stroke:#5a0085,stroke-width:2px,color:#000,font-weight:bold;
+    style Roteador fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
+
 ```
 
 ```mermaid
-flowchart TD
+sequenceDiagram
+    participant Host
+    participant Switch
+    participant Roteador
 
-    %% --- Definição dos nós ---
-    H[**Host**]:::host
-    S[**Switch**]:::switch
-    R[**Roteador**]:::router
+    Host->>Roteador: Host Membership Report (Join)
+    Note right of Roteador: Adiciona grupo à tabela<br>de encaminhamento multicast
+    Host->>Switch: Host Membership Report (escutado via IGMP Snooping)
+    Note right of Switch: Associa porta ao grupo multicast
 
-    J1[**Join: Host envia Host Membership Report**]:::host
-    J2[**Roteador adiciona grupo à tabela**]:::router
-    J3[**Switch associa porta ao grupo - IGMP Snooping**]:::switch
+    Roteador-->>Host: General Query (periódico)
+    Host->>Roteador: Host Membership Report (resposta)
 
-    M1[**Roteador envia General Query - periódico**]:::router
-    M2[**Host responde com Host Membership Report**]:::host
-
-    L1[**Leave: Host envia Leave Group - 224.0.0.2**]:::host
-    L2[**Roteador envia Group-Specific Query**]:::router
-    L3[**Sem resposta → Roteador remove grupo da tabela**]:::router
-
-    %% --- Conexões ---
-    H --> J1 --> R --> J2
-    H --> J3
-    R --> M1 --> H --> M2 --> R
-    H --> L1 --> R --> L2 --> L3
-
-    %% --- Estilos ---
-    classDef host fill:#cce5ff,stroke:#004085,color:#000,font-weight:bold;
-    classDef switch fill:#e6ccff,stroke:#5a0085,color:#000,font-weight:bold;
-    classDef router fill:#d4edda,stroke:#155724,color:#000,font-weight:bold;
+    Host->>Roteador: Leave Group (224.0.0.2 - All Routers)
+    Roteador->>Host: Group-Specific Query
+    Note right of Roteador: Aguarda resposta...
+    Roteador->>Roteador: Remove grupo da tabela<br>se não houver resposta
 ```
 
 ```mermaid
