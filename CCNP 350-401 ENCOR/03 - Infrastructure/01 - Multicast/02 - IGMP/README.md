@@ -14,6 +14,7 @@
     - [Consultas no IGMPv3](#consultas-no-igmpv3)
     - [Eleição do Querier no IGMPv3](#eleição-do-querier-no-igmpv3)
     - [Fluxograma do Processo IGMPv3](#fluxograma-do-processo-igmpv3)
+    - [Tipos de Transições de Estado no IGMPv3](#tipos-de-transições-de-estado-no-igmpv3)
     - [Vantagens do IGMPv3](#vantagens-do-igmpv3)
     - [Resumo da Operação do IGMPv3](#resumo-da-operação-do-igmpv3)
   - [Referências](#referências)
@@ -385,6 +386,19 @@ flowchart TD
     classDef host fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:#000,font-weight:bold;
     classDef leave fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000,font-weight:bold;
 ```
+
+### Tipos de Transições de Estado no IGMPv3  
+
+O IGMPv3 define várias transições de estado que são comunicadas através dos reports:
+
+| Transição | Significado                           | Exemplo de Uso                                 |
+|-----------|---------------------------------------|------------------------------------------------|
+| TO_IN(A)  | Mudança para modo Include com lista A | Host quer receber apenas de fontes específicas |
+| TO_EX(A)  | Mudança para modo Exclude com lista A | Host quer receber de todas, exceto lista A     |
+| ALLOW(A)  | Adicionar fontes A à lista atual      | Host quer receber de fontes adicionais         |
+| BLOCK(A)  | Remover fontes A da lista atual       | Host não quer mais receber de certas fontes    |
+
+Essas transições permitem que o host modifique dinamicamente suas preferências de recebimento sem precisar sair e reingressar no grupo.
 
 ### Vantagens do IGMPv3
 
