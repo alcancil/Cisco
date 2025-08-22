@@ -200,8 +200,7 @@ O IGMPv3 evolui em relação à versão 2 ao permitir identificar a origem desej
 Essa versão foi desenvolvida para coexistir junto das outras. A diferença da versão 3 para 2 é que na versão 3 foram acrescentados novos campos na consulta de adesão e um novo tipo de
 mensagem IGMP chamado relatório de associação da versão 3 para oferecer suporte à filtragem de origem.  
 
-IGMPv3 oferece suporte a aplicativos que sinalizam fontes explicitamente do qual desejam receber tráfego. Com IGMPv3, os destinatários sinalizam a intenção de se associar a um endereço
-de grupo multicast usando um relatório de associação nos dois modos a seguir:
+O IGMPv3 oferece suporte a aplicativos que sinalizam fontes explicitamente do qual desejam receber tráfego. Com o IGMPv3, os destinatários sinalizam a intenção de se associar a um endereço de grupo multicast usando um relatório de associação nos dois modos a seguir:
 
 - **MODO DE INCLUSÂO:** nesse modo, o destinatário anuncia a adesão para um endereço de grupo de multicast e fornece uma lista (include list) de endereços de fontes de quem ele deseja receber o tráfego
 - **MODO DE EXCLUSÂO:** nesse modo, o destinatário anuncia a adesão para um endereço de grupo de multicast e fornece uma lista (exclude list) de endereços de quem ele não receber o tráfego.
