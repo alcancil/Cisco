@@ -109,29 +109,31 @@ Quando um host deseja sair de um grupo, ele envia uma mensagem Leave Group para 
 Esse processo garante que o tráfego multicast seja encaminhado apenas quando necessário, otimizando o uso da rede.
 
 ```mermaid
+%%{init: { "theme": "dark", "themeVariables": {
+  "actorBorder": "#5a0085",   /* borda roxa dos participantes */
+  "actorBkg": "#0d0d0d",      /* fundo da caixa */
+  "actorTextColor": "#ffffff",/* texto */
+  "noteBkgColor": "#fff3cd",  /* fundo das notas */
+  "noteTextColor": "#000000"  /* texto das notas */
+}}}%%
+
 sequenceDiagram
-    participant Host as **Host**
-    participant Switch as **Switch**
-    participant Roteador as **Roteador**
+    participant Host
+    participant Switch
+    participant Roteador
 
-    Host->>Roteador: **Host Membership Report (Join)**
-    Note right of Roteador: **Adiciona grupo à tabela<br>de encaminhamento multicast**
-    Host->>Switch: **Host Membership Report (escutado via IGMP Snooping)**
-    Note right of Switch: **Associa porta ao grupo multicast**
+    Host->>Roteador: Host Membership Report (Join)
+    Note right of Roteador: Adiciona grupo à tabela<br>de encaminhamento multicast
+    Host->>Switch: Host Membership Report (escutado via IGMP Snooping)
+    Note right of Switch: Associa porta ao grupo multicast
 
-    Roteador-->>Host: **General Query (periódico)**
-    Host->>Roteador: **Host Membership Report (resposta)**
+    Roteador-->>Host: General Query (periódico)
+    Host->>Roteador: Host Membership Report (resposta)
 
-    Host->>Roteador: **Leave Group (224.0.0.2 - All Routers)**
-    Roteador->>Host: **Group-Specific Query**
-    Note right of Roteador: **Aguarda resposta...**
-    Roteador->>Roteador: **Remove grupo da tabela<br>se não houver resposta**
-
-    %% --- Estilos ---
-    style Host fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#000,font-weight:bold;
-    style Switch fill:#e6ccff,stroke:#5a0085,stroke-width:2px,color:#000,font-weight:bold;
-    style Roteador fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
-
+    Host->>Roteador: Leave Group (224.0.0.2 - All Routers)
+    Roteador->>Host: Group-Specific Query
+    Note right of Roteador: Aguarda resposta...
+    Roteador->>Roteador: Remove grupo da tabela<br>se não houver resposta
 ```
 
 ```mermaid
