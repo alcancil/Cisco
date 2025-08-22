@@ -13,7 +13,9 @@
     - [Processo de Participação no IGMPv3](#processo-de-participação-no-igmpv3)
     - [Consultas no IGMPv3](#consultas-no-igmpv3)
     - [Eleição do Querier no IGMPv3](#eleição-do-querier-no-igmpv3)
+    - [Fluxograma do Processo IGMPv3](#fluxograma-do-processo-igmpv3)
     - [Vantagens do IGMPv3](#vantagens-do-igmpv3)
+    - [Resumo da Operação do IGMPv3](#resumo-da-operação-do-igmpv3)
   - [Referências](#referências)
   - [Simulados](#simulados)
 
@@ -278,6 +280,37 @@ Exemplo: "Quero receber o grupo 224.1.1.1 de todas as fontes, exceto de 10.1.1.3
 
 Para manter compatibilidade com IGMPv2: Um host pode usar o modo de exclusão com lista vazia, indicando que deseja receber de todas as fontes (comportamento padrão do IGMPv2).
 
+```mermaid
+sequenceDiagram
+    participant Host
+    participant Switch
+    participant Roteador
+    participant Fonte1 as Fonte A<br>(10.1.1.1)
+    participant Fonte2 as Fonte B<br>(10.1.1.2)
+    participant Fonte3 as Fonte C<br>(10.1.1.3)
+
+    Host->>Roteador: IGMPv3 Report - EXCLUDE Mode<br>Grupo: 224.1.1.1<br>Fontes Bloqueadas: [10.1.1.3]
+    Note right of Roteador: Adiciona grupo com<br>lista de exclusão
+    Host->>Switch: IGMPv3 Report (escutado via IGMP Snooping)
+    Note right of Switch: Associa porta ao grupo<br>com filtro de exclusão
+
+    Roteador-->>Host: General Query (periódico)
+    Host->>Roteador: IGMPv3 Report - EXCLUDE Mode<br>Fontes Bloqueadas: [10.1.1.3]
+
+    Fonte1->>Roteador: Tráfego Multicast (224.1.1.1)
+    Roteador->>Host: Encaminha tráfego ✅
+    
+    Fonte2->>Roteador: Tráfego Multicast (224.1.1.1)
+    Roteador->>Host: Encaminha tráfego ✅
+
+    Fonte3->>Roteador: Tráfego Multicast (224.1.1.1)
+    Note right of Roteador: Filtrado - fonte está na<br>lista EXCLUDE ❌
+
+    Host->>Roteador: IGMPv3 Report - TO_IN(NULL)<br>(Leave Group)
+    Roteador->>Host: Group-Specific Query
+    Note right of Roteador: Remove grupo da tabela<br>se não houver resposta
+```
+
 ### Consultas no IGMPv3  
 
 O IGMPv3 suporta três tipos de consultas:
@@ -294,8 +327,63 @@ O processo de eleição do querier no IGMPv3 mantém o mesmo princípio do IGMPv
 - **Melhor eficiência:** Reduz o tráfego desnecessário ao permitir consultas mais granulares
 - **Compatibilidade:** Queriers IGMPv3 podem interagir com hosts IGMPv1/v2 na mesma rede
 
-```mermaid
+### Fluxograma do Processo IGMPv3
 
+```mermaid
+%%{init: {"themeVariables": {
+  "fontSize": "16px",
+  "fontWeight": "bold"
+}, "flowchart": { "nodeSpacing": 50, "rankSpacing": 70 }}}%%
+flowchart TD
+
+    %% --- Definição dos nós ---
+    START([**Host deseja ingressar<br>em grupo multicast**]):::start
+    
+    DECISION{**Qual modo<br>de filtro?**}:::decision
+    
+    %% Modo Include
+    INCLUDE[**MODO INCLUDE** - Especifica fontes permitidas]:::include
+    INC_REPORT[**Envia IGMPv3 Report** - INCLUDE Mode - Lista: fontes desejadas]:::include
+    INC_FILTER[**Roteador filtra tráfego** - ✅ Fontes na lista INCLUDE<br>❌ Outras fontes]:::include
+    
+    %% Modo Exclude  
+    EXCLUDE[**MODO EXCLUDE**<br>Especifica fontes bloqueadas]:::exclude
+    EXC_REPORT[**Envia IGMPv3 Report** - EXCLUDE Mode<br>Lista: fontes bloqueadas]:::exclude
+    EXC_FILTER[**Roteador filtra tráfego** - ✅ Todas as fontes<br>❌ Fontes na lista EXCLUDE]:::exclude
+    
+    %% Processo comum
+    ROUTER[**Roteador processa** - Adiciona à tabela multicast com filtros de origem]:::router
+    QUERY[**Queries periódicas** - General, Group-Specific - Group-and-Source-Specific]:::router
+    RESPONSE[**Host responde** com IGMPv3 Reports atualizados]:::host
+    
+    %% Leave process
+    LEAVE[**Host deseja sair** TO_IN - NULL Report]:::leave
+    QUERY_LEAVE[**Roteador envia** Group/Source-Specific Query]:::router
+    REMOVE[**Remove grupo se** não houver resposta]:::router
+
+    %% --- Conexões ---
+    START --> DECISION
+    
+    DECISION -->|Include| INCLUDE
+    DECISION -->|Exclude| EXCLUDE
+    
+    INCLUDE --> INC_REPORT --> INC_FILTER
+    EXCLUDE --> EXC_REPORT --> EXC_FILTER
+    
+    INC_FILTER --> ROUTER
+    EXC_FILTER --> ROUTER
+    
+    ROUTER --> QUERY --> RESPONSE --> QUERY
+    RESPONSE --> LEAVE --> QUERY_LEAVE --> REMOVE
+
+    %% --- Estilos ---
+    classDef start fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000,font-weight:bold;
+    classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000,font-weight:bold;
+    classDef include fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,color:#000,font-weight:bold;
+    classDef exclude fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000,font-weight:bold;
+    classDef router fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000,font-weight:bold;
+    classDef host fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:#000,font-weight:bold;
+    classDef leave fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
 ### Vantagens do IGMPv3
@@ -306,19 +394,28 @@ O processo de eleição do querier no IGMPv3 mantém o mesmo princípio do IGMPv
 - **Compatibilidade:** Coexiste com versões anteriores
 - **Controle granular:** Múltiplos grupos e fontes em uma única mensagem
 
-Resumo da Operação do IGMPv3
-📹 Papéis
+### Resumo da Operação do IGMPv3
 
-Host (receptor): informa ao roteador quais grupos deseja participar e de quais fontes específicas
-Querier (roteador): mantém estado detalhado de grupos e suas listas de origem
+**📹 Papéis**  
 
-📹 Tipos de Mensagens
-MensagemOrigemFunçãoIGMPv3 Membership ReportHostAnuncia participação em grupos com lista de fontes específicasGeneral QueryQuerierVerifica todos os grupos ativosGroup-Specific QueryQuerierVerifica um grupo específicoGroup-and-Source QueryQuerierVerifica um grupo e fontes específicas
-Estados de Filtro
+- **Host (receptor):** informa ao roteador quais grupos deseja participar e de quais fontes específicas
+- **Querier (roteador):** mantém estado detalhado de grupos e suas listas de origem
+
+**📹 Tipos de Mensagens**  
+
+| Mensagem          | Origem  | Função                                                             |
+|-------------------|---------|--------------------------------------------------------------------|
+| IGMPv3 Membership | Report  | HostAnuncia participação em grupos com lista de fontes específicas |
+| General Query     | Querier | Verifica todos os grupos ativosGroup-Specific                      |
+| Query             | Querier | Verifica um grupo específico                                       |
+| Group-and-Source  | Query   | Querier Verifica um grupo e fontes específicas                     |
+
+**Estados de Filtro**  
+
 O IGMPv3 mantém estados de filtro para cada interface:
 
-INCLUDE (S,G): Recebe tráfego do grupo G apenas das fontes na lista S
-EXCLUDE (S,G): Recebe tráfego do grupo G de todas as fontes, exceto as da lista S
+- **INCLUDE (S,G):** Recebe tráfego do grupo G apenas das fontes na lista S
+- **EXCLUDE (S,G):** Recebe tráfego do grupo G de todas as fontes, exceto as da lista S
 
 Esses estados são fundamentais para o funcionamento correto do Source-Specific Multicast (SSM) e permitem que aplicações tenham controle preciso sobre suas fontes de dados.
 
