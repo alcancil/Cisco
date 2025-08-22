@@ -5,6 +5,7 @@
   - [Aplicações](#aplicações)
   - [IGMPv1](#igmpv1)
   - [IGMPv2](#igmpv2)
+  - [Processo de participação (Join/Leave) no IGMPv2](#processo-de-participação-joinleave-no-igmpv2)
   - [IGMPv3](#igmpv3)
   - [Referências](#referências)
   - [Simulados](#simulados)
@@ -92,6 +93,40 @@ Nesse momento, os outros roteadores iniciam um timer que reinicia toda a vez que
 
 Se por algum motivo o roteador que venceu a eleição para de enviar as mensagens, uma nova eleição ocorre. Um roteador que não responde as consultas, espera o dobro do tempo, que por
 padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP.  
+
+## Processo de participação (Join/Leave) no IGMPv2
+
+No IGMPv2 (Internet Group Management Protocol versão 2), o processo de participação em grupos multicast segue uma sequência clara entre hosts, roteadores e switches (quando há IGMP Snooping habilitado).
+
+Quando um host deseja ingressar em um grupo multicast, ele envia uma mensagem Host Membership Report para o endereço multicast de destino. O roteador que atua como querier naquela rede escuta essa mensagem e passa a registrar o grupo em sua tabela de encaminhamento multicast, associando-o à interface de onde a mensagem foi recebida.
+
+Se houver switches com IGMP Snooping ativado, eles também escutam esse report e associam a porta física ao grupo multicast, garantindo que o tráfego seja encaminhado apenas para os hosts interessados, evitando flooding desnecessário.
+
+Para manter a associação ativa, o roteador envia periodicamente General Queries, às quais os hosts devem responder com novos Host Membership Reports. Dessa forma, o roteador confirma a permanência de membros ativos naquele grupo.
+
+Quando um host deseja sair de um grupo, ele envia uma mensagem Leave Group para o endereço 224.0.0.2 (All Routers). Ao receber esse Leave, o roteador dispara uma Group-Specific Query para verificar se ainda existem outros hosts interessados naquele grupo. Se ninguém responder dentro do tempo limite, o roteador conclui que não há mais membros naquela interface e remove o grupo de sua tabela.
+
+Esse processo garante que o tráfego multicast seja encaminhado apenas quando necessário, otimizando o uso da rede.
+
+```mermaid
+sequenceDiagram
+    participant Host
+    participant Switch
+    participant Roteador
+
+    Host->>Roteador: Host Membership Report (Join)
+    Note right of Roteador: Adiciona grupo à tabela<br>de encaminhamento multicast
+    Host->>Switch: Host Membership Report (escutado via IGMP Snooping)
+    Note right of Switch: Associa porta ao grupo multicast
+
+    Roteador-->>Host: General Query (periódico)
+    Host->>Roteador: Host Membership Report (resposta)
+
+    Host->>Roteador: Leave Group (224.0.0.2 - All Routers)
+    Roteador->>Host: Group-Specific Query
+    Note right of Roteador: Aguarda resposta...
+    Roteador->>Roteador: Remove grupo da tabela<br>se não houver resposta
+```
 
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
 
