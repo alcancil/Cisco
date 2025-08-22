@@ -163,6 +163,17 @@ flowchart TD
     classDef router fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
+**🔄 IGMPv2 e a “eleição silenciosa”**  
+
+Quando falamos de multicast, um ponto importante é: quem será o querier?
+Imagine vários roteadores em uma mesma rede, todos prontos para coordenar os grupos multicast. Se todos enviarem queries ao mesmo tempo, vira bagunça.
+
+**👉 É aí que entra a eleição automática do IGMPv2.**  
+
+Funciona assim: todos se apresentam, mas o que tem o menor IP na interface local ganha o cargo de querier. Os outros respeitam e ficam de reserva, prontos para assumir se o principal cair.  
+
+Ou seja, não existe caos: o protocolo se organiza sozinho, mantendo a rede multicast funcional e estável.  
+
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
 
 ## IGMPv3
