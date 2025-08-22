@@ -159,9 +159,9 @@ flowchart TD
     H --> L1 --> R --> L2 --> L3
 
     %% --- Estilos ---
-    classDef host fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#000,font-weight:bold;
-    classDef switch fill:#e6ccff,stroke:#5a0085,stroke-width:2px,color:#000,font-weight:bold;
-    classDef router fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
+    classDef host fill:#cce5ff,stroke:#004085,stroke-width:4px,color:#000,font-weight:bold;
+    classDef switch fill:#e6ccff,stroke:#5a0085,stroke-width:4px,color:#000,font-weight:bold;
+    classDef router fill:#d4edda,stroke:#155724,stroke-width:4px,color:#000,font-weight:bold;
 ```
 
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
