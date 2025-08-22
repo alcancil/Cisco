@@ -159,7 +159,7 @@ flowchart TD
     H --> L1 --> R --> L2 --> L3
 
     %% --- Estilos ---
-    classDef host fill:#cce5ff,stroke:#004085,color:#000,font-weight:bold;
+    classDef host fill:#cce5ff,stroke:#004085,color:#ffffff
     classDef switch fill:#e6ccff,stroke:#5a0085,color:#000,font-weight:bold;
     classDef router fill:#d4edda,stroke:#155724,color:#000,font-weight:bold;
 ```
