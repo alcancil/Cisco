@@ -5,8 +5,15 @@
   - [Aplicações](#aplicações)
   - [IGMPv1](#igmpv1)
   - [IGMPv2](#igmpv2)
-  - [Processo de participação (Join/Leave) no IGMPv2](#processo-de-participação-joinleave-no-igmpv2)
+    - [Processo de participação (Join/Leave) no IGMPv2](#processo-de-participação-joinleave-no-igmpv2)
+    - [🔄 IGMPv2 e a “eleição silenciosa” - Eleição do querier](#-igmpv2-e-a-eleição-silenciosa---eleição-do-querier)
+    - [📝 Resumo da Operação do IGMPv2](#-resumo-da-operação-do-igmpv2)
   - [IGMPv3](#igmpv3)
+    - [Funcionamento do IGMPv3](#funcionamento-do-igmpv3)
+    - [Processo de Participação no IGMPv3](#processo-de-participação-no-igmpv3)
+    - [Consultas no IGMPv3](#consultas-no-igmpv3)
+    - [Eleição do Querier no IGMPv3](#eleição-do-querier-no-igmpv3)
+    - [Vantagens do IGMPv3](#vantagens-do-igmpv3)
   - [Referências](#referências)
   - [Simulados](#simulados)
 
@@ -94,7 +101,7 @@ Nesse momento, os outros roteadores iniciam um timer que reinicia toda a vez que
 Se por algum motivo o roteador que venceu a eleição para de enviar as mensagens, uma nova eleição ocorre. Um roteador que não responde as consultas, espera o dobro do tempo, que por
 padrão é 60 segundos, e se ele não receber nenhuma consulta nesse intervalo, ele aciona uma nova eleição de IGMP.  
 
-## Processo de participação (Join/Leave) no IGMPv2
+### Processo de participação (Join/Leave) no IGMPv2
 
 No IGMPv2 (Internet Group Management Protocol versão 2), o processo de participação em grupos multicast segue uma sequência clara entre hosts, roteadores e switches (quando há IGMP Snooping habilitado).
 
@@ -163,7 +170,7 @@ flowchart TD
     classDef router fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
-**🔄 IGMPv2 e a “eleição silenciosa” - Eleição do querier**  
+### 🔄 IGMPv2 e a “eleição silenciosa” - Eleição do querier
 
 Quando falamos de multicast, um ponto importante é: quem será o querier?
 Imagine vários roteadores em uma mesma rede, todos prontos para coordenar os grupos multicast. Se todos enviarem queries ao mesmo tempo, vira bagunça.
@@ -174,7 +181,7 @@ Funciona assim: todos se apresentam, mas o que tem o menor IP na interface local
 
 Ou seja, não existe caos: o protocolo se organiza sozinho, mantendo a rede multicast funcional e estável.  
 
-**📝 Resumo da Operação do IGMPv2**  
+### 📝 Resumo da Operação do IGMPv2  
 
 🔹 Papéis  
 
@@ -219,6 +226,101 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 - **ENDEREÇO DE ORIGEM[N] :** Representa o endereço IP unicast para N campos.
 
 [IGMPv3 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv3.html)
+
+### Funcionamento do IGMPv3  
+
+Quando um destinatário deseja ingressar em um grupo multicast no IGMPv3, ele envia uma mensagem IGMPv3 Membership Report que pode conter múltiplos registros de grupo em uma única mensagem. Cada registro especifica:  
+
+- O endereço do grupo multicast
+- O modo de filtro (Include ou Exclude)
+- A lista de endereços de origem
+
+O roteador que atua como querier processa esses relatórios e mantém o estado de cada grupo, incluindo as listas de origem associadas. Isso permite um controle muito mais granular sobre qual tráfego multicast é encaminhado.
+
+### Processo de Participação no IGMPv3  
+
+**Modo de Inclusão (Include Mode):**  
+
+O host especifica exatamente de quais fontes deseja receber tráfego  
+Exemplo: "Quero receber o grupo 224.1.1.1, mas apenas das fontes 10.1.1.1 e 10.1.1.2" 
+
+```mermaid
+sequenceDiagram
+    participant Host
+    participant Switch
+    participant Roteador
+    participant Fonte1 as Fonte A<br>(10.1.1.1)
+    participant Fonte2 as Fonte B<br>(10.1.1.2)
+
+    Host->>Roteador: IGMPv3 Report - INCLUDE Mode<br>Grupo: 224.1.1.1<br>Fontes: [10.1.1.1]
+    Note right of Roteador: Adiciona grupo com<br>filtro de origem específica
+    Host->>Switch: IGMPv3 Report (escutado via IGMP Snooping)
+    Note right of Switch: Associa porta ao grupo<br>com filtro de origem
+
+    Roteador-->>Host: General Query (periódico)
+    Host->>Roteador: IGMPv3 Report - INCLUDE Mode<br>Fontes: [10.1.1.1]
+
+    Fonte1->>Roteador: Tráfego Multicast (224.1.1.1)
+    Roteador->>Host: Encaminha tráfego ✅
+    
+    Fonte2->>Roteador: Tráfego Multicast (224.1.1.1)
+    Note right of Roteador: Filtrado - fonte não está<br>na lista INCLUDE ❌
+
+    Host->>Roteador: IGMPv3 Report - TO_IN(NULL)<br>(equivalente ao Leave)
+    Roteador->>Host: Group-and-Source-Specific Query
+    Note right of Roteador: Remove grupo da tabela<br>se não houver resposta
+````
+
+**Modo de Exclusão (Exclude Mode):**
+
+O host especifica de quais fontes NÃO deseja receber tráfego  
+Exemplo: "Quero receber o grupo 224.1.1.1 de todas as fontes, exceto de 10.1.1.3"  
+
+Para manter compatibilidade com IGMPv2: Um host pode usar o modo de exclusão com lista vazia, indicando que deseja receber de todas as fontes (comportamento padrão do IGMPv2).
+
+### Consultas no IGMPv3  
+
+O IGMPv3 suporta três tipos de consultas:
+
+- **General Query:** Verifica todos os grupos ativos (endereço de grupo = 0.0.0.0)
+- **Group-Specific Query:** Verifica um grupo específico
+- **Group-and-Source-Specific Query:** Verifica um grupo e fontes específicas
+
+### Eleição do Querier no IGMPv3
+
+O processo de eleição do querier no IGMPv3 mantém o mesmo princípio do IGMPv2: o roteador com menor endereço IP na interface local vence a eleição. Porém, o IGMPv3 introduz melhorias:  
+
+- **Consultas mais específicas:** O querier pode fazer consultas direcionadas para grupos e fontes específicas
+- **Melhor eficiência:** Reduz o tráfego desnecessário ao permitir consultas mais granulares
+- **Compatibilidade:** Queriers IGMPv3 podem interagir com hosts IGMPv1/v2 na mesma rede
+
+```mermaid
+
+```
+
+### Vantagens do IGMPv3
+
+- **Source-Specific Multicast (SSM):** Permite especificar exatamente de qual fonte receber
+- **Melhor segurança:** Hosts podem bloquear fontes indesejadas
+- **Eficiência aprimorada:** Reduz tráfego desnecessário na rede
+- **Compatibilidade:** Coexiste com versões anteriores
+- **Controle granular:** Múltiplos grupos e fontes em uma única mensagem
+
+Resumo da Operação do IGMPv3
+📹 Papéis
+
+Host (receptor): informa ao roteador quais grupos deseja participar e de quais fontes específicas
+Querier (roteador): mantém estado detalhado de grupos e suas listas de origem
+
+📹 Tipos de Mensagens
+MensagemOrigemFunçãoIGMPv3 Membership ReportHostAnuncia participação em grupos com lista de fontes específicasGeneral QueryQuerierVerifica todos os grupos ativosGroup-Specific QueryQuerierVerifica um grupo específicoGroup-and-Source QueryQuerierVerifica um grupo e fontes específicas
+Estados de Filtro
+O IGMPv3 mantém estados de filtro para cada interface:
+
+INCLUDE (S,G): Recebe tráfego do grupo G apenas das fontes na lista S
+EXCLUDE (S,G): Recebe tráfego do grupo G de todas as fontes, exceto as da lista S
+
+Esses estados são fundamentais para o funcionamento correto do Source-Specific Multicast (SSM) e permitem que aplicações tenham controle preciso sobre suas fontes de dados.
 
 ## Referências
 
