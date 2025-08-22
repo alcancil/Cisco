@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Multicast. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Qual protocolo permite que hosts e roteadores adjacentes estabeleçam comunicação multicast em redes IP?",
+        options: ["PIM", "OSPF", "IGMP", "BGP"],
+        answer: "IGMP",
+        explanation: "O IGMP (Internet Group Management Protocol) é o protocolo responsável por permitir que os hosts se tornem membros de grupos multicast e se comuniquem com roteadores adjacentes."
+      },
+      {
+        question: "O que é o Multicast Listener Discovery (MLD)?",
+        options: ["Um protocolo para IPv4", "Um protocolo que gerencia membros multicast IPv6", "Um tipo de roteamento", "Um algoritmo de criptografia"],
+        answer: "Um protocolo que gerencia membros multicast IPv6",
+        explanation: "O MLD é um protocolo que gerencia membros multicast IPv6, sendo o equivalente do IGMP para redes IPv6."
+      },
+      {
+        question: "Qual função está voltada principalmente às consultas e gerenciamento de grupos multicast no IGMP?",
+        options: ["Roteador de borda", "Host cliente", "Roteador da Camada 3", "Switch da Camada 2"],
+        answer: "Roteador da Camada 3",
+        explanation: "O roteador da Camada 3 (Roteador de rede) OSI tem sua função voltada principalmente às consultas e gerenciamento de grupos multicast."
+      },
+      {
+        question: "Como o IGMP possibilita que os switches saibam onde entregar o tráfego multicast?",
+        options: ["Através de flooding", "Monitorando consultas e relatórios IGMP", "Usando tabelas estáticas", "Por configuração manual"],
+        answer: "Monitorando consultas e relatórios IGMP",
+        explanation: "O IGMP possibilita que os switches saibam onde entregar o tráfego multicast através do monitoramento de consultas e relatórios IGMP, evitando desperdício de banda em cenários mais críticos."
+      },
+      {
+        question: "Quais são as principais versões do IGMP mencionadas no texto?",
+        options: ["IGMPv1 e IGMPv2", "IGMPv2 e IGMPv3", "IGMPv1, IGMPv2 e IGMPv3", "Apenas IGMPv3"],
+        answer: "IGMPv1, IGMPv2 e IGMPv3",
+        explanation: "O texto menciona que atualmente existem 3 versões do protocolo: IGMPv1, IGMPv2 e IGMPv3, sendo IGMPv3 definida na RFC 3376 e IGMPv2 na RFC 2236."
+      },
+      {
+        question: "Para que tipo de aplicação o IGMP é muito utilizado em streaming?",
+        options: ["Unicast de texto", "Áudio e vídeo", "Transferência de arquivos", "Email multicast"],
+        answer: "Áudio e vídeo",
+        explanation: "O IGMP é muito utilizado em streaming de áudio e vídeo onde uma pessoa transmite um único fluxo de comunicação para um grupo de pessoas."
+      },
+      {
+        question: "Em jogos online, qual é uma das principais aplicações do IGMP?",
+        options: ["Criar salas privadas", "Tornar os jogos mais próximos e eficientes", "Aumentar a velocidade", "Reduzir latência"],
+        answer: "Tornar os jogos mais próximos e eficientes",
+        explanation: "Em jogos online, o IGMP é usado para tornar os usuários de jogos mais próximos e eficientes, pois o IGMP se comunica de forma mais eficiente."
+      },
+      {
+        question: "No formato da mensagem IGMPv1, quantos bits possui o campo VERSÃO?",
+        options: ["4 Bits", "8 Bits", "16 Bits", "32 Bits"],
+        answer: "4 Bits",
+        explanation: "No formato da mensagem IGMPv1, o campo VERSÃO possui 4 bits, conforme mostrado no diagrama da estrutura da mensagem."
+      },
+      {
+        question: "O que representa o campo CHECKSUM no IGMPv1?",
+        options: ["Versão do protocolo", "Endereço do grupo", "Campo de 16 bits para validação", "Tipo da mensagem"],
+        answer: "Campo de 16 bits para validação",
+        explanation: "O CHECKSUM é um campo de 16 bits usado para validação da integridade da mensagem IGMP."
+      },
+      {
+        question: "Quando o campo ENDEREÇO DE GRUPO é definido como zero na mensagem IGMP?",
+        options: ["Quando há erro na transmissão", "Em consultas gerais", "Para grupos específicos", "Nunca é definido como zero"],
+        answer: "Em consultas gerais",
+        explanation: "O campo ENDEREÇO DE GRUPO é definido como zero quando enviado é ignorado quando recebido na mensagem de consulta de associação, sendo usado para consultas gerais a todos os grupos."
+      }   
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

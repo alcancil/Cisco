@@ -7,6 +7,7 @@
   - [IGMPv2](#igmpv2)
   - [IGMPv3](#igmpv3)
   - [Referências](#referências)
+  - [Simulados](#simulados)
 
 ## 02 - Internet Group Management Protocol
 
@@ -129,3 +130,13 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 | RFC 1112 | Host Extensions for IP Multicasting           | [https://www.rfc-editor.org/rfc/rfc1112](https://www.rfc-editor.org/rfc/rfc1112) |
 | RFC 2236 | Internet Group Management Protocol, Version 2 | [https://www.rfc-editor.org/rfc/rfc2236](https://www.rfc-editor.org/rfc/rfc2236) |
 | RFC 3376 | Internet Group Management Protocol, Version 3 | [https://www.rfc-editor.org/rfc/rfc3376](https://www.rfc-editor.org/rfc/rfc3376) |
+
+## Simulados  
+
+**[Simulado 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/Simulado/01.html)**  
+
+**[Simulado 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/Simulado/02.html)**
+
+**[Simulado 03](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/Simulado/03.html)**
+
+**[Dashboard](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/Simulado/dashboard.html)**  
