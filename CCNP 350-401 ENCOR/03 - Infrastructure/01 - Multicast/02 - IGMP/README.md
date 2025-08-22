@@ -159,9 +159,44 @@ flowchart TD
     H --> L1 --> R --> L2 --> L3
 
     %% --- Estilos ---
-    classDef host fill:#cce5ff,stroke:#004085,color:#ffffff
+    classDef host fill:#cce5ff,stroke:#004085,color:#000,font-weight:bold;
     classDef switch fill:#e6ccff,stroke:#5a0085,color:#000,font-weight:bold;
     classDef router fill:#d4edda,stroke:#155724,color:#000,font-weight:bold;
+```
+
+```mermaid
+%%{init: {"themeVariables": {
+  "fontSize": "18px",
+  "fontWeight": "bold"
+}, "flowchart": { "nodeSpacing": 60, "rankSpacing": 80 }}}%%
+flowchart TD
+
+    %% --- Definição dos nós ---
+    H[**Host**]:::host
+    S[**Switch**]:::switch
+    R[**Roteador**]:::router
+
+    J1[**Join: Host envia Host Membership Report**]:::host
+    J2[**Roteador adiciona grupo à tabela**]:::router
+    J3[**Switch associa porta ao grupo (IGMP Snooping)**]:::switch
+
+    M1[**Roteador envia General Query (periódico)**]:::router
+    M2[**Host responde com Host Membership Report**]:::host
+
+    L1[**Leave: Host envia Leave Group (224.0.0.2)**]:::host
+    L2[**Roteador envia Group-Specific Query**]:::router
+    L3[**Sem resposta → Roteador remove grupo da tabela**]:::router
+
+    %% --- Conexões ---
+    H --> J1 --> R --> J2
+    H --> J3
+    R --> M1 --> H --> M2 --> R
+    H --> L1 --> R --> L2 --> L3
+
+    %% --- Estilos ---
+    classDef host fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#000,font-weight:bold;
+    classDef switch fill:#e6ccff,stroke:#5a0085,stroke-width:2px,color:#000,font-weight:bold;
+    classDef router fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
