@@ -40,7 +40,7 @@
 
 ## 02 - Internet Group Management Protocol
 
-Esse protocolo permite que hosts e roteadores adjacentes estabeleçam comunicação multicast em redes IP, otimizando o uso de banda e a transmissão de pacotes. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) que é um protocolo que gerência membros multicast IPv6.  
+Esse protocolo permite que hosts e roteadores adjacentes estabeleçam comunicação multicast em redes IP, otimizando o uso de banda e a transmissão de pacotes. O multicast pode ter um único ou vários remetentes e destinatários. Ele é utilizado em redes IPv4 e em redes IPv6 é utilizado o Multicast Listener Discovery (MLD) que é um protocolo que gerencia membros multicast IPv6.  
 
 O **IGMP (Internet Group Management Protocol)** é o protocolo responsável por permitir que os hosts informem ao roteador local sua intenção de ingressar ou sair de grupos multicast.  
 
