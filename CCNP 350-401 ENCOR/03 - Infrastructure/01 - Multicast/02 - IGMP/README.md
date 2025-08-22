@@ -163,7 +163,7 @@ flowchart TD
     classDef router fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
-**🔄 IGMPv2 e a “eleição silenciosa”**  
+**🔄 IGMPv2 e a “eleição silenciosa” - Eleição do querier**  
 
 Quando falamos de multicast, um ponto importante é: quem será o querier?
 Imagine vários roteadores em uma mesma rede, todos prontos para coordenar os grupos multicast. Se todos enviarem queries ao mesmo tempo, vira bagunça.
@@ -173,6 +173,18 @@ Imagine vários roteadores em uma mesma rede, todos prontos para coordenar os gr
 Funciona assim: todos se apresentam, mas o que tem o menor IP na interface local ganha o cargo de querier. Os outros respeitam e ficam de reserva, prontos para assumir se o principal cair.  
 
 Ou seja, não existe caos: o protocolo se organiza sozinho, mantendo a rede multicast funcional e estável.  
+
+**🔎 Resumo da Operação do IGMPv2**  
+
+O IGMPv2 (Internet Group Management Protocol versão 2) é utilizado por hosts e roteadores para gerenciar a participação em grupos multicast na rede. Ele funciona em 3 pilares principais: adesão, saída e manutenção do grupo.
+
+**📌 Tabela de mensagens IGMPv2**  
+
+| Mensagem IGMPv2   | Função                                                               |
+|-------------------|----------------------------------------------------------------------|
+| Membership Query  | Enviado pelo Querier para verificar quais hosts ainda querem o grupo |
+| Membership Report | Enviado pelo host para informar participação em um grupo multicast   |
+| Leave Group       | Enviado pelo host para indicar que está saindo do grupo              |
 
 [IGMPv2 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv2.html)
 
