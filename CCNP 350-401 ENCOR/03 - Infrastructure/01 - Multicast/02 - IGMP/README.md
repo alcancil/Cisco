@@ -17,6 +17,24 @@
     - [Tipos de Transições de Estado no IGMPv3](#tipos-de-transições-de-estado-no-igmpv3)
     - [Vantagens do IGMPv3](#vantagens-do-igmpv3)
     - [Resumo da Operação do IGMPv3](#resumo-da-operação-do-igmpv3)
+    - [Resumo](#resumo)
+  - [Tabela Comparativa: IGMPv1 vs IGMPv2 vs IGMPv3](#tabela-comparativa-igmpv1-vs-igmpv2-vs-igmpv3)
+  - [Comparação Detalhada das Versões do IGMP](#comparação-detalhada-das-versões-do-igmp)
+  - [Funcionalidades Básicas](#funcionalidades-básicas)
+  - [Tipos de Mensagens](#tipos-de-mensagens)
+  - [Tipos de Consultas (Queries)](#tipos-de-consultas-queries)
+  - [Campos da Mensagem](#campos-da-mensagem)
+  - [Processo de Saída (Leave)](#processo-de-saída-leave)
+  - [Filtragem e Controle](#filtragem-e-controle)
+  - [Eleição do Querier](#eleição-do-querier)
+  - [Eficiência e Performance](#eficiência-e-performance)
+  - [Aplicações Típicas](#aplicações-típicas)
+  - [Limitações por Versão](#limitações-por-versão)
+    - [IGMPv1](#igmpv1-1)
+    - [IGMPv2](#igmpv2-1)
+    - [IGMPv3](#igmpv3-1)
+  - [Recomendações de Implementação](#recomendações-de-implementação)
+  - [📝 **Resumo Executivo**](#-resumo-executivo)
   - [Referências](#referências)
   - [Simulados](#simulados)
 
@@ -228,8 +246,6 @@ Para receber o tráfego de todas as fontes, que é o comportamento do IGMPv2, o 
 - **NÚMERO DE FONTES :** Representa o número de endereços de origem presentes na consulta. Para consulta geral ou consulta específica de grupo, este campo é zero e para consulta específica de grupo e origem, este campo é diferente de zero.
 - **ENDEREÇO DE ORIGEM[N] :** Representa o endereço IP unicast para N campos.
 
-[IGMPv3 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv3.html)
-
 ### Funcionamento do IGMPv3  
 
 Quando um destinatário deseja ingressar em um grupo multicast no IGMPv3, ele envia uma mensagem IGMPv3 Membership Report que pode conter múltiplos registros de grupo em uma única mensagem. Cada registro especifica:  
@@ -387,6 +403,8 @@ flowchart TD
     classDef leave fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000,font-weight:bold;
 ```
 
+[IGMPv3 - Animação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/02%20-%20IGMP/Arquivos/igmpv3.html)
+
 ### Tipos de Transições de Estado no IGMPv3  
 
 O IGMPv3 define várias transições de estado que são comunicadas através dos reports:
@@ -432,6 +450,150 @@ O IGMPv3 mantém estados de filtro para cada interface:
 - **EXCLUDE (S,G):** Recebe tráfego do grupo G de todas as fontes, exceto as da lista S
 
 Esses estados são fundamentais para o funcionamento correto do Source-Specific Multicast (SSM) e permitem que aplicações tenham controle preciso sobre suas fontes de dados.
+
+### Resumo
+
+## Tabela Comparativa: IGMPv1 vs IGMPv2 vs IGMPv3  
+
+## Comparação Detalhada das Versões do IGMP
+
+| **Característica**  | **IGMPv1**          | **IGMPv2**                 | **IGMPv3**                      |
+|---------------------|---------------------|----------------------------|---------------------------------|
+| **RFC**             | RFC 1112 (1989)     | RFC 2236 (1997)            | RFC 3376 (2002)                 |
+| **Status de Uso**   | Raramente utilizada | Mais comum                 | Crescente adoção                |
+| **Compatibilidade** | -                   | Backward compatible com v1 | Backward compatible com v1 e v2 |
+
+## Funcionalidades Básicas
+
+| **Aspecto**            | **IGMPv1**               | **IGMPv2**                   | **IGMPv3**                         |
+|------------------------|--------------------------|------------------------------|------------------------------------|
+| **Join de Grupo**      | ✅ Host Membership Report| ✅ IGMPv2 Membership Report | ✅ IGMPv3 Membership Report        |
+| **Leave de Grupo**     | ❌ Apenas timeout        | ✅ Leave Group Message      | ✅ TO_IN(NULL) / Transições        |
+| **Queries Periódicas** | ✅ Host Membership Query | ✅ General Query            | ✅ General Query                   |
+| **Filtro de Origem**   | ❌ Não suportado         | ❌ Não suportado            | ✅ **Source Filtering**            |
+| **Múltiplos Grupos**   | ❌ Um report por grupo   | ❌ Um report por grupo      | ✅ **Múltiplos grupos por report** |
+
+## Tipos de Mensagens
+
+| **Tipo de Mensagem**          | **IGMPv1** | **IGMPv2**                 | **IGMPv3**                |
+|-------------------------------|------------|----------------------------|---------------------------|
+| **Host Membership Query**     | ✅ 0x11    | ✅ 0x11 (compatibilidade) | ✅ 0x11 (compatibilidade) |
+| **Host Membership Report v1** | ✅ 0x12    | ✅ 0x12 (compatibilidade) | ✅ 0x12 (compatibilidade) |
+| **Leave Group**               | ❌         | ✅ 0x17                   | ✅ 0x17 (compatibilidade) |
+| **IGMPv2 Membership Report**  | ❌         | ✅ 0x16                   | ✅ 0x16 (compatibilidade) |
+| **IGMPv3 Membership Report**  | ❌         | ❌                        | ✅ **0x22**               |
+
+## Tipos de Consultas (Queries)
+
+| **Tipo de Query**                   | **IGMPv1**             | **IGMPv2**    | **IGMPv3**        |
+|-------------------------------------|------------------------|---------------|-------------------|
+| **General Query**                   | ✅ Para todos os hosts | ✅ Melhorada | ✅ Mais eficiente |
+| **Group-Specific Query**            | ❌                     | ✅ **Novo**  | ✅ Mantido        |
+| **Group-and-Source-Specific Query** | ❌                     | ❌           | ✅ **Novo**       |
+
+## Campos da Mensagem
+
+| **Campo**                    | **IGMPv1**       | **IGMPv2**       | **IGMPv3**          |
+|------------------------------|------------------|------------------|---------------------|
+| **Versão**                   | 4 bits (valor 1) | 4 bits (valor 2) | 4 bits (valor 3)    |
+| **Tipo**                     | 4 bits           | 8 bits           | 8 bits              |
+| **Tempo Máximo de Resposta** | ❌               | ✅ **8 bits**   | ✅ 8 bits           |
+| **Checksum**                 | ✅ 16 bits       | ✅ 16 bits      | ✅ 16 bits          |
+| **Endereço de Grupo**        | ✅ 32 bits       | ✅ 32 bits      | ✅ 32 bits          |
+| **Flags (S, QRV)**           | ❌               | ❌              | ✅ **Novos campos** |
+| **Número de Fontes**         | ❌               | ❌              | ✅ **16 bits**      |
+| **Lista de Fontes**          | ❌               | ❌              | ✅ **N × 32 bits**  |
+
+## Processo de Saída (Leave)
+
+| **Aspecto**             | **IGMPv1**            | **IGMPv2**              | **IGMPv3**                     |
+|-------------------------|-----------------------|-------------------------|--------------------------------|
+| **Método de Saída**     | Timeout silencioso    | Leave Group Message     | Transições de estado avançadas |
+| **Endereço de Destino** | -                     | 224.0.0.2 (All Routers) | Flexível                       |
+| **Confirmação**         | ❌                    | Group-Specific Query    | Group/Source-Specific Query    |
+| **Eficiência**          | Baixa (timeout longo) | Média                   | **Alta**                       |
+
+## Filtragem e Controle
+
+| **Recurso**                         | **IGMPv1** | **IGMPv2**    | **IGMPv3**            |
+|-------------------------------------|------------|---------------|-----------------------|
+| **Any-Source Multicast (ASM)**      | ✅ Básico  | ✅ Melhorado | ✅ Completo           |
+| **Source-Specific Multicast (SSM)** | ❌         | ❌           | ✅ **Suporte nativo** |
+| **Modo de Inclusão**                | ❌         | ❌           | ✅ **INCLUDE(S,G)**   |
+| **Modo de Exclusão**                | ❌         | ❌           | ✅ **EXCLUDE(S,G)**   |
+| **Filtragem de Origem**             | ❌         | ❌           | ✅ **Granular**       |
+
+## Eleição do Querier
+
+| **Aspecto**             | **IGMPv1** | **IGMPv2** | **IGMPv3** |
+|-------------------------|------------|------------|------------|
+| **Processo de Eleição** | Básico | **Menor IP vence** | Mesmo do v2 |
+| **Detecção de Falha** | Timeout simples | Timer + re-eleição | Melhorado |
+| **Coexistência** | - | Com IGMPv1 | Com v1 e v2 |
+
+## Eficiência e Performance
+
+| **Métrica**               | **IGMPv1** | **IGMPv2** | **IGMPv3**    |
+|---------------------------|------------|------------|---------------|
+| **Overhead de Rede**      | Alto       | Médio      | **Baixo**     |
+| **Precisão do Controle**  | Básica     | Boa        | **Excelente** |
+| **Tempo de Convergência** | Lento      | Melhorado  | **Rápido**    |
+| **Escalabilidade**        | Limitada   | Boa        | **Excelente** |
+| **Segurança**             | Básica     | Básica     | **Melhorada** |
+
+## Aplicações Típicas
+
+| **Cenário de Uso**     | **IGMPv1** | **IGMPv2** | **IGMPv3** |
+|------------------------|------------|------------|------------|
+| **Streaming Básico**   | ✅        | ✅ ✅      | ✅ ✅ ✅ |
+| **IPTV**               | ❌        | ✅ ✅      | ✅ ✅ ✅ |
+| **Videoconferência**   | ❌        | ✅         | ✅ ✅ ✅ |
+| **Jogos Online**       | ❌        | ✅         | ✅ ✅ ✅ |
+| **SSM/Canal Premium**  | ❌        | ❌         | ✅ ✅ ✅ |
+| **Segurança Avançada** | ❌        | ❌         | ✅ ✅ ✅ |
+
+## Limitações por Versão
+
+### IGMPv1  
+
+- ❌ Não suporta Leave explícito
+- ❌ Timeout longo para detectar saída
+- ❌ Sem controle de fonte
+- ❌ Eleição de querier básica
+
+### IGMPv2  
+
+- ❌ Não suporta filtragem de origem
+- ❌ Um grupo por mensagem
+- ❌ Sem suporte a SSM
+- ❌ Controle limitado sobre fontes
+
+### IGMPv3  
+
+- ⚠️ Maior complexidade
+- ⚠️ Requer suporte de hardware/software
+- ⚠️ Overhead inicial maior
+- ⚠️ Curva de aprendizado
+
+## Recomendações de Implementação
+
+| **Cenário**                | **Versão Recomendada** | **Justificativa**              |
+|----------------------------|------------------------|--------------------------------|
+| **Redes Legadas**          | IGMPv2                 | Compatibilidade e simplicidade |
+| **IPTV/Streaming**         | IGMPv3                 | Controle granular e eficiência |
+| **Ambientes Corporativos** | IGMPv3                 | Segurança e controle avançado  |
+| **Provedores de Internet** | IGMPv3                 | Escalabilidade e SSM           |
+| **Aplicações Críticas**    | IGMPv3                 | Precisão e performance         |
+
+---
+
+## 📝 **Resumo Executivo**
+
+- **IGMPv1**: Funcional básico, obsoleto
+- **IGMPv2**: Padrão atual, amplamente suportado
+- **IGMPv3**: Futuro, recursos avançados de filtragem
+
+**💡 Dica**: Para novos projetos, considere IGMPv3 para máxima flexibilidade e controle.
 
 ## Referências
 
