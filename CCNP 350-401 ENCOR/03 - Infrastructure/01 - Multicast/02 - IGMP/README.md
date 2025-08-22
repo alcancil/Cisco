@@ -143,12 +143,12 @@ flowchart TD
 
     J1[**Join: Host envia Host Membership Report**]:::host
     J2[**Roteador adiciona grupo à tabela**]:::router
-    J3[**Switch associa porta ao grupo (IGMP Snooping)**]:::switch
+    J3[**Switch associa porta ao grupo - IGMP Snooping**]:::switch
 
-    M1[**Roteador envia General Query (periódico)**]:::router
+    M1[**Roteador envia General Query - periódico**]:::router
     M2[**Host responde com Host Membership Report**]:::host
 
-    L1[**Leave: Host envia Leave Group (224.0.0.2)**]:::host
+    L1[**Leave: Host envia Leave Group - 224.0.0.2**]:::host
     L2[**Roteador envia Group-Specific Query**]:::router
     L3[**Sem resposta → Roteador remove grupo da tabela**]:::router
 
