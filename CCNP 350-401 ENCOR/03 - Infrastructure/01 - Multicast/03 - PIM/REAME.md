@@ -6,9 +6,11 @@
     - [Tipos de Árvores de Distribuição](#tipos-de-árvores-de-distribuição)
   - [Modos de Operação do PIM](#modos-de-operação-do-pim)
     - [1. PIM Dense Mode (PIM-DM) - RFC 3973](#1-pim-dense-mode-pim-dm---rfc-3973)
-      - [Fluxograma do Processo](#fluxograma-do-processo)
+      - [Fluxograma do Processo - PIM Dense Mode (PIM-DM)](#fluxograma-do-processo---pim-dense-mode-pim-dm)
     - [2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761](#2-pim-sparse-mode-pim-sm---rfc-46017761)
+      - [Fluxograma do Processo - PIM Sparse Mode (PIM-SM)](#fluxograma-do-processo---pim-sparse-mode-pim-sm)
     - [3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607](#3-pim-source-specific-multicast-pim-ssm---rfc-4607)
+      - [Fluxograma do Processo - PIM Source-Specific Multicast (PIM-SSM)](#fluxograma-do-processo---pim-source-specific-multicast-pim-ssm)
     - [4. PIM Bidirectional (PIM-BIDIR) - RFC 5015](#4-pim-bidirectional-pim-bidir---rfc-5015)
     - [5. PIM Any-Source Multicast (PIM-ASM)](#5-pim-any-source-multicast-pim-asm)
     - [Comparação dos Modos](#comparação-dos-modos)
@@ -130,7 +132,7 @@ O PIM possui diferentes modos de operação, cada um otimizado para cenários es
 
 **Quando usar**: Redes pequenas com muitos receptores próximos  
 
-#### Fluxograma do Processo
+#### Fluxograma do Processo - PIM Dense Mode (PIM-DM)  
 
 ```mermaid
 flowchart TD
@@ -184,6 +186,8 @@ style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 **Quando usar:** Redes grandes com receptores distribuídos
 
+#### Fluxograma do Processo - PIM Sparse Mode (PIM-SM)  
+
 ```mermaid
 flowchart TD
     A["Host envia IGMP Join"] --> B["DR recebe Join"]
@@ -232,6 +236,26 @@ flowchart TD
 - Utiliza faixa de endereços 232.0.0.0/8
 
 **Quando usar:** IPTV, streaming, aplicações com origem conhecida
+
+#### Fluxograma do Processo - PIM Source-Specific Multicast (PIM-SSM)  
+
+```mermaid
+flowchart TD
+    A["Receptor envia IGMPv3 Join com (S,G)"] --> B["Roteador recebe pedido com origem e grupo"]
+    B --> C["Constrói diretamente a Source Tree (S,G)"]
+    C --> D["Tráfego flui pelo caminho mais curto"]
+    D --> E["Aplicações One-to-Many (IPTV, Streaming)"]
+
+%% Estilos (esquema de farol + negrito)
+%% Amarelo = início (Join receptor)
+style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style B fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Verde = árvore construída / tráfego ativo
+style C fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style D fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+```
 
 ### 4. PIM Bidirectional (PIM-BIDIR) - RFC 5015  
 
