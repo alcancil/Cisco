@@ -6,6 +6,7 @@
     - [Tipos de Árvores de Distribuição](#tipos-de-árvores-de-distribuição)
   - [Modos de Operação do PIM](#modos-de-operação-do-pim)
     - [1. PIM Dense Mode (PIM-DM) - RFC 3973](#1-pim-dense-mode-pim-dm---rfc-3973)
+      - [Fluxograma do Processo](#fluxograma-do-processo)
     - [2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761](#2-pim-sparse-mode-pim-sm---rfc-46017761)
     - [3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607](#3-pim-source-specific-multicast-pim-ssm---rfc-4607)
     - [4. PIM Bidirectional (PIM-BIDIR) - RFC 5015](#4-pim-bidirectional-pim-bidir---rfc-5015)
@@ -129,6 +130,33 @@ O PIM possui diferentes modos de operação, cada um otimizado para cenários es
 
 **Quando usar**: Redes pequenas com muitos receptores próximos  
 
+#### Fluxograma do Processo
+
+```mermaid
+flowchart TD
+    A["Tráfego multicast chega na rede"] --> B["Roteador inunda o tráfego para todas as interfaces"]
+    B --> C{"Receptores interessados?"}
+    C -- Sim --> D["Mantém o tráfego ativo"]
+    C -- Não --> E["Envia mensagem PIM Prune para cortar o galho"]
+    D --> F["Árvore multicast otimizada"]
+    E --> F["Árvore multicast otimizada"]
+    F --> G["Flood periódico reinicia o processo"]
+
+%% Estilos (esquema de farol + negrito)
+%% Amarelo = flood inicial
+style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style B fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Vermelho = decisão de podar
+style C fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style E fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Verde = estados finais/otimizados
+style D fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+```
+
 ### 2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761
 
 **Filosofia: "Pull Model" (Modelo de Solicitação)**  
@@ -158,15 +186,31 @@ O PIM possui diferentes modos de operação, cada um otimizado para cenários es
 
 ```mermaid
 flowchart TD
-    A["Host envia IGMP Join"] --> B["DR (Designated Router) recebe Join"]
-    B --> C["Consulta tabela de roteamento unicast"]
-    C --> D["DR envia PIM Join em direção ao RP"]
-    D --> E["Tráfego começa pela árvore compartilhada (*,G)"]
-    E --> F{SPT Switch Ativado?}
-    F -- Sim --> G["Constrói árvore SPT (S,G)"]
+    A["Host envia IGMP Join"] --> B["DR recebe Join"]
+    B --> C["Consulta tabela unicast"]
+    C --> D["Join em direção ao RP (*,G)"]
+    D --> E["Tráfego pela Shared Tree (*,G)"]
+    E --> F{"SPT Switch Ativado?"}
+    F -- Sim --> G["Constrói Source Tree (S,G)"]
     F -- Não --> H["Permanece na Shared Tree (*,G)"]
-    G --> I[Tráfego flui pela SPT]
-    H --> I[Tráfego flui pela RP Tree]
+    G --> I["Tráfego flui pela SPT (S,G)"]
+    H --> I["Tráfego flui pela RP Tree (*,G)"]
+
+    %% Estilos (esquema de farol)
+    %% Amarelo (início / intermediário)
+    style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style B fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style C fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style D fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style E fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+    %% Vermelho (decisão / permanência RP)
+    style F fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style H fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+    %% Verde (SPT ativo / fluxo final)
+    style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ```
 
 ### 3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607
