@@ -12,6 +12,7 @@
     - [3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607](#3-pim-source-specific-multicast-pim-ssm---rfc-4607)
       - [Fluxograma do Processo - PIM Source-Specific Multicast (PIM-SSM)](#fluxograma-do-processo---pim-source-specific-multicast-pim-ssm)
     - [4. PIM Bidirectional (PIM-BIDIR) - RFC 5015](#4-pim-bidirectional-pim-bidir---rfc-5015)
+      - [Fluxograma do Processo - PIM Bidirectional (PIM-BIDIR)](#fluxograma-do-processo---pim-bidirectional-pim-bidir)
     - [5. PIM Any-Source Multicast (PIM-ASM)](#5-pim-any-source-multicast-pim-asm)
     - [Comparação dos Modos](#comparação-dos-modos)
 
@@ -276,6 +277,30 @@ style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 - Ideal para aplicações many-to-many
 
 **Quando usar:** Aplicações colaborativas, jogos online, muitas origens
+
+#### Fluxograma do Processo - PIM Bidirectional (PIM-BIDIR)
+
+```mermaid
+flowchart TD
+    A["Múltiplas origens enviam tráfego"] --> B["Árvore Compartilhada (*,G) é utilizada"]
+    B --> C{"Tráfego flui em ambas as direções?"}
+    C -- Sim --> D["Roteadores mantêm pouco estado"]
+    D --> E["Rede altamente escalável"]
+    E --> F["Aplicações Many-to-Many (colaboração, jogos online)"]
+
+%% Estilos (esquema de farol + negrito)
+%% Amarelo = início (origens e uso da Shared Tree)
+style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style B fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Vermelho = decisão crítica (direção do tráfego / risco de loops se mal configurado)
+style C fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Verde = benefícios finais (estado reduzido, escalabilidade, aplicações)
+style D fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+```
 
 ### 5. PIM Any-Source Multicast (PIM-ASM)  
 
