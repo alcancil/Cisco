@@ -156,6 +156,19 @@ O PIM possui diferentes modos de operação, cada um otimizado para cenários es
 
 **Quando usar:** Redes grandes com receptores distribuídos
 
+```mermaid
+flowchart TD
+    A["Host envia IGMP Join"] --> B["DR (Designated Router) recebe Join"]
+    B --> C["Consulta tabela de roteamento unicast"]
+    C --> D["DR envia PIM Join em direção ao RP"]
+    D --> E["Tráfego começa pela árvore compartilhada (*,G)"]
+    E --> F{SPT Switch Ativado?}
+    F -- Sim --> G["Constrói árvore SPT (S,G)"]
+    F -- Não --> H["Permanece na Shared Tree (*,G)"]
+    G --> I[Tráfego flui pela SPT]
+    H --> I[Tráfego flui pela RP Tree]
+```
+
 ### 3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607
 
 **Filosofia: "Source-Specific" (Específico por Origem)**  
