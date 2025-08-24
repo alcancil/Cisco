@@ -4,6 +4,13 @@
   - [03 - PIM - Protocol Independent Multicast](#03---pim---protocol-independent-multicast)
   - [Contexto Histórico](#contexto-histórico)
     - [Tipos de Árvores de Distribuição](#tipos-de-árvores-de-distribuição)
+  - [Modos de Operação do PIM](#modos-de-operação-do-pim)
+    - [1. PIM Dense Mode (PIM-DM) - RFC 3973](#1-pim-dense-mode-pim-dm---rfc-3973)
+    - [2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761](#2-pim-sparse-mode-pim-sm---rfc-46017761)
+    - [3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607](#3-pim-source-specific-multicast-pim-ssm---rfc-4607)
+    - [4. PIM Bidirectional (PIM-BIDIR) - RFC 5015](#4-pim-bidirectional-pim-bidir---rfc-5015)
+    - [5. PIM Any-Source Multicast (PIM-ASM)](#5-pim-any-source-multicast-pim-asm)
+    - [Comparação dos Modos](#comparação-dos-modos)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -89,6 +96,118 @@ Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**
 - Não requer Rendezvous Point (RP)
 - Elimina problemas de segurança do multicast tradicional
 - Utilizado principalmente em IPTV e streaming
+
+**Principais Características**  
+
+- **Protocol Independent:** Utiliza a tabela de roteamento unicast existente
+- **Suporte a diferentes topologias:** Funciona em redes densas e esparsas
+- **Eficiência:** Constrói árvores otimizadas para distribuição
+- **Flexibilidade:** Múltiplos modos de operação (Sparse Mode, Dense Mode, etc.)
+
+## Modos de Operação do PIM
+
+O PIM possui diferentes modos de operação, cada um otimizado para cenários específicos de rede:  
+
+### 1. PIM Dense Mode (PIM-DM) - RFC 3973
+
+**Filosofia: "Flood and Prune" (Inundar e Podar)**  
+
+**Como funciona:**  
+
+- Assume que receptores estão densamente distribuídos pela rede
+- Inicialmente inunda todo o tráfego multicast por todas as interfaces
+- Utiliza mensagens Prune para remover galhos desnecessários
+- Reconstrói periodicamente a árvore através de flood novamente
+
+**Características:**
+
+- Simples de configurar e entender
+- Eficiente quando há muitos receptores
+- Desperdiça largura de banda inicialmente
+- Não escalável para redes grandes
+- Ideal para LANs com alta densidade de receptores
+
+**Quando usar**: Redes pequenas com muitos receptores próximos  
+
+### 2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761
+
+**Filosofia: "Pull Model" (Modelo de Solicitação)**  
+
+**Como funciona:**
+
+- Assume que receptores estão esparsamente distribuídos
+- Utiliza Rendezvous Point (RP) como ponto central
+- Constrói árvores sob demanda apenas quando há receptores
+- Pode migrar de Shared Tree (*,G) para Source Tree (S,G)
+
+**Componentes principais:**  
+
+- **Rendezvous Point (RP):** Ponto de encontro central
+- **Bootstrap Router (BSR):** Elege e anuncia RPs
+- **Designated Router (DR):** Roteador designado por segmento
+
+**Características:**
+
+- Muito escalável
+- Conserva largura de banda
+- Mais complexo de configurar
+- Requer planejamento de RPs
+- Padrão para redes empresariais e ISPs
+
+**Quando usar:** Redes grandes com receptores distribuídos
+
+### 3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607
+
+**Filosofia: "Source-Specific" (Específico por Origem)**  
+
+**Como funciona:**  
+
+- Receptores especificam origem E grupo (S,G)
+- Não requer Rendezvous Point (RP)
+- Sempre utiliza Source Trees (S,G)
+- Integra-se com IGMPv3/MLDv2
+
+**Características:**
+
+- Elimina problemas de segurança do multicast tradicional
+- Mais simples que PIM-SM (sem RP)
+- Ideal para aplicações one-to-many
+- Utiliza faixa de endereços 232.0.0.0/8
+
+**Quando usar:** IPTV, streaming, aplicações com origem conhecida
+
+### 4. PIM Bidirectional (PIM-BIDIR) - RFC 5015  
+
+**Filosofia: "Bidirectional Shared Tree" (Árvore Compartilhada Bidirecional)**  
+
+**Como funciona:**
+
+- Utiliza apenas Shared Trees (*,G)
+- Tráfego flui em ambas as direções na árvore
+- Múltiplas origens podem usar a mesma árvore
+- Reduz drasticamente o estado nos roteadores
+
+**Características:**
+
+- Extremamente escalável para muitas origens
+- Reduz estado de roteamento
+- Pode criar loops se mal configurado
+- Ideal para aplicações many-to-many
+
+**Quando usar:** Aplicações colaborativas, jogos online, muitas origens
+
+### 5. PIM Any-Source Multicast (PIM-ASM)  
+
+**Descrição:** Termo genérico para PIM-SM tradicional onde qualquer origem pode enviar para um grupo sem que os receptores especifiquem a origem previamente.
+
+### Comparação dos Modos
+
+| Modo      | Escalabilidade | Complexidade | Uso de Banda | Cenário Ideal      |
+|-----------|----------------|--------------|--------------|--------------------|
+| PIM-DM    | Baixa          | Baixa        | Alto inicial | LANs densas        |
+| PIM-SM    | Alta           | Alta         | Otimizado    | Redes corporativas |
+| PIM-SSM   | Alta           | Média        | Otimizado    | IPTV/Streaming     |
+| PIM-BIDIR | Muito Alta     | Alta         | Otimizado    | Many-to-many       |
 
 **Principais Características**  
 
