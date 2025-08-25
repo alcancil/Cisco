@@ -18,6 +18,18 @@
     - [Terminologias Importantes](#terminologias-importantes)
     - [Comparação dos Modos](#comparação-dos-modos)
   - [Componentes do PIM](#componentes-do-pim)
+    - [1. Multicast Source (Origem Multicast)](#1-multicast-source-origem-multicast)
+    - [2. Designated Router (DR)](#2-designated-router-dr)
+    - [3. First Hop Router (FHR)](#3-first-hop-router-fhr)
+    - [4. Rendezvous Point (RP)](#4-rendezvous-point-rp)
+    - [5. Last Hop Router (LHR)](#5-last-hop-router-lhr)
+    - [6. SPT Router](#6-spt-router)
+    - [7. Bootstrap Router (BSR)](#7-bootstrap-router-bsr)
+    - [8. Multicast Receivers (Receptores)](#8-multicast-receivers-receptores)
+    - [9. Switches com IGMP Snooping](#9-switches-com-igmp-snooping)
+    - [10. Interfaces e Direcionamento](#10-interfaces-e-direcionamento)
+    - [11. Árvores de Distribuição](#11-árvores-de-distribuição)
+    - [Mensagens PIM Principais](#mensagens-pim-principais)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -46,6 +58,16 @@ Primeiros Protocolos (1980s-1990s):
 
 O IGMP é o protocolo que permite aos hosts participarem de grupos multicast e sinalizarem seu interesse em receber fluxos multicast específicos. Porém, o IGMP opera apenas no escopo da rede local e não tem a capacidade de rotear pacotes multicast da origem até os destinos através de múltiplas redes. É nesse momento que o PIM (Protocol Independent Multicast) entra em ação.  
 
+```text
+❌ Sem PIM:
+📺 Origem ──❓── [Router] ──❓── [Router] ──❓── 💻 Receptor
+   "Como o tráfego multicast atravessa a rede?"
+
+✅ Com PIM:
+📺 Origem ──🌲── [Router] ──🌲── [Router] ──🌲── 💻 Receptor
+   "PIM constrói árvores de distribuição inteligentes"
+```
+
 O PIM é um protocolo de roteamento multicast que:
 
 - **Constrói árvores de distribuição** para entregar tráfego multicast de forma eficiente
@@ -59,11 +81,46 @@ O protocolo é descrito principalmente na RFC **4601 (PIM-SM)** e possui diferen
 
 Como o PIM por si só não transporta o tráfego dos pacotes entre os roteadores multicast, ele precisa consultar a tabela de roteamento unicast para determinar os caminhos de rede. Por isso ele é chamado de Protocol Independent - porque se baseia na tabela de roteamento unicast formada por protocolos como EIGRP, OSPF, RIP, BGP, etc., ou até mesmo rotas estáticas.  
 
-Resumindo, ele consulta a tabela RIB (Routing Information Base).  
+Resumindo, ele consulta a tabela RIB (Routing Information Base). 
+
+```text
+PIM consulta RIB:  
+
+┌─────────────────┐     ┌──────────────────┐      ┌─────────────────┐
+│ Protocolo OSPF  │───▶ │ Tabela RIB       │ ◀───│ PIM usa essa    │
+│ BGP, EIGRP, etc │     │ (unicast routes) │      │ info para árvore│
+└─────────────────┘     └──────────────────┘      └─────────────────┘
+```
 
 Com essas informações de roteamento, o PIM constrói árvores de distribuição multicast para definir os caminhos otimizados entre origem e destinos do tráfego multicast.
 
 ### Tipos de Árvores de Distribuição
+
+**Conceito Visual das Árvores**  
+
+```text
+🌳 Shared Tree (*,G) - "Árvore Compartilhada"
+    
+    📺 Source A        📺 Source B
+         \                /
+          \              /
+           ▼            ▼
+            [RP Router]           ← Ponto Central
+           /     |     \
+          ▼      ▼      ▼
+      [LHR1]  [LHR2]  [LHR3]
+        |      |       |
+       💻     💻      💻
+
+🌲 Source Tree (S,G) - "Árvore por Origem"
+
+    📺 Source A específica
+         |
+         ▼
+      [Router] ──┬──▶ [LHR1] ──▶ 💻
+                 │
+                 └──▶ [LHR2] ──▶ 💻
+```
 
 O PIM utiliza dois tipos principais de árvores para distribuir o tráfego multicast:
 
@@ -398,3 +455,179 @@ style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 ## Componentes do PIM  
 
+O PIM utiliza vários componentes especializados para formar e manter as árvores multicast:
+
+### 1. Multicast Source (Origem Multicast)
+
+**Função:** Dispositivo que gera e transmite o tráfego multicast 
+
+**Responsabilidades:**  
+
+- **Geração de conteúdo:** Produz o tráfego multicast (ex: 239.255.1.1)
+- **Transmissão inicial:** Envia dados para o First-Hop Router
+- **Identificação:** Cada origem é identificada pelo seu endereço IP
+- **Aplicações típicas:** Servidores de IPTV, streaming, videoconferência
+
+### 2. Designated Router (DR)
+
+**Função:** Roteador designado responsável por um segmento de rede específico
+
+**Responsabilidades:**
+
+- **Eleição automática:** Roteador com maior prioridade DR ou maior IP se empate
+- **Interface com hosts:** Processa mensagens IGMP dos hosts locais
+- **Geração de Join/Prune:** Envia mensagens PIM Join em direção ao RP ou origem
+- **Registro de origens:** Encapsula tráfego multicast inicial para o RP (Register)
+- **Prevenção de duplicação:** Evita múltiplos roteadores enviando o mesmo tráfego
+- **Onde atua:** Em cada segmento de LAN (sub-rede)
+
+### 3. First Hop Router (FHR)
+
+**Função:** Primeiro roteador no caminho das origens multicast (conectado à origem)  
+
+**Responsabilidades:**
+
+- **Register Process:** Encapsula tráfego da origem e envia para RP via PIM Register
+- **Descoberta de RP:** Localiza o RP apropriado para o grupo
+- **Encaminhamento inicial:** Primeira replicação do tráfego multicast
+- **Interface com origem:** Recebe tráfego diretamente da fonte multicast
+- **SPT Join:** Processa Joins diretos das árvores de origem (S,G)
+
+Na imagem: Roteadores R1 e R2 conectados à Multicast Source
+
+### 4. Rendezvous Point (RP)
+
+**Função:** Ponto de encontro central para grupos multicast (apenas em PIM-SM)  
+
+**Responsabilidades:**  
+
+- **Descoberta de origens:** Recebe PIM Register das origens via FHR
+- **Ponto de encontro:** Local onde receptores se conectam inicialmente (*,G)
+- **Construção de RPT:** Forma a Rendezvous Point Tree (Shared Tree)
+- **Transição para SPT:** Facilita mudança para Source Tree quando necessário
+- **Balanceamento:** Pode haver múltiplos RPs para diferentes grupos
+
+Na imagem: Roteador R3 atuando como RP central
+
+### 5. Last Hop Router (LHR)
+
+**Função:** Último roteador no caminho até os receptores (conectado aos receptores)  
+
+**Responsabilidades:**  
+
+- **Interface com receptores:** Conecta diretamente aos hosts interessados
+- **Processamento IGMP:** Recebe IGMP Join dos hosts locais
+- **Conversão IGMP→PIM:** Converte IGMP Join em PIM Join upstream
+- **SPT Switchover:** Decide quando migrar de (*,G) para (S,G)
+- **Otimização de caminho:** Procura pelo caminho mais curto até a origem
+
+Na imagem: Roteadores R5, R6, R7, R8 conectados aos Multicast Receivers  
+
+### 6. SPT Router
+
+**Função:** Roteadores que participam da Shortest Path Tree (S,G)  
+
+**Responsabilidades:**  
+
+- **Caminho otimizado:** Participa do caminho direto origem→receptor
+- **Bypassing RP:** Permite tráfego direto sem passar pelo RP
+- **Lower latency:** Oferece menor latência que RPT
+- **Encaminhamento (S,G):** Mantém estado específico por origem
+
+Na imagem: Roteador R4 no caminho SPT
+
+### 7. Bootstrap Router (BSR)
+
+**Função:** Eleição e anúncio automático de RPs (PIM-SM dinâmico)  
+
+**Responsabilidades:**
+
+- **Eleição de BSR:** Auto-eleição baseada em prioridade e IP
+- **Descoberta de RPs:** Coleta anúncios de candidatos a RP
+- **Distribuição de mapeamentos:** Anuncia qual RP serve cada faixa de grupos
+- **Redundância:** Permite múltiplos RPs candidatos por grupo
+- **Flooding de BSR:** Distribui informações RP por toda a rede PIM
+
+### 8. Multicast Receivers (Receptores)
+
+**Função:** Dispositivos finais que consomem o tráfego multicast  
+
+**Responsabilidades:**
+
+- **IGMP Join:** Enviam IGMP Join para grupos desejados (ex: 239.255.1.1)
+- **Sinalização de interesse:** Indicam quais fluxos desejam receber
+- **IGMP Leave:** Sinalizam quando não querem mais o tráfego
+- **Consumo de conteúdo:** Aplicações finais (players, browsers, etc.)
+
+Na imagem: Hosts conectados aos switches SW1, SW2, SW3
+
+### 9. Switches com IGMP Snooping
+
+**Função:** Equipamentos L2 que otimizam a distribuição multicast na LAN  
+
+**Responsabilidades:**  
+
+- **IGMP Snooping:** Aprendem quais portas têm receptores interessados
+- **Flooding inteligente:** Enviam tráfego apenas para portas interessadas
+- **Tabela de grupos:** Mantêm mapeamento grupo↔portas
+- **Prevenção de flooding:** Evitam inundar toda a VLAN com multicast
+
+Na imagem: SW1, SW2, SW3 entre receptores e LHRs
+
+### 10. Interfaces e Direcionamento
+
+**IIF (Incoming Interface)**  
+
+- **RPF Check:** Interface pela qual tráfego deve chegar (Reverse Path Forwarding)
+- **Validação:** Previne loops verificando origem do tráfego
+- **Upstream:** Interface em direção à origem ou RP
+
+**OIF (Outgoing Interface)**  
+
+- **Replicação:** Interfaces de saída para próximos roteadores
+- **Downstream:** Interfaces em direção aos receptores
+- **Lista OIL:** Outgoing Interface List mantida por grupo
+
+Na imagem: Te0/0/0, Te0/0/1 mostram as interfaces específicas
+
+### 11. Árvores de Distribuição
+
+**RPT (Rendezvous Point Tree) - (*,G)**  
+
+- **Shared Tree:** Árvore compartilhada via RP
+- **Qualquer origem:** Suporta múltiplas origens para o mesmo grupo
+- **Estado reduzido:** Menos entradas na tabela multicast
+- **Caminho possivelmente subótimo:** Pode não ser o mais curto
+
+**SPT (Shortest Path Tree) - (S,G)**  
+
+- **Source Tree:** Árvore específica por origem
+- **Caminho otimizado:** Menor latência origem→receptor
+- **Mais estado:** Uma entrada por origem ativa
+- **Migração:** LHR pode migrar de RPT para SPT
+
+### Mensagens PIM Principais
+
+**Mensagens de Controle**  
+
+- **Hello:** Descoberta de vizinhos e eleição DR
+- **Join/Prune:** Construção e poda de árvores
+- **Register:** FHR anuncia nova origem ao RP
+- **Register-Stop:** RP informa que não precisa mais de Registers
+- **Assert:** Resolução de forwarding duplicado
+- **Bootstrap:** Distribuição de informações RP (BSR)
+- **Candidate-RP-Advertisement:** Anúncio de candidatos a RP
+
+**Estados das Interfaces**  
+
+- **Join:** Interface faz parte da árvore de distribuição
+- **Prune:** Interface removida da árvore
+- **Forward:** Interface encaminha tráfego multicast
+- **Block:** Interface bloqueia tráfego multicast
+
+**Principais Características**  
+
+- **Protocol Independent:** Utiliza a tabela de roteamento unicast existente
+- **Suporte a diferentes topologias:** Funciona em redes densas e esparsas
+- **Eficiência:** Constrói árvores otimizadas para distribuição
+- **Flexibilidade:** Múltiplos modos de operação (Sparse Mode, Dense Mode, etc.)
