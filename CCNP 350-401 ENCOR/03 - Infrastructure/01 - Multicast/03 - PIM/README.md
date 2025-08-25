@@ -18,16 +18,16 @@
     - [Terminologias Importantes](#terminologias-importantes)
     - [Comparação dos Modos](#comparação-dos-modos)
   - [Componentes do PIM](#componentes-do-pim)
-    - [1. Multicast Source (Origem Multicast)](#1-multicast-source-origem-multicast)
-    - [2. Designated Router (DR)](#2-designated-router-dr)
-    - [3. First Hop Router (FHR)](#3-first-hop-router-fhr)
-    - [4. Rendezvous Point (RP)](#4-rendezvous-point-rp)
-    - [5. Last Hop Router (LHR)](#5-last-hop-router-lhr)
-    - [6. SPT Router](#6-spt-router)
-    - [7. Bootstrap Router (BSR)](#7-bootstrap-router-bsr)
+    - [1. 📺 Multicast Source (Origem Multicast)](#1--multicast-source-origem-multicast)
+    - [2. 🗳️ Designated Router (DR)](#2-️-designated-router-dr)
+    - [3. 🔌 First Hop Router (FHR)](#3--first-hop-router-fhr)
+    - [4. 🎯 Rendezvous Point (RP)](#4--rendezvous-point-rp)
+    - [5. 📡 Last Hop Router (LHR)](#5--last-hop-router-lhr)
+    - [6. ⚡ SPT Router](#6--spt-router)
+    - [7. 🔄 Bootstrap Router (BSR)](#7--bootstrap-router-bsr)
     - [8. Multicast Receivers (Receptores)](#8-multicast-receivers-receptores)
-    - [9. Switches com IGMP Snooping](#9-switches-com-igmp-snooping)
-    - [10. Interfaces e Direcionamento](#10-interfaces-e-direcionamento)
+    - [9. 🔌 Switches com IGMP Snooping](#9--switches-com-igmp-snooping)
+    - [10. 🔄 Interfaces e Direcionamento](#10--interfaces-e-direcionamento)
     - [11. Árvores de Distribuição](#11-árvores-de-distribuição)
     - [Mensagens PIM Principais](#mensagens-pim-principais)
 
@@ -126,8 +126,9 @@ O PIM utiliza dois tipos principais de árvores para distribuir o tráfego multi
 
 **1. Source Tree (Árvore de Origem) - (S,G)**  
 
-Também conhecida como: **Shortest Path Tree (SPT)**  
-Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**  
+- Também conhecida como: **Shortest Path Tree (SPT)**
+- Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**
+- Representação: 🌲  
 
 **Características:**  
 
@@ -139,10 +140,11 @@ Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**
 
 **2. Shared Tree (Árvore Compartilhada) - (*,G)**  
 
-- Também conhecida como: **Rendezvous Point Tree (RP Tree)**  
-- Notação: **(*,G) onde * = qualquer origem e G = Group (grupo)**  
+- Também conhecida como: **Rendezvous Point Tree (RP Tree)**
+- Notação: **(*,G) onde * = qualquer origem e G = Group (grupo)**
+- Representação: 🌳  
 
-**Características:**
+**Características:**  
 
 - Todas as origens do mesmo grupo compartilham a mesma árvore
 - Utiliza um ponto central chamado Rendezvous Point (RP)
@@ -172,6 +174,22 @@ Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**
 
 O PIM possui diferentes modos de operação, cada um otimizado para cenários específicos de rede.  
 
+**Comparação Visual dos Modos**  
+
+```text
+PIM Dense Mode - "Flood and Prune"
+📺 ──flood──▶ ALL ──prune──▶ NEEDED
+    "Inunda primeiro, depois poda"
+
+PIM Sparse Mode - "Pull Model"  
+📺 ──join──▶ RP ──join──▶ RECEIVERS
+    "Constrói sob demanda"
+
+PIM-SSM - "Source Specific"
+📺 ──direct──▶ RECEIVERS (know source)
+    "Receptores conhecem a origem"
+```
+
 Os 5 modos de operação do PIM são:
 
 - PIM Dense Mode (PIM-DM)
@@ -183,6 +201,10 @@ Os 5 modos de operação do PIM são:
 ### 1. PIM Dense Mode (PIM-DM) - RFC 3973
 
 **Filosofia: "Flood and Prune" (Inundar e Podar)**  
+
+```text
+
+```
 
 **Como funciona:**  
 
@@ -231,6 +253,10 @@ style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ### 2. PIM Sparse Mode (PIM-SM) - RFC 4601/7761
 
 **Filosofia: "Pull Model" (Modelo de Solicitação)**  
+
+```text
+
+```
 
 **Como funciona:**
 
@@ -293,6 +319,16 @@ flowchart TD
 
 **Filosofia: "Source-Specific" (Específico por Origem)**  
 
+```text
+Representação SSM:
+📺 192.168.1.10/232.1.1.1 ──direct──▶ 💻
+   "Receptor sabe exatamente qual origem quer"
+   
+vs PIM-SM:
+📺 Any Source/239.1.1.1 ──via RP──▶ 💻  
+   "Receptor aceita qualquer origem do grupo"
+```
+
 **Como funciona:**  
 
 - Receptores especificam origem E grupo (S,G)
@@ -333,6 +369,16 @@ style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 **Filosofia: "Bidirectional Shared Tree" (Árvore Compartilhada Bidirecional)**  
 
+```text
+Representação BIDIR:
+📺 Source1 ──┐
+             │
+📺 Source2 ──┤──▶ [RP] ◀──┬── 📺 Source3
+              │             │
+📺 Source4 ──┘             └── 📺 Source5
+
+"Múltiplas origens, uma árvore, tráfego bidirecional"
+```
 **Como funciona:**
 
 - Utiliza apenas Shared Trees (*,G)
@@ -376,6 +422,15 @@ style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ### 5. PIM Sparse Dense Mode (PIM-SDM)
 
 **Filosofia:** "Hybrid Mode" (Modo Híbrido)  
+
+```text
+Configuração por Grupo:
+224.1.1.x ──▶ Dense Mode (flood & prune)
+239.1.1.x ──▶ Sparse Mode (via RP)  
+232.1.1.x ──▶ SSM Mode (direct)
+
+"Flexibilidade máxima por faixa de endereços"
+```
 
 **Como funciona:**
 
@@ -457,9 +512,19 @@ style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 O PIM utiliza vários componentes especializados para formar e manter as árvores multicast:
 
-### 1. Multicast Source (Origem Multicast)
+### 1. 📺 Multicast Source (Origem Multicast)
 
 **Função:** Dispositivo que gera e transmite o tráfego multicast 
+
+```text
+Representação:
+📺 Server IPTV (192.168.1.10)
+   │ 
+   │ Gera tráfego para: 239.255.1.1
+   │
+   ▼
+[FHR] ← Primeiro roteador que recebe
+```
 
 **Responsabilidades:**  
 
@@ -468,9 +533,23 @@ O PIM utiliza vários componentes especializados para formar e manter as árvore
 - **Identificação:** Cada origem é identificada pelo seu endereço IP
 - **Aplicações típicas:** Servidores de IPTV, streaming, videoconferência
 
-### 2. Designated Router (DR)
+### 2. 🗳️ Designated Router (DR)
 
 **Função:** Roteador designado responsável por um segmento de rede específico
+
+```text
+Representação - Eleição DR:
+
+Segmento LAN:
+    [R1] ──┐
+           │── LAN Segment
+    [R2] ──┘     │
+    ↑            │
+    DR          💻 Host
+    
+"Apenas DR processa IGMP do segmento"
+"Evita duplicação de Join/Register"
+```
 
 **Responsabilidades:**
 
@@ -481,9 +560,18 @@ O PIM utiliza vários componentes especializados para formar e manter as árvore
 - **Prevenção de duplicação:** Evita múltiplos roteadores enviando o mesmo tráfego
 - **Onde atua:** Em cada segmento de LAN (sub-rede)
 
-### 3. First Hop Router (FHR)
+### 3. 🔌 First Hop Router (FHR)
 
 **Função:** Primeiro roteador no caminho das origens multicast (conectado à origem)  
+
+```text
+Representação:
+📺 Source ──▶ [FHR] ──Register──▶ [RP]
+              │
+              ├─ "Registra nova origem"
+              ├─ "Encapsula tráfego inicial"  
+              └─ "Primeira replicação"
+```
 
 **Responsabilidades:**
 
@@ -495,9 +583,22 @@ O PIM utiliza vários componentes especializados para formar e manter as árvore
 
 Na imagem: Roteadores R1 e R2 conectados à Multicast Source
 
-### 4. Rendezvous Point (RP)
+### 4. 🎯 Rendezvous Point (RP)
 
 **Função:** Ponto de encontro central para grupos multicast (apenas em PIM-SM)  
+
+```text
+Representação - RP como "Hub Central":
+
+    📺 Source1 ──┐
+                 │
+    📺 Source2 ──┤──▶ [RP] ──┬──▶ [LHR1] ──▶ 💻
+                 │           │
+    📺 Source3 ──┘           └──▶ [LHR2] ──▶ 💻
+    
+    "Todas as origens se registram no RP"
+    "Todos os receptores se conectam ao RP"
+```
 
 **Responsabilidades:**  
 
@@ -509,9 +610,20 @@ Na imagem: Roteadores R1 e R2 conectados à Multicast Source
 
 Na imagem: Roteador R3 atuando como RP central
 
-### 5. Last Hop Router (LHR)
+### 5. 📡 Last Hop Router (LHR)
 
 **Função:** Último roteador no caminho até os receptores (conectado aos receptores)  
+
+```text
+Representação:
+[RP] ──▶ [LHR] ──▶ SW ──▶ 💻 Receptor
+         │                │
+         │                └─ IGMP Join
+         └─ PIM Join ──────▲
+         
+"Converte IGMP em PIM"
+"Decide SPT Switchover"
+```
 
 **Responsabilidades:**  
 
@@ -523,9 +635,21 @@ Na imagem: Roteador R3 atuando como RP central
 
 Na imagem: Roteadores R5, R6, R7, R8 conectados aos Multicast Receivers  
 
-### 6. SPT Router
+### 6. ⚡ SPT Router
 
 **Função:** Roteadores que participam da Shortest Path Tree (S,G)  
+
+```text
+Representação - SPT Switchover:
+
+ANTES (via RP):
+📺 ──▶ [FHR] ──▶ [RP] ──▶ [LHR] ──▶ 💻
+       "Caminho mais longo via RP"
+
+DEPOIS (SPT):  
+📺 ──▶ [FHR] ──▶ [SPT Router] ──▶ [LHR] ──▶ 💻
+       "Caminho otimizado direto"
+```
 
 **Responsabilidades:**  
 
@@ -536,9 +660,19 @@ Na imagem: Roteadores R5, R6, R7, R8 conectados aos Multicast Receivers
 
 Na imagem: Roteador R4 no caminho SPT
 
-### 7. Bootstrap Router (BSR)
+### 7. 🔄 Bootstrap Router (BSR)
 
 **Função:** Eleição e anúncio automático de RPs (PIM-SM dinâmico)  
+
+```text
+Representação - Descoberta de RP:
+
+[BSR] ──flood──▶ Todos os roteadores PIM
+  │
+  ├─ "RP para 224.x.x.x = 10.1.1.1"
+  ├─ "RP para 239.x.x.x = 10.2.2.2"  
+  └─ "RP para 232.x.x.x = N/A (SSM)"
+```
 
 **Responsabilidades:**
 
@@ -561,9 +695,23 @@ Na imagem: Roteador R4 no caminho SPT
 
 Na imagem: Hosts conectados aos switches SW1, SW2, SW3
 
-### 9. Switches com IGMP Snooping
+### 9. 🔌 Switches com IGMP Snooping
 
 **Função:** Equipamentos L2 que otimizam a distribuição multicast na LAN  
+
+```text
+Representação - IGMP Snooping:
+
+SWITCH SEM Snooping:
+[LHR] ──▶ [SW] ──┬──▶ 💻 Interessado
+                 ├──▶ 💻 NÃO interessado ❌
+                 └──▶ 💻 NÃO interessado ❌
+
+SWITCH COM Snooping:
+[LHR] ──▶ [SW] ──┬──▶ 💻 Interessado ✅
+                 ├──✗ 💻 (bloqueado)
+                 └──✗ 💻 (bloqueado)
+```
 
 **Responsabilidades:**  
 
@@ -574,7 +722,19 @@ Na imagem: Hosts conectados aos switches SW1, SW2, SW3
 
 Na imagem: SW1, SW2, SW3 entre receptores e LHRs
 
-### 10. Interfaces e Direcionamento
+### 10. 🔄 Interfaces e Direcionamento
+
+```text
+Representação - RPF Check:
+
+Tráfego chegando pela interface correta:
+📺 Source ──▶ [Router] ──IIF(✅)──▶ OIF ──▶ 💻
+              "RPF OK"
+
+Tráfego chegando pela interface errada:  
+📺 Source ──▶ [Router] ──IIF(❌)──✗ Descartado
+              "RPF Fail"
+```
 
 **IIF (Incoming Interface)**  
 
@@ -607,6 +767,20 @@ Na imagem: Te0/0/0, Te0/0/1 mostram as interfaces específicas
 - **Migração:** LHR pode migrar de RPT para SPT
 
 ### Mensagens PIM Principais
+
+```text
+Fluxo de Mensagens PIM:
+
+1. Hello: [R1] ↔ [R2] "Descoberta de vizinhos"
+
+2. Register: [FHR] ──▶ [RP] "Nova origem ativa"
+
+3. Join: [LHR] ──▶ [RP] "Quero receber tráfego"
+
+4. Prune: [LHR] ──▶ [RP] "Não quero mais tráfego"
+
+5. Assert: [R1] ↔ [R2] "Quem encaminha neste link?"
+```
 
 **Mensagens de Controle**  
 
