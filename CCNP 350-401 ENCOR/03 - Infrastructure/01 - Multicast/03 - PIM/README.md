@@ -25,7 +25,7 @@
     - [5. 📡 Last Hop Router (LHR)](#5--last-hop-router-lhr)
     - [6. ⚡ SPT Router](#6--spt-router)
     - [7. 🔄 Bootstrap Router (BSR)](#7--bootstrap-router-bsr)
-    - [8. Multicast Receivers (Receptores)](#8-multicast-receivers-receptores)
+    - [8. 💻 Multicast Receivers (Receptores)](#8--multicast-receivers-receptores)
     - [9. 🔌 Switches com IGMP Snooping](#9--switches-com-igmp-snooping)
     - [10. 🔄 Interfaces e Direcionamento](#10--interfaces-e-direcionamento)
     - [11. Árvores de Distribuição](#11-árvores-de-distribuição)
@@ -263,7 +263,14 @@ style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 **Filosofia: "Pull Model" (Modelo de Solicitação)**  
 
 ```text
+Representação PIM-SM:
+💻 Receptor ──IGMP Join──▶ [LHR]
+[LHR] ──PIM Join──▶ [RP]
+[Source] ──PIM Register──▶ [RP]
+[RP] ──Shared Tree──▶ [LHR]
 
+
+"Constrói sob demanda via RP e pode migrar para SPT"
 ```
 
 **Como funciona:**
@@ -391,6 +398,7 @@ Representação BIDIR:
 
 "Múltiplas origens, uma árvore, tráfego bidirecional"
 ```
+
 **Como funciona:**
 
 - Utiliza apenas Shared Trees (*,G)
@@ -696,14 +704,23 @@ Representação - Descoberta de RP:
 - **Redundância:** Permite múltiplos RPs candidatos por grupo
 - **Flooding de BSR:** Distribui informações RP por toda a rede PIM
 
-### 8. Multicast Receivers (Receptores)
+### 8. 💻 Multicast Receivers (Receptores)
 
 **Função:** Dispositivos finais que consomem o tráfego multicast  
 
 **Representação visual**  
 
 ```text
+Receptores em uma LAN:
+💻 Host1 ──IGMP Join──▶ [SW]
+💻 Host2 ──IGMP Join──▶ [SW]
+💻 Host3 ──(não envia Join)
 
+
+[SW] ──PIM Join──▶ [LHR] ──▶ Árvore Multicast
+
+
+"Apenas hosts interessados recebem tráfego multicast"
 ```
 
 **Responsabilidades:**
