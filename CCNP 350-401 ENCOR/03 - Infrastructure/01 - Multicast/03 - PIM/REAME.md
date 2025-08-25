@@ -17,6 +17,7 @@
       - [Fluxograma do Processo - PIM Sparse Dense Mode (PIM-SDM)](#fluxograma-do-processo---pim-sparse-dense-mode-pim-sdm)
     - [Terminologias Importantes](#terminologias-importantes)
     - [Comparação dos Modos](#comparação-dos-modos)
+  - [Componentes do PIM](#componentes-do-pim)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -393,4 +394,7 @@ style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 - **Protocol Independent:** Utiliza a tabela de roteamento unicast existente
 - **Suporte a diferentes topologias:** Funciona em redes densas e esparsas
 - **Eficiência:** Constrói árvores otimizadas para distribuição
-- **Flexibilidade:** Múltiplos modos de operação (Sparse Mode, Dense Mode, etc.)
+- **Flexibilidade:** Múltiplos modos de operação (Sparse Mode, Dense Mode, etc.)  
+
+## Componentes do PIM  
+
