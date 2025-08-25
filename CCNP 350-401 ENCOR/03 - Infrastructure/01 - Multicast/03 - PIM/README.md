@@ -700,6 +700,12 @@ Representação - Descoberta de RP:
 
 **Função:** Dispositivos finais que consomem o tráfego multicast  
 
+**Representação visual**  
+
+```text
+
+```
+
 **Responsabilidades:**
 
 - **IGMP Join:** Enviam IGMP Join para grupos desejados (ex: 239.255.1.1)
