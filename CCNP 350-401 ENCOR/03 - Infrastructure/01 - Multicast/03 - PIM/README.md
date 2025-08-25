@@ -202,8 +202,16 @@ Os 5 modos de operação do PIM são:
 
 **Filosofia: "Flood and Prune" (Inundar e Podar)**  
 
-```text
+**Representação do Processo:**
 
+```text
+Fase 1 - Flood:
+📺 ──▶ [R1] ──flood──┬──▶ [R2] ──▶ 💻 ✅
+                      └──▶ [R3] ──▶ ∅ ❌
+
+Fase 2 - Prune:  
+📺 ──▶ [R1] ──────────┬──▶ [R2] ──▶ 💻 ✅
+                       └──prune── [R3] ✗
 ```
 
 **Como funciona:**  
@@ -319,6 +327,8 @@ flowchart TD
 
 **Filosofia: "Source-Specific" (Específico por Origem)**  
 
+**Representação Visual**  
+
 ```text
 Representação SSM:
 📺 192.168.1.10/232.1.1.1 ──direct──▶ 💻
@@ -368,6 +378,8 @@ style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ### 4. PIM Bidirectional (PIM-BIDIR) - RFC 5015  
 
 **Filosofia: "Bidirectional Shared Tree" (Árvore Compartilhada Bidirecional)**  
+
+**Representação visual**  
 
 ```text
 Representação BIDIR:
@@ -422,6 +434,8 @@ style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ### 5. PIM Sparse Dense Mode (PIM-SDM)
 
 **Filosofia:** "Hybrid Mode" (Modo Híbrido)  
+
+**Representação visual**  
 
 ```text
 Configuração por Grupo:
