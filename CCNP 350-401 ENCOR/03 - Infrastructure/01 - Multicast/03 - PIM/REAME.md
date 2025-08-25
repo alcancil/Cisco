@@ -13,7 +13,9 @@
       - [Fluxograma do Processo - PIM Source-Specific Multicast (PIM-SSM)](#fluxograma-do-processo---pim-source-specific-multicast-pim-ssm)
     - [4. PIM Bidirectional (PIM-BIDIR) - RFC 5015](#4-pim-bidirectional-pim-bidir---rfc-5015)
       - [Fluxograma do Processo - PIM Bidirectional (PIM-BIDIR)](#fluxograma-do-processo---pim-bidirectional-pim-bidir)
-    - [5. PIM Any-Source Multicast (PIM-ASM)](#5-pim-any-source-multicast-pim-asm)
+    - [5. PIM Sparse Dense Mode (PIM-SDM)](#5-pim-sparse-dense-mode-pim-sdm)
+      - [Fluxograma do Processo - PIM Sparse Dense Mode (PIM-SDM)](#fluxograma-do-processo---pim-sparse-dense-mode-pim-sdm)
+    - [Terminologias Importantes](#terminologias-importantes)
     - [Comparação dos Modos](#comparação-dos-modos)
 
 ## 03 - PIM - Protocol Independent Multicast  
@@ -110,7 +112,15 @@ Notação: **(S,G) onde S = Source (origem) e G = Group (grupo)**
 
 ## Modos de Operação do PIM
 
-O PIM possui diferentes modos de operação, cada um otimizado para cenários específicos de rede:  
+O PIM possui diferentes modos de operação, cada um otimizado para cenários específicos de rede.  
+
+Os 5 modos de operação do PIM são:
+
+- PIM Dense Mode (PIM-DM)
+- PIM Sparse Mode (PIM-SM)
+- PIM Source-Specific Multicast (PIM-SSM)
+- PIM Bidirectional (PIM-BIDIR)
+- PIM Sparse Dense Mode (PIM-SDM)
 
 ### 1. PIM Dense Mode (PIM-DM) - RFC 3973
 
@@ -177,6 +187,11 @@ style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 - **Bootstrap Router (BSR):** Elege e anuncia RPs
 - **Designated Router (DR):** Roteador designado por segmento
 
+**Tipos de árvores utilizadas:**
+
+- 🌳 Shared Tree (*,G): Árvore inicial compartilhada via RP
+- 🌲 Source Tree (S,G): Árvore otimizada após SPT switchover 
+
 **Características:**
 
 - Muito escalável
@@ -193,14 +208,13 @@ style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 flowchart TD
     A["Host envia IGMP Join"] --> B["DR recebe Join"]
     B --> C["Consulta tabela unicast"]
-    C --> D["Join em direção ao RP (*,G)"]
-    D --> E["Tráfego pela Shared Tree (*,G)"]
+    C --> D["🌳 Join em direção ao RP (*,G)"]
+    D --> E["🌳 Tráfego pela Shared Tree (*,G)"]
     E --> F{"SPT Switch Ativado?"}
-    F -- Sim --> G["Constrói Source Tree (S,G)"]
-    F -- Não --> H["Permanece na Shared Tree (*,G)"]
-    G --> I["Tráfego flui pela SPT (S,G)"]
-    H --> I["Tráfego flui pela RP Tree (*,G)"]
-
+    F -- Sim --> G["🌲 Constrói Source Tree (S,G)"]
+    F -- Não --> H["🌳 Permanece na Shared Tree (*,G)"]
+    G --> I["🌲 Tráfego flui pela SPT (S,G)"]
+    H --> J["🌳 Tráfego flui pela RP Tree (*,G)"]
     %% Estilos (esquema de farol)
     %% Amarelo (início / intermediário)
     style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
@@ -208,14 +222,13 @@ flowchart TD
     style C fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
     style D fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
     style E fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
-
     %% Vermelho (decisão / permanência RP)
     style F fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
     style H fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
-
     %% Verde (SPT ativo / fluxo final)
     style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
     style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+    style J fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ```
 
 ### 3. PIM Source-Specific Multicast (PIM-SSM) - RFC 4607
@@ -302,9 +315,69 @@ style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ```
 
-### 5. PIM Any-Source Multicast (PIM-ASM)  
+### 5. PIM Sparse Dense Mode (PIM-SDM)
 
-**Descrição:** Termo genérico para PIM-SM tradicional onde qualquer origem pode enviar para um grupo sem que os receptores especifiquem a origem previamente.
+**Filosofia:** "Hybrid Mode" (Modo Híbrido)  
+
+**Como funciona:**
+
+- Combina PIM-DM e PIM-SM na mesma rede
+- Configuração por grupo multicast:  
+
+    1. Grupos configurados como "dense" → usa PIM-DM
+    2. Grupos configurados como "sparse" → usa PIM-SM
+    3. Grupos não configurados → usa modo padrão definido  
+
+- Permite otimização específica por aplicação
+
+**Características:**
+
+- Flexibilidade máxima de configuração
+- Permite coexistência de diferentes comportamentos
+- Complexidade de gerenciamento aumentada
+- Configuração granular por faixa de grupos
+
+**Quando usar:** Redes mistas com diferentes tipos de aplicações multicast  
+
+#### Fluxograma do Processo - PIM Sparse Dense Mode (PIM-SDM)
+
+```mermaid
+flowchart TD
+    A["Roteador recebe solicitação para Grupo G"] --> B{"Qual modo de operação para o Grupo G?"}
+    B -- Configurado como PIM-DM --> C["Inunda o tráfego para todas as interfaces (Flood)"]
+    B -- Configurado como PIM-SM --> D["Envia Join em direção ao Rendezvous Point (RP)"]
+    C --> E["Receptores 'podam' galhos desnecessários (Prune)"]
+    E --> F["Tráfego flui pela Source Tree (S,G)"]
+    D --> G["Tráfego flui pela Shared Tree (*,G)"]
+    F --> H["Modo PIM-DM para o Grupo G"]
+    G --> I["Modo PIM-SM para o Grupo G"]
+
+%% Estilos (esquema de cores + negrito)
+%% Amarelo = início, ação de entrada
+style A fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style B fill:#fca5a5,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Vermelho = ponto de decisão
+style C fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style D fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+
+%% Verde = fluxo final, comportamento do tráfego
+style E fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style F fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style G fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style H fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+style I fill:#86efac,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
+```
+
+### Terminologias Importantes
+
+**PIM Any-Source Multicast (PIM-ASM)**  
+
+- Não é um modo específico, mas sim um termo conceitual
+- Refere-se ao PIM-SM tradicional onde qualquer origem pode enviar para um grupo
+- Os receptores não especificam a origem previamente (ao contrário do SSM)
+- Utiliza Rendezvous Point (RP) para descoberta de origens
+- Oposto conceitual ao Source-Specific Multicast (SSM)
 
 ### Comparação dos Modos
 
