@@ -846,4 +846,4 @@ Fluxo de Mensagens PIM:
 
 ## Representação dos elementos da árvore
 
-[Árvore](Imagens/arvore.png)
+![Árvore](Imagens/arvore.png)
