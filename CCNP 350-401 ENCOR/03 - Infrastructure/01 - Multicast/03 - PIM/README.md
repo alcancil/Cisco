@@ -41,6 +41,7 @@
     - [O Processo Completo:](#o-processo-completo)
     - [A Magia do Multicast:](#a-magia-do-multicast)
   - [Representação dos elementos da árvore](#representação-dos-elementos-da-árvore)
+  - [📌 O que vimos até aqui](#-o-que-vimos-até-aqui)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -1018,3 +1019,61 @@ A imagem que você compartilhou representa esse sistema completo em funcionament
 ## Representação dos elementos da árvore
 
 ![Árvore](Imagens/arvore.png)
+
+## 📌 O que vimos até aqui  
+
+**🕒 Origem do Multicast**  
+
+- DVMRP e MOSPF → primeiros protocolos, pouca escalabilidade.  
+
+- PIM surge como solução independente de unicast.  
+
+- 🌳 Tipos de Árvores Multicast  
+
+- 🌲 Source Tree (SPT / (S,G)) → menor latência, caminho direto.  
+
+- 🌳 Shared Tree (RPT / (*,G)) → usa RP, menos estado, mas pode ser subótima.  
+
+- 🔒 SSM ((S,G) com IGMPv3/MLDv2) → elimina RP, ideal para origem conhecida.  
+
+**⚙️ Modos de Operação do PIM**
+
+| Modo      | Filosofia                | Cenário Ideal                |
+|-----------|--------------------------|------------------------------|
+| PIM-DM    | Flood & Prune            | LANs densas e pequenas       |
+| PIM-SM    | Pull Model (via RP)      | Redes grandes e distribuídas |
+| PIM-SSM   | Source-Specific          | IPTV, streaming              |
+| PIM-BIDIR | Shared Tree bidirecional | Many-to-many (colaboração)   |
+| PIM-SDM   | Híbrido                  | Redes mistas                 |
+
+**🧩 Componentes do PIM**
+
+- 📺 Source → gera o tráfego.  
+
+- 🗳️ DR → roteador designado em cada LAN.  
+
+- 🔌 FHR → primeiro roteador da origem.  
+
+- 🎯 RP → ponto central (PIM-SM).  
+
+- 📡 LHR → roteador final antes dos receptores.  
+
+- ⚡ SPT Router → otimiza caminho direto.  
+
+- 🔄 BSR → eleição/anúncio de RPs.  
+
+- 💻 Receptores → hosts interessados (via IGMP).  
+
+- 🔌 Switches com IGMP Snooping → otimizam distribuição em L2.  
+
+**🔑 Mecanismos Importantes**  
+
+- IGMP Join/Leave → hosts entram/saem dos grupos.
+
+- RPF Check → valida caminho correto, evita loops.
+
+- Mensagens PIM → Hello, Join/Prune, Register, Assert, Bootstrap.
+
+**✨ Conceito central:** Multicast envia uma única cópia do tráfego, que é replicada apenas onde há interesse, otimizando o uso de banda.  
+
+👉 No próximo passo: Rendezvous Points (RPs) – peça central do PIM-SM.
