@@ -30,6 +30,7 @@
     - [10. 🔄 Interfaces e Direcionamento](#10--interfaces-e-direcionamento)
     - [11. Árvores de Distribuição](#11-árvores-de-distribuição)
     - [Mensagens PIM Principais](#mensagens-pim-principais)
+  - [Representação dos elementos da árvore](#representação-dos-elementos-da-árvore)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -842,3 +843,7 @@ Fluxo de Mensagens PIM:
 - **Suporte a diferentes topologias:** Funciona em redes densas e esparsas
 - **Eficiência:** Constrói árvores otimizadas para distribuição
 - **Flexibilidade:** Múltiplos modos de operação (Sparse Mode, Dense Mode, etc.)
+
+## Representação dos elementos da árvore
+
+[Árvore](Imagens/arvore.png)
