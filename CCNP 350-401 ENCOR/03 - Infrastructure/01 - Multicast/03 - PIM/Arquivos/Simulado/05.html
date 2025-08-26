@@ -44,65 +44,65 @@
 
   const quizData = [
     {
-      "question": "Um roteador multicast IGMPv2 com um endereço IP `192.168.1.1` e outro roteador com `192.168.1.5` estão na mesma rede. Qual roteador se tornará o 'Querier' e por quê?",
-      "options": ["O roteador com `192.168.1.5`, porque tem um endereço IP maior.", "O roteador com `192.168.1.1`, porque tem um endereço IP menor.", "O roteador com `192.168.1.1`, por ser o primeiro a ligar.", "O roteador com `192.168.1.5`, por ser o mais novo na rede."],
-      "answer": 1,
-      "rationale": "O roteador com o menor endereço IP na interface se torna o 'Querier', pois os roteadores com endereços IP maiores cessam de enviar as consultas."
-    },
-    {
-      "question": "No IGMPv3, um host envia uma mensagem 'Report' para o endereço `224.0.0.22` com o modo 'Exclude'. Qual é a finalidade dessa mensagem?",
-      "options": ["Para se juntar a um grupo multicast e ouvir todas as fontes, exceto as listadas no relatório.", "Para sair de um grupo multicast específico.", "Para solicitar que o roteador não envie mensagens de consulta.", "Para solicitar tráfego multicast de uma fonte específica."],
-      "answer": 0,
-      "rationale": "Esta é a definição do modo 'Exclude'. A mensagem indica que o host deseja ingressar no grupo e aceitar tráfego de todas as fontes, exceto aquelas especificamente excluídas na lista."
-    },
-    {
-      "question": "Um host conectado a um switch está no grupo multicast `224.1.1.1`. Para evitar o 'flooding' de tráfego multicast, o switch está executando o IGMP Snooping. Quando o host para de ouvir o grupo, que ação o switch pode tomar?",
-      "options": ["O switch continua a enviar o tráfego do grupo para o host até que o timer de expiração expire.", "O switch notifica o roteador multicast de que o host saiu do grupo.", "O switch remove a porta do host da tabela de encaminhamento para o grupo `224.1.1.1` imediatamente ao detectar a saída do grupo.", "O switch envia uma 'General Query' para verificar a presença de outros membros do grupo."],
-      "answer": 2,
-      "rationale": "O IGMP Snooping permite que o switch remova a porta do host da sua tabela de encaminhamento para o grupo, evitando o 'flooding' do tráfego multicast."
-    },
-    {
-      "question": "No contexto de roteamento multicast, qual dos seguintes protocolos opera na Camada 3 e é o equivalente do IGMP para redes IPv6?",
-      "options": ["Protocolo de Roteamento de Multicast (PIM).", "Protocolo de Descoberta de Vizinhos (NDP).", "Protocolo de Gerenciamento de Membros de Multicast (MLD).", "Protocolo de Túnel de IPv6 (6to4)."],
-      "answer": 2,
-      "rationale": "O MLD (Multicast Listener Discovery) é o protocolo equivalente ao IGMP, utilizado em redes IPv6 para que os roteadores descubram e mantenham a informação de quais hosts estão interessados em quais grupos de multicast."
-    },
-    {
-      "question": "Um roteador IGMPv2 está na mesma rede que um roteador IGMPv3. O que ocorrerá com a eleição do 'Querier'?",
-      "options": ["O roteador IGMPv3 será eleito como 'Querier', independentemente de seu endereço IP.", "O roteador IGMPv2 será eleito, e o IGMPv3 não participará da eleição.", "A eleição falhará e nenhum 'Querier' será eleito.", "A eleição será baseada no menor endereço IP. O roteador IGMPv3 operará em modo de compatibilidade com IGMPv2."],
-      "answer": 3,
-      "rationale": "Essa é a resposta correta. O roteador IGMPv3, ao detectar um roteador IGMPv2, opera em modo de compatibilidade com o IGMPv2. A eleição é então baseada no menor endereço IP, e o roteador IGMPv3 envia consultas IGMPv2 para manter a interoperabilidade."
-    },
-    {
-      "question": "Um host envia um 'Group Membership Report' para um roteador IGMPv1. Qual campo da mensagem deve ser obrigatoriamente `0.0.0.0`?",
-      "options": ["O campo 'IP Source Address'.", "O campo 'IP Destination Address'.", "O campo 'Group Address'.", "O campo 'Querier IP Address'."],
-      "answer": 3,
-      "rationale": "O campo 'Querier IP Address' é usado para identificar o 'Querier' no IGMPv2 e no IGMPv3, mas em um 'Report' do IGMPv1 este campo é definido como '0.0.0.0' por ser irrelevante, já que o IGMPv1 não tem um mecanismo de eleição de 'Querier' formal."
-    },
-    {
-      "question": "Um roteador multicast está enviando uma 'General Query' (Consulta Geral) com um 'Maximum Response Time' de 10 segundos. Qual é a principal implicação desse tempo para os hosts na rede?",
-      "options": ["Os hosts devem responder à consulta em exatamente 10 segundos.", "O roteador aguardará 10 segundos antes de enviar outra consulta.", "Os hosts devem iniciar um timer aleatório com um valor entre 0 e 10 segundos para enviar seu 'Report'.", "Os hosts que não responderem dentro de 10 segundos são removidos do grupo imediatamente."],
-      "answer": 2,
-      "rationale": "Os hosts iniciam um timer aleatório entre 0 e o valor do 'Maximum Response Time' para evitar 'rajadas de tráfego' ('report bursts')."
-    },
-    {
-      "question": "Um host, membro de um grupo multicast, recebe uma 'Group-Specific Query' (Consulta Específica de Grupo) para o grupo `239.1.1.1` com o 'Source IP' `10.1.1.50`. Qual é o propósito desta mensagem?",
-      "options": ["O roteador está verificando se há hosts que desejam receber tráfego de qualquer fonte para o grupo.", "O roteador está confirmando a presença do host no grupo e verificando se ele deseja receber tráfego de uma fonte específica.", "O roteador está verificando se há hosts que ainda são membros do grupo após uma mensagem de 'Leave Group'.", "O roteador está solicitando que o host saia do grupo `239.1.1.1`."],
-      "answer": 2,
-      "rationale": "Quando um roteador recebe uma 'Leave Group' de um host, ele envia uma 'Group-Specific Query' para verificar se há outros hosts que ainda são membros daquele grupo antes de remover a rota de multicast da sua tabela de roteamento."
-    },
-    {
-      "question": "Em um host que usa IGMPv3, qual é o estado de uma entrada de grupo quando o host está configurado para receber tráfego de **todas** as fontes exceto uma lista específica de endereços?",
-      "options": ["State is `TO_IN` (Transition to Include).", "State is `ISL` (Include Source List).", "State is `IS_EX` (Is Exclude).", "State is `IS_IN` (Is Include)."],
-      "answer": 2,
-      "rationale": "O estado `IS_EX` (Is Exclude) é o estado final de exclusão. Ele indica que o host está recebendo tráfego de todas as fontes para o grupo, exceto as listadas no relatório."
-    },
-    {
-      "question": "O Protocolo de Gerenciamento de Grupo da Internet (IGMP) é um componente chave do quebra-cabeça do roteamento multicast. Sua principal função é:",
-      "options": ["Construir e manter tabelas de roteamento multicast para os roteadores.", "Gerenciar a adesão de membros de grupos multicast em uma rede local.", "Realizar a descoberta e a comunicação entre roteadores vizinhos para o tráfego multicast.", "Realizar a conversão de endereços IP multicast para endereços MAC de camada 2."],
-      "answer": 1,
-      "rationale": "A principal função do IGMP é permitir que hosts e roteadores em uma rede local gerenciem a adesão de hosts a grupos de multicast, informando os roteadores quais hosts em quais sub-redes desejam receber tráfego para quais grupos."
-    }
+    question: "Qual RFC especifica o PIM Bidirectional (PIM-BIDIR)?",
+    options: ["RFC 3973", "RFC 4601", "RFC 5015", "RFC 4607"],
+    answer: "RFC 5015",
+    explanation: "O PIM Bidirectional é especificado pela RFC 5015, diferente do PIM-DM (RFC 3973), PIM-SM (RFC 4601) e PIM-SSM (RFC 4607)."
+  },
+  {
+    question: "No PIM Dense Mode, qual é a periodicidade mencionada para o processo de flood?",
+    options: ["Flood contínuo", "Flood único", "Flood periódico reinicia o processo", "Flood sob demanda"],
+    answer: "Flood periódico reinicia o processo",
+    explanation: "O material indica que no PIM-DM há um 'Flood periódico reinicia o processo', significando que o processo de inundação se repete periodicamente para manter a árvore atualizada."
+  },
+  {
+    question: "Segundo as características do PIM-SM, qual componente 'Elege e anuncia RPs'?",
+    options: ["Designated Router (DR)", "Bootstrap Router (BSR)", "First Hop Router (FHR)", "Last Hop Router (LHR)"],
+    answer: "Bootstrap Router (BSR)",
+    explanation: "O Bootstrap Router (BSR) é o componente responsável por eleger e anunciar os Rendezvous Points (RPs) na rede PIM-SM."
+  },
+  {
+    question: "No fluxograma do PIM-SM, qual é o primeiro passo após o host enviar IGMP Join?",
+    options: ["Consulta tabela unicast", "Join em direção ao RP", "DR recebe Join", "Construção da Source Tree"],
+    answer: "DR recebe Join",
+    explanation: "Segundo o fluxograma do PIM-SM, após o host enviar IGMP Join, o próximo passo é 'DR recebe Join', iniciando o processo de construção da árvore multicast."
+  },
+  {
+    question: "Qual é a representação visual utilizada no material para mostrar que o PIM-SSM usa conexão direta?",
+    options: ["Setas bidirecionais", "Linha pontilhada", "192.168.1.10/232.1.1.1 ——direct——> 📱", "Múltiplas origens"],
+    answer: "192.168.1.10/232.1.1.1 ——direct——> 📱",
+    explanation: "O material usa a representação '192.168.1.10/232.1.1.1 ——direct——> 📱' para mostrar que no PIM-SSM o receptor sabe exatamente qual origem quer, estabelecendo conexão direta."
+  },
+  {
+    question: "No PIM Sparse Dense Mode, quais faixas de grupos são mostradas na configuração visual?",
+    options: ["224.1.1.x, 225.1.1.x, 226.1.1.x", "224.1.1.x, 239.1.1.x, 232.1.1.x", "239.1.1.x, 232.1.1.x, 233.1.1.x", "192.168.x.x, 10.x.x.x, 172.16.x.x"],
+    answer: "224.1.1.x, 239.1.1.x, 232.1.1.x",
+    explanation: "Na representação visual do PIM-SDM são mostradas três faixas: 224.1.1.x (Dense Mode), 239.1.1.x (Sparse Mode via RP), e 232.1.1.x (SSM Mode direct), demonstrando flexibilidade por faixa de endereços."
+  },
+  {
+    question: "Qual característica do PIM Bidirectional é destacada como vantagem em relação ao estado nos roteadores?",
+    options: ["Aumenta o estado", "Mantém estado moderado", "Reduz drasticamente o estado nos roteadores", "Estado variável"],
+    answer: "Reduz drasticamente o estado nos roteadores",
+    explanation: "O PIM-BIDIR 'Reduz drasticamente o estado nos roteadores' porque múltiplas origens podem usar a mesma árvore compartilhada, diminuindo significativamente as informações que cada roteador precisa manter."
+  },
+  {
+    question: "Na tabela comparativa, qual modo tem complexidade classificada como 'Média'?",
+    options: ["PIM-DM", "PIM-SM", "PIM-SSM", "PIM-BIDIR"],
+    answer: "PIM-SSM",
+    explanation: "Segundo a tabela comparativa apresentada, o PIM Source-Specific Multicast (PIM-SSM) tem complexidade 'Média', sendo mais simples que PIM-SM (Alta) mas mais complexo que PIM-DM (Baixa)."
+  },
+  {
+    question: "Qual é o cenário ideal mencionado para PIM Dense Mode?",
+    options: ["Redes corporativas", "IPTV/Streaming", "LANs densas", "Aplicações colaborativas"],
+    answer: "LANs densas",
+    explanation: "O PIM Dense Mode é ideal para 'LANs com alta densidade de receptores', onde a suposição de que todos querem o tráfego multicast inicialmente faz sentido e o desperdício inicial é minimizado."
+  },
+  {
+    question: "No contexto das terminologias importantes, qual é a oposição conceitual ao Source-Specific Multicast (SSM)?",
+    options: ["Dense Mode", "Sparse Mode", "PIM Any-Source Multicast (ASM)", "Bidirectional Mode"],
+    answer: "PIM Any-Source Multicast (ASM)",
+    explanation: "O PIM Any-Source Multicast (ASM) é apresentado como 'oposto conceitual ao Source-Specific Multicast (SSM)', onde no ASM qualquer origem pode enviar para um grupo, enquanto no SSM os receptores especificam a origem previamente."
+  }
   ];
   
   // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---

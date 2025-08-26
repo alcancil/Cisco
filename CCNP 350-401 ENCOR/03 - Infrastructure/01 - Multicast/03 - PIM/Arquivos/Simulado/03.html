@@ -45,65 +45,65 @@
   <script>
     const quizData = [
       {
-        question: "Qual é a principal evolução do IGMPv3 em relação ao IGMPv2?",
-        options: ["Maior velocidade de transmissão", "Identificação da origem do tráfego multicast", "Melhor criptografia", "Suporte apenas ao IPv6"],
-        answer: "Identificação da origem do tráfego multicast",
-        explanation: "O IGMPv3 evolui permitindo identificar a origem desejada do tráfego multicast, possibilitando que os destinatários apliquem filtros de origem e escolham de quais fontes receber o tráfego."
-      },
-      {
-        question: "No modo INCLUSÃO do IGMPv3, o que o destinatário fornece?",
-        options: ["Lista de grupos bloqueados", "Lista de endereços de fontes desejadas", "Lista de roteadores", "Lista de protocolos suportados"],
-        answer: "Lista de endereços de fontes desejadas",
-        explanation: "No modo INCLUSÃO, o destinatário anuncia adesão ao grupo multicast e fornece uma include list com endereços de fontes de quem deseja receber o tráfego."
-      },
-      {
-        question: "Como um destinatário pode receber tráfego de todas as fontes (comportamento IGMPv2) no IGMPv3?",
-        options: ["Usando modo INCLUSÃO com lista completa", "Usando modo EXCLUSÃO com lista vazia", "Enviando consulta geral", "Desabilitando filtros"],
-        answer: "Usando modo EXCLUSÃO com lista vazia",
-        explanation: "Para receber tráfego de todas as fontes (comportamento do IGMPv2), o destinatário utiliza o modo de exclusão com uma lista de exclusão vazia."
-      },
-      {
-        question: "Em que unidades está o valor do campo CÓDIGO MÁXIMO DE RESPOSTA no IGMPv3?",
-        options: ["Segundos", "Milissegundos", "0,1 segundos", "Microssegundos"],
-        answer: "0,1 segundos",
-        explanation: "O campo CÓDIGO MÁXIMO DE RESPOSTA está em unidades de 0,1 segundos, representando o tempo máximo permitido antes de enviar um relatório de resposta."
-      },
-      {
-        question: "O que representa o S FLAG no IGMPv3?",
-        options: ["Source Flag para identificar origem", "Suppress Flag para suprimir timer", "Security Flag para segurança", "Speed Flag para velocidade"],
-        answer: "Suppress Flag para suprimir timer",
-        explanation: "O S FLAG representa o sinalizador Suprimir processamento do lado do roteador, indicando supressão das atualizações de timer que os roteadores multicast realizam."
-      },
-      {
-        question: "Quando o campo NÚMERO DE FONTES é diferente de zero no IGMPv3?",
-        options: ["Em consultas gerais", "Em consultas específicas de grupo", "Em consultas específicas de grupo e origem", "Sempre"],
-        answer: "Em consultas específicas de grupo e origem",
-        explanation: "O campo NÚMERO DE FONTES é diferente de zero para consultas específicas de grupo e origem, sendo zero para consultas gerais ou específicas apenas de grupo."
-      },
-      {
-        question: "O que representa QRV no IGMPv3?",
-        options: ["Query Response Value", "Querier Robustness Variable", "Quality Response Variable", "Quick Reply Value"],
-        answer: "Querier Robustness Variable",
-        explanation: "QRV representa a variável de robustez do consultor (querier), onde os roteadores recuperam o valor QRV da consulta mais recente como seu próprio valor."
-      },
-      {
-        question: "No modo EXCLUSÃO do IGMPv3, o destinatário fornece:",
-        options: ["Lista de fontes desejadas", "Lista de fontes não desejadas", "Lista de todos os grupos", "Lista de roteadores"],
-        answer: "Lista de fontes não desejadas",
-        explanation: "No modo EXCLUSÃO, o destinatário anuncia adesão ao grupo multicast e fornece uma exclude list com endereços de fontes de quem NÃO deseja receber tráfego."
-      },
-      {
-        question: "O que representa QQIC no IGMPv3?",
-        options: ["Quality Query Interval Code", "Querier Query Interval Code", "Quick Query Internet Code", "Queue Query Information Code"],
-        answer: "Querier Query Interval Code",
-        explanation: "QQIC representa o código de intervalo de consulta do consultor (Querier Query Interval Code), controlando a frequência das consultas."
-      },
-      {
-        question: "Qual campo do IGMPv3 é configurado em 0 e ignorado quando recebido?",
-        options: ["CHECKSUM", "RESV", "QRV", "QQIC"],
-        answer: "RESV",
-        explanation: "O campo RESV (Reserved) é configurado em 0 no envio e é ignorado quando recebido, sendo um campo reservado para uso futuro."
-      }
+    question: "Qual é a filosofia de operação do PIM Dense Mode (PIM-DM)?",
+    options: ["Pull Model", "Flood and Prune", "Source-Specific", "Bidirectional"],
+    answer: "Flood and Prune",
+    explanation: "O PIM Dense Mode opera com a filosofia 'Flood and Prune' (Inundar e Podar), assumindo inicialmente que todos os receptores estão densamente distribuídos pela rede e depois removendo galhos desnecessários."
+  },
+  {
+    question: "Segundo a RFC 3973, qual é o processo inicial do PIM Dense Mode quando o tráfego multicast chega na rede?",
+    options: ["Consulta o Rendezvous Point", "Inunda todo o tráfego multicast por todas as interfaces", "Aguarda solicitação dos receptores", "Cria uma Source Tree diretamente"],
+    answer: "Inunda todo o tráfego multicast por todas as interfaces",
+    explanation: "No PIM-DM, o roteador inicialmente inunda todo o tráfego multicast por todas as interfaces, assumindo que há receptores densamente distribuídos pela rede."
+  },
+  {
+    question: "Qual componente é essencial para o funcionamento do PIM Sparse Mode (PIM-SM) que não existe no Dense Mode?",
+    options: ["Bootstrap Router (BSR)", "Rendezvous Point (RP)", "Designated Router (DR)", "Source Tree"],
+    answer: "Rendezvous Point (RP)",
+    explanation: "O Rendezvous Point (RP) é o componente central do PIM-SM que serve como ponto de encontro, sendo essencial para seu funcionamento no modelo 'Pull Model' (Controle sob demanda)."
+  },
+  {
+    question: "No fluxograma do PIM Sparse Mode, o que acontece quando o 'SPT Switch' é ativado?",
+    options: ["Permanece na Shared Tree", "Constrói Source Tree e tráfego flui pela SPT", "Retorna ao Dense Mode", "Desativa o multicast"],
+    answer: "Constrói Source Tree e tráfego flui pela SPT",
+    explanation: "Quando o SPT Switch é ativado, o sistema constrói uma Source Tree (S,G) e o tráfego passa a fluir pela SPT (Shortest Path Tree), otimizando o caminho da origem ao receptor."
+  },
+  {
+    question: "Qual é a principal diferença do PIM Source-Specific Multicast (PIM-SSM) em relação ao PIM-SM tradicional?",
+    options: ["Usa Rendezvous Point", "Receptores especificam origem e grupo", "Funciona apenas em LANs", "Requer Bootstrap Router"],
+    answer: "Receptores especificam origem e grupo",
+    explanation: "No PIM-SSM, os receptores devem especificar tanto a origem quanto o grupo (S,G), diferente do PIM-SM tradicional onde receptores aceitam qualquer origem do grupo (*,G)."
+  },
+  {
+    question: "Qual faixa de endereços é utilizada pelo PIM Source-Specific Multicast (PIM-SSM)?",
+    options: ["224.0.0.0/8", "239.0.0.0/8", "232.0.0.0/8", "225.0.0.0/8"],
+    answer: "232.0.0.0/8",
+    explanation: "O PIM-SSM utiliza a faixa de endereços 232.0.0.0/8, sendo ideal para aplicações como IPTV e streaming onde a origem é conhecida."
+  },
+  {
+    question: "No PIM Bidirectional (PIM-BIDIR), qual é a característica principal do tráfego na árvore?",
+    options: ["Flui apenas downstream", "Flui apenas upstream", "Flui em ambas as direções na árvore", "Flui apenas pela Source Tree"],
+    answer: "Flui em ambas as direções na árvore",
+    explanation: "O PIM Bidirectional permite que o tráfego flua em ambas as direções na árvore compartilhada, sendo extremamente escalável para muitas origens e ideal para aplicações many-to-many."
+  },
+  {
+    question: "Qual modo do PIM é descrito como 'Hybrid Mode' no material apresentado?",
+    options: ["PIM Dense Mode", "PIM Sparse Mode", "PIM Sparse Dense Mode (PIM-SDM)", "PIM Bidirectional"],
+    answer: "PIM Sparse Dense Mode (PIM-SDM)",
+    explanation: "O PIM Sparse Dense Mode (PIM-SDM) é descrito como 'Hybrid Mode' pois combina PIM-DM e PIM-SM na mesma rede, permitindo flexibilidade máxima de configuração por grupo multicast."
+  },
+  {
+    question: "Segundo a tabela comparativa, qual modo do PIM tem 'Muito Alta' escalabilidade?",
+    options: ["PIM-DM", "PIM-SM", "PIM-SSM", "PIM-BIDIR"],
+    answer: "PIM-BIDIR",
+    explanation: "Segundo a tabela comparativa apresentada, o PIM Bidirectional (PIM-BIDIR) possui escalabilidade 'Muito Alta', sendo ideal para cenários many-to-many com múltiplas origens."
+  },
+  {
+    question: "No PIM Sparse Dense Mode (PIM-SDM), como são tratados os grupos não configurados?",
+    options: ["Usam PIM-DM", "Usam PIM-SM", "Usam modo padrão definido", "São descartados"],
+    answer: "Usam modo padrão definido",
+    explanation: "No PIM-SDM, os grupos podem ser configurados como 'dense' (PIM-DM), 'sparse' (PIM-SM), ou grupos não configurados usam o modo padrão definido, oferecendo flexibilidade máxima por faixa de endereços."
+  }
       // 👉 Adicione mais questões aqui
     ];
 

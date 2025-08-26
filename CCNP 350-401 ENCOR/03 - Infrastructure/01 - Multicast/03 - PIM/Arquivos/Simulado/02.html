@@ -45,65 +45,65 @@
   <script>
     const quizData = [
       {
-        question: "Quantos bits possui o campo CÓDIGO MÁXIMO DE RESPOSTA no IGMPv2?",
-        options: ["4 bits", "8 bits", "16 bits", "32 bits"],
-        answer: "8 bits",
-        explanation: "No formato da mensagem IGMPv2, o campo CÓDIGO MÁXIMO DE RESPOSTA possui 8 bits, conforme mostrado no diagrama da estrutura da mensagem."
-      },
-      {
-        question: "Qual é a principal funcionalidade do campo CÓDIGO MÁXIMO DE RESPOSTA no IGMPv2?",
-        options: ["Definir o tipo de mensagem", "Controlar o tempo máximo para resposta", "Identificar o grupo multicast", "Validar a integridade da mensagem"],
-        answer: "Controlar o tempo máximo para resposta",
-        explanation: "O campo CÓDIGO MÁXIMO DE RESPOSTA controla o tempo máximo que um host deve aguardar antes de enviar uma resposta a uma consulta IGMP."
-      },
-      {
-        question: "O que acontece quando um host recebe uma mensagem de consulta geral no IGMPv2?",
-        options: ["Sai imediatamente do grupo", "Inicia um temporizador aleatório", "Envia resposta imediata", "Ignora a mensagem"],
-        answer: "Inicia um temporizador aleatório",
-        explanation: "Quando um host recebe uma consulta geral, ele inicia um temporizador aleatório para evitar que todos os hosts respondam simultaneamente, causando colisões na rede."
-      },
-      {
-        question: "Qual tipo de mensagem IGMP é usada para sair de um grupo multicast no IGMPv2?",
-        options: ["Membership Query", "Membership Report", "Leave Group", "General Query"],
-        answer: "Leave Group",
-        explanation: "A mensagem Leave Group é usada no IGMPv2 para que um host comunique ao roteador que deseja sair de um grupo multicast específico."
-      },
-      {
-        question: "Como o roteador verifica se ainda há membros ativos após receber uma mensagem Leave Group?",
-        options: ["Envia consulta geral", "Remove imediatamente o grupo", "Envia consulta específica para o grupo", "Aguarda timeout"],
-        answer: "Envia consulta específica para o grupo",
-        explanation: "Após receber uma mensagem Leave Group, o roteador envia uma consulta específica para o grupo para verificar se ainda existem membros ativos antes de parar o encaminhamento do tráfego."
-      },
-      {
-        question: "Qual é o mecanismo usado no IGMPv2 para evitar múltiplas respostas simultâneas?",
-        options: ["CSMA/CD", "Supressão de relatório", "Token passing", "Round robin"],
-        answer: "Supressão de relatório",
-        explanation: "O IGMPv2 usa supressão de relatório, onde se um host escuta uma resposta de associação para um grupo antes do seu temporizador expirar, ele cancela sua própria resposta para evitar tráfego desnecessário."
-      },
-      {
-        question: "Quantos tipos principais de mensagens IGMP existem no IGMPv2?",
-        options: ["2 tipos", "3 tipos", "4 tipos", "5 tipos"],
-        answer: "3 tipos",
-        explanation: "O IGMPv2 possui 3 tipos principais de mensagens: Membership Query (consulta), Membership Report (relatório de associação) e Leave Group (sair do grupo)."
-      },
-      {
-        question: "Para que serve o campo CHECKSUM na mensagem IGMPv2?",
-        options: ["Identificar o remetente", "Validar a integridade da mensagem", "Definir o tempo de vida", "Especificar o grupo multicast"],
-        answer: "Validar a integridade da mensagem",
-        explanation: "O campo CHECKSUM de 16 bits é usado para validar a integridade da mensagem IGMP, detectando possíveis erros durante a transmissão."
-      },
-      {
-        question: "O que representa o valor zero no campo ENDEREÇO DE GRUPO?",
-        options: ["Grupo inválido", "Consulta geral para todos os grupos", "Erro na mensagem", "Grupo padrão"],
-        answer: "Consulta geral para todos os grupos",
-        explanation: "Quando o campo ENDEREÇO DE GRUPO é definido como zero, indica uma consulta geral que solicita informações sobre todos os grupos multicast ativos."
-      },
-      {
-        question: "Qual é o principal benefício do IGMPv2 em relação ao controle de tráfego multicast?",
-        options: ["Aumenta a velocidade de transmissão", "Permite criptografia", "Evita desperdício de banda", "Melhora a qualidade do áudio"],
-        answer: "Evita desperdício de banda",
-        explanation: "O principal benefício do IGMPv2 é evitar desperdício de banda, pois permite que o tráfego multicast seja encaminhado apenas para segmentos onde realmente existem receptores interessados."
-      }
+    question: "Qual protocolo foi mencionado como uma das primeiras tentativas de integrar multicast ao OSPF?",
+    options: ["DVMRP", "MOSPF", "PIM-DM", "IGMP"],
+    answer: "MOSPF",
+    explanation: "O MOSPF (Multicast Extensions to OSPF) foi uma das primeiras tentativas de integrar funcionalidades multicast ao protocolo OSPF, mas tinha limitações significativas em termos de escalabilidade."
+  },
+  {
+    question: "Segundo o material, qual é a principal limitação do IGMP em relação ao roteamento multicast?",
+    options: ["Não funciona com IPv6", "Opera apenas no escopo da rede local", "Consome muita memória", "É incompatível com PIM"],
+    answer: "Opera apenas no escopo da rede local",
+    explanation: "O IGMP permite que hosts participem de grupos multicast e sinalizem interesse, porém opera apenas no escopo da rede local e não tem capacidade de rotear pacotes multicast entre múltiplas redes."
+  },
+  {
+    question: "Na representação visual, qual símbolo indica que o PIM constrói árvores de distribuição inteligentes?",
+    options: ["❌ (X vermelho)", "✅ (Check verde)", "🔄 (Setas circulares)", "📡 (Antena)"],
+    answer: "✅ (Check verde)",
+    explanation: "O material usa o símbolo ✅ (check verde) para indicar que 'PIM constrói árvores de distribuição inteligentes', contrastando com o ❌ que mostra as limitações dos protocolos anteriores."
+  },
+  {
+    question: "Qual é a notação utilizada para representar uma Shared Tree no PIM?",
+    options: ["(S,G)", "(*,G)", "(G,S)", "(*,S)"],
+    answer: "(*,G)",
+    explanation: "A notação (*,G) representa uma Shared Tree (Árvore Compartilhada), onde '*' indica qualquer origem e 'G' representa o grupo multicast. Todas as origens do mesmo grupo compartilham a mesma árvore."
+  },
+  {
+    question: "Segundo o material, o que acontece quando o PIM não transporta o tráfego dos pacotes entre roteadores multicast?",
+    options: ["Os pacotes são descartados", "Ele consulta a tabela de roteamento unicast", "Cria uma nova rota", "Usa broadcast"],
+    answer: "Ele consulta a tabela de roteamento unicast",
+    explanation: "Como o PIM não transporta tráfego por si só, ele consulta a tabela de roteamento unicast formada por protocolos como BGP, OSPF, RIP, BGP, etc., ou até mesmo rotas estáticas para determinar os caminhos."
+  },
+  {
+    question: "Qual modo do PIM é descrito como adequado principalmente para IPTV e streaming?",
+    options: ["PIM Dense Mode", "PIM Sparse Mode", "PIM Source-Specific Multicast (SSM)", "PIM Bidirectional"],
+    answer: "PIM Source-Specific Multicast (SSM)",
+    explanation: "O PIM-SSM é destacado como sendo utilizado principalmente em IPTV e streaming, pois os receptores especificam tanto a origem quanto o grupo, eliminando problemas de segurança do multicast tradicional."
+  },
+  {
+    question: "Qual é a principal característica da Source Tree (S,G) em relação à latência?",
+    options: ["Maior latência devido ao processamento", "Latência variável", "Oferece a menor latência possível", "Latência igual à Shared Tree"],
+    answer: "Oferece a menor latência possível",
+    explanation: "A Source Tree (S,G) utiliza o caminho mais curto da origem para cada receptor, oferecendo a menor latência possível, embora consuma mais memória nos roteadores."
+  },
+  {
+    question: "De acordo com as características apresentadas, qual é uma desvantagem da Shared Tree (*,G)?",
+    options: ["Consome mais memória", "Não oferece o caminho mais curto", "É incompatível com PIM-SM", "Funciona apenas com uma origem"],
+    answer: "Não oferece o caminho mais curto",
+    explanation: "A Shared Tree (*,G) utiliza um ponto central (Rendezvous Point), consome menos memória, mas pode não oferecer o caminho mais curto entre origem e receptor, sendo esta sua principal desvantagem."
+  },
+  {
+    question: "Qual protocolo é mencionado como exemplo junto com BGP, OSPF e RIP na consulta da tabela RIB pelo PIM?",
+    options: ["EIGRP", "ISIS", "Rotas estáticas", "MPLS"],
+    answer: "Rotas estáticas",
+    explanation: "O material menciona que o PIM consulta a tabela RIB que pode ser formada por protocolos como BGP, OSPF, RIP, BGP, etc., ou até mesmo rotas estáticas, demonstrando sua independência de protocolo."
+  },
+  {
+    question: "Segundo o fluxograma apresentado, o que o PIM usa para construir árvores de distribuição?",
+    options: ["Apenas informações IGMP", "Protocolos IGMP, EIGRP, etc.", "Informações de roteamento da tabela RIB", "Configurações manuais"],
+    answer: "Informações de roteamento da tabela RIB",
+    explanation: "O fluxograma mostra que o PIM consulta a tabela RIB (Routing Information Base) e usa essas informações para construir árvores de distribuição multicast para definir caminhos otimizados."
+  }
       // 👉 Adicione mais questões aqui
     ];
 

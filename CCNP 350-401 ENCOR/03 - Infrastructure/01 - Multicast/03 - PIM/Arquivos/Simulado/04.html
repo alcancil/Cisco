@@ -44,65 +44,65 @@
 
   const quizData = [
     {
-      "question": "Qual é a principal função do IGMPv2 em comparação com o IGMPv1, que resolve a lentidão na saída de um grupo multicast?",
-      "options": ["A introdução de mensagens de adesão atrasadas.", "A implementação de um mecanismo de eleição para o querier multicast.", "A inclusão de uma mensagem de 'Leave Group' (Saída de Grupo).", "O uso de endereços de grupo de multicast de origem específica."],
-      "answer": 2,
-      "rationale": "O IGMPv2 introduziu a mensagem de 'Leave Group' para permitir que os hosts notifiquem imediatamente o roteador de sua intenção de sair do grupo, acelerando o processo."
-    },
-    {
-      "question": "Em um ambiente com múltiplos roteadores em uma mesma interface, o processo de eleição do 'Querier' (Consultor) do IGMPv2 é baseado em qual critério?",
-      "options": ["O roteador com a maior prioridade configurada.", "O roteador com o maior endereço IP da interface.", "O primeiro roteador a iniciar a troca de mensagens de consulta.", "O roteador com o menor endereço IP da interface."],
-      "answer": 3,
-      "rationale": "No IGMPv2, o roteador com o menor endereço IP da interface que está enviando consultas multicast é eleito como o 'Querier' para o segmento de rede."
-    },
-    {
-      "question": "O IGMP Snooping é uma funcionalidade essencial para otimizar o tráfego multicast em qual tipo de dispositivo de rede?",
-      "options": ["Roteadores de Borda (Edge Routers).", "Servidores DNS.", "Switches de Camada 2.", "Firewalls de Inspeção de Estado (Stateful Firewalls)."],
-      "answer": 2,
-      "rationale": "O IGMP Snooping permite que switches de Camada 2 inspecionem mensagens IGMP e encaminhem o tráfego multicast apenas para as portas onde os hosts estão interessados, evitando que o tráfego seja enviado para todas as portas."
-    },
-    {
-      "question": "Qual é a principal diferença entre os modos 'Include' e 'Exclude' do IGMPv3?",
-      "options": ["O modo 'Include' aceita todos os tráfegos, enquanto o 'Exclude' bloqueia apenas um tipo de tráfego.", "O modo 'Include' lista as fontes que o host quer receber tráfego, enquanto o 'Exclude' lista as que o host não quer receber.", "O modo 'Include' é usado para IPv4, e o 'Exclude' para IPv6.", "O modo 'Include' é a versão legada do modo 'Exclude'."],
-      "answer": 1,
-      "rationale": "O modo 'Include' (ISL) permite ao host especificar explicitamente a lista de fontes das quais deseja receber o tráfego multicast. O modo 'Exclude' (ESL) permite ao host receber tráfego de todas as fontes, exceto aquelas listadas como excluídas."
-    },
-    {
-      "question": "Um host deseja ingressar no grupo multicast `239.1.1.1` e receber tráfego apenas da fonte `10.1.1.50`. Qual tipo de mensagem o host enviará, e qual modo do IGMPv3 ele utilizará?",
-      "options": ["Um 'Leave Group' no modo 'Exclude' para `10.1.1.50`.", "Um 'Group Membership Report' no modo 'Exclude' para `239.1.1.1`.", "Um 'Group Membership Report' no modo 'Include' para `239.1.1.1` e fonte `10.1.1.50`.", "Um 'General Query' com `10.1.1.50` como endereço de grupo."],
-      "answer": 2,
-      "rationale": "O host deve enviar um 'Report' (Relatório de Adesão) usando o modo 'Include' para notificar o roteador de que ele deseja receber o tráfego para o grupo `239.1.1.1` especificamente da fonte `10.1.1.50`."
-    },
-    {
-      "question": "O que ocorre com o 'Time-to-Live' (TTL) de um pacote de multicast quando ele é enviado com o valor 1?",
-      "options": ["Ele é entregue a todos os hosts na rede local e enviado para o próximo roteador.", "Ele é descartado pelo primeiro roteador que o recebe, pois o TTL se torna 0.", "O pacote é enviado para toda a rede, pois o TTL não é relevante para o tráfego multicast.", "O pacote é enviado para toda a rede local e, se não for recebido, é encaminhado para o próximo salto."],
-      "answer": 1,
-      "rationale": "Quando um pacote com TTL=1 é enviado, ele chega ao primeiro roteador, que decrementa o TTL para 0 e o descarta, pois o valor do TTL se tornou inválido para encaminhamento."
-    },
-    {
-      "question": "Em um cenário de roteamento multicast, qual dos endereços a seguir é usado por um roteador IGMP para enviar consultas a todos os hosts e roteadores em um segmento de rede?",
-      "options": ["224.0.0.1", "224.0.0.2", "224.0.0.3", "224.0.0.22"],
-      "answer": 0,
-      "rationale": "O endereço '224.0.0.1' é o endereço 'all-hosts group', usado para enviar mensagens para todos os hosts multicast em uma rede local."
-    },
-    {
-      "question": "Qual das seguintes afirmações sobre o IGMPv1 está incorreta?",
-      "options": ["O roteador envia 'General Queries' para todos os hosts em um segmento de rede.", "Não existe um mecanismo explícito para um host notificar sua saída de um grupo.", "O roteador com o menor endereço IP se torna o 'Querier'.", "Os hosts respondem com um 'Membership Report' para cada grupo do qual são membros."],
-      "answer": 2,
-      "rationale": "A eleição do 'Querier' com base no menor endereço IP foi introduzida no IGMPv2. No IGMPv1, o primeiro roteador a enviar uma consulta se torna o 'Querier'."
-    },
-    {
-      "question": "Qual das seguintes opções descreve a principal melhoria do IGMPv3 em relação ao IGMPv2?",
-      "options": ["A introdução de mensagens de 'Leave Group' para saídas mais rápidas.", "A capacidade de os hosts filtrarem o tráfego com base na fonte (Source-Specific Multicast).", "O uso de consultas gerais para verificar a presença de membros nos grupos.", "A simplificação do processo de eleição do roteador 'Querier'."],
-      "answer": 1,
-      "rationale": "O IGMPv3 introduziu o Source-Specific Multicast (SSM), que permite aos hosts especificar quais fontes de um grupo multicast eles desejam ouvir ou ignorar."
-    },
-    {
-      "question": "Considere o seguinte cenário: Um roteador multicast envia um 'General Query' (Consulta Geral) na interface `gigabitethernet 0/1`. Qual é o endereço IP de destino desta mensagem?",
-      "options": ["O endereço IP de multicast do grupo específico, por exemplo, `239.1.1.1`.", "O endereço IP 'all-routers group' (`224.0.0.2`).", "O endereço IP de broadcast da rede, por exemplo, `192.168.1.255`.", "O endereço IP 'all-hosts group' (`224.0.0.1`)."],
-      "answer": 3,
-      "rationale": "O 'General Query' tem o objetivo de descobrir todos os hosts membros de todos os grupos em um segmento, e, portanto, é enviado para o endereço reservado 'all-hosts group' (`224.0.0.1`)."
-    }
+    question: "No fluxograma do PIM Dense Mode, o que acontece quando NÃO há receptores interessados no tráfego multicast?",
+    options: ["Mantém o tráfego ativo", "Envia mensagem PIM Prune para cortar o galho", "Reconstrói a árvore multicast", "Ativa o modo sparse"],
+    answer: "Envia mensagem PIM Prune para cortar o galho",
+    explanation: "Quando não há receptores interessados, o PIM Dense Mode envia mensagem PIM Prune para remover galhos desnecessários, otimizando a árvore multicast após o processo inicial de flood."
+  },
+  {
+    question: "Qual protocolo o receptor utiliza no início do processo PIM Source-Specific Multicast (PIM-SSM)?",
+    options: ["PIM Join", "IGMP Join", "IGMPv3 Join com (S,G)", "MLD Join"],
+    answer: "IGMPv3 Join com (S,G)",
+    explanation: "No PIM-SSM, o receptor envia IGMPv3 Join especificando tanto a origem (S) quanto o grupo (G), permitindo que o roteador receba pedido com origem e grupo específicos."
+  },
+  {
+    question: "Segundo as características do PIM Sparse Mode, o que significa 'Padrão para redes empresariais e ISPs'?",
+    options: ["É o mais simples de configurar", "Oferece melhor balance entre escalabilidade e eficiência", "Consome menos CPU", "Funciona apenas em redes grandes"],
+    answer: "Oferece melhor balance entre escalabilidade e eficiência",
+    explanation: "O PIM-SM é padrão para redes empresariais e ISPs porque oferece alta escalabilidade, conserva largura de banda através do modelo pull, sendo mais complexo mas eficiente para redes distribuídas."
+  },
+  {
+    question: "No PIM Bidirectional, o que significa 'Múltiplas origens podem usar a mesma árvore'?",
+    options: ["Apenas uma origem transmite por vez", "Diferentes origens compartilham infraestrutura da árvore", "Origens devem ser do mesmo grupo", "Origens precisam de configuração especial"],
+    answer: "Diferentes origens compartilham infraestrutura da árvore",
+    explanation: "No PIM-BIDIR, múltiplas origens podem usar a mesma infraestrutura de árvore compartilhada, reduzindo drasticamente o estado nos roteadores e sendo ideal para aplicações colaborativas."
+  },
+  {
+    question: "Qual é a principal vantagem do PIM Dense Mode mencionada nas características?",
+    options: ["Alta escalabilidade", "Uso otimizado de banda", "Simples de configurar e entender", "Suporte a múltiplas origens"],
+    answer: "Simples de configurar e entender",
+    explanation: "O PIM Dense Mode é caracterizado como simples de configurar e entender, sendo sua principal vantagem apesar de desperdiçar largura de banda inicialmente e não ser escalável para redes grandes."
+  },
+  {
+    question: "No fluxograma do PIM Sparse Dense Mode (PIM-SDM), qual é o critério de decisão para escolher entre os modos?",
+    options: ["Número de receptores", "Qual modo de operação para o Grupo G?", "Largura de banda disponível", "Localização geográfica"],
+    answer: "Qual modo de operação para o Grupo G?",
+    explanation: "O PIM-SDM decide o modo baseado na configuração específica para cada grupo multicast: se configurado como PIM-DM (flood), PIM-SM (via RP), ou usa modo padrão definido."
+  },
+  {
+    question: "Segundo a tabela comparativa, qual modo tem 'Alto inicial' no uso de banda?",
+    options: ["PIM-SM", "PIM-SSM", "PIM-BIDIR", "PIM-DM"],
+    answer: "PIM-DM",
+    explanation: "O PIM Dense Mode tem uso de banda 'Alto inicial' porque inunda todo o tráfego por todas as interfaces antes de podar os galhos desnecessários, desperdiçando banda no processo inicial."
+  },
+  {
+    question: "Qual característica diferencia o PIM-SSM na integração com outros protocolos?",
+    options: ["Usa apenas IGMP v2", "Integra-se com IGMPv3/MLDv2", "Não precisa de IGMP", "Funciona apenas com PIMv1"],
+    answer: "Integra-se com IGMPv3/MLDv2",
+    explanation: "O PIM-SSM requer integração com IGMPv3/MLDv2 para que os receptores possam especificar tanto a origem quanto o grupo, sendo essencial para sua operação source-specific."
+  },
+  {
+    question: "No contexto do PIM Any-Source Multicast (PIM-ASM), o que significa 'termo conceitual'?",
+    options: ["É um protocolo específico", "Refere-se ao PIM-SM tradicional onde qualquer origem pode enviar", "É uma configuração especial", "Substitui todos os outros modos"],
+    answer: "Refere-se ao PIM-SM tradicional onde qualquer origem pode enviar",
+    explanation: "PIM-ASM não é um modo específico, mas sim um termo conceitual que se refere ao PIM-SM tradicional, onde qualquer origem pode enviar para um grupo, contrastando com o Source-Specific (SSM)."
+  },
+  {
+    question: "Qual é o cenário ideal mencionado para o uso do PIM Bidirectional?",
+    options: ["LANs densas", "IPTV/Streaming", "Aplicações colaborativas, jogos online, muitas origens", "Redes corporativas pequenas"],
+    answer: "Aplicações colaborativas, jogos online, muitas origens",
+    explanation: "O PIM-BIDIR é ideal para aplicações colaborativas, jogos online e cenários com muitas origens, pois permite tráfego bidirecional e mantém poucos estados nos roteadores mesmo com múltiplas fontes."
+  }
   ];
   
   // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---

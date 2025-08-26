@@ -42,6 +42,7 @@
     - [A Magia do Multicast:](#a-magia-do-multicast)
   - [Representação dos elementos da árvore](#representação-dos-elementos-da-árvore)
   - [📌 O que vimos até aqui](#-o-que-vimos-até-aqui)
+    - [Simulados](#simulados)
 
 ## 03 - PIM - Protocol Independent Multicast  
 
@@ -1077,3 +1078,19 @@ A imagem que você compartilhou representa esse sistema completo em funcionament
 **✨ Conceito central:** Multicast envia uma única cópia do tráfego, que é replicada apenas onde há interesse, otimizando o uso de banda.  
 
 👉 No próximo passo: Rendezvous Points (RPs) – peça central do PIM-SM.
+
+---
+
+### Simulados  
+
+**[Simulado 01](Arquivos/Simulado/01.html)**  
+
+**[Simulado 01](Arquivos/Simulado/02.html)**
+
+**[Simulado 01](Arquivos/Simulado/03.html)**
+
+**[Simulado 01](Arquivos/Simulado/04.html)**
+
+**[Simulado 01](Arquivos/Simulado/05.html)**
+
+**[Simulado 01](Arquivos/Simulado/dashboard.html)**
