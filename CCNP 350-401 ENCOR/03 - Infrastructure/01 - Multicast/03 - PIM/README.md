@@ -1091,6 +1091,18 @@ A imagem que você compartilhou representa esse sistema completo em funcionament
 
 **[Simulado 01](Arquivos/Simulado/04.html)**
 
-**[Simulado 01](Arquivos/Simulado/05.html)**
+**[Simulado 01](Arquivos/Simulado/05.html)**  
+
+**[Simulado 01](Arquivos/Simulado/06.html)**  
+
+**[Simulado 01](Arquivos/Simulado/07.html)**  
+
+**[Simulado 01](Arquivos/Simulado/08.html)**  
+
+**[Simulado 01](Arquivos/Simulado/09.html)**  
+
+**[Simulado 01](Arquivos/Simulado/10.html)**  
+
+**[Simulado 01](Arquivos/Simulado/11.html)**  
 
 **[Simulado 01](Arquivos/Simulado/dashboard.html)**
