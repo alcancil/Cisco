@@ -41,7 +41,9 @@
 
 ## O que é um Rendezvous Point (RP)?
 
-O **Rendezvous Point (RP)** é o componente central do PIM Sparse Mode, funcionando como um "ponto de encontro" onde origens multicast se registram e receptores se conectam para descobrir e receber fluxos multicast.
+O **Rendezvous Point (RP)** é o coração do PIM Sparse Mode. Ele funciona como um ponto de encontro central: todas as origens multicast se registram nele, e os receptores consultam o RP para descobrir quais fluxos estão disponíveis.
+Sem o RP, os receptores não teriam uma forma simples de localizar as origens ativas, tornando inviável a comunicação multicast em larga escala.
+Em resumo, o RP é o elo de ligação entre quem transmite e quem deseja receber — garantindo organização, eficiência e escalabilidade na construção das árvores multicast.
 
 ### Representação Visual do RP
 
@@ -59,6 +61,8 @@ Conceito do RP - "Ponto de Encontro Central":
 ```
 
 ### Funcionamento do RP
+
+O funcionamento do RP pode ser entendido como um processo de intermediação. Ele recebe anúncios das origens, registra esses fluxos, e quando um receptor solicita determinado grupo, o RP conecta as duas pontas e garante que o tráfego flua pela Shared Tree (*,G).  
 
 **Função Principal:**
 
@@ -85,7 +89,10 @@ Conceito do RP - "Ponto de Encontro Central":
 
 ### Por que precisamos de um RP?
 
-**Problema sem RP:**
+**Problema sem RP:**  
+
+Sem o Rendezvous Point, não existe um mecanismo central que diga aos receptores onde estão as origens multicast. Imagine um host que deseja receber um fluxo para o grupo 239.1.1.1: ele não tem como descobrir em qual parte da rede a origem está transmitindo. Cada roteador ficaria “no escuro”, sem saber para onde encaminhar os pedidos de recepção.
+O resultado seria confusão, desperdício de banda ou até mesmo a impossibilidade de estabelecer a comunicação multicast.  
 
 ```text
 ❌ Sem RP - Como receptor encontra origem?
@@ -97,7 +104,15 @@ Pergunta: "Onde está a origem 192.168.1.10?"
 Resposta: "Não sabemos! 🤷‍♂️"
 ```
 
-**Solução com RP:**
+**Solução com RP:**  
+
+Com o RP, esse problema é resolvido. O RP funciona como um catálogo central:  
+
+- As origens se registram nele, anunciando os grupos que estão transmitindo.
+- Os receptores consultam o RP quando desejam ingressar em um grupo.  
+- O RP então conecta as duas pontas, permitindo que o tráfego flua pela árvore compartilhada (*,G).  
+
+Dessa forma, o RP garante que receptores encontrem as origens de maneira rápida, organizada e eficiente, viabilizando o multicast em redes de grande escala.  
 
 ```text
 ✅ Com RP - Ponto central de descoberta
