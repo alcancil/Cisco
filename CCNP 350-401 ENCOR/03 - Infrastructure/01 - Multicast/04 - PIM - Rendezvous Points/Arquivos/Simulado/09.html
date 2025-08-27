@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast - 05</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast - IGMP (Parte 2)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre IGMP. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="question-count" class="text-sm font-semibold text-slate-500">Questão 1 de 10</span>
+        <span id="quiz-timer" class="text-sm font-semibold text-slate-500">10:00</span>
+      </div>
+      <h2 id="question-text" class="text-xl font-semibold mb-6"></h2>
+      <div id="options-container" class="space-y-3"></div>
+      <div class="flex justify-between items-center mt-6">
+        <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">Próximo</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2 class="text-2xl font-bold text-center mb-4">Resultados</h2>
+      <p id="score-el" class="text-lg text-center mb-6"></p>
+      <div id="review-el"></div>
+    </div>
+  </div>
+
+<script>
+  const SIMULADO_ID = 'simulado_05';
+  const SIMULADO_TITULO = 'Simulado Multicast - IGMP (Parte 2)';
+
+  const quizData = [
+ {
+  question: "Qual aplicação típica é mencionada nas responsabilidades do Multicast Source?",
+  options: ["Servidores de IPTV", "Videoconferência", "Streaming", "Todas as anteriores"],
+  answer: "Todas as anteriores",
+  explanation: "O material lista 'Aplicações típicas: Servidores de IPTV, streaming, videoconferência' como usos do Multicast Source, incluindo todas essas aplicações."
+},
+{
+  question: "No Designated Router, qual processo evita múltiplos roteadores enviando o mesmo tráfego?",
+  options: ["Eleição automática", "Onde atua", "Prevenção de duplicação", "Interface com hosts"],
+  answer: "Prevenção de duplicação",
+  explanation: "A responsabilidade 'Prevenção de duplicação: Evita múltiplos roteadores enviando o mesmo tráfego' do DR especifica este processo de controle."
+},
+{
+  question: "Qual informação aparece entre colchetes na representação do FHR?",
+  options: ["FHR", "RP", "Register", "Source"],
+  answer: "FHR",
+  explanation: "Na representação 'Source → [FHR] → Register → [RP]', a informação '[FHR]' aparece entre colchetes identificando o First Hop Router."
+},
+{
+  question: "No Rendezvous Point, o que significa '*,G' mencionado nas responsabilidades?",
+  options: ["Qualquer origem, grupo específico", "Origem específica, qualquer grupo", "Todas as origens e grupos", "Nenhuma origem ou grupo"],
+  answer: "Qualquer origem, grupo específico",
+  explanation: "A notação '(*,G)' no contexto PIM significa 'qualquer origem (*) para um grupo específico (G)', usada na construção de árvores compartilhadas."
+},
+{
+  question: "Qual processo o LHR realiza para 'Converte IGMP em PIM Join upstream'?",
+  options: ["Interface com receptores", "Processamento IGMP", "Conversão IGMP→PIM", "SPT Switchover"],
+  answer: "Conversão IGMP→PIM",
+  explanation: "A responsabilidade específica 'Conversão IGMP→PIM: Converte IGMP Join em PIM Join upstream' identifica este processo do LHR."
+},
+{
+  question: "No SPT Router, qual característica é descrita como 'Mantém estado específico por origem'?",
+  options: ["Caminho otimizado", "Bypass do RP", "Lower latency", "Encaminhamento (S,G)"],
+  answer: "Encaminhamento (S,G)",
+  explanation: "A responsabilidade 'Encaminhamento (S,G): Mantém estado específico por origem' do SPT Router descreve esta característica específica."
+},
+{
+  question: "Quantos roteadores PIM recebem o flood do BSR?",
+  options: ["Apenas RPs candidatos", "Roteadores do segmento", "Todos os roteadores PIM", "Roteadores designados"],
+  answer: "Todos os roteadores PIM",
+  explanation: "O BSR realiza 'Flooding de BSR: Distribui informações RP para toda a rede PIM' indicando que todos os roteadores PIM recebem as informações."
+},
+{
+  question: "Qual protocolo os Multicast Receivers usam para sinalizar interesse?",
+  options: ["PIM", "IGMP", "OSPF", "BGP"],
+  answer: "IGMP",
+  explanation: "O material mostra 'IGMP Join' sendo enviado pelos hosts receptores para sinalizar interesse em grupos multicast específicos."
+},
+{
+  question: "No IGMP Snooping, qual switch mostra porta em estado 'Bloqueado'?",
+  options: ["SW1", "SW2", "SW3", "Nenhum switch"],
+  answer: "SW2",
+  explanation: "Na representação do IGMP Snooping, SW2 mostra uma porta com '✗ (Bloqueado)' indicando que essa porta está bloqueada para tráfego multicast."
+},
+{
+  question: "Nas Árvores de Distribuição, qual tipo permite múltiplas origens para o mesmo grupo?",
+  options: ["SPT (Shortest Path Tree)", "RPT (Rendezvous Point Tree)", "Source Tree", "Todas as anteriores"],
+  answer: "RPT (Rendezvous Point Tree)",
+  explanation: "O material indica que 'RPT (Rendezvous Point Tree) - (*,G)' com 'Qualquer origem: Suporta múltiplas origens para o mesmo grupo' permite múltiplas origens."
+}
+  ];
+  
+  // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+  const questionCount = document.getElementById('question-count');
+  const quizTimer = document.getElementById('quiz-timer');
+  const scoreEl = document.getElementById('score-el');
+  const reviewEl = document.getElementById('review-el');
+  const userNameInput = document.getElementById('user-name');
+  
+  let currentQuestionIndex = 0;
+  let userAnswers = [];
+  let score = 0;
+  let timer;
+  let timeSpentSeconds = 0;
+  let currentUserName = '';
+
+  const MAX_TIME = 600; // 10 minutes
+
+  function formatSeconds(secs) {
+      const minutes = Math.floor(secs / 60);
+      const seconds = secs % 60;
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function startQuiz() {
+      const name = userNameInput.value.trim();
+      if (!name) {
+          alert("Por favor, digite seu nome para começar.");
+          return;
+      }
+      currentUserName = name;
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      timeSpentSeconds = 0;
+      quizTimer.textContent = formatSeconds(MAX_TIME);
+      userAnswers = [];
+      score = 0;
+      currentQuestionIndex = 0;
+      timer = setInterval(() => {
+          timeSpentSeconds++;
+          quizTimer.textContent = formatSeconds(MAX_TIME - timeSpentSeconds);
+          if (timeSpentSeconds >= MAX_TIME) {
+              endQuiz();
+          }
+      }, 1000);
+      showQuestion();
+  }
+
+  function showQuestion() {
+      const question = quizData[currentQuestionIndex];
+      questionText.textContent = question.question;
+      optionsContainer.innerHTML = '';
+      questionCount.textContent = `Questão ${currentQuestionIndex + 1} de ${quizData.length}`;
+      nextBtn.classList.add('hidden');
+
+      question.options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.textContent = option;
+          button.className = 'w-full text-left p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors';
+          button.onclick = () => selectAnswer(index);
+          optionsContainer.appendChild(button);
+      });
+  }
+
+  function selectAnswer(selectedIndex) {
+      if (userAnswers[currentQuestionIndex] !== undefined) return;
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      
+      const isCorrect = (selectedIndex === quizData[currentQuestionIndex].answer);
+      if (isCorrect) {
+          score++;
+      }
+      
+      const buttons = optionsContainer.getElementsByTagName('button');
+      for (let i = 0; i < buttons.length; i++) {
+          const button = buttons[i];
+          if (i === quizData[currentQuestionIndex].answer) {
+              button.classList.add('bg-green-200', 'border-green-600');
+          } else if (i === selectedIndex) {
+              button.classList.add('bg-red-200', 'border-red-600');
+          }
+          button.disabled = true;
+      }
+      nextBtn.classList.remove('hidden');
+  }
+
+  function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+          showQuestion();
+      } else {
+          endQuiz();
+      }
+  }
+
+  function endQuiz() {
+    const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+    };
+
+    let results = JSON.parse(localStorage.getItem('quizResults')) || [];
+    results.push(resultRecord);
+    localStorage.setItem('quizResults', JSON.stringify(results));
+      
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+          const isCorrect = userAnswers[i] === q.answer;
+          const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+          const userOptionText = q.options[userAnswers[i]] || 'Não respondida';
+          const correctOptionText = q.options[q.answer];
+
+          return `
+            <div class="p-4 border rounded-lg ${resultClass} mb-4">
+              <p class="font-semibold">Q${i+1}: ${q.question}</p>
+              <p class="text-sm">Sua Resposta: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-medium">${userOptionText}</span></p>
+              ${!isCorrect ? `<p class="text-sm">Resposta Correta: <span class="text-green-600 font-medium">${correctOptionText}</span></p>` : ''}
+              <p class="mt-2 text-sm text-slate-700">Explicação: ${q.rationale}</p>
+            </div>
+          `;
+      }).join('');
+  }
+</script>
+</body>
+</html>
