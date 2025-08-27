@@ -31,6 +31,11 @@
   - [Otimização e Melhores Práticas](#otimização-e-melhores-práticas)
     - [Placement Strategy (Estratégia de Posicionamento)](#placement-strategy-estratégia-de-posicionamento)
     - [Redundância e Failover](#redundância-e-failover)
+    - [Scenario Avançados e Casos de Uso](#scenario-avançados-e-casos-de-uso)
+    - [Security e Hardening](#security-e-hardening)
+    - [Performance Tuning e Optimization](#performance-tuning-e-optimization)
+  - [📌 O que vimos até aqui](#-o-que-vimos-até-aqui)
+    - [Simulados](#simulados)
 
 ## 04 - PIM - Rendezvous Points (RPs)
 
@@ -722,4 +727,417 @@ BOM - RP no core:
 
 **1. Anycast RP:**
 
+```text
+Anycast RP - Configuração Completa:
+
+Site A:                    Site B:
+┌──────────────────┐      ┌──────────────────┐
+│ 🎯 RP1           │──MSDP──│ 🎯 RP2           │
+│ 10.0.0.100/32    │      │ 10.0.0.100/32    │
+│ (Anycast)        │      │ (Anycast)        │
+└──────────────────┘      └──────────────────┘
+        │                          │
+    [Sources A]                [Sources B]
+    [Receivers A]              [Receivers B]
+
+"Mesmo endereço IP, sincronização via MSDP"
+"Roteamento unicast determina RP mais próximo"
 ```
+
+**Configuração Anycast RP Completa:**
+
+```cisco
+! RP1 (Site A)
+Router1(config)# interface loopback100
+Router1(config-if)# ip address 10.0.0.100 255.255.255.255
+Router1(config-if)# ip pim sparse-mode
+
+Router1(config)# ip pim rp-address 10.0.0.100
+Router1(config)# ip msdp peer 10.1.1.2 connect-source loopback0
+Router1(config)# ip msdp originator-id loopback0
+
+! RP2 (Site B) 
+Router2(config)# interface loopback100  
+Router2(config-if)# ip address 10.0.0.100 255.255.255.255
+Router2(config-if)# ip pim sparse-mode
+
+Router2(config)# ip pim rp-address 10.0.0.100
+Router2(config)# ip msdp peer 10.1.1.1 connect-source loopback0
+Router2(config)# ip msdp originator-id loopback0
+```
+
+**2. BSR com Múltiplos RPs:**
+
+```text
+BSR Redundancy Model:
+
+    🔄 BSR Primary ──backup──→ 🔄 BSR Secondary
+            │                         │
+    ┌───────┴────────┐         ┌──────┴─────────┐
+    │                │         │                │
+  🎯 RP1 (Pri: 100) 🎯 RP2   🎯 RP3 (Pri: 50) 🎯 RP4
+    
+"BSR distribui múltiplos candidatos"
+"Hash function balanceia grupos entre RPs"
+"Failover automático se RP primário falha"
+```
+
+**Configuração BSR Redundante:**
+
+```cisco
+! BSR Primary
+RouterBSR1(config)# ip pim bsr-candidate loopback0 30 100
+
+! BSR Backup  
+RouterBSR2(config)# ip pim bsr-candidate loopback0 30 50
+
+! RP Candidates (mesma configuração em ambos)
+RouterRP1(config)# ip pim rp-candidate loopback0 priority 100
+RouterRP2(config)# ip pim rp-candidate loopback0 priority 50
+RouterRP3(config)# ip pim rp-candidate loopback0 priority 75
+```
+
+**3. Load Balancing entre RPs:**
+
+```text
+RP Load Balancing via Hash:
+
+Grupos 239.1.1.1-100 ──hash──→ 🎯 RP1 (10.1.1.1)
+Grupos 239.1.2.1-100 ──hash──→ 🎯 RP2 (10.1.1.2)  
+Grupos 239.1.3.1-100 ──hash──→ 🎯 RP3 (10.1.1.3)
+
+"Hash function distribui grupos automaticamente"
+"Reduz carga em RPs individuais"
+"Melhora performance geral"
+```
+
+**Monitoring e Alertas:**
+
+```cisco
+! Configurar SNMP para monitoramento RP
+Router(config)# snmp-server enable traps pim neighbor-change rp-mapping-change
+
+! Configurar syslog para eventos críticos
+Router(config)# logging discriminator PIM_EVENTS facility local0
+
+! Track RP reachability
+Router(config)# track 1 ip route 10.1.1.1 255.255.255.255 reachability
+Router(config)# event manager applet RP_DOWN
+Router(config-applet)# event track 1 state down
+Router(config-applet)# action 1.0 syslog msg "RP 10.1.1.1 is unreachable!"
+```
+
+### Scenario Avançados e Casos de Uso
+
+**1. Multi-Domain RP Design:**
+
+```text
+Enterprise Multi-Site RP:
+
+    🌐 Internet/WAN
+         │
+    ┌────┼────┐
+    │    │    │
+   Site1 │ Site2  Site3
+  🎯 RP1 │🎯 RP2 🎯 RP3
+ (Local) │(Main) (DR)
+    │    │    │
+ Sources │ Sources Sources
+Receivers│Receivers Receivers
+
+Design Pattern:
+- RP principal no site central  
+- RPs locais para redundância
+- MSDP entre sites para sincronização
+```
+
+**Configuração Multi-Site:**
+
+```cisco
+! Site Principal (RP Main)
+SiteMain(config)# ip msdp peer 10.10.1.1 connect-source loopback0 remote-as 65001
+SiteMain(config)# ip msdp peer 10.10.3.1 connect-source loopback0 remote-as 65003
+SiteMain(config)# ip msdp redistribute
+
+! Site 1 (RP Local)
+Site1(config)# ip msdp peer 10.10.2.1 connect-source loopback0 remote-as 65002
+Site1(config)# ip msdp mesh-group CORP_SITES
+
+! Site 3 (DR Site)  
+Site3(config)# ip msdp peer 10.10.2.1 connect-source loopbook0 remote-as 65002
+Site3(config)# ip msdp default-peer 10.10.2.1
+```
+
+**2. RP para Aplicações Específicas:**
+
+```text
+Application-Specific RP Design:
+
+📺 IPTV RP (239.0.0.0/8)     ──→ 🎯 RP_IPTV (High-performance)
+🎮 Gaming RP (239.100.0.0/16) ──→ 🎯 RP_GAMING (Low-latency)  
+📞 Voice RP (239.200.0.0/16) ──→ 🎯 RP_VOICE (QoS-enabled)
+📊 Data RP (239.255.0.0/16)  ──→ 🎯 RP_DATA (Standard)
+
+"RPs dedicados por tipo de aplicação"
+"Otimização específica por workload"
+```
+
+**Configuração Application-Specific:**
+
+```cisco
+! IPTV RP - Performance otimizada
+RouterIPTV(config)# access-list 100 permit ip any 239.0.0.0 0.255.255.255
+RouterIPTV(config)# ip pim rp-candidate loopback0 group-list 100 priority 10
+RouterIPTV(config)# ip pim spt-threshold 1 group-list 100
+
+! Gaming RP - Baixa latência  
+RouterGaming(config)# access-list 200 permit ip any 239.100.0.0 0.0.255.255
+RouterGaming(config)# ip pim rp-candidate loopback0 group-list 200 priority 10
+RouterGaming(config)# ip pim spt-threshold 0 group-list 200
+
+! Voice RP - QoS garantido
+RouterVoice(config)# access-list 300 permit ip any 239.200.0.0 0.0.255.255  
+RouterVoice(config)# ip pim rp-candidate loopback0 group-list 300 priority 10
+RouterVoice(config)# class-map VOICE_MCAST
+RouterVoice(config-cmap)# match access-group 300
+RouterVoice(config)# policy-map VOICE_QOS
+RouterVoice(config-pmap)# class VOICE_MCAST
+RouterVoice(config-pmap-c)# priority percent 30
+```
+
+### Security e Hardening
+
+**1. RP Security Best Practices:**
+
+```text
+🔒 RP Security Layers:
+
+1. CONTROLE DE ACESSO:
+   ├─ ACL em interfaces RP
+   ├─ Filtros PIM Register/Join
+   └─ Source/Group authentication
+
+2. PROTEÇÃO DO RP:  
+   ├─ Rate limiting PIM messages
+   ├─ CPU protection (CoPP)
+   └─ Memory monitoring
+
+3. NETWORK SEGMENTATION:
+   ├─ RP em VLAN dedicada
+   ├─ Firewall rules específicas
+   └─ Management plane separado
+```
+
+**Implementação Security:**
+
+```cisco
+! Rate limiting PIM messages
+Router(config)# access-list 50 permit 224.0.0.0 15.255.255.255
+Router(config)# class-map PIM_CONTROL
+Router(config-cmap)# match access-group 50
+
+Router(config)# policy-map CoPP_POLICY
+Router(config-pmap)# class PIM_CONTROL  
+Router(config-pmap-c)# police 1000000 conform-action transmit exceed-action drop
+
+Router(config)# control-plane
+Router(config-cp)# service-policy input CoPP_POLICY
+
+! Source authentication
+Router(config)# ip pim accept-register list 60
+Router(config)# access-list 60 permit ip 192.168.0.0 0.0.255.255 any
+Router(config)# access-list 60 permit ip 10.0.0.0 0.255.255.255 any
+
+! Join filtering
+Router(config)# ip pim accept-rp 10.1.1.1 100
+Router(config)# access-list 100 permit ip any 239.0.0.0 0.255.255.255
+```
+
+**2. Anti-Spoofing e Validation:**
+
+```text
+PIM Security Mechanisms:
+
+┌─ uRPF (Unicast RPF) ─────────┐
+│ Valida origem dos Register   │
+│ Previne source spoofing      │
+└─────────────────────────────┘
+
+┌─ PIM Authentication ────────┐  
+│ MD5/SHA authentication      │
+│ Entre neighbors PIM         │
+└─────────────────────────────┘
+
+┌─ BSR Security ──────────────┐
+│ BSR message authentication  │  
+│ Prevents rogue BSR/RP       │
+└─────────────────────────────┘
+```
+
+**Configuração Anti-Spoofing:**
+
+```cisco
+! uRPF strict mode
+Router(config)# interface fastethernet0/0
+Router(config-if)# ip verify unicast source reachable-via rx
+
+! PIM authentication
+Router(config)# interface fastethernet0/0  
+Router(config-if)# ip pim message-digest-key 1 md5 MySecretKey
+
+! BSR authentication
+Router(config)# ip pim bsr-candidate loopback0 30 10
+Router(config)# ip pim message-digest-key 1 md5 BSR_SecretKey
+```
+
+### Performance Tuning e Optimization
+
+**1. RP Performance Optimization:**
+
+```text
+🚀 RP Performance Tuning:
+
+CPU OPTIMIZATION:
+├─ Register processing em hardware (se disponível)
+├─ PIM message batching
+└─ Periodic maintenance optimization
+
+MEMORY OPTIMIZATION:  
+├─ Timeout tuning para entries inativas
+├─ SPT switchover agressivo
+└─ Prune/Join aggregation
+
+NETWORK OPTIMIZATION:
+├─ Register supression tuning
+├─ Hello interval optimization  
+└─ Assert mechanism tuning
+```
+
+**Implementação Performance:**
+
+```cisco
+! Register optimization
+Router(config)# ip pim register-rate-limit 500
+
+! SPT switchover tuning - migra imediatamente  
+Router(config)# ip pim spt-threshold 0
+
+! Hello interval otimizado para detecção rápida
+Router(config)# interface fastethernet0/0
+Router(config-if)# ip pim hello-interval 15
+Router(config-if)# ip pim query-interval 60
+
+! Join/Prune interval tuning
+Router(config)# ip pim join-prune-interval 45
+
+! State refresh optimization (PIM-DM)
+Router(config)# ip pim state-refresh-interval 45
+Router(config)# ip pim state-refresh-ttl 100
+```
+
+**2. Capacity Planning:**
+
+```text
+📊 RP Capacity Planning:
+
+SOURCES PER RP:
+├─ Hardware platform limits
+├─ Register processing capacity  
+└─ Memory per (S,G) entry
+
+GROUPS PER RP:
+├─ Hash distribution effectiveness
+├─ (*,G) vs (S,G) ratio
+└─ Geographic distribution
+
+BANDWIDTH CALCULATIONS:
+├─ Peak simultaneous streams
+├─ Average bitrate per stream
+└─ Replication factor
+```
+
+**Monitoring Capacity:**
+
+```cisco
+! SNMP monitoring
+Router(config)# snmp-server enable traps pim invalid-register
+Router(config)# snmp-server enable traps pim neighbor-change
+Router(config)# snmp-server enable traps pim rp-mapping-change
+
+! Performance counters
+Router# show ip pim rp-hash detail
+Router# show processes cpu | include PIM
+Router# show memory summary | include Multicast
+
+! Custom EEM monitoring
+Router(config)# event manager applet RP_CAPACITY_MONITOR
+Router(config-applet)# event timer watchdog time 300
+Router(config-applet)# action 1.0 cli command "show ip pim rp mapping | count"
+Router(config-applet)# action 2.0 regexp "([0-9]+)" "$_cli_result" RESULT
+Router(config-applet)# action 3.0 if $RESULT gt 1000
+Router(config-applet)# action 3.1 syslog msg "RP overload: $RESULT groups"
+```
+
+## 📌 O que vimos até aqui
+
+**🎯 Rendezvous Point (RP) - Conceito Central**
+
+- RP = "Ponto de encontro" central do PIM Sparse Mode
+- Conecta sources (via Register) com receivers (via Join)
+- Reduz estado nos roteadores usando Shared Tree (*,G)
+
+**⚙️ Tipos de Configuração RP**
+
+| Método       | Características                    | Cenário Ideal          |
+|-------------|-----------------------------------|------------------------|
+| Static RP    | Manual, simples, sem redundância  | Redes pequenas/teste   |
+| Auto-RP     | Cisco proprietário, automático    | Ambientes Cisco puro   |
+| BSR         | RFC padrão, interoperável         | Redes multi-vendor     |
+| Anycast RP  | Alta disponibilidade via MSDP     | Redes críticas         |
+| Embedded RP | IPv6, auto-descoberta            | Redes IPv6 modernas    |
+
+**🔄 Processo RP**
+
+1. **Register Phase:** Sources se anunciam via FHR → RP
+2. **Join Phase:** Receivers solicitam via LHR → RP  
+3. **Distribution:** Tráfego flui via Shared Tree (*,G)
+4. **Optimization:** Possível migração para SPT (S,G)
+
+**🚀 Otimização e Redundância**
+
+- **Anycast RP:** Múltiplos RPs com mesmo IP + MSDP
+- **Load Balancing:** Hash function distribui grupos  
+- **Application-Specific:** RPs dedicados por workload
+- **Security:** ACLs, rate limiting, authentication
+
+**💡 SPT Switchover:** Migração de (*,G) para (S,G) para otimizar latência
+
+**🔧 Troubleshooting:** show ip pim rp mapping, debug ip pim, análise Register/Join
+
+👉 **Próximo tópico:** PIM Dense Mode vs Sparse Mode - comparação detalhada e casos de uso.
+
+---
+
+### Simulados
+
+**[Simulado 01 - RP Basics](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/01.html)**
+
+**[Simulado 02 - Auto-RP vs BSR](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/02.html)**
+
+**[Simulado 03 - Anycast RP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/03.html)**
+
+**[Simulado 04 - SPT Switchover](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/04.html)**
+
+**[Simulado 05 - RP Security](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/05.html)**
+
+**[Simulado 06 - Multi-Site RP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/06.html)**
+
+**[Simulado 07 - RP Troubleshooting](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/07.html)**
+
+**[Simulado 08 - Performance Tuning](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/08.html)**
+
+**[Simulado 09 - BSR Advanced](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/09.html)**
+
+**[Simulado 10 - RP Design](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/10.html)**
+
+**[Dashboard](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/04%20-%20RP/Arquivos/Simulado/dashboard.html)**
