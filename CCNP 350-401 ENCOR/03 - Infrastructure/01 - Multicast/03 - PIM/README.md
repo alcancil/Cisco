@@ -1105,4 +1105,4 @@ A imagem que você compartilhou representa esse sistema completo em funcionament
 
 **[Simulado 11](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/03%20-%20PIM/Arquivos/Simulado/11.html)**  
 
-**[Dashboard]((https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/03%20-%20PIM/Arquivos/Simulado/dashboard.html))**  
+**[Dashboard](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/01%20-%20Multicast/03%20-%20PIM/Arquivos/Simulado/dashboard.html)**  
