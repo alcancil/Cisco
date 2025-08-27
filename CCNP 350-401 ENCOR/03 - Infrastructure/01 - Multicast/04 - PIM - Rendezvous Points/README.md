@@ -128,6 +128,12 @@ Existem diferentes métodos para configurar e descobrir RPs em uma rede PIM:
 
 ### 1. Static RP (RP Estático)
 
+O Static RP é a forma mais simples de definir um Rendezvous Point. Nele, o administrador escolhe manualmente qual roteador será o RP e configura todos os roteadores da rede PIM para reconhecer esse endereço.  
+
+Isso significa que não existe um processo de eleição ou descoberta automática: cada roteador já “sabe de antemão” quem é o RP responsável por centralizar as sessões multicast.  
+
+Esse método é bastante útil em redes pequenas ou ambientes de laboratório, onde o controle é total e a simplicidade é mais importante que a escalabilidade.
+
 **Características:**  
 
 - Configuração manual em todos os roteadores
@@ -149,6 +155,13 @@ Configuração Static RP:
 ```
 
 ### 2. Auto-RP (Cisco Proprietário)
+
+O Auto-RP foi criado pela Cisco para resolver a limitação do Static RP, eliminando a necessidade de configurar manualmente o RP em todos os roteadores.
+Nesse modelo, a descoberta do RP é feita de forma automática: roteadores candidatos anunciam sua disponibilidade, e um Mapping Agent coleta esses anúncios e distribui para todos os demais roteadores da rede.  
+
+Esse processo garante que todos os dispositivos aprendam, de maneira dinâmica, qual é o RP responsável por cada grupo multicast.  
+
+A grande vantagem é a simplicidade operacional e redução de erros de configuração. Porém, como é um protocolo proprietário da Cisco, só funciona em equipamentos Cisco e, em cenários "multivendor", não é a solução mais indicada.  
 
 **Características:**  
 
@@ -177,6 +190,12 @@ Auto-RP Process:
 
 ### 3. Bootstrap Router (BSR) - RFC 5059
 
+O Bootstrap Router (BSR) é o método padrão definido pela RFC 5059 para a descoberta e distribuição de RPs em redes PIM Sparse Mode. Diferente do Auto-RP (que é proprietário da Cisco), o BSR é aberto e interoperável, podendo ser usado em ambientes multivendor.  
+
+No BSR, os roteadores elegem automaticamente um Bootstrap Router responsável por coletar as informações dos candidatos a RP e distribuí-las para toda a rede. Essa eleição garante resiliência e redundância nativa: se o BSR principal falhar, outro candidato assume a função.  
+
+O resultado é uma rede mais escalável, padronizada e tolerante a falhas, sem a necessidade de configuração manual em todos os dispositivos.  
+
 **Características:**  
 
 - Padrão RFC (interoperável entre vendors)
@@ -204,6 +223,12 @@ BSR Process:
 
 ### 4. Anycast RP - RFC 4610
 
+O Anycast RP é uma técnica que aumenta a resiliência e a escalabilidade do multicast em redes grandes e críticas. Nesse modelo, múltiplos roteadores são configurados para atuar como RP utilizando o mesmo endereço IP. Assim, para a rede, todos eles representam “o mesmo RP”, mas na prática são diferentes dispositivos físicos distribuídos pela infraestrutura.  
+
+O roteamento unicast se encarrega de direcionar cada origem ou receptor ao RP mais próximo, garantindo balanceamento de carga e menor latência. Já a consistência entre os múltiplos RPs é mantida pelo protocolo MSDP (Multicast Source Discovery Protocol), que sincroniza as informações de estado entre eles.  
+
+O grande benefício do Anycast RP é que ele oferece alta disponibilidade: se um RP falhar, os outros continuam respondendo de forma transparente, sem necessidade de reconfiguração manual. Por isso, é amplamente utilizado em backbones de ISPs e grandes redes corporativas que exigem continuidade e performance.  
+
 **Características:**  
 
 - Alta disponibilidade e load balancing
@@ -227,6 +252,12 @@ Anycast RP - Redundância:
 ```
 
 ### 5. Embedded RP (IPv6)
+
+O Embedded RP foi introduzido no IPv6 como uma forma simples e eficiente de resolver o problema da descoberta do RP. Diferente dos outros métodos (Static RP, Auto-RP, BSR ou Anycast RP), o endereço do RP já vem embutido diretamente no endereço multicast do grupo.  
+
+Isso significa que não há necessidade de protocolos adicionais para anúncio ou descoberta. Quando um roteador recebe um grupo multicast IPv6 com Embedded RP, ele consegue identificar automaticamente qual é o RP responsável apenas analisando o próprio endereço do grupo.  
+
+A grande vantagem é a simplicidade operacional: não é preciso configurar mapeamentos nem manter processos de sincronização. Essa abordagem torna o multicast em IPv6 mais direto, especialmente útil em ambientes que buscam reduzir dependências de protocolos auxiliares.  
 
 **Características:**  
 
