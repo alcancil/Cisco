@@ -371,6 +371,10 @@ style N fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 **Fase 1 - Register Process:**  
 
+- **O que acontece:** Esta é a fase inicial onde uma nova fonte de multicast é descoberta e registrada na rede. Quando uma fonte começa a transmitir dados multicast, o roteador conectado diretamente a ela (First Hop Router - FHR) detecta este novo fluxo e inicia o processo de notificação para o Rendezvous Point (RP).  
+
+- **Por que é importante:** O RP precisa saber sobre todas as fontes ativas na rede para poder coordenar a distribuição de tráfego multicast. Sem este registro, os receptores não conseguiriam encontrar as fontes disponíveis.  
+
 ```text
 1. Source transmite → FHR detecta novo fluxo
 2. FHR encapsula pacotes → PIM Register → RP
@@ -379,6 +383,10 @@ style N fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 ```
 
 **Fase 2 - Join Process:**  
+
+- **O que acontece:** Quando um receptor deseja receber tráfego multicast de um grupo específico, ele envia uma mensagem IGMP Join. O roteador local (Last Hop Router - LHR) processa esta solicitação e envia uma mensagem PIM Join em direção ao RP. Conforme a mensagem viaja pela rede, cada roteador no caminho constrói uma árvore de distribuição compartilhada.  
+
+- **Por que é importante:** Esta fase estabelece o caminho pelo qual o tráfego multicast fluirá da fonte até os receptores interessados, criando uma infraestrutura eficiente de distribuição.  
 
 ```text
 5. Receptor envia IGMP Join → LHR
@@ -389,10 +397,14 @@ style N fill:#fef08a,stroke:#000,stroke-width:1px,color:#000,font-weight:bold
 
 **Fase 3 - Traffic Flow:**  
 
+- **O que acontece:** Com a árvore de distribuição estabelecida, o tráfego multicast pode fluir da fonte através do FHR, passando pelo RP, até chegar aos receptores via LHR. O RP pode otimizar o caminho enviando uma mensagem Register-Stop para evitar encapsulamento desnecessário, e há possibilidade de migração para uma árvore SPT (Shortest Path Tree) para otimizar a rota.  
+
+- **Por que é importante:** Esta é a fase operacional onde o tráfego multicast efetivamente chega aos destinatários. As otimizações realizadas aqui garantem eficiência na utilização da largura de banda da rede.  
+
 ```text
-9. Tráfego flui: Source → FHR → RP → LHR → Receiver
-10. RP pode enviar Register-Stop se tráfego flui diretamente
-11. Possível migração para SPT (S,G) para otimizar caminho
+1. Tráfego flui: Source → FHR → RP → LHR → Receiver
+2.  RP pode enviar Register-Stop se tráfego flui diretamente
+3.  Possível migração para SPT (S,G) para otimizar caminho
 ```
 
 ## Configuração de RPs
