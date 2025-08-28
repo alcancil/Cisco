@@ -12,6 +12,8 @@
     - [3. Bootstrap Router (BSR) - RFC 5059](#3-bootstrap-router-bsr---rfc-5059)
     - [4. Anycast RP - RFC 4610](#4-anycast-rp---rfc-4610)
     - [5. Embedded RP (IPv6)](#5-embedded-rp-ipv6)
+  - [Tabela Comparativa - Tipos de Configuração de Rendezvous Points (RP)](#tabela-comparativa---tipos-de-configuração-de-rendezvous-points-rp)
+  - [Resumo das Características Principais](#resumo-das-características-principais)
   - [Processo de Funcionamento do RP](#processo-de-funcionamento-do-rp)
     - [Fluxograma - Processo Completo do RP](#fluxograma---processo-completo-do-rp)
   - [Configuração de RPs](#configuração-de-rps)
@@ -278,6 +280,55 @@ Grupo: FF7X:0240:RPIP::/96
 Exemplo: FF75:0240:2001:DB8::1::/96
          RP = 2001:DB8::1
 ```
+
+## Tabela Comparativa - Tipos de Configuração de Rendezvous Points (RP)  
+
+| Característica        | Static RP                     | Auto-RP                         | Bootstrap Router (BSR)           | Anycast RP               | Embedded RP          |
+|-----------------------|-------------------------------|---------------------------------|----------------------------------|--------------------------|----------------------|
+| Padrão/RFC            | Manual                        | Proprietário Cisco              | RFC 5059                         | RFC 4610                 | IPv6                 |
+| Configuração          | Manual em todos os roteadores | Automática                      | Automática                       | Manual + MSDP            | Automática           |
+| Descoberta            | Não há (pré-configurado)      | Automática via grupos especiais | Eleição automática de BSR        | Roteamento unicast       | Embutida no endereço |
+| Interoperabilidade    | Universal                     | Apenas Cisco                    | Multivendor                      | Multivendor              | IPv6 universal       |
+| Redundância           | Não possui                    | Limitada                        | Nativa                           | Alta disponibilidade     | Não aplicável        |
+| Escalabilidade        | Baixa                         | Média                           | Alta                             | Muito Alta               | Alta                 |
+| Complexidade          | Muito Simples                 | Simples                         | Média                            | Alta                     | Muito Simples        |
+| Grupos Especiais      | N/A                           | 224.0.1.39, 224.0.1.40          | Bootstrap Messages               | N/A                      | N/A                  |
+| Protocolos Auxiliares | Nenhum                        | Auto-RP                         | BSR                              | MSDP                     | Nenhum               |
+| Tolerância a Falhas   | Baixa                         | Média                           | Alta                             | Muito Alta               | N/A                  |
+| Load Balancing        | Não                           | Não                             | Não                              | Sim                      | Não                  |
+| Melhor Cenário        | Redes pequenas/laboratório    | Redes Cisco homogêneas          | Redes multivendor médias/grandes | Backbones/redes críticas | Redes IPv6 simples   |
+
+## Resumo das Características Principais  
+
+**🔧 Static RP**  
+
+- Configuração manual mais simples
+- Adequado para ambientes controlados
+- Sem redundância automática
+
+**🏢 Auto-RP (Cisco)**  
+
+- Discovery automática em equipamentos Cisco
+- Utiliza Mapping Agent para distribuição
+- Limitado a ambientes homogêneos Cisco
+
+**🌐 Bootstrap Router (BSR)**  
+
+- Padrão RFC com interoperabilidade
+- Eleição automática e redundância nativa
+- Distribuição por flooding
+
+**⚡ Anycast RP**  
+
+- Alta disponibilidade com múltiplos RPs físicos
+- Sincronização via MSDP
+- Balanceamento de carga automático
+
+**📍 Embedded RP (IPv6)**  
+
+- RP embutido no próprio endereço do grupo
+- Zero configuração adicional
+- Específico para IPv6
 
 ## Processo de Funcionamento do RP
 
