@@ -72,10 +72,15 @@ Com base nessa limitação, foi desenvolvido o **multicast**. Agora, nesse tipo 
 - **Multicast:** Substitui a funcionalidade de broadcast no IPv6.  
 - **Loopback:** Para testes internos no dispositivo.  
 
-Certo, mas precisamos lembrar de duas coisas importantes: os switches propagam broadcast e os roteadores não. É importante lembrar pois o multicast vai funcionar de forma semelhante nesse aspecto. Para ter comunicação em ***multicast***, os switches formam os grupos em que os hosts irão participar e o roteador é quem gerencia os hosts. Porém essa comunicação fica somente na ***lan**, não vai para outras redes. Quem cria e gerencia esses grupos é a funcionalidade **IGMP SNOOP** .  
-Mas se precisarmos enviar a comunicação para outras redes, quem faz esse processo é o protocolo **PIM - Protocol Independent Multicast**.  
+Dois pontos importantes sobre multicast em camadas 2 e 3:
 
-**OBS:** existem vários outros protocolos além do PIM, porém o mercado escolheu ele para utilizar no dia-a-dia.  
+- **Camada 2 (Switches):** Utilizam IGMP Snooping para "escutar" as mensagens IGMP entre hosts e roteadores, criando uma tabela de quais portas têm hosts interessados em cada grupo multicast.
+
+- **Camada 3 (Roteadores):** Gerenciam os grupos multicast localmente via IGMP e fazem o roteamento inter-redes via PIM (Protocol Independent Multicast).
+
+O IGMP funciona entre hosts e roteadores dentro de uma rede local, mas quando é necessário enviar tráfego multicast para outras redes, o protocolo PIM é responsável pelo roteamento inter-redes.
+
+**Observação:** Existem outros protocolos multicast além do PIM (como DVMRP e MOSPF), porém o PIM se tornou o padrão da indústria para roteamento multicast.
 
 ![TOPOLOGIA](Imagens/topologia.png)  
 
