@@ -7,6 +7,7 @@
   - [Switch - Verificar IGMP Snooping:](#switch---verificar-igmp-snooping)
   - [Problemas de não utilizar o multicast](#problemas-de-não-utilizar-o-multicast)
   - [Endereçamento Multicast](#endereçamento-multicast)
+    - [🎯 Casos de Uso Reais](#-casos-de-uso-reais)
 
 # 01 - Multicast
 
@@ -310,3 +311,58 @@ GigabitEthernet0/1 is up, line protocol is up
 
 Para informações mais detalhadas e atualizadas, consulte o registro oficial da IANA:
 [Registro oficial de endereços multicast IPv6 pela IANA](https://www.iana.org/assignments/ipv6-multicast-addresses/ipv6-multicast-addresses.xhtml)
+
+### 🎯 Casos de Uso Reais
+
+1. IPTV/Streaming de Vídeo  
+
+```text
+Cenário: Provedor de TV por IP com 10.000 assinantes
+├─ Largura de banda por canal: 8 Mbps (HD)
+├─ 100 canais disponíveis  
+├─ Pico: 30% dos usuários assistindo simultaneamente
+
+Sem Multicast:
+└─ Banda necessária: 10.000 × 30% × 8 Mbps = 24.000 Mbps (24 Gbps)
+
+Com Multicast:  
+└─ Banda necessária: 100 canais × 8 Mbps = 800 Mbps
+
+💰 Economia: 96,7% na largura de banda!
+```
+
+2. Distribuição de Software/Updates  
+
+```text
+Cenário: Empresa com 1.000 computadores, update de 2GB
+
+Unicast tradicional:
+├─ Tempo por download: 10 minutos  
+├─ Downloads simultâneos: 50 (limitação do servidor)
+└─ Tempo total: 1000/50 × 10 = 200 minutos (3h20m)
+
+Multicast:
+├─ Todos recebem simultaneamente
+├─ Largura de banda: 1 × transmissão
+└─ Tempo total: 10 minutos
+
+⏱️ Redução de tempo: 95%
+```
+
+3. Dados Financeiros (Market Data)  
+
+```text
+Cenário: Bolsa de valores enviando cotações para brokers
+
+Características:
+├─ Latência crítica: < 1ms
+├─ 500 símbolos sendo negociados
+├─ 100 updates/segundo por símbolo  
+├─ 200 brokers conectados
+
+Benefícios do Multicast:
+├─ ✅ Latência ultra-baixa (UDP + multicast)
+├─ ✅ Mesmo dado para todos simultaneamente  
+├─ ✅ Não há "vantagem" por velocidade de conexão
+└─ ✅ Escalabilidade: adicionar broker não afeta performance
+```  
