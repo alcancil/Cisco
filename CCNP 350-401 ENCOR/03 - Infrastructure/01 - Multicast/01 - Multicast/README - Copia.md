@@ -265,6 +265,12 @@ Router(config)# access-list 10 permit any
 | FF0X::1:3                   | Todos os servidores DHCPv6 no site                      | Site-local (5)                                      | 🟡 |
 | FF0X::1:FFXX:XXXX           | Endereço multicast de nó solicitado                     | Link-local (2)                                      | 🔵 |
 
+Legenda de Cores:  
+
+- 🟢 Verde: Endereços fundamentais e essenciais para o funcionamento básico da rede
+- 🟡 Amarelo: Protocolos específicos de roteamento e serviços de infraestrutura
+- 🔵 Azul: Endereços multicast de nó solicitado (solicited-node)
+
 **🔍 Verificação IPv6 Multicast na Prática**  
 
 - Host Linux
