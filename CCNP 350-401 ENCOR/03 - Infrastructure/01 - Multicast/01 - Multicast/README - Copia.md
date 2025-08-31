@@ -8,6 +8,7 @@
   - [Problemas de não utilizar o multicast](#problemas-de-não-utilizar-o-multicast)
   - [Endereçamento Multicast](#endereçamento-multicast)
     - [🎯 Casos de Uso Reais](#-casos-de-uso-reais)
+    - [Próximo Tópico: Detalhes do Multicast](#próximo-tópico-detalhes-do-multicast)
 
 # 01 - Multicast
 
@@ -366,3 +367,11 @@ Benefícios do Multicast:
 ├─ ✅ Não há "vantagem" por velocidade de conexão
 └─ ✅ Escalabilidade: adicionar broker não afeta performance
 ```  
+
+---
+
+### Próximo Tópico: Detalhes do Multicast  
+
+ Para aprofundar a compreensão sobre como o roteamento multicast funciona na prática, incluindo os protocolos e as árvores de distribuição, continue para o próximo artigo.
+
+[**02 - Multicast Detalhes e Fluxo de Tráfego**](./README%20-%20Copia%20(2).md)
