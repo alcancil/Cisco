@@ -1,7 +1,6 @@
 - [Tipos de Endereço Multicast](#tipos-de-endereço-multicast)
 - [Tipos de Endereço Multicast IPv4](#tipos-de-endereço-multicast-ipv4)
   - [1. Endereços Bem Conhecidos (Well-Known)](#1-endereços-bem-conhecidos-well-known)
-  - [2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)](#2-escopo-global---22401024-internetwork-control-block)
   - [3. Endereços Multicast Privados ("Administratively Scoped Addresses")](#3-endereços-multicast-privados-administratively-scoped-addresses)
   - [4 Source-Specific Multicast (SSM)](#4-source-specific-multicast-ssm)
   - [5 GLOP Addressing](#5-glop-addressing)
@@ -52,6 +51,18 @@ Quando um roteador Cisco executa OSPF, ele automaticamente:
 - Se for eleito DR/BDR, também escuta em 224.0.0.6
 - Envia Hello packets para esses grupos multicast
 - Forma adjacências apenas com vizinhos que respondem
+
+**📋 Comandos Básicos para Well-Known:**  
+
+``ìos
+! Verificar endereços well-known em uso
+Router# show ip igmp groups
+Router# show ip mroute 224.0.0.0/8
+
+! Verificar protocolos usando endereços well-known
+Router# show ip ospf neighbor
+Router# show ip eigrp neighbors
+```
 
 **⚠️ Observação para CCNP:**
 Conhecer esses endereços é fundamental para troubleshooting de protocolos de roteamento. Quando analisamos captures com Wireshark, esses endereços aparecem frequentemente no tráfego de controle da rede.
@@ -108,6 +119,18 @@ Cenário: Redundância de Gateway
 - Router Backup monitora anúncios multicast
 - Se Master falha, Backup assume automaticamente
 - Hosts mantêm conectividade sem reconfiguração
+
+**📋 Comandos para Escopo Global:**  
+
+```ios
+! Verificar VRRP usando multicast global
+Router# show vrrp brief
+Router# show ip mroute 224.0.1.25
+
+! Configurar filtros para endereços globais
+Router(config)# ip multicast boundary 10
+Router(config)# access-list 10 permit 224.0.1.0 0.0.0.255
+```
 
 **🚨 Considerações para Implementação:**  
 
@@ -319,6 +342,20 @@ Cenário: Streaming de Vídeo Corporativo
 
 Resultado: Cada cliente recebe apenas o tráfego das fontes solicitadas!  
 
+**📋 Comandos Básicos para SSM:**  
+
+```ios
+! Habilitar SSM globalmente
+Router(config)# ip pim ssm default
+
+! Verificar configuração SSM
+Router# show ip pim rp mapping
+Router# show ip mroute 232.0.0.0/8
+
+! Configurar interface para IGMPv3 (necessário para SSM)
+Router(config-if)# ip igmp version 3
+```
+
 **🏢 Casos de Uso Empresariais:**  
 
 **📺 IPTV e Streaming:**  
@@ -462,6 +499,20 @@ Aplicações:
 │ 233.254.12.50 - Network Monitoring          │
 │ 233.254.12.100- Backup Replication          │
 └─────────────────────────────────────────────┘
+```
+
+**📋 Comandos para GLOP:**  
+
+```ios
+! Verificar número AS configurado
+Router# show ip bgp summary
+
+! Verificar grupos GLOP ativos
+Router# show ip mroute 233.0.0.0/8
+
+! Converter AS para GLOP (exemplo: AS 65001)
+! 65001 (decimal) = 0xFDE9 = 253.233
+! Resultado: 233.253.233.0/24
 ```
 
 **Diagrama de Rede**  
