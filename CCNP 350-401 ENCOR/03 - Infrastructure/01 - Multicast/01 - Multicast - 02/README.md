@@ -624,6 +624,27 @@ Onde:
 | 192.168.50.1  | 232.168.50.1/32    | 232.168.50.1     |
 | 172.16.200.10 | 232.16.200.10/32   | 232.16.200.10    |
 
+**Comandos de Configuração Embedded-RP:**  
+
+```ios
+! Configurar RP como Embedded-RP
+Router(config)# ip pim rp-address 10.1.1.100
+Router(config)# ip pim send-rp-discovery Loopback0 scope 16
+
+! Verificar configuração Embedded-RP
+Router# show ip pim rp mapping
+Router# show ip pim rp embedded
+
+! Habilitar BSR para Embedded-RP
+Router(config)# ip pim bsr-candidate Loopback0 0 1
+Router(config)# ip pim rp-candidate Loopback0 group-list 10
+Router(config)# access-list 10 permit 232.0.0.0 0.255.255.255
+
+! Debug de Embedded-RP
+Router# debug ip pim embedded-rp
+Router# debug ip pim bsr
+```
+
 **Exemplo Prático: Data Center Multicast**  
 
 **Cenário: Streaming Financeiro Distribuído**  
@@ -666,6 +687,26 @@ Site Backup (Rio de Janeiro):
                 │         │        │
             [PIM Join]    │    [PIM Join]
           232.10.10.100   │    232.20.20.200
+```
+
+**Comandos de Troubleshooting:**
+
+```ios
+! Verificar estado do Embedded-RP
+Router# show ip pim rp mapping embedded
+Router# show ip mroute 232.0.0.0/8
+
+! Testar conectividade com RP
+Router# ping 10.1.1.100 source loopback0
+Router# traceroute 10.1.1.100
+
+! Verificar tabela de roteamento multicast
+Router# show ip mroute count
+Router# show ip pim interface count
+
+! Limpar estatísticas para teste
+Router# clear ip mroute *
+Router# clear ip pim topology
 ```
 
 **Vantagens do Embedded-RP**  
@@ -712,6 +753,20 @@ Benefícios:
 | MTU Issues       | Packet loss       | show ip mroute count   | Ajustar MTU path discovery     |
 | TTL Boundary     | Scope limitation  | show ip mroute         | Verificar TTL scoping          |
 
+**Comandos de Monitoramento Contínuo:**  
+
+```ios
+! Scripts de monitoramento automático
+Router# show ip mroute summary | include entries
+Router# show ip pim neighbor | include Neighbor
+Router# show ip igmp groups summary | include Group
+
+! Verificação de performance
+Router# show ip mroute active
+Router# show processes cpu | include PIM|IGMP
+Router# show memory processes | include PIM
+```
+
 **💡 Dica Profissional:** Embedded-RP representa o estado da arte em multicast enterprise, oferecendo auto-configuração sem sacrificar controle. É a base para implementações IPv6 e arquiteturas SD-WAN modernas.
 
 ## Tipos de Endereço Multicast IPv6
@@ -739,6 +794,26 @@ Onde:
 | P    | 0 ou 1   | Indica se o grupo é baseado em um prefixo unicast (1) ou não (0)                  |
 | R    | 0 ou 1   | Indica se o grupo tem um RP (1) ou não (0) Z-Reservado                            |
 
+**Comandos Básicos IPv6 Multicast:**
+
+```ios
+! Habilitar IPv6 multicast routing
+Router(config)# ipv6 multicast-routing
+
+! Configurar interface para IPv6 multicast
+Router(config-if)# ipv6 enable
+Router(config-if)# ipv6 pim sparse-mode
+
+! Verificar configuração IPv6 multicast
+Router# show ipv6 mroute
+Router# show ipv6 pim interface
+Router# show ipv6 pim neighbor
+
+! Verificar grupos MLD
+Router# show ipv6 mld groups
+Router# show ipv6 mld interface
+```
+
 ### 1. Escopo IPv6 Multicast (Scope Field)  
 
 O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permitindo controle granular sobre a propagação do tráfego sem depender de configurações complexas de boundary. Este mecanismo built-in facilita significativamente o design e troubleshooting de redes multicast.
@@ -753,6 +828,24 @@ O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permit
 | 5     | Site-Local         | Campus ou organização              | Múltiplas VLANs    |
 | 8     | Organization-Local | Toda a organização                 | WANs corporativas  |
 | E     | Global             | Internet/redes públicas            | Alcance irrestrito |
+
+**Comandos para Configuração de Escopo:**  
+
+```ios
+! Configurar boundary por escopo (exemplo: bloquear global scope)
+Router(config-if)# ipv6 multicast boundary ff0e::/16
+
+! Configurar scope específico para aplicação
+Router(config)# ipv6 multicast group-range ff05::/16
+
+! Verificar boundaries configurados
+Router# show ipv6 multicast boundary
+Router# show ipv6 pim topology
+
+! Debug de escopo
+Router# debug ipv6 mld events
+Router# debug ipv6 pim events
+```
 
 **📊 Comparativo: IPv4 vs IPv6 Scope Control**  
 
@@ -775,6 +868,17 @@ O campo Scope de 4 bits é uma das maiores evoluções do IPv6 multicast, permit
 - Equivalente ao loopback multicast
 - Zero overhead de rede
 
+**Comandos de Teste:**  
+
+```ios
+! Testar interface-local
+Router# ping ipv6 ff01::1
+Router# show ipv6 mld groups ff01::/16
+
+! Verificar apenas na interface local
+Router# show ipv6 interface brief
+```
+
 **🏢 Escopo 2: Link-Local (FF02::)**  
 
 O escopo mais utilizado em redes **enterprise** para protocolos de descoberta e controle local.
@@ -789,6 +893,21 @@ O escopo mais utilizado em redes **enterprise** para protocolos de descoberta e 
 | FF02::A   | EIGRP          | Roteadores EIGRP           |
 | FF02::1:2 | DHCPv6         | Agentes DHCP               |
 | FF02::FB  | mDNSv6         | Multicast DNS              |
+
+**Comandos para Link-Local:**
+
+```ios
+! Testar descoberta de vizinhos
+Router# ping ipv6 ff02::2
+
+! Verificar protocolos usando link-local
+Router# show ipv6 ospf neighbor
+Router# show ipv6 eigrp neighbors
+Router# show ipv6 dhcp binding
+
+! Capturar tráfego link-local
+Router# debug ipv6 packet ff02::/16
+```
 
 **Cenário Empresarial:**
 
@@ -831,6 +950,20 @@ Propagação:
 └─ Internet Gateway       ✗ (bloqueado automaticamente)
 ```
 
+**Comandos para Site-Local:**
+
+```ios
+! Configurar aplicação site-local
+Router(config)# ipv6 multicast group-range ff05::/16 site-local
+
+! Monitorar tráfego site-local
+Router# show ipv6 mroute ff05::/16
+Router# show ipv6 mld groups | include ff05
+
+! Configurar boundary para site-local
+Router(config-if)# ipv6 multicast boundary ff05::/16 in
+```
+
 **🌐 Escopo 8: Organization-Local (FF08::)**  
 
 Abrange toda a organização, incluindo filiais conectadas via WAN, mas não a Internet pública.
@@ -852,6 +985,18 @@ Filial (Rio):         Filial (Brasília):
 
 Internet:
 └─ Bloqueado automaticamente ✗
+```
+
+**Comandos para Organization-Local:**
+
+```ios
+! Configurar WAN para organization-local
+Router(config-if)# ipv6 multicast boundary ff0e::/16
+Router(config-if)# no ipv6 multicast boundary ff08::/16
+
+! Monitorar sites remotos
+Router# show ipv6 mroute ff08::/16 | include RPF
+Router# ping ipv6 ff08::corp:test
 ```
 
 **🌍 Escopo E: Global (FFE::)**  
