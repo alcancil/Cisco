@@ -1009,6 +1009,17 @@ Router# ping ipv6 ff08::corp:test
 - Distribuição de software público
 - Serviços de descoberta global
 
+**Comandos para Global Scope:**  
+
+```ios
+! CUIDADO: Configurar com cautela
+Router(config-if)# no ipv6 multicast boundary ff0e::/16
+
+! Monitorar uso global (pode gerar custos)
+Router# show ipv6 mroute ff0e::/16 active
+Router# show ipv6 mroute ff0e::/16 count
+```
+
 **Vantagens do Sistema de Escopo IPv6**  
 
 **✅ Benefícios Operacionais:**  
@@ -1046,6 +1057,23 @@ ipv6.dst >= ff05:: and ipv6.dst < ff06::  # Site-local
 | "Tráfego sai para Internet"   | FFE::          | Scope global        | Mudar para FF08::        |
 | "Filial não recebe"           | FF05::         | Scope site-local    | Usar FF08:: organization |
 | "Sobrecarga de tráfego"       | FF0E::         | Scope muito amplo   | Reduzir para FF05::      |
+
+**Comandos de Troubleshooting por Escopo:**  
+
+```ios
+! Verificar por escopo específico
+Router# show ipv6 mroute | include ff02
+Router# show ipv6 mroute | include ff05  
+Router# show ipv6 mroute | include ff08
+
+! Teste de conectividade por escopo
+Router# ping ipv6 ff02::1 repeat 5
+Router# ping ipv6 ff05::1 repeat 5
+
+! Debug por escopo
+Router# debug ipv6 mld events | include ff02
+Router# debug ipv6 pim sparse | include ff05
+```
 
 **🎯 Relevância para CCNP Enterprise:**  
 
@@ -1088,6 +1116,26 @@ Versão avançada com filtragem por fonte:
 - **Include/Exclude Lists:** "Aceito de todos, exceto desta lista" ou "Apenas destas fontes"
 - **Query Types:** Consultas gerais, específicas por grupo, ou por grupo e fonte
 
+**Comandos Básicos MLD:**  
+
+```ios
+! Configurar MLDv2 na interface
+Router(config-if)# ipv6 mld version 2
+
+! Configurar parâmetros MLD
+Router(config-if)# ipv6 mld query-interval 125
+Router(config-if)# ipv6 mld query-max-response-time 10
+
+! Verificar configuração MLD
+Router# show ipv6 mld interface
+Router# show ipv6 mld groups
+Router# show ipv6 mld traffic
+
+! Limpar estatísticas MLD
+Router# clear ipv6 mld traffic
+Router# clear ipv6 mld counters
+```
+
 **Tipos de Mensagens MLD**  
 
 | Tipo      | Função                                | Exemplo Prático                             |
@@ -1118,6 +1166,22 @@ Andar 1 - Geral:
 ├─ Rede: 2001:db8:100:1::/64
 ├─ All Hands: ff0e::1:1000 (global)
 └─ Treinamentos: ff3e::1:3000
+```
+
+**Comandos de Monitoramento MLD:**  
+
+```ios
+! Monitorar grupos ativos por interface
+Router# show ipv6 mld groups interface gi0/1
+Router# show ipv6 mld groups interface gi0/2
+
+! Verificar hosts membros de grupos específicos
+Router# show ipv6 mld groups ff05::1000:1 detail
+Router# show ipv6 mld groups | include 2001:db8
+
+! Estatísticas de mensagens MLD
+Router# show ipv6 mld interface gi0/1 detail
+Router# show ipv6 mld traffic | include Query|Report
 ```
 
 **Como Funciona na Prática**  
@@ -1187,3 +1251,16 @@ debug ipv6 mld
 | "Grupos não funcionam" | Verificar roteamento IPv6 multicast     |
 
 **💡 Dica Prática:** MLD é como uma "lista de transmissão inteligente" para IPv6. Quando você quer receber um stream de vídeo específico, seu dispositivo automaticamente se inscreve usando MLD, e quando não quer mais, se desinscreve. É simples, eficiente e economiza banda da rede!
+
+**Comandos de Troubleshooting:**  
+
+```ios
+! Problemas de conectividade
+Router# ping ipv6 ff02::1
+Router# show ipv6 interface brief
+Router# show ipv6 route
+
+! Problemas de grupos
+Router# show ipv6 mroute
+Router# show ipv6 pim
+```
