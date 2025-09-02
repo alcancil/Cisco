@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árvore Multicast - Cisco CCNP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #00d4ff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #b8d4ff;
+        }
+        
+        .tree-container {
+            position: relative;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Raiz - Servidor */
+        .root {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border: 3px solid #fff;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 50px;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            animation: pulse 2s infinite;
+            position: relative;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Linhas conectoras */
+        .line {
+            width: 3px;
+            background: linear-gradient(to bottom, #00d4ff, #0099cc);
+            position: absolute;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        /* Nível dos Roteadores Core */
+        .level {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .router {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border: 2px solid #fff;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin: 0 30px;
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .router:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Switches */
+        .switch {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin: 0 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Folhas - Hosts */
+        .leaf {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            border: 2px solid #fff;
+            border-radius: 8px;
+            padding: 8px 15px;
+            margin: 0 10px;
+            box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
+            font-size: 0.9em;
+        }
+        
+        .device-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .device-info {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* Protocolos */
+        .protocol {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .pim-protocol {
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .igmp-protocol {
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Setas de fluxo */
+        .flow-arrow {
+            position: absolute;
+            color: #00d4ff;
+            font-size: 1.5em;
+            animation: flow 1.5s infinite;
+        }
+        
+        @keyframes flow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .legend {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            text-align: left;
+        }
+        
+        .legend-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        
+        .legend-source { border-color: #ff6b35; }
+        .legend-router { border-color: #4ecdc4; }
+        .legend-switch { border-color: #667eea; }
+        .legend-host { border-color: #11998e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🌳 Árvore de Distribuição Multicast</h1>
+        <p class="subtitle">Grupo: 239.1.1.1 | Cisco CCNP ENCOR 350-401</p>
+        
+        <div class="tree-container">
+            <!-- RAIZ: Servidor de Vídeo -->
+            <div class="root">
+                <div class="device-name">📺 SERVIDOR DE VÍDEO</div>
+                <div class="device-info">IP: 192.168.100.10<br>
+                Envia para: 239.1.1.1</div>
+            </div>
+            
+            <!-- Linha vertical principal -->
+            <div class="line" style="height: 40px; top: 95px;"></div>
+            <div class="flow-arrow" style="top: 110px;">⬇️</div>
+            
+            <!-- NÍVEL 1: Roteadores Core -->
+            <div class="level">
+                <div class="router">
+                    <div class="device-name">🔄 ROUTER A</div>
+                    <div class="device-info">Core Router<br>10.1.1.1</div>
+                    <div class="protocol pim-protocol">PIM</div>
+                    <div class="protocol igmp-protocol">IGMP</div>
+                </div>
+                
+                <div class="router">
+                    <div class="device-name">🔄 ROUTER B</div>
+                    <div class="device-info">Core Router<br>10.1.2.1</div>
+                    <div class="protocol pim-protocol">PIM</div>
+                    <div class="protocol igmp-protocol">IGMP</div>
+                </div>
+                
+                <div class="router">
+                    <div class="device-name">🔄 ROUTER C</div>
+                    <div class="device-info">Core Router<br>10.1.3.1</div>
+                    <div class="protocol pim-protocol">PIM</div>
+                    <div class="protocol igmp-protocol">IGMP</div>
+                </div>
+            </div>
+            
+            <!-- Linhas para switches -->
+            <div style="position: relative; height: 40px;">
+                <div class="flow-arrow" style="top: 15px; left: 20%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 50%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 80%;">⬇️</div>
+            </div>
+            
+            <!-- NÍVEL 2: Switches -->
+            <div class="level">
+                <div class="switch">
+                    <div class="device-name">🔀 SWITCH 1</div>
+                    <div class="device-info">Access Layer</div>
+                    <div class="protocol igmp-protocol">IGMP Snooping</div>
+                </div>
+                
+                <div class="switch">
+                    <div class="device-name">🔀 SWITCH 2</div>
+                    <div class="device-info">Access Layer</div>
+                    <div class="protocol igmp-protocol">IGMP Snooping</div>
+                </div>
+                
+                <div class="switch">
+                    <div class="device-name">🔀 SWITCH 3</div>
+                    <div class="device-info">Access Layer</div>
+                    <div class="protocol igmp-protocol">IGMP Snooping</div>
+                </div>
+            </div>
+            
+            <!-- Linhas para hosts -->
+            <div style="position: relative; height: 40px;">
+                <div class="flow-arrow" style="top: 15px; left: 15%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 30%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 45%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 60%;">⬇️</div>
+                <div class="flow-arrow" style="top: 15px; left: 85%;">⬇️</div>
+            </div>
+            
+            <!-- FOLHAS: Hosts/Clientes -->
+            <div class="level">
+                <div class="leaf">
+                    <div class="device-name">💻 PC-A1</div>
+                    <div class="device-info">IGMP Join<br>239.1.1.1</div>
+                </div>
+                
+                <div class="leaf">
+                    <div class="device-name">📱 Mobile-A2</div>
+                    <div class="device-info">IGMP Join<br>239.1.1.1</div>
+                </div>
+                
+                <div class="leaf">
+                    <div class="device-name">💻 PC-B1</div>
+                    <div class="device-info">IGMP Join<br>239.1.1.1</div>
+                </div>
+                
+                <div class="leaf">
+                    <div class="device-name">📺 TV-B2</div>
+                    <div class="device-info">IGMP Join<br>239.1.1.1</div>
+                </div>
+                
+                <div class="leaf">
+                    <div class="device-name">💻 PC-C1</div>
+                    <div class="device-info">IGMP Join<br>239.1.1.1</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Legenda -->
+        <div class="legend">
+            <div class="legend-item legend-source">
+                <strong>RAIZ (Source)</strong><br>
+                Servidor que origina o conteúdo multicast
+            </div>
+            <div class="legend-item legend-router">
+                <strong>GALHOS (Routers)</strong><br>
+                PIM: Constroem árvore entre roteadores<br>
+                IGMP: Comunicam com hosts locais
+            </div>
+            <div class="legend-item legend-switch">
+                <strong>RAMOS (Switches)</strong><br>
+                IGMP Snooping otimiza entrega L2
+            </div>
+            <div class="legend-item legend-host">
+                <strong>FOLHAS (Hosts)</strong><br>
+                IGMP Join: Se juntam aos grupos multicast
+            </div>
+        </div>
+    </div>
+</body>
+</html>

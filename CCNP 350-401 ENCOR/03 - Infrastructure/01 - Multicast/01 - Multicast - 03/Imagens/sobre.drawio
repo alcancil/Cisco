@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0" version="26.0.8">
+  <diagram name="Página-1" id="gYHmF2ha5RBDS1s4GA_A">
+    <mxGraphModel dx="1194" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-1" value="&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 127, 255));&quot;&gt;239.192.1.1&lt;/span&gt;&lt;span style=&quot;color: rgba(0, 0, 0, 0);&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 127, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt; &lt;/span&gt;em binário: &lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 51, 255));&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 0, 255));&quot;&gt;11101111 1&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 255, 128));&quot;&gt;1000000 00000001 00000001&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="140" width="540" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-2" value="&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 127, 255));&quot;&gt;239.64.1.1&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; em binário: &lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 0, 255));&quot;&gt;11101111 0&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 204, 102));&quot;&gt;1000000 00000001 00000001&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="180" width="540" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-3" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;strokeWidth=3;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="335" y="205" width="20" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-4" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;strokeWidth=3;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="481.5" y="137.5" width="20" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-5" value="&lt;div&gt;&lt;b&gt;25 primeiros bits.&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Parte fixa&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontColor=light-dark(#000000,#FF33FF);fontSize=16;align=center;" vertex="1" parent="1">
+          <mxGeometry x="270" y="260" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-7" value="&lt;div&gt;&lt;b style=&quot;color: light-dark(rgb(0, 0, 0), rgb(0, 255, 128));&quot;&gt;23 últimos bits.&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b style=&quot;color: light-dark(transparent, rgb(0, 204, 102));&quot;&gt;Parte Igual&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontColor=light-dark(#000000,#FF33FF);fontSize=16;align=center;" vertex="1" parent="1">
+          <mxGeometry x="430" y="260" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UK9mEGpV4gR6H5LQlIn4-8" value="MAC ADDRESS IGUAL :&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 153, 51));&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(153, 76, 0));&quot;&gt; &lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 181, 112));&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 153, 51));&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(153, 76, 0));&quot;&gt;01-00-5E-7F-01-01&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Helvetica;fontSize=15;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="120" y="342.5" width="320" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
