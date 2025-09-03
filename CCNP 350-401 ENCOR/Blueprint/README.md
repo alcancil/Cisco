@@ -1,120 +1,150 @@
-# Blueprint - Tópicos Exame CCNEP ENCORE 350-401
+# CCNP ENCOR 350-401 - Implementing Cisco Enterprise Network Core Technologies
 
+Este repositório contém todo o material de estudo e controle de progresso para o exame **CCNP ENCOR 350-401 - Implementing Cisco Enterprise Network Core Technologies**.
 
-- [ ] 1.0 Architecture 15%
-- [ ] 2.0 Virtualization 10%
-- [ ] 3.0 Infrastructure 30%
-- [ ] 4.0 Network Assurance 10%
-- [ ] 5.0 Security 20%
-- [ ] 6.0 Automation 15%
+## 📅 Informações do Exame
 
-- - -
+### Cronograma de Versões
 
-## 1.0 Architecture 15%
+| Versão | Status | Vigência | Observações |
+|--------|--------|----------|-------------|
+| **v1.1** | 🟢 **Ativa** | Até **18 de março de 2026** | Versão atual em vigor |
+| **v1.2** | 🟡 **Futura** | A partir de **19 de março de 2026** | Nova versão com mudanças significativas |
 
-- [x] 1.1 Explain the different design principles used in an enterprise network
-- [x] 1.1.a High-level enterprise network design such as 2-tier, 3-tier, fabric, and cloud
-- [ ] 1.1.b High availability techniques such as redundancy, FHRP, and SSO
-- [ ] 1.2 Describe wireless network design principles
-- [ ] 1.2.a Wireless deployment models (centralized, distributed, controller-less, controller-based, cloud, remote branch)
-- [ ] 1.2.b Location services in a WLAN design
-- [ ] 1.2.c Client density
-- [ ] 1.3 Explain the working principles of the Cisco SD-WAN solution
-- [ ] 1.3.a SD-WAN control and data planes elements
-- [ ] 1.3.b Benefits and limitations of SD-WAN solutions
-- [ ] 1.4 Explain the working principles of the Cisco SD-Access solution
-- [ ] 1.4.a SD-Access control and data planes elements
-- [ ] 1.4.b Traditional campus interoperating with SD-Access
-- [x] 1.5 Interpret wired and wireless QoS configurations
-- [x] 1.5.a QoS components
-- [x] 1.5.b QoS policy
-- [x] 1.6 Describe hardware and software switching mechanisms such as CEF, CAM, TCAM, FIB, RIB, and adjacency tables
+> ⚠️ **Importante:** Se você planeja fazer o exame antes de março de 2026, estude pela **v1.1**. Para exames após essa data, utilize a **v1.2**.
 
-- - -
+## 📋 Documentos de Estudo
 
-## 2.0 Virtualization 10%
+### 🔍 [Comparação Detalhada v1.1 vs v1.2](comparacao.md)
+Análise completa das diferenças entre as duas versões do blueprint, incluindo:
+- Tópicos que **permanecem** inalterados
+- Tópicos que foram **removidos** da v1.2
+- Tópicos **novos** adicionados na v1.2
+- Mudanças de nomenclatura e reorganização
 
-- [x] 2.1 Describe device virtualization technologies
-- [x] 2.1.a Hypervisor type 1 and 2
-- [x] 2.1.b Virtual machine
-- [x] 2.1.c Virtual switching
-- [x] 2.2 Configure and verify data path virtualization technologies
-- [x] 2.2.a VRF
-- [ ] 2.2.b GRE and IPsec tunneling
-- [ ] 2.3 Describe network virtualization concepts
-- [ ] 2.3.a LISP
-- [ ] 2.3.b VXLAN
+### 📚 Blueprints por Versão
 
-- - -
+#### 📖 [ENCOR v1.1 - Controle de Estudos](encor_v11.md)
+- ✅ **Versão Atual** (válida até 18/03/2026)
+- **155+ laboratórios** organizados por tópico
+- Inclui todo conteúdo **Wireless** (design, infraestrutura, segurança)
+- Hardware switching detalhado (CEF, CAM, TCAM)
+- QoS com componentes e políticas específicas
 
-### 3.0 Infraestructure 30%
+#### 🚀 [ENCOR v1.2 - Controle de Estudos](encor_v12.md)
+- 🔄 **Versão Futura** (válida a partir de 19/03/2026)
+- **158 laboratórios** reorganizados
+- ❌ **Sem conteúdo Wireless**
+- ➕ **Multicast expandido** (PIM SM, SSM, bidir, MSDP)
+- ➕ **AI-powered workflows** integrados
+- 🏷️ **Catalyst branding** (SD-WAN, Center)
 
-- [ ] 3.1 Layer 2
-  - [ ] 3.1.a Troubleshoot static and dynamic 802.1q trunking protocols
-  - [ ] 3.1.b Troubleshoot static and dynamic EtherChannels
-  - [ ] 3.1.c Configure and verify common Spanning Tree Protocols (RSTP, MST) and Spanning Tree enhancements such as root guard and BPDU guard
-- [ ] 3.2 Layer 3
-  - [ ] 3.2.a Compare routing concepts of EIGRP and OSPF (advanced distance vector vs. link state, load balancing, path selection, path operations, metrics, and area types)
-  - [ ] 3.2.b Configure simple OSPFv2/v3 environments, including multiple normal areas, summarization, and filtering (neighbor adjacency, point-to-point, and broadcast network types, and passive-interface)
-  - [ ] 3.2.c Configure and verify eBGP between directly connected neighbors (best path selection algorithm and neighbor relationships)
-  - [ ] 3.2.d Describe policy-based routing
-- [ ] 3.3 Wireless
-  - [ ] 3.3.a Describe Layer 1 concepts, such as RF power, RSSI, SNR, interference, noise, bands, channels, and wireless client devices capabilities
-  - [ ] 3.3.b Describe AP modes and antenna types
-  - [ ] 3.3.c Describe access point discovery and join process (discovery algorithms, WLC selection process)
-  - [ ] 3.3.d Describe the main principles and use cases for Layer 2 and Layer 3 roaming
-  - [ ] 3.3.e Troubleshoot WLAN configuration and wireless client connectivity issues using GUI only
-  - [ ] 3.3.f Describe wireless segmentation with groups, profiles, and tags3.3 Wireless
-- [ ] 3.4 IP Services
-  - [ ] 3.4.a Interpret network time protocol configurations such as NTP and PTP
-  - [ ] 3.4.b Configure NAT/PAT
-  - [ ] 3.4.c Configure first hop redundancy protocols, such as HSRP, VRRP
-  - [ ] 3.4.d Describe multicast protocols, such as RPF check, PIM and IGMP v2/v3
+## 🎯 Como Usar Este Material
 
-- - -
+### 1. **Escolha sua Versão**
+- **Exame antes de março/2026:** Use [ENCOR v1.1](encor_v11.md)
+- **Exame após março/2026:** Use [ENCOR v1.2](encor_v12.md)
 
-## 4.0 Network Assurance 10%
+### 2. **Sistema de Controle de Progresso**
+Cada documento possui checkboxes para marcar seu progresso:
 
-- [ ] 4.1 Diagnose network problems using tools such as debugs, conditional debugs, traceroute, ping, SNMP, and syslog
-- [ ] 4.2 Configure and verify Flexible NetFlow
-- [ ] 4.3 Configure SPAN/RSPAN/ERSPAN
-- [ ] 4.4 Configure and verify IPSLA
-- [ ] 4.5 Describe Cisco DNA Center workflows to apply network configuration, monitoring, and management
-- [ ] 4.6 Configure and verify NETCONF and RESTCONF
+- ⏳ **Não Iniciado** - Tópico ainda não estudado
+- 📚 **Estudando** - Em progresso atual
+- ✅ **Concluído** - Tópico finalizado
+- 🔄 **Revisão** - Necessita revisão
 
-- - - 
+### 3. **Organização dos Estudos**
+Os tópicos estão numerados sequencialmente para facilitar o controle:
+```
+01 - Architecture - 2-Tier Design
+02 - Architecture - 3-Tier Design
+03 - Architecture - Fabric Design
+...
+```
 
-## 5.0 Security 20%
+### 4. **Estrutura de Pastas**
+Sugestão de organização dos laboratórios:
+```
+ENCOR_Labs/
+├── 01_Architecture/
+├── 02_Virtualization/
+├── 03_Infrastructure/
+├── 04_Network_Assurance/
+├── 05_Security/
+└── 06_Automation/
+```
 
-- [ ] 5.1 Configure and verify device access control
-  - [ ] 5.1.a Lines and local user authentication
-  - [ ] 5.1.b Authentication and authorization using AAA
-- [ ] 5.2 Configure and verify infrastructure security features
-  - [ ] 5.2.a ACLs
-  - [ ] 5.2.b CoPP
-- [ ] 5.3 Describe REST API security
-- [ ] 5.4 Configure and verify wireless security features
-  - [ ] 5.4.a 802.1X
-  - [ ] 5.4.b WebAuth
-  - [ ] 5.4.c PSK
-  - [ ] 5.4.d EAPOL (4-way handshake)
-- [ ] 5.5 Describe the components of network security design
-  - [ ] 5.5.a Threat defense
-  - [ ] 5.5.b Endpoint security
-  - [ ] 5.5.c Next-generation firewall
-  - [ ] 5.5.d TrustSec and MACsec
-  - [ ] 5.5.e Network access control with 802.1X, MAB, and WebAuth
+## 📊 Estrutura do Exame
 
-- - - 
+### Distribuição de Conteúdo (Ambas Versões)
+| Seção | Percentual | Foco Principal |
+|-------|------------|----------------|
+| **Arquitetura** | 15% | Design principles, SD-WAN, SD-Access, QoS |
+| **Virtualização** | 10% | Hypervisors, VRF, GRE/IPsec, LISP/VXLAN |
+| **Infraestrutura** | 30% | Layer 2/3, Routing, IP Services |
+| **Network Assurance** | 10% | Troubleshooting, NetFlow, SPAN, DNA/Catalyst Center |
+| **Segurança** | 20% | Device access, Infrastructure security, Network design |
+| **Automação** | 15% | Python, JSON, APIs, EEM, Orchestration |
 
-### 6.0 Automation 15%
+### ⏱️ Detalhes do Exame
+- **Duração:** 120 minutos
+- **Formato:** Multiple choice, drag-and-drop, fill-in-the-blank, testlet, simlet
+- **Associado a:** Certificações CCNP e CCIE Enterprise
 
-- [X] 6.1 Interpret basic Python components and scripts
-- [X] 6.2 Construct valid JSON-encoded files
-- [ ] 6.3 Describe the high-level principles and benefits of a data modeling language, such as YANG
-- [ ] 6.4 Describe APIs for Cisco DNA Center and vManage
-- [ ] 6.5 Interpret REST API response codes and results in payload using Cisco DNA Center and RESTCONF
-- [ ] 6.6 Construct an EEM applet to automate configuration, troubleshooting, or data collection
-- [ ] 6.7 Compare agent vs. agentless orchestration tools, such as Chef, Puppet, Ansible, and SaltStack
+## 🎓 Estratégia de Estudo
 
+### Recomendações:
+1. **Comece pela seção de maior peso:** Infraestrutura (30%)
+2. **Foque nas mudanças:** Se migrar da v1.1 para v1.2, consulte a [comparação](comparacao.md)
+3. **Pratique laboratórios:** Cada tópico deve incluir prática hands-on
+4. **Mantenha controle:** Marque regularmente seu progresso nos checkboxes
+5. **Revise regularmente:** Use o status 🔄 para tópicos que precisam de revisão
 
+### Ordem Sugerida de Estudo:
+1. **Infraestrutura** (30%) - Base fundamental
+2. **Segurança** (20%) - Aplicação prática
+3. **Arquitetura** (15%) - Design principles
+4. **Automação** (15%) - Tendências modernas
+5. **Network Assurance** (10%) - Troubleshooting
+6. **Virtualização** (10%) - Tecnologias específicas
+
+## 📝 Progresso Atual
+
+### Version v1.1
+- **Total de Tópicos:** 155+
+- **Concluídos:** [ ] 0
+- **Em Progresso:** [ ] 0
+- **Progresso Geral:** 0%
+
+### Version v1.2  
+- **Total de Tópicos:** 158
+- **Concluídos:** [ ] 0
+- **Em Progresso:** [ ] 0
+- **Progresso Geral:** 0%
+
+---
+
+## 📚 Recursos Adicionais
+
+### Links Úteis:
+- [Cisco Learning Network](https://learningnetwork.cisco.com/)
+- [Cisco Documentation](https://www.cisco.com/c/en/us/support/docs/ip/ip-routing/13769-16.html)
+- [Oficial Exam Topics](https://learningnetwork.cisco.com/s/encor-exam-topics)
+
+### Laboratórios Recomendados:
+- **EVE-NG** - Emulação de redes
+- **GNS3** - Simulação avançada  
+- **Cisco Modeling Labs** - Plataforma oficial
+
+---
+
+## 📄 Licença e Uso
+
+Este material é destinado para fins educacionais e preparação para certificações Cisco. 
+Todo o conteúdo segue as diretrizes oficiais da Cisco Systems.
+
+---
+
+**Última Atualização:** Janeiro 2025  
+**Status:** Em desenvolvimento ativo  
+**Próxima Revisão:** Março 2026 (transição v1.1 → v1.2)
