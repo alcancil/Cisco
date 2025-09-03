@@ -30,12 +30,27 @@
 Para qualquer host pode responder a alguma requisição em redes IP, ele tem um endereço de camada 2 chamado de mac address que é único. Porém, agora como estamos em multicast, os hosts
 tem que responder a um endereço de grupo de multicast para poderem fazer parte desse grupo. Como as placas de rede podem receber vários fluxos de comunicação ao mesmo tempo, é assim que eles conseguem identificar os fluxos multicast. Mas para tanto, foram criadas algumas regras específicas.  
 
-Primeiro, precisamos lembrar que o MAC address é um endereço de 12 dígitos hexadecimais, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55  
+Primeiro, precisamos lembrar que o MAC address é um endereço de 12 dígitos hexadecimais, com segmentos de 8 bits contendo no total 48 bits. Exemplo: 00:11:22:33:44:55 
+
+### Regras de Formação IPv4 Multicast MAC:
 
 - Os **primeiros 24 bits** de um Mac Address de multicast sempre serão **01:00:5E**
 - O primeiro bit mais à esquerda é conhecido como **individual/group bit (I/G)** e, sempre que ele for o valor **1**, isso indica que ele é um multicast.
 - O vigésimo quinto bit sempre será setado em **0**. Isso é feito para evitar ambiguidades e tentar manter o endereço de multicast em faixas menores.
 - O restante dos outros **23 bits** é utilizado para calcular o resto do endereço de multicast.
+
+**Comandos para Verificar MAC Multicast:**
+
+```ios
+! Verificar tabela MAC com endereços multicast
+Switch# show mac address-table multicast
+
+! Verificar endereços MAC específicos
+Switch# show mac address-table address 01005e.xxxx.xx
+
+! Monitorar tráfego multicast na interface
+Switch# show interfaces gigabitethernet0/1 counters
+```
 
 Agora vamos a um exemplo de como funciona essa regra. Vamos transformar o endereço IP 239.255.1.1 .  
 
@@ -49,11 +64,53 @@ E por fim agora é só converter a parte em Binário para Hexadecimal.
 
 ![MAC](Imagens/mac.png)  
 
+**Comandos para Teste Prático:**  
+
+```ios
+! Testar conectividade multicast
+Router# ping 239.255.1.1
+
+! Verificar grupos IGMP na interface
+Router# show ip igmp groups interface gigabitethernet0/1
+
+! Capturar tráfego para análise
+Router# debug ip packet 239.255.1.1
+```
+
+## Problema de Sobreposição
+
 Agora vamos pensar um pouco. Se os 25 primeiro bits são fixos, isso não pode gerar algum tipo de problema ? Sim, podem existir sobreposições de endereços uma vez que somente os 23 últimos bits vão variar. Vamos supor que eu tenha endereços que os 23 últimos bits seja iguais. Vamos ao exemplo:  
 
 ![SOBRE](Imagens/sobre.png)  
 
 Esse tipo de problema pode fazer com que hosts que não sejam os alvos comecem a receber os tráfegos não solicitado e isso dificulta a gerência dos grupos multicast. Para solucionar esse tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados.  
+
+**Comandos para Identificar Sobreposições:**  
+
+```ios
+! Verificar conflitos de MAC multicast
+Switch# show mac address-table | include 01005e
+
+! Verificar grupos IGMP ativos
+Router# show ip igmp groups summary
+
+! Filtrar por endereços específicos
+Switch# show mac address-table vlan 10 | include 01005e
+```
+
+Para solucionar esse tipo de problema devemos fazer filtragem de pacotes com o uso de Vlans, ACLS e Firewalls controlando o fluxo de dados.  
+
+**Comandos para Mitigação:**  
+
+```ios
+! Configurar IGMP Snooping para controle
+Switch(config)# ip igmp snooping
+Switch(config)# ip igmp snooping vlan 10
+
+! Configurar boundaries multicast
+Router(config-if)# ip multicast boundary 10
+Router(config)# access-list 10 deny 239.255.1.0 0.0.0.255
+```
 
 Por outro lado, se considerarmos IPv6, o espaço de endereçamento IP é muito maior e esse tipo de problema é evitado. Portanto, a recomendação é utilizar IPv6 sempre que possível.
 
@@ -83,6 +140,18 @@ O formato geral de um endereço multicast IPv6 é: **FF [flags] [scope] :: [grou
 
 - **group ID (112 bits):** É o identificador único do grupo multicast.
 
+**Comandos para Análise de Estrutura:**  
+
+```ios
+! Verificar endereços IPv6 multicast por escopo
+Router# show ipv6 mroute | include ff02
+Router# show ipv6 mroute | include ff05
+
+! Testar conectividade por escopo
+Router# ping ipv6 ff02::1
+Router# ping ipv6 ff05::1
+```
+
 ### Mapeamento de IPv6 Multicast para MAC Address
 
 Este é o ponto principal e uma melhoria significativa em relação ao IPv4.  
@@ -93,6 +162,7 @@ Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
 
 **Exemplo:**
 
+```text
     Endereço IPv6 Multicast: ff02::1:ff1e:8899
 
     Endereço MAC de Destino:
@@ -102,10 +172,52 @@ Este é o ponto principal e uma melhoria significativa em relação ao IPv4.
         Os últimos 32 bits do endereço IPv6 são ff:1e:88:99.
 
         O endereço MAC final será 33:33:ff:1e:88:99.
+```
+
+**Comandos para Verificação IPv6:**  
+
+```ios
+! Verificar mapeamento IPv6 para MAC
+Switch# show mac address-table | include 3333
+
+! Testar endereço específico
+Router# ping ipv6 ff02::1:ff1e:8899
+
+! Debug MLD para ver mapeamentos
+Router# debug ipv6 mld events
+```
 
 **Vantagem sobre o IPv4:**
 
-Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o MAC (o que causa o problema de múltiplos endereços IP mapearem para o mesmo endereço MAC), no IPv6, todos os 32 bits do group ID são usados. Isso significa que cada endereço IPv6 multicast corresponde a um único endereço MAC multicast, eliminando a possibilidade de colisões de endereçamento na camada 2.
+Ao contrário do IPv4, onde 23 bits do endereço multicast são mapeados para o MAC (o que causa o problema de múltiplos endereços IP mapearem para o mesmo endereço MAC), no IPv6, todos os 32 bits do group ID são usados. Isso significa que cada endereço IPv6 multicast corresponde a um único endereço MAC multicast, eliminando a possibilidade de colisões de endereçamento na camada 2.  
+
+**Comandos Comparativos:**  
+
+```ios
+! Comparar tabelas MAC IPv4 vs IPv6
+Switch# show mac address-table | include 01005e | count
+Switch# show mac address-table | include 3333 | count
+
+! Verificar uso de recursos
+Switch# show processes cpu | include IGMP|MLD
+Switch# show memory processes | include IGMP|MLD
+```
+
+**Troubleshooting de MAC Multicast:**
+
+```ios
+! Problemas gerais de multicast L2
+Switch# show ip igmp snooping
+Switch# show ipv6 mld snooping
+
+! Verificar flooding multicast
+Switch# show mac address-table aging-time
+Switch# show spanning-tree interface gi0/1 portfast
+
+! Limpar tabelas para teste
+Switch# clear mac address-table
+Switch# clear ip igmp snooping statistics
+```
 
 ## Simulados
 
