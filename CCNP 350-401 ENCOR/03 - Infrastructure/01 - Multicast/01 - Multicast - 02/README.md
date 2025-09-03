@@ -602,27 +602,27 @@ AS 1234 → 233.4.210.0/24
 
 **Conceito Fundamental**  
 
-O Embedded-RP (também conhecido como IPv4 Multicast prefix-based) é uma técnica avançada que embute o endereço do Rendezvous Point (RP) diretamente no endereço multicast. Esta abordagem elimina a necessidade de configuração manual ou descoberta dinâmica de RP, facilitando a implementação de multicast em redes complexas.
+O Embedded-RP (também conhecido como IPv4 Multicast prefix-based) é uma técnica avançada que embute o endereço do Rendezvous Point (RP) diretamente no endereço multicast. Esta abordagem elimina a necessidade de configuração manual ou descoberta dinâmica de RP, facilitando a implementação de multicast em redes complexas.  
 
 **Estrutura do Endereçamento Embedded-RP**  
 
 **Formato Padrão IPv4**  
 
-Endereço Multicast: **232.R.R.R.0/24**  
+O endereço multicast é construído utilizando o prefixo **234.0.0.0/8**  
 
-Onde:  
+Para um RP com endereço unicast A.B.C.D, o endereço multicast Embedded-RP para um grupo específico pode ser formado como 234.B.C.D (onde B.C.D são os três últimos octetos do endereço IP do RP).  
 
-- 232: Prefixo reservado para Embedded-RP
-- R.R.R: Últimos 3 octetos do endereço RP
-- Faixa utilizável: 232.0.0.1 até 232.255.255.254
+- 234: Prefixo reservado para Embedded-RP (Unicast-Prefix-based IPv4 Multicast Addresses)
+- B.C.D: (Exemplo) Últimos três octetos do endereço IP unicast do Rendezvous Point (RP).
+- Faixa utilizável: 234.0.0.1 até 234.255.255.254 (os octetos restantes são derivados do RP e do ID do grupo).
 
 **Mapeamento RP para Multicast**  
 
 | Endereço RP   | Embedded Multicast | Faixa Disponível |
 |---------------|--------------------|------------------|
-| 10.1.1.100    | 232.1.1.100/32     | 232.1.1.100      |
-| 192.168.50.1  | 232.168.50.1/32    | 232.168.50.1     |
-| 172.16.200.10 | 232.16.200.10/32   | 232.16.200.10    |
+| 10.1.1.100    | 234.1.1.100        | 232.1.1.100      |
+| 192.168.50.1  | 234.168.50.1       | 232.168.50.1     |
+| 172.16.200.10 | 234.16.200.10      | 232.16.200.10    |
 
 **Comandos de Configuração Embedded-RP:**  
 
