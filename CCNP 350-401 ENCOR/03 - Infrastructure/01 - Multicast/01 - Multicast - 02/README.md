@@ -1264,3 +1264,9 @@ Router# show ipv6 route
 Router# show ipv6 mroute
 Router# show ipv6 pim
 ```
+
+Agora que dominamos os tipos de endereçamento multicast IPv4 e IPv6, incluindo seus escopos e protocolos de gerenciamento (IGMP/MLD), precisamos entender como esses endereços IP são traduzidos para endereços MAC na camada 2.  
+
+Esta tradução é fundamental porque determina como switches e placas de rede processam o tráfego multicast na prática. Veremos como funciona o mapeamento para IPv4 (com suas limitações de sobreposição) e a solução mais elegante implementada no IPv6.  
+
+Continue na próxima seção: Formação de Endereços de Camada 02 (Mac Address)
