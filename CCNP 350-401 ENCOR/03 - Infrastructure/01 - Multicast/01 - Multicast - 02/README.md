@@ -21,7 +21,7 @@ Esse bloco foi estruturado para que possam se ter subgrupos com finalidades espe
 
 ### 1. Endereços Bem Conhecidos (Well-Known)
 
-Dentro do bloco Classe D (224.0.0.0 a 239.255.255.255), existe uma faixa especial reservada para endereços multicast bem conhecidos que vai de 224.0.0.0 a 224.0.0.255. Esses endereços são padronizados pela IANA (Internet Assigned Numbers Authority) e têm propósitos específicos definidos globalmente.  
+Dentro do bloco Classe D (224.0.0.0 a 239.255.255.255), existe uma faixa especial reservada para endereços multicast bem conhecidos que vai de **224.0.0.0 a 224.0.0.255**. Esses endereços são padronizados pela IANA (Internet Assigned Numbers Authority) e têm propósitos específicos definidos globalmente.
 
 **🎯 Principais Endereços Well-Known:**
 
@@ -64,8 +64,11 @@ Router# show ip ospf neighbor
 Router# show ip eigrp neighbors
 ```
 
-**⚠️ Observação para CCNP:**
+**⚠️ Observação para CCNP:**  
 Conhecer esses endereços é fundamental para troubleshooting de protocolos de roteamento. Quando analisamos captures com Wireshark, esses endereços aparecem frequentemente no tráfego de controle da rede.
+
+**📊 Diferença: Escopo Local vs Global (Nota):**  
+É importante distinguir os endereços **224.0.0.x (TTL=1, local na subnet)** de outros endereços "bem conhecidos" de escopo mais amplo, como os usados por Auto-RP (224.0.1.39, 224.0.1.40) ou VRRP/HSRP (que podem usar endereços multicast de escopo global/inter-subnet), que são roteáveis (TTL > 1). Esses endereços de escopo mais amplo necessitam de roteamento multicast habilitado para se propagarem
 
 ### 2. Escopo Global - 224.0.1.0/24 (Internetwork Control Block)
 

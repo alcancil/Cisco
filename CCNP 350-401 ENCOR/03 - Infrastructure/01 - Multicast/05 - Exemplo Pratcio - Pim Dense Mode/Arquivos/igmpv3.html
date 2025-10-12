@@ -1,0 +1,327 @@
+<svg viewBox="0 0 800 750" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .router { fill: #4CAF50; stroke: #2E7D32; stroke-width: 2; }
+      .host { fill: #2196F3; stroke: #1565C0; stroke-width: 2; }
+      .source { fill: #9C27B0; stroke: #6A1B9A; stroke-width: 2; }
+      .multicast-group { fill: #FF9800; stroke: #E65100; stroke-width: 2; }
+      .message { fill: #F44336; stroke: #C62828; stroke-width: 2; }
+      .text { font-family: Arial, sans-serif; font-size: 12px; fill: #333; }
+      .title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #1565C0; }
+      .phase-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #2E7D32; }
+      .arrow { stroke: #F44336; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .query-arrow { stroke: #4CAF50; stroke-width: 2; fill: none; marker-end: url(#arrowhead-green); }
+      .report-arrow { stroke: #2196F3; stroke-width: 2; fill: none; marker-end: url(#arrowhead-blue); }
+      .include-arrow { stroke: #4CAF50; stroke-width: 3; fill: none; marker-end: url(#arrowhead-green); }
+      .exclude-arrow { stroke: #F44336; stroke-width: 3; fill: none; marker-end: url(#arrowhead); stroke-dasharray: 5,5; }
+      .packet { fill: #FF5722; stroke: #D84315; stroke-width: 2; }
+      .packet-query { fill: #4CAF50; stroke: #2E7D32; stroke-width: 2; }
+      .packet-report { fill: #2196F3; stroke: #1565C0; stroke-width: 2; }
+      .packet-v3 { fill: #9C27B0; stroke: #6A1B9A; stroke-width: 2; }
+      .legend-line { stroke: black; stroke-width: 2; fill: none; }
+      .field-box { fill: #E3F2FD; stroke: #1565C0; stroke-width: 1; }
+      .include-mode { fill: #E8F5E8; stroke: #4CAF50; stroke-width: 2; }
+      .exclude-mode { fill: #FFEBEE; stroke: #F44336; stroke-width: 2; }
+    </style>
+    
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#F44336" />
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4CAF50" />
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2196F3" />
+    </marker>
+    <marker id="arrowhead-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9C27B0" />
+    </marker>
+  </defs>
+  
+  <g transform="scale(0.7) translate(120, 50)">
+    <!-- Background -->
+    <rect width="800" height="750" fill="#f5f5f5" stroke="#ddd" stroke-width="1"/>
+    
+    <!-- Title -->
+    <text x="400" y="30" text-anchor="middle" class="title">IGMPv3 - Internet Group Management Protocol v3</text>
+    <text x="400" y="50" text-anchor="middle" class="text" font-style="italic">Filtragem por Fonte (Source Filtering)</text>
+    
+    <!-- Router -->
+    <rect x="350" y="80" width="100" height="60" rx="10" class="router"/>
+    <text x="400" y="100" text-anchor="middle" class="text" fill="white">Router</text>
+    <text x="400" y="115" text-anchor="middle" class="text" fill="white">IGMPv3</text>
+    
+    <!-- Sources -->
+    <rect x="50" y="80" width="80" height="50" rx="8" class="source"/>
+    <text x="90" y="100" text-anchor="middle" class="text" fill="white">Fonte A</text>
+    <text x="90" y="115" text-anchor="middle" class="text" fill="white">10.1.1.1</text>
+    
+    <rect x="200" y="80" width="80" height="50" rx="8" class="source"/>
+    <text x="240" y="100" text-anchor="middle" class="text" fill="white">Fonte B</text>
+    <text x="240" y="115" text-anchor="middle" class="text" fill="white">10.1.1.2</text>
+    
+    <rect x="620" y="80" width="80" height="50" rx="8" class="source"/>
+    <text x="660" y="100" text-anchor="middle" class="text" fill="white">Fonte C</text>
+    <text x="660" y="115" text-anchor="middle" class="text" fill="white">10.1.1.3</text>
+    
+    <!-- Hosts -->
+    <rect x="100" y="280" width="80" height="50" rx="8" class="host"/>
+    <text x="140" y="300" text-anchor="middle" class="text" fill="white">Host X</text>
+    <text x="140" y="315" text-anchor="middle" class="text" fill="white">INCLUDE</text>
+    
+    <rect x="300" y="280" width="80" height="50" rx="8" class="host"/>
+    <text x="340" y="300" text-anchor="middle" class="text" fill="white">Host Y</text>
+    <text x="340" y="315" text-anchor="middle" class="text" fill="white">EXCLUDE</text>
+    
+    <rect x="520" y="280" width="80" height="50" rx="8" class="host"/>
+    <text x="560" y="300" text-anchor="middle" class="text" fill="white">Host Z</text>
+    <text x="560" y="315" text-anchor="middle" class="text" fill="white">IGMPv2</text>
+    
+    <!-- Multicast Group -->
+    <ellipse cx="400" cy="380" rx="100" ry="40" class="multicast-group"/>
+    <text x="400" y="375" text-anchor="middle" class="text" fill="white">Grupo Multicast</text>
+    <text x="400" y="390" text-anchor="middle" class="text" fill="white">224.1.1.10</text>
+    
+    <!-- Network Line -->
+    <line x1="50" y1="180" x2="750" y2="180" stroke="#666" stroke-width="3"/>
+    <text x="400" y="170" text-anchor="middle" class="text">Rede Local (LAN)</text>
+    
+    <!-- Connection lines -->
+    <line x1="90" y1="130" x2="90" y2="180" stroke="#666" stroke-width="2"/>
+    <line x1="240" y1="130" x2="240" y2="180" stroke="#666" stroke-width="2"/>
+    <line x1="660" y1="130" x2="660" y2="180" stroke="#666" stroke-width="2"/>
+    <line x1="400" y1="140" x2="400" y2="180" stroke="#666" stroke-width="2"/>
+    <line x1="140" y1="180" x2="140" y2="280" stroke="#666" stroke-width="2"/>
+    <line x1="340" y1="180" x2="340" y2="280" stroke="#666" stroke-width="2"/>
+    <line x1="560" y1="180" x2="560" y2="280" stroke="#666" stroke-width="2"/>
+    
+    <!-- Phase indicators -->
+    <g transform="translate(0, 450)">
+      <!-- Phase 1 -->
+      <rect x="10" y="20" width="380" height="35" rx="5" fill="#E8F5E8" stroke="#4CAF50" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;1;1;0;0;0" dur="12s" begin="0s" repeatCount="indefinite"/>
+      </rect>
+      <text x="200" y="42" text-anchor="middle" class="phase-text" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;1;1;0;0;0" dur="12s" begin="0s" repeatCount="indefinite"/>
+        Fase 1: Host X - Modo INCLUSÃO (Quer A e B)
+      </text>
+      
+      <!-- Phase 2 -->
+      <rect x="10" y="60" width="380" height="35" rx="5" fill="#FFEBEE" stroke="#F44336" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="12s" begin="0s" repeatCount="indefinite"/>
+      </rect>
+      <text x="200" y="82" text-anchor="middle" class="phase-text" fill="#D32F2F" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="12s" begin="0s" repeatCount="indefinite"/>
+        Fase 2: Host Y - Modo EXCLUSÃO (Não quer C)
+      </text>
+      
+      <!-- Phase 3 -->
+      <rect x="10" y="100" width="380" height="35" rx="5" fill="#E3F2FD" stroke="#2196F3" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="0s" repeatCount="indefinite"/>
+      </rect>
+      <text x="200" y="122" text-anchor="middle" class="phase-text" fill="#1565C0" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="0s" repeatCount="indefinite"/>
+        Fase 3: Host Z - Modo IGMPv2 (Todas as fontes)
+      </text>
+    </g>
+    
+    <!-- Message Structure Box - Fixed Position -->
+    <g transform="translate(420, 450)">
+      <rect x="0" y="0" width="350" height="180" rx="5" class="field-box"/>
+      <text x="175" y="20" text-anchor="middle" class="text" font-weight="bold">Estrutura da Mensagem IGMPv3</text>
+      
+      <!-- Message fields -->
+      <rect x="10" y="30" width="330" height="20" fill="#4CAF50" opacity="0.3"/>
+      <text x="15" y="45" class="text" font-size="10">Código Máx. Resposta | Checksum | Endereço Grupo</text>
+      
+      <rect x="10" y="55" width="330" height="20" fill="#FF9800" opacity="0.3"/>
+      <text x="15" y="70" class="text" font-size="10">RESV | S Flag | QRV | QQIC | Número de Fontes</text>
+      
+      <rect x="10" y="80" width="330" height="40" fill="#9C27B0" opacity="0.3"/>
+      <text x="15" y="95" class="text" font-size="10">Endereços de Origem [1...N]</text>
+      <text x="15" y="110" class="text" font-size="10">Lista de fontes para filtro</text>
+      
+      <text x="15" y="140" class="text" font-size="10">• S Flag: Suprime timer do roteador</text>
+      <text x="15" y="155" class="text" font-size="10">• QRV: Variável de robustez</text>
+      <text x="15" y="170" class="text" font-size="10">• QQIC: Intervalo entre consultas</text>
+    </g>
+    
+    <!-- Animated Packets and Traffic Flow -->
+    
+    <!-- Phase 1: Include Mode - Host X wants sources A and B -->
+    <g id="include-mode">
+      <!-- Report from Host X -->
+      <g>
+        <rect x="0" y="0" width="25" height="18" rx="3" class="packet-v3">
+          <animateMotion dur="2s" begin="2s" repeatCount="indefinite" path="M140,280 L140,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;1;1;1;0;0;0;0" dur="12s" begin="2s" repeatCount="indefinite"/>
+        </rect>
+        <text x="12" y="12" class="text" font-size="10" fill="white" text-anchor="middle">
+          INC
+          <animateMotion dur="2s" begin="2s" repeatCount="indefinite" path="M140,280 L140,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;1;1;1;0;0;0;0" dur="12s" begin="2s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Traffic from Source A to Host X -->
+      <g>
+        <circle r="8" fill="#4CAF50" opacity="0">
+          <animateMotion dur="1.5s" begin="3s" repeatCount="indefinite" path="M90,130 L90,180 L140,180 L140,280"/>
+          <animate attributeName="opacity" values="0;0;1;1;1;0;0;0" dur="12s" begin="3s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          A
+          <animateMotion dur="1.5s" begin="3s" repeatCount="indefinite" path="M90,130 L90,180 L140,180 L140,280"/>
+          <animate attributeName="opacity" values="0;0;1;1;1;0;0;0" dur="12s" begin="3s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Traffic from Source B to Host X -->
+      <g>
+        <circle r="8" fill="#4CAF50" opacity="0">
+          <animateMotion dur="1.5s" begin="3.2s" repeatCount="indefinite" path="M240,130 L240,180 L140,180 L140,280"/>
+          <animate attributeName="opacity" values="0;0;1;1;1;0;0;0" dur="12s" begin="3.2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          B
+          <animateMotion dur="1.5s" begin="3.2s" repeatCount="indefinite" path="M240,130 L240,180 L140,180 L140,280"/>
+          <animate attributeName="opacity" values="0;0;1;1;1;0;0;0" dur="12s" begin="3.2s" repeatCount="indefinite"/>
+        </text>
+      </g>
+    </g>
+    
+    <!-- Phase 2: Exclude Mode - Host Y excludes source C -->
+    <g id="exclude-mode">
+      <!-- Report from Host Y -->
+      <g>
+        <rect x="0" y="0" width="25" height="18" rx="3" class="packet" opacity="0">
+          <animateMotion dur="2s" begin="5s" repeatCount="indefinite" path="M340,280 L340,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="12s" begin="5s" repeatCount="indefinite"/>
+        </rect>
+        <text x="12" y="12" class="text" font-size="10" fill="white" text-anchor="middle" opacity="0">
+          EXC
+          <animateMotion dur="2s" begin="5s" repeatCount="indefinite" path="M340,280 L340,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;0;0;1;1;1;0;0" dur="12s" begin="5s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Traffic from Source A to Host Y -->
+      <g>
+        <circle r="8" fill="#4CAF50" opacity="0">
+          <animateMotion dur="1.5s" begin="6s" repeatCount="indefinite" path="M90,130 L90,180 L340,180 L340,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" dur="12s" begin="6s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          A
+          <animateMotion dur="1.5s" begin="6s" repeatCount="indefinite" path="M90,130 L90,180 L340,180 L340,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" dur="12s" begin="6s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Traffic from Source B to Host Y -->
+      <g>
+        <circle r="8" fill="#4CAF50" opacity="0">
+          <animateMotion dur="1.5s" begin="6.2s" repeatCount="indefinite" path="M240,130 L240,180 L340,180 L340,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" dur="12s" begin="6.2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          B
+          <animateMotion dur="1.5s" begin="6.2s" repeatCount="indefinite" path="M240,130 L240,180 L340,180 L340,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" dur="12s" begin="6.2s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Blocked traffic from Source C (shown as X) -->
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" dur="12s" begin="6.4s" repeatCount="indefinite"/>
+        <circle cx="590" cy="200" r="15" fill="#F44336" stroke="#D32F2F" stroke-width="2"/>
+        <line x1="585" y1="195" x2="595" y2="205" stroke="white" stroke-width="2"/>
+        <line x1="595" y1="195" x2="585" y2="205" stroke="white" stroke-width="2"/>
+        <text x="590" y="225" text-anchor="middle" class="text" font-size="10">Fonte C Bloqueada</text>
+      </g>
+    </g>
+    
+    <!-- Phase 3: IGMPv2 Mode - Host Z receives all sources -->
+    <g id="igmpv2-mode">
+      <!-- Report from Host Z -->
+      <g>
+        <rect x="0" y="0" width="25" height="18" rx="3" class="packet-report" opacity="0">
+          <animateMotion dur="2s" begin="8s" repeatCount="indefinite" path="M560,280 L560,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="8s" repeatCount="indefinite"/>
+        </rect>
+        <text x="12" y="12" class="text" font-size="10" fill="white" text-anchor="middle" opacity="0">
+          ALL
+          <animateMotion dur="2s" begin="8s" repeatCount="indefinite" path="M560,280 L560,180 L400,180 L400,140"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="8s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      
+      <!-- Traffic from all sources to Host Z -->
+      <g>
+        <circle r="8" fill="#2196F3" opacity="0">
+          <animateMotion dur="1.5s" begin="9s" repeatCount="indefinite" path="M90,130 L90,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          A
+          <animateMotion dur="1.5s" begin="9s" repeatCount="indefinite" path="M90,130 L90,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      <g>
+        <circle r="8" fill="#2196F3" opacity="0">
+          <animateMotion dur="1.5s" begin="9.2s" repeatCount="indefinite" path="M240,130 L240,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9.2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          B
+          <animateMotion dur="1.5s" begin="9.2s" repeatCount="indefinite" path="M240,130 L240,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9.2s" repeatCount="indefinite"/>
+        </text>
+      </g>
+      <g>
+        <circle r="8" fill="#2196F3" opacity="0">
+          <animateMotion dur="1.5s" begin="9.4s" repeatCount="indefinite" path="M660,130 L660,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9.4s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="3" class="text" font-size="8" fill="white" text-anchor="middle">
+          C
+          <animateMotion dur="1.5s" begin="9.4s" repeatCount="indefinite" path="M660,130 L660,180 L560,180 L560,280"/>
+          <animate attributeName="opacity" values="0;0;0;0;0;0;1;1" dur="12s" begin="9.4s" repeatCount="indefinite"/>
+        </text>
+      </g>
+    </g>
+    
+    <!-- Legend -->
+    <g transform="translate(50, 650)">
+      <text x="0" y="0" class="text" font-weight="bold">Legenda:</text>
+      
+      <rect x="0" y="10" width="20" height="15" class="include-mode"/>
+      <text x="25" y="22" class="text">Modo Inclusão (Include List)</text>
+      
+      <rect x="200" y="10" width="20" height="15" class="exclude-mode"/>
+      <text x="225" y="22" class="text">Modo Exclusão (Exclude List)</text>
+      
+      <circle cx="10" cy="40" r="8" fill="#4CAF50"/>
+      <text x="25" y="45" class="text">Tráfego Permitido</text>
+      
+      <circle cx="150" cy="40" r="8" fill="#F44336"/>
+      <line x1="145" y1="35" x2="155" y2="45" stroke="white" stroke-width="2"/>
+      <line x1="155" y1="35" x2="145" y2="45" stroke="white" stroke-width="2"/>
+      <text x="165" y="45" class="text">Tráfego Bloqueado</text>
+      
+      <rect x="0" y="55" width="20" height="15" class="packet-v3"/>
+      <text x="25" y="67" class="text">Relatório IGMPv3</text>
+      
+      <rect x="150" y="55" width="20" height="15" class="packet-report"/>
+      <text x="175" y="67" class="text">Relatório IGMPv2</text>
+    </g>
+    
+    <!-- Timer indicator -->
+    <circle cx="750" cy="100" r="25" fill="none" stroke="#9C27B0" stroke-width="3">
+      <animate attributeName="stroke-dasharray" values="0,157;157,0" dur="3s" begin="0s" repeatCount="indefinite"/>
+    </circle>
+    <text x="750" y="105" text-anchor="middle" class="text" font-size="10">IGMPv3</text>
+    
+  </g>
+</svg>
