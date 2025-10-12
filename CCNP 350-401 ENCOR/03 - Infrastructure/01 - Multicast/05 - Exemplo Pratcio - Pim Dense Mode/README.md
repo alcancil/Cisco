@@ -43,7 +43,7 @@
 
 Certo, agora que vimos a teoria é hora de praticar. A primeira coisa que precisa ser dita que o multicast é um serviço e, portanto, precisamos aplicar ele em um cenário que já está pronto e funcional.
 
-![cenário](/Imagens/cenario.png)
+[cenário](/Imagens/cenario.png)
 
 ## Funcionamento do Pim - Dense Mode
 
