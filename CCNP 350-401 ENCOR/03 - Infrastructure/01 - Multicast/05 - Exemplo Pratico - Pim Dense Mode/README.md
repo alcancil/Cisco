@@ -4,6 +4,7 @@
   - [05 - Exemplo Prático - PIM Dense Mode](#05---exemplo-prático---pim-dense-mode)
     - [Explicação do Cenário](#explicação-do-cenário)
     - [Testes Preliminares](#testes-preliminares)
+    - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -72,4 +73,16 @@ R01#show ip multicast
   Multicast Fallback group mode: Sparse  
   Multicast DVMRP Interoperability: disabled  
   Number of multicast boundaries configured with filter-autorp option: 0  
-R01# 
+R01#  
+
+Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PIM**. Esse protocolo deve ser ativado nas interfaces onde a comunicação ira ocorrer.  
+
+### Onde o PIM deve ser ativado
+
+No modo **Dense Mode (PIM-DM)**, o tráfego multicast é floodado por todas as interfaces que participam do domínio multicast.  
+
+👉 Portanto, você deve ativar o PIM **em todas as interfaces que participam do caminho multicast** — ou seja, interfaces que interligam roteadores e também interfaces conectadas a redes com hosts (fontes ou receptores).  
+
+✅ **Resumo da regra prática:**  
+
+- Ative o PIM nas interfaces que têm roteadores vizinhos PIM e nas interfaces onde há fontes ou receptores multicast.  
