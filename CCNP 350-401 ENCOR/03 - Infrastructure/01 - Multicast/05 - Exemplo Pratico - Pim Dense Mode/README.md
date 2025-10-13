@@ -5,6 +5,7 @@
     - [Explicação do Cenário](#explicação-do-cenário)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
+  - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -116,3 +117,20 @@ Portanto, no nosso cenário vamos entrar no roteador R01 vamos ativar o PIM em t
 > R01(config-if)#  
 > *Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0  
 > R01(config-if)#  
+
+Agora que ativamos o **PIM DENSE-MODE** podemos observar que nos é exibida uma mensagem de aviso (log nível 5)  
+  
+***Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0**  
+  
+Essa mensagem se dá por conta do processo de eleição do **DR (Designated Router)**. Apesar dessa mensagem gerar uma dúvida, isso não tem nada a ver com o protocolo OSPF. Apenas ocorre uma coincidência nas nomenclaturas: **DR (Designated Router)** pois nos dois protocolos é mesma nomenclatura.  
+
+## Função do DR no PIM Dense Mode
+
+No PIM Dense Mode, a comunicação multicast funciona com o método Flood and Prune:
+
+- Inicialmente, o tráfego multicast é enviado para todos os roteadores PIM;
+- Os roteadores que não têm receptores interessados enviam mensagens Prune, pedindo para parar de receber o fluxo.
+- O Designated Router é quem:
+- Inicia o envio do fluxo multicast para a LAN;
+- Coordena a poda (prune) quando não há interesse local;
+- Evita duplicação de pacotes multicast quando há mais de um roteador conectado à mesma rede.
