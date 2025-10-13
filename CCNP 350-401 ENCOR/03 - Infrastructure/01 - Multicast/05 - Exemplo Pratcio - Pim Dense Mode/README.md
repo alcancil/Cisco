@@ -3,6 +3,7 @@
 - [Índice](#índice)
   - [05 - Exemplo Prático - PIM Dense Mode](#05---exemplo-prático---pim-dense-mode)
     - [Explicação do Cenário](#explicação-do-cenário)
+    - [Testes Preliminares](#testes-preliminares)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -25,3 +26,10 @@ Quando o processo de comunicação multicast se inicia, o protocolo PIM envia o 
 Os caminhos que **não possuem hosts interessados** são posteriormente **“podados” (pruned)** da árvore de distribuição, otimizando o fluxo.  
 
 Nesse exemplo, o **Host01 (Server)** será a **fonte** da comunicação multicast, enquanto apenas o **Host03** será o **receptor** interessado nesse tráfego.  
+
+### Testes Preliminares
+
+Agora vamos acessar o SERVER e vamos garantir que existe comunicação entre todos os hosts.  
+**OBS:** nos roteadores eu configurei interfaces de LOOPABCK. Então R01 tem o ip 1.1.1.1 /32, R02 tem o ip 2.2.2.2 /32 e R03 tem o ip 3.3.3.3 /32 .  
+
+![01](Imagens/01.png)
