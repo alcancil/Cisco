@@ -82,3 +82,37 @@ No modo **Dense Mode (PIM-DM)**, o tráfego multicast é floodado por todas as i
 ✅ **Resumo da regra prática:**  
 
 - Ative o PIM nas interfaces que têm roteadores vizinhos PIM e nas interfaces onde há fontes ou receptores multicast.  
+
+🌀 **Sobre interfaces de Loopback (muito importante)**  
+
+- Não é necessário ativar PIM em interfaces Loopback, a menos que ela seja usada como origem do tráfego multicast (por exemplo, um servidor multicast rodando em 1.1.1.1).  
+
+- Por padrão, o PIM trabalha nas interfaces que realmente encaminham tráfego multicast (as físicas).  
+
+- A Loopback costuma ser usada apenas como Router-ID, endereço de origem de OSPF/PIM, ou fonte lógica (RP) em cenários de Sparse Mode — não é o caso aqui.  
+
+Portanto, no nosso cenário vamos entrar no roteador R01 vamos ativar o PIM em todas as interfaces que estão ativas e vão fazer parte do multicast.  
+
+> R01>ena  
+> R01#show ip int br  
+> Interface                  IP-Address      OK? Method Status                Protocol  
+> FastEthernet0/0            10.0.0.1        YES NVRAM  up                    up  
+> FastEthernet0/1            10.0.0.9        YES NVRAM  up                    up  
+> FastEthernet1/0            192.168.10.254  YES NVRAM  up                    up  
+> Loopback0                  1.1.1.1         YES NVRAM  up                    up  
+> R01#conf t  
+> Enter configuration commands, one per line.  End with CNTL/Z.  
+> R01(config)#int f0/0  
+> R01(config-if)#ip pim dense-mode  
+> R01(config-if)#  
+> *Mar  1 03:53:26.735: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/0  
+> R01(config-if)#int f0/1  
+> R01(config-if)#ip pim dense-mode  
+> R01(config-if)#  
+> *Mar  1 03:53:48.687: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.9 on interface FastEthernet0/1  
+> R01(config-if)#ip pim  
+> R01(config-if)#int f1/0  
+> R01(config-if)#ip pim dense-mode  
+> R01(config-if)#  
+> *Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0  
+> R01(config-if)#  
