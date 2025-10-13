@@ -11,6 +11,8 @@
     - [Função prática do DR no PIM Dense Mode](#função-prática-do-dr-no-pim-dense-mode)
     - [Resumo rápido](#resumo-rápido)
   - [Endereço Multicast 224.0.0.13](#endereço-multicast-2240013)
+    - [Revisão](#revisão)
+    - [Resumo prático](#resumo-prático)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -260,4 +262,31 @@ Essas opções são usadas justamente para o processo de eleição do DR e detec
 | Descoberta de vizinhos           | Os roteadores PIM enviam Hellos para 224.0.0.13 e escutam nesse grupo para saber quem mais está no mesmo segmento. |
 | Eleição de DR                    | As mensagens Hello trocadas via 224.0.0.13 contêm o campo de prioridade que define quem será o DR.                 |
 | Troca de informações de controle | Outras mensagens PIM (Join/Prune, Assert, Register Stop, etc.) também usam esse grupo.                             |
-| Escopo local (não roteável)      | Pacotes para 224.0.0.13 nunca saem da rede local — são sempre TTL=1.                                               |
+| Escopo local (não roteável)      | Pacotes para 224.0.0.13 nunca saem da rede local — são sempre TTL=1.                                               |  
+
+### Revisão
+
+A tabela abaixo mostra outros endereços multicast da faixa 224.0.0.x, usados por protocolos de roteamento e gerenciamento:
+
+| Endereço   | Nome                  | Usado por                 |
+|------------|-----------------------|---------------------------|
+| 224.0.0.1  | All Hosts             | Todos os hosts multicast  |
+| 224.0.0.2  | All Routers           | Todos os roteadores       |
+| 224.0.0.5  | All OSPF Routers      | OSPF                      |
+| 224.0.0.6  | OSPF DR/BDR Routers   | OSPF                      |
+| 224.0.0.9  | RIPng Routers         | RIPng                     |
+| 224.0.0.10 | EIGRP Routers         | EIGRP                     |
+| 224.0.0.13 | All PIM Routers       | PIMv2                     |
+| 224.0.0.18 | VRRP Routers          | VRRP                      |  
+
+### Resumo prático
+
+🔹 Quem envia: todo roteador com ip pim dense-mode (ou sparse, etc.) ativo em uma interface.
+🔹 Quem recebe: todos os roteadores PIM do mesmo segmento (escutando 224.0.0.13).
+🔹 TTL = 1: os pacotes nunca são roteados.
+
+Usado para:
+
+- Descoberta de vizinhos PIM
+- Eleição de DR
+- Comunicação de controle
