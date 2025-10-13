@@ -45,8 +45,8 @@ No nosso caso queremos ter a comunicação **de um para um grupo**, ou seja, **c
 Então a primeira coisa que precisamos verificar é se o **roteamento multicast está ativo** no equipamento.  
 
 > R01#show ip multicast  
->>  Multicast Routing: disabled  
->>  Multicast Multipath: disabled  
+>  Multicast Routing: disabled  
+>  Multicast Multipath: disabled  
 >  Multicast Route limit: No limit  
 >  Multicast Triggered RPF check: enabled  
 >  Multicast Fallback group mode: Sparse  
