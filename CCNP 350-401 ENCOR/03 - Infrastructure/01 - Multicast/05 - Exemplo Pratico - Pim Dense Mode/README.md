@@ -281,9 +281,9 @@ A tabela abaixo mostra outros endereços multicast da faixa 224.0.0.x, usados po
 
 ### Resumo prático
 
-🔹 Quem envia: todo roteador com ip pim dense-mode (ou sparse, etc.) ativo em uma interface.
-🔹 Quem recebe: todos os roteadores PIM do mesmo segmento (escutando 224.0.0.13).
-🔹 TTL = 1: os pacotes nunca são roteados.
+🔹 Quem envia: todo roteador com ip pim dense-mode (ou sparse, etc.) ativo em uma interface.  
+🔹 Quem recebe: todos os roteadores PIM do mesmo segmento (escutando 224.0.0.13).  
+🔹 TTL = 1: os pacotes nunca são roteados.  
 
 Usado para:
 
