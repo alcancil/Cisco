@@ -10,6 +10,7 @@
     - [Processo de Eleição do DR no PIM Dense Mode](#processo-de-eleição-do-dr-no-pim-dense-mode)
     - [Função prática do DR no PIM Dense Mode](#função-prática-do-dr-no-pim-dense-mode)
     - [Resumo rápido](#resumo-rápido)
+  - [Endereço Multicast 224.0.0.13](#endereço-multicast-2240013)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -228,3 +229,35 @@ Se R3 cair, a eleição é refeita: o DR passa a ser R2 (maior IP entre os resta
 | 5️⃣    | DR é responsável pelo tráfego multicast e comunicação IGMP |
 | 6️⃣    | Se o DR falhar → nova eleição automática                   |
 
+Agora vamos confirmar isso com o **Whireshark** Vamos ligar ele na interface de R01 que está ligada ao nosso HOST01 (SERVER) e vamos procurar pelas mensagens Hello do protocolo PIM.  
+
+![hello](Imagens/03.png)  
+
+Como podemos ver, a mensagem **Hello** é originada do IP 192.168.0.254, que é o IP do nosso SERVER com origem para **224.0.0.13**  
+
+## Endereço Multicast 224.0.0.13
+
+| Campo               | Valor                                              |
+|---------------------|----------------------------------------------------|
+| Endereço IPv4       | 224.0.0.13                                         |
+| Nome reservado      | ALL-PIM-ROUTERS                                    |
+| Protocolo associado | Protocol Independent Multicast (PIM)               |
+| Escopo              | Local-link (não é roteável)                        |
+| Função              | Comunicação entre roteadores PIM no mesmo segmento |  
+
+E dentro do pacote:  
+
+- Option 19: DR Priority: 1
+- Option 20: Generation ID: 488683522
+- Option 21: State-Refresh: Version = 1, Interval = 0s
+
+Essas opções são usadas justamente para o processo de eleição do DR e detecção de vizinhos.  
+
+**🔍 O papel do endereço 224.0.0.13 em resumo**
+
+| Função                           | Descrição                                                                                                          |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| Descoberta de vizinhos           | Os roteadores PIM enviam Hellos para 224.0.0.13 e escutam nesse grupo para saber quem mais está no mesmo segmento. |
+| Eleição de DR                    | As mensagens Hello trocadas via 224.0.0.13 contêm o campo de prioridade que define quem será o DR.                 |
+| Troca de informações de controle | Outras mensagens PIM (Join/Prune, Assert, Register Stop, etc.) também usam esse grupo.                             |
+| Escopo local (não roteável)      | Pacotes para 224.0.0.13 nunca saem da rede local — são sempre TTL=1.                                               |
