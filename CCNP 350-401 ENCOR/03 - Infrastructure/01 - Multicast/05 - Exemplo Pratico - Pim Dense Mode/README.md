@@ -6,6 +6,8 @@
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
   - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
+    - [Contexto: Por que o PIM precisa de um DR?](#contexto-por-que-o-pim-precisa-de-um-dr)
+    - [Processo de Eleição do DR no PIM Dense Mode](#processo-de-eleição-do-dr-no-pim-dense-mode)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -133,4 +135,52 @@ No PIM Dense Mode, a comunicação multicast funciona com o método Flood and Pr
 - O Designated Router é quem:
 - Inicia o envio do fluxo multicast para a LAN;
 - Coordena a poda (prune) quando não há interesse local;
-- Evita duplicação de pacotes multicast quando há mais de um roteador conectado à mesma rede.
+- Evita duplicação de pacotes multicast quando há mais de um roteador conectado à mesma rede.  
+
+### Contexto: Por que o PIM precisa de um DR?  
+
+Em uma rede multiacesso (como um segmento Ethernet), podem existir vários roteadores PIM conectados à mesma sub-rede.  
+Quando um host multicast envia tráfego para um grupo (ex: 239.1.1.1), todos os roteadores PIM na LAN recebem esse tráfego.  
+
+- Se todos eles repassassem o fluxo multicast ao mesmo tempo, haveria duplicação de pacotes e loops.  
+  
+Por isso, o PIM precisa eleger um único roteador que será responsável por reencaminhar o tráfego multicast na LAN — esse é o Designated Router (DR).  
+
+### Processo de Eleição do DR no PIM Dense Mode
+
+A eleição é baseada nas mensagens PIM Hello, trocadas periodicamente entre os roteadores.
+
+🔹 **Etapa 1 — Envio de mensagens Hello**
+
+Todos os roteadores PIM em uma interface enviam mensagens Hello periodicamente (a cada 30 segundos por padrão).  
+Essas mensagens contêm informações como:  
+
+- IP da interface de origem
+- Prioridade do DR (DR Priority)
+- Temporizador de Hello  
+
+O comando **debug ip pim ou show ip pim interface** permite ver esses parâmetros.
+
+🔹 **Etapa 2 — Comparação dos parâmetros**
+
+Ao receber Hellos dos vizinhos, cada roteador compara sua prioridade com as dos outros:  
+
+- Maior prioridade vence.
+- Por padrão, o valor é 1 em todos os roteadores.
+
+Pode ser alterado com:  
+
+> interface FastEthernet0/0
+> ip pim dr-priority <valor>  
+
+🔹 **Etapa 3 — Eleição e anúncio do DR**
+
+Quando um roteador identifica que ele possui a maior prioridade (ou maior IP em empate), ele se declara DR.  
+O Cisco IOS registra isso com mensagens como:  
+
+> %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0
+
+📘 Interpretação:  
+
+- O campo from neighbor 0.0.0.0 indica que não havia DR anterior.
+- O novo DR é o roteador cujo IP é 192.168.10.254 (o próprio).
