@@ -8,6 +8,8 @@
   - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
     - [Contexto: Por que o PIM precisa de um DR?](#contexto-por-que-o-pim-precisa-de-um-dr)
     - [Processo de Eleição do DR no PIM Dense Mode](#processo-de-eleição-do-dr-no-pim-dense-mode)
+    - [Função prática do DR no PIM Dense Mode](#função-prática-do-dr-no-pim-dense-mode)
+    - [Resumo rápido](#resumo-rápido)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -183,4 +185,46 @@ O Cisco IOS registra isso com mensagens como:
 📘 Interpretação:  
 
 - O campo from neighbor 0.0.0.0 indica que não havia DR anterior.
-- O novo DR é o roteador cujo IP é 192.168.10.254 (o próprio).
+- O novo DR é o roteador cujo IP é 192.168.10.254 (o próprio).  
+
+🔹 **Etapa 4 — Manutenção do DR**  
+
+Enquanto o DR estiver ativo e enviando Hellos, os outros roteadores não tentam assumir o papel.  
+Se o DR parar de enviar Hellos (por falha, interface down ou perda de conectividade), os demais roteadores detectam a ausência e refazem a eleição automaticamente.  
+
+### Função prática do DR no PIM Dense Mode
+
+O DR atua como ponto central para:  
+
+- Registrar as fontes (quando há hosts multicast na LAN).
+- Enviar os pacotes multicast iniciais no modo flood.
+- Responder a mensagens IGMP vindas dos hosts receptores. 
+
+Ou seja, o DR é quem fala com os hosts (via IGMP) e com os outros roteadores (via PIM).  
+
+**🔍 Exemplo prático**
+
+Imagine três roteadores PIM ligados à mesma rede 192.168.10.0/24:
+
+| Roteador | IP da Interface | Prioridade PIM |
+|----------|-----------------|----------------|
+| R1       | 192.168.10.1    |       1        |
+| R2       | 192.168.10.2    |       1        |
+| R3       | 192.168.10.3    |       5        |
+
+➡️ Resultado:  
+
+O R3 será o Designated Router, pois tem maior prioridade (5).  
+Se R3 cair, a eleição é refeita: o DR passa a ser R2 (maior IP entre os restantes).  
+
+### Resumo rápido
+
+| Etapa | Descrição                                                  |
+|-------|------------------------------------------------------------|
+| 1️⃣    | Todos enviam mensagens PIM Hello                           |
+| 2️⃣    | Comparam prioridade (dr-priority)                          |
+| 3️⃣    | Empate → vence o maior IP da interface                     |
+| 4️⃣    | Roteador vencedor se torna o DR                            |
+| 5️⃣    | DR é responsável pelo tráfego multicast e comunicação IGMP |
+| 6️⃣    | Se o DR falhar → nova eleição automática                   |
+
