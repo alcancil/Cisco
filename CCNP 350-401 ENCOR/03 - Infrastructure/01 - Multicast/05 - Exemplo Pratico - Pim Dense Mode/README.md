@@ -53,3 +53,19 @@ Então a primeira coisa que precisamos verificar é se o **roteamento multicast 
 >  Multicast DVMRP Interoperability: disabled  
 >  Number of multicast boundaries configured with filter-autorp option: 0  
 > R01#  
+
+Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos ativar o mesmo.  
+
+>R01>ena
+R01#conf t
+R01(config)#ip multicast-routing
+R01(config)#end
+R01#show ip multicast
+  Multicast Routing: enabled
+  Multicast Multipath: disabled
+  Multicast Route limit: No limit
+  Multicast Triggered RPF check: enabled
+  Multicast Fallback group mode: Sparse
+  Multicast DVMRP Interoperability: disabled
+  Number of multicast boundaries configured with filter-autorp option: 0
+R01#
