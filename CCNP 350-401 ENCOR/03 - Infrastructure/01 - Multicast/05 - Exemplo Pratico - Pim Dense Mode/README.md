@@ -61,11 +61,7 @@ Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos a
 
 Só para confirmar, vamos rodar o mesmo comando mais uma vez.  
 
->R01>ena  
-R01#conf t  
-R01(config)#ip multicast-routing  
-R01(config)#end  
-R01#show ip multicast  
+>R01#show ip multicast  
   Multicast Routing: enabled  
   Multicast Multipath: disabled  
   Multicast Route limit: No limit  
