@@ -56,6 +56,10 @@ Então a primeira coisa que precisamos verificar é se o **roteamento multicast 
 
 Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos ativar o mesmo.  
 
+>R01(config)#ip multicast-routing  
+
+Só para confirmar, vamos rodar o mesmo comando mais uma vez.  
+
 >R01>ena  
 R01#conf t  
 R01(config)#ip multicast-routing  
@@ -68,4 +72,4 @@ R01#show ip multicast
   Multicast Fallback group mode: Sparse  
   Multicast DVMRP Interoperability: disabled  
   Number of multicast boundaries configured with filter-autorp option: 0  
-R01#  
+R01# 
