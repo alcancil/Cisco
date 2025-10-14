@@ -13,6 +13,7 @@
   - [Endereço Multicast 224.0.0.13](#endereço-multicast-2240013)
     - [Revisão](#revisão)
     - [Resumo prático](#resumo-prático)
+  - [Explicação da Tabela de roteamento multicast](#explicação-da-tabela-de-roteamento-multicast)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -316,3 +317,28 @@ E o resultado é a saída:
     FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
   
 > R01#  
+
+## Explicação da Tabela de roteamento multicast
+
+Como essa tabela é diferente da tabela de roteamento tradicional, vamos analisar suas entradas.  
+
+🔹 Linha principal:  
+
+> (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL 
+  
+- (*, 224.0.1.40) → É uma entrada (*,G), ou seja, “para qualquer origem (*), grupo 224.0.1.40”.  
+Isso indica que qualquer fonte enviando para esse grupo será tratada por essa entrada (é o estado compartilhado).  
+  
+- 00:00:20/00:02:40 → Tempo desde que a entrada foi criada (uptime) e quanto tempo falta para expirar (expire time).  
+  
+- RP 0.0.0.0 → O RP (Rendezvous Point) é 0.0.0.0 porque o modo é PIM Dense Mode, que não usa RP (só o Sparse Mode usa RP).  
+  
+- flags: DCL  
+
+Cada letra indica um estado:
+
+  D → Dense-mode entry
+
+  C → Connected (a origem está diretamente conectada)
+
+  L → Local (o roteador faz parte do grupo — ou recebeu IGMP localmente)
