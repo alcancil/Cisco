@@ -299,20 +299,20 @@ O comando fica:
 E o resultado é a saída:  
 
 > IP Multicast Routing Table
-> Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-> Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
->
-> (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00
-
-> R01#
+> Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,  
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,  
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,  
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,  
+       U - URD, I - Received Source Specific Host Report,  
+       Z - Multicast Tunnel, z - MDT-data group sender,  
+       Y - Joined MDT-data group, y - Sending to MDT-data group  
+> Outgoing interface flags: H - Hardware switched, A - Assert winner  
+ Timers: Uptime/Expires  
+ Interface state: Interface, Next-Hop or VCD, State/Mode  
+>  
+> (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL  
+  Incoming interface: Null, RPF nbr 0.0.0.0  
+  Outgoing interface list:  
+    FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
+  
+> R01#  
