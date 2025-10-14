@@ -388,3 +388,20 @@ Ou seja, os Mapping Agents escutam 224.0.1.40 e enviam informações no 224.0.1.
 | 224.0.1.40 | Auto-RP Announcement        | Roteadores candidatos a RP anunciam sua função   |
 | 224.0.0.x  | Multicast de link-local     | Não roteável (apenas dentro do segmento local)   |
 | 224.0.1.x  | Multicast global (roteável) | Pode atravessar roteadores                       |  
+
+Para verificarmos em quais interfaces foram configurados o protocolo PIm, vamos executar o comando:
+
+```ios
+R01#show ip pim interface
+
+Address          Interface                Ver/   Nbr    Query  DR     DR
+                                          Mode   Count  Intvl  Prior
+10.0.0.1         FastEthernet0/0          v2/D   0      30     1      10.0.0.1
+10.0.0.9         FastEthernet0/1          v2/D   0      30     1      10.0.0.9
+192.168.10.254   FastEthernet1/0          v2/D   0      30     1      192.168.10.254
+R01#
+```
+
+Agora que demos o inicio da criação da nossa árvore, precisamos fazer as mesmas configurações nos outros roteadores R02 e R03.  
+Vamos acessar R02 agora.  
+
