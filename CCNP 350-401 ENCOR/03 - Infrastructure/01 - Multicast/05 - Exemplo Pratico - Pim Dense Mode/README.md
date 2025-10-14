@@ -361,4 +361,30 @@ Cada letra indica um estado:
 
 💡 **Em outras palavras:**  
 O roteador R01 está participando do grupo 224.0.1.40, aprendeu via IGMP local, ainda não recebeu tráfego multicast, mas já sabe por onde reenviar quando ele aparecer.  
+  
+**224.0.1.40 — Cisco RP-Announce (Auto-RP Announcement) - Grupo proprietário da Cisco**  
 
+Esse endereço é usado pelo protocolo Cisco Auto-RP, que faz parte do PIM (Protocol Independent Multicast), modo Sparse.  
+Mesmo que você esteja usando Dense Mode, os roteadores Cisco ainda escutam alguns grupos multicast padrão (como o 224.0.1.40), especialmente se o PIM estiver ativado — por isso ele aparece na tabela.  
+
+🔹 **Função do grupo 224.0.1.40**  
+  
+- Utilizado por Candidatos a RP (Rendezvous Point) para anunciar suas informações a todos os roteadores.  
+- Em outras palavras, roteadores que querem ser RP enviam suas mensagens de anúncio (RP-Announce) para o grupo 224.0.1.40.  
+  
+🔹 **Complemento: o 224.0.1.39**
+  
+- Esse é o outro grupo relacionado:  
+224.0.1.39 — Cisco RP-Discovery (Auto-RP Discovery)  
+É usado pelos roteadores para descobrir quem são os RPs disponíveis.  
+Ou seja, os Mapping Agents escutam 224.0.1.40 e enviam informações no 224.0.1.39.  
+  
+**📘 Resumo prático**  
+
+| Grupo      |Função                       | Descrição                                        |
+|------------|-----------------------------|--------------------------------------------------|
+| 224.0.0.13 | PIM Hello                   | Troca de mensagens entre roteadores PIM vizinhos |
+| 224.0.1.39 | Auto-RP Discovery           | Distribui mapeamentos RP para os roteadores      |
+| 224.0.1.40 | Auto-RP Announcement        | Roteadores candidatos a RP anunciam sua função   |
+| 224.0.0.x  | Multicast de link-local     | Não roteável (apenas dentro do segmento local)   |
+| 224.0.1.x  | Multicast global (roteável) | Pode atravessar roteadores                       |  
