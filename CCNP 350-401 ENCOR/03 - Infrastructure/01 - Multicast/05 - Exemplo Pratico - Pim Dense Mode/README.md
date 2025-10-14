@@ -497,5 +497,15 @@ Outgoing interface flags: H - Hardware switched, A - Assert winner
 R02#
 ```
 
-Podemos notar que a tabela é bem parecida com a do roteador R01. Ainda não configuramos R03 e nem iniciamos a comunicação. Portanto, agora vamos fazer o mesmo em R03.  
+Podemos notar que a tabela é bem parecida com a do roteador R01. Ainda não configuramos R03 e nem iniciamos a comunicação.  
+Vamos analisar o tráfego com o Whireshark. Então vamos analisar o tráfego em R02 na porta f0/0, que está ligada a R01.  
 
+![Whireshark](Imagens/04.png)  
+
+Analisando a saída, podemos observar agora que jpa temos pacotes hello sendo enviados de R01 para R02.  
+
+Portanto, agora vamos configurar o mesmo em R03.  
+
+```ios
+
+```
