@@ -341,4 +341,24 @@ Cada letra indica um estado:
 
   C → Connected (a origem está diretamente conectada)
 
-  L → Local (o roteador faz parte do grupo — ou recebeu IGMP localmente)
+  L → Local (o roteador faz parte do grupo — ou recebeu IGMP localmente)  
+
+🔹 Próxima parte:  
+
+> Incoming interface: Null, RPF nbr 0.0.0.0  
+  
+- **Incoming interface: Null** → Ainda não há uma origem (S,G) conhecida enviando tráfego multicast. Ou seja, o roteador conhece o grupo, mas não sabe ainda de onde vem o fluxo.  
+- **RPF nbr 0.0.0.0** → O Reverse Path Forwarding neighbor (vizinho RPF) não está definido, pois ainda não há rota multicast para a origem.  
+
+🔹 Saídas (onde o tráfego será enviado):  
+
+> Outgoing interface list:  
+>  FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
+
+- O tráfego multicast (quando chegar) será encaminhado pela interface FastEthernet0/0.  
+- Forward/Dense → indica que o tráfego será reenviado (forwarded) no modo dense-mode.  
+- Timers → mostram há quanto tempo o estado está ativo e quando expira.  
+
+💡 **Em outras palavras:**  
+O roteador R01 está participando do grupo 224.0.1.40, aprendeu via IGMP local, ainda não recebeu tráfego multicast, mas já sabe por onde reenviar quando ele aparecer.  
+
