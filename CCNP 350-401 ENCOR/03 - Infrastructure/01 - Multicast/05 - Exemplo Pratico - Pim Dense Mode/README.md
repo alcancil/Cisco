@@ -507,5 +507,69 @@ Analisando a saída, podemos observar agora que jpa temos pacotes hello sendo en
 Portanto, agora vamos configurar o mesmo em R03.  
 
 ```ios
+R03#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+R03(config)#ip multicast-routing
+R03(config)#int f0/0
+R03(config-if)#ip pim dense-mode
+R03(config-if)#
+*Mar  1 00:34:46.935: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.30.254 on interface FastEthernet0/0
+R03(config-if)#int f0/1
+R03(config-if)#ip pim dense-mode
+R03(config-if)#
+*Mar  1 00:34:58.567: %PIM-5-NBRCHG: neighbor 10.0.0.9 UP on interface FastEthernet0/1
+*Mar  1 00:34:59.883: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.10 on interface FastEthernet0/1
+R03(config-if)#int f1/0
+R03(config-if)#ip pim dense-mode
+R03(config-if)#
+*Mar  1 00:35:10.395: %PIM-5-NBRCHG: neighbor 10.0.0.5 UP on interface FastEthernet1/0
+*Mar  1 00:35:11.831: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.6 on interface FastEthernet1/0
+R03(config-if)#
+```  
 
+Vamos verificar as configurações.  
+
+- Tabela de roteamento multicast
+  
+```ios
+R03#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.0.1.40), 00:02:15/00:02:04, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:01:51/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:02:03/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:02:15/00:00:00
+
+R03#
 ```
+
+- Vizinhos PIM  
+
+```ios
+R03#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.9          FastEthernet0/1          00:02:52/00:01:19 v2    1 / S
+10.0.0.5          FastEthernet1/0          00:02:40/00:01:31 v2    1 / S
+R03#
+```
+
+Vamos analisar o tráfego com o Whireshark que é aplicando na interface f1/0 de R03, ligado ao route R02.
+
+![Whireshark](Imagens/05.png)  
+
