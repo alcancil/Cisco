@@ -54,15 +54,17 @@ No nosso caso queremos ter a comunicação **de um para um grupo**, ou seja, **c
 
 Então a primeira coisa que precisamos verificar é se o **roteamento multicast está ativo** no equipamento.  
 
-> R01#show ip multicast  
->  Multicast Routing: disabled  
->  Multicast Multipath: disabled  
->  Multicast Route limit: No limit  
->  Multicast Triggered RPF check: enabled  
->  Multicast Fallback group mode: Sparse  
->  Multicast DVMRP Interoperability: disabled  
->  Number of multicast boundaries configured with filter-autorp option: 0  
-> R01#  
+```ios
+R01#show ip multicast  
+  Multicast Routing: disabled  
+  Multicast Multipath: disabled  
+  Multicast Route limit: No limit  
+  Multicast Triggered RPF check: enabled  
+  Multicast Fallback group mode: Sparse  
+  Multicast DVMRP Interoperability: disabled  
+  Number of multicast boundaries configured with filter-autorp option: 0  
+R01#  
+```
 
 Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos ativar o mesmo.  
 
@@ -70,7 +72,8 @@ Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos a
 
 Só para confirmar, vamos rodar o mesmo comando mais uma vez.  
 
->R01#show ip multicast  
+```ios
+R01#show ip multicast  
   Multicast Routing: enabled  
   Multicast Multipath: disabled  
   Multicast Route limit: No limit  
@@ -79,6 +82,7 @@ Só para confirmar, vamos rodar o mesmo comando mais uma vez.
   Multicast DVMRP Interoperability: disabled  
   Number of multicast boundaries configured with filter-autorp option: 0  
 R01#  
+```
 
 Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PIM**. Esse protocolo deve ser ativado nas interfaces onde a comunicação ira ocorrer.  
 
@@ -102,29 +106,31 @@ No modo **Dense Mode (PIM-DM)**, o tráfego multicast é floodado por todas as i
 
 Portanto, no nosso cenário vamos entrar no roteador R01 vamos ativar o PIM em todas as interfaces que estão ativas e vão fazer parte do multicast.  
 
-> R01>ena  
-> R01#show ip int br  
-> Interface                  IP-Address      OK? Method Status                Protocol  
-> FastEthernet0/0            10.0.0.1        YES NVRAM  up                    up  
-> FastEthernet0/1            10.0.0.9        YES NVRAM  up                    up  
-> FastEthernet1/0            192.168.10.254  YES NVRAM  up                    up  
-> Loopback0                  1.1.1.1         YES NVRAM  up                    up  
-> R01#conf t  
-> Enter configuration commands, one per line.  End with CNTL/Z.  
-> R01(config)#int f0/0  
-> R01(config-if)#ip pim dense-mode  
-> R01(config-if)#  
-> *Mar  1 03:53:26.735: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/0  
-> R01(config-if)#int f0/1  
-> R01(config-if)#ip pim dense-mode  
-> R01(config-if)#  
-> *Mar  1 03:53:48.687: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.9 on interface FastEthernet0/1  
-> R01(config-if)#ip pim  
-> R01(config-if)#int f1/0  
-> R01(config-if)#ip pim dense-mode  
-> R01(config-if)#  
-> *Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0  
-> R01(config-if)#  
+```ios
+ R01>ena  
+ R01#show ip int br  
+  Interface                  IP-Address      OK? Method Status                Protocol  
+  FastEthernet0/0            10.0.0.1        YES NVRAM  up                    up  
+  FastEthernet0/1            10.0.0.9        YES NVRAM  up                    up  
+  FastEthernet1/0            192.168.10.254  YES NVRAM  up                    up  
+  Loopback0                  1.1.1.1         YES NVRAM  up                    up  
+ R01#conf t  
+ Enter configuration commands, one per line.  End with CNTL/Z.  
+ R01(config)#int f0/0  
+ R01(config-if)#ip pim dense-mode  
+ R01(config-if)#  
+ *Mar  1 03:53:26.735: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/0  
+ R01(config-if)#int f0/1  
+ R01(config-if)#ip pim dense-mode  
+ R01(config-if)#  
+ *Mar  1 03:53:48.687: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.9 on interface FastEthernet0/1  
+ R01(config-if)#ip pim  
+ R01(config-if)#int f1/0  
+ R01(config-if)#ip pim dense-mode  
+ R01(config-if)#  
+ *Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0  
+ R01(config-if)#  
+```
 
 Agora que ativamos o **PIM DENSE-MODE** podemos observar que nos é exibida uma mensagem de aviso (log nível 5)  
   
@@ -299,24 +305,26 @@ O comando fica:
 
 E o resultado é a saída:  
 
-> IP Multicast Routing Table
-> Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,  
+```ios
+ IP Multicast Routing Table
+ Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,  
        L - Local, P - Pruned, R - RP-bit set, F - Register flag,  
        T - SPT-bit set, J - Join SPT, M - MSDP created entry,  
        X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,  
        U - URD, I - Received Source Specific Host Report,  
        Z - Multicast Tunnel, z - MDT-data group sender,  
        Y - Joined MDT-data group, y - Sending to MDT-data group  
-> Outgoing interface flags: H - Hardware switched, A - Assert winner  
+ Outgoing interface flags: H - Hardware switched, A - Assert winner  
  Timers: Uptime/Expires  
  Interface state: Interface, Next-Hop or VCD, State/Mode  
->  
-> (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL  
+  
+ (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL  
   Incoming interface: Null, RPF nbr 0.0.0.0  
   Outgoing interface list:  
     FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
   
-> R01#  
+ R01#  
+```
 
 ## Explicação da Tabela de roteamento multicast
 
@@ -324,8 +332,10 @@ Como essa tabela é diferente da tabela de roteamento tradicional, vamos analisa
 
 🔹 Linha principal:  
 
-> (*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL 
-  
+```ios
+(*, 224.0.1.40), 00:00:20/00:02:40, RP 0.0.0.0, flags: DCL 
+```
+
 - (*, 224.0.1.40) → É uma entrada (*,G), ou seja, “para qualquer origem (*), grupo 224.0.1.40”.  
 Isso indica que qualquer fonte enviando para esse grupo será tratada por essa entrada (é o estado compartilhado).  
   
@@ -345,15 +355,19 @@ Cada letra indica um estado:
 
 🔹 Próxima parte:  
 
-> Incoming interface: Null, RPF nbr 0.0.0.0  
-  
+```ios
+Incoming interface: Null, RPF nbr 0.0.0.0  
+```
+
 - **Incoming interface: Null** → Ainda não há uma origem (S,G) conhecida enviando tráfego multicast. Ou seja, o roteador conhece o grupo, mas não sabe ainda de onde vem o fluxo.  
 - **RPF nbr 0.0.0.0** → O Reverse Path Forwarding neighbor (vizinho RPF) não está definido, pois ainda não há rota multicast para a origem.  
 
 🔹 Saídas (onde o tráfego será enviado):  
 
-> Outgoing interface list:  
->  FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
+```ios
+Outgoing interface list:  
+  FastEthernet0/0, Forward/Dense, 00:00:20/00:00:00  
+```
 
 - O tráfego multicast (quando chegar) será encaminhado pela interface FastEthernet0/0.  
 - Forward/Dense → indica que o tráfego será reenviado (forwarded) no modo dense-mode.  
@@ -403,5 +417,58 @@ R01#
 ```
 
 Agora que demos o inicio da criação da nossa árvore, precisamos fazer as mesmas configurações nos outros roteadores R02 e R03.  
-Vamos acessar R02 agora.  
+Vamos acessar R02 agora e aplicar os mesmos comandos nas interfaces.  
 
+```ios
+R02#conf t
+R02(config)#ip multicast-routing
+R02(config)#int f0/0
+R02(config-if)#ip pim dense-mode
+R02(config-if)#
+*Mar  1 00:13:15.155: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.2 on interface FastEthernet0/0
+R02(config-if)#int f0/1
+R02(config-if)#ip pim dense-mode
+R02(config-if)#
+*Mar  1 00:13:36.107: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.20.254 on interface FastEthernet0/1
+R02(config-if)#int f1/0
+R02(config-if)#ip pim dense-mode
+*Mar  1 00:13:44.023: %PIM-5-NBRCHG: neighbor 10.0.0.1 UP on interface FastEthernet0/0
+R02(config-if)#
+*Mar  1 00:13:53.055: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.5 on interface FastEthernet1/0
+R02(config-if)#
+```
+
+Agora podemos notar que agora o roteador já conseguiu formar vizinhos. Isso é mostrado nas mensagens de log exibidas:  
+
+```ios
+*Mar  1 00:13:15.155: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.2 on interface FastEthernet0/0
+```
+
+Com isso já conseguimos verificar em R01 e R02 os vizinhos.  
+
+- R01  
+
+```ios
+R01>ena
+R01#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.2          FastEthernet0/0          00:04:57/00:01:43 v2    1 / DR S
+R01#
+```
+  
+- R02  
+
+```ios
+R02#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.1          FastEthernet0/0          00:06:02/00:01:37 v2    1 / S
+R02#
+```  
