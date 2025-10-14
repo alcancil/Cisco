@@ -586,3 +586,33 @@ host02(config-if)#ip igmp join-group 239.1.1.1
 Agora vamos fazer a captura no whireshark dessa porta para analisar o comportamento.  
 
 ![Whireshark](Imagens/06.png)
+
+Quem adiciona o Host ao grupo **multicast 239.1.1.1** é o protocolo **igmp**. Então se analisarmos na saída, vemos que temos o endereço de ip 192.168.20.1, que é o endereço IPv4 do Host02 para o destino 239.1.1.1. Ou seja nesse momento ele ingressa no grupo 239.1.1.1. Então todos os hosts que estão nesse grupo vão começar a escutar toda o trefego desse grupo, mas o restante dos hosts irão ser podados da "conversa". Só que também podemos ver que além do grupo 239.1.1.1 existe um outro, o 224.0.0.1  
+
+![Whireshark](Imagens/07.png)  
+
+Aqui quem está enviando é o roteador multicast (192.168.20.254), não o host.  
+Esse pacote é um IGMP General Query, enviado periodicamente pelo Querier (o roteador PIM/IGMP responsável pela rede local) para o endereço 224.0.0.1 — que é o grupo “todos os hosts multicast-capable”. Esse é um endereço padrão IPv4 multicast reservado pelo IANA, usado para todos os dispositivos multicast na rede local.  
+  
+👉 Portanto, qualquer host ou roteador multicast deve escutar esse endereço.
+
+**E por que o campo “Multicast Address” aparece como 0.0.0.0?**  
+
+Isso acontece apenas nas mensagens de Query (e nunca nos Reports).  
+  
+**Explicação:**
+  
+Quando o campo “Multicast Address” = 0.0.0.0, o roteador está dizendo:  
+
+- “Este é um General Query, quero saber quais grupos multicast estão ativos nesta sub-rede”.
+
+Quando o campo mostra um grupo específico (ex: 239.1.1.1), então é um:
+
+- “Group-Specific Query”, pedindo apenas sobre aquele grupo.
+
+Resumindo o fluxo completo:  
+
+| Tipo de pacote                  | Origem                    | Destino                   | Multicast Address | Função                                                          |
+|---------------------------------|---------------------------|---------------------------|-------------------|-----------------------------------------------------------------|
+| IGMP Membership Query (general) | Roteador (192.168.20.254) | 224.0.0.1                 | 0.0.0.0	          | Pergunta a todos os hosts: “quem está inscrito em algum grupo?” |
+| IGMP Membership Report          | Host (192.168.20.1)       | 239.1.1.1                 | 239.1.1.1         | O host responde: “eu quero participar do grupo 239.1.1.1”       |
