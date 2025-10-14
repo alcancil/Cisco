@@ -573,3 +573,16 @@ Vamos analisar o tráfego com o Whireshark que é aplicando na interface f1/0 de
 
 ![Whireshark](Imagens/05.png)  
 
+Agora temos que pensar assim, até aqui temos as inteligências da nossa árvore, mas não temos os interessados. No exemplo, para demonstrar o comportamento de **flood and prune**, vamos dizer que iremos transmitir nosso fluxo de SERVER até o HOST2. Portanto nossa árvore passa entre os roteadores R01, R02 e R03, mas os "galhos" (que são os hosts interessados no fluxo) só estão em R01 e R02.  
+Para tanto, vamos escolher o endereço **239.1.1.1** que um endereço de grupo multicast semelhante a rf1918, ou seja, só tem escopo local. Também precisamos configurar nos hosts para eles façam o **join para o grupo**.  
+No nosso exemplo, precisamos entrar somente no HOST02 e na interface f0/0, que é a que está ligada ao roteador R02 vamos executar o comando o seguinte comando:  
+
+```ios
+host02#conf t
+host02(config)#int f0/0
+host02(config-if)#ip igmp join-group 239.1.1.1
+```
+
+Agora vamos fazer a captura no whireshark dessa porta para analisar o comportamento.  
+
+![Whireshark](Imagens/06.png)
