@@ -619,3 +619,250 @@ Resumindo o fluxo completo:
 |---------------------------------|---------------------------|---------------------------|-------------------|-----------------------------------------------------------------|
 | IGMP Membership Query (general) | Roteador (192.168.20.254) | 224.0.0.1                 | 0.0.0.0	          | Pergunta a todos os hosts: “quem está inscrito em algum grupo?” |
 | IGMP Membership Report          | Host (192.168.20.1)       | 239.1.1.1                 | 239.1.1.1         | O host responde: “eu quero participar do grupo 239.1.1.1”       |
+
+Agora, vamos voltar em R02 e analisar novamente nossa tabela de roteamento multicast.  
+
+```ios
+R02#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:00:12/00:02:47, RP 0.0.0.0, flags: DC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:00:12/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:00:12/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:00:12/00:00:00
+
+(*, 224.0.1.40), 00:01:52/00:02:08, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:01:52/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:01:53/00:00:00
+
+R02#
+```  
+
+Aqui podemos notar que agora apareceu uma segunda entrada:  
+
+```ios
+(*, 239.1.1.1), 00:00:12/00:02:47, RP 0.0.0.0, flags: DC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:00:12/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:00:12/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:00:12/00:00:00
+```
+
+Isso confirma que agora o host fez o join no  **grupo 239.1.1.1**. Se observarmos também veremos que temos a flag **DC**, ou seja, **D - Dense C - Connected**, que nos diz que o hoste está conectado a interface e o Pim está ativo no modo Dense.  
+Cabe aqui uma breve explicação do desse modo. Como dito anteriormente, o **PIM Dense - Mode**, tem o comportamento de **Flood e Prune**. Mas o que isso realmente quer dizer?  
+Bem, o Pim nesse modo é mais adotado por sua facilidade na configuração porém, mesmo que a rede não esteja sendo utilizada, como ele tem que fazer um **flood**, nesse momento a bada está sendo consumida pois o protocolo precisa verificar em quais portas que o tráfego multicast irá passar e quais portas possuem hosts interessados. È por isso que ele faz o flood, mas isso pode ser considerado um pouco de desperdício de banda e, por esse motivo, não é o modo de atuação do PIM mais efetivo.  
+
+Até aqui temos quase tudo pronto. Porém nos falta uma fonte real para transmissão de dados em multicast. Para tanto, vamos acesso o nosso host apelidado de **SERVER** e vamos realizar um ping para o grupo **239.1.1.1**.  
+
+```ios
+server#ping ip 239.1.1.1 ?
+  data      specify data pattern
+  df-bit    enable do not fragment bit in IP header
+  repeat    specify repeat count
+  size      specify datagram size
+  source    specify source address or name
+  timeout   specify timeout interval
+  validate  validate reply data
+  <cr>
+
+server#ping ip 239.1.1.1 repeat 10000
+
+Type escape sequence to abort.
+Sending 10000, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+...
+Reply to request 3 from 192.168.20.1, 20 ms
+Reply to request 4 from 192.168.20.1, 84 ms
+Reply to request 5 from 192.168.20.1, 132 ms
+Reply to request 6 from 192.168.20.1, 84 ms
+Reply to request 7 from 192.168.20.1, 88 ms
+Reply to request 8 from 192.168.20.1, 96 ms
+Reply to request 9 from 192.168.20.1, 112 ms
+Reply to request 10 from 192.168.20.1, 124 ms
+Reply to request 11 from 192.168.20.1, 120 ms
+Reply to request 12 from 192.168.20.1, 192 ms
+Reply to request 13 from 192.168.20.1, 92 ms
+Reply to request 14 from 192.168.20.1, 124 ms
+Reply to request 15 from 192.168.20.1, 136 ms
+Reply to request 16 from 192.168.20.1, 84 ms
+Reply to request 17 from 192.168.20.1, 100 ms
+....
+```
+
+Agora podemos ter certeza de que nossa configuração funcionou. Podemos reparar que ao executar um **echo request** para o grupo **239.1.1.1** quem retornou o **echo reply** foi o host interessado com o ip **192.168.20.1**  
+
+Vamos realizar uma captura do Whireshark na **interface f1/0 de entrada de R01**
+
+![Whireshark](Imagens/08.png)  
+  
+Porém vamos analisar a tabela de roteamento multicast nos roteadores para ver como ficou a situação.  
+
+**R01**  
+
+```ios
+R01#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:08:20/stopped, RP 0.0.0.0, flags: D
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Dense, 00:08:20/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:08:20/00:00:00
+
+(192.168.10.1, 239.1.1.1), 00:08:20/00:02:44, flags: T
+  Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Dense, 00:08:21/00:00:00
+    FastEthernet0/1, Prune/Dense, 00:01:54/00:01:05
+
+(*, 224.0.1.40), 00:25:28/00:02:32, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Dense, 00:25:26/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:25:28/00:00:00
+
+R01#
+```
+
+A primeira entrada **(*, 239.1.1.1), 00:08:20/stopped, RP 0.0.0.0, flags: D** nos diz assim:  
+
+- **(*,239.1.1.1)** → indica uma entrada do tipo “shared tree”, ou seja, qualquer origem (representada por *) que envie tráfego para o grupo 239.1.1.1 será encaminhada conforme esta rota.
+- **Incoming interface: Null, RPF nbr 0.0.0.0** → significa que o roteador ainda não aprendeu uma origem específica para esse grupo. Ele apenas sabe que o grupo existe, mas não há uma interface de entrada definida.
+- **Outgoing interface list:** mostra as interfaces que devem encaminhar o tráfego multicast desse grupo.
+  - **FastEthernet0/1, Forward/Dense** → interface encaminhando o tráfego normalmente (modo PIM Dense).
+  - **FastEthernet0/0, Forward/Dense** → mesma função, também participando do encaminhamento.
+A flag D confirma que o grupo está sendo tratado no modo PIM Dense Mode.  
+  
+A segunda entrada é **(192.168.10.1, 239.1.1.1), 00:08:20/00:02:44, flags: T**
+
+- Aqui temos uma entrada (S,G), ou seja, uma origem (S) específica — 192.168.10.1 — enviando tráfego ao grupo 239.1.1.1.
+- **Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0** → indica que o roteador recebe o tráfego multicast dessa origem pela interface Fa1/0, conforme a checagem RPF (Reverse Path Forwarding).
+- **Outgoing interface list:**
+  - **FastEthernet0/0, Forward/Dense** → tráfego está sendo reenviado por essa interface.
+  - **FastEthernet0/1, Prune/Dense** → essa interface foi podada (pruned), o que significa que o roteador vizinho dessa interface não tem receptores interessados no grupo 239.1.1.1.
+O flag **T (SPT-bit set)** mostra que essa entrada pertence à árvore de caminho mais curto (Shortest Path Tree) — o roteador já conhece a origem e está enviando o tráfego diretamente por ela.  
+
+A terceira entrada é **(*, 224.0.1.40), 00:25:28/00:02:32, RP 0.0.0.0, flags: DCL**  
+Esse grupo 224.0.1.40 é utilizado por protocolos de descoberta (exemplo: NTP multicast ou mensagens de serviço), não sendo um grupo criado manualmente pelo administrador.
+
+- **(*,224.0.1.40)** indica que qualquer origem pode enviar pacotes para esse grupo.  
+- **Incoming interface: Null** → não há uma origem específica conhecida, apenas a detecção de que o grupo está ativo.
+- **Outgoing interface list:**
+  - **FastEthernet0/1, Forward/Dense**
+  - **FastEthernet0/0, Forward/Dense**
+Ambas as interfaces estão propagando o tráfego do grupo **224.0.1.40** no modo Dense.  
+  
+Os flags **DCL** indicam:
+
+- **D** → Dense mode
+- **C** → Conectado localmente (há hosts na LAN associados a esse grupo)
+- **L** → O próprio roteador participa desse grupo (escuta localmente)
+
+📘 Resumo conceitual:
+
+Agora podemos ver a formação de nossa árvore múlticast.  
+
+- Entradas (*,G) representam grupos multicast conhecidos, mas ainda sem origem definida.
+- Entradas (S,G) representam grupos que já têm uma origem identificada enviando tráfego.
+- As interfaces em “Forward” participam do encaminhamento multicast.
+- As interfaces em “Prune” não participam, pois não há receptores downstream.
+- Flags como D, C, L, T ajudam a entender o estado do grupo e o modo de operação do PIM.
+
+**R02**  
+
+```ios
+R02#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:26:19/stopped, RP 0.0.0.0, flags: DC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:26:19/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:26:19/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:26:19/00:00:00
+
+(192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Dense, 00:10:54/00:00:00
+    FastEthernet1/0, Prune/Dense, 00:01:16/00:01:43
+
+(*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:27:59/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:28:00/00:00:00
+
+R02#
+```
+
+**R03**  
+
+```ios
+R03#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:11:35/stopped, RP 0.0.0.0, flags: D
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:11:35/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:11:35/00:00:00
+
+(192.168.10.1, 239.1.1.1), 00:01:56/00:01:11, flags: PT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.9
+  Outgoing interface list:
+    FastEthernet1/0, Prune/Dense, 00:01:58/00:01:02, A
+
+(*, 224.0.1.40), 00:28:41/00:02:17, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Dense, 00:28:11/00:00:00
+    FastEthernet0/1, Forward/Dense, 00:28:12/00:00:00
+    FastEthernet0/0, Forward/Dense, 00:28:41/00:00:00
+
+R03#
+```
