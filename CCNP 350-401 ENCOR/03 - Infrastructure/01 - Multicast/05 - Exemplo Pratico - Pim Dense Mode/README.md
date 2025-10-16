@@ -14,6 +14,7 @@
     - [Revisão](#revisão)
     - [Resumo prático](#resumo-prático)
   - [Explicação da Tabela de roteamento multicast](#explicação-da-tabela-de-roteamento-multicast)
+    - [Realizando Join Group](#realizando-join-group)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -572,6 +573,8 @@ R03#
 Vamos analisar o tráfego com o Whireshark que é aplicando na interface f1/0 de R03, ligado ao route R02.
 
 ![Whireshark](Imagens/05.png)  
+
+### Realizando Join Group
 
 Agora temos que pensar assim, até aqui temos as inteligências da nossa árvore, mas não temos os interessados. No exemplo, para demonstrar o comportamento de **flood and prune**, vamos dizer que iremos transmitir nosso fluxo de SERVER até o HOST2. Portanto nossa árvore passa entre os roteadores R01, R02 e R03, mas os "galhos" (que são os hosts interessados no fluxo) só estão em R01 e R02.  
 Para tanto, vamos escolher o endereço **239.1.1.1** que um endereço de grupo multicast semelhante a rf1918, ou seja, só tem escopo local. Também precisamos configurar nos hosts para eles façam o **join para o grupo**.  
