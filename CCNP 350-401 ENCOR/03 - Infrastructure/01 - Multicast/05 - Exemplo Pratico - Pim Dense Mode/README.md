@@ -1006,6 +1006,10 @@ Assim, forma-se automaticamente uma árvore de distribuição otimizada que cobr
   - **G** = endereço do grupo multicast (239.1.1.1)
 - O nome **“Shortest Path Tree”** vem do fato de que o PIM utiliza o RPF (Reverse Path Forwarding) para garantir que cada roteador receba os pacotes multicast pelo caminho mais curto até a fonte, evitando loops.  
 
+![Tree](Imagens/tree.png)  
+
+Esse é o resultado da nossa árvore.
+
 ### RPF - Reverse Path Forwarding  
 
 **RPF (Reverse Path Forwarding)** é o mecanismo usado pelo roteador para garantir que o tráfego multicast está vindo pela interface correta, ou seja, pelo caminho reverso até a origem da fonte.  
@@ -1072,6 +1076,10 @@ Como o único host interessado no tráfego multicast está na rede **192.168.20.
 No resultado, o roteador R01 mostra que o caminho de retorno para o host 192.168.20.1 é pela interface FastEthernet0/0, tendo como vizinho RPF o endereço 10.0.0.2, aprendido via OSPF. Isso confirma que o tráfego multicast proveniente desse vizinho será aceito por estar conforme a tabela de roteamento unicast.  
   
 O IP 192.168.20.1 foi escolhido por ser o host receptor do grupo multicast, mas qualquer endereço dentro da sub-rede 192.168.20.0/24 poderia ser utilizado para fins de verificação — o importante é que ele pertença à rede do destino multicast e possua rota válida no roteamento unicast.  
+
+Visualmente, o RPF de R01 01 fica assim:  
+
+![RPF](Imagens/rpf.png)  
 
 ---  
 
