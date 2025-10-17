@@ -846,23 +846,17 @@ Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específic
     Todas as interfaces estão em estado Forward, indicando que o roteador está encaminhando o tráfego multicast do grupo 239.1.1.1 nessas interfaces.  
     O flag **DC** significa:  
     - **D** → o grupo está operando em Dense Mode.
-    - **C** → há hosts diretamente conectados a uma das interfaces do roteador que participam do grupo 239.1.1.1 (ou seja, há receptores IGMP ativos).
+    - **C** → há hosts diretamente conectados a uma das interfaces do roteador que participam do grupo 239.1.1.1 (ou seja, há receptores IGMP ativos).  
 
-🟩 2️⃣ Entrada: (192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T
-
-Aqui temos uma entrada (S,G), ou seja, o roteador conhece a origem 192.168.10.1 que está enviando tráfego multicast para o grupo 239.1.1.1.
-
-Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
-
-Isso mostra que o tráfego multicast está sendo recebido pela interface Fa0/0, e o vizinho RPF (Reverse Path Forwarding) para essa origem é 10.0.0.1 — ou seja, o próximo roteador no caminho de retorno até a origem.
-
-Outgoing interface list:
-
-FastEthernet0/1, Forward/Dense → essa interface está encaminhando o tráfego multicast do grupo.
-
-FastEthernet1/0, Prune/Dense → o roteador poda (prune) o tráfego nessa interface porque não há receptores interessados a jusante (downstream).
-
-O flag T indica que esta rota pertence à árvore de caminho mais curto (SPT – Shortest Path Tree), o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).
+**Entrada: (192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T**
+  
+- Aqui temos uma entrada (S,G), ou seja, o roteador conhece a origem 192.168.10.1 que está enviando tráfego multicast para o grupo 239.1.1.1.
+  - **Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1**
+  Isso mostra que o tráfego multicast está sendo recebido pela interface **Fa0/0, e o vizinho RPF (Reverse Path Forwarding)** para essa origem é 10.0.0.1 — ou seja, o próximo roteador no caminho de retorno até a origem.
+- **Outgoing interface list:**
+  - **FastEthernet0/1, Forward/Dense** → essa interface está encaminhando o tráfego multicast do grupo.
+  - **FastEthernet1/0, Prune/Dense** → o roteador poda (prune) o tráfego nessa interface porque não há receptores interessados a jusante (downstream).
+    O **flag T** indica que esta rota pertence à árvore de caminho mais curto **(SPT – Shortest Path Tree)**, o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).
 
 🟩 3️⃣ Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL
 
