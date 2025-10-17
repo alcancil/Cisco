@@ -782,7 +782,7 @@ Os flags **DCL** indicam:
 - **C** → Conectado localmente (há hosts na LAN associados a esse grupo)
 - **L** → O próprio roteador participa desse grupo (escuta localmente)
 
-📘 Resumo conceitual:
+📘 **Resumo conceitual:**
 
 Agora podemos ver a formação de nossa árvore múlticast.  
 
@@ -856,40 +856,28 @@ Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específic
 - **Outgoing interface list:**
   - **FastEthernet0/1, Forward/Dense** → essa interface está encaminhando o tráfego multicast do grupo.
   - **FastEthernet1/0, Prune/Dense** → o roteador poda (prune) o tráfego nessa interface porque não há receptores interessados a jusante (downstream).
-    O **flag T** indica que esta rota pertence à árvore de caminho mais curto **(SPT – Shortest Path Tree)**, o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).
+    O **flag T** indica que esta rota pertence à árvore de caminho mais curto **(SPT – Shortest Path Tree)**, o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).  
+  
+**Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL**
+  
+- Essa é uma entrada para o grupo **224.0.1.40**, que é um endereço multicast reservado para protocolos de controle e descoberta, como NTP (Network Time Protocol).
+- **(*,224.0.1.40)** indica que o grupo é conhecido, mas sem origem específica.
+- **Incoming interface: Null** → o roteador ainda não recebeu tráfego específico para o grupo.
+  - **Outgoing interface list:**
+    - **FastEthernet1/0, Forward/Dense**
+    - **FastEthernet0/0, Forward/Dense**
+      Ambas as interfaces estão encaminhando o tráfego multicast desse grupo.
+      Os flags **DCL** significam:
+      - **D** → Dense Mode
+      - **C** → Conectado (há hosts escutando localmente)
+      - **L** → Local (o próprio roteador participa desse grupo internamente, como listener)  
+  
+**📘 Resumo técnico do R02:**
 
-🟩 3️⃣ Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL
-
-Essa é uma entrada para o grupo 224.0.1.40, que é um endereço multicast reservado para protocolos de controle e descoberta, como NTP (Network Time Protocol).
-
-(*,224.0.1.40) indica que o grupo é conhecido, mas sem origem específica.
-
-Incoming interface: Null → o roteador ainda não recebeu tráfego específico para o grupo.
-
-Outgoing interface list:
-
-FastEthernet1/0, Forward/Dense
-
-FastEthernet0/0, Forward/Dense
-Ambas as interfaces estão encaminhando o tráfego multicast desse grupo.
-
-Os flags DCL significam:
-
-D → Dense Mode
-
-C → Conectado (há hosts escutando localmente)
-
-L → Local (o próprio roteador participa desse grupo internamente, como listener)
-
-📘 Resumo técnico do R02:
-
-O R02 atua como roteador de trânsito (intermediário) entre a origem do tráfego multicast (192.168.10.1) e outros roteadores com receptores IGMP ativos.
-
-Ele recebe o fluxo pela interface Fa0/0 (do R01) e repassa pela Fa0/1, enquanto a Fa1/0 foi podada, indicando ausência de receptores naquele segmento.
-
-O grupo 239.1.1.1 está ativo e operando normalmente em PIM Dense Mode, com propagação automática e pruning dinâmico.
-
-O grupo 224.0.1.40 está sendo tratado internamente, refletindo a presença de serviços de controle (ex: NTP multicast).
+- O R02 atua como roteador de trânsito (intermediário) entre a origem do tráfego multicast (192.168.10.1) e outros roteadores com receptores IGMP ativos.
+- Ele recebe o fluxo pela interface Fa0/0 (do R01) e repassa pela Fa0/1, enquanto a Fa1/0 foi podada, indicando ausência de receptores naquele segmento.
+- O grupo 239.1.1.1 está ativo e operando normalmente em PIM Dense Mode, com propagação automática e pruning dinâmico.
+- O grupo 224.0.1.40 está sendo tratado internamente, refletindo a presença de serviços de controle (ex: NTP multicast).
 
 ---  
 
