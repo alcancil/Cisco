@@ -19,7 +19,7 @@
   - [Comportamento de cada roteador](#comportamento-de-cada-roteador)
   - [Formação da Árvore Multicast](#formação-da-árvore-multicast)
     - [RPF - Reverse Path Forwarding](#rpf---reverse-path-forwarding)
-    - [Troubleshooting](#troubleshooting)
+    - [Troubleshooting Multicast Pim Dense-Mode](#troubleshooting-multicast-pim-dense-mode)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -1144,5 +1144,14 @@ Visualmente, o RPF de R01 01 fica assim:
 
 ![RPF](Imagens/rpf03.png)
 
-### Troubleshooting
+### Troubleshooting Multicast Pim Dense-Mode
+ 
+Durante a configuração e testes do PIM Dense Mode, algumas situações comuns podem impedir a formação correta da árvore multicast. Abaixo estão os principais sintomas, suas causas e soluções observadas no laboratório.
 
+| Sintoma                                       | Possível causa                                         | Solução aplicada                           | Verificação                    |
+|-----------------------------------------------|--------------------------------------------------------|--------------------------------------------|------------------------------------|
+| Nenhum roteador encaminha tráfego multicast   | Falta do comando `ip multicast-routing` no modo global | Ativado o comando em todos os roteadores   | `show ip mroute` deve exibir entradas do grupo |
+| Roteadores não formam vizinhança PIM          | Interface sem `ip pim dense-mode`                      | Habilitado PIM nas interfaces interligadas | `show ip pim neighbor` deve listar vizinhos |
+| Host não recebe tráfego multicast             | Host sem `ip igmp join-group`                          | Aplicado `ip igmp join-group 239.1.1.1` na interface | Wireshark mostra IGMP Membership Report |
+| Interface marcada como “Pruned” indevidamente | Ausência de receptores downstream                      | Verificado com `show ip igmp groups`       | O prune é esperado nesse caso |
+| Falha de RPF | Rota incorreta no OSPF ou sem rota para a origem | Ajustado OSPF e rotas de retorno | `show ip rpf <ip>` deve indicar a interface correta |
