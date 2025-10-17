@@ -792,6 +792,8 @@ Agora podemos ver a formação de nossa árvore múlticast.
 - As interfaces em “Prune” não participam, pois não há receptores downstream.
 - Flags como D, C, L, T ajudam a entender o estado do grupo e o modo de operação do PIM.
 
+---  
+
 **R02**  
 
 ```ios
@@ -829,6 +831,73 @@ Outgoing interface flags: H - Hardware switched, A - Assert winner
 
 R02#
 ```
+
+Em R02, temos três entradas na tabela multicast, semelhantes às do roteador R01, porém com algumas diferenças no papel do roteador e nas interfaces envolvidas.  
+
+**Entrada: (*, 239.1.1.1), 00:26:19/stopped, RP 0.0.0.0, flags: DC**  
+
+- **(*,239.1.1.1)** → representa uma rota genérica para o grupo multicast 239.1.1.1.  
+Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específica (S) definida, mas já reconhece que o grupo existe.  
+- **Incoming interface: Null, RPF nbr 0.0.0.0** → o roteador ainda não determinou a interface de entrada do tráfego multicast (ou seja, ainda não recebeu fluxo de nenhuma origem para este grupo).
+- **Outgoing interface list:**
+  - **FastEthernet1/0, Forward/Dense**
+  - **FastEthernet0/1, Forward/Dense**
+  - **FastEthernet0/0, Forward/Dense**
+    Todas as interfaces estão em estado Forward, indicando que o roteador está encaminhando o tráfego multicast do grupo 239.1.1.1 nessas interfaces.  
+    O flag **DC** significa:  
+    - **D** → o grupo está operando em Dense Mode.
+    - **C** → há hosts diretamente conectados a uma das interfaces do roteador que participam do grupo 239.1.1.1 (ou seja, há receptores IGMP ativos).
+
+🟩 2️⃣ Entrada: (192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T
+
+Aqui temos uma entrada (S,G), ou seja, o roteador conhece a origem 192.168.10.1 que está enviando tráfego multicast para o grupo 239.1.1.1.
+
+Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
+
+Isso mostra que o tráfego multicast está sendo recebido pela interface Fa0/0, e o vizinho RPF (Reverse Path Forwarding) para essa origem é 10.0.0.1 — ou seja, o próximo roteador no caminho de retorno até a origem.
+
+Outgoing interface list:
+
+FastEthernet0/1, Forward/Dense → essa interface está encaminhando o tráfego multicast do grupo.
+
+FastEthernet1/0, Prune/Dense → o roteador poda (prune) o tráfego nessa interface porque não há receptores interessados a jusante (downstream).
+
+O flag T indica que esta rota pertence à árvore de caminho mais curto (SPT – Shortest Path Tree), o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).
+
+🟩 3️⃣ Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL
+
+Essa é uma entrada para o grupo 224.0.1.40, que é um endereço multicast reservado para protocolos de controle e descoberta, como NTP (Network Time Protocol).
+
+(*,224.0.1.40) indica que o grupo é conhecido, mas sem origem específica.
+
+Incoming interface: Null → o roteador ainda não recebeu tráfego específico para o grupo.
+
+Outgoing interface list:
+
+FastEthernet1/0, Forward/Dense
+
+FastEthernet0/0, Forward/Dense
+Ambas as interfaces estão encaminhando o tráfego multicast desse grupo.
+
+Os flags DCL significam:
+
+D → Dense Mode
+
+C → Conectado (há hosts escutando localmente)
+
+L → Local (o próprio roteador participa desse grupo internamente, como listener)
+
+📘 Resumo técnico do R02:
+
+O R02 atua como roteador de trânsito (intermediário) entre a origem do tráfego multicast (192.168.10.1) e outros roteadores com receptores IGMP ativos.
+
+Ele recebe o fluxo pela interface Fa0/0 (do R01) e repassa pela Fa0/1, enquanto a Fa1/0 foi podada, indicando ausência de receptores naquele segmento.
+
+O grupo 239.1.1.1 está ativo e operando normalmente em PIM Dense Mode, com propagação automática e pruning dinâmico.
+
+O grupo 224.0.1.40 está sendo tratado internamente, refletindo a presença de serviços de controle (ex: NTP multicast).
+
+---  
 
 **R03**  
 
