@@ -917,3 +917,32 @@ Outgoing interface flags: H - Hardware switched, A - Assert winner
 
 R03#
 ```
+
+Em R03, temos novamente três entradas na tabela multicast. Vamos detalhar cada uma delas:
+
+- **1️⃣ Entrada (*, 239.1.1.1)**
+- **(*,239.1.1.1)** indica que qualquer fonte pode enviar tráfego para o grupo 239.1.1.1.
+  Essa é a árvore compartilhada (shared tree) do grupo, usada em modo PIM Dense Mode.
+- **Incoming interface: Null** significa que ainda não há uma interface específica de entrada; o roteador apenas conhece o grupo.
+- **Outgoing interfaces:**
+  **FastEthernet1/0 e FastEthernet0/1** estão encaminhando o tráfego multicast no modo Forward/Dense, ou seja, o roteador está reenviando o tráfego para essas interfaces até que algum vizinho envie uma mensagem Prune.  
+  
+- **2️⃣ Entrada (192.168.10.1, 239.1.1.1)**
+- Esta é uma **entrada (S,G)** — ou seja, uma associação entre uma fonte (192.168.10.1) e um grupo (239.1.1.1).
+- **Incoming interface: FastEthernet0/1** mostra que o tráfego multicast chega em R03 vindo da interface FastEthernet0/1, que tem como vizinho R02 (RPF neighbor 10.0.0.9).
+- **Outgoing interface list:**
+  - **FastEthernet1/0** está em estado Prune/Dense, o que significa que não há receptores ativos atrás dessa interface, e R03 notificou o roteador anterior para interromper o envio por esse caminho.
+  - O flag **“A”** indica que esta interface venceu o processo de PIM Assert, garantindo que apenas um roteador (o Assert Winner) encaminhe tráfego no segmento compartilhado, evitando duplicação de pacotes multicast.
+
+- **3️⃣ Entrada (*, 224.0.1.40)**
+- Este é um grupo de controle, usado por protocolos de roteamento (no caso, Cisco RP/Auto-RP Discovery).
+  Ele não é um grupo de dados multicast comum, e sim usado para troca de mensagens entre roteadores.
+- **Incoming interface: Null** indica que não há uma origem específica, pois o tráfego desse grupo é interno à infraestrutura de roteamento.
+- **Outgoing interfaces:**
+  Todas as interfaces **(FastEthernet1/0, FastEthernet0/1 e FastEthernet0/0)** estão em estado Forward/Dense, o que é esperado — todos os roteadores multicast participam da divulgação de mensagens do grupo 224.0.1.40.
+
+**📘 Resumo geral:**  
+
+- No roteador R03, vemos claramente a propagação do fluxo multicast originado em 192.168.10.1 (localizado em R01).
+- O tráfego chega a R03 pela interface FastEthernet0/1, é avaliado pelo algoritmo de Reverse Path Forwarding (RPF) e depois é podado (Pruned) nas interfaces onde não existem receptores.
+- O grupo 224.0.1.40 permanece ativo em todas as interfaces por ser essencial para o controle do PIM Dense Mode.
