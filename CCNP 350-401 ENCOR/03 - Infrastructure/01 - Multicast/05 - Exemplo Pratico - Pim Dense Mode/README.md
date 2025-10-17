@@ -15,6 +15,10 @@
     - [Resumo prático](#resumo-prático)
   - [Explicação da Tabela de roteamento multicast](#explicação-da-tabela-de-roteamento-multicast)
     - [Realizando Join Group](#realizando-join-group)
+  - [🌳 Visão geral da Árvore Multicast (PIM Dense Mode)](#-visão-geral-da-árvore-multicast-pim-dense-mode)
+  - [Comportamento de cada roteador](#comportamento-de-cada-roteador)
+  - [Formação da Árvore Multicast](#formação-da-árvore-multicast)
+    - [RPF - Revers Path Forwarding](#rpf---revers-path-forwarding)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -945,4 +949,74 @@ Em R03, temos novamente três entradas na tabela multicast. Vamos detalhar cada 
 
 - No roteador R03, vemos claramente a propagação do fluxo multicast originado em 192.168.10.1 (localizado em R01).
 - O tráfego chega a R03 pela interface FastEthernet0/1, é avaliado pelo algoritmo de Reverse Path Forwarding (RPF) e depois é podado (Pruned) nas interfaces onde não existem receptores.
-- O grupo 224.0.1.40 permanece ativo em todas as interfaces por ser essencial para o controle do PIM Dense Mode.
+- O grupo 224.0.1.40 permanece ativo em todas as interfaces por ser essencial para o controle do PIM Dense Mode.  
+
+## 🌳 Visão geral da Árvore Multicast (PIM Dense Mode)
+
+🔹 Topologia resumida  
+
+```text
+[Host Fonte 192.168.10.1]
+         │
+      (Fa1/0)
+        R01
+       /   \
+ (Fa0/0)   (Fa0/1)
+     |        |
+    R02------R03
+```
+
+🔹 Grupo multicast utilizado: **239.1.1.1**
+
+- A fonte (192.168.10.1) está em R01, que inicia o envio de pacotes multicast para o grupo 239.1.1.1.
+- Os roteadores estão operando em PIM Dense Mode, que segue a filosofia “flood and prune” — ou seja:
+  O tráfego multicast é floodado (inundado) por todas as interfaces PIM habilitadas.
+  Os roteadores que não possuem receptores para aquele grupo enviam mensagens Prune, cortando o tráfego por aquelas interfaces.  
+  
+Assim, forma-se automaticamente uma árvore de distribuição otimizada que cobre apenas os caminhos com receptores.
+
+## Comportamento de cada roteador
+
+🟢 **R01 (Fonte)**
+
+- A fonte 192.168.10.1 envia multicast para o grupo 239.1.1.1.
+- R01 é o primeiro roteador da árvore, iniciando o flooding pelas interfaces Fa0/0 e Fa0/1.
+- As entradas (192.168.10.1, 239.1.1.1) mostram que o tráfego sai de R01 pelas duas interfaces, alcançando R02 e R03.
+- Nenhum prune é aplicado aqui, pois ele é o ponto de origem (root) da árvore.
+
+🟢 **R02 (Intermediário)**
+
+- Recebe tráfego multicast de R01 (por Fa0/0).
+- Encaminha o tráfego pela interface Fa0/1 em direção a R03.
+- A interface Fa1/0 foi podada (Prune) porque não há hosts interessados nesse grupo.
+- Assim, R02 atua como roteador intermediário, repassando apenas o tráfego necessário para R03.
+
+🟢 **R03 (Folha da árvore)**
+
+- Recebe o tráfego multicast de R02 (Fa0/1).
+- Verifica que não há receptores ativos (nenhum host solicitou o grupo 239.1.1.1).
+- Envia uma mensagem Prune para R02, cortando o tráfego nessa interface.
+- **Resultado:** R03 não encaminha mais pacotes para nenhuma interface downstream.
+
+## Formação da Árvore Multicast
+
+- A árvore formada é chamada de SPT — Shortest Path Tree (Árvore de Menor Caminho), também conhecida como Árvore por Fonte (Source Tree).
+  Ela é representada pelo par **(S,G)**, onde:
+  - **S** = endereço IP da fonte (neste caso, 192.168.10.1)
+  - **G** = endereço do grupo multicast (239.1.1.1)
+- O nome **“Shortest Path Tree”** vem do fato de que o PIM utiliza o RPF (Reverse Path Forwarding) para garantir que cada roteador receba os pacotes multicast pelo caminho mais curto até a fonte, evitando loops.  
+
+### RPF - Revers Path Forwarding  
+
+**RPF (Reverse Path Forwarding)** é o mecanismo usado pelo roteador para garantir que o tráfego multicast está vindo pela interface correta, ou seja, pelo caminho reverso até a origem da fonte.  
+
+👉 Regra simples:
+**Um roteador aceita um pacote multicast somente se ele chegar pela interface usada para alcançar o remetente (fonte) no sentido unicast.**
+Se o pacote chegar por outra interface → é descartado (falha de RPF).  
+
+🔹 Em resumo:
+
+- Verifica se o caminho até a fonte é coerente.
+- Evita loops no tráfego multicast.
+- Baseia-se na tabela de roteamento unicast.  
+
