@@ -19,6 +19,7 @@
   - [Comportamento de cada roteador](#comportamento-de-cada-roteador)
   - [Formação da Árvore Multicast](#formação-da-árvore-multicast)
     - [RPF - Reverse Path Forwarding](#rpf---reverse-path-forwarding)
+    - [Troubleshooting](#troubleshooting)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -1108,6 +1109,10 @@ RPF information for ? (192.168.20.1)
 R02#
 ```
 
+Visualmente, o RPF de R01 01 fica assim:  
+
+![RPF](Imagens/rpf02.png)
+
 ---  
 
 **R03**  
@@ -1134,3 +1139,10 @@ RPF information for ? (192.168.20.1)
   Doing distance-preferred lookups across tables
 R03#
 ```  
+
+Visualmente, o RPF de R01 01 fica assim:  
+
+![RPF](Imagens/rpf03.png)
+
+### Troubleshooting
+
