@@ -1020,3 +1020,84 @@ Se o pacote chegar por outra interface → é descartado (falha de RPF).
 - Evita loops no tráfego multicast.
 - Baseia-se na tabela de roteamento unicast.  
 
+**R01**  
+
+```ios
+R01#show ip rpf event
+R01#show ip rpf events
+Last 15 triggered multicast RPF check events
+
+RPF backoff delay: 500 msec
+RPF maximum delay: 5 sec
+
+DATE/TIME             BACKOFF    PROTOCOL   EVENT         RPF CHANGES
+Mar 1 00:00:34.815    500 msec   PIM        Nbr UP          0
+Mar 1 00:00:21.163    500 msec   OSPF       Route UP        0
+Mar 1 00:00:11.163    500 msec   OSPF       Route UP        0
+Mar 1 00:00:08.663    500 msec   PIM        Nbr UP          0
+Mar 1 00:00:06.063    500 msec   Connected  Route UP        0
+
+R01#show ip rpf 192.168.20.1
+RPF information for ? (192.168.20.1)
+  RPF interface: FastEthernet0/0
+  RPF neighbor: ? (10.0.0.2)
+  RPF route/mask: 192.168.20.0/24
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R01#
+```
+
+---  
+
+**R02**  
+
+```ios
+R02#show ip rpf events
+Last 15 triggered multicast RPF check events
+
+RPF backoff delay: 500 msec
+RPF maximum delay: 5 sec
+
+DATE/TIME             BACKOFF    PROTOCOL   EVENT         RPF CHANGES
+Mar 1 00:00:20.763    500 msec   OSPF       Route UP        0
+Mar 1 00:00:06.663    1 sec      PIM        Nbr UP          0
+Mar 1 00:00:05.263    500 msec   Connected  Route UP        0
+
+R02#show ip rpf 192.168.20.1
+RPF information for ? (192.168.20.1)
+  RPF interface: FastEthernet0/1
+  RPF neighbor: ? (192.168.20.1) - directly connected
+  RPF route/mask: 192.168.20.0/24
+  RPF type: unicast (connected)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R02#
+```
+
+---  
+
+**R03**  
+
+```ios
+R03#show ip rpf events
+Last 15 triggered multicast RPF check events
+
+RPF backoff delay: 500 msec
+RPF maximum delay: 5 sec
+
+DATE/TIME             BACKOFF    PROTOCOL   EVENT         RPF CHANGES
+Mar 1 00:00:35.651    500 msec   PIM        Nbr UP          0
+Mar 1 00:00:21.351    500 msec   OSPF       Route UP        0
+Mar 1 00:00:06.251    500 msec   Connected  Route UP        0
+
+R03#show ip rpf 192.168.20.1
+RPF information for ? (192.168.20.1)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.5)
+  RPF route/mask: 192.168.20.0/24
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R03#
+```  
