@@ -18,7 +18,7 @@
   - [🌳 Visão geral da Árvore Multicast (PIM Dense Mode)](#-visão-geral-da-árvore-multicast-pim-dense-mode)
   - [Comportamento de cada roteador](#comportamento-de-cada-roteador)
   - [Formação da Árvore Multicast](#formação-da-árvore-multicast)
-    - [RPF - Revers Path Forwarding](#rpf---revers-path-forwarding)
+    - [RPF - Reverse Path Forwarding](#rpf---reverse-path-forwarding)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -1006,7 +1006,7 @@ Assim, forma-se automaticamente uma árvore de distribuição otimizada que cobr
   - **G** = endereço do grupo multicast (239.1.1.1)
 - O nome **“Shortest Path Tree”** vem do fato de que o PIM utiliza o RPF (Reverse Path Forwarding) para garantir que cada roteador receba os pacotes multicast pelo caminho mais curto até a fonte, evitando loops.  
 
-### RPF - Revers Path Forwarding  
+### RPF - Reverse Path Forwarding  
 
 **RPF (Reverse Path Forwarding)** é o mecanismo usado pelo roteador para garantir que o tráfego multicast está vindo pela interface correta, ou seja, pelo caminho reverso até a origem da fonte.  
 
@@ -1020,10 +1020,13 @@ Se o pacote chegar por outra interface → é descartado (falha de RPF).
 - Evita loops no tráfego multicast.
 - Baseia-se na tabela de roteamento unicast.  
 
+Então vamos acessar cada roteador para verificarmos o funcionamento do RPF.  
+Como mencionado anteriormente, o multicast é um serviço que atua sobre uma estrutura de roteamento unicast já funcional.  
+Como foi escolhido o protocolo OSPF para a configuração do roteamento dinâmico, vamos analisar os eventos do RPF e observar que aparecem entradas relacionadas ao OSPF nesses eventos.  
+
 **R01**  
 
 ```ios
-R01#show ip rpf event
 R01#show ip rpf events
 Last 15 triggered multicast RPF check events
 
@@ -1036,7 +1039,23 @@ Mar 1 00:00:21.163    500 msec   OSPF       Route UP        0
 Mar 1 00:00:11.163    500 msec   OSPF       Route UP        0
 Mar 1 00:00:08.663    500 msec   PIM        Nbr UP          0
 Mar 1 00:00:06.063    500 msec   Connected  Route UP        0
+```  
 
+O comando **show ip rpf events** mostra o histórico de verificações RPF acionadas por alterações na tabela de roteamento.
+
+**Campos principais:**  
+
+- **DATE/TIME**: momento em que o evento ocorreu.
+- **PROTOCOL**: protocolo que gerou a mudança (ex: OSPF, PIM, Connected).
+- **EVENT**: tipo de atualização (ex: Route UP, Nbr UP).
+- **RPF CHANGES**: indica se houve mudança efetiva na interface de RPF (0 = nenhuma alteração).
+
+**Em resumo:**  
+
+Cada linha representa um gatilho que fez o roteador rever seu caminho reverso.  
+Mudanças em rotas OSPF, vizinhanças PIM ou interfaces conectadas podem disparar novas verificações RPF — garantindo que o tráfego multicast continue vindo pela interface correta.
+
+```ios
 R01#show ip rpf 192.168.20.1
 RPF information for ? (192.168.20.1)
   RPF interface: FastEthernet0/0
@@ -1047,6 +1066,12 @@ RPF information for ? (192.168.20.1)
   Doing distance-preferred lookups across tables
 R01#
 ```
+
+Como o único host interessado no tráfego multicast está na rede **192.168.20.0/24**, representado pelo endereço **192.168.20.1**, foi executado o comando **show ip rpf** para verificar o caminho inverso até esse destino. Esse comando permite validar se o roteador possui uma rota válida e coerente para alcançar o destino multicast, garantindo que o tráfego seja encaminhado apenas se vier pela interface correta — ou seja, aquela apontada pelo **RPF (Reverse Path Forwarding)**.  
+  
+No resultado, o roteador R01 mostra que o caminho de retorno para o host 192.168.20.1 é pela interface FastEthernet0/0, tendo como vizinho RPF o endereço 10.0.0.2, aprendido via OSPF. Isso confirma que o tráfego multicast proveniente desse vizinho será aceito por estar conforme a tabela de roteamento unicast.  
+  
+O IP 192.168.20.1 foi escolhido por ser o host receptor do grupo multicast, mas qualquer endereço dentro da sub-rede 192.168.20.0/24 poderia ser utilizado para fins de verificação — o importante é que ele pertença à rede do destino multicast e possua rota válida no roteamento unicast.  
 
 ---  
 
