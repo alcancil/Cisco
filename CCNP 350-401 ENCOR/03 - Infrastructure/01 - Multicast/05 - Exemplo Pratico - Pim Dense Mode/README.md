@@ -748,7 +748,7 @@ Outgoing interface flags: H - Hardware switched, A - Assert winner
 R01#
 ```
 
-A primeira entrada **(*, 239.1.1.1), 00:08:20/stopped, RP 0.0.0.0, flags: D** nos diz assim:  
+1️⃣ A primeira entrada **(*, 239.1.1.1), 00:08:20/stopped, RP 0.0.0.0, flags: D** nos diz assim:  
 
 - **(*,239.1.1.1)** → indica uma entrada do tipo “shared tree”, ou seja, qualquer origem (representada por *) que envie tráfego para o grupo 239.1.1.1 será encaminhada conforme esta rota.
 - **Incoming interface: Null, RPF nbr 0.0.0.0** → significa que o roteador ainda não aprendeu uma origem específica para esse grupo. Ele apenas sabe que o grupo existe, mas não há uma interface de entrada definida.
@@ -757,7 +757,7 @@ A primeira entrada **(*, 239.1.1.1), 00:08:20/stopped, RP 0.0.0.0, flags: D** no
   - **FastEthernet0/0, Forward/Dense** → mesma função, também participando do encaminhamento.
 A flag D confirma que o grupo está sendo tratado no modo PIM Dense Mode.  
   
-A segunda entrada é **(192.168.10.1, 239.1.1.1), 00:08:20/00:02:44, flags: T**
+2️⃣ A segunda entrada é **(192.168.10.1, 239.1.1.1), 00:08:20/00:02:44, flags: T**
 
 - Aqui temos uma entrada (S,G), ou seja, uma origem (S) específica — 192.168.10.1 — enviando tráfego ao grupo 239.1.1.1.
 - **Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0** → indica que o roteador recebe o tráfego multicast dessa origem pela interface Fa1/0, conforme a checagem RPF (Reverse Path Forwarding).
@@ -766,7 +766,7 @@ A segunda entrada é **(192.168.10.1, 239.1.1.1), 00:08:20/00:02:44, flags: T**
   - **FastEthernet0/1, Prune/Dense** → essa interface foi podada (pruned), o que significa que o roteador vizinho dessa interface não tem receptores interessados no grupo 239.1.1.1.
 O flag **T (SPT-bit set)** mostra que essa entrada pertence à árvore de caminho mais curto (Shortest Path Tree) — o roteador já conhece a origem e está enviando o tráfego diretamente por ela.  
 
-A terceira entrada é **(*, 224.0.1.40), 00:25:28/00:02:32, RP 0.0.0.0, flags: DCL**  
+3️⃣ A terceira entrada é **(*, 224.0.1.40), 00:25:28/00:02:32, RP 0.0.0.0, flags: DCL**  
 Esse grupo 224.0.1.40 é utilizado por protocolos de descoberta (exemplo: NTP multicast ou mensagens de serviço), não sendo um grupo criado manualmente pelo administrador.
 
 - **(*,224.0.1.40)** indica que qualquer origem pode enviar pacotes para esse grupo.  
@@ -834,7 +834,7 @@ R02#
 
 Em R02, temos três entradas na tabela multicast, semelhantes às do roteador R01, porém com algumas diferenças no papel do roteador e nas interfaces envolvidas.  
 
-**Entrada: (*, 239.1.1.1), 00:26:19/stopped, RP 0.0.0.0, flags: DC**  
+**1️⃣ Entrada: (*, 239.1.1.1), 00:26:19/stopped, RP 0.0.0.0, flags: DC**  
 
 - **(*,239.1.1.1)** → representa uma rota genérica para o grupo multicast 239.1.1.1.  
 Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específica (S) definida, mas já reconhece que o grupo existe.  
@@ -848,7 +848,7 @@ Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específic
     - **D** → o grupo está operando em Dense Mode.
     - **C** → há hosts diretamente conectados a uma das interfaces do roteador que participam do grupo 239.1.1.1 (ou seja, há receptores IGMP ativos).  
 
-**Entrada: (192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T**
+**2️⃣ Entrada: (192.168.10.1, 239.1.1.1), 00:10:53/00:02:42, flags: T**
   
 - Aqui temos uma entrada (S,G), ou seja, o roteador conhece a origem 192.168.10.1 que está enviando tráfego multicast para o grupo 239.1.1.1.
   - **Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1**
@@ -858,7 +858,7 @@ Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específic
   - **FastEthernet1/0, Prune/Dense** → o roteador poda (prune) o tráfego nessa interface porque não há receptores interessados a jusante (downstream).
     O **flag T** indica que esta rota pertence à árvore de caminho mais curto **(SPT – Shortest Path Tree)**, o que significa que o tráfego flui diretamente da origem 192.168.10.1 até os destinos, sem depender de um RP (Rendezvous Point).  
   
-**Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL**
+**3️⃣ Entrada: (*, 224.0.1.40), 00:28:00/00:02:05, RP 0.0.0.0, flags: DCL**
   
 - Essa é uma entrada para o grupo **224.0.1.40**, que é um endereço multicast reservado para protocolos de controle e descoberta, como NTP (Network Time Protocol).
 - **(*,224.0.1.40)** indica que o grupo é conhecido, mas sem origem específica.
