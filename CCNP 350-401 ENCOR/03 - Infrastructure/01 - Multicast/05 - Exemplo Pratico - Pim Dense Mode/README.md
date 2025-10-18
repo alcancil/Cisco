@@ -2,6 +2,7 @@
 
 - [Índice](#índice)
   - [05 - Exemplo Prático - PIM Dense Mode](#05---exemplo-prático---pim-dense-mode)
+  - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
@@ -29,9 +30,15 @@
     - [🔹 Etapa 4 – Análise e Diagnóstico Avançado](#-etapa-4--análise-e-diagnóstico-avançado)
     - [🔹 Etapa 5 – Troubleshooting (Comandos de Diagnóstico)](#-etapa-5--troubleshooting-comandos-de-diagnóstico)
     - [🧠 Dica Final](#-dica-final)
+  - [💡 Aplicações Práticas do Multicast](#-aplicações-práticas-do-multicast)
   - [🧩 O que aprendemos com este laboratório](#-o-que-aprendemos-com-este-laboratório)
 
-## 05 - Exemplo Prático - PIM Dense Mode
+## 05 - Exemplo Prático - PIM Dense Mode  
+
+## 🧾 Introdução
+
+Este laboratório demonstra o funcionamento do **roteamento multicast em modo PIM Dense Mode**, simulando um ambiente Cisco onde apenas hosts interessados recebem o fluxo de dados.  
+A prática tem como objetivo visualizar na prática o comportamento de **flood e prune**, a **formação da árvore multicast (SPT)** e a **verificação RPF**, conceitos fundamentais para transmissões eficientes em redes IP.
 
 ## 🎯 Objetivo do Laboratório
 
@@ -318,7 +325,7 @@ E dentro do pacote:
 
 Essas opções são usadas justamente para o processo de eleição do DR e detecção de vizinhos.  
 
-**🔍 O papel do endereço 224.0.0.13 em resumo**
+**🔍 O papel do endereço 224.0.0.13 em resumo**  
 
 | Função                           | Descrição                                                                                                          |
 |----------------------------------|--------------------------------------------------------------------------------------------------------------------|
@@ -847,7 +854,7 @@ Agora podemos ver a formação de nossa árvore múlticast.
 - As interfaces em “Prune” não participam, pois não há receptores downstream.
 - Flags como D, C, L, T ajudam a entender o estado do grupo e o modo de operação do PIM.
 
----  
+---
 
 **R02**  
 
@@ -934,7 +941,7 @@ Aqui, o asterisco (*) indica que o roteador ainda não tem uma origem específic
 - O grupo 239.1.1.1 está ativo e operando normalmente em PIM Dense Mode, com propagação automática e pruning dinâmico.
 - O grupo 224.0.1.40 está sendo tratado internamente, refletindo a presença de serviços de controle (ex: NTP multicast).
 
----  
+---
 
 **R03**  
 
@@ -1259,7 +1266,7 @@ As tabelas estão organizadas de forma progressiva para facilitar o estudo e a a
 | `debug ip pim join-prune` | Exibe mensagens PIM Join e Prune trocadas entre roteadores. | Em roteadores de trânsito. |
 | `debug ip igmp` | Mostra mensagens IGMP enviadas e recebidas pela interface. | Em roteadores conectados a hosts multicast. |
 
----  
+---
 
 ### 🔹 Etapa 5 – Troubleshooting (Comandos de Diagnóstico)
 
@@ -1273,7 +1280,7 @@ As tabelas estão organizadas de forma progressiva para facilitar o estudo e a a
 | `show interfaces | include up` | Checa estado das interfaces | Garante que todas as interfaces estão operacionais antes do teste. |
 | `show logging | include PIM` | Exibe logs relacionados ao PIM | Permite confirmar mensagens de prune, flood e DR election. |
 
----  
+---
 
 ### 🧠 Dica Final
 
@@ -1282,7 +1289,19 @@ As tabelas estão organizadas de forma progressiva para facilitar o estudo e a a
 - Use `show ip rpf` para validar o caminho reverso até o receptor ou origem — ele é o **coração do multicast funcional**.  
 - Execute os comandos de debug **com cautela** — utilize apenas em ambiente de laboratório.
 
----  
+---
+
+## 💡 Aplicações Práticas do Multicast
+
+O roteamento multicast é amplamente utilizado em diversos cenários reais que exigem distribuição eficiente de dados para múltiplos destinos, como:
+
+- 🎥 **Transmissões de vídeo ao vivo e IPTV**, onde um único fluxo é distribuído simultaneamente a vários espectadores.  
+- 📞 **Aplicações de voz e videoconferência (VoIP e WebRTC)**, que dependem de baixa latência e envio otimizado.  
+- 📊 **Sistemas de monitoramento e telemetria**, que coletam dados em tempo real de múltiplos dispositivos.  
+- 🧠 **Ambientes de simulação e ensino**, como laboratórios virtuais, onde múltiplos hosts precisam receber o mesmo conteúdo de forma sincronizada.  
+- 🌐 **Protocolos de roteamento dinâmico**, como OSPF e EIGRP, que também utilizam endereços multicast internamente para troca de informações.
+
+Essas aplicações reforçam a importância de entender e dominar o multicast — tecnologia essencial para redes modernas e de alta performance.
 
 ## 🧩 O que aprendemos com este laboratório
 
