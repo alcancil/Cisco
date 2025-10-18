@@ -4,6 +4,7 @@
   - [05 - Exemplo Prático - PIM Dense Mode](#05---exemplo-prático---pim-dense-mode)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
+  - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
   - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
@@ -56,7 +57,41 @@ Mas o que isso significa?
 Quando o processo de comunicação multicast se inicia, o protocolo PIM envia o tráfego multicast por todos os caminhos possíveis (flood), **até descobrir quais roteadores possuem receptores interessados** naquele grupo multicast.  
 Os caminhos que **não possuem hosts interessados** são posteriormente **“podados” (pruned)** da árvore de distribuição, otimizando o fluxo.  
 
-Nesse exemplo, o **Host01 (Server)** será a **fonte** da comunicação multicast, enquanto apenas o **Host03** será o **receptor** interessado nesse tráfego.  
+Nesse exemplo, o **Host01 (Server)** será a **fonte** da comunicação multicast, enquanto apenas o **Host03** será o **receptor** interessado nesse tráfego. 
+
+## 🌐 Topologia do Laboratório
+
+A topologia utilizada neste laboratório é composta por três roteadores principais (R01, R02 e R03) e três hosts simulados (Server, Host01 e Host02).  
+Os hosts são roteadores Cisco “disfarçados” de PCs, configurados apenas com interfaces IP e adesão a grupos multicast via IGMP.  
+O protocolo **OSPF** foi usado para prover conectividade unicast, enquanto o **PIM Dense Mode** foi configurado para viabilizar o tráfego multicast.
+
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Rede / Conexão** | **Função** |
+|-----------------|----------------|-----------------------------|--------------------|-------------|
+| **R01** | Loopback0 | 1.1.1.1 /32 | - | Identificação / Router-ID OSPF |
+|  | Fa0/0 | 10.0.0.1 /30 | Conexão com R02 | Link PIM + OSPF |
+|  | Fa0/1 | 10.0.0.9 /30 | Conexão com R03 | Link PIM + OSPF |
+|  | Fa1/0 | 192.168.10.254 /24 | LAN do Server | Gateway Multicast para Server |
+| **R02** | Loopback0 | 2.2.2.2 /32 | - | Identificação / Router-ID OSPF |
+|  | Fa0/0 | 10.0.0.2 /30 | Conexão com R01 | Link PIM + OSPF |
+|  | Fa0/1 | 10.0.0.5 /30 | Conexão com R03 | Link PIM + OSPF |
+|  | Fa1/0 | 192.168.20.254 /24 | LAN do Host02 | Gateway Multicast para Host02 |
+| **R03** | Loopback0 | 3.3.3.3 /32 | - | Identificação / Router-ID OSPF |
+|  | Fa0/0 | 10.0.0.6 /30 | Conexão com R02 | Link PIM + OSPF |
+|  | Fa0/1 | 10.0.0.10 /30 | Conexão com R01 | Link PIM + OSPF |
+|  | Fa1/0 | 192.168.30.254 /24 | LAN do Host03 | Gateway Multicast para Host03 |
+| **Server** | Fa0/0 | 192.168.10.1 /24 | LAN com R01 | Fonte Multicast (transmissor) |
+| **Host02** | Fa0/0 | 192.168.20.1 /24 | LAN com R02 | Receptor Multicast (join-group 239.1.1.1) |
+| **Host03** | Fa0/0 | 192.168.30.1 /24 | LAN com R03 | Receptor (não inscrito no grupo) |
+
+---
+
+🧭 **Resumo da Lógica:**  
+
+- O **Server (192.168.10.1)** envia o fluxo multicast para o grupo **239.1.1.1**.  
+- Apenas o **Host02 (192.168.20.1)** faz o *join* ao grupo multicast.  
+- O **R03** participa da árvore apenas como roteador de trânsito, sem hosts interessados.  
+- O protocolo **PIM Dense Mode** cria inicialmente um *flood* de tráfego, seguido de *prune* onde não há receptores.  
+- O **RPF** (Reverse Path Forwarding) valida o caminho correto até a fonte multicast através do OSPF.
 
 ### Testes Preliminares
 
