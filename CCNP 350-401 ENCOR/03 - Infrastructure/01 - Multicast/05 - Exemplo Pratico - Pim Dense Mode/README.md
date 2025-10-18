@@ -2,6 +2,7 @@
 
 - [Índice](#índice)
   - [05 - Exemplo Prático - PIM Dense Mode](#05---exemplo-prático---pim-dense-mode)
+  - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
@@ -27,8 +28,15 @@
     - [🔹 Etapa 4 – Análise e Diagnóstico Avançado](#-etapa-4--análise-e-diagnóstico-avançado)
     - [🔹 Etapa 5 – Troubleshooting (Comandos de Diagnóstico)](#-etapa-5--troubleshooting-comandos-de-diagnóstico)
     - [🧠 Dica Final](#-dica-final)
+  - [🧩 O que aprendemos com este laboratório](#-o-que-aprendemos-com-este-laboratório)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
+
+## 🎯 Objetivo do Laboratório
+
+Este laboratório tem como objetivo **compreender o funcionamento do protocolo PIM Dense Mode (PIM-DM)** e a **formação da árvore multicast (SPT – Shortest Path Tree)** em um ambiente Cisco simulado.  
+A proposta é observar na prática o comportamento dos roteadores durante o **processo de flooding e prune**, a **eleição de DR**, e a **verificação do caminho reverso (RPF)**, utilizando uma topologia simples com três roteadores e hosts simulados.  
+Ao longo dos testes, são analisadas as tabelas multicast, os grupos IGMP e os eventos de roteamento dinâmico, demonstrando como o multicast opera sobre uma infraestrutura unicast baseada em OSPF.  
 
 ### Explicação do Cenário
 
@@ -1240,3 +1248,10 @@ As tabelas estão organizadas de forma progressiva para facilitar o estudo e a a
 - Execute os comandos de debug **com cautela** — utilize apenas em ambiente de laboratório.
 
 ---  
+
+## 🧩 O que aprendemos com este laboratório
+
+Com este experimento, foi possível visualizar de forma prática como o **multicast utiliza a infraestrutura unicast existente** para distribuir tráfego de forma eficiente apenas aos hosts interessados.  
+Observamos o comportamento do **PIM Dense Mode**, que inicialmente envia o fluxo a todos os roteadores (flood) e, em seguida, otimiza a árvore de distribuição com mensagens **Prune**.  
+Também analisamos a importância do **RPF (Reverse Path Forwarding)**, responsável por garantir que o tráfego chegue pela interface correta e evitar loops.  
+Por fim, reforçamos o papel dos protocolos **IGMP** (para associação dos hosts) e **OSPF** (para suporte unicast), consolidando o entendimento de como a árvore multicast é formada, mantida e validada em um ambiente Cisco.
