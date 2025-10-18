@@ -19,7 +19,14 @@
   - [Comportamento de cada roteador](#comportamento-de-cada-roteador)
   - [Formação da Árvore Multicast](#formação-da-árvore-multicast)
     - [RPF - Reverse Path Forwarding](#rpf---reverse-path-forwarding)
-    - [Troubleshooting Multicast Pim Dense-Mode](#troubleshooting-multicast-pim-dense-mode)
+  - [Troubleshooting Multicast Pim Dense-Mode](#troubleshooting-multicast-pim-dense-mode)
+  - [Resumo de Comandos Multicast (PIM Dense Mode)](#resumo-de-comandos-multicast-pim-dense-mode)
+    - [🔹 Etapa 1 – Configuração Inicial](#-etapa-1--configuração-inicial)
+    - [🔹 Etapa 2 – Configuração Complementar (Unicast)](#-etapa-2--configuração-complementar-unicast)
+    - [🔹 Etapa 3 – Verificações Iniciais](#-etapa-3--verificações-iniciais)
+    - [🔹 Etapa 4 – Análise e Diagnóstico Avançado](#-etapa-4--análise-e-diagnóstico-avançado)
+    - [🔹 Etapa 5 – Troubleshooting (Comandos de Diagnóstico)](#-etapa-5--troubleshooting-comandos-de-diagnóstico)
+    - [🧠 Dica Final](#-dica-final)
 
 ## 05 - Exemplo Prático - PIM Dense Mode
 
@@ -1144,7 +1151,7 @@ Visualmente, o RPF de R01 01 fica assim:
 
 ![RPF](Imagens/rpf03.png)
 
-### Troubleshooting Multicast Pim Dense-Mode
+## Troubleshooting Multicast Pim Dense-Mode
  
 Durante a configuração e testes do PIM Dense Mode, algumas situações comuns podem impedir a formação correta da árvore multicast. Abaixo estão os principais sintomas, suas causas e soluções observadas no laboratório.
 
@@ -1155,3 +1162,81 @@ Durante a configuração e testes do PIM Dense Mode, algumas situações comuns 
 | Host não recebe tráfego multicast             | Host sem `ip igmp join-group`                          | Aplicado `ip igmp join-group 239.1.1.1` na interface | Wireshark mostra IGMP Membership Report |
 | Interface marcada como “Pruned” indevidamente | Ausência de receptores downstream                      | Verificado com `show ip igmp groups`       | O prune é esperado nesse caso |
 | Falha de RPF | Rota incorreta no OSPF ou sem rota para a origem | Ajustado OSPF e rotas de retorno | `show ip rpf <ip>` deve indicar a interface correta |
+
+## Resumo de Comandos Multicast (PIM Dense Mode)
+
+Este resumo apresenta os principais comandos utilizados no laboratório, desde a configuração inicial até as verificações e diagnósticos.  
+As tabelas estão organizadas de forma progressiva para facilitar o estudo e a aplicação prática.  
+
+---  
+
+### 🔹 Etapa 1 – Configuração Inicial
+
+| **Comando** | **Descrição** | **Onde aplicar** |
+|--------------|---------------|------------------|
+| `ip multicast-routing` | Habilita o roteamento multicast no roteador. Sem ele, o tráfego multicast não é encaminhado entre interfaces. | Em **todos os roteadores** que participam do domínio multicast. |
+| `interface <nome>`<br>`ip pim dense-mode` | Ativa o protocolo PIM no modo **Dense Mode** na interface, permitindo flood e prune de tráfego multicast. | Em todas as **interfaces interligadas entre roteadores** e nas **interfaces LAN** conectadas a hosts multicast. |
+| `interface <nome>`<br>`ip igmp join-group <grupo>` | Faz a interface aderir a um grupo multicast específico (simula um host receptor). | Apenas nos **hosts** (roteadores disfarçados de PCs) que representam receptores multicast, ex.: `ip igmp join-group 239.1.1.1`. |
+| `interface <nome>`<br>`no ip igmp join-group <grupo>` | Remove a associação da interface ao grupo multicast. | No **host receptor**, quando se deseja encerrar a participação no grupo. |
+| `ip pim autorp listener` *(opcional)* | Permite ouvir anúncios Auto-RP mesmo sem RP configurado, útil em laboratórios híbridos. | Global (opcional). |
+
+---  
+
+### 🔹 Etapa 2 – Configuração Complementar (Unicast)
+
+| **Comando** | **Descrição** | **Onde aplicar** |
+|--------------|---------------|------------------|
+| `router ospf <processo>` | Inicia o processo OSPF, responsável pela conectividade unicast entre os roteadores. | Em **todos os roteadores**. |
+| `network <rede> <wildcard> area 0` | Define as interfaces participantes do OSPF. | Em todas as interfaces backbone (área 0). |
+| `interface <nome>`<br>`ip address <ip> <máscara>` | Configura o endereço IP da interface. | Em **todas as interfaces ativas** entre roteadores e hosts. |
+
+---  
+
+### 🔹 Etapa 3 – Verificações Iniciais
+
+| **Comando** | **Descrição** | **Onde aplicar** |
+|--------------|---------------|------------------|
+| `show ip route` | Exibe a tabela de roteamento unicast, confirmando conectividade OSPF. | Em todos os roteadores multicast. |
+| `show ip pim interface` | Lista as interfaces com PIM habilitado, modo (Dense/Sparse) e status operacional. | Em todos os roteadores. |
+| `show ip pim neighbor` | Mostra os vizinhos PIM descobertos e o estado da adjacência. | Em todas as interfaces PIM interligadas. |
+| `show ip igmp groups` | Mostra os grupos multicast dos quais o roteador (ou host) participa. | Em hosts receptores e nos roteadores diretamente conectados a eles. |
+| `show ip igmp interface` | Exibe as configurações e parâmetros IGMP da interface (modo, timers e versão). | Nas interfaces que atendem hosts multicast. |
+
+---  
+
+### 🔹 Etapa 4 – Análise e Diagnóstico Avançado
+
+| **Comando** | **Descrição** | **Onde aplicar** |
+|--------------|---------------|------------------|
+| `show ip mroute` | Exibe a tabela de roteamento multicast com os grupos ativos, interfaces de entrada e saída. | Em qualquer roteador PIM. |
+| `show ip mroute <grupo>` | Filtra a tabela multicast para um grupo específico. | Em qualquer roteador PIM. |
+| `show ip rpf <endereço>` | Mostra o caminho reverso usado pelo RPF até a fonte ou destino especificado. | Em qualquer roteador participante. |
+| `show ip rpf events` | Exibe eventos que causaram novas verificações RPF (ex: OSPF Route Up, PIM Neighbor Up). | Em qualquer roteador multicast. |
+| `debug ip pim events` | Mostra eventos de vizinhança, flood e prune do PIM em tempo real. | Em roteadores multicast (apenas em lab). |
+| `debug ip pim join-prune` | Exibe mensagens PIM Join e Prune trocadas entre roteadores. | Em roteadores de trânsito. |
+| `debug ip igmp` | Mostra mensagens IGMP enviadas e recebidas pela interface. | Em roteadores conectados a hosts multicast. |
+
+---  
+
+### 🔹 Etapa 5 – Troubleshooting (Comandos de Diagnóstico)
+
+| **Comando** | **Verifica / Soluciona** | **Descrição prática** |
+|--------------|--------------------------|------------------------|
+| `show ip mroute count` | Estatísticas de pacotes multicast | Permite ver se o tráfego está sendo realmente encaminhado. |
+| `clear ip mroute` | Reinicia a tabela multicast | Útil para limpar estados antigos durante testes. |
+| `clear ip pim neighbor` | Reinicia a relação PIM | Força a reeleição de DR e atualização de adjacências. |
+| `ping <grupo> repeat 100 source <ip>` | Gera tráfego multicast (teste de fluxo) | Usado para simular o envio de pacotes multicast a partir da fonte. |
+| `show ip ospf neighbor` | Verifica adjacências OSPF | Confirma se há conectividade unicast antes de testar multicast. |
+| `show interfaces | include up` | Checa estado das interfaces | Garante que todas as interfaces estão operacionais antes do teste. |
+| `show logging | include PIM` | Exibe logs relacionados ao PIM | Permite confirmar mensagens de prune, flood e DR election. |
+
+---  
+
+### 🧠 Dica Final
+
+- Sempre confirme a conectividade **unicast** antes de testar o **multicast**.  
+- Lembre-se: o PIM **depende da tabela de roteamento unicast** para construir a árvore multicast (SPT).  
+- Use `show ip rpf` para validar o caminho reverso até o receptor ou origem — ele é o **coração do multicast funcional**.  
+- Execute os comandos de debug **com cautela** — utilize apenas em ambiente de laboratório.
+
+---  
