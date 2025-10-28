@@ -5,6 +5,12 @@
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
+      - [**O que é o RP (Rendezvous Point)**](#o-que-é-o-rp-rendezvous-point)
+      - [🧩 1️⃣ O papel do grupo 224.0.1.40 (Auto-RP Announcement)](#-1️⃣-o-papel-do-grupo-2240140-auto-rp-announcement)
+      - [🌳 2️⃣ PIM Sparse Mode — como nasce a árvore multicast](#-2️⃣-pim-sparse-mode--como-nasce-a-árvore-multicast)
+      - [🔹 3️⃣ O papel do IGMP Join](#-3️⃣-o-papel-do-igmp-join)
+      - [🔀 4️⃣ Do IGMP para o RP: como o Join “descobre o caminho”](#-4️⃣-do-igmp-para-o-rp-como-o-join-descobre-o-caminho)
+      - [🛰️ 5️⃣ Agora entra a fonte (source)](#️-5️⃣-agora-entra-a-fonte-source)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
@@ -38,12 +44,13 @@
 ## 🧾 Introdução
 
 Este laboratório demonstra o funcionamento do **roteamento multicast em modo PIM Sparse Mode**, simulando um ambiente Cisco onde apenas hosts interessados recebem o fluxo de dados.  
-Diferente do PIM Dense Mode, agora temos o uso de **Rendezvousz Points**, ou seja, o comportamento do protocolo PIM muda agora. Então vamos demonstrar isso de forma prática.
+Diferente do PIM Dense Mode, agora o protocolo utiliza Rendezvous Points (RP) — pontos centrais de encontro entre fontes e receptores.  
+Essa mudança altera completamente o comportamento do PIM, tornando o tráfego mais controlado e escalável. Então vamos demonstrar isso de forma prática.  
 
 ## 🎯 Objetivo do Laboratório
 
-Este laboratório tem como objetivo **compreender o funcionamento do protocolo PIM Sparse Mode (PIM-SM)** e a **formação da árvore multicast (SPT – Shortest Path Tree) com o RP - Rendezvousz Points** em um ambiente Cisco simulado.  
-Agora vamos observar na prática o comportamento dos roteadores durante a **eleição de RP**, a formação da **árvore multicats** e a **verificação do caminho reverso (RPF)**, utilizando uma topologia simples com cinco roteadores e hosts simulados.  
+Este laboratório tem como objetivo compreender o funcionamento do protocolo **PIM Sparse Mode (PIM-SM) e a formação das árvores multicast — a Shared Tree (baseada no RP) e a SPT (Shortest Path Tree)**, em um ambiente Cisco simulado.  
+Agora vamos observar na prática o comportamento dos roteadores durante a **eleição de RP**, a formação da **árvore multicast** e a **verificação do caminho reverso (RPF)**, utilizando uma topologia simples com 8 roteadores e hosts simulados.  
 Ao longo dos testes, são analisadas as tabelas multicast, os grupos IGMP e os eventos de roteamento dinâmico, demonstrando como o multicast opera sobre uma infraestrutura unicast baseada em OSPF.  
 
 ### Explicação do Cenário
@@ -58,47 +65,142 @@ Então vamos manter a lógica anterior, vamos utilizar **três roteadores disfar
 
 Nos demais roteadores, que estão interligados entre si, foi configurado apenas o protocolo de roteamento dinâmico **OSPF**, garantindo que todas as redes já possuam **conectividade IP completa** antes de ativarmos o multicast.  
 
-O que precisamos entender aqui é que o **PIM Dense Mode** funciona segundo o princípio **“flood and prune”**.  
-Mas o que isso significa?  
+Diferente do **PIM Dense Mode** agora temos a figura do **Rendezvous Point**.  Ao configurar o PIM em modo Sparse, os roteadores passam a escutar os **grupos 224.0.1.39 e 224.0.1.40, utilizados pelo Auto-RP — um mecanismo proprietário da Cisco** para descoberta automática de Rendezvous Points.  
+Esses grupos ficam prontos para uso assim que algum roteador for configurado como Candidate RP e outro como Mapping Agent.  
 
-Quando o processo de comunicação multicast se inicia, o protocolo PIM envia o tráfego multicast por todos os caminhos possíveis (flood), **até descobrir quais roteadores possuem receptores interessados** naquele grupo multicast.  
-Os caminhos que **não possuem hosts interessados** são posteriormente **“podados” (pruned)** da árvore de distribuição, otimizando o fluxo.  
+#### **O que é o RP (Rendezvous Point)**  
 
-Nesse exemplo, o **Host01 (Server)** será a **fonte** da comunicação multicast, enquanto apenas o **Host03** será o **receptor** interessado nesse tráfego. 
+- O Rendezvous Point (RP) é um ponto central usado apenas pelo PIM Sparse Mode (PIM-SM).  
+- Ele funciona como um "ponto de encontro" entre fontes (senders) e receptores (receivers) multicast.
+- Todas as fontes primeiro registram-se com o RP, e os receptores enviam joins até o RP.
+- Isso cria a árvore compartilhada (*,G).
+- Depois, o tráfego pode mudar para a árvore por fonte (S,G), mais otimizada.
+  
+👉 **Resumo:** o RP é essencial somente no modo Sparse, porque nesse modo o tráfego não é floodado.
+
+#### 🧩 1️⃣ O papel do grupo 224.0.1.40 (Auto-RP Announcement)
+
+✅ O grupo 224.0.1.40 é usado para anunciar automaticamente quem serão os Rendezvous Points (RPs) no domínio PIM-SM.  
+  
+Mas há **duas entidades** envolvidas nesse processo Auto-RP da Cisco: 
+
+| Função              | Grupo Multicast | Descrição                                                                                                         |
+|---------------------|-----------------|-------------------------------------------------------------------------------------------------------------------|
+| Candidate RP (C-RP) | 224.0.1.40      | Envia anúncios periódicos dizendo **"posso atuar como RP"**                                                       |
+| Mapping Agent (MA)  | 224.0.1.39      | Escuta os anúncios dos C-RPs e escolhe quem será o RP final — depois distribui o mapeamento a todos os roteadores |
+
+Então sim, 224.0.1.40 serve para descobrir os RPs automaticamente, substituindo a configuração manual, mas somente no PIM Sparse Mode.
+
+No Dense Mode, esses grupos aparecem, mas não têm função ativa — são apenas “ouvidos” por compatibilidade.
+
+#### 🌳 2️⃣ PIM Sparse Mode — como nasce a árvore multicast
+
+No Sparse Mode, não há flood and prune, então o multicast não se propaga automaticamente.  
+  
+👉 O tráfego só flui se houver um receptor que peça explicitamente para participar — e esse pedido começa com o IGMP Join.  
+
+#### 🔹 3️⃣ O papel do IGMP Join
+
+Vamos supor o cenário:
+
+- O Host envia IGMP Join 239.1.1.1
+- O roteador local (chamado de Designated Router – DR) recebe esse IGMP Report.
+
+Mas agora vem a dúvida-chave:  
+  
+**“Como o roteador sabe para onde enviar o join, se ele não faz flood?”**  
+  
+Excelente 👇  
+
+#### 🔀 4️⃣ Do IGMP para o RP: como o Join “descobre o caminho”
+
+Quando um host envia um IGMP Join, o roteador de borda (DR – Designated Router) aprende que há um receptor interessado.  
+A partir daí, o DR precisa descobrir quem é o RP responsável por aquele grupo.  
+  
+**Exemplo:** o host 192.168.20.2 envia um Join para o grupo 239.1.1.1, e o DR encaminha o PIM Join em direção ao RP 1.1.1.1 seguindo a rota unicast.  
+  
+- O Host envia IGMP Join → o roteador (DR) aprende que tem um receptor interessado no grupo 239.1.1.1.
+- O DR consulta sua tabela PIM:
+  “Quem é o RP responsável pelo grupo 239.1.1.1?”
+- Essa informação vem de:
+  - ip pim rp-address x.x.x.x, ou
+  - Auto-RP (224.0.1.39/40), ou
+  - BSR (Bootstrap Router).
+- O DR então envia uma mensagem PIM Join em direção ao RP, seguindo a rota unicast até ele (sem flood).
+  
+**🔁 Isso é o ponto crucial:**  
+👉 O Join é roteado unicast até o RP, não é floodado.  
+  
+Cada roteador no caminho cria uma entrada (*,G) na tabela multicast:  
+
+- “Existe um receptor interessado no grupo 239.1.1.1”
+- “O tráfego deve ser encaminhado nessa direção caso apareça”.
+  
+Quando o RP recebe esse Join, ele sabe:
+
+- “Tenho receptores interessados no grupo G”.
+  
+#### 🛰️ 5️⃣ Agora entra a fonte (source)
+
+Quando um servidor multicast (ex: 192.168.10.1) começa a enviar tráfego para 239.1.1.1:
+
+- O roteador mais próximo da fonte (chamado source DR) envia uma mensagem PIM Register diretamente ao RP (unicast).
+- Essa mensagem carrega o tráfego ou anuncia a existência da fonte.
+  
+O RP aprende:  
+
+- “A fonte S está enviando para o grupo G.”
+- O RP então conecta as duas pontas (S e os receptores).
+- Ele cria o fluxo (*,G) e (S,G).
+- O tráfego multicast começa a fluir da fonte até o RP, e do RP até os receptores.
+- Depois que o tráfego é estabelecido, o roteador receptor pode migrar para a SPT (Shortest Path Tree), formando um caminho direto até a fonte, sem depender do RP.
 
 ## 🌐 Topologia do Laboratório
 
-A topologia utilizada neste laboratório é composta por três roteadores principais (R01, R02 e R03) e três hosts simulados (Server, Host01 e Host02).  
-Os hosts são roteadores Cisco “disfarçados” de PCs, configurados apenas com interfaces IP e adesão a grupos multicast via IGMP.  
-O protocolo **OSPF** foi usado para prover conectividade unicast, enquanto o **PIM Dense Mode** foi configurado para viabilizar o tráfego multicast.
+A topologia utilizada neste laboratório é composta por cinco roteadores principais (R01, R02, R03, R04 e R05) e três hosts simulados (Server, Host02 e Host03).  
+Os hosts são roteadores Cisco “disfarçados” de PCs, configurados apenas com endereços IP e adesão a grupos multicast via IGMP.  
+O protocolo **OSPF** é utilizado para prover conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** foi configurado para o tráfego multicast, com uso inicial do Auto-RP para eleição automática do Rendezvous Point (RP).
 
-| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Rede / Conexão** | **Função** |
-|-----------------|----------------|-----------------------------|--------------------|-------------|
-| **R01** | Loopback0 | 1.1.1.1 /32 | - | Identificação / Router-ID OSPF |
-|  | Fa0/0 | 10.0.0.1 /30 | Conexão com R02 | Link PIM + OSPF |
-|  | Fa0/1 | 10.0.0.9 /30 | Conexão com R03 | Link PIM + OSPF |
-|  | Fa1/0 | 192.168.10.254 /24 | LAN do Server | Gateway Multicast para Server |
-| **R02** | Loopback0 | 2.2.2.2 /32 | - | Identificação / Router-ID OSPF |
-|  | Fa0/0 | 10.0.0.2 /30 | Conexão com R01 | Link PIM + OSPF |
-|  | Fa0/1 | 10.0.0.5 /30 | Conexão com R03 | Link PIM + OSPF |
-|  | Fa1/0 | 192.168.20.254 /24 | LAN do Host02 | Gateway Multicast para Host02 |
-| **R03** | Loopback0 | 3.3.3.3 /32 | - | Identificação / Router-ID OSPF |
-|  | Fa0/0 | 10.0.0.6 /30 | Conexão com R02 | Link PIM + OSPF |
-|  | Fa0/1 | 10.0.0.10 /30 | Conexão com R01 | Link PIM + OSPF |
-|  | Fa1/0 | 192.168.30.254 /24 | LAN do Host03 | Gateway Multicast para Host03 |
-| **Server** | Fa0/0 | 192.168.10.1 /24 | LAN com R01 | Fonte Multicast (transmissor) |
-| **Host02** | Fa0/0 | 192.168.20.1 /24 | LAN com R02 | Receptor Multicast (join-group 239.1.1.1) |
-| **Host03** | Fa0/0 | 192.168.30.1 /24 | LAN com R03 | Receptor (não inscrito no grupo) |
+**🔧 Endereçamento e Funções**  
 
----
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara Rede** | **Conexão Função**                                    |
+|-----------------|---------------|--------------------------------|-------------------------------------------------------|
+| R01             | Loopback0     | 1.1.1.1 /32                    | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 192.168.10.254 /24             | LAN do Server - Gateway multicast para Server         |
+|                 | Fa0/1         | 10.0.0.1 /30                   | Link com R02 PIM + OSPF                               |
+|                 | Fa1/0         | 10.0.0.18 /30                  | Link com R05 PIM + OSPF                               |
+| R02             | Loopback0     | 2.2.2.2 /32                    | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.2 /30                   | Link com R01 PIM + OSPF                               |
+|                 | Fa1/0         | 10.0.0.5 /30                   | Link com R03 PIM + OSPF                               |
+| R03             | Loopback0     | 3.3.3.3 /32                    | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.6 /30                   | Link com R02 PIM + OSPF                               |
+|                 | Fa1/0         | 10.0.0.9 /30                   | Link com R04 PIM + OSPF                               |
+| R04             | Loopback0     | 4.4.4.4 /32                    | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.10 /30                  | Link com R03 PIM + OSPF                               |
+|                 | Fa1/0         | 10.0.0.13 /30                  | Link com R05 PIM + OSPF                               |
+|                 | Fa1/1         | 192.168.20.254 /24             | LAN do Host02 - Gateway multicast para Host02         |
+| R05             | Loopback0     | 5.5.5.5 /32                    | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.14 /30                  | Link com R04 PIM + OSPF                               |
+|                 | Fa1/0         | 10.0.0.17 /30                  | Link com R01 PIM + OSPF                               |
+|                 | Fa0/1         | 192.168.30.254 /24             | LAN do Host03 Gateway multicast para Host03           |
+| Server          | Fa0/0         | 192.168.10.1 /24               | LAN com R01 Fonte multicast (sender)                  |
+| Host02          | Fa0/0         | 192.168.20.1 /24               | LAN com R04 Receptor multicast (join-group 239.1.1.1) |
+| Host03          | Fa0/0         | 192.168.30.1 /24               | LAN com R05 Host não inscrito (sem join IGMP)         |
 
-🧭 **Resumo da Lógica:**  
+**🧭 Resumo da Lógica**  
 
-- O **Server (192.168.10.1)** envia o fluxo multicast para o grupo **239.1.1.1**.  
-- Apenas o **Host02 (192.168.20.1)** faz o *join* ao grupo multicast.  
-- O **R03** participa da árvore apenas como roteador de trânsito, sem hosts interessados.  
-- O protocolo **PIM Dense Mode** cria inicialmente um *flood* de tráfego, seguido de *prune* onde não há receptores.  
-- O **RPF** (Reverse Path Forwarding) valida o caminho correto até a fonte multicast através do OSPF.
+- O Server (192.168.10.1) envia tráfego multicast para o grupo 239.1.1.1.
+- Apenas o Host02 (192.168.20.1) envia IGMP Join solicitando adesão ao grupo 239.1.1.1.
+- O Host03 (192.168.30.1) não participa, servindo como referência para áreas sem receptores.
+- O PIM Sparse Mode depende de um Rendezvous Point (RP) — no primeiro momento, selecionado automaticamente via Auto-RP (grupos 224.0.1.39 e 224.0.1.40).
+- O roteador designado como RP será o ponto de encontro entre a fonte (Server) e os receptores (Host02).
+- O RPF (Reverse Path Forwarding) é utilizado para validar o caminho de retorno até a fonte multicast com base na tabela OSPF.
+
+Após a formação inicial da árvore compartilhada (*,G) via RP, os roteadores podem comutar para a árvore de menor custo (SPT – Shortest Path Tree), estabelecendo o caminho direto entre fonte e receptores.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 ### Testes Preliminares
 
