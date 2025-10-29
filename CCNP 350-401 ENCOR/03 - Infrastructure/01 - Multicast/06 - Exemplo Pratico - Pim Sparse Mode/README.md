@@ -14,6 +14,10 @@
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
+    - [📘 No nosso cenário](#-no-nosso-cenário)
+  - [🧩 Como funciona o Auto-RP da Cisco](#-como-funciona-o-auto-rp-da-cisco)
+  - [1️⃣ Os dois papéis do Auto-RP](#1️⃣-os-dois-papéis-do-auto-rp)
+  - [2️⃣ Comunicação entre eles](#2️⃣-comunicação-entre-eles)
   - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
     - [Contexto: Por que o PIM precisa de um DR?](#contexto-por-que-o-pim-precisa-de-um-dr)
     - [Processo de Eleição do DR no PIM Dense Mode](#processo-de-eleição-do-dr-no-pim-dense-mode)
@@ -198,44 +202,20 @@ O protocolo **OSPF** é utilizado para prover conectividade unicast entre todos 
 
 Após a formação inicial da árvore compartilhada (*,G) via RP, os roteadores podem comutar para a árvore de menor custo (SPT – Shortest Path Tree), estabelecendo o caminho direto entre fonte e receptores.
 
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 ### Testes Preliminares
 
-Agora vamos acessar o SERVER e vamos garantir que existe comunicação entre todos os hosts.  
-**OBS:** nos roteadores eu configurei interfaces de LOOPABCK. Então R01 tem o ip 1.1.1.1 /32, R02 tem o ip 2.2.2.2 /32 e R03 tem o ip 3.3.3.3 /32 .  
+Como feito no exemplo anterior, vamos realizar um teste de comunicação entre todos os equipamentos com o ping só para garantir a comunicação.    
+**OBS:** nos roteadores eu configurei interfaces de LOOPABCK. Então R01 tem o ip 1.1.1.1 /32, R02 tem o ip 2.2.2.2 /32, R03 tem o ip 3.3.3.3 /32, R04 4.4.4.4/32 e R05 5.5.5.5/32 .  
 
 ![01](Imagens/01.png)
 
 Com isso, podemos ver que todos os hosts se alcançam e se comunicam. Mas o mais importante é observer a a tabela de roteamento para podermos entender um conceito simples.  
-
-![02](Imagens/02.png)  
-
-Essa é a tabela de roteamento em R01. Estamos acostumados a analisar essa tabela para verificarmos se o roteamento dinâmico está funcionando corretamente e não temos nenhum problema. Porém uma coisa que não é muito falada e que pode passar despercebida no primeiro momento é que essa tabela é como se fosse um bando de dados onde é feito o mapeamento da comunicação das redes que agora se dá em **unicast**. Ou seja, um host vai se comunicar diretamente com o outro, ou seja, comunicação de **um para um.**  
-
-No nosso caso queremos ter a comunicação **de um para um grupo**, ou seja, **comunicação multicast**. Então nosso papel aqui é montar a árvore de comuniçação que já foi explicada anteriormente. Essa árvore é como se fosse uma tabela de roteamento só que agora multicast.  
-
-Então a primeira coisa que precisamos verificar é se o **roteamento multicast está ativo** no equipamento.  
-
-```ios
-R01#show ip multicast  
-  Multicast Routing: disabled  
-  Multicast Multipath: disabled  
-  Multicast Route limit: No limit  
-  Multicast Triggered RPF check: enabled  
-  Multicast Fallback group mode: Sparse  
-  Multicast DVMRP Interoperability: disabled  
-  Number of multicast boundaries configured with filter-autorp option: 0  
-R01#  
-```
-
-Certo, como podemos ver, o roteamento multicast não está ativo. Então vamos ativar o mesmo.  
-
+  
+Agora a primeira coisa que precisamos ativar é o **roteamento multicast** no equipamento.  
+  
 >R01(config)#ip multicast-routing  
-
-Só para confirmar, vamos rodar o mesmo comando mais uma vez.  
+  
+Só para confirmar, vamos verificar o roteamento multicast.  
 
 ```ios
 R01#show ip multicast  
@@ -253,23 +233,70 @@ Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PI
 
 ### Onde o PIM deve ser ativado
 
-No modo **Dense Mode (PIM-DM)**, o tráfego multicast é floodado por todas as interfaces que participam do domínio multicast.  
+No modo **Sparse Mode (PIM-SM)**, o tráfego multicast não é floodado automaticamente — ele só percorre interfaces onde existe interesse explícito (IGMP Join) ou onde há necessidade de alcançar o **Rendezvous Point (RP)**.  
+  
+👉 Portanto, o PIM deve ser ativado em todas as interfaces que participam do domínio multicast, ou seja:
 
-👉 Portanto, você deve ativar o PIM **em todas as interfaces que participam do caminho multicast** — ou seja, interfaces que interligam roteadores e também interfaces conectadas a redes com hosts (fontes ou receptores).  
+- **Interfaces entre roteadores PIM vizinhos** (para formar a árvore multicast e permitir a troca de mensagens PIM Join/Prune);
+- **Interfaces conectadas a redes com fontes (senders) ou receptores (receivers) multicast**;
+- **Interfaces de loopback**, quando utilizadas como endereço do RP ou como Router-ID PIM.
 
-✅ **Resumo da regra prática:**  
+✅ **Resumo da regra prática para PIM-SM**  
 
-- Ative o PIM nas interfaces que têm roteadores vizinhos PIM e nas interfaces onde há fontes ou receptores multicast.  
+| Situação                           | PIM deve ser ativado?    | Motivo                                                         |
+|------------------------------------|--------------------------|----------------------------------------------------------------|
+| Interface entre roteadores         | ✅ Sim                   | Necessário para formar vizinhança PIM e propagar joins/prunes  |
+| Interface com host receptor (IGMP) | ✅ Sim                   | Permite que o roteador DR receba e encaminhe IGMP Reports      |
+| Interface com fonte multicast      | ✅ Sim                   | Permite que o roteador DR da fonte envie PIM Register ao RP    |
+| Interface Loopback usada como RP   | ✅ Sim                   | O RP precisa estar ativo no domínio PIM                        |
+| Loopback apenas como Router-ID     | ⚙️ Opcional              | Apenas usada como origem lógica dos pacotes PIM                |  
 
-🌀 **Sobre interfaces de Loopback (muito importante)**  
+🌀 Observação importante sobre as Loopbacks
 
-- Não é necessário ativar PIM em interfaces Loopback, a menos que ela seja usada como origem do tráfego multicast (por exemplo, um servidor multicast rodando em 1.1.1.1).  
+No PIM Sparse Mode, a Loopback pode ter uma função mais relevante do que no Dense Mode:
 
-- Por padrão, o PIM trabalha nas interfaces que realmente encaminham tráfego multicast (as físicas).  
+- Se ela for usada como endereço do RP (definido manualmente com **ip pim rp-address** <loopback>), o PIM deve estar habilitado nela.
+- Se for usada apenas como **Router-ID do OSPF/PIM, não há necessidade de ativar PIM nela**.
+  
+💡 Em geral, em laboratórios e ambientes de estudo, é prática comum habilitar o PIM apenas nas interfaces físicas e na loopback do RP.
 
-- A Loopback costuma ser usada apenas como Router-ID, endereço de origem de OSPF/PIM, ou fonte lógica (RP) em cenários de Sparse Mode — não é o caso aqui.  
+### 📘 No nosso cenário
 
-Portanto, no nosso cenário vamos entrar no roteador R01 vamos ativar o PIM em todas as interfaces que estão ativas e vão fazer parte do multicast.  
+Vamos ativar o PIM em todas as interfaces de roteadores que fazem parte do domínio multicast, incluindo:  
+
+- Todas as interfaces ponto a ponto entre roteadores (R01–R02, R02–R03, R03–R04, R04–R05, R05–R01);
+- Interfaces conectadas às LANs dos hosts (Server, Host02 e Host03).
+- Apenas as interfaces de Loopback serão avaliadas conforme sua função:
+  - Se forem usadas apenas como identificação OSPF, não precisam de PIM;
+  - Se forem usadas como RP, devem ter PIM ativo.
+
+Antes de ativarmos, é importante compreender o conceito de eleição dos **Rendezvous Point (RP)**, ou o **Auto RP**.  
+
+## 🧩 Como funciona o Auto-RP da Cisco
+
+O Auto-RP é um mecanismo proprietário da Cisco que automatiza a descoberta e distribuição de RPs dentro de um domínio **PIM Sparse Mode**.
+
+Em vez de configurar manualmente o comando **ip pim rp-address** em todos os roteadores, o Auto-RP usa dois papéis principais e dois grupos multicast reservados para distribuir essa informação automaticamente.
+
+## 1️⃣ Os dois papéis do Auto-RP
+
+| Função        | Sigla    | Responsabilidade                                                          | Grupo Multicast Utilizado |
+|---------------|----------|---------------------------------------------------------------------------|---------------------------|
+| Candidate RP  | **C-RP** | Anuncia-se como potencial RP para determinados grupos multicast           | **224.0.1.40**            |
+| Mapping Agent | **MA**   | Escuta os anúncios dos C-RPs, escolhe o RP final e distribui o mapeamento | **224.0.1.39**            |  
+
+## 2️⃣ Comunicação entre eles
+
+O Candidate RP envia mensagens Auto-RP Announcement (anúncio) para o grupo 224.0.1.40, dizendo:  
+
+- 🗣️ “Eu posso ser o RP para os grupos **224.0.0.0 – 239.255.255.255**”.  
+
+O Mapping Agent (MA) se inscreve nesse grupo **224.0.1.40 (via PIM/IGMP)** e escuta todos os anúncios.  
+Ele então escolhe um ou mais RPs válidos e repassa essa informação para todos os roteadores PIM do domínio via grupo **224.0.1.39**, através da mensagem Auto-RP Mapping.  
+  
+Todos os roteadores escutam o **224.0.1.39** e, assim, aprendem qual é o RP ativo para cada grupo multicast.
+
+-------------------------------------------------------------------------
 
 ```ios
  R01>ena  
