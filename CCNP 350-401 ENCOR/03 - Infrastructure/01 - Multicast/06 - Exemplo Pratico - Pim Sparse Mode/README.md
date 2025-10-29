@@ -18,6 +18,11 @@
   - [🧩 Como funciona o Auto-RP da Cisco](#-como-funciona-o-auto-rp-da-cisco)
   - [1️⃣ Os dois papéis do Auto-RP](#1️⃣-os-dois-papéis-do-auto-rp)
   - [2️⃣ Comunicação entre eles](#2️⃣-comunicação-entre-eles)
+  - [🧠 Como o domínio decide quem será o RP](#-como-o-domínio-decide-quem-será-o-rp)
+  - [3️⃣ Comandos de configuração (modo Auto-RP)](#3️⃣-comandos-de-configuração-modo-auto-rp)
+    - [💡 A pegadinha do nome “Auto-RP”](#-a-pegadinha-do-nome-auto-rp)
+  - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
+    - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
   - [Função do DR no PIM Dense Mode](#função-do-dr-no-pim-dense-mode)
     - [Contexto: Por que o PIM precisa de um DR?](#contexto-por-que-o-pim-precisa-de-um-dr)
     - [Processo de Eleição do DR no PIM Dense Mode](#processo-de-eleição-do-dr-no-pim-dense-mode)
@@ -204,7 +209,7 @@ Após a formação inicial da árvore compartilhada (*,G) via RP, os roteadores 
 
 ### Testes Preliminares
 
-Como feito no exemplo anterior, vamos realizar um teste de comunicação entre todos os equipamentos com o ping só para garantir a comunicação.    
+Como feito no exemplo anterior, vamos realizar um teste de comunicação entre todos os equipamentos com o ping só para garantir a comunicação.  
 **OBS:** nos roteadores eu configurei interfaces de LOOPABCK. Então R01 tem o ip 1.1.1.1 /32, R02 tem o ip 2.2.2.2 /32, R03 tem o ip 3.3.3.3 /32, R04 4.4.4.4/32 e R05 5.5.5.5/32 .  
 
 ![01](Imagens/01.png)
@@ -229,7 +234,7 @@ R01#show ip multicast
 R01#  
 ```
 
-Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PIM**. Esse protocolo deve ser ativado nas interfaces onde a comunicação ira ocorrer.  
+**ONS:** Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PIM**. Esse protocolo deve ser ativado nas interfaces onde a comunicação ira ocorrer. Então, repetir o processo de R01 a R05.
 
 ### Onde o PIM deve ser ativado
 
@@ -296,33 +301,194 @@ Ele então escolhe um ou mais RPs válidos e repassa essa informação para todo
   
 Todos os roteadores escutam o **224.0.1.39** e, assim, aprendem qual é o RP ativo para cada grupo multicast.
 
--------------------------------------------------------------------------
+## 🧠 Como o domínio decide quem será o RP
+
+O Mapping Agent é quem escolhe o RP com base nos anúncios que recebe.  
+A seleção normalmente segue critérios simples:  
+
+- Todos os **C-RPs** válidos são incluídos na tabela de mapeamento.
+- Cada grupo multicast pode ter um **RP diferente** (dependendo do range anunciado).
+
+Se houver mais de um C-RP para o mesmo grupo, o MA usa o endereço IP mais alto como critério de desempate.  
+
+💡 **Em laboratório, normalmente deixamos apenas um Mapping Agent e um ou dois Candidate RPs — assim dá pra ver a eleição e o tráfego de anúncios claramente.**
+
+## 3️⃣ Comandos de configuração (modo Auto-RP)
+
+### 💡 A pegadinha do nome “Auto-RP”
+
+Apesar do nome “Auto-RP” sugerir que tudo é automático, ele não é totalmente automático.  
+O que o Auto-RP automatiza é a descoberta e distribuição do RP dentro do domínio PIM-SM — ou seja, os roteadores aprendem automaticamente quem é o RP sem precisar do comando manual ip pim rp-address.  
+Mas para isso acontecer, alguém precisa gerar e propagar essa informação — e é aí que entram os dois papéis:  
+
+- **Candidate RP (C-RP)** → quem “se oferece” para ser RP.
+- **Mapping Agent (MA)** → quem “ouve”, escolhe e anuncia o vencedor.
+
+**OBS:** Esses papéis devem ser definidos manualmente pelo administrador.  
+  
+🧠 **Analogia simples (pensa como uma eleição)**  
+  
+Imagine que o domínio PIM é uma cidade:  
+
+- Vários roteadores podem se candidatar a prefeito **(Candidate RP)**.
+- Mas precisa ter um cartório eleitoral **(Mapping Agent)** que receba as candidaturas e divulgue quem foi eleito para toda a cidade.
+
+👉 **O processo de votação e divulgação é automático — mas os papéis são definidos manualmente**.  
+Sem pelo menos **um Mapping Agent e um Candidate RP**, não há eleição alguma.  
+  
+📊 **O que é automático e o que é manual**  
+
+| Ação                               | Automático? | Quem decide                 |
+|------------------------------------|-------------|-----------------------------|
+| Escolher quem é Candidate RP       | ❌ Não      | Administrador              |
+| Escolher quem é Mapping Agent      | ❌ Não      | Administrador              |
+| Eleger o RP (entre os candidatos)  | ✅ Sim      | Mapping Agent              |
+| Distribuir o mapeamento para todos | ✅ Sim      | Mapping Agent              |
+| Aprender o RP e atualizar a tabela | ✅ Sim      | Todos os roteadores PIM-SM |
+
+🧱 **Em projeto real (ou laboratório bem documentado)**
+  
+Essa escolha deve ser feita pela pelo administrador e precisa estar no projeto.  
+No nosso caso, com cinco roteadores, uma topologia em anel e um laboratório educacional, uma boa prática é:  
+
+| Função                 | Roteador             | Justificativa                                                        |
+|------------------------|----------------------|----------------------------------------------------------------------|
+| Mapping Agent          | R01                  | Está próximo da fonte multicast (Server) e tem conectividade central |
+| Candidate RP           | R02                  | Está no meio do domínio PIM, facilita convergência                   |
+| Demais (R03, R04, R05) | Participantes PIM-SM | Aprendem o RP automaticamente via 224.0.1.39                         |  
+
+⚙️ **O que o Auto-RP faz automaticamente**  
+  
+Depois que você define quem é C-RP e MA:  
+
+- O **C-RP** envia anúncios PIM Auto-RP para **224.0.1.40**.
+- O **MA** escuta, escolhe o RP e envia o mapeamento para **224.0.1.39**.
+
+Todos os roteadores escutam 224.0.1.39 e aprendem:  
+
+- “Para o grupo 239.1.1.1, o RP é 2.2.2.2”.
+- Se o C-RP cair, o MA detecta a ausência dos anúncios e remove o RP do mapeamento.
+
+👉 **Ou seja: a distribuição e manutenção são automáticas, mas a existência do MA e do C-RP depende de você configurá-los.**
+
+## Ativando o protocolo PIM Sparse Mode
+
+Agora que entendemos a lógica, vamos ativar o protocolo em todas as interfaces que participam do multicast nos roteadores, de R01 a R05.
 
 ```ios
- R01>ena  
- R01#show ip int br  
-  Interface                  IP-Address      OK? Method Status                Protocol  
-  FastEthernet0/0            10.0.0.1        YES NVRAM  up                    up  
-  FastEthernet0/1            10.0.0.9        YES NVRAM  up                    up  
-  FastEthernet1/0            192.168.10.254  YES NVRAM  up                    up  
-  Loopback0                  1.1.1.1         YES NVRAM  up                    up  
- R01#conf t  
- Enter configuration commands, one per line.  End with CNTL/Z.  
- R01(config)#int f0/0  
- R01(config-if)#ip pim dense-mode  
- R01(config-if)#  
- *Mar  1 03:53:26.735: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/0  
- R01(config-if)#int f0/1  
- R01(config-if)#ip pim dense-mode  
- R01(config-if)#  
- *Mar  1 03:53:48.687: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.9 on interface FastEthernet0/1  
- R01(config-if)#ip pim  
- R01(config-if)#int f1/0  
- R01(config-if)#ip pim dense-mode  
- R01(config-if)#  
- *Mar  1 03:54:21.635: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet1/0  
- R01(config-if)#  
+R01#show ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
+FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
+FastEthernet1/0            10.0.0.18       YES NVRAM  up                    up
+Loopback0                  1.1.1.1         YES NVRAM  up                    up
+R01#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+R01(config)#int f0/0
+R01(config-if)#ip pim sparse-mode
+R01(config-if)#
+*Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
+R01(config-if)#int f0/1
+R01(config-if)#ip pim sparse-mode
+R01(config-if)#
+*Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
+R01(config-if)#int f1/0
+R01(config-if)#ip pim sparse-mode
+R01(config-if)#
+*Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
+R01(config-if)#
 ```
+
+Agora que o **PIM Sparse-Mode** foi ativado, vamos analisar a tabela de **roteamento multicast:**
+
+```ios
+R01#show ip mrout
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.0.1.40), 00:15:57/00:02:04, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:15:57/00:02:04
+
+R01#
+```
+
+Então eu realizei uma captura de pacotes na interface F0/0 de R01.  
+
+![Whireshark](Imagens/02.png)  
+
+Então podemos verificar que o grupo **224.0.1.40** foi ativado.  
+
+### 🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode
+
+Quando ativamos o **PIM Sparse Mode** nas interfaces, cada rede multicast (LAN) com mais de um roteador participante precisa escolher um roteador responsável por interagir com os hosts locais e com o **RP (Rendezvous Point)**.  
+Esse roteador é chamado de **Designated Router (DR).**  
+  
+🔍 **O que é o DR**  
+  
+O Designated Router tem duas funções principais:  
+
+| Situação                               | Função do DR                                                                                     |
+|----------------------------------------|--------------------------------------------------------------------------------------------------|
+| Lado dos receptores (hosts multicast)  | Recebe mensagens IGMP Report dos hosts interessados e envia mensagens PIM Join em direção ao RP. |
+| Lado das fontes (servidores multicast) | Detecta tráfego multicast local e envia PIM Register diretamente ao RP.                          |  
+
+⚙️ **Como ocorre a eleição do DR**  
+  
+A eleição do DR é feita automaticamente entre todos os roteadores PIM que compartilham a mesma rede multicast.  
+
+🔸 Critério de eleição:  
+  
+- O roteador com o maior endereço IP ativo na interface vence a eleição.
+- Em caso de empate (endereços iguais, o que é raro), o endereço de Router-ID PIM (geralmente a Loopback) é usado como desempate.
+
+🔸 Exemplo real do log:  
+
+```ios
+*Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
+```
+
+🔹 **Interpretação:**  
+
+- Houve uma mudança de **DR** na interface FastEthernet1/0.
+- O roteador **10.0.0.18** foi eleito como o novo Designated Router.
+- O endereço **0.0.0.0** indica que antes não havia DR definido (primeira eleição).  
+  
+🚫 **Não existe BDR no PIM**
+  
+Diferente do **OSPF, o PIM não possui Backup Designated Router (BDR)**.  
+Somente um DR é responsável pela rede.  
+  
+Se o DR atual falhar, os demais roteadores detectam a ausência de mensagens **PIM Hello (por padrão a cada 30 segundos)** e realizam uma nova eleição automaticamente.  
+O roteador com o próximo IP mais alto assume o papel de DR sem interrupção perceptível no domínio multicast.  
+  
+🧭 **Resumo prático**
+
+| Item                         | PIM Dense Mode             | PIM Sparse Mode          |
+|------------------------------|----------------------------|--------------------------|
+| DR existe?                   | Sim, mas é pouco relevante | ✅ Sim, papel essencial |
+| BDR existe?                  | ❌ Não                     | ❌ Não                  |
+| Flood de tráfego             | ✅ Sim                     | ❌ Não                  |
+| Comunicação com RP           | ❌ Não usa RP              | ✅ Sim, feita pelo DR   |
+| Envio de PIM Join / Register | Todos enviam               | Apenas o DR envia        |
+
+Então podemos observar esse comportamento através da captura de pacotes onde o Whireshark foi ativado na interface F0/0 de R01.  
+
+![Whireshark](Imagens/03.png)
+
+-------------------------------------------------------------------------
+
+
 
 Agora que ativamos o **PIM DENSE-MODE** podemos observar que nos é exibida uma mensagem de aviso (log nível 5)  
   
