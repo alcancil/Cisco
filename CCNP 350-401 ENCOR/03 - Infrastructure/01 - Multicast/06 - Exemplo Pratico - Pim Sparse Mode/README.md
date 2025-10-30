@@ -24,6 +24,7 @@
   - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
     - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
+    - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
 
 ## 05 - Exemplo Prático - PIM Sparse Mode  
 
@@ -512,4 +513,138 @@ Logo após, a eleição de DR é feita com base nos campos DR Priority e IP Addr
 | Troca de informações entre vizinhos PIM | Hello               | 224.0.0.13 | 1   | Manter vizinhança ativa     |
 | Eleição do DR                           | Hello               | 224.0.0.13 | 1   | Eleger roteador responsável |
 | Detecção de falha de vizinho            | Timeout (sem Hello) | —          | —   | Remover roteador inativo    |
+
+### ⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)
+
+Agora que o PIM Sparse Mode está ativo em todas as interfaces, o domínio multicast já está pronto para eleger o Rendezvous Point (RP).  
+Como estamos utilizando o Auto-RP da Cisco, precisamos definir manualmente quem será o Candidate RP (C-RP) e quem atuará como Mapping Agent (MA).  
+
+🔹 Lembrando:  
+  
+- O Candidate RP anuncia-se ao grupo **224.0.1.40** dizendo: “posso ser o RP”.
+- O Mapping Agent escuta esses anúncios e envia o mapeamento final para todos os roteadores via grupo **224.0.1.39**.  
+
+🧩 1️⃣ **Escolha dos equipamentos**  
+  
+Para este laboratório:  
+  
+| Função        | Roteador | Loopback usada | Justificativa técnica                                                             |
+|---------------|----------|----------------|-----------------------------------------------------------------------------------|
+| Candidate RP  | R02      | 2.2.2.2        | Está centralizado no domínio PIM, ideal para convergência                         |
+| Mapping Agent | R01      | 1.1.1.1        | Próximo à fonte multicast (Server), reduz latência para distribuição dos anúncios |  
+
+Assim, os roteadores R01 e R02 passam a desempenhar papéis complementares no processo de descoberta do RP.  
+
+🎯 **Sobre as Interfaces Loopback**  
+  
+No PIM Sparse Mode, a loopback pode exercer dois papéis distintos:
+
+- Apenas identificação lógica do roteador — usada como Router-ID ou origem de sessões OSPF/PIM.
+- Endereço lógico de RP (Rendezvous Point) — usada como ponto central da árvore multicast.
+
+👉 **Só o segundo caso exige que o PIM esteja ativo na loopback.**
+
+🧩 **Regra prática (Cisco e CCNP)**
+
+| Função da Loopback                                         | Precisa ativar PIM? | Motivo                                                                                             |
+|------------------------------------------------------------|---------------------|----------------------------------------------------------------------------------------------------|
+| Loopback usada como RP (Candidate RP)                      | ✅ Sim       | O RP precisa participar ativamente do domínio PIM para enviar/receber mensagens Register, Join e Auto-RP  |
+| Loopback usada como Mapping Agent   | ✅ Sim (recomendado)               | Embora o MA só envie anúncios Auto-RP, a interface é usada como origem das mensagens PIM (para 224.0.1.39) |
+| Loopback usada apenas como Router-ID (OSPF, identificação) | ❌ Não              | Ela não participa do encaminhamento multicast nem troca mensagens PIM.                             |
+| Loopback em roteadores comuns (não-RP, não-MA)             | ❌ Não              | Não há função multicast direta associada a ela.                                                   |  
+
+💬 **Em resumo**  
+
+- Ative o PIM-SM nas loopbacks **apenas do Candidate RP e do Mapping Agent**.
+- As demais loopbacks podem ficar sem PIM, já que não fazem parte do processo de descoberta nem da árvore multicast.
+- Isso torna o ambiente mais limpo e evita sobrecarga desnecessária no plano de controle.  
+  
+🧰 2️⃣ **Comandos de configuração**  
+  
+➡️ No R02 (Candidate RP):  
+
+```ios
+R02(config)#ip pim send-rp-announce loopback0 scope 16 group-list 1
+R02(config)#access-list 1 permit 224.0.0.0 15.255.255.255
+```
+
+🔎 **Explicação:**
+  
+- **send-rp-announce**: indica que o roteador R02 será Candidate RP.
+- **loopback0**: define o endereço 2.2.2.2 como IP de identificação do RP.
+- **scope 16**: limita o alcance dos anúncios ao domínio local PIM.
+- **group-list 1**: especifica o intervalo de grupos multicast para os quais o RP é válido (aqui, todo o range padrão).  
+
+➡️ No R01 (Mapping Agent):  
+
+```ios
+R01(config)#int lo0
+R01(config-if)#ip pim sparse-mode
+R01(config-if)#
+*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
+R01(config-if)#exit
+R01(config)#ip pim send-rp-discovery loopback 0 scope 16
+R01(config)#
+```
+
+🔎 **Explicação:**
+
+- **send-rp-discovery**: indica que R01 atuará como Mapping Agent (MA).
+- Ele escutará os anúncios dos **C-RPs (via 224.0.1.40) e redistribuirá os mapeamentos (via 224.0.1.39)**.  
+
+3️⃣ **Captura e observação via Wireshark**  
+
+🧩 **Contexto da captura**  
+
+Como não temos como realizar capturas de pacotes em interfaces loopback, vou escolher utilizar qualquer uma das interfaces para verificarmos o comportamento dos pacotes.  
+
+**Entendendo o que você quer capturar**  
+  
+Há três tipos principais de mensagens que vão aparecer entre R01 e R02 logo após a configuração:  
+
+| Tipo      | Protocolo        | Propósito                  | Observação                                 |                             |
+|-----------|------------------|----------------------------|--------------------------------------------|-----------------------------|
+| PIM Hello | PIMv2 (Type 0)   | Descoberta e eleição de DR                                              | TTL = 1, destino 224.0.0.13 |
+| Auto-RP   | Announcement     | PIMv2 (Type 13) - Candidate RP se anuncia (R02 → 224.0.1.40)            | Proprietário Cisco          |
+| Auto-RP   | Discovery        | PIMv2 (Type 13) - Mapping Agent divulga o mapeamento (R01 → 224.0.1.39) | Proprietário Cisco          | 
+
+Para capturar tudo que interessa agora — Hellos, Auto-RP, e IGMP futuramente — use este filtro único e combinado:
+
+```whiresahrk
+pim || igmp || ip.dst == 224.0.1.39 || ip.dst == 224.0.1.40
+````
+
+![Whireshark](Imagens/04.png)  
+
+Como podemos observar, temos as mensagens de Auto-RP comprovando o funcionamento do Candidate RP e do Mapping Agent.  
+  
+Mas para validar, vamos entrar em R01 e R02 e digitar o comando **show ip pim rp mapping**.  
+  
+**R01**  
+
+```ios
+R01#show ip pim rp mapping
+PIM Group-to-RP Mappings
+This system is an RP-mapping agent (Loopback0)
+
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2v1
+    Info source: 2.2.2.2 (?), elected via Auto-RP
+         Uptime: 00:09:18, expires: 00:02:39
+R01#
+```
+
+**R02**  
+
+```ios
+R02#show ip pim rp mapping
+PIM Group-to-RP Mappings
+This system is an RP (Auto-RP)
+
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2v1
+    Info source: 1.1.1.1 (?), elected via Auto-RP
+         Uptime: 00:46:15, expires: 00:02:21
+R02#
+```
 
