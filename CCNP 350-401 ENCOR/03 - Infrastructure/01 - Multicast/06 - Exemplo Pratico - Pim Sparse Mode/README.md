@@ -910,5 +910,71 @@ show ip pim rp mapping
 Se o listener estiver ativo e a propagação funcionando, todos os roteadores devem exibir algo como:  
 
 ```ios
+R01#show ip pim rp mapping
+PIM Group-to-RP Mappings
+This system is an RP-mapping agent (Loopback0)
 
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2v1
+    Info source: 2.2.2.2 (?), elected via Auto-RP
+         Uptime: 00:21:25, expires: 00:02:33
+R01#
 ```  
+
+🧰 **Captura no Wireshark**  
+  
+Para confirmar a propagação das mensagens Auto-RP, realize a captura nas interfaces de trânsito entre o Mapping Agent **(R01)** e os roteadores intermediários **(R03, R04)**.  
+  
+Locais sugeridos para captura:
+
+| Equipamento                  | Interface      | Motivo
+|------------------------------|----------------|----------------------------------------------------------------------|
+| R01 (Mapping Agent)          | Fa0/1          | Origem das mensagens Auto-RP Discovery (224.0.1.39)                  |
+| R02 (Candidate RP)           | Fa0/0          | Envio dos anúncios Auto-RP Announce (224.0.1.40)                     |
+| R03 (roteador intermediário) | Fa0/0 ou Fa0/1 | Validação de que os pacotes Auto-RP estão atravessando o domínio PIM |
+| R04 (DR do Host)             | Fa0/0          | Verificar se o listener permitiu o recebimento das mensagens Auto-RP |  
+
+**Filtro recomendado:**  
+
+```whireshark
+ip.dst == 224.0.1.39 || ip.dst == 224.0.1.40
+```
+  
+🔍 **O que observar:**
+  
+| Tipo de mensagem            | Origem  | Destino                  | Descrição                                                         |
+|-----------------------------|---------|--------------------------|-------------------------------------------------------------------|
+| Auto-RP Announcement        | R02     | 224.0.1.40               | R02 anuncia-se como RP candidato                                  |
+| Auto-RP Discovery           | R01     | 224.0.1.39               | R01 (Mapping Agent) distribui o mapeamento do RP                  |
+| Encaminhamento via Listener | R03/R04 | 224.0.1.39 ou 224.0.1.40 | Indica que o listener está retransmitindo os pacotes pelo domínio |  
+
+**R01 - Interface F0/1**  
+
+![Whireshark](Imagens/05.png)  
+
+**R02 - Interface F1/0**  
+
+![Whireshark](Imagens/06.png)  
+
+**R03 - Interface F0/0**  
+
+![Whireshark](Imagens/07.png)  
+
+**R04 - Interface F0/0**  
+
+![Whireshark](Imagens/08.png)  
+
+✅ **Conclusão**
+
+O comando **ip pim autorp listener** é indispensável para inicializar corretamente um domínio PIM Sparse Mode que utiliza Auto-RP.  
+  
+Ele garante que:
+
+- Todos os roteadores aprendam quem é o RP (resolvendo o paradoxo do ovo e da galinha);
+- As mensagens Auto-RP (224.0.1.39 e 224.0.1.40) cheguem a todos os pontos da rede;
+- O domínio PIM esteja sincronizado antes da formação da árvore multicast (*,G) e (S,G).
+  
+💡 **Resumo rápido:**  
+  
+Sem o autorp listener, roteadores distantes do Mapping Agent podem nunca aprender o RP, e o multicast simplesmente não se forma.  
+
