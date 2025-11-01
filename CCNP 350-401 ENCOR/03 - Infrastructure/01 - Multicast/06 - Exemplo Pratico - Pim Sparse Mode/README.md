@@ -29,6 +29,14 @@
     - [🌳 Formação da Árvore Multicast (\*,G) — A Shared Tree](#-formação-da-árvore-multicast-g--a-shared-tree)
     - [⚡ Migração para a Shortest Path Tree (SPT)](#-migração-para-a-shortest-path-tree-spt)
     - [🧩 Propagação das mensagens Auto-RP — O papel do ip pim autorp listener](#-propagação-das-mensagens-auto-rp--o-papel-do-ip-pim-autorp-listener)
+  - [🌳 Formação da Árvore Multicast — do IGMP Join ao PIM Register](#-formação-da-árvore-multicast--do-igmp-join-ao-pim-register)
+    - [🧩 1️⃣ O início de tudo: o IGMP Join](#-1️⃣-o-início-de-tudo-o-igmp-join)
+    - [🛰️ 2️⃣ O papel do DR (Designated Router)](#️-2️⃣-o-papel-do-dr-designated-router)
+    - [⚙️ 3️⃣ O nascimento da árvore compartilhada (\*,G)](#️-3️⃣-o-nascimento-da-árvore-compartilhada-g)
+    - [📡 4️⃣ A fonte começa a transmitir — PIM Register](#-4️⃣-a-fonte-começa-a-transmitir--pim-register)
+    - [🔁 5️⃣ RP conecta as pontas e inicia o fluxo](#-5️⃣-rp-conecta-as-pontas-e-inicia-o-fluxo)
+    - [⚙️ 6️⃣ A transição para a Árvore de Caminho Mais Curto (SPT)](#️-6️⃣-a-transição-para-a-árvore-de-caminho-mais-curto-spt)
+    - [✅ Conclusão](#-conclusão)
 
 ## 05 - Exemplo Prático - PIM Sparse Mode  
 
@@ -977,4 +985,199 @@ Ele garante que:
 💡 **Resumo rápido:**  
   
 Sem o autorp listener, roteadores distantes do Mapping Agent podem nunca aprender o RP, e o multicast simplesmente não se forma.  
+
+## 🌳 Formação da Árvore Multicast — do IGMP Join ao PIM Register  
+  
+Com o domínio PIM Sparse Mode devidamente sincronizado e todos os roteadores já conhecendo o Rendezvous Point (RP) através do Auto-RP e do autorp listener, finalmente podemos observar a formação da árvore multicast.  
+  
+Essa é a parte mais visual e importante do laboratório, pois mostra o fluxo completo de como uma sessão multicast é criada e otimizada.  
+  
+### 🧩 1️⃣ O início de tudo: o IGMP Join
+
+A comunicação multicast só é iniciada quando há um receptor interessado.  
+Sem receptores, nenhum tráfego é enviado — esse é o grande diferencial do modo Sparse Mode.  
+  
+O processo começa no host (no nosso caso, um roteador simulando um PC) que deseja receber o fluxo multicast.  
+
+📍 Comando no HOST02:
+
+```ios
+interface FastEthernet0/0
+ ip igmp join-group 239.1.1.1
+```  
+
+- Esse comando simula o **IGMP Report** (mensagem enviada pelos hosts para participar de um grupo multicast).
+- O roteador conectado ao host (chamado de Designated **Router – DR**) registra essa informação e sabe que há um receptor interessado em **239.1.1.1**.
+
+### 🛰️ 2️⃣ O papel do DR (Designated Router)
+
+O DR é o primeiro roteador no caminho que “ouve” o IGMP Join do host.  
+Ao receber o pedido, ele precisa fazer com que o tráfego chegue até esse receptor — mas como ele faz isso?  
+  
+Como o PIM Sparse Mode não faz flood, o DR precisa “subir” até o Rendezvous Point (RP).  
+
+👉 Então o DR consulta a tabela PIM e verifica quem é o RP responsável pelo grupo 239.1.1.1, informação aprendida via Auto-RP:  
+
+```ios
+show ip pim rp mapping
+```
+
+- Se o RP for, por exemplo, 2.2.2.2 (R02), o DR enviará uma mensagem PIM Join na direção do RP, utilizando a rota unicast normal (via OSPF).  
+  
+### ⚙️ 3️⃣ O nascimento da árvore compartilhada (*,G)
+
+Durante o caminho até o RP, cada roteador cria uma entrada na tabela multicast, indicando que há um receptor interessado naquele grupo.  
+Essas entradas têm o formato:  
+
+```ios
+(*, 239.1.1.1)
+```
+
+O asterisco (*) indica que o receptor ainda não conhece a fonte — ele está apenas interessado no grupo.  
+
+- Esse caminho reverso é conhecido como Shared Tree, ou árvore compartilhada.  
+  
+✅ **Agora o RP já sabe que há receptores interessados no grupo 239.1.1.1.**  
+
+Você pode verificar essa estrutura com o comando:  
+
+```ios
+show ip mroute 239.1.1.1
+```
+
+Exemplo em R03:  
+
+```ios
+R03#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 01:18:31/00:02:42, RP 2.2.2.2, flags: SF
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.5
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 01:18:31/00:02:42
+
+R03#
+```
+
+### 📡 4️⃣ A fonte começa a transmitir — PIM Register
+
+Agora, o servidor multicast (R01) começa a enviar tráfego para o grupo **239.1.1.1.**  
+  
+O roteador diretamente conectado à fonte (também um DR) detecta que está recebendo tráfego multicast sem receptores ainda conhecidos.  
+Para resolver isso, ele encapsula o tráfego dentro de uma mensagem PIM Register e envia diretamente ao RP (R02), via unicast.  
+  
+💡 **Essa é a primeira etapa da comunicação — o RP “descobre” a fonte.**  
+
+### 🔁 5️⃣ RP conecta as pontas e inicia o fluxo
+
+O RP agora conhece dois lados:
+
+- **As fontes (S)** — aprendidas via mensagens PIM Register.
+- **Os receptores (R)** — aprendidos via mensagens PIM Join.
+  
+Ele então conecta essas duas informações e cria as entradas:  
+
+```ios
+(S, 239.1.1.1)
+(*, 239.1.1.1)
+```
+
+A partir desse momento, o RP começa a reenviar o tráfego multicast pela árvore compartilhada (*,G) até o DR do receptor.
+Os pacotes multicast fluem normalmente até o host.
+
+✅ **O multicast agora está funcional!**  
+
+### ⚙️ 6️⃣ A transição para a Árvore de Caminho Mais Curto (SPT)
+
+Após o fluxo se estabilizar, o roteador receptor percebe que há um caminho mais direto entre ele e a fonte (sem passar pelo RP).  
+  
+Então, ele envia um novo PIM Join diretamente em direção à fonte, criando a árvore SPT (Shortest Path Tree).
+A árvore agora passa a ser baseada em **(S,G)**, e o RP deixa de encaminhar esse tráfego.  
+  
+Esse comportamento otimiza o caminho e reduz o delay, criando a estrutura:  
+
+```ios
+(S, 239.1.1.1)
+```
+
+Então vamos no SERVER e realizar um ping para o grupo 239.1.1.1  
+
+```ios
+SERVER#ping 239.1.1.1 repeat 100
+```  
+
+Em R01 execute o comando:  
+
+```ios
+SERVER#ping 239.1.1.1 repeat 100
+
+Type escape sequence to abort.
+Sending 100, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.10.1, 4 ms
+Reply to request 0 from 192.168.20.1, 176 ms
+Reply to request 1 from 192.168.10.1, 4 ms
+Reply to request 1 from 192.168.20.1, 128 ms
+Reply to request 2 from 192.168.10.1, 4 ms
+Reply to request 2 from 192.168.20.1, 112 ms
+Reply to request 3 from 192.168.10.1, 4 ms
+Reply to request 3 from 192.168.20.1, 116 ms
+Reply to request 4 from 192.168.10.1, 4 ms
+Reply to request 4 from 192.168.20.1, 132 ms
+Reply to request 5 from 192.168.10.1, 4 ms
+Reply to request 5 from 192.168.20.1, 120 ms
+Reply to request 6 from 192.168.10.1, 4 ms
+Reply to request 6 from
+
+...saída omitida...
+```  
+  
+```ios
+R01#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 01:58:37/stopped, RP 2.2.2.2, flags: SJCF
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 01:58:37/00:02:32
+
+(192.168.10.1, 239.1.1.1), 00:00:16/00:03:17, flags: FT
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0, Registering
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:00:17/00:03:12
+    FastEthernet0/1, Forward/Sparse, 00:00:17/00:03:12
+
+R01#  
+```  
+
+### ✅ Conclusão
+
+O PIM Sparse Mode constrói a árvore multicast de forma inteligente e otimizada, somente quando há receptores interessados.  
+O processo completo ocorre em três fases:  
+
+| Etapa                                               | Descrição                            |
+|-----------------------------------------------------|--------------------------------------|
+| 1️⃣ Descoberta e sincronização (Auto-RP + Listener) | Define o RP e garante o domínio PIM   |
+| 2️⃣ Formação da Shared Tree (*,G)                   | Ligação dos receptores ao RP          |
+| 3️⃣ Transição para SPT (S,G)                        | Ligação direta entre receptor e fonte |  
 
