@@ -37,6 +37,16 @@
     - [🔁 5️⃣ RP conecta as pontas e inicia o fluxo](#-5️⃣-rp-conecta-as-pontas-e-inicia-o-fluxo)
     - [⚙️ 6️⃣ A transição para a Árvore de Caminho Mais Curto (SPT)](#️-6️⃣-a-transição-para-a-árvore-de-caminho-mais-curto-spt)
     - [✅ Conclusão](#-conclusão)
+  - [🧰 Validação e Troubleshooting do PIM Sparse Mode](#-validação-e-troubleshooting-do-pim-sparse-mode)
+    - [1️⃣ Verificar os vizinhos PIM — show ip pim neighbor](#1️⃣-verificar-os-vizinhos-pim--show-ip-pim-neighbor)
+    - [2️⃣ Confirmar o RP ativo — show ip pim rp mapping](#2️⃣-confirmar-o-rp-ativo--show-ip-pim-rp-mapping)
+    - [3️⃣ Verificar os grupos IGMP — show ip igmp groups](#3️⃣-verificar-os-grupos-igmp--show-ip-igmp-groups)
+    - [4️⃣ Validar a tabela de rotas multicast — show ip mroute](#4️⃣-validar-a-tabela-de-rotas-multicast--show-ip-mroute)
+    - [5️⃣ Confirmar o RPF — show ip rpf](#5️⃣-confirmar-o-rpf--show-ip-rpf)
+    - [6️⃣ Confirmar a recepção de tráfego multicast](#6️⃣-confirmar-a-recepção-de-tráfego-multicast)
+    - [🧭 7️⃣ Diagnóstico rápido de problemas comuns](#-7️⃣-diagnóstico-rápido-de-problemas-comuns)
+  - [🧾 Resumo Final — Fluxo do PIM Sparse Mode](#-resumo-final--fluxo-do-pim-sparse-mode)
+  - [✅ Conclusão](#-conclusão-1)
 
 ## 05 - Exemplo Prático - PIM Sparse Mode  
 
@@ -1181,3 +1191,203 @@ O processo completo ocorre em três fases:
 | 2️⃣ Formação da Shared Tree (*,G)                   | Ligação dos receptores ao RP          |
 | 3️⃣ Transição para SPT (S,G)                        | Ligação direta entre receptor e fonte |  
 
+## 🧰 Validação e Troubleshooting do PIM Sparse Mode
+
+Após configurar todo o domínio PIM-SM, habilitar o Auto-RP (com Listener) e realizar os joins multicast, é hora de validar a formação da árvore multicast e confirmar se o tráfego está fluindo corretamente.  
+    
+Esta é a parte final e mais importante do laboratório — onde garantimos que cada elemento **(IGMP, PIM, RP e RPF)** está operando de forma integrada.
+
+### 1️⃣ Verificar os vizinhos PIM — show ip pim neighbor
+
+O primeiro passo é garantir que os roteadores realmente formaram vizinhança PIM nas interfaces corretas.  
+  
+📍 Execute em todos os roteadores:  
+
+```ios
+show ip pim neighbor
+```
+
+📘 **Saída esperada:**  
+
+```ios
+PIM Neighbor Table
+Neighbor Address     Interface          Uptime/Expires    Ver/Mode
+10.0.0.2             FastEthernet0/0    00:02:13/00:01:46 v2/Sparse
+10.0.0.6             FastEthernet0/1    00:02:10/00:01:50 v2/Sparse
+```
+
+🔍 **Interpretação:**
+
+- Todos os vizinhos devem aparecer em modo Sparse.
+- Se não houver vizinhos, revise o comando ip pim sparse-mode nas interfaces.
+- Sem vizinhança, o PIM não forma a árvore multicast.  
+
+### 2️⃣ Confirmar o RP ativo — show ip pim rp mapping
+
+O próximo passo é verificar se todos os roteadores aprenderam quem é o RP através do Auto-RP.  
+  
+📍 Execute em cada roteador:  
+
+```ios
+show ip pim rp mapping
+```
+
+📘 **Saída esperada**:  
+
+```ios
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2
+    Info source: 1.1.1.1 (?), via Auto-RP
+    Uptime: 00:00:42, expires: 00:01:17
+```  
+
+🔍 **Interpretação:**  
+  
+- O campo RP mostra o IP do Candidate RP (R02).
+- Info source mostra o Mapping Agent (R01).
+- O campo via Auto-RP confirma que o aprendizado foi feito automaticamente.
+- Se aparecer “No RP mapping information”, o problema é na propagação das mensagens Auto-RP → verifique ip pim autorp listener.  
+
+### 3️⃣ Verificar os grupos IGMP — show ip igmp groups
+
+Agora, valide se os hosts realmente aderiram ao grupo multicast.  
+
+📍 No roteador conectado ao Host02:  
+
+```ios
+show ip igmp groups
+```
+
+📘 **Saída esperada:**
+  
+```ios
+Group Address    Interface       Uptime    Expires   Last Reporter   Group Mode
+239.1.1.1        FastEthernet1/0 00:02:18  00:02:05  192.168.20.1    IGMPv2
+```
+
+🔍 **Interpretação:**  
+
+- O endereço 239.1.1.1 confirma que o host se juntou ao grupo.
+- O roteador local atua como Designated Router (DR).
+- Se o grupo não aparecer, o host não enviou IGMP Join → revise ip igmp join-group 239.1.1.1.  
+
+### 4️⃣ Validar a tabela de rotas multicast — show ip mroute
+
+Este é o comando mais importante do laboratório .  
+Ele mostra como o roteador está encaminhando o tráfego multicast.  
+
+📍 Execute em todos os roteadores do caminho:  
+
+```ios
+show ip mroute 239.1.1.1
+```
+
+📘 **Saída esperada (Shared Tree ativa):**  
+
+```ios
+(*, 239.1.1.1), uptime: 00:00:56, RP 2.2.2.2, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:00:52/00:02:08
+```
+
+📘 **Após a fonte começar a transmitir:**  
+
+```ios
+(S, 239.1.1.1), uptime: 00:00:31, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.9
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:00:27/00:02:32
+```
+
+🔍 **Interpretação:**  
+
+| Campo               | Significado                                |
+|---------------------|--------------------------------------------|
+| (*,G)               | Árvore compartilhada (receptores → RP)     |
+| (S,G)               | Árvore específica (fonte → receptores)     |
+| RP                  | Endereço do Rendezvous Point               |
+| Incoming interface  | Caminho reverso até a fonte (RPF)          |
+| Outgoing interfaces | Interfaces pelas quais o tráfego é enviado |  
+
+💡 **Se a entrada (S,G) aparecer, significa que o SPT (Shortest Path Tree) foi formado com sucesso.**  
+
+### 5️⃣ Confirmar o RPF — show ip rpf
+
+O **Reverse Path Forwarding (RPF)** garante que o tráfego multicast está sendo recebido pelo caminho correto de volta à fonte.
+
+📍 Execute no roteador receptor (por exemplo, R04):  
+
+```ios
+show ip rpf 192.168.10.1
+```
+
+📘 **Saída esperada:**  
+
+```ios
+RPF information for ? (192.168.10.1)
+  RPF interface: FastEthernet0/0
+  RPF neighbor: 10.0.0.1
+  RPF route/mask: 10.0.0.0/30
+  RPF type: unicast
+  RPF recursion count: 0
+```  
+
+🔍 **Interpretação:**
+
+- O RPF deve apontar para o roteador correto no caminho até a fonte.  
+- Se o RPF falhar, o tráfego não será encaminhado — o roteador descarta o pacote multicast.  
+
+### 6️⃣ Confirmar a recepção de tráfego multicast
+
+Por fim, envie tráfego da fonte (Server / R01) para o grupo 239.1.1.1 e verifique se os receptores o recebem.  
+  
+📍 **No Server (R01):**  
+
+```ios
+ping 239.1.1.1 repeat 5
+```
+
+📍 **No Host02:**  
+
+```ios
+debug ip mpacket
+```
+
+📘 **Saída esperada:**
+
+```ios
+00:00:24: IP multicast packet received from 192.168.10.1 (239.1.1.1), 28 bytes
+```
+  
+✅ Se o host receber o pacote multicast, o laboratório está 100% funcional.  
+
+### 🧭 7️⃣ Diagnóstico rápido de problemas comuns
+
+| Sintoma                                  | Causa provável                 | Solução                                         |
+|------------------------------------------|--------------------------------|-------------------------------------------------|
+| show ip pim rp mapping vazio             | Mensagens Auto-RP não propagam | Adicione ip pim autorp listener                 |
+| show ip mroute sem (*,G)                 | Nenhum IGMP Join recebido      | Verifique o join-group no host                  |
+| Tráfego chega ao RP, mas não ao receptor | Falha de RPF                   | Verifique show ip rpf e tabela de rotas unicast |
+| Pacotes “Malformed” no Wireshark         | Captura truncada               | Aumente Snaplen para 65535                      |
+| DR incorreto no domínio LAN              | Vizinhança PIM instável        | Verifique show ip pim neighbor e prioridade DR  |  
+
+## 🧾 Resumo Final — Fluxo do PIM Sparse Mode
+
+| Etapa | Descrição                       | Comando de validação      |
+|-------|---------------------------------|---------------------------|
+| 1️⃣   | Formação das vizinhanças PIM     | show ip pim neighbor     |
+| 2️⃣   | Descoberta do RP (Auto-RP)       | show ip pim rp mapping   |
+| 3️⃣   | Adesão do host ao grupo          | show ip igmp groups      |
+| 4️⃣   | Criação da Shared Tree (*,G)     | show ip mroute           |
+| 5️⃣   | Registro da fonte (PIM Register) | show ip mroute no RP     |
+| 6️⃣   | Transição para SPT (S,G)         | show ip mroute + flags T |
+| 7️⃣   | Validação do RPF                 | show ip rpf <source>     |  
+
+## ✅ Conclusão
+  
+Com esses testes, você conclui a validação completa do PIM Sparse Mode, cobrindo:
+
+- Eleição e distribuição do RP (Auto-RP + Listener)
+- Formação da árvore multicast (*,G → S,G)
+- Confirmação de IGMP, PIM, RPF e fluxo multicast ativo
