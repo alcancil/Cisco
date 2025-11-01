@@ -25,6 +25,7 @@
     - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
     - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
+  - [Quando o Server entra na jogada](#quando-o-server-entra-na-jogada)
 
 ## 05 - Exemplo Prático - PIM Sparse Mode  
 
@@ -48,7 +49,7 @@ Como dito anteriormente, nosso cenário já tem o roteamento pronto e funcional 
 
 Nesse cenário estamos utilizando **oito roteadores**.  
 
-Então vamos manter a lógica anterior, vamos utilizar **três roteadores disfarçados de hosts**, e por isso não realizaremos muitas configurações neles.  
+Então vamos manter a lógica anterior, iremos utilizar **três roteadores disfarçados de hosts**, e por isso não realizaremos muitas configurações neles.  
 
 Nos demais roteadores, que estão interligados entre si, foi configurado apenas o protocolo de roteamento dinâmico **OSPF**, garantindo que todas as redes já possuam **conectividade IP completa** antes de ativarmos o multicast.  
 
@@ -76,7 +77,7 @@ Mas há **duas entidades** envolvidas nesse processo Auto-RP da Cisco:
 | Candidate RP (C-RP) | 224.0.1.40      | Envia anúncios periódicos dizendo **"posso atuar como RP"**                                                       |
 | Mapping Agent (MA)  | 224.0.1.39      | Escuta os anúncios dos C-RPs e escolhe quem será o RP final — depois distribui o mapeamento a todos os roteadores |
 
-Então sim, 224.0.1.40 serve para descobrir os RPs automaticamente, substituindo a configuração manual, mas somente no PIM Sparse Mode.
+Então o grupo **224.0.1.40** serve para descobrir os RPs automaticamente, substituindo a configuração manual, mas somente no PIM Sparse Mode.
 
 No Dense Mode, esses grupos aparecem, mas não têm função ativa — são apenas “ouvidos” por compatibilidade.
 
@@ -192,7 +193,7 @@ Como feito no exemplo anterior, vamos realizar um teste de comunicação entre t
 
 ![01](Imagens/01.png)
 
-Com isso, podemos ver que todos os hosts se alcançam e se comunicam. Mas o mais importante é observer a a tabela de roteamento para podermos entender um conceito simples.  
+Com isso, podemos ver que todos os hosts se alcançam e se comunicam. Como demonstrado no exemplo anterior, essa é tabela de roteamento, porém ela não faz a comunicação multicast.    
   
 Agora a primeira coisa que precisamos ativar é o **roteamento multicast** no equipamento.  
   
@@ -241,7 +242,7 @@ No PIM Sparse Mode, a Loopback pode ter uma função mais relevante do que no De
 - Se ela for usada como endereço do RP (definido manualmente com **ip pim rp-address** <loopback>), o PIM deve estar habilitado nela.
 - Se for usada apenas como **Router-ID do OSPF/PIM, não há necessidade de ativar PIM nela**.
   
-💡 Em geral, em laboratórios e ambientes de estudo, é prática comum habilitar o PIM apenas nas interfaces físicas e na loopback do RP.
+💡 Em geral, em laboratórios e ambientes de estudo, é prática comum habilitar o PIM apenas nas interfaces físicas e na loopback do RP. Porém como **boa prática**, iremos ativar o protocolo **pim sparse-mode** em todas as interfaces loopbacks.  
 
 ### 📘 No nosso cenário
 
@@ -252,6 +253,7 @@ Vamos ativar o PIM em todas as interfaces de roteadores que fazem parte do domí
 - Apenas as interfaces de Loopback serão avaliadas conforme sua função:
   - Se forem usadas apenas como identificação OSPF, não precisam de PIM;
   - Se forem usadas como RP, devem ter PIM ativo.
+  - Como boas práticas, vamos ativar o protocolo PIM em todas as interfaces loopabacks.  
 
 Antes de ativarmos, é importante compreender o conceito de eleição dos **Rendezvous Point (RP)**, ou o **Auto RP**.  
 
@@ -375,6 +377,9 @@ R01(config-if)#ip pim sparse-mode
 R01(config-if)#
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
 R01(config-if)#
+R01(config-if)#int l0/0
+R01(config-if)#ip pim sparse-mode
+*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
 Agora que o **PIM Sparse-Mode** foi ativado, vamos analisar a tabela de **roteamento multicast:**
@@ -501,6 +506,7 @@ Após ativar o PIM Sparse Mode nas interfaces, os roteadores começam a trocar m
 *Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
 *Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
+*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
 👉 **Esses logs indicam que o roteador recebeu um Hello válido de 10.0.0.1 e estabeleceu a vizinhança PIM.**  
@@ -557,11 +563,17 @@ No PIM Sparse Mode, a loopback pode exercer dois papéis distintos:
 
 - Ative o PIM-SM nas loopbacks **apenas do Candidate RP e do Mapping Agent**.
 - As demais loopbacks podem ficar sem PIM, já que não fazem parte do processo de descoberta nem da árvore multicast.
-- Isso torna o ambiente mais limpo e evita sobrecarga desnecessária no plano de controle.  
+- Por recomendações de boas práticas, vamos **sempre** ativar o protocolo **PIM em todas as interfaces LOOPBACKS**.  
   
 🧰 2️⃣ **Comandos de configuração**  
   
 ➡️ No R02 (Candidate RP):  
+
+```ios
+R02(config)#ip pim send-rp-announce loopback0 scope 16
+```
+
+**OBS:** podemos também utilizar **acls** junto a esse comando por questões de segurança limitando os grupos que vão receber o anuncio.  
 
 ```ios
 R02(config)#ip pim send-rp-announce loopback0 scope 16 group-list 1
@@ -579,10 +591,6 @@ R02(config)#access-list 1 permit 224.0.0.0 15.255.255.255
 
 ```ios
 R01(config)#int lo0
-R01(config-if)#ip pim sparse-mode
-R01(config-if)#
-*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
-R01(config-if)#exit
 R01(config)#ip pim send-rp-discovery loopback 0 scope 16
 R01(config)#
 ```
@@ -602,11 +610,11 @@ Como não temos como realizar capturas de pacotes em interfaces loopback, vou es
   
 Há três tipos principais de mensagens que vão aparecer entre R01 e R02 logo após a configuração:  
 
-| Tipo      | Protocolo        | Propósito                  | Observação                                 |                             |
-|-----------|------------------|----------------------------|--------------------------------------------|-----------------------------|
+| Tipo      | Protocolo        | Propósito                                                               | Observação                  |
+|-----------|------------------|-------------------------------------------------------------------------|-----------------------------|
 | PIM Hello | PIMv2 (Type 0)   | Descoberta e eleição de DR                                              | TTL = 1, destino 224.0.0.13 |
 | Auto-RP   | Announcement     | PIMv2 (Type 13) - Candidate RP se anuncia (R02 → 224.0.1.40)            | Proprietário Cisco          |
-| Auto-RP   | Discovery        | PIMv2 (Type 13) - Mapping Agent divulga o mapeamento (R01 → 224.0.1.39) | Proprietário Cisco          | 
+| Auto-RP   | Discovery        | PIMv2 (Type 13) - Mapping Agent divulga o mapeamento (R01 → 224.0.1.39) | Proprietário Cisco          |  
 
 Para capturar tudo que interessa agora — Hellos, Auto-RP, e IGMP futuramente — use este filtro único e combinado:
 
@@ -647,4 +655,104 @@ Group(s) 224.0.0.0/4
          Uptime: 00:46:15, expires: 00:02:21
 R02#
 ```
+  
+🧩 **Quando o RP é realmente utilizado no PIM Sparse Mode**  
+
+Até este ponto, configuramos o **Candidate RP (R02) e o Mapping Agent (R01)**, e já confirmamos no Wireshark a troca de mensagens Auto-RP entre os grupos 224.0.1.39 e 224.0.1.40.
+Mas se executarmos agora comandos como **show ip pim rp mapping ou show ip mroute**, é possível que ainda não vejamos nenhuma entrada ativa.  
+  
+Isso é completamente normal e faz parte do comportamento do **PIM Sparse Mode.**  
+
+🎯 **Por que isso acontece?**  
+  
+O **PIM Sparse Mode** é um protocolo orientado à demanda — ou seja, ele só cria árvores multicast quando há receptores interessados em um grupo.  
+Diferente do PIM Dense Mode (que flooda o tráfego por todo o domínio), o PIM-SM permanece “em silêncio” até que alguém demonstre interesse.  
+  
+💡 Em outras palavras:  
+  
+> Nenhum host interessado = Nenhum Join PIM = Nenhum RP consultado.
+  
+🔍 **Entendendo o fluxo lógico**
+  
+| Etapa | Ação                                                  | Resultado                                                               |
+|-------|------------------------------------------------------|---------------------------------------------------------------------------|
+| 1️⃣   | Candidate RP e Mapping Agent são configurados         | O domínio multicast conhece o RP, mas ninguém o consulta ainda           |
+| 2️⃣   | Um host envia IGMP Join para um grupo (ex: 239.1.1.1) | O roteador local (DR) registra o interesse e envia PIM Join até o RP     |
+| 3️⃣   | O RP recebe o Join                                    | A árvore (*,G) começa a ser formada                                      |
+| 4️⃣   | Uma fonte (Server) envia tráfego multicast            | O roteador da fonte envia PIM Register ao RP                             |
+| 5️⃣   | O tráfego flui pela árvore e chega aos receptores     | O domínio multicast torna-se ativo e as tabelas PIM/mroute são populadas |  
+  
+🧠 **O papel do DR nesse processo**
+  
+O **Designated Router (DR)** é o primeiro roteador a perceber o interesse do host.  
+Vamos dizer que agora o Host02 esteja interessado na comunicação multicast. Então precisamos colocar ele no grupo **239.1.1.1**. Antes vamos entrar em **R04**, que é o roteador mais próximo. Vamos digitar:  
+
+```ios
+R04#debug ip igmp
+IGMP debugging is on
+R04#
+```
+
+Agora vamos entrar em Host02 e fazer o **join-goup**  
+
+```ios
+HOST02(config)#int f0/0
+Host02(config)#ip igmp join-group 239.1.1.1
+```
+
+E voltando a **R04** podemos observar a mensagem:
+
+```ios
+R04#
+*Mar  1 02:05:04.899: IGMP(0): Received v2 Query on FastEthernet0/0 from 10.0.0.9
+*Mar  1 02:05:04.903: IGMP(0): Set report delay time to 0.9 seconds for 224.0.1.40 on FastEthernet0/0
+*Mar  1 02:05:05.511: IGMP(0): Send v2 general Query on FastEthernet1/0
+R04#
+*Mar  1 02:05:06.511: IGMP(0): Send v2 Report for 224.0.1.40 on FastEthernet0/0
+*Mar  1 02:05:06.511: IGMP(0): Received v2 Report on FastEthernet0/0 from 10.0.0.10 for 224.0.1.40
+*Mar  1 02:05:06.511: IGMP(0): Received Group record for group 224.0.1.40, mode 2 from 10.0.0.10 for 0 sources
+*Mar  1 02:05:06.515: IGMP(0): Updating EXCLUDE group timer for 224.0.1.40
+*Mar  1 02:05:06.515: IGMP(0): MRT Add/Update FastEthernet0/0 for (*,224.0.1.40) by 0
+*Mar  1 02:05:06.515: IGMP(0): Send v2 general Query on FastEthernet0/1
+R04#
+*Mar  1 02:05:41.019: IGMP(0): Received v2 Report on FastEthernet1/0 from 192.168.20.1 for 239.1.1.1
+*Mar  1 02:05:41.023: IGMP(0): Received Group record for group 239.1.1.1, mode 2 from 192.168.20.1 for 0 sources
+*Mar  1 02:05:41.023: IGMP(0): WAVL Insert group: 239.1.1.1 interface: FastEthernet1/0Successful
+*Mar  1 02:05:41.027: IGMP(0): Switching to EXCLUDE mode for 239.1.1.1 on FastEthernet1/0
+*Mar  1 02:05:41.027: IGMP(0): Updating EXCLUDE group timer for 239.1.1.1
+*Mar  1 02:05:41.027: IGMP(0): MRT Add/Update FastEthernet1/0 for (*,239.1.1.1) by 0
+R04#
+```
+
+o DR (R04) aprende que existe um receptor interessado e então envia uma mensagem PIM Join em direção ao RP — seguindo o caminho unicast mais curto até ele (RPF).  
+Nesse momento, a árvore compartilhada **(Shared Tree, representada por (*,G))** começa a nascer.  
+
+## Quando o Server entra na jogada
+
+**OBS:** como o nosso servidor é um Router disfarçado de PC, precisamos inserir ele no grupo **239.1.1.1**. Mas em ambientes reais, como em aplicativos que nem o **Vlc Player**, também devemos fazer isso porém somente na aplicação e não computador. Em sistemas operacionais Linux podemos colocar o sistema no grupo, mas ai vai depender da necessidade de cada aplicação que formos utilizar.  
+
+```ios
+SERVER(config)#int f0/0
+SERVER(config-if)#ip igmp join-group 239.1.1.1
+SERVER(config-if)#
+```  
+  
+Quando o Server (192.168.10.1) inicia o envio de tráfego para o mesmo grupo:  
+
+```ios
+SERVER#ping 239.1.1.1
+
+Type escape sequence to abort.
+Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.10.1, 8 ms
+SERVER#
+```
+
+o roteador da fonte (DR da LAN do Server) envia uma mensagem PIM Register (unicast) ao RP informando que há uma fonte ativa para o grupo G.  
+Assim o RP agora conhece:
+
+- a fonte (S) que transmite,
+- e os receptores que já haviam solicitado o grupo.
+- O RP conecta as duas pontas e inicia o fluxo multicast.
 
