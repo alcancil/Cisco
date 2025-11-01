@@ -26,6 +26,9 @@
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
     - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
   - [Quando o Server entra na jogada](#quando-o-server-entra-na-jogada)
+    - [🌳 Formação da Árvore Multicast (\*,G) — A Shared Tree](#-formação-da-árvore-multicast-g--a-shared-tree)
+    - [⚡ Migração para a Shortest Path Tree (SPT)](#-migração-para-a-shortest-path-tree-spt)
+    - [🧩 Propagação das mensagens Auto-RP — O papel do ip pim autorp listener](#-propagação-das-mensagens-auto-rp--o-papel-do-ip-pim-autorp-listener)
 
 ## 05 - Exemplo Prático - PIM Sparse Mode  
 
@@ -756,3 +759,156 @@ Assim o RP agora conhece:
 - e os receptores que já haviam solicitado o grupo.
 - O RP conecta as duas pontas e inicia o fluxo multicast.
 
+### 🌳 Formação da Árvore Multicast (*,G) — A Shared Tree
+
+Até agora configuramos e validamos o Mapping Agent (R01) e o Candidate RP (R02).  
+Os anúncios Auto-RP estão funcionando, e todos os roteadores do domínio já sabem que o **RP responsável é o 2.2.2.2**.
+Mas a árvore multicast ainda não existe — porque **o PIM Sparse Mode só age quando há interesse (IGMP Join)**.  
+  
+Agora que o Host02 (192.168.20.1) entrou no grupo 239.1.1.1, o roteador R04 (que é o Designated Router da LAN) envia uma mensagem PIM Join em direção ao RP 2.2.2.2, seguindo a rota unicast mais curta aprendida via OSPF.  
+  
+👉 Esse Join cria o primeiro ramo da árvore compartilhada (*,G), onde “*” representa todas as fontes possíveis e “G” é o grupo 239.1.1.1.  
+  
+🔍 Validando a árvore inicial
+
+Podemos visualizar essa árvore parcial com o comando:  
+
+```ios
+R04#show ip mroute 239.1.1.1
+```
+
+Exemplo de saída esperada:  
+
+```ios
+(*, 239.1.1.1), 00:00:28/00:02:31, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.9
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:00:28/00:02:31
+```
+  
+🧠 **Analisando a saída**:
+
+- **(*,G)** indica que é uma entrada da árvore compartilhada, ainda sem fonte específica.
+- O **RP 2.2.2.2** mostra que o roteador já conhece quem é o ponto central.
+- A interface de saída (FastEthernet1/0) é a que conecta o receptor (Host02).  
+  
+🚀 **Quando o Servidor Inicia o Tráfego**  
+
+Quando o **Server (192.168.10.1)** começa a enviar tráfego para o grupo **239.1.1.1**, o roteador **R01 (Designated Router da LAN do Server)** percebe a transmissão multicast local e envia uma mensagem PIM Register diretamente ao **RP (2.2.2.2)**.  
+
+Esse registro informa:  
+
+- a fonte **(S = 192.168.10.1);**
+- o grupo **(G = 239.1.1.1).**
+  
+O RP então cria uma nova entrada (S,G) em sua tabela de roteamento multicast e conecta as duas pontas da comunicação:
+
+- os receptores já conhecidos **(via Join de R04)**;
+- e a fonte recém-descoberta **(via Register de R01)**.
+  
+🔎 **Verificação prática**  
+  
+No RP (R02):
+
+```ios
+R02#show ip mroute 239.1.1.1
+```
+
+Saída esperada:  
+
+```ios
+(*, 239.1.1.1), 00:01:12/00:02:54, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:01:12/00:02:54
+
+(S, 239.1.1.1), 00:00:35/00:02:34, Source 192.168.10.1, flags: SJ
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:00:35/00:02:34
+```
+
+💡 **Resumo do que aconteceu:**
+
+1. O receptor **(Host02) gerou o Join → criou-se o (*,G)**.
+2. A fonte (Server) enviou tráfego → **gerou o Register e criou-se o (S,G).**
+3. O RP ligou as duas pontas → **o tráfego multicast começou a fluir**.  
+
+### ⚡ Migração para a Shortest Path Tree (SPT)
+
+Depois que o tráfego estabiliza, o roteador receptor (R04) pode perceber que existe um caminho mais curto diretamente até a fonte (192.168.10.1), sem precisar passar pelo RP.
+Nesse momento ele envia um novo **PIM Join (S,G)** direto em direção à fonte, e o tráfego passa a seguir o **SPT (Shortest Path Tree)**.
+
+O RP continua existindo, mas apenas como ponto de referência — o tráfego em si agora flui pelo caminho otimizado.  
+
+### 🧩 Propagação das mensagens Auto-RP — O papel do ip pim autorp listener
+
+Até aqui configuramos o Candidate RP (R02) e o Mapping Agent (R01), garantindo que as mensagens Auto-RP Announcement (224.0.1.40) e Auto-RP Discovery (224.0.1.39) estejam sendo geradas.
+
+Mas existe um detalhe fundamental:  
+➡️ **Como os demais roteadores do domínio PIM-SM vão receber essas mensagens se ainda não sabem quem é o RP?**
+
+É aqui que entra o comando mágico:  
+
+```ios
+ip pim autorp listener
+```
+
+🧠 **O paradoxo do “Ovo e da Galinha”**  
+  
+O comportamento do PIM-SM gera um impasse curioso:  
+  
+| Situação                                                                                                                                  | Explicação                                |
+|-------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| 🐣 Para conhecer o RP, o roteador precisa receber as mensagens Auto-RP (224.0.1.39 / 224.0.1.40).                                        | ✅ Essas mensagens informam quem é o RP.  |
+| 🐔 Mas para encaminhar as mensagens Auto-RP, o roteador precisa já conhecer o RP (pois o tráfego multicast em Sparse Mode depende dele). | 🚫 Ou seja, sem RP conhecido, as mensagens Auto-RP não chegam. |  
+
+💡 Esse impasse é conhecido como o **“paradoxo do ovo e da galinha”** no PIM-SM:  
+  
+> O roteador precisa do RP para aprender quem é o RP.  
+  
+🔍 **Como o comando resolve o problema**
+  
+Ao aplicar o comando:  
+
+```ios
+ip pim autorp listener
+```
+  
+o roteador temporariamente trata os grupos 224.0.1.39 e 224.0.1.40 como se estivessem em modo Dense Mode.  
+
+👉 **Isso permite que as mensagens Auto-RP sejam floodadas por toda a rede, garantindo que todos os roteadores PIM-SM aprendam o RP — mesmo antes da árvore multicast existir.**  
+  
+Assim, o domínio PIM se inicializa corretamente e as futuras mensagens **(Join, Register, Prune)** passam a fluir de forma normal e otimizada **(Sparse)**.  
+
+⚙️ **Onde aplicar o ip pim autorp listener**  
+  
+O comando deve ser ativado em todos os roteadores do domínio PIM-SM que não sejam o RP nem o Mapping Agent.  
+Na prática, você pode aplicá-lo em todos os roteadores sem causar problemas — é até recomendado em laboratórios. Então vamos aplicar em todos os roteadores.  
+  
+🔧 **Exemplo prático:**
+
+```ios
+R01(config)#ip pim autorp listener
+R02(config)#ip pim autorp listener
+R03(config)#ip pim autorp listener
+R04(config)#ip pim autorp listener
+R05(config)#ip pim autorp listener
+```
+
+💡 **Isso garante que os roteadores de trânsito e os roteadores de borda possam receber as mensagens 224.0.1.39 e 224.0.1.40.**  
+
+🧪 **Como validar o funcionamento**  
+  
+Após aplicar o comando, você poderá observar que os roteadores intermediários começam a receber e processar as mensagens Auto-RP.  
+Use o comando:  
+
+```ios
+show ip pim rp mapping
+```  
+  
+Se o listener estiver ativo e a propagação funcionando, todos os roteadores devem exibir algo como:  
+
+```ios
+
+```  
