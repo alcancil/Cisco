@@ -1434,7 +1434,7 @@ Com esses testes, você conclui a validação completa do PIM Sparse Mode, cobri
 
 ### 📙 R03 – Roteador de Trânsito (PIM-SM Participant)
 
-| **Seção**                 **Comando / Configuração**                                                                         | **Descrição**                                         |
+| **Seção**                | **Comando / Configuração**                                                                        | **Descrição**                                         |
 |--------------------------|---------------------------------------------------------------------------------------------------|-------------------------------------------------------|
 | **Global**               | `ip multicast-routing`                                                                            | Habilita o roteamento multicast globalmente           |
 |                          | `ip pim autorp listener`                                                                        | Permite escutar mensagens Auto-RP em interfaces não PIM |
