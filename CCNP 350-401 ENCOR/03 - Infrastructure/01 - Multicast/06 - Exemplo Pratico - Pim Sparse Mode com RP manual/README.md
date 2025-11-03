@@ -19,8 +19,10 @@
   - [📘 No nosso cenário](#-no-nosso-cenário)
   - [🧩 Configurando o RP manual](#-configurando-o-rp-manual)
     - [🔧 Escolha do RP](#-escolha-do-rp)
-  - [3️⃣ Comandos de configuração (modo Auto-RP)](#3️⃣-comandos-de-configuração-modo-auto-rp)
-    - [💡 A pegadinha do nome “Auto-RP”](#-a-pegadinha-do-nome-auto-rp)
+  - [3️⃣ Comandos de Configuração – RP Manual (PIM Sparse Mode)](#3️⃣-comandos-de-configuração--rp-manual-pim-sparse-mode)
+    - [💡 A pegadinha do nome “RP Manual”](#-a-pegadinha-do-nome-rp-manual)
+    - [⚙️ Comando principal](#️-comando-principal)
+  - [Continuar daqui](#continuar-daqui)
   - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
     - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
@@ -282,7 +284,7 @@ No **PIM Sparse Mode com RP manual**, as interfaces **Loopback** ganham um papel
 💡 **Boa prática:**  
 Mesmo que o laboratório utilize um único RP definido manualmente, é recomendável habilitar o **`ip pim sparse-mode`** em todas as interfaces de **Loopback** — assim garantimos consistência e simplificamos o processo de verificação e troubleshooting.
 
----  
+---
   
 ## 📘 No nosso cenário
 
@@ -366,70 +368,63 @@ Com o RP definido manualmente, eliminamos a dependência de mecanismos propriet�
 Esse tipo de configuração é ideal para ambientes de estudo, validação de conceito (PoC) ou cenários corporativos estáticos.  
   
 Nos próximos passos, partiremos para os testes práticos de tráfego multicast, analisando a formação da **árvore (*,G)** e a posterior comutação para a **SPT (S,G)**.  
-  
+
+## 3️⃣ Comandos de Configuração – RP Manual (PIM Sparse Mode)
+
+### 💡 A pegadinha do nome “RP Manual”
+
+Apesar do modo **PIM Sparse Mode (PIM-SM)** parecer complexo, a configuração manual do **Rendezvous Point (RP)** é, na verdade, **simples e direta** — porém, **depende 100% da configuração do administrador**.  
+Diferente do **Auto-RP**, aqui **não existe eleição ou anúncio automático**: o endereço do RP é informado explicitamente em cada roteador do domínio multicast.  
+
+🧠 **Analogia simples — pense como um ponto de encontro fixo:**  
+
+- Em vez de eleger um RP automaticamente, **o administrador escolhe um roteador específico** (ex: R02) para atuar como RP.  
+- Todos os roteadores do domínio são **instruídos manualmente** a encaminhar os joins em direção a esse endereço.  
+- É como combinar previamente:  
+  > “Todo mundo que quiser participar do grupo multicast, encontra o RP no endereço 2.2.2.2.”
+
 ---
 
-Alterar a partir daqui
+### ⚙️ Comando principal
+
+O comando usado em todos os roteadores é:
+
+```ios
+ip pim rp-address <endereço_RP>
+```
+
+💡 **Exemplo do laboratório:**
+No nosso cenário, o **R02 (2.2.2.2) foi definido como o Rendezvous Point**.  
+Logo, em todos os roteadores do domínio PIM-SM (R01 a R05), configuramos:
+
+```ios
+ip pim rp-address 2.2.2.2
+```
+
+🧱 **Definição dos Papéis no Laboratório**
+
+| Função                                 | Roteador             | Endereço | Justificativa                                                              |
+|----------------------------------------|----------------------|----------|----------------------------------------------------------------------------|
+| Rendezvous Point (RP)                  | R02                  | 2.2.2.2  | Roteador central na topologia, com boa conectividade e posição estratégica |
+| Demais Roteadores (R01, R03, R04, R05) | Participantes PIM-SM | —        | Encaminham joins e registros diretamente para o RP definido                |
+  
+🧩 **Funcionamento resumido do RP Manual**  
+
+1. O roteador R02 (RP) aguarda registros **PIM Register das fontes multicast**.
+2. Os receptores (via IGMP Join) fazem com que os DRs (Designated Routers) enviem **PIM Join até o endereço 2.2.2.2**.
+3. Cada roteador cria entradas **(*,G)** na tabela multicast, indicando o caminho até o RP.
+4. Assim que o fluxo é estabelecido, pode ocorrer a mudança para a **SPT (Shortest Path Tree)**, permitindo o caminho direto entre fonte e receptor.
+
+👉 Resumo final:  
+
+> O RP Manual é o método mais previsível e estável para laboratórios e ambientes controlados.  
+> Ele dispensa anúncios multicast de Auto-RP, reduz complexidade e permite observar com clareza o funcionamento do PIM Sparse Mode, desde a descoberta de fontes até a comutação para a árvore SPT.  
+
 
 ---
 
-## 3️⃣ Comandos de configuração (modo Auto-RP)
-
-### 💡 A pegadinha do nome “Auto-RP”
-
-Apesar do nome “Auto-RP” sugerir que tudo é automático, ele não é totalmente automático.  
-O que o Auto-RP automatiza é a descoberta e distribuição do RP dentro do domínio PIM-SM — ou seja, os roteadores aprendem automaticamente quem é o RP sem precisar do comando manual ip pim rp-address.  
-Mas para isso acontecer, alguém precisa gerar e propagar essa informação — e é aí que entram os dois papéis:  
-
-- **Candidate RP (C-RP)** → quem “se oferece” para ser RP.
-- **Mapping Agent (MA)** → quem “ouve”, escolhe e anuncia o vencedor.
-
-**OBS:** Esses papéis devem ser definidos manualmente pelo administrador.  
-  
-🧠 **Analogia simples (pensa como uma eleição)**  
-  
-Imagine que o domínio PIM é uma cidade:  
-
-- Vários roteadores podem se candidatar a prefeito **(Candidate RP)**.
-- Mas precisa ter um cartório eleitoral **(Mapping Agent)** que receba as candidaturas e divulgue quem foi eleito para toda a cidade.
-
-👉 **O processo de votação e divulgação é automático — mas os papéis são definidos manualmente**.  
-Sem pelo menos **um Mapping Agent e um Candidate RP**, não há eleição alguma.  
-  
-📊 **O que é automático e o que é manual**  
-
-| Ação                               | Automático? | Quem decide                 |
-|------------------------------------|-------------|-----------------------------|
-| Escolher quem é Candidate RP       | ❌ Não      | Administrador              |
-| Escolher quem é Mapping Agent      | ❌ Não      | Administrador              |
-| Eleger o RP (entre os candidatos)  | ✅ Sim      | Mapping Agent              |
-| Distribuir o mapeamento para todos | ✅ Sim      | Mapping Agent              |
-| Aprender o RP e atualizar a tabela | ✅ Sim      | Todos os roteadores PIM-SM |
-
-🧱 **Em projeto real (ou laboratório bem documentado)**
-  
-Essa escolha deve ser feita pela pelo administrador e precisa estar no projeto.  
-No nosso caso, com cinco roteadores, uma topologia em anel e um laboratório educacional, uma boa prática é:  
-
-| Função                 | Roteador             | Justificativa                                                        |
-|------------------------|----------------------|----------------------------------------------------------------------|
-| Mapping Agent          | R01                  | Está próximo da fonte multicast (Server) e tem conectividade central |
-| Candidate RP           | R02                  | Está no meio do domínio PIM, facilita convergência                   |
-| Demais (R03, R04, R05) | Participantes PIM-SM | Aprendem o RP automaticamente via 224.0.1.39                         |  
-
-⚙️ **O que o Auto-RP faz automaticamente**  
-  
-Depois que você define quem é C-RP e MA:  
-
-- O **C-RP** envia anúncios PIM Auto-RP para **224.0.1.40**.
-- O **MA** escuta, escolhe o RP e envia o mapeamento para **224.0.1.39**.
-
-Todos os roteadores escutam 224.0.1.39 e aprendem:  
-
-- “Para o grupo 239.1.1.1, o RP é 2.2.2.2”.
-- Se o C-RP cair, o MA detecta a ausência dos anúncios e remove o RP do mapeamento.
-
-👉 **Ou seja: a distribuição e manutenção são automáticas, mas a existência do MA e do C-RP depende de você configurá-los.**
+Continuar daqui
+---
 
 ## Ativando o protocolo PIM Sparse Mode
 
