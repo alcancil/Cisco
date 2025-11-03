@@ -272,12 +272,6 @@ Portanto, siga esta regra prática:
 | Interface Loopback usada como RP   | ✅ Sim                   | O RP precisa estar ativo no domínio PIM                        |
 | Loopback apenas como Router-ID     | ⚙️ Opcional              | Apenas usada como origem lógica dos pacotes PIM                |
 
----
-
-ALterar a PARTIR DAQUI
-
----
-
 ## 🌀 Observação importante sobre as Loopbacks
 
 No **PIM Sparse Mode com RP manual**, as interfaces **Loopback** ganham um papel mais direto e previsível.  
@@ -299,6 +293,7 @@ Neste laboratório, o PIM será ativado em todas as interfaces que fazem parte d
 - E as **Loopbacks**, com atenção especial para aquela que atuará como endereço do RP.
 
 🔹 **Funções práticas das Loopbacks:**
+
 - Se usadas **apenas como Router-ID do OSPF**, o PIM é opcional;
 - Se usadas como **endereço do RP**, o PIM é obrigatório;
 - Como boa prática, neste cenário, o **PIM será ativado em todas as Loopbacks**.
