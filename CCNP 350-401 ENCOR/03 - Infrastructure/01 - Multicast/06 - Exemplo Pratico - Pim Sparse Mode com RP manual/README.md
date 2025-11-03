@@ -1,7 +1,7 @@
 # Índice
 
 - [Índice](#índice)
-  - [05 - Exemplo Prático - PIM Sparse Mode](#05---exemplo-prático---pim-sparse-mode)
+  - [06 - Exemplo Prático - PIM Sparse Mode com RP manual](#06---exemplo-prático---pim-sparse-mode-com-rp-manual)
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
@@ -57,7 +57,7 @@
     - [💻 HOST02 – Receptor Multicast](#-host02--receptor-multicast)
     - [🖥️ HOST03 – Host Não Inscrito](#️-host03--host-não-inscrito)
 
-## 05 - Exemplo Prático - PIM Sparse Mode  
+## 06 - Exemplo Prático - PIM Sparse Mode com RP manual 
 
 ## 🧾 Introdução
 
