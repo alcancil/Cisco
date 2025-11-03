@@ -10,6 +10,9 @@
   - [🌳 Formação da Árvore Multicast no PIM-SM](#-formação-da-árvore-multicast-no-pim-sm)
     - [🔁 Passo a passo simplificado](#-passo-a-passo-simplificado)
   - [✳️ Resumo conceitual](#️-resumo-conceitual)
+  - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
+    - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
+    - [🧭 Lógica do Cenário](#-lógica-do-cenário)
     - [🧪 Testes Preliminares](#-testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
     - [📘 No nosso cenário](#-no-nosso-cenário)
@@ -158,6 +161,7 @@ Neste laboratório, o RP é **configurado manualmente** com o comando abaixo em 
 
 ```ios
 ip pim rp-address 2.2.2.2
+```
 
 ## 🌐 Topologia do Laboratório
 
