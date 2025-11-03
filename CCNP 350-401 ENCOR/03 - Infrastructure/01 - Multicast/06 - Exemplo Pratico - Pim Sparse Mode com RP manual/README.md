@@ -15,11 +15,10 @@
     - [🧭 Lógica do Cenário](#-lógica-do-cenário)
     - [🧪 Testes Preliminares](#-testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
-    - [📘 No nosso cenário](#-no-nosso-cenário)
-  - [🧩 Como funciona o Auto-RP da Cisco](#-como-funciona-o-auto-rp-da-cisco)
-  - [1️⃣ Os dois papéis do Auto-RP](#1️⃣-os-dois-papéis-do-auto-rp)
-  - [2️⃣ Comunicação entre eles](#2️⃣-comunicação-entre-eles)
-  - [🧠 Como o domínio decide quem será o RP](#-como-o-domínio-decide-quem-será-o-rp)
+  - [🌀 Observação importante sobre as Loopbacks](#-observação-importante-sobre-as-loopbacks)
+  - [📘 No nosso cenário](#-no-nosso-cenário)
+  - [🧩 Configurando o RP manual](#-configurando-o-rp-manual)
+    - [🔧 Escolha do RP](#-escolha-do-rp)
   - [3️⃣ Comandos de configuração (modo Auto-RP)](#3️⃣-comandos-de-configuração-modo-auto-rp)
     - [💡 A pegadinha do nome “Auto-RP”](#-a-pegadinha-do-nome-auto-rp)
   - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
@@ -279,63 +278,105 @@ ALterar a PARTIR DAQUI
 
 ---
 
-🌀 Observação importante sobre as Loopbacks
+## 🌀 Observação importante sobre as Loopbacks
 
-No PIM Sparse Mode, a Loopback pode ter uma função mais relevante do que no Dense Mode:
+No **PIM Sparse Mode com RP manual**, as interfaces **Loopback** ganham um papel mais direto e previsível.  
 
-- Se ela for usada como endereço do RP (definido manualmente com **ip pim rp-address** <loopback>), o PIM deve estar habilitado nela.
-- Se for usada apenas como **Router-ID do OSPF/PIM, não há necessidade de ativar PIM nela**.
+- Se a Loopback for usada como endereço do **Rendezvous Point (RP)** (definido manualmente com o comando `ip pim rp-address <loopback>`), o **PIM deve estar habilitado nela**.  
+- Se ela for usada apenas como **Router-ID** do OSPF ou PIM, **não há necessidade de ativar o PIM** nessa interface.  
+
+💡 **Boa prática:**  
+Mesmo que o laboratório utilize um único RP definido manualmente, é recomendável habilitar o **`ip pim sparse-mode`** em todas as interfaces de **Loopback** — assim garantimos consistência e simplificamos o processo de verificação e troubleshooting.
+
+---  
   
-💡 Em geral, em laboratórios e ambientes de estudo, é prática comum habilitar o PIM apenas nas interfaces físicas e na loopback do RP. Porém como **boa prática**, iremos ativar o protocolo **pim sparse-mode** em todas as interfaces loopbacks.  
+## 📘 No nosso cenário
 
-### 📘 No nosso cenário
+Neste laboratório, o PIM será ativado em todas as interfaces que fazem parte do **domínio multicast**, incluindo:  
 
-Vamos ativar o PIM em todas as interfaces de roteadores que fazem parte do domínio multicast, incluindo:  
+- Todas as interfaces **ponto a ponto entre roteadores** (R01–R02, R02–R03, R03–R04, R04–R05 e R05–R01);  
+- Interfaces conectadas às **LANs dos hosts** (Server, Host02 e Host03);  
+- E as **Loopbacks**, com atenção especial para aquela que atuará como endereço do RP.
 
-- Todas as interfaces ponto a ponto entre roteadores (R01–R02, R02–R03, R03–R04, R04–R05, R05–R01);
-- Interfaces conectadas às LANs dos hosts (Server, Host02 e Host03).
-- Apenas as interfaces de Loopback serão avaliadas conforme sua função:
-  - Se forem usadas apenas como identificação OSPF, não precisam de PIM;
-  - Se forem usadas como RP, devem ter PIM ativo.
-  - Como boas práticas, vamos ativar o protocolo PIM em todas as interfaces loopabacks.  
+🔹 **Funções práticas das Loopbacks:**
+- Se usadas **apenas como Router-ID do OSPF**, o PIM é opcional;
+- Se usadas como **endereço do RP**, o PIM é obrigatório;
+- Como boa prática, neste cenário, o **PIM será ativado em todas as Loopbacks**.
 
-Antes de ativarmos, é importante compreender o conceito de eleição dos **Rendezvous Point (RP)**, ou o **Auto RP**.  
+---
 
-## 🧩 Como funciona o Auto-RP da Cisco
+## 🧩 Configurando o RP manual
 
-O Auto-RP é um mecanismo proprietário da Cisco que automatiza a descoberta e distribuição de RPs dentro de um domínio **PIM Sparse Mode**.
+Diferente do **Auto-RP da Cisco**, o método **manual** exige que o administrador defina explicitamente qual roteador será o **Rendezvous Point (RP)**, e que essa informação seja configurada em todos os roteadores do domínio PIM-SM.  
 
-Em vez de configurar manualmente o comando **ip pim rp-address** em todos os roteadores, o Auto-RP usa dois papéis principais e dois grupos multicast reservados para distribuir essa informação automaticamente.
+Esse método é simples, direto e **independe de anúncios multicast adicionais** (como os grupos 224.0.1.39 e 224.0.1.40 usados pelo Auto-RP).  
+Ele é ideal para **laboratórios, topologias pequenas** ou ambientes controlados onde o RP é fixo.
 
-## 1️⃣ Os dois papéis do Auto-RP
+---
 
-| Função        | Sigla    | Responsabilidade                                                          | Grupo Multicast Utilizado |
-|---------------|----------|---------------------------------------------------------------------------|---------------------------|
-| Candidate RP  | **C-RP** | Anuncia-se como potencial RP para determinados grupos multicast           | **224.0.1.40**            |
-| Mapping Agent | **MA**   | Escuta os anúncios dos C-RPs, escolhe o RP final e distribui o mapeamento | **224.0.1.39**            |  
+### 🔧 Escolha do RP
 
-## 2️⃣ Comunicação entre eles
+No nosso cenário, o **R01** será o **RP manual**.  
+Utilizaremos sua **Loopback0 (1.1.1.1)** como endereço de referência, pois é uma interface lógica estável e sempre alcançável via OSPF.
 
-O Candidate RP envia mensagens Auto-RP Announcement (anúncio) para o grupo 224.0.1.40, dizendo:  
+```ios
+R01(config)# ip pim sparse-mode
+R01(config)# ip pim rp-address 1.1.1.1
+```
 
-- 🗣️ “Eu posso ser o RP para os grupos **224.0.0.0 – 239.255.255.255**”.  
+Agora, o mesmo comando deve ser replicado em todos os demais roteadores do domínio PIM-SM:  
 
-O Mapping Agent (MA) se inscreve nesse grupo **224.0.1.40 (via PIM/IGMP)** e escuta todos os anúncios.  
-Ele então escolhe um ou mais RPs válidos e repassa essa informação para todos os roteadores PIM do domínio via grupo **224.0.1.39**, através da mensagem Auto-RP Mapping.  
+```ios
+R02(config)# ip pim rp-address 1.1.1.1
+R03(config)# ip pim rp-address 1.1.1.1
+R04(config)# ip pim rp-address 1.1.1.1
+R05(config)# ip pim rp-address 1.1.1.1
+```
+
+💡 **Importante:**  
   
-Todos os roteadores escutam o **224.0.1.39** e, assim, aprendem qual é o RP ativo para cada grupo multicast.
+O endereço informado deve ser alcançável via unicast (OSPF).  
+Isso garante que as mensagens PIM Register e PIM Join consigam chegar até o RP sem depender de broadcast ou flooding.  
+  
+🧠 **Vantagens do RP manual**  
 
-## 🧠 Como o domínio decide quem será o RP
+| Vantagem            | Descrição                                                                      |
+|-------------------- |--------------------------------------------------------------------------------|
+| 🎯 Simplicidade    | Fácil de configurar e visualizar em laboratórios ou topologias pequenas.       |
+| 🔒 Controle total  | O administrador define explicitamente qual roteador será o RP.                 |
+| 🧩 Previsibilidade | Todos os roteadores sabem de antemão qual é o RP, sem depender de anúncios.    |
+| 🧱 Estabilidade    | Não há troca dinâmica de RP, evitando mudanças inesperadas.                    |  
 
-O Mapping Agent é quem escolhe o RP com base nos anúncios que recebe.  
-A seleção normalmente segue critérios simples:  
+⚙️ **Resumo conceitual**
 
-- Todos os **C-RPs** válidos são incluídos na tabela de mapeamento.
-- Cada grupo multicast pode ter um **RP diferente** (dependendo do range anunciado).
+- O **Rendezvous Point (RP)** é o ponto central da **árvore compartilhada (*,G)**;
+- Os **roteadores receptores (DRs)** enviam PIM Joins em direção ao RP;
+- Os roteadores das fontes **(senders)** enviam PIM Register diretamente ao RP;
+- Após o fluxo inicial, ocorre a migração automática para a **SPT (Shortest Path Tree)**, otimizando o caminho.
 
-Se houver mais de um C-RP para o mesmo grupo, o MA usa o endereço IP mais alto como critério de desempate.  
+✅ **Verificação básica**  
+  
+Após a configuração, podemos validar o aprendizado do RP com o comando:  
 
-💡 **Em laboratório, normalmente deixamos apenas um Mapping Agent e um ou dois Candidate RPs — assim dá pra ver a eleição e o tráfego de anúncios claramente.**
+```ios
+R03# show ip pim rp mapping
+Group: 224.0.0.0/4, RP: 1.1.1.1, Info source: static
+```
+  
+O campo **“Info source: static”** confirma que o RP foi configurado manualmente e está ativo no domínio multicast.  
+
+🧭 **Conclusão dessa etapa**
+  
+Com o RP definido manualmente, eliminamos a dependência de mecanismos proprietários e tornamos o processo mais previsível.  
+Esse tipo de configuração é ideal para ambientes de estudo, validação de conceito (PoC) ou cenários corporativos estáticos.  
+  
+Nos próximos passos, partiremos para os testes práticos de tráfego multicast, analisando a formação da **árvore (*,G)** e a posterior comutação para a **SPT (S,G)**.  
+  
+---
+
+Alterar a partir daqui
+
+---
 
 ## 3️⃣ Comandos de configuração (modo Auto-RP)
 
