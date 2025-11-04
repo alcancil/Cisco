@@ -22,10 +22,15 @@
   - [3️⃣ Comandos de Configuração – RP Manual (PIM Sparse Mode)](#3️⃣-comandos-de-configuração--rp-manual-pim-sparse-mode)
     - [💡 A pegadinha do nome “RP Manual”](#-a-pegadinha-do-nome-rp-manual)
     - [⚙️ Comando principal](#️-comando-principal)
-  - [Continuar daqui](#continuar-daqui)
-  - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
-    - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
-    - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
+  - [3️⃣ Ativando o Protocolo PIM Sparse Mode](#3️⃣-ativando-o-protocolo-pim-sparse-mode)
+    - [🧱 Exemplo prático (R01)](#-exemplo-prático-r01)
+    - [🧠 Entendendo o Papel do Designated Router (DR) no PIM Sparse Mode com RP Manual](#-entendendo-o-papel-do-designated-router-dr-no-pim-sparse-mode-com-rp-manual)
+    - [🔍 O que o DR realmente faz](#-o-que-o-dr-realmente-faz)
+    - [⚙️ Como o DR é escolhido](#️-como-o-dr-é-escolhido)
+    - [💬 Entendendo as Mensagens PIM Hello no PIM Sparse Mode (RP Manual)](#-entendendo-as-mensagens-pim-hello-no-pim-sparse-mode-rp-manual)
+    - [🧩 Funções das Mensagens Hello](#-funções-das-mensagens-hello)
+    - [⚙️ Estrutura das Mensagens PIM Hello](#️-estrutura-das-mensagens-pim-hello)
+    - [🔍 Exemplo de Mensagens Hello em Ação](#-exemplo-de-mensagens-hello-em-ação)
     - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
   - [Quando o Server entra na jogada](#quando-o-server-entra-na-jogada)
     - [🌳 Formação da Árvore Multicast (\*,G) — A Shared Tree](#-formação-da-árvore-multicast-g--a-shared-tree)
@@ -420,47 +425,57 @@ ip pim rp-address 2.2.2.2
 > O RP Manual é o método mais previsível e estável para laboratórios e ambientes controlados.  
 > Ele dispensa anúncios multicast de Auto-RP, reduz complexidade e permite observar com clareza o funcionamento do PIM Sparse Mode, desde a descoberta de fontes até a comutação para a árvore SPT.  
 
+## 3️⃣ Ativando o Protocolo PIM Sparse Mode
+
+Agora que entendemos a lógica do **PIM Sparse Mode** e definimos o **RP manual**, vamos ativar o protocolo em todas as interfaces que participam do domínio multicast — ou seja, **todas as interfaces conectadas entre roteadores e sub-redes dos hosts**.  
+  
+Nos roteadores **R01 a R05**, aplicamos o comando `ip pim sparse-mode` nas interfaces de roteamento.  
 
 ---
 
-Continuar daqui
----
-
-## Ativando o protocolo PIM Sparse Mode
-
-Agora que entendemos a lógica, vamos ativar o protocolo em todas as interfaces que participam do multicast nos roteadores, de R01 a R05.
-
+### 🧱 Exemplo prático (R01)
+  
+Primeiro, verificamos as interfaces ativas no roteador:  
+  
 ```ios
-R01#show ip int br
+R01#show ip interface brief
 Interface                  IP-Address      OK? Method Status                Protocol
 FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
 FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
 FastEthernet1/0            10.0.0.18       YES NVRAM  up                    up
 Loopback0                  1.1.1.1         YES NVRAM  up                    up
-R01#conf t
-Enter configuration commands, one per line.  End with CNTL/Z.
-R01(config)#int f0/0
+```
+
+Em seguida, ativamos o PIM Sparse Mode em cada uma delas:  
+
+```ios
+R01(config)#interface f0/0
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
-R01(config-if)#int f0/1
+
+R01(config)#interface f0/1
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
-R01(config-if)#int f1/0
+
+R01(config)#interface f1/0
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
-R01(config-if)#
-R01(config-if)#int l0/0
+
+R01(config)#interface loopback0
 R01(config-if)#ip pim sparse-mode
 *Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-Agora que o **PIM Sparse-Mode** foi ativado, vamos analisar a tabela de **roteamento multicast:**
+Essas mensagens **%PIM-5-DRCHG** indicam que o roteador se elegeu Designated Router (DR) em cada rede — o primeiro sinal de que o PIM está ativo e operante.  
+
+---
+
+🧩 **Verificando a Tabela de Roteamento Multicast**  
+  
+Após ativar o PIM, podemos observar a tabela de roteamento multicast:  
 
 ```ios
-R01#show ip mrout
+R01#show ip mroute
 IP Multicast Routing Table
 Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
        L - Local, P - Pruned, R - RP-bit set, F - Register flag,
@@ -470,130 +485,175 @@ Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
        Z - Multicast Tunnel, z - MDT-data group sender,
        Y - Joined MDT-data group, y - Sending to MDT-data group
 Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 224.0.1.40), 00:15:57/00:02:04, RP 0.0.0.0, flags: DCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 00:15:57/00:02:04
-
-R01#
+Timers: Uptime/Expires
+Interface state: Interface, Next-Hop or VCD, State/Mode
 ```
 
-Então eu realizei uma captura de pacotes na interface F0/0 de R01.  
+Neste momento, a tabela ainda exibe apenas grupos internos (como 224.0.0.x), usados para comunicação entre roteadores PIM.  
+Isso é esperado, pois ainda não há fontes ou receptores multicast ativos — o domínio PIM está inicializado, mas sem tráfego de grupo.  
 
-![Whireshark](Imagens/02.png)  
-
-Então podemos verificar que o grupo **224.0.1.40** foi ativado.  
-
-### 🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode
-
-Quando ativamos o **PIM Sparse Mode** nas interfaces, cada rede multicast (LAN) com mais de um roteador participante precisa escolher um roteador responsável por interagir com os hosts locais e com o **RP (Rendezvous Point)**.  
-Esse roteador é chamado de **Designated Router (DR).**  
+🧠 **Conclusão desta etapa**  
   
-🔍 **O que é o DR**  
+Com o PIM Sparse Mode ativado em todas as interfaces:  
+
+- Os roteadores agora trocam mensagens PIM Hello e formam vizinhanças PIM.
+- O domínio multicast está pronto para receber registros de fontes e joins de receptores.
+- O próximo passo será verificar a formação das vizinhanças e confirmar se todos os roteadores conhecem o RP manual (2.2.2.2).
   
-O Designated Router tem duas funções principais:  
+🔍 **Nota: nesta etapa, ainda não realizamos captura de pacotes, pois o tráfego multicast de controle é mínimo.**
 
-| Situação                               | Função do DR                                                                                     |
-|----------------------------------------|--------------------------------------------------------------------------------------------------|
-| Lado dos receptores (hosts multicast)  | Recebe mensagens IGMP Report dos hosts interessados e envia mensagens PIM Join em direção ao RP. |
-| Lado das fontes (servidores multicast) | Detecta tráfego multicast local e envia PIM Register diretamente ao RP.                          |  
 
-⚙️ **Como ocorre a eleição do DR**  
+---
+
+Continuar daqui
+
+---
+
+### 🧠 Entendendo o Papel do Designated Router (DR) no PIM Sparse Mode com RP Manual
+
+Ao habilitarmos o **PIM Sparse Mode** nas interfaces, cada rede local (LAN) que possui mais de um roteador precisa definir **quem será o “porta-voz” daquele segmento** no domínio multicast.  
+Esse roteador é conhecido como **Designated Router (DR)** — e é ele quem interage diretamente com o **Rendezvous Point (RP)** e com os **hosts multicast**.
+
+Mesmo em ambientes com **RP configurado manualmente**, a escolha do **DR** continua acontecendo de forma **automática** entre os roteadores participantes do PIM.
+
+---
+
+### 🔍 O que o DR realmente faz
+
+O **DR** é o roteador que “fala pela rede local” dentro do domínio multicast.  
+Ele tem duas funções principais:
+
+| Situação                                   | Responsabilidade do DR |
+|--------------------------------------------|------------------------|
+| **Rede com receptores (hosts multicast)**  | Recebe as mensagens **IGMP Report** dos hosts interessados e envia **PIM Join** em direção ao **RP configurado manualmente** (2.2.2.2). |
+| **Rede com fontes multicast (servidores)** | Detecta o tráfego multicast local e envia **PIM Register** diretamente ao RP, para que o grupo seja conhecido por todo o domínio. |
+
+Assim, o DR é o **elo entre os dispositivos de borda e o RP**, garantindo que o tráfego multicast seja distribuído de forma controlada e sem redundância.
+
+---
+
+### ⚙️ Como o DR é escolhido
+
+A eleição do DR acontece **automaticamente** entre os roteadores PIM de uma mesma rede.    
+Não há comandos específicos para isso — o processo faz parte do protocolo.  
+
+🔸 **Critério de escolha:**  
   
-A eleição do DR é feita automaticamente entre todos os roteadores PIM que compartilham a mesma rede multicast.  
-
-🔸 Critério de eleição:  
+- O roteador com o **maior endereço IP ativo** na interface vence.  
+- Se houver empate (raro), usa-se o **Router-ID PIM** (normalmente o da Loopback) para desempatar.
   
-- O roteador com o maior endereço IP ativo na interface vence a eleição.
-- Em caso de empate (endereços iguais, o que é raro), o endereço de Router-ID PIM (geralmente a Loopback) é usado como desempate.
-
-🔸 Exemplo real do log:  
-
+🔸 **Exemplo real do log:**  
+  
 ```ios
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
 ```
 
-🔹 **Interpretação:**  
+🔹 **Como interpretar:**  
+  
+- A mensagem indica que houve mudança de DR na interface FastEthernet1/0.
+- O roteador 10.0.0.18 foi eleito o novo Designated Router.
+- O endereço 0.0.0.0 mostra que não havia DR anterior — ou seja, essa foi a primeira eleição no segmento.
 
-- Houve uma mudança de **DR** na interface FastEthernet1/0.
-- O roteador **10.0.0.18** foi eleito como o novo Designated Router.
-- O endereço **0.0.0.0** indica que antes não havia DR definido (primeira eleição).  
+🚫 **PIM não tem BDR**  
   
-🚫 **Não existe BDR no PIM**
+Diferente do OSPF, o PIM não utiliza Backup Designated Router (BDR).  
+Existe somente um DR por rede multicast.  
   
-Diferente do **OSPF, o PIM não possui Backup Designated Router (BDR)**.  
-Somente um DR é responsável pela rede.  
-  
-Se o DR atual falhar, os demais roteadores detectam a ausência de mensagens **PIM Hello (por padrão a cada 30 segundos)** e realizam uma nova eleição automaticamente.  
-O roteador com o próximo IP mais alto assume o papel de DR sem interrupção perceptível no domínio multicast.  
-  
+Se o DR atual deixar de enviar mensagens PIM Hello (por padrão, a cada 30 segundos), os demais roteadores percebem a ausência e elegem automaticamente o próximo com maior IP ativo, sem afetar o funcionamento do domínio multicast.  
+
 🧭 **Resumo prático**
 
-| Item                         | PIM Dense Mode             | PIM Sparse Mode          |
-|------------------------------|----------------------------|--------------------------|
-| DR existe?                   | Sim, mas é pouco relevante | ✅ Sim, papel essencial |
-| BDR existe?                  | ❌ Não                     | ❌ Não                  |
-| Flood de tráfego             | ✅ Sim                     | ❌ Não                  |
-| Comunicação com RP           | ❌ Não usa RP              | ✅ Sim, feita pelo DR   |
-| Envio de PIM Join / Register | Todos enviam               | Apenas o DR envia        |
+| Item                         | PIM Dense Mode            | PIM Sparse Mode (RP Manual) |
+|------------------------------|---------------------------|-----------------------------|
+| DR existe?                   | Sim, mas papel secundário | ✅ Sim, papel essencial    |
+| BDR existe?                  | ❌ Não                   | ❌ Não                      |
+| Flood de tráfego             | ✅ Sim                   | ❌ Não                      |
+| Comunicação com RP           | ❌ Não usa RP            | ✅ Sim, via DR              |
+| Envio de PIM Join / Register | Todos enviam             | ✅ Apenas o DR envia        |  
 
-Então podemos observar esse comportamento através da captura de pacotes onde o Whireshark foi ativado na interface F0/0 de R01.  
+🧩 **Conclusão desta etapa**  
+  
+No PIM Sparse Mode com RP manual, o Designated Router (DR) é quem organiza a comunicação multicast de forma inteligente e eficiente.  
+Ele centraliza o envio dos joins e registers, evitando duplicidade de tráfego e garantindo que o RP (2.2.2.2) receba apenas informações consolidadas de cada rede.  
+  
+> 🔍 Nesta etapa ainda não faremos captura de pacotes, pois o objetivo é compreender a função do DR e validar a formação das vizinhanças PIM. As análises de fluxo serão feitas mais adiante, quando o multicast estiver ativo.
 
-![Whireshark](Imagens/03.png)
+### 💬 Entendendo as Mensagens PIM Hello no PIM Sparse Mode (RP Manual)
 
-### 💬 Entendendo as Mensagens PIM Hello
+As mensagens **PIM Hello** são o ponto de partida de toda a comunicação entre roteadores PIM dentro do domínio multicast.  
+São elas que permitem que os roteadores **se descubram, troquem informações e mantenham a vizinhança ativa** — algo fundamental para o funcionamento do **PIM Sparse Mode**, independentemente de o RP ser configurado manualmente ou via Auto-RP.
 
-As mensagens PIM Hello são a base de toda a comunicação entre roteadores PIM dentro de um domínio multicast.  
-Elas são trocadas periodicamente entre roteadores vizinhos, mantêm a vizinhança ativa, e também controlam a eleição do Designated Router (DR).  
-  
-🧩 **Funções das mensagens Hello**  
+Assim que ativamos o PIM nas interfaces, os roteadores começam automaticamente a enviar mensagens Hello para o endereço **224.0.0.13**, estabelecendo a base da comunicação multicast de controle.
 
-| Função                     | Descrição                                                                                |
-|----------------------------|------------------------------------------------------------------------------------------|
-| Descoberta de vizinhos PIM | Permite que roteadores PIM na mesma rede LAN se reconheçam.                              |
-| Eleição do DR              | Define qual roteador será o Designated Router na LAN.                                    |
-| Troca de parâmetros        | Informa temporizadores, prioridade de DR e capacidade de recursos (ex: Join suppression).|
-| Detecção de falhas         | Se um roteador parar de enviar Hellos dentro do Holdtime, é considerado inativo.         |  
-  
-⚙️ **Estrutura das mensagens Hello**  
-  
-Cada mensagem PIM Hello contém um cabeçalho com parâmetros negociados entre os roteadores.  
-  
-| Campo          | Descrição                                                                 | Valor típico                           |
-|----------------|---------------------------------------------------------------------------|----------------------------------------|
-| Type           | Tipo de mensagem **PIM (Hello = 0x00)**                                   | **0x00**                               |
-| Holdtime       | Tempo máximo que um roteador considera o vizinho ativo sem receber Hellos | **105 segundos (3,5 × período Hello)** |
-| DR Priority    | Define a prioridade do roteador na eleição de DR                          | **1 (padrão)**                         |
-| Generation ID  | Identificador único do roteador, muda quando o roteador reinicia          | Valor aleatório                        |
-| Hello Interval | Tempo entre Hellos enviados                                               | **30 segundos (padrão Cisco)**         |
-| PIM Mode       | Indica se é Sparse, Dense ou **Bidir**                                    | Sparse (modo atual do laboratório)     |  
+---
 
-💡 Esses parâmetros podem ser visualizados diretamente no Wireshark, no campo “PIM Hello Options”.  
+### 🧩 Funções das Mensagens Hello
+
+| Função                         | Descrição                                                                           |
+|--------------------------------|-------------------------------------------------------------------------------------|
+| **Descoberta de vizinhos PIM** | Permite que roteadores na mesma LAN se reconheçam e formem uma vizinhança PIM.      |
+| **Manutenção da vizinhança**   | Mantém os roteadores ativos trocando Hellos periodicamente (a cada 30 segundos).    |
+| **Eleição do DR**              | Define qual roteador atuará como **Designated Router (DR)** no segmento local.      |
+| **Troca de parâmetros**        | Anuncia capacidades e temporizadores, como DR Priority e Holdtime.                  |
+| **Detecção de falhas**         | Se o roteador parar de enviar Hellos dentro do tempo limite, é considerado inativo. |
+
+Essas funções garantem que o domínio PIM permaneça estável, sincronizado e pronto para enviar mensagens **Join** e **Register** ao RP.  
+
+---
+
+### ⚙️ Estrutura das Mensagens PIM Hello
+
+Cada mensagem Hello contém um conjunto de opções negociadas entre os roteadores vizinhos.  
+Esses parâmetros definem como o PIM opera no segmento.  
+
+| Campo              | Descrição                                                                 | Valor típico                           |
+|--------------------|---------------------------------------------------------------------------|----------------------------------------|
+| **Type**           | Tipo da mensagem PIM (**Hello = 0x00**)                                   | 0x00                                   |
+| **Holdtime**       | Tempo máximo para considerar o vizinho ativo sem novos Hellos             | 105 segundos (3,5 × intervalo)         |
+| **DR Priority**    | Prioridade do roteador na eleição de DR                                   | 1 (padrão Cisco)                       |
+| **Generation ID**  | Identificador único do roteador; muda quando o roteador é reiniciado      | Valor aleatório                        |
+| **Hello Interval** | Intervalo entre Hellos enviados                                           | 30 segundos (padrão Cisco)             |
+| **PIM Mode**       | Indica o modo de operação do protocolo                                    | Sparse (modo atual do laboratório)     |
+
+Esses valores garantem que todos os roteadores dentro do mesmo segmento PIM operem com parâmetros compatíveis.  
   
-🔍**Exemplo de troca de mensagens Hello**
+---
   
-Após ativar o PIM Sparse Mode nas interfaces, os roteadores começam a trocar mensagens Hello automaticamente:
+### 🔍 Exemplo de Mensagens Hello em Ação
+  
+Após ativar o **PIM Sparse Mode** nas interfaces, os roteadores trocam Hellos e formam automaticamente suas vizinhanças.  
+As mensagens de log indicam tanto o recebimento de Hellos válidos quanto as mudanças de DR:  
 
 ```ios
 *Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
 *Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
-*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-👉 **Esses logs indicam que o roteador recebeu um Hello válido de 10.0.0.1 e estabeleceu a vizinhança PIM.**  
-Logo após, a eleição de DR é feita com base nos campos DR Priority e IP Address.  
-  
-🧭 **Resumo prático**  
+🧠 **Interpretação:**
 
-| Ação                                    | Tipo de mensagem    | Destino    | TTL | Finalidade                  |
-|-----------------------------------------|---------------------|------------|-----|-----------------------------|
-| Troca de informações entre vizinhos PIM | Hello               | 224.0.0.13 | 1   | Manter vizinhança ativa     |
-| Eleição do DR                           | Hello               | 224.0.0.13 | 1   | Eleger roteador responsável |
-| Detecção de falha de vizinho            | Timeout (sem Hello) | —          | —   | Remover roteador inativo    |
+- O roteador recebeu Hellos válidos e estabeleceu vizinhança PIM.
+- Com base nos parâmetros trocados, o PIM realizou a eleição automática de DR para cada interface.
+- O endereço que aparece após “to” representa o novo DR naquele segmento.
+
+🧭 **Resumo Prático**
+
+| Ação / Evento                             | Tipo de Mensagem  | Destino    | TTL | Finalidade                           |
+|-------------------------------------------|-------------------|------------|-----|--------------------------------------|
+| Descoberta e manutenção de vizinhos       | Hello             | 224.0.0.13 | 1   | Mantém a vizinhança PIM ativa        |
+| Eleição de DR                             | Hello             | 224.0.0.13 | 1   | Define o roteador responsável na LAN |
+| Detecção de falha                         | Ausência de Hello | —          | —   | Remove vizinho inativo               |
+
+🧩 **Conclusão desta etapa**
+
+> As mensagens PIM Hello são o primeiro sinal de vida do protocolo multicast.
+> Elas estabelecem a vizinhança, permitem a eleição de DR e garantem que o domínio PIM esteja sincronizado antes mesmo do tráfego multicast começar a fluir.
+
+---
+
+Alterar Daqui
+
+---
 
 ### ⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)
 
