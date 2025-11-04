@@ -46,11 +46,11 @@
     - [📘 Tabela de Comandos – Referência Rápida](#-tabela-de-comandos--referência-rápida)
     - [🏁 Conclusão](#-conclusão)
   - [📘 Tabela de Comandos](#-tabela-de-comandos)
-    - [R01 – Mapping Agent (MA)](#r01--mapping-agent-ma)
-    - [📗 R02 – Candidate RP (C-RP)](#-r02--candidate-rp-c-rp)
-    - [📙 R03 – Roteador de Trânsito (PIM-SM Participant)](#-r03--roteador-de-trânsito-pim-sm-participant)
-    - [📒 R04 – Roteador com Receptor Multicast (Host02)](#-r04--roteador-com-receptor-multicast-host02)
-    - [📕 R05 – Roteador com Host Não Inscrito (Host03)](#-r05--roteador-com-host-não-inscrito-host03)
+    - [🧩 R01 – Router de Borda (Ligado ao Servidor Multicast)](#-r01--router-de-borda-ligado-ao-servidor-multicast)
+    - [🧩 R02 – Rendezvous Point (RP Manual)](#-r02--rendezvous-point-rp-manual)
+    - [🧩 R03 – Roteador de Distribuição (Participante PIM-SM)](#-r03--roteador-de-distribuição-participante-pim-sm)
+    - [🧩 R04 – Roteador de Borda (Ligado ao Host02)](#-r04--roteador-de-borda-ligado-ao-host02)
+    - [🧩 R05 – Roteador de Borda (Ligado ao Host03)](#-r05--roteador-de-borda-ligado-ao-host03)
     - [🖥️ SERVER – Fonte Multicast (Sender)](#️-server--fonte-multicast-sender)
     - [💻 HOST02 – Receptor Multicast](#-host02--receptor-multicast)
     - [🖥️ HOST03 – Host Não Inscrito](#️-host03--host-não-inscrito)
@@ -920,70 +920,134 @@ Foram abordados:
 
 ## 📘 Tabela de Comandos
 
-### R01 – Mapping Agent (MA)
+### 🧩 R01 – Router de Borda (Ligado ao Servidor Multicast)
 
-| **Seção**                | **Comando / Configuração**                                                                     | **Descrição**                                            |
-|--------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                         | Habilita o roteamento multicast globalmente              |
-|                          | `ip pim autorp listener`                                                                       | Permite escutar mensagens Auto-RP em interfaces não PIM  |
-|                          | `ip pim send-rp-discovery Loopback0 scope 16`                                                  | Define R01 como **Mapping Agent (MA)** no domínio PIM-SM |
-| **Interface Loopback0**  | `ip address 1.1.1.1 255.255.255.255`<br>`ip pim sparse-mode`                                   | Identificação do roteador e ativação PIM na Loopback     |
-| **Fa0/0 (LAN Server)**   | `ip address 192.168.10.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Gateway do servidor multicast                     |
-| **Fa0/1 (Link com R02)** | `ip address 10.0.0.1 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`     | Conexão P2P com R02                               |
-| **Fa1/0 (Link com R05)** | `ip address 10.0.0.18 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`    | Conexão P2P com R05                               |
-| **OSPF**                 | `router ospf 100`<br>`router-id 1.1.1.1`<br>`network 1.1.1.1 0.0.0.0 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0`<br>`network 192.168.10.0 0.0.0.255 area 0`                                                                                      | Configuração OSPF para conectividade unicast      |
-| **Função no Auto-RP**    | **Mapping Agent (MA)**                                                      | Responsável por ouvir anúncios e distribuir o RP ativo (grupo 224.0.1.39)  | 
+| Etapa   | Configuração                                             | Comando                                                                                                         |
+|-------- |----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| **1️⃣** | Ativar roteamento multicast globalmente                  | `ip multicast-routing`                                                                                          |
+| **2️⃣** | Configurar interface Loopback para identificação e PIM   | <pre>interface Loopback0<br> ip address 1.1.1.1 255.255.255.255<br> ip pim sparse-mode</pre>                    |
+| **3️⃣** | Configurar interfaces de rede com PIM Sparse Mode e OSPF | <pre>interface FastEthernet0/0<br> ip address 192.168.10.254 255.255.255.0<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet0/1<br> ip address 10.0.0.1 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet1/0<br> ip address 10.0.0.18 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point</pre>                                                               |
+| **4️⃣** | Configurar OSPF para conectividade unicast               | <pre>router ospf 100<br> router-id 1.1.1.1<br> log-adjacency-changes<br> network 1.1.1.1 0.0.0.0 area 0<br> network 10.0.0.0 0.0.0.3 area 0<br> network 10.0.0.16 0.0.0.3 area 0<br> network 192.168.10.0 0.0.0.255 area 0</pre>                                                                   |
+| **5️⃣** | Definir o RP manual (R02 – Loopback0 = 2.2.2.2)          | `ip pim rp-address 2.2.2.2`                                                                                     |
+| **6️⃣** | Salvar configuração                                      | `write memory`                                                                                                  |
 
-### 📗 R02 – Candidate RP (C-RP)
+---
 
-| **Seção**                | **Comando / Configuração**                                                                        | **Descrição**                                      |
-|--------------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                            | Habilita o roteamento multicast globalmente        |
-|                          | `ip pim autorp listener`                                                                | Permite escutar anúncios Auto-RP mesmo em interfaces não PIM |
-|                          | `ip pim send-rp-announce Loopback0 scope 16`                                                      | Define R02 como **Candidate RP (C-RP)**            |
-| **Interface Loopback0**  | `ip address 2.2.2.2 255.255.255.255`<br>`ip pim sparse-mode`                                      | Identificação e habilitação PIM                    |
-| **Fa0/1 (Link com R01)** | `ip address 10.0.0.2 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R01                                |
-| **Fa1/0 (Link com R03)** | `ip address 10.0.0.5 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R03                                |
-| **OSPF**                 | `router ospf 100`<br>`router-id 2.2.2.2`<br>`network 2.2.2.2 0.0.0.0 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0` | Configuração OSPF unicast |
-| **Função no Auto-RP**    | **Candidate RP (C-RP)**                                                                | Envia anúncios para o grupo 224.0.1.40, oferecendo-se como RP |
+✅ **Função:**  
 
-### 📙 R03 – Roteador de Trânsito (PIM-SM Participant)
+Roteador de borda conectado à rede do servidor multicast.  
+Participa do domínio PIM Sparse Mode, aprendendo o RP manualmente (2.2.2.2) via comando estático.
 
-| **Seção**                | **Comando / Configuração**                                                                        | **Descrição**                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                            | Habilita o roteamento multicast globalmente           |
-|                          | `ip pim autorp listener`                                                                        | Permite escutar mensagens Auto-RP em interfaces não PIM |
-| **Interface Loopback0**  | `ip address 3.3.3.3 255.255.255.255`<br>`ip pim sparse-mode`                                      | Identificação do roteador e ativação do PIM           |
-| **Fa0/0 (Link com R04)** | `ip address 10.0.0.9 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R04                                   |
-| **Fa1/0 (Link com R02)** | `ip address 10.0.0.6 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R02                                   |
-| **OSPF**                 | `router ospf 100`<br>`router-id 3.3.3.3`<br>`network 3.3.3.3 0.0.0.0 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`   | Configuração OSPF para roteamento unicast |
-| **Função no Auto-RP**    | **Participante do domínio PIM-SM**                                                  | Aprende automaticamente o RP via grupo 224.0.1.39 (Auto-RP Mapping) |
+🧠 **Validação sugerida:**
 
-### 📒 R04 – Roteador com Receptor Multicast (Host02)
+```ios
+show ip pim neighbor
+show ip pim rp mapping
+show ip mroute
+```
 
-| **Seção**                | **Comando / Configuração**                                                                         | **Descrição**                                        |
-|--------------------------|----------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                             | Habilita o roteamento multicast globalmente          |
-|                          | `ip pim autorp listener`                                                                           | Permite escutar anúncios Auto-RP                     |
-| **Interface Loopback0**  | `ip address 4.4.4.4 255.255.255.255`<br>`ip pim sparse-mode`                                       | Identificação lógica e ativação do PIM               |
-| **Fa0/0 (Link com R03)** | `ip address 10.0.0.10 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R03                                  |
-| **Fa0/1 (Link com R05)** | `ip address 10.0.0.13 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R05                                  |
-| **Fa1/0 (LAN Host02)**   | `ip address 192.168.20.254 255.255.255.0`<br>`ip pim sparse-mode`                              | Interface que conecta o host receptor multicast (Host02) |
-| **OSPF**                 | `router ospf 100`<br>`router-id 4.4.4.4`<br>`network 4.4.4.4 0.0.0.0 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 192.168.20.0 0.0.0.255 area 0` | Configuração OSPF para conectividade completa |
-| **Função no Auto-RP**    | **Participante com receptor multicast** |                          Recebe grupos via IGMP Join (Host02 – 239.1.1.1) e encaminha PIM Join em direção ao RP |
+### 🧩 R02 – Rendezvous Point (RP Manual)
 
-### 📕 R05 – Roteador com Host Não Inscrito (Host03)
+| Etapa  | Configuração                                             | Comando                                                                                                          |
+|--------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| **1️⃣** | Ativar roteamento multicast globalmente                 | `ip multicast-routing`                                                                                           |
+| **2️⃣** | Configurar interface Loopback0 (usada como RP)          | <pre>interface Loopback0<br> ip address 2.2.2.2 255.255.255.255<br> ip pim sparse-mode</pre>                     |
+| **3️⃣** | Configurar interfaces ativas com PIM Sparse Mode e OSPF | <pre>interface FastEthernet0/1<br> ip address 10.0.0.2 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet1/0<br> ip address 10.0.0.5 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point</pre>                                |
+| **4️⃣** | Configurar OSPF para roteamento unicast                 | <pre>router ospf 100<br> router-id 2.2.2.2<br> log-adjacency-changes<br> network 2.2.2.2 0.0.0.0 area 0<br> network 10.0.0.0 0.0.0.3 area 0<br> network 10.0.0.4 0.0.0.3 area 0</pre> |
+| **5️⃣** | Definir o RP manual (este próprio roteador é o RP)      | `ip pim rp-address 2.2.2.2`                                                                                      |
+| **6️⃣** | Salvar configuração                                     | `write memory`                                                                                                   |
 
-| **Seção**               | **Comando / Configuração**                                                                            | **Descrição**                                      |
-|-------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| **Global**              | `ip multicast-routing`                                                                                | Habilita o roteamento multicast globalmente        |
-|                         | `ip pim autorp listener`                                                                              | Permite escutar mensagens Auto-RP nas interfaces   |
-| **Interface Loopback0** | `ip address 5.5.5.5 255.255.255.255`<br>`ip pim sparse-mode`                                          | Identificação do roteador e ativação do PIM        |
-| **Fa0/0 (LAN Host03)**  | `ip address 192.168.30.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Interface conectada ao Host03 (não inscrito em grupos multicast) |
-| **Fa0/1 (Link com R04)** | `ip address 10.0.0.14 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`   | Conexão P2P com R04                                |
-| **Fa1/0 (Link com R01)** | `ip address 10.0.0.17 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`   | Conexão P2P com R01                                |
-| **OSPF**                 | `router ospf 100`<br>`router-id 5.5.5.5`<br>`network 5.5.5.5 0.0.0.0 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0`<br>`network 192.168.30.0 0.0.0.255 area 0` | Configuração OSPF para conectividade total |
-| **Função no Auto-RP**    | **Participante PIM-SM (sem receptor multicast)**                                     | Atua apenas como roteador de passagem; não há IGMP Join em sua LAN |
+---
+
+✅ **Função:**  
+
+Roteador central do domínio multicast, atuando como **Rendezvous Point (RP)** manual.  
+Todos os roteadores do domínio PIM-SM (incluindo ele mesmo) apontam para o endereço **2.2.2.2** como RP estático. 
+
+🧠 **Validação sugerida:**
+
+```ios
+show ip pim rp mapping
+show ip pim interface
+show ip pim neighbor
+```
+
+### 🧩 R03 – Roteador de Distribuição (Participante PIM-SM)
+
+| Etapa   | Configuração                                                | Comando                                                                                                      |
+|---------|-------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| **1️⃣** | Ativar roteamento multicast globalmente                     | `ip multicast-routing`                                                                                       |
+| **2️⃣** | Configurar interface Loopback0 (identificação lógica e PIM) | <pre>interface Loopback0<br> ip address 3.3.3.3 255.255.255.255<br> ip pim sparse-mode</pre>                 |
+| **3️⃣** | Configurar interfaces de rede com PIM Sparse Mode e OSPF    | <pre>interface FastEthernet0/0<br> ip address 10.0.0.9 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet1/0<br> ip address 10.0.0.6 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point</pre> |
+| **4️⃣** | Configurar OSPF para conectividade unicast                  | <pre>router ospf 100<br> router-id 3.3.3.3<br> log-adjacency-changes<br> network 3.3.3.3 0.0.0.0 area 0<br> network 10.0.0.4 0.0.0.3 area 0<br> network 10.0.0.8 0.0.0.3 area 0</pre> |
+| **5️⃣** | Definir o RP manual (R02 – Loopback0 = 2.2.2.2)             | `ip pim rp-address 2.2.2.2`                                                                                  |
+| **6️⃣** | Salvar configuração                                         | `write memory`                                                                                               |
+
+---
+
+✅ **Função:**  
+
+Roteador intermediário no domínio multicast.  
+Participa do roteamento PIM Sparse Mode e referencia o RP manual **2.2.2.2** (R02).  
+
+🧠 **Validação sugerida:**
+
+```ios
+show ip pim neighbor
+show ip pim rp mapping
+show ip mroute
+```
+
+### 🧩 R04 – Roteador de Borda (Ligado ao Host02)
+
+| Etapa  | Configuração                                                | Comando                                                                                                       |
+|--------|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| **1️⃣** | Ativar roteamento multicast globalmente                     | `ip multicast-routing`                                                                                       |
+| **2️⃣** | Configurar interface Loopback0 (identificação lógica e PIM) | <pre>interface Loopback0<br> ip address 4.4.4.4 255.255.255.255<br> ip pim sparse-mode</pre>                 |
+| **3️⃣** | Configurar interfaces de rede com PIM Sparse Mode e OSPF    | <pre>interface FastEthernet0/0<br> ip address 10.0.0.10 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet0/1<br> ip address 10.0.0.13 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point</pre>                       |
+| **4️⃣** | Configurar interface de acesso à LAN (Host02)               | <pre>interface FastEthernet1/0<br> ip address 192.168.20.254 255.255.255.0<br> ip pim sparse-mode</pre>      |
+| **5️⃣** | Configurar OSPF para conectividade unicast                  | <pre>router ospf 100<br> log-adjacency-changes<br> network 4.4.4.4 0.0.0.0 area 0<br> network 10.0.0.8 0.0.0.3 area 0<br> network 10.0.0.12 0.0.0.3 area 0<br> network 192.168.20.0 0.0.0.255 area 0</pre>                                                                                          |
+| **6️⃣** | Definir o RP manual (R02 – Loopback0 = 2.2.2.2)             | `ip pim rp-address 2.2.2.2`                                                                                  |
+| **7️⃣** | Salvar configuração                                         | `write memory`                                                                                               |
+
+---
+
+✅ **Função:**  
+Roteador de borda conectado ao **Host02**, responsável por encaminhar fluxos multicast entre a LAN 192.168.20.0/24 e o domínio PIM-SM.  
+Participa do roteamento multicast e referencia o **RP manual 2.2.2.2 (R02)**.
+
+🧠 **Validação sugerida:**
+
+```ios
+show ip pim neighbor
+show ip pim rp mapping
+show ip mroute
+```
+
+### 🧩 R05 – Roteador de Borda (Ligado ao Host03)
+
+| Etapa  | Configuração                                                 | Comando                                                                                                     |
+|--------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| **1️⃣** | Ativar roteamento multicast globalmente                     | `ip multicast-routing`                                                                                       |
+| **2️⃣** | Configurar interface Loopback0 (identificação lógica e PIM) | <pre>interface Loopback0<br> ip address 5.5.5.5 255.255.255.255<br> ip pim sparse-mode</pre>                 |
+| **3️⃣** | Configurar interfaces de rede com PIM Sparse Mode e OSPF    | <pre>interface FastEthernet0/0<br> ip address 192.168.30.254 255.255.255.0<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet0/1<br> ip address 10.0.0.14 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point<br><br>interface FastEthernet1/0<br> ip address 10.0.0.17 255.255.255.252<br> ip pim sparse-mode<br> ip ospf network point-to-point</pre>                                                               |
+| **4️⃣** | Configurar OSPF para conectividade unicast                  | <pre>router ospf 100<br> router-id 5.5.5.5<br> log-adjacency-changes<br> network 5.5.5.5 0.0.0.0 area 0<br> network 10.0.0.12 0.0.0.3 area 0<br> network 10.0.0.16 0.0.0.3 area 0<br> network 192.168.30.0 0.0.0.255 area 0</pre>                                                                  |
+| **5️⃣** | Definir o RP manual (R02 – Loopback0 = 2.2.2.2)             | `ip pim rp-address 2.2.2.2`                                                                                  |
+| **6️⃣** | Salvar configuração                                         | `write memory`                                                                                               |
+
+---
+
+✅ **Função:**  
+Roteador de borda conectado à rede do **Host03 (192.168.30.0/24)**.  
+Participa do domínio multicast PIM Sparse Mode e utiliza o **RP estático 2.2.2.2 (R02)**.
+
+🧠 **Validação sugerida:**
+
+```ios
+show ip pim neighbor
+show ip pim rp mapping
+show ip mroute
+```
 
 ### 🖥️ SERVER – Fonte Multicast (Sender)
 
