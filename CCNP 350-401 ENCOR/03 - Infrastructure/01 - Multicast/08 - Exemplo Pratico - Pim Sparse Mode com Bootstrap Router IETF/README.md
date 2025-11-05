@@ -1,7 +1,7 @@
 # Índice
 
 - [Índice](#índice)
-  - [07 - Exemplo Pratico - Pim Sparse Mode com Auto-RP (Cisco Proprietario)](#07---exemplo-pratico---pim-sparse-mode-com-auto-rp-cisco-proprietario)
+  - [08 - Exemplo Pratico - Pim Sparse Mode com Bootstrap Router IETF](#08---exemplo-pratico---pim-sparse-mode-com-bootstrap-router-ietf)
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
@@ -57,21 +57,36 @@
     - [💻 HOST02 – Receptor Multicast](#-host02--receptor-multicast)
     - [🖥️ HOST03 – Host Não Inscrito](#️-host03--host-não-inscrito)
 
-## 07 - Exemplo Pratico - Pim Sparse Mode com Auto-RP (Cisco Proprietario)  
+## 08 - Exemplo Pratico - Pim Sparse Mode com Bootstrap Router IETF  
 
 ## 🧾 Introdução
 
-Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco CCNP ENCOR (350-401). O objetivo é compreender, de forma prática, o funcionamento do protocolo PIM Sparse Mode (PIM-SM) e sua aplicação em redes corporativas que exigem distribuição eficiente e controlada de dados multicast.  
-
+Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco **CCNP ENCOR (350-401)**.  
+O objetivo é compreender, de forma prática, o funcionamento do protocolo **PIM Sparse Mode (PIM-SM)** e sua aplicação em redes corporativas que exigem **distribuição eficiente e controlada de dados multicast**.  
+  
 Aqui demonstro o funcionamento do **roteamento multicast em modo PIM Sparse Mode**, simulando um ambiente Cisco onde apenas hosts interessados recebem o fluxo de dados.  
-Diferente do PIM Dense Mode, agora o protocolo utiliza Rendezvous Points (RP) — pontos centrais de encontro entre fontes e receptores.  
-Essa mudança altera completamente o comportamento do PIM, tornando o tráfego mais controlado e escalável. Então vamos demonstrar isso de forma prática.  
-
+Diferente do PIM Dense Mode, o PIM-SM utiliza **Rendezvous Points (RP)** — pontos centrais de encontro entre fontes e receptores — para construir as árvores multicast de forma otimizada.  
+  
+Neste laboratório, substituímos o mecanismo **Auto-RP (proprietário Cisco)** pelo **Bootstrap Router (BSR)**, que é o **padrão definido pelo IETF (RFC 5059)** para descoberta e distribuição automática de RPs dentro de um domínio PIM-SM.  
+O BSR elimina a dependência de grupos multicast proprietários (224.0.1.39 e 224.0.1.40) e realiza a eleição e divulgação dos RPs de forma totalmente integrada ao próprio protocolo PIM.  
+  
+💡 Embora o laboratório utilize apenas roteadores Cisco, o conceito e o funcionamento do **BSR são universais e compatíveis com ambientes multivendor**, já que seguem o padrão aberto do IETF.  
+Isso torna o aprendizado aplicável a qualquer fabricante que implemente o **PIM-SM com suporte ao BSR**, como Juniper, Arista, Huawei, Nokia, entre outros.  
+  
+[IETF (RFC 5059)](https://datatracker.ietf.org/doc/html/rfc5059)  
+  
 ## 🎯 Objetivo do Laboratório
 
-Este laboratório tem como objetivo compreender o funcionamento do protocolo **PIM Sparse Mode (PIM-SM) e a formação das árvores multicast — a Shared Tree (baseada no RP) e a SPT (Shortest Path Tree)**, em um ambiente Cisco simulado.  
-Agora vamos observar na prática o comportamento dos roteadores durante a **eleição de RP**, a formação da **árvore multicast** e a **verificação do caminho reverso (RPF)**, utilizando uma topologia simples com 8 roteadores e hosts simulados.  
-Ao longo dos testes, são analisadas as tabelas multicast, os grupos IGMP e os eventos de roteamento dinâmico, demonstrando como o multicast opera sobre uma infraestrutura unicast baseada em OSPF.  
+O objetivo deste laboratório é compreender o funcionamento do **PIM Sparse Mode (PIM-SM)** e a formação das árvores multicast — a **Shared Tree** (baseada no RP) e a **Shortest Path Tree (SPT)** — utilizando o mecanismo **Bootstrap Router (BSR)** para descoberta automática do RP.  
+
+Durante os testes, iremos observar:
+
+- Como o domínio PIM realiza a **eleição do BSR** e dos **Candidate RPs**;
+- Como as mensagens **Bootstrap** e **Candidate-RP-Advertisement** são trocadas;
+- A **formação da árvore multicast** e a **validação do RPF (Reverse Path Forwarding)**;
+- E como o PIM-SM opera sobre uma infraestrutura unicast previamente estabelecida com OSPF.
+
+Assim, este laboratório demonstra na prática o funcionamento completo do PIM-SM em conformidade com o padrão **IETF**, destacando o papel do BSR na automação, interoperabilidade e escalabilidade de redes multicast.
 
 ### Explicação do Cenário
 
