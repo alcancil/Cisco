@@ -19,7 +19,7 @@
     - [1️⃣ Os papéis no BSR](#1️⃣-os-papéis-no-bsr)
     - [2️⃣ Como ocorre a comunicação](#2️⃣-como-ocorre-a-comunicação)
     - [3️⃣ Critérios de eleição](#3️⃣-critérios-de-eleição)
-  - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
+  - [⚙️ Ativando o protocolo PIM Sparse Mode](#️-ativando-o-protocolo-pim-sparse-mode)
     - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
     - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
@@ -387,45 +387,51 @@ Alterar Daqui
 
 ---
 
+📊 **O que é automático e o que é manual**
 
-📊 **O que é automático e o que é manual**  
+| Ação | Automático? | Quem decide |
+|------|--------------|-------------|
+| Definir quem é Candidate BSR | ❌ Não | Administrador |
+| Definir quem é Candidate RP | ❌ Não | Administrador |
+| Eleger o BSR ativo | ✅ Sim | Protocolo PIM-SM |
+| Eleger o RP (entre os candidatos) | ✅ Sim | BSR (com base nas mensagens C-RP Adv) |
+| Distribuir o mapeamento (Group → RP) | ✅ Sim | BSR |
+| Aprender o RP e atualizar a tabela local | ✅ Sim | Todos os roteadores PIM-SM |
 
-| Ação                               | Automático? | Quem decide                 |
-|------------------------------------|-------------|-----------------------------|
-| Escolher quem é Candidate RP       | ❌ Não      | Administrador              |
-| Escolher quem é Mapping Agent      | ❌ Não      | Administrador              |
-| Eleger o RP (entre os candidatos)  | ✅ Sim      | Mapping Agent              |
-| Distribuir o mapeamento para todos | ✅ Sim      | Mapping Agent              |
-| Aprender o RP e atualizar a tabela | ✅ Sim      | Todos os roteadores PIM-SM |
+---
 
 🧱 **Em projeto real (ou laboratório bem documentado)**
-  
-Essa escolha deve ser feita pela pelo administrador e precisa estar no projeto.  
-No nosso caso, com cinco roteadores, uma topologia em anel e um laboratório educacional, uma boa prática é:  
 
-| Função                 | Roteador             | Justificativa                                                        |
-|------------------------|----------------------|----------------------------------------------------------------------|
-| Mapping Agent          | R01                  | Está próximo da fonte multicast (Server) e tem conectividade central |
-| Candidate RP           | R02                  | Está no meio do domínio PIM, facilita convergência                   |
-| Demais (R03, R04, R05) | Participantes PIM-SM | Aprendem o RP automaticamente via 224.0.1.39                         |  
+A definição de quem será **Candidate BSR** e **Candidate RP** deve estar prevista no projeto de rede.  
+No nosso caso — com **cinco roteadores**, **topologia em anel** e **cenário educacional** — podemos seguir a seguinte estratégia:
 
-⚙️ **O que o Auto-RP faz automaticamente**  
-  
-Depois que você define quem é C-RP e MA:  
+| Função | Roteador | Justificativa |
+|--------|-----------|----------------|
+| **Candidate BSR** | **R01** | Está próximo da fonte multicast (Server) e possui posição central no domínio PIM-SM. |
+| **Candidate RP 1** | **R02** | Localização intermediária, favorece convergência e distribuição equilibrada. |
+| **Candidate RP 2 (Backup)** | **R03** | Permite validar o failover automático caso o RP principal falhe. |
+| **R04 / R05** | Participantes PIM-SM | Aprendem automaticamente o RP via mensagens Bootstrap. |
 
-- O **C-RP** envia anúncios PIM Auto-RP para **224.0.1.40**.
-- O **MA** escuta, escolhe o RP e envia o mapeamento para **224.0.1.39**.
+---
 
-Todos os roteadores escutam 224.0.1.39 e aprendem:  
+⚙️ **O que o BSR faz automaticamente**
 
-- “Para o grupo 239.1.1.1, o RP é 2.2.2.2”.
-- Se o C-RP cair, o MA detecta a ausência dos anúncios e remove o RP do mapeamento.
+Após definir quem são os **Candidate BSRs** e **Candidate RPs**, o processo de eleição ocorre automaticamente:
 
-👉 **Ou seja: a distribuição e manutenção são automáticas, mas a existência do MA e do C-RP depende de você configurá-los.**
+1. O **Candidate BSR (R01)** envia mensagens **Bootstrap** para todo o domínio PIM.  
+2. Os **Candidate RPs (R02 e R03)** enviam mensagens **C-RP Advertisement** ao BSR, informando os grupos multicast que desejam atender.  
+3. O BSR compila todas as informações e distribui a tabela final de mapeamento (*Group → RP*) para todos os roteadores.  
 
-## Ativando o protocolo PIM Sparse Mode
+Dessa forma, cada roteador PIM-SM aprende quem é o RP ativo para cada grupo multicast.  
+Se um RP deixar de responder, o BSR detecta e remove automaticamente seu mapeamento, promovendo o RP de backup.
 
-Agora que entendemos a lógica, vamos ativar o protocolo em todas as interfaces que participam do multicast nos roteadores, de R01 a R05.
+👉 **Ou seja:** o BSR automatiza o processo de **eleição, distribuição e failover** de RPs, mas a definição inicial dos candidatos ainda é feita pelo administrador.
+
+---
+
+## ⚙️ Ativando o protocolo PIM Sparse Mode
+
+Com a base teórica clara, o próximo passo é ativar o **PIM Sparse Mode** em todas as interfaces que participam do domínio multicast (de R01 a R05).
 
 ```ios
 R01#show ip int br
@@ -434,27 +440,40 @@ FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
 FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
 FastEthernet1/0            10.0.0.18       YES NVRAM  up                    up
 Loopback0                  1.1.1.1         YES NVRAM  up                    up
+
 R01#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
+
 R01(config)#int f0/0
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
-R01(config-if)#int f0/1
+
+R01(config)#int f0/1
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
-R01(config-if)#int f1/0
+
+R01(config)#int f1/0
 R01(config-if)#ip pim sparse-mode
-R01(config-if)#
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
-R01(config-if)#
-R01(config-if)#int l0/0
+
+R01(config)#int lo0
 R01(config-if)#ip pim sparse-mode
 *Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-Agora que o **PIM Sparse-Mode** foi ativado, vamos analisar a tabela de **roteamento multicast:**
+Agora que o PIM Sparse-Mode está habilitado, podemos verificar se o roteamento multicast foi corretamente ativado:  
+
+```ios
+R01#show ip multicast
+  Multicast Routing: enabled
+  Multicast Multipath: disabled
+  Multicast Route limit: No limit
+  Multicast Triggered RPF check: enabled
+  Multicast Fallback group mode: Sparse
+  Multicast DVMRP Interoperability: disabled
+```
+
+Em seguida, validamos a tabela de roteamento multicast:
 
 ```ios
 R01#show ip mrout
@@ -467,22 +486,26 @@ Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
        Z - Multicast Tunnel, z - MDT-data group sender,
        Y - Joined MDT-data group, y - Sending to MDT-data group
 Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
+Timers: Uptime/Expires
+Interface state: Interface, Next-Hop or VCD, State/Mode
 
-(*, 224.0.1.40), 00:15:57/00:02:04, RP 0.0.0.0, flags: DCL
+(*, 224.0.0.0), 00:10:57/00:02:04, RP 0.0.0.0, flags: SCL
   Incoming interface: Null, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 00:15:57/00:02:04
-
-R01#
+    FastEthernet0/0, Forward/Sparse, 00:10:57/00:02:04
 ```
+  
+Note que neste estágio ainda não há grupos específicos configurados — apenas as entradas padrão criadas ao ativar o PIM.  
+As mensagens Bootstrap e Candidate RP Advertisement começarão a circular assim que configurarmos o Candidate BSR (R01) e os Candidate RPs (R02 e R03).  
+  
+💡 **Dica prática:**  
+Ao capturar o tráfego PIM no Wireshark **(filtro ip.proto == 103)**, será possível visualizar as mensagens Bootstrap e C-RP Adv sendo trocadas entre os roteadores, comprovando que o domínio PIM-SM com BSR está operacional.  
 
-Então eu realizei uma captura de pacotes na interface F0/0 de R01.  
+--- 
 
-![Whireshark](Imagens/02.png)  
+Alterar Daqui
 
-Então podemos verificar que o grupo **224.0.1.40** foi ativado.  
+---
 
 ### 🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode
 
