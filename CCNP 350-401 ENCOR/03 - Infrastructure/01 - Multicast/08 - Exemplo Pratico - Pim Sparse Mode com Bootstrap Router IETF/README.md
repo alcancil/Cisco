@@ -15,12 +15,10 @@
     - [🔍 Testes Preliminares](#-testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
     - [📘 No nosso cenário](#-no-nosso-cenário)
-  - [🧩 Como funciona o Auto-RP da Cisco](#-como-funciona-o-auto-rp-da-cisco)
-  - [1️⃣ Os dois papéis do Auto-RP](#1️⃣-os-dois-papéis-do-auto-rp)
-  - [2️⃣ Comunicação entre eles](#2️⃣-comunicação-entre-eles)
-  - [🧠 Como o domínio decide quem será o RP](#-como-o-domínio-decide-quem-será-o-rp)
-  - [3️⃣ Comandos de configuração (modo Auto-RP)](#3️⃣-comandos-de-configuração-modo-auto-rp)
-    - [💡 A pegadinha do nome “Auto-RP”](#-a-pegadinha-do-nome-auto-rp)
+  - [🧩 Como funciona o Bootstrap Router (BSR)](#-como-funciona-o-bootstrap-router-bsr)
+    - [1️⃣ Os papéis no BSR](#1️⃣-os-papéis-no-bsr)
+    - [2️⃣ Como ocorre a comunicação](#2️⃣-como-ocorre-a-comunicação)
+    - [3️⃣ Critérios de eleição](#3️⃣-critérios-de-eleição)
   - [Ativando o protocolo PIM Sparse Mode](#ativando-o-protocolo-pim-sparse-mode)
     - [🧠 Entendendo a Eleição do Designated Router (DR) no PIM Sparse Mode](#-entendendo-a-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [💬 Entendendo as Mensagens PIM Hello](#-entendendo-as-mensagens-pim-hello)
@@ -283,113 +281,113 @@ R01#show ip multicast
 Com o roteamento multicast ativo, o próximo passo é habilitar o protocolo PIM nas interfaces participantes (LANs e links entre roteadores).  
 Repita esse processo de R01 a R05, garantindo que todas as interfaces de roteamento participem do domínio PIM-SM.  
 
----
-
-alterar daqui
-
----
-
 ### Onde o PIM deve ser ativado
 
-No modo **Sparse Mode (PIM-SM)**, o tráfego multicast não é floodado automaticamente — ele só percorre interfaces onde existe interesse explícito (IGMP Join) ou onde há necessidade de alcançar o **Rendezvous Point (RP)**.  
-  
-👉 Portanto, o PIM deve ser ativado em todas as interfaces que participam do domínio multicast, ou seja:
+No modo **Sparse Mode (PIM-SM)**, o tráfego multicast não é disseminado automaticamente.  
+Ele só é encaminhado por interfaces que **participam ativamente do domínio multicast**, seja porque há **hosts interessados (IGMP Join)** ou porque é necessário **alcançar o Rendezvous Point (RP)**.  
+ 
+👉 Por isso, o PIM deve ser ativado em **todas as interfaces relevantes** da topologia, ou seja:  
 
-- **Interfaces entre roteadores PIM vizinhos** (para formar a árvore multicast e permitir a troca de mensagens PIM Join/Prune);
-- **Interfaces conectadas a redes com fontes (senders) ou receptores (receivers) multicast**;
-- **Interfaces de loopback**, quando utilizadas como endereço do RP ou como Router-ID PIM.
+- **Entre roteadores PIM vizinhos**, para formar adjacências e trocar mensagens PIM Join/Prune;  
+- **Em interfaces conectadas a fontes (senders)** e receptores (receivers) multicast;  
+- **Em interfaces de Loopback**, quando utilizadas como endereço de RP ou de Candidate BSR.
 
-✅ **Resumo da regra prática para PIM-SM**  
+---
 
-| Situação                           | PIM deve ser ativado?    | Motivo                                                         |
-|------------------------------------|--------------------------|----------------------------------------------------------------|
-| Interface entre roteadores         | ✅ Sim                   | Necessário para formar vizinhança PIM e propagar joins/prunes  |
-| Interface com host receptor (IGMP) | ✅ Sim                   | Permite que o roteador DR receba e encaminhe IGMP Reports      |
-| Interface com fonte multicast      | ✅ Sim                   | Permite que o roteador DR da fonte envie PIM Register ao RP    |
-| Interface Loopback usada como RP   | ✅ Sim                   | O RP precisa estar ativo no domínio PIM                        |
-| Loopback apenas como Router-ID     | ⚙️ Opcional              | Apenas usada como origem lógica dos pacotes PIM                |  
+✅ **Resumo prático para ativação do PIM-SM**
 
-🌀 Observação importante sobre as Loopbacks
+| Situação                           | PIM deve ser ativado? | Motivo                                                                |
+|------------------------------------|-----------------------|-----------------------------------------------------------------------|
+| Interface entre roteadores         | ✅ Sim               | Necessário para formar vizinhanças PIM e trocar mensagens Join/Prune   |
+| Interface com host receptor (IGMP) | ✅ Sim               | Permite ao roteador DR receber IGMP Reports e criar a árvore multicast |
+| Interface com fonte multicast      | ✅ Sim               | O DR da fonte envia PIM Register ao RP                                 |
+| Loopback usada como RP ou BSR      | ✅ Sim               | O endereço de Loopback precisa participar do domínio PIM               |
+| Loopback apenas como Router-ID     | ⚙️ Opcional          | Pode ser omitido se não for usada no processo PIM                      |
 
-No PIM Sparse Mode, a Loopback pode ter uma função mais relevante do que no Dense Mode:
+---
 
-- Se ela for usada como endereço do RP (definido manualmente com **ip pim rp-address** <loopback>), o PIM deve estar habilitado nela.
-- Se for usada apenas como **Router-ID do OSPF/PIM, não há necessidade de ativar PIM nela**.
-  
-💡 Em geral, em laboratórios e ambientes de estudo, é prática comum habilitar o PIM apenas nas interfaces físicas e na loopback do RP. Porém como **boa prática**, iremos ativar o protocolo **pim sparse-mode** em todas as interfaces loopbacks.  
+🌀 **Observação sobre as Loopbacks**  
+
+No PIM Sparse Mode, a **Loopback** pode representar funções lógicas importantes:  
+
+- Se for usada como **endereço do RP** ou **Candidate BSR**, o PIM **deve ser ativado** nela.  
+- Se for apenas o **Router-ID do OSPF**, a ativação do PIM é opcional.  
+
+💡 Em ambientes de laboratório — como este — é prática comum **ativar o PIM em todas as interfaces loopback** para simplificar a topologia e garantir que elas participem do domínio multicast.  
+
+---
 
 ### 📘 No nosso cenário
 
-Vamos ativar o PIM em todas as interfaces de roteadores que fazem parte do domínio multicast, incluindo:  
+Vamos habilitar o **PIM Sparse Mode** em todas as interfaces de roteadores que participam do domínio multicast, incluindo:  
 
-- Todas as interfaces ponto a ponto entre roteadores (R01–R02, R02–R03, R03–R04, R04–R05, R05–R01);
-- Interfaces conectadas às LANs dos hosts (Server, Host02 e Host03).
-- Apenas as interfaces de Loopback serão avaliadas conforme sua função:
-  - Se forem usadas apenas como identificação OSPF, não precisam de PIM;
-  - Se forem usadas como RP, devem ter PIM ativo.
-  - Como boas práticas, vamos ativar o protocolo PIM em todas as interfaces loopabacks.  
+- Todas as interfaces ponto a ponto entre roteadores (R01–R02, R02–R03, R03–R04, R04–R05, R05–R01);  
+- As interfaces conectadas às LANs dos hosts (Server, Host02 e Host03);  
+- As interfaces de Loopback, tanto para fins de identificação OSPF quanto para uso do **BSR e dos Candidate RPs**.  
 
-Antes de ativarmos, é importante compreender o conceito de eleição dos **Rendezvous Point (RP)**, ou o **Auto RP**.  
+Antes de iniciar a configuração, é importante compreender como ocorre o **processo de eleição do RP** no mecanismo **Bootstrap Router (BSR)**, que substitui o Auto-RP proprietário da Cisco.
 
-## 🧩 Como funciona o Auto-RP da Cisco
+---
 
-O Auto-RP é um mecanismo proprietário da Cisco que automatiza a descoberta e distribuição de RPs dentro de um domínio **PIM Sparse Mode**.
+## 🧩 Como funciona o Bootstrap Router (BSR)
 
-Em vez de configurar manualmente o comando **ip pim rp-address** em todos os roteadores, o Auto-RP usa dois papéis principais e dois grupos multicast reservados para distribuir essa informação automaticamente.
-
-## 1️⃣ Os dois papéis do Auto-RP
-
-| Função        | Sigla    | Responsabilidade                                                          | Grupo Multicast Utilizado |
-|---------------|----------|---------------------------------------------------------------------------|---------------------------|
-| Candidate RP  | **C-RP** | Anuncia-se como potencial RP para determinados grupos multicast           | **224.0.1.40**            |
-| Mapping Agent | **MA**   | Escuta os anúncios dos C-RPs, escolhe o RP final e distribui o mapeamento | **224.0.1.39**            |  
-
-## 2️⃣ Comunicação entre eles
-
-O Candidate RP envia mensagens Auto-RP Announcement (anúncio) para o grupo 224.0.1.40, dizendo:  
-
-- 🗣️ “Eu posso ser o RP para os grupos **224.0.0.0 – 239.255.255.255**”.  
-
-O Mapping Agent (MA) se inscreve nesse grupo **224.0.1.40 (via PIM/IGMP)** e escuta todos os anúncios.  
-Ele então escolhe um ou mais RPs válidos e repassa essa informação para todos os roteadores PIM do domínio via grupo **224.0.1.39**, através da mensagem Auto-RP Mapping.  
+O **Bootstrap Router (BSR)** é o método **padrão IETF (RFC 5059)** utilizado pelo **PIM Sparse Mode (PIM-SM)** para automatizar a **descoberta e a distribuição de RPs** dentro de um domínio multicast.  
+Diferente do Auto-RP, o BSR não utiliza grupos multicast reservados (como 224.0.1.39 e 224.0.1.40).  
+Toda a comunicação ocorre por meio de mensagens **Bootstrap** e **Candidate RP Advertisement (C-RP Adv)** encapsuladas no próprio PIM.  
   
-Todos os roteadores escutam o **224.0.1.39** e, assim, aprendem qual é o RP ativo para cada grupo multicast.
-
-## 🧠 Como o domínio decide quem será o RP
-
-O Mapping Agent é quem escolhe o RP com base nos anúncios que recebe.  
-A seleção normalmente segue critérios simples:  
-
-- Todos os **C-RPs** válidos são incluídos na tabela de mapeamento.
-- Cada grupo multicast pode ter um **RP diferente** (dependendo do range anunciado).
-
-Se houver mais de um C-RP para o mesmo grupo, o MA usa o endereço IP mais alto como critério de desempate.  
-
-💡 **Em laboratório, normalmente deixamos apenas um Mapping Agent e um ou dois Candidate RPs — assim dá pra ver a eleição e o tráfego de anúncios claramente.**
-
-## 3️⃣ Comandos de configuração (modo Auto-RP)
-
-### 💡 A pegadinha do nome “Auto-RP”
-
-Apesar do nome “Auto-RP” sugerir que tudo é automático, ele não é totalmente automático.  
-O que o Auto-RP automatiza é a descoberta e distribuição do RP dentro do domínio PIM-SM — ou seja, os roteadores aprendem automaticamente quem é o RP sem precisar do comando manual ip pim rp-address.  
-Mas para isso acontecer, alguém precisa gerar e propagar essa informação — e é aí que entram os dois papéis:  
-
-- **Candidate RP (C-RP)** → quem “se oferece” para ser RP.
-- **Mapping Agent (MA)** → quem “ouve”, escolhe e anuncia o vencedor.
-
-**OBS:** Esses papéis devem ser definidos manualmente pelo administrador.  
+---
   
-🧠 **Analogia simples (pensa como uma eleição)**  
-  
-Imagine que o domínio PIM é uma cidade:  
+### 1️⃣ Os papéis no BSR
 
-- Vários roteadores podem se candidatar a prefeito **(Candidate RP)**.
-- Mas precisa ter um cartório eleitoral **(Mapping Agent)** que receba as candidaturas e divulgue quem foi eleito para toda a cidade.
-
-👉 **O processo de votação e divulgação é automático — mas os papéis são definidos manualmente**.  
-Sem pelo menos **um Mapping Agent e um Candidate RP**, não há eleição alguma.  
+| Função            | Sigla     | Responsabilidade                                                                                              |
+|-------------------|-----------|---------------------------------------------------------------------------------------------------------------|
+| **Candidate BSR** | **C-BSR** | Roteador que se candidata a coordenar o domínio PIM, recolhendo anúncios de RPs e distribuindo a lista final. |
+| **Candidate RP**  | **C-RP**  | Roteador que se oferece para atuar como Rendezvous Point para um ou mais grupos multicast.                    |
   
+---
+  
+### 2️⃣ Como ocorre a comunicação
+
+1. **Os Candidate RPs (C-RPs)** enviam anúncios para o **Candidate BSR (C-BSR)** contendo os grupos multicast que desejam atender.  
+2. O **C-BSR eleito como BSR ativo** consolida todas as informações recebidas e distribui periodicamente mensagens **Bootstrap** para todo o domínio.  
+3. Cada roteador PIM-SM recebe essas mensagens e atualiza sua tabela local de RPs disponíveis.  
+  
+👉 Assim, todos os roteadores aprendem automaticamente **quem é o RP ativo** para cada grupo multicast, sem necessidade de configuração manual.  
+  
+---
+
+### 3️⃣ Critérios de eleição
+
+Se houver mais de um **Candidate BSR**, a eleição é determinada com base nos seguintes critérios:  
+  
+1. **Prioridade configurada** (menor prioridade vence);  
+2. Em caso de empate, o **maior endereço IP** da interface candidata é usado como critério de desempate.  
+  
+De forma semelhante, se houver múltiplos **Candidate RPs**, o domínio poderá alternar entre eles conforme as políticas definidas pelo BSR.  
+No nosso laboratório, isso será demonstrado ao **forçar a falha de um RP ativo**, permitindo observar o **failover automático para o RP de backup**.  
+  
+---
+
+💡 **Resumo geral:**  
+  
+O **BSR** é o “cérebro” do domínio multicast, responsável por:  
+
+- Eleger o **Rendezvous Point (RP)** ativo;  
+- Distribuir os mapeamentos (*Group → RP*) para todos os roteadores;  
+- Garantir a **redundância e continuidade** do serviço multicast em caso de falha de um RP.
+
+---
+
+Pronto — com os conceitos estabelecidos, o próximo passo é iniciar a configuração do **Candidate BSR (R01)** e dos **Candidate RPs (R02 e R03)** dentro da topologia.  
+
+  
+---
+
+Alterar Daqui
+
+---
+
+
 📊 **O que é automático e o que é manual**  
 
 | Ação                               | Automático? | Quem decide                 |
