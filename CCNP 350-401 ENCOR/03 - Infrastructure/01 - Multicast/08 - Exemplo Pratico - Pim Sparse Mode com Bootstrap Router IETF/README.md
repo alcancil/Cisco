@@ -6,11 +6,11 @@
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
     - [Explicação do Cenário](#explicação-do-cenário)
       - [**O que é o RP (Rendezvous Point)**](#o-que-é-o-rp-rendezvous-point)
-      - [🧩 1️⃣ O papel do grupo 224.0.1.40 (Auto-RP Announcement)](#-1️⃣-o-papel-do-grupo-2240140-auto-rp-announcement)
-      - [🌳 2️⃣ PIM Sparse Mode — como nasce a árvore multicast](#-2️⃣-pim-sparse-mode--como-nasce-a-árvore-multicast)
+      - [🧩 1️⃣ O papel do Bootstrap Router (BSR)](#-1️⃣-o-papel-do-bootstrap-router-bsr)
+      - [🌳 2️⃣ O comportamento do PIM Sparse Mode](#-2️⃣-o-comportamento-do-pim-sparse-mode)
       - [🔹 3️⃣ O papel do IGMP Join](#-3️⃣-o-papel-do-igmp-join)
-      - [🔀 4️⃣ Do IGMP para o RP: como o Join “descobre o caminho”](#-4️⃣-do-igmp-para-o-rp-como-o-join-descobre-o-caminho)
-      - [🛰️ 5️⃣ Agora entra a fonte (source)](#️-5️⃣-agora-entra-a-fonte-source)
+      - [🔀 4️⃣ Como o DR encontra o RP correto](#-4️⃣-como-o-dr-encontra-o-rp-correto)
+      - [🛰️ 5️⃣ Quando a fonte começa a transmitir](#️-5️⃣-quando-a-fonte-começa-a-transmitir)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [Testes Preliminares](#testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
@@ -113,82 +113,84 @@ Esses grupos ficam prontos para uso assim que algum roteador for configurado com
   
 👉 **Resumo:** o RP é essencial somente no modo Sparse, porque nesse modo o tráfego não é floodado.
 
-#### 🧩 1️⃣ O papel do grupo 224.0.1.40 (Auto-RP Announcement)
 
-✅ O grupo 224.0.1.40 é usado para anunciar automaticamente quem serão os Rendezvous Points (RPs) no domínio PIM-SM.  
+#### 🧩 1️⃣ O papel do Bootstrap Router (BSR)
+
+✅ O **Bootstrap Router (BSR)** é o mecanismo **padrão IETF (RFC 5059)** para **descoberta e distribuição automática dos Rendezvous Points (RPs)** dentro de um domínio PIM-SM.  
   
-Mas há **duas entidades** envolvidas nesse processo Auto-RP da Cisco: 
-
-| Função              | Grupo Multicast | Descrição                                                                                                         |
-|---------------------|-----------------|-------------------------------------------------------------------------------------------------------------------|
-| Candidate RP (C-RP) | 224.0.1.40      | Envia anúncios periódicos dizendo **"posso atuar como RP"**                                                       |
-| Mapping Agent (MA)  | 224.0.1.39      | Escuta os anúncios dos C-RPs e escolhe quem será o RP final — depois distribui o mapeamento a todos os roteadores |
-
-Então o grupo **224.0.1.40** serve para descobrir os RPs automaticamente, substituindo a configuração manual, mas somente no PIM Sparse Mode.
-
-No Dense Mode, esses grupos aparecem, mas não têm função ativa — são apenas “ouvidos” por compatibilidade.
-
-#### 🌳 2️⃣ PIM Sparse Mode — como nasce a árvore multicast
-
-No Sparse Mode, não há flood and prune, então o multicast não se propaga automaticamente.  
+Ele substitui o **Auto-RP** (proprietário da Cisco), removendo a necessidade dos grupos multicast **224.0.1.39** e **224.0.1.40**.  
+Em vez disso, o BSR realiza todo o processo de **eleição e anúncio de RPs** por meio de mensagens PIM nativas, tornando a solução **multivendor e interoperável**.  
   
-👉 O tráfego só flui se houver um receptor que peça explicitamente para participar — e esse pedido começa com o IGMP Join.  
+No BSR, existem duas funções principais:  
 
+| Função                    | Descrição                                                                                                                    |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **Candidate RP (C-RP)**   | Roteador que se oferece para atuar como RP para determinados grupos multicast.                                               |
+| **Candidate BSR (C-BSR)** | Roteador que coordena o processo, recolhe anúncios dos C-RPs e distribui as informações finais aos demais roteadores PIM-SM. |
+  
+Após a eleição, o **BSR ativo** envia periodicamente mensagens do tipo **Bootstrap** para todo o domínio, informando quais RPs estão disponíveis e quais grupos eles atendem.  
+Com isso, os roteadores aprendem automaticamente o mapeamento (*Group → RP*) sem intervenção manual.  
+
+---
+
+#### 🌳 2️⃣ O comportamento do PIM Sparse Mode
+  
+O **PIM Sparse Mode** trabalha sob o princípio da economia: ele **não envia tráfego multicast até que haja um receptor interessado**.  
+Isso o torna ideal para redes grandes ou ambientes corporativos, onde o consumo de banda precisa ser controlado.  
+  
+Em vez de inundar o domínio com tráfego (como ocorre no Dense Mode), o PIM-SM constrói **árvores de distribuição seletivas** — chamadas **Shared Trees** — baseadas no RP.  
+Essas árvores crescem sob demanda, acompanhando os roteadores onde os receptores estão conectados.  
+  
+---
+  
 #### 🔹 3️⃣ O papel do IGMP Join
-
-Vamos supor o cenário:
-
-- O Host envia IGMP Join 239.1.1.1
-- O roteador local (chamado de Designated Router – DR) recebe esse IGMP Report.
-
-Mas agora vem a dúvida-chave:  
   
-**“Como o roteador sabe para onde enviar o join, se ele não faz flood?”**  
+Os receptores, representados aqui pelos hosts multicast, sinalizam interesse em participar de um grupo através do **IGMP (Internet Group Management Protocol)**.  
+O host envia uma mensagem **IGMP Membership Report (Join)** ao roteador local, conhecido como **Designated Router (DR)**.  
   
-Excelente 👇  
+O DR, ao receber esse pedido, entende que há um receptor desejando participar do grupo — por exemplo, **239.1.1.1** — e aciona o processo PIM para buscar o tráfego correspondente.  
+  
+---
+  
+#### 🔀 4️⃣ Como o DR encontra o RP correto  
+  
+O Designated Router precisa descobrir **quem é o RP responsável** pelo grupo solicitado.  
+Essa informação pode ser aprendida de três formas:  
 
-#### 🔀 4️⃣ Do IGMP para o RP: como o Join “descobre o caminho”
+- Por configuração estática (`ip pim rp-address`);  
+- Por mecanismos proprietários como o **Auto-RP**;  
+- Ou, neste laboratório, por meio do **Bootstrap Router (BSR)**.
+  
+Com base nesse conhecimento, o DR envia um **PIM Join** em direção ao RP — **seguindo a rota unicast normal**, sem flood.  
+Cada roteador no caminho cria uma entrada **(*,G)** na tabela multicast, registrando que existe interesse ativo naquele grupo.  
+  
+Dessa forma, o domínio PIM constrói gradualmente uma árvore lógica (*,G) que conecta todos os receptores ao RP, aguardando o surgimento de uma fonte.  
+  
+---
+  
+#### 🛰️ 5️⃣ Quando a fonte começa a transmitir  
+  
+Assim que a fonte (por exemplo, o servidor 192.168.10.1) inicia o envio de pacotes multicast para o grupo 239.1.1.1, o roteador mais próximo dela — chamado **Source DR** — envia uma **mensagem PIM Register** diretamente ao RP.  
+Essa mensagem pode conter o tráfego encapsulado ou apenas um aviso de que há uma nova fonte ativa.  
+  
+O RP, ao receber esse registro, associa a fonte ao grupo multicast e conecta as duas pontas:  
 
-Quando um host envia um IGMP Join, o roteador de borda (DR – Designated Router) aprende que há um receptor interessado.  
-A partir daí, o DR precisa descobrir quem é o RP responsável por aquele grupo.  
-  
-**Exemplo:** o host 192.168.20.2 envia um Join para o grupo 239.1.1.1, e o DR encaminha o PIM Join em direção ao RP 1.1.1.1 seguindo a rota unicast.  
-  
-- O Host envia IGMP Join → o roteador (DR) aprende que tem um receptor interessado no grupo 239.1.1.1.
-- O DR consulta sua tabela PIM:
-  “Quem é o RP responsável pelo grupo 239.1.1.1?”
-- Essa informação vem de:
-  - ip pim rp-address x.x.x.x, ou
-  - Auto-RP (224.0.1.39/40), ou
-  - BSR (Bootstrap Router).
-- O DR então envia uma mensagem PIM Join em direção ao RP, seguindo a rota unicast até ele (sem flood).
-  
-**🔁 Isso é o ponto crucial:**  
-👉 O Join é roteado unicast até o RP, não é floodado.  
-  
-Cada roteador no caminho cria uma entrada (*,G) na tabela multicast:  
+- Fontes → RP → Receptores.  
 
-- “Existe um receptor interessado no grupo 239.1.1.1”
-- “O tráfego deve ser encaminhado nessa direção caso apareça”.
+O fluxo de tráfego multicast passa então a percorrer a **árvore compartilhada (*,G)**.  
+Com o tempo, os roteadores próximos aos receptores podem optar por **migrar para a Shortest Path Tree (SPT)**, formando um caminho direto até a fonte — eliminando a necessidade do RP no encaminhamento de dados.  
   
-Quando o RP recebe esse Join, ele sabe:
-
-- “Tenho receptores interessados no grupo G”.
+---
   
-#### 🛰️ 5️⃣ Agora entra a fonte (source)
+👉 **Resumo:**  
+O **Bootstrap Router (BSR)** fornece um método padronizado, automático e **compatível com qualquer fabricante** para distribuição de RPs em domínios PIM-SM.  
+Ele garante que todos os roteadores conheçam o RP correto para cada grupo, permitindo a construção dinâmica das árvores multicast com eficiência, escalabilidade e interoperabilidade.  
 
-Quando um servidor multicast (ex: 192.168.10.1) começa a enviar tráfego para 239.1.1.1:
+---
 
-- O roteador mais próximo da fonte (chamado source DR) envia uma mensagem PIM Register diretamente ao RP (unicast).
-- Essa mensagem carrega o tráfego ou anuncia a existência da fonte.
-  
-O RP aprende:  
+Alterar Daqui
 
-- “A fonte S está enviando para o grupo G.”
-- O RP então conecta as duas pontas (S e os receptores).
-- Ele cria o fluxo (*,G) e (S,G).
-- O tráfego multicast começa a fluir da fonte até o RP, e do RP até os receptores.
-- Depois que o tráfego é estabelecido, o roteador receptor pode migrar para a SPT (Shortest Path Tree), formando um caminho direto até a fonte, sem depender do RP.
+---
 
 ## 🌐 Topologia do Laboratório
 
