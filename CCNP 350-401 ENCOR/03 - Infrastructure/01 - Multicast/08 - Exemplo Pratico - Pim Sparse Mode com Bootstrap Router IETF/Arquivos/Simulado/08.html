@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast - 05</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast - IGMP (Parte 2)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre IGMP. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="question-count" class="text-sm font-semibold text-slate-500">Questão 1 de 10</span>
+        <span id="quiz-timer" class="text-sm font-semibold text-slate-500">10:00</span>
+      </div>
+      <h2 id="question-text" class="text-xl font-semibold mb-6"></h2>
+      <div id="options-container" class="space-y-3"></div>
+      <div class="flex justify-between items-center mt-6">
+        <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">Próximo</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2 class="text-2xl font-bold text-center mb-4">Resultados</h2>
+      <p id="score-el" class="text-lg text-center mb-6"></p>
+      <div id="review-el"></div>
+    </div>
+  </div>
+
+<script>
+  const SIMULADO_ID = 'simulado_05';
+  const SIMULADO_TITULO = 'Simulado Multicast - IGMP (Parte 2)';
+
+  const quizData = [
+    {
+  question: "Qual é a função principal do Multicast Source (Origem Multicast) no PIM?",
+  options: ["Rotear tráfego unicast", "Gerar e transmitir o tráfego multicast", "Eleger o DR da rede", "Processar mensagens IGMP"],
+  answer: "Gerar e transmitir o tráfego multicast",
+  explanation: "O Multicast Source é o dispositivo que gera e transmite o tráfego multicast, sendo o ponto de origem dos dados multicast na rede."
+},
+{
+  question: "Qual endereço IP é usado para representar o Server IPTV no Multicast Source?",
+  options: ["192.168.1.10", "239.255.1.1", "10.1.1.1", "232.1.1.1"],
+  answer: "192.168.1.10",
+  explanation: "Na representação do Multicast Source, o material mostra 'Server IPTV (192.168.1.10)' como o endereço do servidor que gera tráfego multicast."
+},
+{
+  question: "No Designated Router, qual anotação indica limitação do processamento?",
+  options: ["*Apenas DR processa IGMP do segmento*", "*Evita duplicação de Join/Register*", "*Eleição automática*", "*Interface com origem*"],
+  answer: "*Apenas DR processa IGMP do segmento*",
+  explanation: "A anotação '*Apenas DR processa IGMP do segmento*' destaca que somente o DR eleito processa mensagens IGMP no segmento de rede, evitando processamento duplicado."
+},
+{
+  question: "Qual processo está representado entre FHR e RP na sequência do First Hop Router?",
+  options: ["Join", "Prune", "Register", "Hello"],
+  answer: "Register",
+  explanation: "Na representação 'Source → [FHR] → Register → [RP]', o processo 'Register' é mostrado como a comunicação entre o First Hop Router e o Rendezvous Point."
+},
+{
+  question: "Quantos receptores (LHRs) estão conectados ao RP na representação visual?",
+  options: ["1 receptor", "2 receptores", "3 receptores", "4 receptores"],
+  answer: "2 receptores",
+  explanation: "Na representação do RP são mostrados [LHR1] e [LHR2] conectados ao ponto de encontro, indicando 2 receptores na topologia."
+},
+{
+  question: "No Last Hop Router, qual conversão específica é mencionada nas responsabilidades?",
+  options: ["PIM para IGMP", "IGMP para PIM", "Unicast para Multicast", "Multicast para Unicast"],
+  answer: "IGMP para PIM",
+  explanation: "O LHR realiza 'Conversão IGMP→PIM: Converte IGMP Join em PIM Join upstream', convertendo solicitações IGMP locais em mensagens PIM para a rede."
+},
+{
+  question: "Qual sigla identifica o modo de operação do SPT Router?",
+  options: ["(S,G)", "(S,*)", "(*,G)", "(G,S)"],
+  answer: "(S,G)",
+  explanation: "O SPT Router opera no modo '(S,G)' conforme mostrado no material, indicando árvore específica por origem (Source) e grupo (Group)."
+},
+{
+  question: "No Bootstrap Router, qual faixa de endereços é associada ao SSM?",
+  options: ["224.x.x.x", "239.x.x.x", "232.x.x.x", "225.x.x.x"],
+  answer: "232.x.x.x",
+  explanation: "O material mostra 'RP para 232.x.x.x ≈ N/A (SSM)', indicando que a faixa 232.x.x.x é reservada para Source-Specific Multicast."
+},
+{
+  question: "Nos Multicast Receivers, qual anotação explica o comportamento dos hosts?",
+  options: ["*Apenas hosts interessados recebem tráfego multicast*", "*Todos os hosts recebem multicast*", "*Hosts processam IGMP*", "*Receptores geram tráfego*"],
+  answer: "*Apenas hosts interessados recebem tráfego multicast*",
+  explanation: "A anotação '*Apenas hosts interessados recebem tráfego multicast*' esclarece que somente os dispositivos que solicitaram o grupo multicast recebem o tráfego."
+},
+{
+  question: "No IGMP Snooping, qual é o estado mostrado para Host3?",
+  options: ["Interessado", "Não Interessado", "Bloqueado", "Não envia Join"],
+  answer: "Não envia Join",
+  explanation: "Na representação do IGMP Snooping, Host3 é mostrado como '(Não envia Join)', diferente dos outros hosts que enviam IGMP Join."
+},
+{
+  question: "Nas mensagens de controle PIM, qual função é atribuída ao 'Register-Stop'?",
+  options: ["Inicia registro de origem", "RP informa que não precisa mais de Registers", "Para todo tráfego multicast", "Cancela eleição de DR"],
+  answer: "RP informa que não precisa mais de Registers",
+  explanation: "Segundo as mensagens de controle, 'Register-Stop: RP informa que não precisa mais de Registers' indica que o RP sinaliza quando não necessita mais receber mensagens Register."
+},
+{
+  question: "No Designated Router (DR), qual processo é mencionado como 'Apenas DR processa IGMP do segmento'?",
+  options: ["Eleição automática", "Interface com hosts", "Registro de origens", "Prevenção de duplicação"],
+  answer: "Interface com hosts",
+  explanation: "A responsabilidade 'Interface com hosts' do DR especifica que apenas o DR processa mensagens IGMP dos hosts locais, evitando processamento duplicado no segmento."
+},
+{
+  question: "Qual é a representação do First Hop Router (FHR) mostrada no material?",
+  options: ["Source → [FHR] → Register → [RP]", "[RP] → [LHR] → SW → Receptor", "[BSR] → Flood → Todos os roteadores PIM", "Source → [Router] → IIF → OIF"],
+  answer: "Source → [FHR] → Register → [RP]",
+  explanation: "O material mostra claramente a representação 'Source → [FHR] → Register → [RP]' indicando o fluxo do tráfego desde a origem através do FHR até o RP."
+},
+{
+  question: "No Rendezvous Point (RP), quantas origens são mostradas na representação visual?",
+  options: ["1 origem", "2 origens", "3 origens", "4 origens"],
+  answer: "3 origens",
+  explanation: "Na representação do RP, são mostradas Source1, Source2 e Source3, totalizando 3 origens conectadas ao ponto de encontro central."
+},
+{
+  question: "Qual processo o Last Hop Router (LHR) realiza segundo suas responsabilidades?",
+  options: ["Encapsula tráfego inicial", "Converte IGMP em PIM", "Descobre RP via FHR", "Distribui informações RP"],
+  answer: "Converte IGMP em PIM",
+  explanation: "Entre as responsabilidades do LHR está 'Conversão IGMP→PIM: Converte IGMP Join em PIM Join upstream', convertendo solicitações locais em mensagens PIM."
+},
+{
+  question: "No SPT Router, qual é a vantagem mencionada para o 'Caminho otimizado'?",
+  options: ["Maior segurança", "Lower latency", "Mais estabilidade", "Menor processamento"],
+  answer: "Lower latency",
+  explanation: "O material indica que o SPT Router oferece 'Lower latency: Oferece menor latência que RPT' como vantagem do caminho otimizado direto."
+},
+{
+  question: "Quantos RPs para diferentes faixas de grupos são mostrados na descoberta de RP do BSR?",
+  options: ["2 RPs", "3 RPs", "4 RPs", "5 RPs"],
+  answer: "3 RPs",
+  explanation: "Na representação do BSR são mostrados: 'RP para 224.x.x.x ≈ 10.1.1.1', 'RP para 239.x.x.x ≈ 10.2.2.2' e 'RP para 232.x.x.x ≈ N/A (SSM)', totalizando 3 RPs."
+},
+{
+  question: "Nos Switches com IGMP Snooping, qual símbolo indica porta interessada?",
+  options: ["✓ (check verde)", "✗ (X vermelho)", "→ (seta)", "🔒 (bloqueado)"],
+  answer: "✓ (check verde)",
+  explanation: "O material mostra claramente que o símbolo '✓' em verde indica 'Interessado' nas portas dos switches com IGMP Snooping."
+},
+{
+  question: "Na seção de Interfaces e Direcionamento, qual verificação é realizada no tráfego que chega pela interface correta?",
+  options: ["RPF Check", "IGMP Join", "PIM Register", "Source Discovery"],
+  answer: "RPF Check",
+  explanation: "O material mostra 'RPF Check: Interface pela qual tráfego deve chegar (Reverse Path Forwarding)' como a verificação realizada no tráfego chegando pela interface correta."
+},
+{
+  question: "Segundo as principais mensagens PIM, qual mensagem tem a função 'Descoberta de vizinhos'?",
+  options: ["Register", "Join", "Prune", "Hello"],
+  answer: "Hello",
+  explanation: "No fluxo de mensagens PIM mostrado, 'Hello: [R1] ↔ [R2] \"Descoberta de vizinhos\"' indica que a mensagem Hello é usada para descoberta de vizinhos na rede PIM."
+}
+  ];
+  
+  // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+  const questionCount = document.getElementById('question-count');
+  const quizTimer = document.getElementById('quiz-timer');
+  const scoreEl = document.getElementById('score-el');
+  const reviewEl = document.getElementById('review-el');
+  const userNameInput = document.getElementById('user-name');
+  
+  let currentQuestionIndex = 0;
+  let userAnswers = [];
+  let score = 0;
+  let timer;
+  let timeSpentSeconds = 0;
+  let currentUserName = '';
+
+  const MAX_TIME = 600; // 10 minutes
+
+  function formatSeconds(secs) {
+      const minutes = Math.floor(secs / 60);
+      const seconds = secs % 60;
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function startQuiz() {
+      const name = userNameInput.value.trim();
+      if (!name) {
+          alert("Por favor, digite seu nome para começar.");
+          return;
+      }
+      currentUserName = name;
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      timeSpentSeconds = 0;
+      quizTimer.textContent = formatSeconds(MAX_TIME);
+      userAnswers = [];
+      score = 0;
+      currentQuestionIndex = 0;
+      timer = setInterval(() => {
+          timeSpentSeconds++;
+          quizTimer.textContent = formatSeconds(MAX_TIME - timeSpentSeconds);
+          if (timeSpentSeconds >= MAX_TIME) {
+              endQuiz();
+          }
+      }, 1000);
+      showQuestion();
+  }
+
+  function showQuestion() {
+      const question = quizData[currentQuestionIndex];
+      questionText.textContent = question.question;
+      optionsContainer.innerHTML = '';
+      questionCount.textContent = `Questão ${currentQuestionIndex + 1} de ${quizData.length}`;
+      nextBtn.classList.add('hidden');
+
+      question.options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.textContent = option;
+          button.className = 'w-full text-left p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors';
+          button.onclick = () => selectAnswer(index);
+          optionsContainer.appendChild(button);
+      });
+  }
+
+  function selectAnswer(selectedIndex) {
+      if (userAnswers[currentQuestionIndex] !== undefined) return;
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      
+      const isCorrect = (selectedIndex === quizData[currentQuestionIndex].answer);
+      if (isCorrect) {
+          score++;
+      }
+      
+      const buttons = optionsContainer.getElementsByTagName('button');
+      for (let i = 0; i < buttons.length; i++) {
+          const button = buttons[i];
+          if (i === quizData[currentQuestionIndex].answer) {
+              button.classList.add('bg-green-200', 'border-green-600');
+          } else if (i === selectedIndex) {
+              button.classList.add('bg-red-200', 'border-red-600');
+          }
+          button.disabled = true;
+      }
+      nextBtn.classList.remove('hidden');
+  }
+
+  function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+          showQuestion();
+      } else {
+          endQuiz();
+      }
+  }
+
+  function endQuiz() {
+    const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+    };
+
+    let results = JSON.parse(localStorage.getItem('quizResults')) || [];
+    results.push(resultRecord);
+    localStorage.setItem('quizResults', JSON.stringify(results));
+      
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+          const isCorrect = userAnswers[i] === q.answer;
+          const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+          const userOptionText = q.options[userAnswers[i]] || 'Não respondida';
+          const correctOptionText = q.options[q.answer];
+
+          return `
+            <div class="p-4 border rounded-lg ${resultClass} mb-4">
+              <p class="font-semibold">Q${i+1}: ${q.question}</p>
+              <p class="text-sm">Sua Resposta: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-medium">${userOptionText}</span></p>
+              ${!isCorrect ? `<p class="text-sm">Resposta Correta: <span class="text-green-600 font-medium">${correctOptionText}</span></p>` : ''}
+              <p class="mt-2 text-sm text-slate-700">Explicação: ${q.rationale}</p>
+            </div>
+          `;
+      }).join('');
+  }
+</script>
+</body>
+</html>
