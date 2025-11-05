@@ -12,7 +12,7 @@
       - [🔀 4️⃣ Como o DR encontra o RP correto](#-4️⃣-como-o-dr-encontra-o-rp-correto)
       - [🛰️ 5️⃣ Quando a fonte começa a transmitir](#️-5️⃣-quando-a-fonte-começa-a-transmitir)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
-    - [Testes Preliminares](#testes-preliminares)
+    - [🔍 Testes Preliminares](#-testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
     - [📘 No nosso cenário](#-no-nosso-cenário)
   - [🧩 Como funciona o Auto-RP da Cisco](#-como-funciona-o-auto-rp-da-cisco)
@@ -186,83 +186,108 @@ Com o tempo, os roteadores próximos aos receptores podem optar por **migrar par
 O **Bootstrap Router (BSR)** fornece um método padronizado, automático e **compatível com qualquer fabricante** para distribuição de RPs em domínios PIM-SM.  
 Ele garante que todos os roteadores conheçam o RP correto para cada grupo, permitindo a construção dinâmica das árvores multicast com eficiência, escalabilidade e interoperabilidade.  
 
----
-
-Alterar Daqui
-
----
-
 ## 🌐 Topologia do Laboratório
 
-A topologia utilizada neste laboratório é composta por cinco roteadores principais (R01, R02, R03, R04 e R05) e três hosts simulados (Server, Host02 e Host03).  
-Os hosts são roteadores Cisco “disfarçados” de PCs, configurados apenas com endereços IP e adesão a grupos multicast via IGMP.  
-O protocolo **OSPF** é utilizado para prover conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** foi configurado para o tráfego multicast, com uso inicial do Auto-RP para eleição automática do Rendezvous Point (RP).
+A topologia deste laboratório é composta por **cinco roteadores principais (R01 a R05)** e **três hosts simulados (Server, Host02 e Host03)**.  
+Os hosts são roteadores Cisco configurados de forma simplificada, apenas com IP e participação em grupos multicast via IGMP, simulando o comportamento de dispositivos finais.  
+  
+O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** é utilizado para o roteamento multicast.  
+Diferente dos exemplos anteriores, aqui implementamos o **Bootstrap Router (BSR)** como mecanismo padrão IETF de descoberta automática de RPs, substituindo o antigo Auto-RP da Cisco.  
+  
+Neste cenário, teremos dois roteadores candidatos a RP (**Candidate RPs**) e um roteador candidato a coordenar o processo (**Candidate BSR**).  
+Durante o laboratório, será possível observar a **eleição automática do RP ativo** e simular **falha em um deles** para confirmar a **assunção automática do RP de backup**.  
+  
+---
 
 **🔧 Endereçamento e Funções**  
 
-| **Dispositivo** | **Interface** | **Endereço IP / Máscara Rede** | **Conexão Função**                                    |
-|-----------------|---------------|--------------------------------|-------------------------------------------------------|
-| R01             | Loopback0     | 1.1.1.1 /32                    | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 192.168.10.254 /24             | LAN do Server - Gateway multicast para Server         |
-|                 | Fa0/1         | 10.0.0.1 /30                   | Link com R02 PIM + OSPF                               |
-|                 | Fa1/0         | 10.0.0.18 /30                  | Link com R05 PIM + OSPF                               |
-| R02             | Loopback0     | 2.2.2.2 /32                    | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.2 /30                   | Link com R01 PIM + OSPF                               |
-|                 | Fa1/0         | 10.0.0.5 /30                   | Link com R03 PIM + OSPF                               |
-| R03             | Loopback0     | 3.3.3.3 /32                    | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.6 /30                   | Link com R02 PIM + OSPF                               |
-|                 | Fa1/0         | 10.0.0.9 /30                   | Link com R04 PIM + OSPF                               |
-| R04             | Loopback0     | 4.4.4.4 /32                    | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.10 /30                  | Link com R03 PIM + OSPF                               |
-|                 | Fa1/0         | 10.0.0.13 /30                  | Link com R05 PIM + OSPF                               |
-|                 | Fa1/1         | 192.168.20.254 /24             | LAN do Host02 - Gateway multicast para Host02         |
-| R05             | Loopback0     | 5.5.5.5 /32                    | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.14 /30                  | Link com R04 PIM + OSPF                               |
-|                 | Fa1/0         | 10.0.0.17 /30                  | Link com R01 PIM + OSPF                               |
-|                 | Fa0/1         | 192.168.30.254 /24             | LAN do Host03 Gateway multicast para Host03           |
-| Server          | Fa0/0         | 192.168.10.1 /24               | LAN com R01 Fonte multicast (sender)                  |
-| Host02          | Fa0/0         | 192.168.20.1 /24               | LAN com R04 Receptor multicast (join-group 239.1.1.1) |
-| Host03          | Fa0/0         | 192.168.30.1 /24               | LAN com R05 Host não inscrito (sem join IGMP)         |
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara Rede** | **Conexão / Função**                          |
+|-----------------|---------------|--------------------------------|-----------------------------------------------|
+| **R01**         | Loopback0     | 1.1.1.1 /32                    | Identificação / Router-ID OSPF                |
+|                 | Fa0/0         | 192.168.10.254 /24             | LAN do Server — Gateway multicast             |
+|                 | Fa0/1         | 10.0.0.1 /30                   | Link com R02 — PIM + OSPF                     |
+|                 | Fa1/0         | 10.0.0.18 /30                  | Link com R05 — PIM + OSPF                     |
+| **R02**         | Loopback0     | 2.2.2.2 /32                    | Identificação / Router-ID OSPF                |
+|                 | Fa0/0         | 10.0.0.2 /30                   | Link com R01 — PIM + OSPF                     |
+|                 | Fa1/0         | 10.0.0.5 /30                   | Link com R03 — PIM + OSPF                     |
+| **R03**         | Loopback0     | 3.3.3.3 /32                    | Candidate RP — Identificação / Router-ID OSPF |
+|                 | Fa0/0         | 10.0.0.6 /30                   | Link com R02 — PIM + OSPF                     |
+|                 | Fa1/0         | 10.0.0.9 /30                   | Link com R04 — PIM + OSPF                     |
+| **R04**         | Loopback0     | 4.4.4.4 /32                    | Identificação / Router-ID OSPF                |
+|                 | Fa0/0         | 10.0.0.10 /30                  | Link com R03 — PIM + OSPF                     |
+|                 | Fa1/0         | 10.0.0.13 /30                  | Link com R05 — PIM + OSPF                     |
+|                 | Fa1/1         | 192.168.20.254 /24             | LAN do Host02 — Gateway multicast             |
+| **R05**         | Loopback0     | 5.5.5.5 /32                    | Identificação / Router-ID OSPF                |
+|                 | Fa0/0         | 10.0.0.14 /30                  | Link com R04 — PIM + OSPF                     |
+|                 | Fa1/0         | 10.0.0.17 /30                  | Link com R01 — PIM + OSPF                     |
+|                 | Fa0/1         | 192.168.30.254 /24             | LAN do Host03 — Gateway multicast             |
+| **Server**      | Fa0/0         | 192.168.10.1 /24               | Fonte multicast (sender)                      |
+| **Host02**      | Fa0/0         | 192.168.20.1 /24               | Receptor multicast (join-group 239.1.1.1)     |
+| **Host03**      | Fa0/0         | 192.168.30.1 /24               | Host sem participação (sem join IGMP)         |
+
+---
 
 **🧭 Resumo da Lógica**  
 
-- O Server (192.168.10.1) envia tráfego multicast para o grupo 239.1.1.1.
-- Apenas o Host02 (192.168.20.1) envia IGMP Join solicitando adesão ao grupo 239.1.1.1.
-- O Host03 (192.168.30.1) não participa, servindo como referência para áreas sem receptores.
-- O PIM Sparse Mode depende de um Rendezvous Point (RP) — no primeiro momento, selecionado automaticamente via Auto-RP (grupos 224.0.1.39 e 224.0.1.40).
-- O roteador designado como RP será o ponto de encontro entre a fonte (Server) e os receptores (Host02).
-- O RPF (Reverse Path Forwarding) é utilizado para validar o caminho de retorno até a fonte multicast com base na tabela OSPF.
+- O **Server (192.168.10.1)** transmite tráfego multicast para o grupo **239.1.1.1**.  
+- Apenas o **Host02 (192.168.20.1)** realiza **IGMP Join**, pedindo para receber o grupo multicast.  
+- O **Host03 (192.168.30.1)** não participa, representando uma rede sem receptores.  
+- O **PIM-SM** é habilitado em todos os roteadores, e o **R01** será configurado como **Candidate BSR**, enquanto o **R02** e o **R03** atuarão como **Candidate RPs**.  
+- O domínio PIM irá eleger automaticamente um RP ativo com base nas mensagens Bootstrap enviadas pelo BSR.  
+- Após a eleição, simularemos uma **falha no RP ativo** para observar a **eleição e promoção automática do RP de backup**.  
+- O **RPF (Reverse Path Forwarding)** garantirá que o caminho de retorno até a fonte multicast siga o melhor trajeto OSPF.
+  
+Assim, poderemos observar não apenas o funcionamento da descoberta automática de RPs via BSR, mas também o comportamento dinâmico da **tolerância a falhas (failover)** entre múltiplos RPs.  
 
-Após a formação inicial da árvore compartilhada (*,G) via RP, os roteadores podem comutar para a árvore de menor custo (SPT – Shortest Path Tree), estabelecendo o caminho direto entre fonte e receptores.
+---
 
-### Testes Preliminares
+### 🔍 Testes Preliminares
 
-Como feito no exemplo anterior, vamos realizar um teste de comunicação entre todos os equipamentos com o ping só para garantir a comunicação.  
-**OBS:** nos roteadores eu configurei interfaces de LOOPABCK. Então R01 tem o ip 1.1.1.1 /32, R02 tem o ip 2.2.2.2 /32, R03 tem o ip 3.3.3.3 /32, R04 4.4.4.4/32 e R05 5.5.5.5/32 .  
+Antes de ativar o multicast, é importante confirmar a **conectividade unicast** entre todos os dispositivos.  
+  
+Cada roteador possui uma **interface de Loopback** usada como **Router-ID** no OSPF:  
+
+- R01 → 1.1.1.1/32  
+- R02 → 2.2.2.2/32  
+- R03 → 3.3.3.3/32  
+- R04 → 4.4.4.4/32  
+- R05 → 5.5.5.5/32  
+
+Após o OSPF estar operacional, verifique a conectividade com **ping entre todas as loopbacks**.
 
 ![01](Imagens/01.png)
 
-Com isso, podemos ver que todos os hosts se alcançam e se comunicam. Como demonstrado no exemplo anterior, essa é tabela de roteamento, porém ela não faz a comunicação multicast.    
-  
-Agora a primeira coisa que precisamos ativar é o **roteamento multicast** no equipamento.  
-  
->R01(config)#ip multicast-routing  
-  
-Só para confirmar, vamos verificar o roteamento multicast.  
+Se todos os roteadores se alcançam, a infraestrutura unicast está pronta.  
+Lembre-se: o **PIM-SM** depende de uma **base unicast funcional** para realizar o **RPF check**.
+
+---
+
+Agora podemos ativar o **roteamento multicast** globalmente:
 
 ```ios
-R01#show ip multicast  
-  Multicast Routing: enabled  
-  Multicast Multipath: disabled  
-  Multicast Route limit: No limit  
-  Multicast Triggered RPF check: enabled  
-  Multicast Fallback group mode: Sparse  
-  Multicast DVMRP Interoperability: disabled  
-  Number of multicast boundaries configured with filter-autorp option: 0  
-R01#  
+R01(config)#ip multicast-routing
 ```
 
-**ONS:** Agora que temos o roteamento multicast ativo, precisamos ativar o protocolo **PIM**. Esse protocolo deve ser ativado nas interfaces onde a comunicação ira ocorrer. Então, repetir o processo de R01 a R05.
+Confirme que o recurso foi habilitado:  
+
+```ios
+R01#show ip multicast
+  Multicast Routing: enabled
+  Multicast Multipath: disabled
+  Multicast Route limit: No limit
+  Multicast Triggered RPF check: enabled
+  Multicast Fallback group mode: Sparse
+  Multicast DVMRP Interoperability: disabled
+```
+
+Com o roteamento multicast ativo, o próximo passo é habilitar o protocolo PIM nas interfaces participantes (LANs e links entre roteadores).  
+Repita esse processo de R01 a R05, garantindo que todas as interfaces de roteamento participem do domínio PIM-SM.  
+
+---
+
+alterar daqui
+
+---
 
 ### Onde o PIM deve ser ativado
 
