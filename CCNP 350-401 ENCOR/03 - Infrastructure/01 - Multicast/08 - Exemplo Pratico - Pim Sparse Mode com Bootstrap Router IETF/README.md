@@ -4,9 +4,11 @@
   - [08 - Exemplo Pratico - Pim Sparse Mode com Bootstrap Router IETF](#08---exemplo-pratico---pim-sparse-mode-com-bootstrap-router-ietf)
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
-    - [Explicação do Cenário](#explicação-do-cenário)
-      - [**O que é o RP (Rendezvous Point)**](#o-que-é-o-rp-rendezvous-point)
+    - [🧠 Explicação do Cenário](#-explicação-do-cenário)
+    - [🌐 Do Dense Mode ao Sparse Mode](#-do-dense-mode-ao-sparse-mode)
       - [🧩 1️⃣ O papel do Bootstrap Router (BSR)](#-1️⃣-o-papel-do-bootstrap-router-bsr)
+    - [🧭 Resumo dos Papéis no BSR](#-resumo-dos-papéis-no-bsr)
+    - [🛰️ O que é o RP (Rendezvous Point)](#️-o-que-é-o-rp-rendezvous-point)
       - [🌳 2️⃣ O comportamento do PIM Sparse Mode](#-2️⃣-o-comportamento-do-pim-sparse-mode)
       - [🔹 3️⃣ O papel do IGMP Join](#-3️⃣-o-papel-do-igmp-join)
       - [🔀 4️⃣ Como o DR encontra o RP correto](#-4️⃣-como-o-dr-encontra-o-rp-correto)
@@ -86,48 +88,64 @@ Durante os testes, iremos observar:
 
 Assim, este laboratório demonstra na prática o funcionamento completo do PIM-SM em conformidade com o padrão **IETF**, destacando o papel do BSR na automação, interoperabilidade e escalabilidade de redes multicast.
 
-### Explicação do Cenário
+### 🧠 Explicação do Cenário
 
-Como dito anteriormente, nosso cenário já tem o roteamento pronto e funcional para podermos dar o foco no processo da comunicação **multicast**.  
+Como mencionado anteriormente, nosso cenário já possui **roteamento unicast totalmente funcional** (via OSPF), permitindo que o foco agora seja o **tráfego multicast**.  
 
 ![cenário](Imagens/cenario.png)  
 
-Nesse cenário estamos utilizando **oito roteadores**.  
+Nesse laboratório, utilizamos **oito roteadores**, sendo **três deles disfarçados de hosts** apenas para representar as fontes (senders) e receptores (receivers) multicast.  
+Esses roteadores “host” não executam roteamento dinâmico — apenas participam dos grupos multicast por meio do IGMP.  
 
-Então vamos manter a lógica anterior, iremos utilizar **três roteadores disfarçados de hosts**, e por isso não realizaremos muitas configurações neles.  
+Os demais roteadores estão interligados e executam o **OSPF**, garantindo a convergência e conectividade IP entre todas as redes antes de habilitarmos o PIM.
 
-Nos demais roteadores, que estão interligados entre si, foi configurado apenas o protocolo de roteamento dinâmico **OSPF**, garantindo que todas as redes já possuam **conectividade IP completa** antes de ativarmos o multicast.  
+---
 
-Diferente do **PIM Dense Mode** agora temos a figura do **Rendezvous Point**.  Ao configurar o PIM em modo Sparse, os roteadores passam a escutar os **grupos 224.0.1.39 e 224.0.1.40, utilizados pelo Auto-RP — um mecanismo proprietário da Cisco** para descoberta automática de Rendezvous Points.  
-Esses grupos ficam prontos para uso assim que algum roteador for configurado como Candidate RP e outro como Mapping Agent.  
+### 🌐 Do Dense Mode ao Sparse Mode
 
-#### **O que é o RP (Rendezvous Point)**  
+Diferente do **PIM Dense Mode**, que utiliza o método *flood and prune* (inundação inicial e podas posteriores), o **PIM Sparse Mode (PIM-SM)** opera de forma seletiva:  
+apenas interfaces com receptores interessados participam da árvore multicast.  
 
-- O Rendezvous Point (RP) é um ponto central usado apenas pelo PIM Sparse Mode (PIM-SM).  
-- Ele funciona como um "ponto de encontro" entre fontes (senders) e receptores (receivers) multicast.
-- Todas as fontes primeiro registram-se com o RP, e os receptores enviam joins até o RP.
-- Isso cria a árvore compartilhada (*,G).
-- Depois, o tráfego pode mudar para a árvore por fonte (S,G), mais otimizada.
-  
-👉 **Resumo:** o RP é essencial somente no modo Sparse, porque nesse modo o tráfego não é floodado.
+Para que isso funcione, o PIM-SM precisa de um **Rendezvous Point (RP)** — o ponto de encontro entre fontes e receptores multicast.  
+É ele quem coordena a formação inicial da árvore compartilhada (*,G), permitindo que os fluxos sejam distribuídos de forma controlada e eficiente.
 
+---
 
 #### 🧩 1️⃣ O papel do Bootstrap Router (BSR)
 
-✅ O **Bootstrap Router (BSR)** é o mecanismo **padrão IETF (RFC 5059)** para **descoberta e distribuição automática dos Rendezvous Points (RPs)** dentro de um domínio PIM-SM.  
-  
-Ele substitui o **Auto-RP** (proprietário da Cisco), removendo a necessidade dos grupos multicast **224.0.1.39** e **224.0.1.40**.  
-Em vez disso, o BSR realiza todo o processo de **eleição e anúncio de RPs** por meio de mensagens PIM nativas, tornando a solução **multivendor e interoperável**.  
-  
-No BSR, existem duas funções principais:  
+Neste cenário, estamos utilizando o **Bootstrap Router (BSR)**, que é o **padrão IETF** para descoberta e distribuição automática de RPs em um domínio PIM-SM.  
+O BSR substitui mecanismos proprietários como o **Auto-RP** da Cisco.  
 
-| Função                    | Descrição                                                                                                                    |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| **Candidate RP (C-RP)**   | Roteador que se oferece para atuar como RP para determinados grupos multicast.                                               |
-| **Candidate BSR (C-BSR)** | Roteador que coordena o processo, recolhe anúncios dos C-RPs e distribui as informações finais aos demais roteadores PIM-SM. |
-  
+👉 **Diferente do Auto-RP**, o BSR **não usa os grupos 224.0.1.39 ou 224.0.1.40**.  
+Toda a comunicação entre os roteadores PIM (Candidate-RP, BSR e demais roteadores) ocorre por **mensagens PIM internas**, encapsuladas diretamente no protocolo, sem uso de grupos multicast adicionais.  
+
+Nos equipamentos Cisco, esses grupos podem até aparecer na tabela de roteamento multicast — mas apenas por **compatibilidade com o Auto-RP**, sem função prática neste laboratório.
+
+---
+
+### 🧭 Resumo dos Papéis no BSR
+
+| Função                     | Responsabilidade                                                                                | Comunicação                                           |
+|----------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| **Candidate RP (C-RP)**    | Roteadores que se oferecem para atuar como RP, anunciando quais grupos multicast podem atender. | Enviam mensagens PIM *Candidate-RP-Advertisement (C-RP-Adv)* para o BSR. |
+| **Bootstrap Router (BSR)** | Responsável por receber os anúncios dos C-RPs, eleger o(s) RP(s) e distribuir o mapeamento de grupos para todo o domínio PIM. | Envia mensagens *Bootstrap* (PIM Type 13) a todos os roteadores. |
+| **Demais roteadores PIM**  | Escutam as mensagens Bootstrap e aprendem automaticamente quem é o RP de cada grupo multicast.   | Atualizam suas tabelas PIM dinamicamente.           |
+
 Após a eleição, o **BSR ativo** envia periodicamente mensagens do tipo **Bootstrap** para todo o domínio, informando quais RPs estão disponíveis e quais grupos eles atendem.  
 Com isso, os roteadores aprendem automaticamente o mapeamento (*Group → RP*) sem intervenção manual.  
+
+---
+
+### 🛰️ O que é o RP (Rendezvous Point)
+
+- O **Rendezvous Point (RP)** é o ponto central do domínio PIM-SM.  
+- Ele conecta as duas pontas do fluxo multicast:
+  - **Fontes (senders)** que enviam tráfego;
+  - **Receptores (hosts)** que expressam interesse (via IGMP Join).  
+- O RP recebe registros das fontes (mensagens *PIM Register*) e *joins* dos receptores, formando inicialmente a **árvore compartilhada (*,G)**.  
+- Depois, os roteadores podem otimizar o caminho migrando para a **árvore por fonte (S,G)** — a *Shortest Path Tree (SPT)*.  
+  
+👉 Em resumo, o RP atua como um ponto de encontro lógico — fundamental para o Sparse Mode, já que nesse modo o tráfego multicast **não é floodado automaticamente**.  
 
 ---
 
