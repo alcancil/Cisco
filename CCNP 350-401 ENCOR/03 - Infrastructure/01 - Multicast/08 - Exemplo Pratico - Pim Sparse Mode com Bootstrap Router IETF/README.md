@@ -589,7 +589,7 @@ Logo após ativar o **PIM Sparse Mode** nas interfaces, é possível observar no
 🧭 **Resumo rápido**
 
 | Tipo de mensagem            | Destino    | TTL | Finalidade principal                       |
-|-----------------------------|------------|--------------------------------------------------|
+|-----------------------------|------------|-----|--------------------------------------------|
 | Hello                       | 224.0.0.13 | 1   | Estabelecer e manter vizinhança PIM        |
 | Timeout (ausência de Hello) | —          | —   | Detectar falha e remover vizinho da tabela |
 | Hello com DR Priority       | 224.0.0.13 | 1   | Eleger o DR na LAN automaticamente         |
@@ -597,7 +597,15 @@ Logo após ativar o **PIM Sparse Mode** nas interfaces, é possível observar no
 💡 **Nota:**  
 As mensagens Hello são as primeiras a aparecer na captura de pacotes PIM.  
 Elas garantem que o domínio esteja operacional antes da troca das mensagens Bootstrap e Candidate-RP Advertisement, que analisaremos em seguida.  
-  
+
+<center><img src="Imagens/pacote01.png" alt="Pacote01" width="550" height="450"> </img> </center>  
+
+Aqui vamos realizar a captura dos pacotes com o Whireshark. Então ligamos ele em R01 na interface F0/1 que se interliga com R02. Vamos utilizar o filtro `pim.type == 0`
+
+![Pacote01](Imagens/02.png)  
+
+
+
 ---
 
 Alterar daqui
