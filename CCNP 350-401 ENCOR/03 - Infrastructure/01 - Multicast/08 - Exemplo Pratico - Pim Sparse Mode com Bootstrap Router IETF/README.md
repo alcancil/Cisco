@@ -27,7 +27,12 @@
       - [⚙️ Função prática das mensagens Hello](#️-função-prática-das-mensagens-hello)
       - [🧩 Estrutura simplificada da mensagem Hello](#-estrutura-simplificada-da-mensagem-hello)
       - [🔍 Exemplo de mensagens Hello no log](#-exemplo-de-mensagens-hello-no-log)
-    - [⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)](#️-configurando-o-candidate-rp-e-o-mapping-agent-auto-rp)
+    - [⚙️ Configurando o Candidate RP e o Candidate BSR (Bootstrap Router)](#️-configurando-o-candidate-rp-e-o-candidate-bsr-bootstrap-router)
+    - [🧩 1️⃣ Escolha dos equipamentos](#-1️⃣-escolha-dos-equipamentos)
+    - [🧭 2️⃣ Função das interfaces Loopback](#-2️⃣-função-das-interfaces-loopback)
+    - [🧰 3️⃣ Comandos de configuração](#-3️⃣-comandos-de-configuração)
+    - [3️⃣ Captura e Observação via Wireshark](#3️⃣-captura-e-observação-via-wireshark)
+    - [🧪 Realizando a captura](#-realizando-a-captura)
   - [Quando o Server entra na jogada](#quando-o-server-entra-na-jogada)
     - [🌳 Formação da Árvore Multicast (\*,G) — A Shared Tree](#-formação-da-árvore-multicast-g--a-shared-tree)
     - [⚡ Migração para a Shortest Path Tree (SPT)](#-migração-para-a-shortest-path-tree-spt)
@@ -401,13 +406,6 @@ O **BSR** é o “cérebro” do domínio multicast, responsável por:
 
 Pronto — com os conceitos estabelecidos, o próximo passo é iniciar a configuração do **Candidate BSR (R01)** e dos **Candidate RPs (R02 e R03)** dentro da topologia.  
 
-  
----
-
-Alterar Daqui
-
----
-
 📊 **O que é automático e o que é manual**
 
 | Ação                                     | Automático? | Quem decide                          |
@@ -604,7 +602,297 @@ Aqui vamos realizar a captura dos pacotes com o Whireshark. Então ligamos ele e
 
 ![Pacote01](Imagens/02.png)  
 
+### ⚙️ Configurando o Candidate RP e o Candidate BSR (Bootstrap Router)
 
+Agora que o **PIM Sparse Mode** está ativo em todas as interfaces, o domínio multicast já pode iniciar o processo de **eleição automática do Rendezvous Point (RP)** por meio do **Bootstrap Router (BSR)** — o método **padrão IETF (RFC 5059)**.  
+
+Diferente do Auto-RP (proprietário Cisco), o **Bootstrap Router** realiza toda a descoberta e distribuição de RPs **dentro do próprio protocolo PIM**, sem depender de grupos multicast adicionais (como 224.0.1.39 e 224.0.1.40).  
+
+---
+
+### 🧩 1️⃣ Escolha dos equipamentos
+
+Para este laboratório, adotaremos a seguinte estrutura:  
+
+| Função                        | Roteador | Loopback usada | Justificativa técnica                                                                                   |
+|-------------------------------|----------|----------------|---------------------------------------------------------------------------------------------------------|
+| **Candidate BSR**             | **R01**  | 1.1.1.1        | Próximo à fonte multicast (Server) e bem posicionado no domínio para distribuir as mensagens Bootstrap. |
+| **Candidate RP 1 (Primário)** | **R02**  | 2.2.2.2        | Centralizado no domínio, ideal para otimizar convergência e formar a Shared Tree.                       |
+| **Candidate RP 2 (Backup)**   | **R03**  | 3.3.3.3        | Redundância — permite observar o processo de eleição e failover do RP.                                  |
+
+Assim, o R01 atuará como **coordenador (BSR)**, enquanto os roteadores R02 e R03 anunciarão suas candidaturas como **RPs**.  
+  
+---
+  
+### 🧭 2️⃣ Função das interfaces Loopback
+
+No PIM Sparse Mode com BSR, as interfaces Loopback exercem papel importante, pois são usadas como **endereços lógicos de identificação (Router-ID)** e como **endereços de RP e BSR**.  
+  
+| Função da Loopback                                   | PIM deve estar ativo? | Motivo                                                                            |
+|------------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------|
+| Loopback usada como **Candidate RP**                 | ✅ Sim               | Necessário para envio e recebimento de mensagens PIM (Register, Join, Bootstrap). |
+| Loopback usada como **Candidate BSR**                | ✅ Sim               | O BSR utiliza a interface para enviar mensagens Bootstrap (PIM Type 13).          |
+| Loopback usada apenas como Router-ID (sem papel PIM) | ⚙️ Opcional          | Pode permanecer sem PIM se não participar do tráfego multicast.                   |
+
+💡 **Boa prática:**  
+Em ambientes de estudo ou testes, mantenha o **PIM ativo em todas as loopbacks** — isso simplifica o troubleshooting e garante que o endereço lógico seja sempre alcançável via OSPF.  
+
+---
+
+### 🧰 3️⃣ Comandos de configuração
+
+➡️ **No R01 (Candidate BSR):**
+
+```ios
+R01(config)#ip pim bsr-candidate loopback0 30
+```
+
+🔎 **Explicação:**
+
+- **loopback0** → Interface usada como origem das mensagens Bootstrap (IP 1.1.1.1);
+- **30** → Tamanho do hash mask usado para calcular o RP para cada grupo multicast (valor padrão típico);
+
+Nenhum parâmetro de prioridade é aceito aqui..  
+
+🧠 **Sobre a “prioridade” do BSR**
+
+O Bootstrap Router (BSR) não tem prioridade configurável diretamente no IOS clássico.  
+  
+Se houver mais de um Candidate BSR, a eleição segue:  
+
+- **Hash mask length (o maior valor vence)**;
+- Se empatar, o **endereço IP mais alto vence**.
+
+Portanto:  
+
+Se quiser influenciar quem será o BSR, use um **hash-mask maior no roteador que você quer priorizar**.
+
+```ios
+R01(config)#ip pim bsr-candidate loopback0 30
+R02(config)#ip pim bsr-candidate loopback0 20
+```
+
+→ **O R01 será eleito BSR, porque 30 > 20.**
+
+💡 **Versões IOS XE / NX-OS**
+
+Em plataformas mais novas **(IOS XE 17.x, NX-OS, ou IOS XR)**, algumas versões aceitam o parâmetro priority, mas no IOS tradicional (12.x, 15.x, ou em simuladores tipo EVE-NG, GNS3, CML), essa opção não existe.  
+  
+Então para fins de laboratório CCNP ENCOR (350-401), o comando correto é o clássico:  
+
+```ios
+ip pim bsr-candidate loopback0 30
+```
+
+🧰 **Resumo prático**  
+
+| Função        | Comando correto                                       | Observação                                                     |
+|---------------|-------------------------------------------------------|----------------------------------------------------------------|
+| Candidate BSR | ip pim bsr-candidate loopback0 30                     | Define interface e máscara de hash; maior valor vence eleição  |
+| Candidate RP  | ip pim rp-candidate loopback0 group-list 1 priority 5 | Aqui sim a prioridade é configurável                           |
+| Verificação   | show ip pim bsr-router / show ip pim rp mapping       | Mostra quem foi eleito BSR e RP                                |
+
+Exemplo:
+
+➡️ **No R02 (Candidate RP Primário):**  
+
+```
+R02(config)#ip pim rp-candidate loopback0 group-list 1
+R02(config)#access-list 1 permit 224.0.0.0 15.255.255.255
+```
+
+➡️ **No R03 (Candidate RP Secundário):**  
+
+```ios
+R03(config)#ip pim rp-candidate loopback0 group-list 1
+R03(config)#access-list 1 permit 224.0.0.0 15.255.255.255
+```
+
+🔎 **Explicação:**
+
+- **ip pim rp-candidate** anuncia o roteador como Candidate RP para o intervalo de grupos definidos;
+- **group-list 1** especifica os grupos multicast válidos (no caso, todo o intervalo **224.0.0.0/4**);  
+  
+Esses anúncios serão enviados diretamente ao BSR por meio das mensagens C-RP Advertisement (**PIM Type 14**).  
+  
+🛰️ 4️⃣ **Fluxo esperado**
+
+- O **R01 (Candidate BSR)** envia mensagens Bootstrap (**Type 13**) pelo domínio PIM-SM;
+- Os **R02 e R03 (Candidate RPs)** enviam **C-RP Advertisements (Type 14)** ao BSR;
+- O **BSR** compila as informações e distribui o mapeamento de grupos e RPs a todos os roteadores PIM;
+  
+Todos os roteadores passam a conhecer automaticamente quem é o RP ativo.  
+
+### 3️⃣ Captura e Observação via Wireshark  
+
+🧩 **Contexto da captura**
+
+Após ativar o **PIM Sparse Mode** e configurar os papéis do **Bootstrap Router (BSR)** e dos **Candidate RPs**, o próximo passo é comprovar que as mensagens de sinalização estão circulando no domínio PIM-SM.  
+  
+Diferente do Auto-RP (que utiliza os grupos 224.0.1.39/40), o **BSR utiliza mensagens nativas do PIMv2** enviadas para o grupo **224.0.0.13 (ALL-PIM-ROUTERS)**.  
+Aqui esperamos observar:  
+
+| Tipo de Mensagem | PIM Type | Quem envia | Função |
+|------------------|----------|------------|--------|
+| **Bootstrap**     | **9**    | BSR eleito (R01 ou R02) | Distribui o mapeamento de RPs |
+| **RP-Candidate Advertisement** | **4** | R02 e R03 | Informam ao BSR que desejam ser RP |
+| **PIM Hello**     | **0** | Todos | Mantém vizinhança e DR |
+
+---
+
+### 🧪 Realizando a captura
+
+📌 **Local ideal para captura:**  
+  
+**R01 – FastEthernet0/1 (ligação direta com R02)**  
+
+📌 **Filtro recomendado:**  
+
+```wireshark
+pim.type == 4 or pim.type == 9
+```
+  
+✅ PIM type 4 = anúncios dos RP candidates  
+✅ PIM type 9 = mensagens Bootstrap emitidas pelo BSR eleito  
+  
+📸 **Captura real**  
+
+Nesta captura vemos a mensagem PIM Type 9 (Bootstrap) contendo:  
+
+- BSR Address
+- BSR Priority
+- Hash Mask Length
+- Lista de RP Candidates
+- Group-to-RP mapping
+  
+![Whireshark](Imagens/03.png)  
+
+✅ **Validando a eleição REAL do BSR**
+  
+Somente um roteador pode ser o Bootstrap Router ativo.  
+Mesmo que você configure múltiplos candidatos (como R01 e R02), o domínio escolhe apenas um.  
+
+Para saber quem venceu a eleição, utilize:  
+
+```ios
+show ip pim bsr-router
+```
+
+O que observar na saída:  
+  
+| Campo                     | Significado                                       |
+|---------------------------|---------------------------------------------------|
+| Bootstrap router address  | IP da loopback do BSR eleito                      |
+| Priority                  | Maior prioridade vence (se empate, maior IP)      |
+| Hash mask length          | Fator usado na seleção determinística de RPs      |
+| Next bootstrap message in | Temporização, prova de que a eleição está ativa   |
+
+Então vamos executar em **R01**  
+
+```ios
+R01#show ip pim bsr-router
+PIMv2 Bootstrap information
+  BSR address: 2.2.2.2 (?)
+  Uptime:      00:59:23, BSR Priority: 0, Hash mask length: 20
+  Expires:     00:01:37
+This system is a candidate BSR
+  Candidate BSR address: 1.1.1.1, priority: 0, hash mask length: 30
+R01#
+```
+
+✅ Se a saída mostrar R01 → R01 venceu  
+✅ Se mostrar R02 → R02 venceu  
+🎯 Esse é o único comando que revela o BSR real.  
+  
+✅ Interpretando o campo Hash Mask Length  
+  
+O campo Hash Mask Length é um dos elementos centrais do BSR, e quase ninguém explica direito.  
+  
+📌 **O que é o Hash Mask Length?**
+  
+O **Hash Mask Length** define como o domínio PIM distribui grupos multicast entre múltiplos RPs em cenários com dois ou mais RP Candidates.  
+  
+💡 Em outras palavras:  
+
+- O Hash Mask é um “peso” usado para calcular qual RP será responsável por qual range de grupos.
+
+🤓 **Como funciona internamente?**
+
+- Para cada grupo multicast (ex: 239.1.1.1),
+- O roteador aplica um cálculo hash no endereço do grupo,
+- Usa o Hash Mask Length para reduzir o resultado,
+- E esse valor final aponta para um RP específico.
+  
+✅ Com dois C-RPs (como R02 e R03), os grupos podem ser distribuídos entre eles.  
+✅ Se apenas um RP existir, ele recebe todos os grupos.  
+✅ Se o BSR mudar, o hash continua garantindo determinismo e estabilidade.  
+  
+📌 **Regra geral:**
+
+- **Hash Mask Length maior** → distribuição mais granular
+- **Hash Mask Length menor** → clusters maiores de grupos atribuídos ao mesmo RP  
+  
+Você provavelmente verá algo assim na mensagem capturada:  
+
+```ios
+Hash mask len: 20
+```
+
+🎯 **Significa:**  
+> “Use os primeiros 20 bits do resultado do hash para decidir qual RP será usado.”
+  
+✅ **Confirmando o mapeamento no domínio**
+  
+Após analisar a captura, também podemos confirmar as decisões do BSR usando:
+
+```ios
+show ip pim rp mapping
+```
+
+Essa saída revela:  
+
+- Qual RP está ativo
+- A origem da informação (Bootstrap)
+- Lista completa de RP-Candidates
+- Tempo restante até expirar a eleição
+
+Em nosso exemplo, vamos executar em R01:  
+
+```ios
+R01#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2
+    Info source: 2.2.2.2 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 01:10:37, expires: 00:01:48
+  RP 3.3.3.3 (?), v2
+    Info source: 2.2.2.2 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 01:09:54, expires: 00:01:32
+R01#
+```
+
+Esta saída mostra que o domínio PIM-SM aprendeu dois ***Candidate RPs* (2.2.2.2 e 3.3.3.3)** através das mensagens de **Bootstrap**, indicando que o BSR está funcionando corretamente.  
+Ambos os RPs são válidos para o range **224.0.0.0/4 e possuem prioridade 0**. Os timers de *uptime* e *expires* confirmam que as informações estão sendo atualizadas periodicamente pelo BSR.  
+
+🧠 **Quando o RP realmente começa a participar?**  
+  
+Mesmo com BSR + RP Candidates funcionando, nada entra na tabela multicast ainda, porque o PIM-SM é orientado à demanda:  
+
+- Sem IGMP Join → Sem árvore multicast → Sem uso do RP
+- Somente quando Host02 enviar IGMP join para 239.1.1.1, o DR (R04):
+  - cria o entry (*,G)
+  - envia PIM Join até o RP
+  - inicia a árvore compartilhada
+  - e o fluxo multicast começa a ser construído
+  
+Depois disso:  
+
+- O Server envia tráfego
+- R01/R02 envia PIM Register ao RP
+- RP conecta fonte a receptores
+- A SPT pode surgir
+- **show ip mroute passa a exibir (S,G) e (*,G)**
 
 ---
 
@@ -612,168 +900,6 @@ Alterar daqui
 
 ---
 
-### ⚙️ Configurando o Candidate RP e o Mapping Agent (Auto-RP)
-
-Agora que o PIM Sparse Mode está ativo em todas as interfaces, o domínio multicast já está pronto para eleger o Rendezvous Point (RP).  
-Como estamos utilizando o Auto-RP da Cisco, precisamos definir manualmente quem será o Candidate RP (C-RP) e quem atuará como Mapping Agent (MA).  
-
-🔹 Lembrando:  
-  
-- O Candidate RP anuncia-se ao grupo **224.0.1.40** dizendo: “posso ser o RP”.
-- O Mapping Agent escuta esses anúncios e envia o mapeamento final para todos os roteadores via grupo **224.0.1.39**.  
-
-🧩 1️⃣ **Escolha dos equipamentos**  
-  
-Para este laboratório:  
-  
-| Função        | Roteador | Loopback usada | Justificativa técnica                                                             |
-|---------------|----------|----------------|-----------------------------------------------------------------------------------|
-| Candidate RP  | R02      | 2.2.2.2        | Está centralizado no domínio PIM, ideal para convergência                         |
-| Mapping Agent | R01      | 1.1.1.1        | Próximo à fonte multicast (Server), reduz latência para distribuição dos anúncios |  
-
-Assim, os roteadores R01 e R02 passam a desempenhar papéis complementares no processo de descoberta do RP.  
-
-🎯 **Sobre as Interfaces Loopback**  
-  
-No PIM Sparse Mode, a loopback pode exercer dois papéis distintos:
-
-- Apenas identificação lógica do roteador — usada como Router-ID ou origem de sessões OSPF/PIM.
-- Endereço lógico de RP (Rendezvous Point) — usada como ponto central da árvore multicast.
-
-👉 **Só o segundo caso exige que o PIM esteja ativo na loopback.**
-
-🧩 **Regra prática (Cisco e CCNP)**
-
-| Função da Loopback                                         | Precisa ativar PIM? | Motivo                                                                                             |
-|------------------------------------------------------------|---------------------|----------------------------------------------------------------------------------------------------|
-| Loopback usada como RP (Candidate RP)                      | ✅ Sim       | O RP precisa participar ativamente do domínio PIM para enviar/receber mensagens Register, Join e Auto-RP  |
-| Loopback usada como Mapping Agent   | ✅ Sim (recomendado)               | Embora o MA só envie anúncios Auto-RP, a interface é usada como origem das mensagens PIM (para 224.0.1.39) |
-| Loopback usada apenas como Router-ID (OSPF, identificação) | ❌ Não              | Ela não participa do encaminhamento multicast nem troca mensagens PIM.                             |
-| Loopback em roteadores comuns (não-RP, não-MA)             | ❌ Não              | Não há função multicast direta associada a ela.                                                   |  
-
-💬 **Em resumo**  
-
-- Ative o PIM-SM nas loopbacks **apenas do Candidate RP e do Mapping Agent**.
-- As demais loopbacks podem ficar sem PIM, já que não fazem parte do processo de descoberta nem da árvore multicast.
-- Por recomendações de boas práticas, vamos **sempre** ativar o protocolo **PIM em todas as interfaces LOOPBACKS**.  
-  
-🧰 2️⃣ **Comandos de configuração**  
-  
-➡️ No R02 (Candidate RP):  
-
-```ios
-R02(config)#ip pim send-rp-announce loopback0 scope 16
-```
-
-**OBS:** podemos também utilizar **acls** junto a esse comando por questões de segurança limitando os grupos que vão receber o anuncio.  
-
-```ios
-R02(config)#ip pim send-rp-announce loopback0 scope 16 group-list 1
-R02(config)#access-list 1 permit 224.0.0.0 15.255.255.255
-```
-
-🔎 **Explicação:**
-  
-- **send-rp-announce**: indica que o roteador R02 será Candidate RP.
-- **loopback0**: define o endereço 2.2.2.2 como IP de identificação do RP.
-- **scope 16**: limita o alcance dos anúncios ao domínio local PIM.
-- **group-list 1**: especifica o intervalo de grupos multicast para os quais o RP é válido (aqui, todo o range padrão).  
-
-➡️ No R01 (Mapping Agent):  
-
-```ios
-R01(config)#int lo0
-R01(config)#ip pim send-rp-discovery loopback 0 scope 16
-R01(config)#
-```
-
-🔎 **Explicação:**
-
-- **send-rp-discovery**: indica que R01 atuará como Mapping Agent (MA).
-- Ele escutará os anúncios dos **C-RPs (via 224.0.1.40) e redistribuirá os mapeamentos (via 224.0.1.39)**.  
-
-3️⃣ **Captura e observação via Wireshark**  
-
-🧩 **Contexto da captura**  
-
-Como não temos como realizar capturas de pacotes em interfaces loopback, vou escolher utilizar qualquer uma das interfaces para verificarmos o comportamento dos pacotes.  
-
-**Entendendo o que você quer capturar**  
-  
-Há três tipos principais de mensagens que vão aparecer entre R01 e R02 logo após a configuração:  
-
-| Tipo      | Protocolo        | Propósito                                                               | Observação                  |
-|-----------|------------------|-------------------------------------------------------------------------|-----------------------------|
-| PIM Hello | PIMv2 (Type 0)   | Descoberta e eleição de DR                                              | TTL = 1, destino 224.0.0.13 |
-| Auto-RP   | Announcement     | PIMv2 (Type 13) - Candidate RP se anuncia (R02 → 224.0.1.40)            | Proprietário Cisco          |
-| Auto-RP   | Discovery        | PIMv2 (Type 13) - Mapping Agent divulga o mapeamento (R01 → 224.0.1.39) | Proprietário Cisco          |  
-
-Para capturar tudo que interessa agora — Hellos, Auto-RP, e IGMP futuramente — use este filtro único e combinado:
-
-```whiresahrk
-pim || igmp || ip.dst == 224.0.1.39 || ip.dst == 224.0.1.40
-````
-
-![Whireshark](Imagens/04.png)  
-
-Como podemos observar, temos as mensagens de Auto-RP comprovando o funcionamento do Candidate RP e do Mapping Agent.  
-  
-Mas para validar, vamos entrar em R01 e R02 e digitar o comando **show ip pim rp mapping**.  
-  
-**R01**  
-
-```ios
-R01#show ip pim rp mapping
-PIM Group-to-RP Mappings
-This system is an RP-mapping agent (Loopback0)
-
-Group(s) 224.0.0.0/4
-  RP 2.2.2.2 (?), v2v1
-    Info source: 2.2.2.2 (?), elected via Auto-RP
-         Uptime: 00:09:18, expires: 00:02:39
-R01#
-```
-
-**R02**  
-
-```ios
-R02#show ip pim rp mapping
-PIM Group-to-RP Mappings
-This system is an RP (Auto-RP)
-
-Group(s) 224.0.0.0/4
-  RP 2.2.2.2 (?), v2v1
-    Info source: 1.1.1.1 (?), elected via Auto-RP
-         Uptime: 00:46:15, expires: 00:02:21
-R02#
-```
-  
-🧩 **Quando o RP é realmente utilizado no PIM Sparse Mode**  
-
-Até este ponto, configuramos o **Candidate RP (R02) e o Mapping Agent (R01)**, e já confirmamos no Wireshark a troca de mensagens Auto-RP entre os grupos 224.0.1.39 e 224.0.1.40.
-Mas se executarmos agora comandos como **show ip pim rp mapping ou show ip mroute**, é possível que ainda não vejamos nenhuma entrada ativa.  
-  
-Isso é completamente normal e faz parte do comportamento do **PIM Sparse Mode.**  
-
-🎯 **Por que isso acontece?**  
-  
-O **PIM Sparse Mode** é um protocolo orientado à demanda — ou seja, ele só cria árvores multicast quando há receptores interessados em um grupo.  
-Diferente do PIM Dense Mode (que flooda o tráfego por todo o domínio), o PIM-SM permanece “em silêncio” até que alguém demonstre interesse.  
-  
-💡 Em outras palavras:  
-  
-> Nenhum host interessado = Nenhum Join PIM = Nenhum RP consultado.
-  
-🔍 **Entendendo o fluxo lógico**
-  
-| Etapa | Ação                                                  | Resultado                                                               |
-|-------|------------------------------------------------------|---------------------------------------------------------------------------|
-| 1️⃣   | Candidate RP e Mapping Agent são configurados         | O domínio multicast conhece o RP, mas ninguém o consulta ainda           |
-| 2️⃣   | Um host envia IGMP Join para um grupo (ex: 239.1.1.1) | O roteador local (DR) registra o interesse e envia PIM Join até o RP     |
-| 3️⃣   | O RP recebe o Join                                    | A árvore (*,G) começa a ser formada                                      |
-| 4️⃣   | Uma fonte (Server) envia tráfego multicast            | O roteador da fonte envia PIM Register ao RP                             |
-| 5️⃣   | O tráfego flui pela árvore e chega aos receptores     | O domínio multicast torna-se ativo e as tabelas PIM/mroute são populadas |  
-  
 🧠 **O papel do DR nesse processo**
   
 O **Designated Router (DR)** é o primeiro roteador a perceber o interesse do host.  
