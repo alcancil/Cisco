@@ -40,30 +40,30 @@
   - [✅ 7️⃣ Confirmando a Convergência do Domínio PIM-SM](#-7️⃣-confirmando-a-convergência-do-domínio-pim-sm)
   - [🧠 O papel do DR no processo multicast (com PIM-SM e Bootstrap Router)](#-o-papel-do-dr-no-processo-multicast-com-pim-sm-e-bootstrap-router)
   - [🚀 Quando o Servidor Inicia o Tráfego](#-quando-o-servidor-inicia-o-tráfego)
-  - [🌳 Formação da Árvore Multicast — do IGMP Join ao PIM Register](#-formação-da-árvore-multicast--do-igmp-join-ao-pim-register)
-    - [🧩 1️⃣ O início de tudo: o IGMP Join](#-1️⃣-o-início-de-tudo-o-igmp-join)
-    - [🛰️ 2️⃣ O papel do DR (Designated Router)](#️-2️⃣-o-papel-do-dr-designated-router)
-    - [⚙️ 3️⃣ O nascimento da árvore compartilhada (\*,G)](#️-3️⃣-o-nascimento-da-árvore-compartilhada-g)
-    - [📡 4️⃣ A fonte começa a transmitir — PIM Register](#-4️⃣-a-fonte-começa-a-transmitir--pim-register)
-    - [🔁 5️⃣ RP conecta as pontas e inicia o fluxo](#-5️⃣-rp-conecta-as-pontas-e-inicia-o-fluxo)
-    - [⚙️ 6️⃣ A transição para a Árvore de Caminho Mais Curto (SPT)](#️-6️⃣-a-transição-para-a-árvore-de-caminho-mais-curto-spt)
-    - [✅ Conclusão](#-conclusão)
-  - [🧰 Validação e Troubleshooting do PIM Sparse Mode](#-validação-e-troubleshooting-do-pim-sparse-mode)
-    - [1️⃣ Verificar os vizinhos PIM — show ip pim neighbor](#1️⃣-verificar-os-vizinhos-pim--show-ip-pim-neighbor)
-    - [2️⃣ Confirmar o RP ativo — show ip pim rp mapping](#2️⃣-confirmar-o-rp-ativo--show-ip-pim-rp-mapping)
-    - [3️⃣ Verificar os grupos IGMP — show ip igmp groups](#3️⃣-verificar-os-grupos-igmp--show-ip-igmp-groups)
-    - [4️⃣ Validar a tabela de rotas multicast — show ip mroute](#4️⃣-validar-a-tabela-de-rotas-multicast--show-ip-mroute)
-    - [5️⃣ Confirmar o RPF — show ip rpf](#5️⃣-confirmar-o-rpf--show-ip-rpf)
-    - [6️⃣ Confirmar a recepção de tráfego multicast](#6️⃣-confirmar-a-recepção-de-tráfego-multicast)
-    - [🧭 7️⃣ Diagnóstico rápido de problemas comuns](#-7️⃣-diagnóstico-rápido-de-problemas-comuns)
-  - [🧾 Resumo Final — Fluxo do PIM Sparse Mode](#-resumo-final--fluxo-do-pim-sparse-mode)
-  - [✅ Conclusão](#-conclusão-1)
+  - [⚙️ Simulando a Falha do RP Principal e a Ativação do RP Backup](#️-simulando-a-falha-do-rp-principal-e-a-ativação-do-rp-backup)
+    - [🧠 **Objetivo do teste**](#-objetivo-do-teste)
+    - [1️⃣ **Identificando o RP atual**](#1️⃣-identificando-o-rp-atual)
+  - [⚙️ Simulando a Falha do RP Principal e a Ativação do RP Backup](#️-simulando-a-falha-do-rp-principal-e-a-ativação-do-rp-backup-1)
+    - [🧠 **Objetivo do teste**](#-objetivo-do-teste-1)
+    - [1️⃣ **Identificando o RP atual**](#1️⃣-identificando-o-rp-atual-1)
+    - [2️⃣ Simulando a falha do RP principal](#2️⃣-simulando-a-falha-do-rp-principal)
+    - [3️⃣ Monitorando a eleição via Debug](#3️⃣-monitorando-a-eleição-via-debug)
+    - [4️⃣ Confirmando o novo RP ativo](#4️⃣-confirmando-o-novo-rp-ativo)
+    - [5️⃣ Restaurando o RP principal](#5️⃣-restaurando-o-rp-principal)
+    - [💡 Conclusão](#-conclusão)
+  - [🧩 O que aprendemos com este laboratório](#-o-que-aprendemos-com-este-laboratório)
+    - [🎯 Principais aprendizados](#-principais-aprendizados)
+    - [💡 Conclusões gerais](#-conclusões-gerais)
+  - [🧩 O que aprendemos com este laboratório](#-o-que-aprendemos-com-este-laboratório-1)
+    - [🎯 Principais aprendizados](#-principais-aprendizados-1)
+    - [💡 Conclusões gerais](#-conclusões-gerais-1)
+  - [🗺️ Mapa conceitual do fluxo PIM-SM com BSR](#️-mapa-conceitual-do-fluxo-pim-sm-com-bsr)
   - [📘 Tabela de Comandos](#-tabela-de-comandos)
-    - [R01 – Mapping Agent (MA)](#r01--mapping-agent-ma)
-    - [📗 R02 – Candidate RP (C-RP)](#-r02--candidate-rp-c-rp)
-    - [📙 R03 – Roteador de Trânsito (PIM-SM Participant)](#-r03--roteador-de-trânsito-pim-sm-participant)
-    - [📒 R04 – Roteador com Receptor Multicast (Host02)](#-r04--roteador-com-receptor-multicast-host02)
-    - [📕 R05 – Roteador com Host Não Inscrito (Host03)](#-r05--roteador-com-host-não-inscrito-host03)
+    - [🖥️ R01 – BSR Primário e DR da LAN do Servidor](#️-r01--bsr-primário-e-dr-da-lan-do-servidor)
+    - [📗 R02 – Candidate RP e BSR Secundário](#-r02--candidate-rp-e-bsr-secundário)
+    - [📙 R03 – Candidate RP Secundário](#-r03--candidate-rp-secundário)
+    - [📒 R04 – DR do Segmento do Host02](#-r04--dr-do-segmento-do-host02)
+    - [📕 R05 – Roteador de trânsito com Host Não Inscrito (Host03)](#-r05--roteador-de-trânsito-com-host-não-inscrito-host03)
     - [🖥️ SERVER – Fonte Multicast (Sender)](#️-server--fonte-multicast-sender)
     - [💻 HOST02 – Receptor Multicast](#-host02--receptor-multicast)
     - [🖥️ HOST03 – Host Não Inscrito](#️-host03--host-não-inscrito)
@@ -1320,525 +1320,358 @@ Alterar Daqui
 
 ---
 
-🧰 **Captura no Wireshark**  
-  
-Para confirmar a propagação das mensagens Auto-RP, realize a captura nas interfaces de trânsito entre o Mapping Agent **(R01)** e os roteadores intermediários **(R03, R04)**.  
-  
-Locais sugeridos para captura:
+## ⚙️ Simulando a Falha do RP Principal e a Ativação do RP Backup
 
-| Equipamento                  | Interface      | Motivo
-|------------------------------|----------------|----------------------------------------------------------------------|
-| R01 (Mapping Agent)          | Fa0/1          | Origem das mensagens Auto-RP Discovery (224.0.1.39)                  |
-| R02 (Candidate RP)           | Fa0/0          | Envio dos anúncios Auto-RP Announce (224.0.1.40)                     |
-| R03 (roteador intermediário) | Fa0/0 ou Fa0/1 | Validação de que os pacotes Auto-RP estão atravessando o domínio PIM |
-| R04 (DR do Host)             | Fa0/0          | Verificar se o listener permitiu o recebimento das mensagens Auto-RP |  
+Agora que o domínio multicast já está totalmente estabelecido e os roteadores conhecem o RP principal e o RP backup, vamos validar na prática o comportamento de **falha e convergência automática** do PIM Sparse Mode com **Bootstrap Router (BSR)**.  
 
-**Filtro recomendado:**  
+---
 
-```whireshark
-ip.dst == 224.0.1.39 || ip.dst == 224.0.1.40
-```
-  
-🔍 **O que observar:**
-  
-| Tipo de mensagem            | Origem  | Destino                  | Descrição                                                         |
-|-----------------------------|---------|--------------------------|-------------------------------------------------------------------|
-| Auto-RP Announcement        | R02     | 224.0.1.40               | R02 anuncia-se como RP candidato                                  |
-| Auto-RP Discovery           | R01     | 224.0.1.39               | R01 (Mapping Agent) distribui o mapeamento do RP                  |
-| Encaminhamento via Listener | R03/R04 | 224.0.1.39 ou 224.0.1.40 | Indica que o listener está retransmitindo os pacotes pelo domínio |  
+### 🧠 **Objetivo do teste**
 
-**R01 - Interface F0/1**  
+Verificar se, quando o **RP principal (R02)** se torna indisponível, o **Candidate BSR (R01)** é capaz de redistribuir o mapeamento e promover o **RP secundário (R03)** de forma automática e transparente para o domínio multicast.  
 
-![Whireshark](Imagens/05.png)  
+---
 
-**R02 - Interface F1/0**  
+### 1️⃣ **Identificando o RP atual**
 
-![Whireshark](Imagens/06.png)  
-
-**R03 - Interface F0/0**  
-
-![Whireshark](Imagens/07.png)  
-
-**R04 - Interface F0/0**  
-
-![Whireshark](Imagens/08.png)  
-
-✅ **Conclusão**
-
-O comando **ip pim autorp listener** é indispensável para inicializar corretamente um domínio PIM Sparse Mode que utiliza Auto-RP.  
-  
-Ele garante que:
-
-- Todos os roteadores aprendam quem é o RP (resolvendo o paradoxo do ovo e da galinha);
-- As mensagens Auto-RP (224.0.1.39 e 224.0.1.40) cheguem a todos os pontos da rede;
-- O domínio PIM esteja sincronizado antes da formação da árvore multicast (*,G) e (S,G).
-  
-💡 **Resumo rápido:**  
-  
-Sem o autorp listener, roteadores distantes do Mapping Agent podem nunca aprender o RP, e o multicast simplesmente não se forma.  
-
-## 🌳 Formação da Árvore Multicast — do IGMP Join ao PIM Register  
-  
-Com o domínio PIM Sparse Mode devidamente sincronizado e todos os roteadores já conhecendo o Rendezvous Point (RP) através do Auto-RP e do autorp listener, finalmente podemos observar a formação da árvore multicast.  
-  
-Essa é a parte mais visual e importante do laboratório, pois mostra o fluxo completo de como uma sessão multicast é criada e otimizada.  
-  
-### 🧩 1️⃣ O início de tudo: o IGMP Join
-
-A comunicação multicast só é iniciada quando há um receptor interessado.  
-Sem receptores, nenhum tráfego é enviado — esse é o grande diferencial do modo Sparse Mode.  
-  
-O processo começa no host (no nosso caso, um roteador simulando um PC) que deseja receber o fluxo multicast.  
-
-📍 Comando no HOST02:
+Antes de simular a falha, confirme quem está atuando como RP no momento.  
+Podemos verificar em qualquer roteador do domínio (ex: R04):  
 
 ```ios
-interface FastEthernet0/0
- ip igmp join-group 239.1.1.1
-```  
+R04#show ip pim rp mapping
+PIM Group-to-RP Mappings
 
-- Esse comando simula o **IGMP Report** (mensagem enviada pelos hosts para participar de um grupo multicast).
-- O roteador conectado ao host (chamado de Designated **Router – DR**) registra essa informação e sabe que há um receptor interessado em **239.1.1.1**.
-
-### 🛰️ 2️⃣ O papel do DR (Designated Router)
-
-O DR é o primeiro roteador no caminho que “ouve” o IGMP Join do host.  
-Ao receber o pedido, ele precisa fazer com que o tráfego chegue até esse receptor — mas como ele faz isso?  
-  
-Como o PIM Sparse Mode não faz flood, o DR precisa “subir” até o Rendezvous Point (RP).  
-
-👉 Então o DR consulta a tabela PIM e verifica quem é o RP responsável pelo grupo 239.1.1.1, informação aprendida via Auto-RP:  
-
-```ios
-show ip pim rp mapping
-```
-
-- Se o RP for, por exemplo, 2.2.2.2 (R02), o DR enviará uma mensagem PIM Join na direção do RP, utilizando a rota unicast normal (via OSPF).  
-  
-### ⚙️ 3️⃣ O nascimento da árvore compartilhada (*,G)
-
-Durante o caminho até o RP, cada roteador cria uma entrada na tabela multicast, indicando que há um receptor interessado naquele grupo.  
-Essas entradas têm o formato:  
-
-```ios
-(*, 239.1.1.1)
-```
-
-O asterisco (*) indica que o receptor ainda não conhece a fonte — ele está apenas interessado no grupo.  
-
-- Esse caminho reverso é conhecido como Shared Tree, ou árvore compartilhada.  
-  
-✅ **Agora o RP já sabe que há receptores interessados no grupo 239.1.1.1.**  
-
-Você pode verificar essa estrutura com o comando:  
-
-```ios
-show ip mroute 239.1.1.1
-```
-
-Exemplo em R03:  
-
-```ios
-R03#show ip mroute 239.1.1.1
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 239.1.1.1), 01:18:31/00:02:42, RP 2.2.2.2, flags: SF
-  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.5
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 01:18:31/00:02:42
-
-R03#
-```
-
-### 📡 4️⃣ A fonte começa a transmitir — PIM Register
-
-Agora, o servidor multicast (R01) começa a enviar tráfego para o grupo **239.1.1.1.**  
-  
-O roteador diretamente conectado à fonte (também um DR) detecta que está recebendo tráfego multicast sem receptores ainda conhecidos.  
-Para resolver isso, ele encapsula o tráfego dentro de uma mensagem PIM Register e envia diretamente ao RP (R02), via unicast.  
-  
-💡 **Essa é a primeira etapa da comunicação — o RP “descobre” a fonte.**  
-
-### 🔁 5️⃣ RP conecta as pontas e inicia o fluxo
-
-O RP agora conhece dois lados:
-
-- **As fontes (S)** — aprendidas via mensagens PIM Register.
-- **Os receptores (R)** — aprendidos via mensagens PIM Join.
-  
-Ele então conecta essas duas informações e cria as entradas:  
-
-```ios
-(S, 239.1.1.1)
-(*, 239.1.1.1)
-```
-
-A partir desse momento, o RP começa a reenviar o tráfego multicast pela árvore compartilhada (*,G) até o DR do receptor.
-Os pacotes multicast fluem normalmente até o host.
-
-✅ **O multicast agora está funcional!**  
-
-### ⚙️ 6️⃣ A transição para a Árvore de Caminho Mais Curto (SPT)
-
-Após o fluxo se estabilizar, o roteador receptor percebe que há um caminho mais direto entre ele e a fonte (sem passar pelo RP).  
-  
-Então, ele envia um novo PIM Join diretamente em direção à fonte, criando a árvore SPT (Shortest Path Tree).
-A árvore agora passa a ser baseada em **(S,G)**, e o RP deixa de encaminhar esse tráfego.  
-  
-Esse comportamento otimiza o caminho e reduz o delay, criando a estrutura:  
-
-```ios
-(S, 239.1.1.1)
-```
-
-Então vamos no SERVER e realizar um ping para o grupo 239.1.1.1  
-
-```ios
-SERVER#ping 239.1.1.1 repeat 100
-```  
-
-Em R01 execute o comando:  
-
-```ios
-SERVER#ping 239.1.1.1 repeat 100
-
-Type escape sequence to abort.
-Sending 100, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-
-Reply to request 0 from 192.168.10.1, 4 ms
-Reply to request 0 from 192.168.20.1, 176 ms
-Reply to request 1 from 192.168.10.1, 4 ms
-Reply to request 1 from 192.168.20.1, 128 ms
-Reply to request 2 from 192.168.10.1, 4 ms
-Reply to request 2 from 192.168.20.1, 112 ms
-Reply to request 3 from 192.168.10.1, 4 ms
-Reply to request 3 from 192.168.20.1, 116 ms
-Reply to request 4 from 192.168.10.1, 4 ms
-Reply to request 4 from 192.168.20.1, 132 ms
-Reply to request 5 from 192.168.10.1, 4 ms
-Reply to request 5 from 192.168.20.1, 120 ms
-Reply to request 6 from 192.168.10.1, 4 ms
-Reply to request 6 from
-
-...saída omitida...
-```  
-  
-```ios
-R01#show ip mroute 239.1.1.1
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 239.1.1.1), 01:58:37/stopped, RP 2.2.2.2, flags: SJCF
-  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 01:58:37/00:02:32
-
-(192.168.10.1, 239.1.1.1), 00:00:16/00:03:17, flags: FT
-  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0, Registering
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:00:17/00:03:12
-    FastEthernet0/1, Forward/Sparse, 00:00:17/00:03:12
-
-R01#  
-```  
-
-### ✅ Conclusão
-
-O PIM Sparse Mode constrói a árvore multicast de forma inteligente e otimizada, somente quando há receptores interessados.  
-O processo completo ocorre em três fases:  
-
-| Etapa                                               | Descrição                            |
-|-----------------------------------------------------|--------------------------------------|
-| 1️⃣ Descoberta e sincronização (Auto-RP + Listener) | Define o RP e garante o domínio PIM   |
-| 2️⃣ Formação da Shared Tree (*,G)                   | Ligação dos receptores ao RP          |
-| 3️⃣ Transição para SPT (S,G)                        | Ligação direta entre receptor e fonte |  
-
-## 🧰 Validação e Troubleshooting do PIM Sparse Mode
-
-Após configurar todo o domínio PIM-SM, habilitar o Auto-RP (com Listener) e realizar os joins multicast, é hora de validar a formação da árvore multicast e confirmar se o tráfego está fluindo corretamente.  
-  
-Esta é a parte final e mais importante do laboratório — onde garantimos que cada elemento **(IGMP, PIM, RP e RPF)** está operando de forma integrada.
-
-### 1️⃣ Verificar os vizinhos PIM — show ip pim neighbor
-
-O primeiro passo é garantir que os roteadores realmente formaram vizinhança PIM nas interfaces corretas.  
-  
-📍 Execute em todos os roteadores:  
-
-```ios
-show ip pim neighbor
-```
-
-📘 **Saída esperada:**  
-
-```ios
-PIM Neighbor Table
-Neighbor Address     Interface          Uptime/Expires    Ver/Mode
-10.0.0.2             FastEthernet0/0    00:02:13/00:01:46 v2/Sparse
-10.0.0.6             FastEthernet0/1    00:02:10/00:01:50 v2/Sparse
-```
-
-🔍 **Interpretação:**
-
-- Todos os vizinhos devem aparecer em modo Sparse.
-- Se não houver vizinhos, revise o comando ip pim sparse-mode nas interfaces.
-- Sem vizinhança, o PIM não forma a árvore multicast.  
-
-### 2️⃣ Confirmar o RP ativo — show ip pim rp mapping
-
-O próximo passo é verificar se todos os roteadores aprenderam quem é o RP através do Auto-RP.  
-  
-📍 Execute em cada roteador:  
-
-```ios
-show ip pim rp mapping
-```
-
-📘 **Saída esperada**:  
-
-```ios
 Group(s) 224.0.0.0/4
   RP 2.2.2.2 (?), v2
-    Info source: 1.1.1.1 (?), via Auto-RP
-    Uptime: 00:00:42, expires: 00:01:17
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:10:21, expires: 00:02:12
+  RP 3.3.3.3 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:09:54, expires: 00:01:58
+```
+
+## ⚙️ Simulando a Falha do RP Principal e a Ativação do RP Backup
+
+Agora que o domínio multicast já está totalmente estabelecido e os roteadores conhecem o RP principal e o RP backup, vamos validar na prática o comportamento de **falha e convergência automática** do PIM Sparse Mode com **Bootstrap Router (BSR)**.
+
+---
+
+### 🧠 **Objetivo do teste**
+
+Verificar se, quando o **RP principal (R02)** se torna indisponível, o **Candidate BSR (R01)** é capaz de redistribuir o mapeamento e promover o **RP secundário (R03)** de forma automática e transparente para o domínio multicast.
+
+---
+
+### 1️⃣ **Identificando o RP atual**
+
+Antes de simular a falha, confirme quem está atuando como RP no momento.  
+Podemos verificar em qualquer roteador do domínio (ex: R04):
+
+```ios
+R04#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Group(s) 224.0.0.0/4
+  RP 2.2.2.2 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:10:21, expires: 00:02:12
+  RP 3.3.3.3 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:09:54, expires: 00:01:58
+```
+
+➡️ Aqui vemos que o RP ativo é o 2.2.2.2 (R02) e o RP de backup é o 3.3.3.3 (R03).
+
+### 2️⃣ Simulando a falha do RP principal
+
+Para simular a indisponibilidade do RP principal, basta desligar a interface loopback que representa o IP 2.2.2.2:  
+
+```ios
+R02(config)#interface loopback0
+R02(config-if)#shutdown
+```
+
+🔎 **Alternativa:** também é possível desligar o link que conecta R02 ao domínio PIM (ex: Fa0/1), caso queira simular uma falha de conectividade em vez de falha lógica.  
+
+### 3️⃣ Monitorando a eleição via Debug
+
+No Candidate BSR (R01), ative os debugs para observar o processo de reeleição:  
+
+```ios
+R01#debug ip pim bsr
 ```  
 
-🔍 **Interpretação:**  
-  
-- O campo RP mostra o IP do Candidate RP (R02).
-- Info source mostra o Mapping Agent (R01).
-- O campo via Auto-RP confirma que o aprendizado foi feito automaticamente.
-- Se aparecer “No RP mapping information”, o problema é na propagação das mensagens Auto-RP → verifique ip pim autorp listener.  
-
-### 3️⃣ Verificar os grupos IGMP — show ip igmp groups
-
-Agora, valide se os hosts realmente aderiram ao grupo multicast.  
-
-📍 No roteador conectado ao Host02:  
+Saída esperada:  
 
 ```ios
-show ip igmp groups
+R01#debug ip pim bsr
+PIM-BSR debugging is on
+R01#
+*Mar  1 01:41:52.779: PIM-BSR(0): 2.2.2.2 bootstrap forwarded on Loopback0
+*Mar  1 01:41:52.779: PIM-BSR(0): 2.2.2.2 bootstrap forwarded on FastEthernet0/0
+*Mar  1 01:41:52.783: PIM-BSR(0): 2.2.2.2 bootstrap forwarded on FastEthernet1/0
+*Mar  1 01:41:52.787: PIM-BSR(0): bootstrap on non-RPF path Loopback0
+R01#
+*Mar  1 01:44:03.303: PIM-BSR(0) BSR 2.2.2.2 expired
+*Mar  1 01:44:04.251: PIM-BSR(0): RP-set for 224.0.0.0/4
+*Mar  1 01:44:04.251: PIM-BSR(0):   RP(1) 2.2.2.2, holdtime 150 sec priority 0
+*Mar  1 01:44:04.255: PIM-BSR(0):   RP(2) 3.3.3.3, holdtime 150 sec priority 0
+*Mar  1 01:44:04.255: PIM-BSR(0): Bootstrap message for 1.1.1.1 originated
+R01#
+*Mar  1 01:44:07.615: PIM-BSR(0):  RP 3.3.3.3, 1 Group Prefixes, Priority 0, Holdtime 150
+R01#
+*Mar  1 01:44:23.203: PIM-BSR(0): Mapping (224.0.0.0/4, RP:2.2.2.2) with holdtime 150 expired on BSR
+*Mar  1 01:44:23.203: PIM-BSR(0): RP-set for 224.0.0.0/4
+*Mar  1 01:44:23.203: PIM-BSR(0):   RP(1) 2.2.2.2, holdtime 0 sec priority 0
+*Mar  1 01:44:23.203: PIM-BSR(0):   RP(2) 3.3.3.3, holdtime 150 sec priority 0
+*Mar  1 01:44:23.203: PIM-BSR(0): Bootstrap message for 1.1.1.1 originated
+R01#
 ```
 
-📘 **Saída esperada:**
-  
+💡 **Interpretação:** o BSR detecta que o RP anterior não respondeu dentro do holdtime e promove automaticamente o RP backup.
+
+### 4️⃣ Confirmando o novo RP ativo
+
+Após alguns segundos (dependendo dos temporizadores PIM), podemos confirmar a nova eleição:  
+
 ```ios
-Group Address    Interface       Uptime    Expires   Last Reporter   Group Mode
-239.1.1.1        FastEthernet1/0 00:02:18  00:02:05  192.168.20.1    IGMPv2
+R04#show ip pim rp mapping
 ```
 
-🔍 **Interpretação:**  
-
-- O endereço 239.1.1.1 confirma que o host se juntou ao grupo.
-- O roteador local atua como Designated Router (DR).
-- Se o grupo não aparecer, o host não enviou IGMP Join → revise ip igmp join-group 239.1.1.1.  
-
-### 4️⃣ Validar a tabela de rotas multicast — show ip mroute
-
-Este é o comando mais importante do laboratório .  
-Ele mostra como o roteador está encaminhando o tráfego multicast.  
-
-📍 Execute em todos os roteadores do caminho:  
+Saída:  
 
 ```ios
-show ip mroute 239.1.1.1
-```
+R04#show ip pim rp mapping
+PIM Group-to-RP Mappings
 
-📘 **Saída esperada (Shared Tree ativa):**  
-
-```ios
-(*, 239.1.1.1), uptime: 00:00:56, RP 2.2.2.2, flags: SJCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:00:52/00:02:08
-```
-
-📘 **Após a fonte começar a transmitir:**  
-
-```ios
-(S, 239.1.1.1), uptime: 00:00:31, flags: T
-  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.9
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:00:27/00:02:32
-```
-
-🔍 **Interpretação:**  
-
-| Campo               | Significado                                |
-|---------------------|--------------------------------------------|
-| (*,G)               | Árvore compartilhada (receptores → RP)     |
-| (S,G)               | Árvore específica (fonte → receptores)     |
-| RP                  | Endereço do Rendezvous Point               |
-| Incoming interface  | Caminho reverso até a fonte (RPF)          |
-| Outgoing interfaces | Interfaces pelas quais o tráfego é enviado |  
-
-💡 **Se a entrada (S,G) aparecer, significa que o SPT (Shortest Path Tree) foi formado com sucesso.**  
-
-### 5️⃣ Confirmar o RPF — show ip rpf
-
-O **Reverse Path Forwarding (RPF)** garante que o tráfego multicast está sendo recebido pelo caminho correto de volta à fonte.
-
-📍 Execute no roteador receptor (por exemplo, R04):  
-
-```ios
-show ip rpf 192.168.10.1
-```
-
-📘 **Saída esperada:**  
-
-```ios
-RPF information for ? (192.168.10.1)
-  RPF interface: FastEthernet0/0
-  RPF neighbor: 10.0.0.1
-  RPF route/mask: 10.0.0.0/30
-  RPF type: unicast
-  RPF recursion count: 0
-```  
-
-🔍 **Interpretação:**
-
-- O RPF deve apontar para o roteador correto no caminho até a fonte.  
-- Se o RPF falhar, o tráfego não será encaminhado — o roteador descarta o pacote multicast.  
-
-### 6️⃣ Confirmar a recepção de tráfego multicast
-
-Por fim, envie tráfego da fonte (Server / R01) para o grupo 239.1.1.1 e verifique se os receptores o recebem.  
-  
-📍 **No Server (R01):**  
-
-```ios
-ping 239.1.1.1 repeat 5
-```
-
-📍 **No Host02:**  
-
-```ios
-debug ip mpacket
-```
-
-📘 **Saída esperada:**
-
-```ios
-00:00:24: IP multicast packet received from 192.168.10.1 (239.1.1.1), 28 bytes
+Group(s) 224.0.0.0/4
+  RP 3.3.3.3 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 03:53:30, expires: 00:01:40
+R04#
 ```
   
-✅ Se o host receber o pacote multicast, o laboratório está 100% funcional.  
-
-### 🧭 7️⃣ Diagnóstico rápido de problemas comuns
-
-| Sintoma                                  | Causa provável                 | Solução                                         |
-|------------------------------------------|--------------------------------|-------------------------------------------------|
-| show ip pim rp mapping vazio             | Mensagens Auto-RP não propagam | Adicione ip pim autorp listener                 |
-| show ip mroute sem (*,G)                 | Nenhum IGMP Join recebido      | Verifique o join-group no host                  |
-| Tráfego chega ao RP, mas não ao receptor | Falha de RPF                   | Verifique show ip rpf e tabela de rotas unicast |
-| Pacotes “Malformed” no Wireshark         | Captura truncada               | Aumente Snaplen para 65535                      |
-| DR incorreto no domínio LAN              | Vizinhança PIM instável        | Verifique show ip pim neighbor e prioridade DR  |  
-
-## 🧾 Resumo Final — Fluxo do PIM Sparse Mode
-
-| Etapa | Descrição                       | Comando de validação      |
-|-------|---------------------------------|---------------------------|
-| 1️⃣   | Formação das vizinhanças PIM     | show ip pim neighbor     |
-| 2️⃣   | Descoberta do RP (Auto-RP)       | show ip pim rp mapping   |
-| 3️⃣   | Adesão do host ao grupo          | show ip igmp groups      |
-| 4️⃣   | Criação da Shared Tree (*,G)     | show ip mroute           |
-| 5️⃣   | Registro da fonte (PIM Register) | show ip mroute no RP     |
-| 6️⃣   | Transição para SPT (S,G)         | show ip mroute + flags T |
-| 7️⃣   | Validação do RPF                 | show ip rpf <source>     |  
-
-## ✅ Conclusão
+➡️ O domínio agora reconhece o R03 (3.3.3.3) como o novo RP ativo.  
   
-Com esses testes, você conclui a validação completa do PIM Sparse Mode, cobrindo:
+### 5️⃣ Restaurando o RP principal
 
-- Eleição e distribuição do RP (Auto-RP + Listener)
-- Formação da árvore multicast (*,G → S,G)
-- Confirmação de IGMP, PIM, RPF e fluxo multicast ativo
+Após validar o failover, podemos reativar o RP principal (R02):  
+
+```ios
+R02(config)#interface loopback0
+R02(config-if)#no shutdown
+```
+
+Logo após o retorno, o BSR volta a anunciar o R02 como RP preferencial, e o domínio converge novamente sem perda de sessões multicast.  
+
+🧩 **Resumo prático**  
+
+| Etapa | Ação                                             | Efeito no Domínio                                     |
+|-------|--------------------------------------------------|-------------------------------------------------------|
+| 1️⃣   | Derrubar Loopback0 do RP principal (R02)         | RP 3.3.3.3 (R03) é promovido automaticamente           |
+| 2️⃣   | Monitorar com debug ip pim bsr e debug ip pim rp | É possível observar o processo de reeleição            |
+| 3️⃣   | Consultar show ip pim rp mapping                 | Mostra o novo RP ativo                                 |
+| 4️⃣   | Reativar Loopback0 no R02                        | O RP principal reassume o controle após reconvergência |  
+
+### 💡 Conclusão
+
+Esse teste confirma o comportamento esperado do PIM Sparse Mode com Bootstrap Router (BSR):
+
+- A eleição e a substituição de RPs acontecem automaticamente, sem intervenção manual.
+- O Candidate BSR garante a continuidade do domínio multicast.
+- Nenhum tráfego é interrompido, comprovando a alta disponibilidade do plano de controle PIM-SM.
+
+## 🧩 O que aprendemos com este laboratório
+
+Neste laboratório, exploramos em profundidade o funcionamento do **PIM Sparse Mode (PIM-SM)** com **Bootstrap Router (BSR)** — o método padrão **IETF** para descoberta e eleição dinâmica de **Rendezvous Points (RPs)** em domínios multicast.
+
+Ao longo das etapas, observamos o comportamento real do protocolo em um ambiente controlado, analisando desde o processo de descoberta até a formação das árvores de distribuição multicast.  
+
+---
+
+### 🎯 Principais aprendizados
+
+| Tópico                            | Conceito-chave                                                                                                                                   |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Ativação do domínio multicast** | O roteamento multicast é habilitado com `ip multicast-routing`, e o PIM Sparse Mode deve ser ativado em todas as interfaces participantes.       |
+| **Bootstrap Router (BSR)**        | É o mecanismo responsável por distribuir as informações dos RPs candidatos e garantir a redundância de forma padronizada (IETF).                 |
+| **Candidate RP e BSR**            | O RP principal (R02) e o backup (R03) foram configurados com `ip pim rp-candidate`, enquanto o R01 foi definido como `bsr-candidate`, centralizando a eleição. |
+| **Troca de mensagens PIM**        | Capturamos e analisamos as mensagens **Hello**, **Bootstrap** e **RP-Set**, que mantêm a estrutura e o estado do domínio PIM-SM.                 |
+| **Eleição automática de RP**      | Validamos que o domínio multicast elege o RP ativo com base nas informações do BSR, garantindo alta disponibilidade.                             |
+| **Função do Designated Router (DR)** | O DR atua como ponto de entrada/saída do tráfego multicast, sendo responsável pelos IGMP Joins e PIM Registers.                               |
+| **Criação das Árvores Multicast** | Entendemos a formação das árvores **(*,G)** (Shared Tree) e **(S,G)** (Shortest Path Tree), com transição automática para o caminho mais eficiente. |
+| **Failover entre RPs**            | Demonstramos que, em caso de falha do RP principal, o BSR promove o RP backup automaticamente, sem interrupção perceptível no tráfego.           |
+| **Monitoramento e validação**     | Utilizamos comandos como `show ip pim rp mapping`, `show ip mroute`, e `debug ip pim bsr` para confirmar cada etapa da operação.                 |
+
+---
+
+### 💡 Conclusões gerais
+
+- O **PIM-SM com BSR** elimina a dependência de mecanismos proprietários como o Auto-RP, tornando o ambiente **multivendor e interoperável**.  
+- A separação entre **BSR**, **RP** e **DR** garante uma arquitetura **modular, resiliente e escalável**.  
+- A propagação de informações via **mensagens Bootstrap** permite que qualquer roteador no domínio saiba, de forma dinâmica e automática, quem são os RPs ativos.  
+- A partir do momento em que há **hosts interessados (IGMP Joins)** e **fontes enviando tráfego**, o domínio multicast se torna operacional e totalmente dinâmico.  
+
+---
+
+📘 **Resumo final:**  
+> Este laboratório consolida o entendimento completo do PIM Sparse Mode moderno — desde o plano de controle (BSR e RP election) até o plano de dados (Shared Tree e Shortest Path Tree) — e prepara a base para ambientes multicast escaláveis e interoperáveis.
+
+---
+
+## 🧩 O que aprendemos com este laboratório
+
+Neste laboratório, exploramos em profundidade o funcionamento do **PIM Sparse Mode (PIM-SM)** com **Bootstrap Router (BSR)** — o método padrão **IETF** para descoberta e eleição dinâmica de **Rendezvous Points (RPs)** em domínios multicast.
+
+Ao longo das etapas, observamos o comportamento real do protocolo em um ambiente controlado, analisando desde o processo de descoberta até a formação das árvores de distribuição multicast.  
+
+---
+
+### 🎯 Principais aprendizados
+
+| Tópico | Conceito-chave |
+|--------|----------------|
+| **Ativação do domínio multicast** | O roteamento multicast é habilitado com `ip multicast-routing`, e o PIM Sparse Mode deve ser ativado em todas as interfaces participantes. |
+| **Bootstrap Router (BSR)** | É o mecanismo responsável por distribuir as informações dos RPs candidatos e garantir a redundância de forma padronizada (IETF). |
+| **Candidate RP e BSR** | O RP principal (R02) e o backup (R03) foram configurados com `ip pim rp-candidate`, enquanto o R01 foi definido como `bsr-candidate`, centralizando a eleição. |
+| **Troca de mensagens PIM** | Capturamos e analisamos as mensagens **Hello**, **Bootstrap** e **RP-Set**, que mantêm a estrutura e o estado do domínio PIM-SM. |
+| **Eleição automática de RP** | Validamos que o domínio multicast elege o RP ativo com base nas informações do BSR, garantindo alta disponibilidade. |
+| **Função do Designated Router (DR)** | O DR atua como ponto de entrada/saída do tráfego multicast, sendo responsável pelos IGMP Joins e PIM Registers. |
+| **Criação das Árvores Multicast** | Entendemos a formação das árvores **(*,G)** (Shared Tree) e **(S,G)** (Shortest Path Tree), com transição automática para o caminho mais eficiente. |
+| **Failover entre RPs** | Demonstramos que, em caso de falha do RP principal, o BSR promove o RP backup automaticamente, sem interrupção perceptível no tráfego. |
+| **Monitoramento e validação** | Utilizamos comandos como `show ip pim rp mapping`, `show ip mroute`, e `debug ip pim bsr` para confirmar cada etapa da operação. |
+
+---
+
+### 💡 Conclusões gerais
+
+- O **PIM-SM com BSR** elimina a dependência de mecanismos proprietários como o Auto-RP, tornando o ambiente **multivendor e interoperável**.  
+- A separação entre **BSR**, **RP** e **DR** garante uma arquitetura **modular, resiliente e escalável**.  
+- A propagação de informações via **mensagens Bootstrap** permite que qualquer roteador no domínio saiba, de forma dinâmica e automática, quem são os RPs ativos.  
+- A partir do momento em que há **hosts interessados (IGMP Joins)** e **fontes enviando tráfego**, o domínio multicast se torna operacional e totalmente dinâmico.  
+
+---
+
+📘 **Resumo final:**  
+> Este laboratório consolida o entendimento completo do PIM Sparse Mode moderno — desde o plano de controle (BSR e RP election) até o plano de dados (Shared Tree e Shortest Path Tree) — e prepara a base para ambientes multicast escaláveis e interoperáveis.
+
+---
+
+## 🗺️ Mapa conceitual do fluxo PIM-SM com BSR
+
+```text
+┌────────────────────────────┐
+│        Fase 1: Setup       │
+│────────────────────────────│
+│ • ip multicast-routing     │
+│ • ip pim sparse-mode       │
+│ • Configuração do BSR/RP   │
+└──────────────┬─────────────┘
+               │
+               ▼
+┌────────────────────────────┐
+│   Fase 2: Descoberta RP    │
+│────────────────────────────│
+│ • C-RPs anunciam-se ao BSR │
+│ • BSR distribui RP-Set     │
+│ • Todos aprendem o RP ativo│
+└──────────────┬─────────────┘
+               │
+               ▼
+┌────────────────────────────┐
+│  Fase 3: Interesse (IGMP)  │
+│────────────────────────────│
+│ • Host envia IGMP Join     │
+│ • DR registra interesse    │
+│ • Envia PIM Join → RP      │
+└──────────────┬─────────────┘
+               │
+               ▼
+┌────────────────────────────────┐
+│ Fase 4: Tráfego e Registro     │
+│────────────────────────────────│
+│ • Fonte envia multicast        │
+│ • DR da fonte envia Register   │
+│ • RP conecta fonte e receptores│
+└──────────────┬─────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────┐
+│ Fase 5: Otimização (SPT)            │
+│─────────────────────────────────────│
+│ • DRs detectam caminho mais curto   │
+│ • Envio direto da fonte ao receptor │
+│ • RP mantém apenas referência lógica│
+└─────────────────────────────────────┘
+```
+
+
 
 ## 📘 Tabela de Comandos
 
-### R01 – Mapping Agent (MA)
+### 🖥️ R01 – BSR Primário e DR da LAN do Servidor
 
-| **Seção**                | **Comando / Configuração**                                                                     | **Descrição**                                            |
-|--------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                         | Habilita o roteamento multicast globalmente              |
-|                          | `ip pim autorp listener`                                                                       | Permite escutar mensagens Auto-RP em interfaces não PIM  |
-|                          | `ip pim send-rp-discovery Loopback0 scope 16`                                                  | Define R01 como **Mapping Agent (MA)** no domínio PIM-SM |
-| **Interface Loopback0**  | `ip address 1.1.1.1 255.255.255.255`<br>`ip pim sparse-mode`                                   | Identificação do roteador e ativação PIM na Loopback     |
-| **Fa0/0 (LAN Server)**   | `ip address 192.168.10.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Gateway do servidor multicast                     |
-| **Fa0/1 (Link com R02)** | `ip address 10.0.0.1 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`     | Conexão P2P com R02                               |
-| **Fa1/0 (Link com R05)** | `ip address 10.0.0.18 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`    | Conexão P2P com R05                               |
-| **OSPF**                 | `router ospf 100`<br>`router-id 1.1.1.1`<br>`network 1.1.1.1 0.0.0.0 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0`<br>`network 192.168.10.0 0.0.0.255 area 0`                                                                                      | Configuração OSPF para conectividade unicast      |
-| **Função no Auto-RP**    | **Mapping Agent (MA)**                                                      | Responsável por ouvir anúncios e distribuir o RP ativo (grupo 224.0.1.39)  | 
+| **Seção**           | **Comando / Configuração**                                                                          | **Descrição**                                            |
+|---------------------|-----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                                                                              | Habilita o roteamento multicast                          |
+| **Global**          | `ip pim bsr-candidate Loopback0 30`                                                                 | Define R01 como **BSR Candidate** (hash-mask 30)         |
+| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`<br>`ip pim sparse-mode`                                        | Loopback usada como Router-ID e origem das mensagens PIM |
+| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip igmp join-group 239.1.1.1` | Conexão com o Server; participa do grupo 239.1.1.1       |
+| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`<br>`ip pim sparse-mode`                                       | Link P2P com R02 — domínio PIM ativo                     |
+| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R05 — participa do domínio PIM              |
+| **OSPF**            | `router ospf 100`<br>`router-id 1.1.1.1`<br>`network 192.168.10.0 0.0.0.255 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0` | Garante conectividade unicast/ RPF para PIM |
+| **Função**          | —                                                                                                   | R01 atua como **BSR principal** e DR da LAN do Server.   |
 
-### 📗 R02 – Candidate RP (C-RP)
+### 📗 R02 – Candidate RP e BSR Secundário
 
-| **Seção**                | **Comando / Configuração**                                                                        | **Descrição**                                      |
-|--------------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                            | Habilita o roteamento multicast globalmente        |
-|                          | `ip pim autorp listener`                                                                | Permite escutar anúncios Auto-RP mesmo em interfaces não PIM |
-|                          | `ip pim send-rp-announce Loopback0 scope 16`                                                      | Define R02 como **Candidate RP (C-RP)**            |
-| **Interface Loopback0**  | `ip address 2.2.2.2 255.255.255.255`<br>`ip pim sparse-mode`                                      | Identificação e habilitação PIM                    |
-| **Fa0/1 (Link com R01)** | `ip address 10.0.0.2 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R01                                |
-| **Fa1/0 (Link com R03)** | `ip address 10.0.0.5 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R03                                |
-| **OSPF**                 | `router ospf 100`<br>`router-id 2.2.2.2`<br>`network 2.2.2.2 0.0.0.0 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0` | Configuração OSPF unicast |
-| **Função no Auto-RP**    | **Candidate RP (C-RP)**                                                                | Envia anúncios para o grupo 224.0.1.40, oferecendo-se como RP |
+| **Seção**           | **Comando / Configuração**                                                                                     | **Descrição**                                 |
+|---------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| **Global**          | `ip multicast-routing`                                                                                         | Habilita o roteamento multicast               |
+| **Global**          | `ip pim bsr-candidate Loopback0 20`                                                         | Define R02 como **BSR Candidate** (hash-mask 20) — menor que R01 |
+| **Global**          | `ip pim rp-candidate Loopback0 group-list 1`                                                          | Define R02 como **Candidate RP** para o `group-list 1` |
+| **ACL**             | `access-list 1 permit 224.0.0.0 15.255.255.255`                                                            | ACL usada pelo `group-list 1` (cobre 224.0.0.0/4) |
+| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255`<br>`ip pim sparse-mode`                                                   | Endereço lógico do Candidate RP               |
+| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`<br>`ip pim sparse-mode`                                                  | Link P2P com R01                              |
+| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`<br>`ip pim sparse-mode`                                                  | Link P2P com R03                              |
+| **OSPF**        | `router ospf 100`<br>`router-id 2.2.2.2`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0` | Garante conectividade unicast/ RPF para PIM   |
+| **Função**      | —                                                                                             | R02 atua como **Candidate RP** primário e BSR secundário / backup. |
 
-### 📙 R03 – Roteador de Trânsito (PIM-SM Participant)
+### 📙 R03 – Candidate RP Secundário
 
-| **Seção**                | **Comando / Configuração**                                                                        | **Descrição**                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                            | Habilita o roteamento multicast globalmente           |
-|                          | `ip pim autorp listener`                                                                        | Permite escutar mensagens Auto-RP em interfaces não PIM |
-| **Interface Loopback0**  | `ip address 3.3.3.3 255.255.255.255`<br>`ip pim sparse-mode`                                      | Identificação do roteador e ativação do PIM           |
-| **Fa0/0 (Link com R04)** | `ip address 10.0.0.9 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R04                                   |
-| **Fa1/0 (Link com R02)** | `ip address 10.0.0.6 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R02                                   |
-| **OSPF**                 | `router ospf 100`<br>`router-id 3.3.3.3`<br>`network 3.3.3.3 0.0.0.0 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`   | Configuração OSPF para roteamento unicast |
-| **Função no Auto-RP**    | **Participante do domínio PIM-SM**                                                  | Aprende automaticamente o RP via grupo 224.0.1.39 (Auto-RP Mapping) |
+| **Seção**           | **Comando / Configuração**                                                                                       | **Descrição**                               |
+|---------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
+| **Global**          | `ip multicast-routing`                                                                                           | Habilita o roteamento multicast             |
+| **Global**          | `ip pim rp-candidate Loopback0 group-list 1`                                                                     | Define R03 como **Candidate RP secundário** |
+| **ACL**             | `access-list 1 permit 224.0.0.0 15.255.255.255`                                       | Define o range de grupos multicast que o RP pode atender (224.0.0.0/4) |
+| **Loopback0**       | `ip address 3.3.3.3 255.255.255.255`<br>`ip pim sparse-mode`                                                         | Endereço lógico usado como RP de backup |
+| **FastEthernet0/0** | `ip address 10.0.0.9 255.255.255.252`<br>`ip pim sparse-mode`                                                    | Link P2P com R04 — participa do domínio PIM |
+| **FastEthernet1/0** | `ip address 10.0.0.6 255.255.255.252`<br>`ip pim sparse-mode`                                                    | Link P2P com R02 — participa do domínio PIM |
+| **OSPF**            | `router ospf 100`<br>`router-id 3.3.3.3`<br>`network 10.0.0.4 0.0.0.3 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`  | Garante conectividade unicast para o RPF |
+| **Função**          | —                                                           | Atua como **RP de backup** no domínio PIM-SM com BSR, assumindo caso o RP principal (R02) falhe. |
 
-### 📒 R04 – Roteador com Receptor Multicast (Host02)
+### 📒 R04 – DR do Segmento do Host02
 
-| **Seção**                | **Comando / Configuração**                                                                         | **Descrição**                                        |
-|--------------------------|----------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| **Global**               | `ip multicast-routing`                                                                             | Habilita o roteamento multicast globalmente          |
-|                          | `ip pim autorp listener`                                                                           | Permite escutar anúncios Auto-RP                     |
-| **Interface Loopback0**  | `ip address 4.4.4.4 255.255.255.255`<br>`ip pim sparse-mode`                                       | Identificação lógica e ativação do PIM               |
-| **Fa0/0 (Link com R03)** | `ip address 10.0.0.10 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R03                                  |
-| **Fa0/1 (Link com R05)** | `ip address 10.0.0.13 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Conexão P2P com R05                                  |
-| **Fa1/0 (LAN Host02)**   | `ip address 192.168.20.254 255.255.255.0`<br>`ip pim sparse-mode`                              | Interface que conecta o host receptor multicast (Host02) |
-| **OSPF**                 | `router ospf 100`<br>`router-id 4.4.4.4`<br>`network 4.4.4.4 0.0.0.0 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 192.168.20.0 0.0.0.255 area 0` | Configuração OSPF para conectividade completa |
-| **Função no Auto-RP**    | **Participante com receptor multicast** |                          Recebe grupos via IGMP Join (Host02 – 239.1.1.1) e encaminha PIM Join em direção ao RP |
+| **Seção**           | **Comando / Configuração**                                                                          | **Descrição**                                            |
+|---------------------|-----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                                                                              | Habilita o roteamento multicast                          |
+| **Loopback0**       | `ip address 4.4.4.4 255.255.255.255`<br>`ip pim sparse-mode`                                        | Identificação lógica e Router-ID do roteador             |
+| **FastEthernet0/0** | `ip address 10.0.0.10 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R03 — domínio PIM ativo                     |
+| **FastEthernet0/1** | `ip address 10.0.0.13 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R05 — domínio PIM ativo                     |
+| **FastEthernet1/0** | `ip address 192.168.20.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip igmp join-group 239.1.1.1` | Interface conectada ao Host02 (receptor multicast)       |
+| **OSPF**            | `router ospf 100`<br>`router-id 4.4.4.4`<br>`network 192.168.20.0 0.0.0.255 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0` | Garante conectividade unicast / RPF |
+| **Função**          | — | Atua como **Designated Router (DR)** para o segmento do Host02, responsável por processar IGMP Reports e enviar PIM Join em direção ao RP. |
 
-### 📕 R05 – Roteador com Host Não Inscrito (Host03)
+### 📕 R05 – Roteador de trânsito com Host Não Inscrito (Host03)
 
-| **Seção**               | **Comando / Configuração**                                                                            | **Descrição**                                      |
-|-------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| **Global**              | `ip multicast-routing`                                                                                | Habilita o roteamento multicast globalmente        |
-|                         | `ip pim autorp listener`                                                                              | Permite escutar mensagens Auto-RP nas interfaces   |
-| **Interface Loopback0** | `ip address 5.5.5.5 255.255.255.255`<br>`ip pim sparse-mode`                                          | Identificação do roteador e ativação do PIM        |
-| **Fa0/0 (LAN Host03)**  | `ip address 192.168.30.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point` | Interface conectada ao Host03 (não inscrito em grupos multicast) |
-| **Fa0/1 (Link com R04)** | `ip address 10.0.0.14 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`   | Conexão P2P com R04                                |
-| **Fa1/0 (Link com R01)** | `ip address 10.0.0.17 255.255.255.252`<br>`ip pim sparse-mode`<br>`ip ospf network point-to-point`   | Conexão P2P com R01                                |
-| **OSPF**                 | `router ospf 100`<br>`router-id 5.5.5.5`<br>`network 5.5.5.5 0.0.0.0 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0`<br>`network 192.168.30.0 0.0.0.255 area 0` | Configuração OSPF para conectividade total |
-| **Função no Auto-RP**    | **Participante PIM-SM (sem receptor multicast)**                                     | Atua apenas como roteador de passagem; não há IGMP Join em sua LAN |
+| **Seção**           | **Comando / Configuração**                                        | **Descrição**                                                                              |
+|---------------------|-------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                                            | Habilita o roteamento multicast                                                            |
+| **Loopback0**       | `ip address 5.5.5.5 255.255.255.255`<br>`ip pim sparse-mode`      | Identificação lógica e Router-ID                                                           |
+| **FastEthernet0/0** | `ip address 192.168.30.254 255.255.255.0`<br>`ip pim sparse-mode` | Interface de acesso para o segmento de borda                                               |
+| **FastEthernet0/1** | `ip address 10.0.0.14 255.255.255.252`<br>`ip pim sparse-mode`    | Link P2P com R04 — participa do domínio PIM                                                |
+| **FastEthernet1/0** | `ip address 10.0.0.17 255.255.255.252`<br>`ip pim sparse-mode`    | Link P2P com R01 — participa do domínio PIM                                                |
+| **OSPF**            | `router ospf 100`<br>`router-id 5.5.5.5`<br>`network 192.168.30.0 0.0.0.255 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0` | Mantém conectividade unicast e suporta o RPF |
+| **Função**          | —                                                                 | Atua como **roteador de trânsito** dentro do domínio PIM-SM, garantindo conectividade entre os segmentos do receptor (R04) e da fonte (R01/SERVER). |
 
 ### 🖥️ SERVER – Fonte Multicast (Sender)
 
