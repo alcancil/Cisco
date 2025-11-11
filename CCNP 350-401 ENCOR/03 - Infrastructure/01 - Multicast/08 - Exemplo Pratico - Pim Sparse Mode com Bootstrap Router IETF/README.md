@@ -33,10 +33,13 @@
     - [🧰 3️⃣ Comandos de configuração](#-3️⃣-comandos-de-configuração)
     - [3️⃣ Captura e Observação via Wireshark](#3️⃣-captura-e-observação-via-wireshark)
     - [🧪 Realizando a captura](#-realizando-a-captura)
-  - [Quando o Server entra na jogada](#quando-o-server-entra-na-jogada)
-    - [🌳 Formação da Árvore Multicast (\*,G) — A Shared Tree](#-formação-da-árvore-multicast-g--a-shared-tree)
-    - [⚡ Migração para a Shortest Path Tree (SPT)](#-migração-para-a-shortest-path-tree-spt)
-    - [🧩 Propagação das mensagens Auto-RP — O papel do ip pim autorp listener](#-propagação-das-mensagens-auto-rp--o-papel-do-ip-pim-autorp-listener)
+  - [✅ 4️⃣ Ativando o Receptor (IGMP Join) — R04](#-4️⃣-ativando-o-receptor-igmp-join--r04)
+    - [✅ Configuração do IGMP Join em R04](#-configuração-do-igmp-join-em-r04)
+  - [✅ 5️⃣ Observando a Formação da Árvore (\*,G)](#-5️⃣-observando-a-formação-da-árvore-g)
+  - [✅ 6️⃣ Ativando a Fonte Multicast — R01/Server](#-6️⃣-ativando-a-fonte-multicast--r01server)
+  - [✅ 7️⃣ Confirmando a Convergência do Domínio PIM-SM](#-7️⃣-confirmando-a-convergência-do-domínio-pim-sm)
+  - [🧠 O papel do DR no processo multicast (com PIM-SM e Bootstrap Router)](#-o-papel-do-dr-no-processo-multicast-com-pim-sm-e-bootstrap-router)
+  - [🚀 Quando o Servidor Inicia o Tráfego](#-quando-o-servidor-inicia-o-tráfego)
   - [🌳 Formação da Árvore Multicast — do IGMP Join ao PIM Register](#-formação-da-árvore-multicast--do-igmp-join-ao-pim-register)
     - [🧩 1️⃣ O início de tudo: o IGMP Join](#-1️⃣-o-início-de-tudo-o-igmp-join)
     - [🛰️ 2️⃣ O papel do DR (Designated Router)](#️-2️⃣-o-papel-do-dr-designated-router)
@@ -311,7 +314,7 @@ Repita esse processo de R01 a R05, garantindo que todas as interfaces de roteame
 
 No modo **Sparse Mode (PIM-SM)**, o tráfego multicast não é disseminado automaticamente.  
 Ele só é encaminhado por interfaces que **participam ativamente do domínio multicast**, seja porque há **hosts interessados (IGMP Join)** ou porque é necessário **alcançar o Rendezvous Point (RP)**.  
- 
+  
 👉 Por isso, o PIM deve ser ativado em **todas as interfaces relevantes** da topologia, ou seja:  
 
 - **Entre roteadores PIM vizinhos**, para formar adjacências e trocar mensagens PIM Join/Prune;  
@@ -532,12 +535,6 @@ A eleição ocorre de forma simples:
 
 💡 Essa etapa é automática e ocorre **antes da descoberta do RP via Bootstrap Router**, portanto não é o foco deste laboratório.
 
----
-
-Alterar daqui
-
----
-
 ### 💬 Entendendo as Mensagens PIM Hello
 
 As mensagens **PIM Hello** são o ponto de partida de toda a comunicação entre roteadores PIM.  
@@ -732,11 +729,11 @@ Após ativar o **PIM Sparse Mode** e configurar os papéis do **Bootstrap Router
 Diferente do Auto-RP (que utiliza os grupos 224.0.1.39/40), o **BSR utiliza mensagens nativas do PIMv2** enviadas para o grupo **224.0.0.13 (ALL-PIM-ROUTERS)**.  
 Aqui esperamos observar:  
 
-| Tipo de Mensagem | PIM Type | Quem envia | Função |
-|------------------|----------|------------|--------|
-| **Bootstrap**     | **9**    | BSR eleito (R01 ou R02) | Distribui o mapeamento de RPs |
-| **RP-Candidate Advertisement** | **4** | R02 e R03 | Informam ao BSR que desejam ser RP |
-| **PIM Hello**     | **0** | Todos | Mantém vizinhança e DR |
+| Tipo de Mensagem               | PIM Type | Quem envia              | Função                             |
+|--------------------------------|----------|-------------------------|------------------------------------|
+| **Bootstrap**                  | **9**    | BSR eleito (R01 ou R02) | Distribui o mapeamento de RPs      |
+| **RP-Candidate Advertisement** | **4**    | R02 e R03               | Informam ao BSR que desejam ser RP |
+| **PIM Hello**                  | **0**    | Todos                   | Mantém vizinhança e DR             |
 
 ---
 
@@ -894,16 +891,159 @@ Depois disso:
 - A SPT pode surgir
 - **show ip mroute passa a exibir (S,G) e (*,G)**
 
----
+## ✅ 4️⃣ Ativando o Receptor (IGMP Join) — R04
 
-Alterar daqui
+Agora que o domínio PIM-SM já conhece o BSR, o RP principal (R02) e o RP backup (R03), podemos finalmente ativar **o primeiro receptor multicast real**.  
+No PIM Sparse Mode, este é o momento em que tudo começa a acontecer: sem IGMP Join, a rede permanece silenciosa.
 
----
+No nosso cenário, **o host interessado está conectado ao R04**, portanto R04 atuará como DR (Designated Router) da LAN 192.168.20.0/24.
 
-🧠 **O papel do DR nesse processo**
+### ✅ Configuração do IGMP Join em R04
+
+```ios
+R04(config)#interface FastEthernet1/1
+R04(config-if)#ip igmp join-group 239.1.1.1
+```
+
+✅ **Confirmando que o IGMP Join foi processado**  
+
+```ios
+R04#show ip igmp groups
+```
+
+Saída em R04:  
+
+```ios
+R04#show ip igmp groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+239.1.1.1        FastEthernet1/0          00:46:15  00:02:50  192.168.20.254
+224.0.1.40       Loopback0                00:56:17  00:02:58  4.4.4.4
+R04#
+```
+
+Isso confirma que existe um receptor na rede e que o R04 está participando do domínio multicast como DR desta LAN.  
+
+## ✅ 5️⃣ Observando a Formação da Árvore (*,G)
+
+Assim que R04 registra o interesse pelo grupo, ele envia **PIM Join na direção do RP (2.2.2.2)**.  
+O RP passa a saber que existe um receptor interessado.  
+
+No RP (R02):  
+
+```ios
+R02#show ip mroute 239.1.1.1
+```
+
+Saída típica:
+
+```ios
+R02#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:48:42/00:03:04, RP 2.2.2.2, flags: S
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:48:42/00:03:04
+
+R02#
+```
   
-O **Designated Router (DR)** é o primeiro roteador a perceber o interesse do host.  
-Vamos dizer que agora o Host02 esteja interessado na comunicação multicast. Então precisamos colocar ele no grupo **239.1.1.1**. Antes vamos entrar em **R04**, que é o roteador mais próximo. Vamos digitar:  
+✅ Isto indica que a Shared Tree (*,G) está sendo criada corretamente.  
+✅ O RP já sabe que há um receptor atrás de R04.  
+✅ O PIM Join percorreu o caminho R04 → R03 → R02.  
+
+## ✅ 6️⃣ Ativando a Fonte Multicast — R01/Server
+  
+Com o receptor ativo, agora precisamos da fonte para iniciar o tráfego.  
+O servidor multicast está conectado ao R01 (192.168.10.0/24).  
+
+No Server:  
+
+```ios
+Server(config)#interface FastEthernet0/0
+Server(config-if)#ip igmp static-group 239.1.1.1
+```
+
+Em R01 também precisamos fazer o join-grpup na interface **F0/0** que está ligada no server.
+
+```ios
+R01(config)#int f0/0
+R01(config-if)#ip igmp join-group 239.1.1.1
+```
+
+Em seguida, verifique no R01:
+
+```ios
+R01#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:00:05/00:02:54, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:00:05/00:02:54
+
+R01#
+```
+  
+✅ Agora temos a árvore de origem (S,G).  
+✅ O tráfego está fluindo R01 → R02 → R03 → R04 → Host.  
+✅ O PIM Register já foi enviado do DR da fonte para o RP.  
+
+## ✅ 7️⃣ Confirmando a Convergência do Domínio PIM-SM
+
+Neste ponto, todo o domínio multicast está ativo.  
+Execute nos roteadores principais:  
+
+📌 **R01, R02, R03 e R04**
+
+```ios
+show ip mroute 239.1.1.1
+show ip pim rp mapping
+show ip pim join
+show ip pim neighbor
+```
+  
+O que você deve ver:  
+  
+- Entradas (*,G) em todo o domínio
+- Entrada (S,G) começando no R01 e propagando para o RP
+- RPF correto em cada salto
+- Interfaces corretas listadas na OIL (Outgoing Interface List)
+  - RP ativo = R02
+  - RP candidato backup = R03
+  
+✅ Neste ponto, a rede multicast está totalmente funcional  
+✅ O tráfego está fluindo corretamente  
+✅ A Shared Tree (*,G) e a Source Tree (S,G) estão construídas  
+✅ Estamos prontos para testar falhas do RP  
+
+## 🧠 O papel do DR no processo multicast (com PIM-SM e Bootstrap Router)
+
+O **Designated Router (DR)** é o primeiro roteador a detectar o interesse de um host por um grupo multicast.  
+No nosso cenário, o **Host02**, conectado à interface **FastEthernet1/0 de R04**, será o receptor interessado no grupo **239.1.1.1**.  
+
+Para observar o comportamento do IGMP e a atuação do DR, vamos habilitar o debug no **R04**:
 
 ```ios
 R04#debug ip igmp
@@ -911,127 +1051,146 @@ IGMP debugging is on
 R04#
 ```
 
-Agora vamos entrar em Host02 e fazer o **join-goup**  
+Agora, no **Host02**, adicionamos o host ao grupo multicast:  
 
 ```ios
 HOST02(config)#int f0/0
-Host02(config)#ip igmp join-group 239.1.1.1
+HOST02(config-if)#ip igmp join-group 239.1.1.1
 ```
 
-E voltando a **R04** podemos observar a mensagem:
+Voltando ao **R04**, podemos observar o roteador detectando o join do host e criando a entrada multicast local:  
 
 ```ios
 R04#
-*Mar  1 02:05:04.899: IGMP(0): Received v2 Query on FastEthernet0/0 from 10.0.0.9
-*Mar  1 02:05:04.903: IGMP(0): Set report delay time to 0.9 seconds for 224.0.1.40 on FastEthernet0/0
-*Mar  1 02:05:05.511: IGMP(0): Send v2 general Query on FastEthernet1/0
+*Mar  1 00:02:01.643: IGMP(0): Received v2 Query on FastEthernet0/0 from 10.0.0.9
 R04#
-*Mar  1 02:05:06.511: IGMP(0): Send v2 Report for 224.0.1.40 on FastEthernet0/0
-*Mar  1 02:05:06.511: IGMP(0): Received v2 Report on FastEthernet0/0 from 10.0.0.10 for 224.0.1.40
-*Mar  1 02:05:06.511: IGMP(0): Received Group record for group 224.0.1.40, mode 2 from 10.0.0.10 for 0 sources
-*Mar  1 02:05:06.515: IGMP(0): Updating EXCLUDE group timer for 224.0.1.40
-*Mar  1 02:05:06.515: IGMP(0): MRT Add/Update FastEthernet0/0 for (*,224.0.1.40) by 0
-*Mar  1 02:05:06.515: IGMP(0): Send v2 general Query on FastEthernet0/1
+*Mar  1 00:02:05.567: IGMP(0): Send v2 general Query on FastEthernet0/1
+*Mar  1 00:02:06.567: IGMP(0): Send v2 general Query on FastEthernet1/0
+*Mar  1 00:02:06.567: IGMP(0): Set report delay time to 2.4 seconds for 239.1.1.1 on FastEthernet1/0
 R04#
-*Mar  1 02:05:41.019: IGMP(0): Received v2 Report on FastEthernet1/0 from 192.168.20.1 for 239.1.1.1
-*Mar  1 02:05:41.023: IGMP(0): Received Group record for group 239.1.1.1, mode 2 from 192.168.20.1 for 0 sources
-*Mar  1 02:05:41.023: IGMP(0): WAVL Insert group: 239.1.1.1 interface: FastEthernet1/0Successful
-*Mar  1 02:05:41.027: IGMP(0): Switching to EXCLUDE mode for 239.1.1.1 on FastEthernet1/0
-*Mar  1 02:05:41.027: IGMP(0): Updating EXCLUDE group timer for 239.1.1.1
-*Mar  1 02:05:41.027: IGMP(0): MRT Add/Update FastEthernet1/0 for (*,239.1.1.1) by 0
+*Mar  1 00:02:07.575: IGMP(0): Send v2 general Query on Loopback0
+*Mar  1 00:02:07.575: IGMP(0): Set report delay time to 7.9 seconds for 224.0.1.40 on Loopback0
 R04#
+*Mar  1 00:02:09.579: IGMP(0): Send v2 Report for 239.1.1.1 on FastEthernet1/0
+*Mar  1 00:02:09.579: IGMP(0): Received v2 Report on FastEthernet1/0 from 192.168.20.254 for 239.1.1.1
+*Mar  1 00:02:09.583: IGMP(0): Received Group record for group 239.1.1.1, mode 2 from 192.168.20.254 for 0 sources
+*Mar  1 00:02:09.583: IGMP(0): Updating EXCLUDE group timer for 239.1.1.1
+*Mar  1 00:02:09.583: IGMP(0): MRT Add/Update FastEthernet1/0 for (*,239.1.1.1) by 0
+R04#
+*Mar  1 00:02:15.579: IGMP(0): Send v2 Report for 224.0.1.40 on Loopback0
+*Mar  1 00:02:15.579: IGMP(0): Received v2 Report on Loopback0 from 4.4.4.4 for 224.0.1.40
+*Mar  1 00:02:15.583: IGMP(0): Received Group record for group 224.0.1.40, mode 2 from 4.4.4.4 for 0 sources
+*Mar  1 00:02:15.583: IGMP(0): Updating EXCLUDE group timer for 224.0.1.40
+*Mar  1 00:02:15.583: IGMP(0): MRT Add/Update Loopback0 for (*,224.0.1.40) by 0
+*Mar  1 00:02:15.583: IGMP(0): Received v2 Report on Loopback0 from 4.4.4.4 for 224.0.1.40
+*Mar  1 00:02:15.583: IGMP(0): Received Group record for group 224.0.1.40, mode 2 from 4.4.4.4 for 0 sources
+R04#
+*Mar  1 00:02:15.583: IGMP(0): Updating EXCLUDE group timer for 224.0.1.40
+*Mar  1 00:02:15.583: IGMP(0): MRT Add/Update Loopback0 for (*,224.0.1.40) by 0
 ```
 
-o DR (R04) aprende que existe um receptor interessado e então envia uma mensagem PIM Join em direção ao RP — seguindo o caminho unicast mais curto até ele (RPF).  
-Nesse momento, a árvore compartilhada **(Shared Tree, representada por (*,G))** começa a nascer.  
-
-## Quando o Server entra na jogada
-
-**OBS:** como o nosso servidor é um Router disfarçado de PC, precisamos inserir ele no grupo **239.1.1.1**. Mas em ambientes reais, como em aplicativos que nem o **Vlc Player**, também devemos fazer isso porém somente na aplicação e não computador. Em sistemas operacionais Linux podemos colocar o sistema no grupo, mas ai vai depender da necessidade de cada aplicação que formos utilizar.  
+O **R04, atuando como Designated Router (DR)** da rede local, aprendeu que há um receptor interessado no grupo 239.1.1.1.  
+A partir daí, ele envia uma mensagem **PIM Join em direção ao RP eleito via Bootstrap Router (BSR)**, seguindo o melhor caminho unicast (RPF) até o RP.  
+  
+Neste momento, começa a se formar a árvore compartilhada, representada como **(*,G), onde “*” significa “todas as fontes possíveis” e “G” é o grupo multicast (239.1.1.1)**.  
+  
+💡 **Quando a fonte (Server) entra na comunicação**
+  
+Nosso Server (192.168.10.1), conectado à LAN de R01, será a fonte multicast.  
+Como o servidor é um roteador disfarçado de PC, simularemos o envio de tráfego com um join-group e um ping multicast.  
 
 ```ios
 SERVER(config)#int f0/0
 SERVER(config-if)#ip igmp join-group 239.1.1.1
-SERVER(config-if)#
-```  
-  
-Quando o Server (192.168.10.1) inicia o envio de tráfego para o mesmo grupo:  
-
-```ios
 SERVER#ping 239.1.1.1
-
-Type escape sequence to abort.
-Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-
-Reply to request 0 from 192.168.10.1, 8 ms
-SERVER#
 ```
 
-o roteador da fonte (DR da LAN do Server) envia uma mensagem PIM Register (unicast) ao RP informando que há uma fonte ativa para o grupo G.  
-Assim o RP agora conhece:
+Ao enviar o tráfego multicast, o roteador da fonte **(DR da LAN do Server, no caso o R01)** gera uma mensagem PIM Register unicast para o RP — informando que existe uma fonte ativa enviando para o **grupo G.**  
 
-- a fonte (S) que transmite,
-- e os receptores que já haviam solicitado o grupo.
-- O RP conecta as duas pontas e inicia o fluxo multicast.
+O **RP (eleito pelo BSR)** passa então a conhecer:  
 
-### 🌳 Formação da Árvore Multicast (*,G) — A Shared Tree
+- A **fonte (S)** que envia para o grupo;
+- Os receptores que solicitaram o grupo.
+- O RP conecta as duas pontas e o tráfego multicast começa a fluir no domínio.
 
-Até agora configuramos e validamos o Mapping Agent (R01) e o Candidate RP (R02).  
-Os anúncios Auto-RP estão funcionando, e todos os roteadores do domínio já sabem que o **RP responsável é o 2.2.2.2**.
-Mas a árvore multicast ainda não existe — porque **o PIM Sparse Mode só age quando há interesse (IGMP Join)**.  
+🌳 **Formação da Árvore Multicast (*,G) — A Shared Tree**
+
+Até este ponto, já temos:  
+
+- O **R01** como Bootstrap Router (BSR) ativo;
+- O **R02** e o R03 como Candidate RPs (RP principal e backup);
+- Todos os roteadores do domínio conhecem o RP eleito via mensagens Bootstrap.
   
-Agora que o Host02 (192.168.20.1) entrou no grupo 239.1.1.1, o roteador R04 (que é o Designated Router da LAN) envia uma mensagem PIM Join em direção ao RP 2.2.2.2, seguindo a rota unicast mais curta aprendida via OSPF.  
+Quando o **Host02 (192.168.20.1) se inscreve no grupo 239.1.1.1**, o R04 (DR da LAN) envia um PIM Join em direção ao RP (2.2.2.2), seguindo a rota unicast aprendida via OSPF.  
   
-👉 Esse Join cria o primeiro ramo da árvore compartilhada (*,G), onde “*” representa todas as fontes possíveis e “G” é o grupo 239.1.1.1.  
+🔹 Assim nasce a primeira árvore multicast, a **Shared Tree (*,G)**, que conecta os receptores ao RP.  
   
-🔍 Validando a árvore inicial
-
-Podemos visualizar essa árvore parcial com o comando:  
+Podemos confirmar a criação dessa árvore em R04:  
 
 ```ios
 R04#show ip mroute 239.1.1.1
 ```
 
-Exemplo de saída esperada:  
+Saída
 
 ```ios
-(*, 239.1.1.1), 00:00:28/00:02:31, RP 2.2.2.2, flags: SJCL
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:10:09/00:02:00, RP 2.2.2.2, flags: SJCL
   Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.9
   Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:00:28/00:02:31
+    FastEthernet1/0, Forward/Sparse, 00:10:09/00:02:00
 ```
-  
-🧠 **Analisando a saída**:
 
-- **(*,G)** indica que é uma entrada da árvore compartilhada, ainda sem fonte específica.
-- O **RP 2.2.2.2** mostra que o roteador já conhece quem é o ponto central.
-- A interface de saída (FastEthernet1/0) é a que conecta o receptor (Host02).  
-  
-🚀 **Quando o Servidor Inicia o Tráfego**  
+🧠 **Análise da saída:**
 
-Quando o **Server (192.168.10.1)** começa a enviar tráfego para o grupo **239.1.1.1**, o roteador **R01 (Designated Router da LAN do Server)** percebe a transmissão multicast local e envia uma mensagem PIM Register diretamente ao **RP (2.2.2.2)**.  
+- **(*,G)** → entrada da árvore compartilhada (ainda sem fonte específica).
+- **RP 2.2.2.2** → indica o RP eleito via Bootstrap Router.
+- **Incoming interface** → interface usada para alcançar o RP (via RPF).
+- **Outgoing interface list** → interface que conduz o tráfego até o receptor (Host02).
+  
+💬 **Conclusão até aqui**  
+  
+- O domínio multicast já tem um **RP dinâmico** aprendido via Bootstrap Router.
+- O **R04 (DR)** estabeleceu a **árvore (*,G)** em direção ao RP.
+- O **Server (R01) e o Host02 (R04)** agora participam ativamente do **grupo 239.1.1.1.**
+- O próximo passo será observar a migração para a árvore SPT (Shortest Path Tree) — quando o tráfego passa a fluir diretamente entre a fonte e os receptores, sem depender do RP.
+ 
+## 🚀 Quando o Servidor Inicia o Tráfego
+
+Quando o **Server (192.168.10.1)** começa a enviar tráfego multicast para o grupo **239.1.1.1**, o roteador **R01 (Designated Router da LAN do Server)** detecta esse fluxo e envia uma mensagem **PIM Register** diretamente ao **RP eleito (2.2.2.2)** — que foi aprendido dinamicamente via **Bootstrap Router (BSR)**.  
 
 Esse registro informa:  
 
-- a fonte **(S = 192.168.10.1);**
-- o grupo **(G = 239.1.1.1).**
+- A **fonte (S = 192.168.10.1)**  
+- O **grupo (G = 239.1.1.1)**  
   
-O RP então cria uma nova entrada (S,G) em sua tabela de roteamento multicast e conecta as duas pontas da comunicação:
+O RP, ao receber o *Register*, cria uma nova entrada **(S,G)** na sua tabela multicast e conecta as duas pontas da comunicação:  
 
-- os receptores já conhecidos **(via Join de R04)**;
-- e a fonte recém-descoberta **(via Register de R01)**.
-  
-🔎 **Verificação prática**  
-  
-No RP (R02):
+- os receptores que já haviam enviado o **PIM Join** (R04 → RP);  
+- e a fonte recém-descoberta (R01 → RP).  
+
+🔎 **Verificação prática**
+
+No **RP (R02)**, podemos validar com:
 
 ```ios
 R02#show ip mroute 239.1.1.1
 ```
 
-Saída esperada:  
+Saída esperada  
 
-```ios
+```ìos
 (*, 239.1.1.1), 00:01:12/00:02:54, RP 2.2.2.2, flags: SJCL
   Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.1
   Outgoing interface list:
@@ -1043,98 +1202,116 @@ Saída esperada:
     FastEthernet0/1, Forward/Sparse, 00:00:35/00:02:34
 ```
 
-💡 **Resumo do que aconteceu:**
+💡 **Resumo do que aconteceu:**  
 
-1. O receptor **(Host02) gerou o Join → criou-se o (*,G)**.
-2. A fonte (Server) enviou tráfego → **gerou o Register e criou-se o (S,G).**
-3. O RP ligou as duas pontas → **o tráfego multicast começou a fluir**.  
+1. O receptor **(Host02)** enviou o Join → criou-se o **(*,G)**.
+2. A fonte **(Server)** enviou tráfego → gerou o Register e criou o **(S,G)**.
+3. O **RP** uniu as duas pontas → o tráfego multicast começou a fluir.
 
-### ⚡ Migração para a Shortest Path Tree (SPT)
+---
 
-Depois que o tráfego estabiliza, o roteador receptor (R04) pode perceber que existe um caminho mais curto diretamente até a fonte (192.168.10.1), sem precisar passar pelo RP.
-Nesse momento ele envia um novo **PIM Join (S,G)** direto em direção à fonte, e o tráfego passa a seguir o **SPT (Shortest Path Tree)**.
+⚡ **Migração para a Shortest Path Tree (SPT)**  
 
-O RP continua existindo, mas apenas como ponto de referência — o tráfego em si agora flui pelo caminho otimizado.  
+Depois que o tráfego multicast estabiliza, o roteador receptor **(R04)** pode identificar que existe um caminho mais curto diretamente até a fonte **(192.168.10.1)**, sem precisar passar pelo RP.  
+  
+Nesse momento, ele envia um novo **PIM Join (S,G)** em direção à fonte, e o tráfego passa a seguir pela **SPT (Shortest Path Tree)** — a árvore mais eficiente e direta entre a fonte e os receptores.  
 
-### 🧩 Propagação das mensagens Auto-RP — O papel do ip pim autorp listener
+O RP continua existindo, mas agora apenas como referência para novos receptores que entrarem no grupo.  
+O tráfego ativo flui diretamente pela SPT, reduzindo latência e uso de recursos na rede.  
 
-Até aqui configuramos o Candidate RP (R02) e o Mapping Agent (R01), garantindo que as mensagens Auto-RP Announcement (224.0.1.40) e Auto-RP Discovery (224.0.1.39) estejam sendo geradas.
+---
 
-Mas existe um detalhe fundamental:  
-➡️ **Como os demais roteadores do domínio PIM-SM vão receber essas mensagens se ainda não sabem quem é o RP?**
+🧩 **Propagação e Aprendizado do RP no PIM-SM com Bootstrap Router**
 
-É aqui que entra o comando mágico:  
+Diferente do **Auto-RP (proprietário Cisco)**, o Bootstrap Router (BSR) segue o padrão IETF RFC 5059 e dispensa grupos multicast especiais como 224.0.1.39 e 224.0.1.40.  
+Em vez disso, o BSR distribui as informações de Candidate RPs usando mensagens **Bootstrap (PIM Type 4)**, enviadas em modo unicast hop-by-hop entre roteadores PIM.  
 
+🔹 **Em resumo:**  
+  
+- O **BSR (em nosso caso o R01)** é responsável por divulgar quem são os Candidate RPs e qual deles foi eleito para cada grupo.
+- Os **Candidate RPs (R02 e R03**) enviam anúncios **C-RP Advertisement (PIM Type 9) para o BSR**.
+- O **BSR** processa essas mensagens, decide o RP ativo, e repassa a todos os roteadores PIM-SM do domínio.
+
+💡 **Isso elimina a necessidade do comando ip pim autorp listener, que só existe em ambientes Auto-RP (Cisco Proprietário).**  
+  
+✅ **Validação do funcionamento do BSR**
+  
+Após configurar o domínio multicast com o BSR e os Candidate RPs, todos os roteadores aprendem automaticamente quem é o RP ativo.  
+Podemos validar de duas formas principais:  
+  
+1️⃣ **Exibir o RP aprendido**  
+  
 ```ios
-ip pim autorp listener
+R04#show ip pim rp mapping
 ```
 
-🧠 **O paradoxo do “Ovo e da Galinha”**  
-  
-O comportamento do PIM-SM gera um impasse curioso:  
-  
-| Situação                                                                                                                                  | Explicação                                |
-|-------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| 🐣 Para conhecer o RP, o roteador precisa receber as mensagens Auto-RP (224.0.1.39 / 224.0.1.40).                                        | ✅ Essas mensagens informam quem é o RP.  |
-| 🐔 Mas para encaminhar as mensagens Auto-RP, o roteador precisa já conhecer o RP (pois o tráfego multicast em Sparse Mode depende dele). | 🚫 Ou seja, sem RP conhecido, as mensagens Auto-RP não chegam. |  
-
-💡 Esse impasse é conhecido como o **“paradoxo do ovo e da galinha”** no PIM-SM:  
-  
-> O roteador precisa do RP para aprender quem é o RP.  
-  
-🔍 **Como o comando resolve o problema**
-  
-Ao aplicar o comando:  
+Saída esperada:
 
 ```ios
-ip pim autorp listener
-```
-  
-o roteador temporariamente trata os grupos 224.0.1.39 e 224.0.1.40 como se estivessem em modo Dense Mode.  
-
-👉 **Isso permite que as mensagens Auto-RP sejam floodadas por toda a rede, garantindo que todos os roteadores PIM-SM aprendam o RP — mesmo antes da árvore multicast existir.**  
-  
-Assim, o domínio PIM se inicializa corretamente e as futuras mensagens **(Join, Register, Prune)** passam a fluir de forma normal e otimizada **(Sparse)**.  
-
-⚙️ **Onde aplicar o ip pim autorp listener**  
-  
-O comando deve ser ativado em todos os roteadores do domínio PIM-SM que não sejam o RP nem o Mapping Agent.  
-Na prática, você pode aplicá-lo em todos os roteadores sem causar problemas — é até recomendado em laboratórios. Então vamos aplicar em todos os roteadores.  
-  
-🔧 **Exemplo prático:**
-
-```ios
-R01(config)#ip pim autorp listener
-R02(config)#ip pim autorp listener
-R03(config)#ip pim autorp listener
-R04(config)#ip pim autorp listener
-R05(config)#ip pim autorp listener
-```
-
-💡 **Isso garante que os roteadores de trânsito e os roteadores de borda possam receber as mensagens 224.0.1.39 e 224.0.1.40.**  
-
-🧪 **Como validar o funcionamento**  
-  
-Após aplicar o comando, você poderá observar que os roteadores intermediários começam a receber e processar as mensagens Auto-RP.  
-Use o comando:  
-
-```ios
-show ip pim rp mapping
-```  
-  
-Se o listener estiver ativo e a propagação funcionando, todos os roteadores devem exibir algo como:  
-
-```ios
-R01#show ip pim rp mapping
 PIM Group-to-RP Mappings
-This system is an RP-mapping agent (Loopback0)
 
 Group(s) 224.0.0.0/4
-  RP 2.2.2.2 (?), v2v1
-    Info source: 2.2.2.2 (?), elected via Auto-RP
-         Uptime: 00:21:25, expires: 00:02:33
-R01#
-```  
+  RP 2.2.2.2 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:11:22, expires: 00:02:33
+  RP 3.3.3.3 (?), v2
+    Info source: 1.1.1.1 (?), via bootstrap, priority 0, holdtime 150
+         Uptime: 00:11:10, expires: 00:02:30
+```
+
+2️⃣ **Validar o Bootstrap Router ativo**  
+
+```ios
+R04#show ip pim bsr-router
+```
+
+Saída esperada:  
+
+```ios
+PIMv2 Bootstrap information
+  BSR address: 1.1.1.1 (?), priority: 10, hash mask length: 30
+  Candidate RPs:
+    2.2.2.2, group prefix: 224.0.0.0/4, priority: 0, holdtime: 150
+    3.3.3.3, group prefix: 224.0.0.0/4, priority: 0, holdtime: 150
+```
+
+🧠 **Como interpretar o campo Hash Mask Length**
+  
+O campo Hash Mask Length é usado pelo BSR para determinar qual RP será escolhido quando há vários Candidate RPs que cobrem o mesmo intervalo de grupos.  
+Ele funciona como um "filtro de seleção" — quanto menor o valor, maior o agrupamento de grupos multicast sob o mesmo RP.  
+
+| Hash Mask | Significado prático                           | Efeito                    |
+|-----------|-----------------------------------------------|---------------------------|
+| 0         | Todos os grupos usam o mesmo RP               | Menor granularidade       |
+| 30        | Cada RP pode atender faixas menores de grupos | Maior equilíbrio de carga |
+  
+💡 **Em laboratórios simples, o valor padrão (30) é suficiente. Em redes grandes, ajustar o hash mask permite balancear grupos multicast entre múltiplos RPs.**  
+  
+🔍 **Captura de mensagens Bootstrap no Wireshark**  
+  
+Para visualizar a troca de mensagens entre os roteadores no domínio, use o filtro:  
+
+```Whireshark
+pim.type == 4 or pim.type == 9
+```
+
+- **Type 4:** Mensagens Bootstrap (enviadas pelo BSR)
+- **Type 9:** Candidate RP Advertisements (enviadas pelos RPs candidatos)
+  
+Com isso, é possível ver no Wireshark as mensagens de eleição e distribuição do RP, confirmando que o domínio PIM-SM com BSR está operacional.  
+
+💬 **Conclusão**
+
+- O tráfego multicast agora flui endereçando o RP dinâmico (via BSR).
+- Os receptores e fontes se conectam automaticamente através da árvore compartilhada (*,G).
+- O domínio migra para a árvore otimizada (S,G), eliminando dependência do RP para o fluxo ativo.
+- O Bootstrap Router (BSR) garante que a eleição e redistribuição dos RPs sejam automáticas e interoperáveis entre diferentes fabricantes.
+
+---
+
+Alterar Daqui
+
+---
 
 🧰 **Captura no Wireshark**  
   
@@ -1391,7 +1568,7 @@ O processo completo ocorre em três fases:
 ## 🧰 Validação e Troubleshooting do PIM Sparse Mode
 
 Após configurar todo o domínio PIM-SM, habilitar o Auto-RP (com Listener) e realizar os joins multicast, é hora de validar a formação da árvore multicast e confirmar se o tráfego está fluindo corretamente.  
-    
+  
 Esta é a parte final e mais importante do laboratório — onde garantimos que cada elemento **(IGMP, PIM, RP e RPF)** está operando de forma integrada.
 
 ### 1️⃣ Verificar os vizinhos PIM — show ip pim neighbor
