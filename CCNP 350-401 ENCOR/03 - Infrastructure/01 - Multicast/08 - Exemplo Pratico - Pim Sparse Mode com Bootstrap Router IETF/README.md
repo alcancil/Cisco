@@ -1298,6 +1298,14 @@ pim.type == 4 or pim.type == 9
 - **Type 9:** Candidate RP Advertisements (enviadas pelos RPs candidatos)
   
 Com isso, é possível ver no Wireshark as mensagens de eleição e distribuição do RP, confirmando que o domínio PIM-SM com BSR está operacional.  
+  
+Então vamos realizar um teste de ping no servrpara o **grupo 239.1.1.1**. Ai poderemos observar quem irá responder.  
+
+![ping](Imagens/04.png)  
+
+Feito isso, podemos realizar a captura via whireshark em R01 para analsiarmos as mensagens.  
+
+![whireshark](Imagens/05.png)  
 
 💬 **Conclusão**
 
