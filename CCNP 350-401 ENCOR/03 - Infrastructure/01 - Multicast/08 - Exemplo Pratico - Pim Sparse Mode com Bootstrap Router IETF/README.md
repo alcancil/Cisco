@@ -1015,12 +1015,11 @@ R01#
 Neste ponto, todo o domínio multicast está ativo.  
 Execute nos roteadores principais:  
 
-📌 **R01, R02, R03 e R04**
+📌 **R01, R02, R03, R04 e R05**
 
 ```ios
 show ip mroute 239.1.1.1
 show ip pim rp mapping
-show ip pim join
 show ip pim neighbor
 ```
   
