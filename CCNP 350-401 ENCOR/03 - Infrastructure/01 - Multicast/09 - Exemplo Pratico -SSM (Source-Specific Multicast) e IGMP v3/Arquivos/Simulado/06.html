@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast - 05</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast - IGMP (Parte 2)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre IGMP. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="question-count" class="text-sm font-semibold text-slate-500">Questão 1 de 10</span>
+        <span id="quiz-timer" class="text-sm font-semibold text-slate-500">10:00</span>
+      </div>
+      <h2 id="question-text" class="text-xl font-semibold mb-6"></h2>
+      <div id="options-container" class="space-y-3"></div>
+      <div class="flex justify-between items-center mt-6">
+        <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">Próximo</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2 class="text-2xl font-bold text-center mb-4">Resultados</h2>
+      <p id="score-el" class="text-lg text-center mb-6"></p>
+      <div id="review-el"></div>
+    </div>
+  </div>
+
+<script>
+  const SIMULADO_ID = 'simulado_05';
+  const SIMULADO_TITULO = 'Simulado Multicast - IGMP (Parte 2)';
+
+  const quizData = [
+    {
+    question: "Qual RFC especifica o PIM Bidirectional (PIM-BIDIR)?",
+    options: ["RFC 3973", "RFC 4601", "RFC 5015", "RFC 4607"],
+    answer: "RFC 5015",
+    explanation: "O PIM Bidirectional é especificado pela RFC 5015, diferente do PIM-DM (RFC 3973), PIM-SM (RFC 4601) e PIM-SSM (RFC 4607)."
+  },
+  {
+    question: "No PIM Dense Mode, qual é a periodicidade mencionada para o processo de flood?",
+    options: ["Flood contínuo", "Flood único", "Flood periódico reinicia o processo", "Flood sob demanda"],
+    answer: "Flood periódico reinicia o processo",
+    explanation: "O material indica que no PIM-DM há um 'Flood periódico reinicia o processo', significando que o processo de inundação se repete periodicamente para manter a árvore atualizada."
+  },
+  {
+    question: "Segundo as características do PIM-SM, qual componente 'Elege e anuncia RPs'?",
+    options: ["Designated Router (DR)", "Bootstrap Router (BSR)", "First Hop Router (FHR)", "Last Hop Router (LHR)"],
+    answer: "Bootstrap Router (BSR)",
+    explanation: "O Bootstrap Router (BSR) é o componente responsável por eleger e anunciar os Rendezvous Points (RPs) na rede PIM-SM."
+  },
+  {
+    question: "No fluxograma do PIM-SM, qual é o primeiro passo após o host enviar IGMP Join?",
+    options: ["Consulta tabela unicast", "Join em direção ao RP", "DR recebe Join", "Construção da Source Tree"],
+    answer: "DR recebe Join",
+    explanation: "Segundo o fluxograma do PIM-SM, após o host enviar IGMP Join, o próximo passo é 'DR recebe Join', iniciando o processo de construção da árvore multicast."
+  },
+  {
+    question: "Qual é a representação visual utilizada no material para mostrar que o PIM-SSM usa conexão direta?",
+    options: ["Setas bidirecionais", "Linha pontilhada", "192.168.1.10/232.1.1.1 ——direct——> 📱", "Múltiplas origens"],
+    answer: "192.168.1.10/232.1.1.1 ——direct——> 📱",
+    explanation: "O material usa a representação '192.168.1.10/232.1.1.1 ——direct——> 📱' para mostrar que no PIM-SSM o receptor sabe exatamente qual origem quer, estabelecendo conexão direta."
+  },
+  {
+    question: "No PIM Sparse Dense Mode, quais faixas de grupos são mostradas na configuração visual?",
+    options: ["224.1.1.x, 225.1.1.x, 226.1.1.x", "224.1.1.x, 239.1.1.x, 232.1.1.x", "239.1.1.x, 232.1.1.x, 233.1.1.x", "192.168.x.x, 10.x.x.x, 172.16.x.x"],
+    answer: "224.1.1.x, 239.1.1.x, 232.1.1.x",
+    explanation: "Na representação visual do PIM-SDM são mostradas três faixas: 224.1.1.x (Dense Mode), 239.1.1.x (Sparse Mode via RP), e 232.1.1.x (SSM Mode direct), demonstrando flexibilidade por faixa de endereços."
+  },
+  {
+    question: "Qual característica do PIM Bidirectional é destacada como vantagem em relação ao estado nos roteadores?",
+    options: ["Aumenta o estado", "Mantém estado moderado", "Reduz drasticamente o estado nos roteadores", "Estado variável"],
+    answer: "Reduz drasticamente o estado nos roteadores",
+    explanation: "O PIM-BIDIR 'Reduz drasticamente o estado nos roteadores' porque múltiplas origens podem usar a mesma árvore compartilhada, diminuindo significativamente as informações que cada roteador precisa manter."
+  },
+  {
+    question: "Na tabela comparativa, qual modo tem complexidade classificada como 'Média'?",
+    options: ["PIM-DM", "PIM-SM", "PIM-SSM", "PIM-BIDIR"],
+    answer: "PIM-SSM",
+    explanation: "Segundo a tabela comparativa apresentada, o PIM Source-Specific Multicast (PIM-SSM) tem complexidade 'Média', sendo mais simples que PIM-SM (Alta) mas mais complexo que PIM-DM (Baixa)."
+  },
+  {
+    question: "Qual é o cenário ideal mencionado para PIM Dense Mode?",
+    options: ["Redes corporativas", "IPTV/Streaming", "LANs densas", "Aplicações colaborativas"],
+    answer: "LANs densas",
+    explanation: "O PIM Dense Mode é ideal para 'LANs com alta densidade de receptores', onde a suposição de que todos querem o tráfego multicast inicialmente faz sentido e o desperdício inicial é minimizado."
+  },
+  {
+    question: "No contexto das terminologias importantes, qual é a oposição conceitual ao Source-Specific Multicast (SSM)?",
+    options: ["Dense Mode", "Sparse Mode", "PIM Any-Source Multicast (ASM)", "Bidirectional Mode"],
+    answer: "PIM Any-Source Multicast (ASM)",
+    explanation: "O PIM Any-Source Multicast (ASM) é apresentado como 'oposto conceitual ao Source-Specific Multicast (SSM)', onde no ASM qualquer origem pode enviar para um grupo, enquanto no SSM os receptores especificam a origem previamente."
+  }
+  ];
+  
+  // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+  const questionCount = document.getElementById('question-count');
+  const quizTimer = document.getElementById('quiz-timer');
+  const scoreEl = document.getElementById('score-el');
+  const reviewEl = document.getElementById('review-el');
+  const userNameInput = document.getElementById('user-name');
+  
+  let currentQuestionIndex = 0;
+  let userAnswers = [];
+  let score = 0;
+  let timer;
+  let timeSpentSeconds = 0;
+  let currentUserName = '';
+
+  const MAX_TIME = 600; // 10 minutes
+
+  function formatSeconds(secs) {
+      const minutes = Math.floor(secs / 60);
+      const seconds = secs % 60;
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function startQuiz() {
+      const name = userNameInput.value.trim();
+      if (!name) {
+          alert("Por favor, digite seu nome para começar.");
+          return;
+      }
+      currentUserName = name;
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      timeSpentSeconds = 0;
+      quizTimer.textContent = formatSeconds(MAX_TIME);
+      userAnswers = [];
+      score = 0;
+      currentQuestionIndex = 0;
+      timer = setInterval(() => {
+          timeSpentSeconds++;
+          quizTimer.textContent = formatSeconds(MAX_TIME - timeSpentSeconds);
+          if (timeSpentSeconds >= MAX_TIME) {
+              endQuiz();
+          }
+      }, 1000);
+      showQuestion();
+  }
+
+  function showQuestion() {
+      const question = quizData[currentQuestionIndex];
+      questionText.textContent = question.question;
+      optionsContainer.innerHTML = '';
+      questionCount.textContent = `Questão ${currentQuestionIndex + 1} de ${quizData.length}`;
+      nextBtn.classList.add('hidden');
+
+      question.options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.textContent = option;
+          button.className = 'w-full text-left p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors';
+          button.onclick = () => selectAnswer(index);
+          optionsContainer.appendChild(button);
+      });
+  }
+
+  function selectAnswer(selectedIndex) {
+      if (userAnswers[currentQuestionIndex] !== undefined) return;
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      
+      const isCorrect = (selectedIndex === quizData[currentQuestionIndex].answer);
+      if (isCorrect) {
+          score++;
+      }
+      
+      const buttons = optionsContainer.getElementsByTagName('button');
+      for (let i = 0; i < buttons.length; i++) {
+          const button = buttons[i];
+          if (i === quizData[currentQuestionIndex].answer) {
+              button.classList.add('bg-green-200', 'border-green-600');
+          } else if (i === selectedIndex) {
+              button.classList.add('bg-red-200', 'border-red-600');
+          }
+          button.disabled = true;
+      }
+      nextBtn.classList.remove('hidden');
+  }
+
+  function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+          showQuestion();
+      } else {
+          endQuiz();
+      }
+  }
+
+  function endQuiz() {
+    const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+    };
+
+    let results = JSON.parse(localStorage.getItem('quizResults')) || [];
+    results.push(resultRecord);
+    localStorage.setItem('quizResults', JSON.stringify(results));
+      
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+          const isCorrect = userAnswers[i] === q.answer;
+          const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+          const userOptionText = q.options[userAnswers[i]] || 'Não respondida';
+          const correctOptionText = q.options[q.answer];
+
+          return `
+            <div class="p-4 border rounded-lg ${resultClass} mb-4">
+              <p class="font-semibold">Q${i+1}: ${q.question}</p>
+              <p class="text-sm">Sua Resposta: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-medium">${userOptionText}</span></p>
+              ${!isCorrect ? `<p class="text-sm">Resposta Correta: <span class="text-green-600 font-medium">${correctOptionText}</span></p>` : ''}
+              <p class="mt-2 text-sm text-slate-700">Explicação: ${q.rationale}</p>
+            </div>
+          `;
+      }).join('');
+  }
+</script>
+</body>
+</html>
