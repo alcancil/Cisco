@@ -10,12 +10,16 @@
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
     - [📡 Grupos Multicast e Fontes Definidas](#-grupos-multicast-e-fontes-definidas)
     - [🧩 Conclusão](#-conclusão)
-    - [🛰️ O que é o RP (Rendezvous Point)](#️-o-que-é-o-rp-rendezvous-point)
-      - [🌳 2️⃣ O comportamento do PIM Sparse Mode](#-2️⃣-o-comportamento-do-pim-sparse-mode)
-      - [🔹 3️⃣ O papel do IGMP Join](#-3️⃣-o-papel-do-igmp-join)
-      - [🔀 4️⃣ Como o DR encontra o RP correto](#-4️⃣-como-o-dr-encontra-o-rp-correto)
-      - [🛰️ 5️⃣ Quando a fonte começa a transmitir](#️-5️⃣-quando-a-fonte-começa-a-transmitir)
+    - [🛰️ O que muda no SSM (Source-Specific Multicast)](#️-o-que-muda-no-ssm-source-specific-multicast)
+      - [🌳 1️⃣ O comportamento do PIM-SSM](#-1️⃣-o-comportamento-do-pim-ssm)
+      - [🔹 2️⃣ O papel do IGMPv3](#-2️⃣-o-papel-do-igmpv3)
+      - [🔀 3️⃣ Como o DR encontra a fonte (S)](#-3️⃣-como-o-dr-encontra-a-fonte-s)
+      - [🛰️ 4️⃣ Quando a fonte começa a transmitir](#️-4️⃣-quando-a-fonte-começa-a-transmitir)
+      - [📡 5️⃣ Vantagens do SSM sobre o PIM-SM](#-5️⃣-vantagens-do-ssm-sobre-o-pim-sm)
+  - [Alterar daqui](#alterar-daqui)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
+    - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
+    - [🧭 Resumo da Lógica](#-resumo-da-lógica)
     - [🔍 Testes Preliminares](#-testes-preliminares)
     - [Onde o PIM deve ser ativado](#onde-o-pim-deve-ser-ativado)
     - [📘 No nosso cenário](#-no-nosso-cenário)
@@ -178,93 +182,112 @@ Dessa forma, o domínio PIM forma **árvores diretas (Shortest Path Trees)** de 
 Com esse modelo, o laboratório demonstra como o **SSM e IGMPv3** tornam o roteamento multicast mais previsível, seguro e escalável.  
 A eliminação do RP e o uso explícito de (S,G) simplificam o controle de fluxos, tornando o ambiente ideal para **streaming, replicação de dados e aplicações em tempo real**.
 
+### 🛰️ O que muda no SSM (Source-Specific Multicast)
+
+Diferente do modelo **PIM Sparse Mode tradicional (PIM-SM)**, que depende de um **Rendezvous Point (RP)** para conectar fontes e receptores, o **SSM (Source-Specific Multicast)** elimina totalmente a necessidade de um ponto central de encontro.  
+
+No SSM, o receptor informa explicitamente **qual fonte (S)** deseja ouvir, junto com o **grupo multicast (G)** — formando o par **(S,G)**.  
+Isso simplifica o roteamento multicast e aumenta a segurança, já que **somente fluxos de fontes autorizadas** são encaminhados.  
+
+Em outras palavras:
+
+- O receptor diz: “quero receber o grupo **G = 232.1.1.1** vindo da fonte **S = 192.168.10.1**”;  
+- O roteador local cria a rota (S,G) e forma a **árvore de distribuição direta (Shortest Path Tree)** até a fonte;  
+- Nenhum RP, BSR ou Auto-RP é necessário.  
 
 ---
 
-Aletrar daqui
+#### 🌳 1️⃣ O comportamento do PIM-SSM
+
+O **PIM-SSM** segue o mesmo princípio de economia de banda do PIM-SM: **somente interfaces com receptores interessados** participam da árvore multicast.  
+A diferença é que o **SSM trabalha sempre em modo por fonte (S,G)** — sem precisar construir árvores compartilhadas (*,G).  
+
+Assim, o PIM inicia diretamente o caminho entre o receptor e a fonte específica, garantindo:
+
+- **Baixa latência** (sem RP intermediário);  
+- **Caminho otimizado** (SPT desde o início);  
+- **Menos processamento e estado multicast** nos roteadores.  
 
 ---
 
-### 🛰️ O que é o RP (Rendezvous Point)
+#### 🔹 2️⃣ O papel do IGMPv3
 
-- O **Rendezvous Point (RP)** é o ponto central do domínio PIM-SM.  
-- Ele conecta as duas pontas do fluxo multicast:
-  - **Fontes (senders)** que enviam tráfego;
-  - **Receptores (hosts)** que expressam interesse (via IGMP Join).  
-- O RP recebe registros das fontes (mensagens *PIM Register*) e *joins* dos receptores, formando inicialmente a **árvore compartilhada (*,G)**.  
-- Depois, os roteadores podem otimizar o caminho migrando para a **árvore por fonte (S,G)** — a *Shortest Path Tree (SPT)*.  
-  
-👉 Em resumo, o RP atua como um ponto de encontro lógico — fundamental para o Sparse Mode, já que nesse modo o tráfego multicast **não é floodado automaticamente**.  
+O **IGMPv3** é essencial para o funcionamento do **SSM**.  
+Ele introduz o conceito de **inscrição seletiva**, permitindo que um host indique explicitamente de qual fonte deseja receber o tráfego multicast.  
+
+O processo funciona assim:
+
+1. O host envia uma mensagem **IGMPv3 Membership Report**, informando o par **(S,G)** de interesse;  
+2. O roteador diretamente conectado ao host (conhecido como **Designated Router – DR**) registra esse interesse;  
+3. O DR, por sua vez, envia uma mensagem **PIM Join (S,G)** diretamente em direção à fonte **S**, utilizando a rota unicast normal para encontrá-la.  
+
+Dessa forma, a árvore multicast é formada de forma **direta, seletiva e eficiente**.  
 
 ---
 
-#### 🌳 2️⃣ O comportamento do PIM Sparse Mode
-  
-O **PIM Sparse Mode** trabalha sob o princípio da economia: ele **não envia tráfego multicast até que haja um receptor interessado**.  
-Isso o torna ideal para redes grandes ou ambientes corporativos, onde o consumo de banda precisa ser controlado.  
-  
-Em vez de inundar o domínio com tráfego (como ocorre no Dense Mode), o PIM-SM constrói **árvores de distribuição seletivas** — chamadas **Shared Trees** — baseadas no RP.  
-Essas árvores crescem sob demanda, acompanhando os roteadores onde os receptores estão conectados.  
-  
----
-  
-#### 🔹 3️⃣ O papel do IGMP Join
-  
-Os receptores, representados aqui pelos hosts multicast, sinalizam interesse em participar de um grupo através do **IGMP (Internet Group Management Protocol)**.  
-O host envia uma mensagem **IGMP Membership Report (Join)** ao roteador local, conhecido como **Designated Router (DR)**.  
-  
-O DR, ao receber esse pedido, entende que há um receptor desejando participar do grupo — por exemplo, **239.1.1.1** — e aciona o processo PIM para buscar o tráfego correspondente.  
-  
----
-  
-#### 🔀 4️⃣ Como o DR encontra o RP correto  
-  
-O Designated Router precisa descobrir **quem é o RP responsável** pelo grupo solicitado.  
-Essa informação pode ser aprendida de três formas:  
+#### 🔀 3️⃣ Como o DR encontra a fonte (S)
 
-- Por configuração estática (`ip pim rp-address`);  
-- Por mecanismos proprietários como o **Auto-RP**;  
-- Ou, como neste laboratório, por meio do **Bootstrap Router (BSR)**.
-  
-Com base nesse conhecimento, o DR envia um **PIM Join** em direção ao RP — **seguindo a rota unicast normal**, sem flood.  
-Cada roteador no caminho cria uma entrada **(*,G)** na tabela multicast, registrando que existe interesse ativo naquele grupo.  
-  
-Dessa forma, o domínio PIM constrói gradualmente uma árvore lógica (*,G) que conecta todos os receptores ao RP, aguardando o surgimento de uma fonte.  
-  
----
-  
-#### 🛰️ 5️⃣ Quando a fonte começa a transmitir  
-  
-Assim que a fonte (por exemplo, o servidor 192.168.10.1) inicia o envio de pacotes multicast para o grupo 239.1.1.1, o roteador mais próximo dela — chamado **Source DR** — envia uma **mensagem PIM Register** diretamente ao RP.  
-Essa mensagem pode conter o tráfego encapsulado ou apenas um aviso de que há uma nova fonte ativa.  
-  
-O RP, ao receber esse registro, associa a fonte ao grupo multicast e conecta as duas pontas:  
+No modelo SSM, **não há descoberta de RP** nem mensagens Bootstrap.  
+O **Designated Router (DR)** usa sua **tabela de roteamento unicast** (aprendida via OSPF, no caso deste laboratório) para alcançar a fonte.  
 
-- Fontes → RP → Receptores.  
+Quando o DR recebe um pedido IGMPv3 indicando:
 
-O fluxo de tráfego multicast passa então a percorrer a **árvore compartilhada (*,G)**.  
-Com o tempo, os roteadores próximos aos receptores podem optar por **migrar para a Shortest Path Tree (SPT)**, formando um caminho direto até a fonte — eliminando a necessidade do RP no encaminhamento de dados.  
-  
+```ios
+(S,G) = (192.168.10.1, 232.1.1.1)
+```
+
+ele simplesmente consulta sua rota para `192.168.10.1` e envia o **PIM Join (S,G)** seguindo esse caminho.  
+Os roteadores intermediários criam entradas **(S,G)** em suas tabelas multicast, estabelecendo o caminho reverso até a fonte.  
+
 ---
-  
+
+#### 🛰️ 4️⃣ Quando a fonte começa a transmitir
+
+Quando a fonte — por exemplo, o servidor `192.168.10.1` — envia pacotes multicast para `232.1.1.1`, os roteadores no caminho reconhecem o fluxo e o associam à árvore (S,G) existente.  
+Os receptores que solicitaram esse fluxo começam imediatamente a receber os pacotes.  
+
+Não há necessidade de registros, mensagens encapsuladas ou intermediação por RP.  
+Todo o processo é **automático e direto**, pois o **PIM-SSM** já conhece exatamente quem é a fonte e quem são os receptores interessados.  
+
+---
+
+#### 📡 5️⃣ Vantagens do SSM sobre o PIM-SM
+
+| Aspecto                     | PIM Sparse Mode (tradicional)        | Source-Specific Multicast (SSM)           |
+|-----------------------------|--------------------------------------|-------------------------------------------|
+| Dependência de RP           | Sim                                  | ❌ Não                                   |
+| Tipo de árvore inicial      | Compartilhada (*,G)                  | Direta (S,G)                              |
+| Controle sobre as fontes    | Limitado                             | Total — receptor escolhe a fonte          |
+| Mensagens adicionais        | PIM Register, Bootstrap, RP-Adv      | Nenhuma (apenas PIM Join/Prune)           |
+| Versão IGMP necessária      | IGMPv2                               | IGMPv3                                    |
+| Segurança e escalabilidade  | Moderada                             | Alta — menos estados e fluxos indevidos   |
+
+---
+
 👉 **Resumo:**  
-O **Bootstrap Router (BSR)** fornece um método padronizado, automático e **compatível com qualquer fabricante** para distribuição de RPs em domínios PIM-SM.  
-Ele garante que todos os roteadores conheçam o RP correto para cada grupo, permitindo a construção dinâmica das árvores multicast com eficiência, escalabilidade e interoperabilidade.  
+O **SSM (Source-Specific Multicast)** representa a evolução natural do multicast em redes IP.  
+Ele remove completamente a complexidade do RP e do BSR, simplificando a operação e melhorando o desempenho.  
+Em conjunto com o **IGMPv3**, o SSM fornece uma arquitetura **mais segura, previsível e escalável** — ideal para **aplicações de streaming, replicação de dados e videoconferência**.
+
+
+---
+Alterar daqui
+---
 
 ## 🌐 Topologia do Laboratório
 
 A topologia deste laboratório é composta por **cinco roteadores principais (R01 a R05)** e **três hosts simulados (Server, Host02 e Host03)**.  
 Os hosts são roteadores Cisco configurados de forma simplificada, apenas com IP e participação em grupos multicast via IGMP, simulando o comportamento de dispositivos finais.  
-  
+
 O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** é utilizado para o roteamento multicast.  
 Diferente dos exemplos anteriores, aqui implementamos o **Bootstrap Router (BSR)** como mecanismo padrão IETF de descoberta automática de RPs, substituindo o antigo Auto-RP da Cisco.  
-  
+
 Neste cenário, teremos dois roteadores candidatos a RP (**Candidate RPs**) e um roteador candidato a coordenar o processo (**Candidate BSR**).  
 Durante o laboratório, será possível observar a **eleição automática do RP ativo** e simular **falha em um deles** para confirmar a **assunção automática do RP de backup**.  
-  
+
 ---
 
-**🔧 Endereçamento e Funções**  
+### 🔧 Endereçamento e Funções
 
 | **Dispositivo** | **Interface** | **Endereço IP / Máscara Rede** | **Conexão / Função**                          |
 |-----------------|---------------|--------------------------------|-----------------------------------------------|
@@ -292,7 +315,7 @@ Durante o laboratório, será possível observar a **eleição automática do RP
 
 ---
 
-**🧭 Resumo da Lógica**  
+### 🧭 Resumo da Lógica
 
 - O **Server (192.168.10.1)** transmite tráfego multicast para o grupo **239.1.1.1**.  
 - Apenas o **Host02 (192.168.20.1)** realiza **IGMP Join**, pedindo para receber o grupo multicast.  
@@ -300,8 +323,8 @@ Durante o laboratório, será possível observar a **eleição automática do RP
 - O **PIM-SM** é habilitado em todos os roteadores, e o **R01** será configurado como **Candidate BSR**, enquanto o **R02** e o **R03** atuarão como **Candidate RPs**.  
 - O domínio PIM irá eleger automaticamente um RP ativo com base nas mensagens Bootstrap enviadas pelo BSR.  
 - Após a eleição, simularemos uma **falha no RP ativo** para observar a **eleição e promoção automática do RP de backup**.  
-- O **RPF (Reverse Path Forwarding)** garantirá que o caminho de retorno até a fonte multicast siga o melhor trajeto OSPF.
-  
+- O **RPF (Reverse Path Forwarding)** garantirá que o caminho de retorno até a fonte multicast siga o melhor trajeto OSPF.  
+
 Assim, poderemos observar não apenas o funcionamento da descoberta automática de RPs via BSR, mas também o comportamento dinâmico da **tolerância a falhas (failover)** entre múltiplos RPs.  
 
 ---
@@ -309,7 +332,7 @@ Assim, poderemos observar não apenas o funcionamento da descoberta automática 
 ### 🔍 Testes Preliminares
 
 Antes de ativar o multicast, é importante confirmar a **conectividade unicast** entre todos os dispositivos.  
-  
+
 Cada roteador possui uma **interface de Loopback** usada como **Router-ID** no OSPF:  
 
 - R01 → 1.1.1.1/32  
@@ -323,7 +346,7 @@ Após o OSPF estar operacional, verifique a conectividade com **ping entre todas
 ![01](Imagens/01.png)
 
 Se todos os roteadores se alcançam, a infraestrutura unicast está pronta.  
-Lembre-se: o **PIM-SM** depende de uma **base unicast funcional** para realizar o **RPF check**.
+Lembre-se: o **PIM-SM** depende de uma **base unicast funcional** para realizar o **RPF check**.  
 
 ---
 
@@ -347,6 +370,12 @@ R01#show ip multicast
 
 Com o roteamento multicast ativo, o próximo passo é habilitar o protocolo PIM nas interfaces participantes (LANs e links entre roteadores).  
 Repita esse processo de R01 a R05, garantindo que todas as interfaces de roteamento participem do domínio PIM-SM.  
+
+---
+
+Alterar daqui
+
+---
 
 ### Onde o PIM deve ser ativado
 
