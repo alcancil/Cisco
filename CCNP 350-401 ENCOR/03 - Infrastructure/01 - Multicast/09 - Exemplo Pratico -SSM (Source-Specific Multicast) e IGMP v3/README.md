@@ -31,12 +31,11 @@
     - [🔧 Configuração do PIM-SSM](#-configuração-do-pim-ssm)
   - [🧩 Eleição do Designated Router (DR)](#-eleição-do-designated-router-dr)
   - [💬 Mensagens PIM Hello](#-mensagens-pim-hello)
-    - [⚙️ Configurando o Candidate RP e o Candidate BSR (Bootstrap Router)](#️-configurando-o-candidate-rp-e-o-candidate-bsr-bootstrap-router)
-    - [🧩 1️⃣ Escolha dos equipamentos](#-1️⃣-escolha-dos-equipamentos)
-    - [🧭 2️⃣ Função das interfaces Loopback](#-2️⃣-função-das-interfaces-loopback)
-    - [🧰 3️⃣ Comandos de configuração](#-3️⃣-comandos-de-configuração)
-    - [3️⃣ Captura e Observação via Wireshark](#3️⃣-captura-e-observação-via-wireshark)
-    - [🧪 Realizando a captura](#-realizando-a-captura)
+    - [⚙️ Configurando o PIM-SSM (Source-Specific Multicast)](#️-configurando-o-pim-ssm-source-specific-multicast)
+    - [🧩 1️⃣ Definindo o intervalo de endereços SSM](#-1️⃣-definindo-o-intervalo-de-endereços-ssm)
+    - [🧭 2️⃣ Habilitando o IGMPv3 nos roteadores](#-2️⃣-habilitando-o-igmpv3-nos-roteadores)
+    - [🧰 3️⃣ Associando hosts e fontes multicast](#-3️⃣-associando-hosts-e-fontes-multicast)
+    - [🧪 5️⃣ Captura e análise via Wireshark](#-5️⃣-captura-e-análise-via-wireshark)
   - [✅ 4️⃣ Ativando o Receptor (IGMP Join) — R04](#-4️⃣-ativando-o-receptor-igmp-join--r04)
     - [✅ Configuração do IGMP Join em R04](#-configuração-do-igmp-join-em-r04)
   - [✅ 5️⃣ Observando a Formação da Árvore (\*,G)](#-5️⃣-observando-a-formação-da-árvore-g)
@@ -766,170 +765,131 @@ Alterar daqui
 
 ---
 
-### ⚙️ Configurando o Candidate RP e o Candidate BSR (Bootstrap Router)
+### ⚙️ Configurando o PIM-SSM (Source-Specific Multicast)
 
-Agora que o **PIM Sparse Mode** está ativo em todas as interfaces, o domínio multicast já pode iniciar o processo de **eleição automática do Rendezvous Point (RP)** por meio do **Bootstrap Router (BSR)** — o método **padrão IETF (RFC 5059)**.  
+Agora que o **PIM** está ativo em todas as interfaces, podemos configurar o domínio multicast para operar em **Source-Specific Multicast (SSM)** — modo no qual **não há Rendezvous Point (RP)** nem mensagens Bootstrap.  
+O tráfego multicast flui diretamente da **fonte (S)** para os **receptores interessados (G)**, conforme indicado pelas mensagens **IGMPv3**.
 
-Diferente do Auto-RP (proprietário Cisco), o **Bootstrap Router** realiza toda a descoberta e distribuição de RPs **dentro do próprio protocolo PIM**, sem depender de grupos multicast adicionais (como 224.0.1.39 e 224.0.1.40).  
-
----
-
-### 🧩 1️⃣ Escolha dos equipamentos
-
-Para este laboratório, adotaremos a seguinte estrutura:  
-
-| Função                        | Roteador | Loopback usada | Justificativa técnica                                                                                   |
-|-------------------------------|----------|----------------|---------------------------------------------------------------------------------------------------------|
-| **Candidate BSR**             | **R01**  | 1.1.1.1        | Próximo à fonte multicast (Server) e bem posicionado no domínio para distribuir as mensagens Bootstrap. |
-| **Candidate RP 1 (Primário)** | **R02**  | 2.2.2.2        | Centralizado no domínio, ideal para otimizar convergência e formar a Shared Tree.                       |
-| **Candidate RP 2 (Backup)**   | **R03**  | 3.3.3.3        | Redundância — permite observar o processo de eleição e failover do RP.                                  |
-
-Assim, o R01 atuará como **coordenador (BSR)**, enquanto os roteadores R02 e R03 anunciarão suas candidaturas como **RPs**.  
-  
----
-  
-### 🧭 2️⃣ Função das interfaces Loopback
-
-No PIM Sparse Mode com BSR, as interfaces Loopback exercem papel importante, pois são usadas como **endereços lógicos de identificação (Router-ID)** e como **endereços de RP e BSR**.  
-  
-| Função da Loopback                                   | PIM deve estar ativo? | Motivo                                                                            |
-|------------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------|
-| Loopback usada como **Candidate RP**                 | ✅ Sim               | Necessário para envio e recebimento de mensagens PIM (Register, Join, Bootstrap). |
-| Loopback usada como **Candidate BSR**                | ✅ Sim               | O BSR utiliza a interface para enviar mensagens Bootstrap (PIM Type 13).          |
-| Loopback usada apenas como Router-ID (sem papel PIM) | ⚙️ Opcional          | Pode permanecer sem PIM se não participar do tráfego multicast.                   |
-
-💡 **Boa prática:**  
-Em ambientes de estudo ou testes, mantenha o **PIM ativo em todas as loopbacks** — isso simplifica o troubleshooting e garante que o endereço lógico seja sempre alcançável via OSPF.  
+Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, que utiliza RPs para coordenar o fluxo, o **SSM** utiliza **pares (*S,G*)** formados dinamicamente, garantindo simplicidade, segurança e menor dependência de controle.
 
 ---
 
-### 🧰 3️⃣ Comandos de configuração
+### 🧩 1️⃣ Definindo o intervalo de endereços SSM
 
-➡️ **No R01 (Candidate BSR):**
+Por padrão, as redes Cisco utilizam o intervalo **232.0.0.0/8** para o **Source-Specific Multicast (SSM)**, conforme definido pelo IANA (RFC 4607).  
+Ainda assim, é boa prática **declarar explicitamente o range SSM** para evitar ambiguidade entre grupos tradicionais (*,G*) e específicos (*S,G*).
 
-```ios
-R01(config)#ip pim bsr-candidate loopback0 30
-```
-
-🔎 **Explicação:**
-
-- **loopback0** → Interface usada como origem das mensagens Bootstrap (IP 1.1.1.1);
-- **30** → Tamanho do hash mask usado para calcular o RP para cada grupo multicast (valor padrão típico);
-
-Nenhum parâmetro de prioridade é aceito aqui..  
-
-🧠 **Sobre a “prioridade” do BSR**
-
-O Bootstrap Router (BSR) não tem prioridade configurável diretamente no IOS clássico.  
-  
-Se houver mais de um Candidate BSR, a eleição segue:  
-
-- **Hash mask length (o maior valor vence)**;
-- Se empatar, o **endereço IP mais alto vence**.
-
-Portanto:  
-
-Se quiser influenciar quem será o BSR, use um **hash-mask maior no roteador que você quer priorizar**.
+➡️ **Comando no modo global:**
 
 ```ios
-R01(config)#ip pim bsr-candidate loopback0 30
-R02(config)#ip pim bsr-candidate loopback0 20
+R01(config)#ip pim ssm range 232.0.0.0 255.0.0.0
 ```
 
-→ **O R01 será eleito BSR, porque 30 > 20.**
+💡 **Explicação:**  
 
-💡 **Versões IOS XE / NX-OS**
-
-Em plataformas mais novas **(IOS XE 17.x, NX-OS, ou IOS XR)**, algumas versões aceitam o parâmetro priority, mas no IOS tradicional (12.x, 15.x, ou em simuladores tipo EVE-NG, GNS3, CML), essa opção não existe.  
+- Define o bloco de endereços que será tratado como SSM;
+- Qualquer grupo dentro de **232.0.0.0/8** será gerenciado sem RP;
+- Isso permite que o roteador processe **joins específicos (S,G) vindos via IGMPv3**.
   
-Então para fins de laboratório CCNP ENCOR (350-401), o comando correto é o clássico:  
+---
+
+### 🧭 2️⃣ Habilitando o IGMPv3 nos roteadores
+
+O IGMPv3 é fundamental para o funcionamento do SSM, pois ele permite que os receptores especifiquem as fontes (S) das quais desejam receber tráfego.  
+Sem IGMPv3, o roteador não reconhece solicitações do tipo (S,G).  
+
+➡️ Comando por interface LAN conectada aos hosts receptores:  
 
 ```ios
-ip pim bsr-candidate loopback0 30
+R04(config)#int fa1/1
+R04(config-if)#ip igmp version 3
 ```
 
-🧰 **Resumo prático**  
+Faça o mesmo nas interfaces onde há receptores multicast (ex.: R04 e R05).  
 
-| Função        | Comando correto                                       | Observação                                                     |
-|---------------|-------------------------------------------------------|----------------------------------------------------------------|
-| Candidate BSR | ip pim bsr-candidate loopback0 30                     | Define interface e máscara de hash; maior valor vence eleição  |
-| Candidate RP  | ip pim rp-candidate loopback0 group-list 1 priority 5 | Aqui sim a prioridade é configurável                           |
-| Verificação   | show ip pim bsr-router / show ip pim rp mapping       | Mostra quem foi eleito BSR e RP                                |
-
-Exemplo:
-
-➡️ **No R02 (Candidate RP Primário):**  
-
-```
-R02(config)#ip pim rp-candidate loopback0 group-list 1
-R02(config)#access-list 1 permit 224.0.0.0 15.255.255.255
-```
-
-➡️ **No R03 (Candidate RP Secundário):**  
-
-```ios
-R03(config)#ip pim rp-candidate loopback0 group-list 1
-R03(config)#access-list 1 permit 224.0.0.0 15.255.255.255
-```
-
-🔎 **Explicação:**
-
-- **ip pim rp-candidate** anuncia o roteador como Candidate RP para o intervalo de grupos definidos;
-- **group-list 1** especifica os grupos multicast válidos (no caso, todo o intervalo **224.0.0.0/4**);  
-  
-Esses anúncios serão enviados diretamente ao BSR por meio das mensagens C-RP Advertisement (**PIM Type 14**).  
-  
-🛰️ 4️⃣ **Fluxo esperado**
-
-- O **R01 (Candidate BSR)** envia mensagens Bootstrap (**Type 13**) pelo domínio PIM-SM;
-- Os **R02 e R03 (Candidate RPs)** enviam **C-RP Advertisements (Type 14)** ao BSR;
-- O **BSR** compila as informações e distribui o mapeamento de grupos e RPs a todos os roteadores PIM;
-  
-Todos os roteadores passam a conhecer automaticamente quem é o RP ativo.  
-
-### 3️⃣ Captura e Observação via Wireshark  
-
-🧩 **Contexto da captura**
-
-Após ativar o **PIM Sparse Mode** e configurar os papéis do **Bootstrap Router (BSR)** e dos **Candidate RPs**, o próximo passo é comprovar que as mensagens de sinalização estão circulando no domínio PIM-SM.  
-  
-Diferente do Auto-RP (que utiliza os grupos 224.0.1.39/40), o **BSR utiliza mensagens nativas do PIMv2** enviadas para o grupo **224.0.0.13 (ALL-PIM-ROUTERS)**.  
-Aqui esperamos observar:  
-
-| Tipo de Mensagem               | PIM Type | Quem envia              | Função                             |
-|--------------------------------|----------|-------------------------|------------------------------------|
-| **Bootstrap**                  | **9**    | BSR eleito (R01 ou R02) | Distribui o mapeamento de RPs      |
-| **RP-Candidate Advertisement** | **4**    | R02 e R03               | Informam ao BSR que desejam ser RP |
-| **PIM Hello**                  | **0**    | Todos                   | Mantém vizinhança e DR             |
+💡 **Dica:**
+Mesmo que alguns roteadores suportem IGMPv3 por padrão, é recomendado forçar a versão explicitamente para evitar incompatibilidades.  
 
 ---
 
-### 🧪 Realizando a captura
+### 🧰 3️⃣ Associando hosts e fontes multicast
+
+Neste laboratório, temos duas fontes e um ou mais receptores:
+
+| Dispositivo | Função             | IP           | Grupo (G)                            |
+|-------------|--------------------|--------------|--------------------------------------|
+| Server01    | Fonte multicast #1 | 192.168.10.1 | 232.1.1.1                            |
+| Server02    | Fonte multicast #2 | 192.168.40.1 | 232.1.1.1                            |
+| Host02      | Receptor multicast | 192.168.20.1 | (S,G) Join para Server01 e Server02  |
+| Host03      | Host sem interesse | 192.168.30.1 | —                                    |
+
+📘 **Comando de Join nos receptores (simulados com roteadores Cisco):**  
+
+```ios
+Host02(config)#int fa0/0
+Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.10.1
+Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.40.1
+```
+
+Exemplo de saída esperada:  
+
+```ios
+(192.168.10.1, 232.1.1.1), 00:00:38/00:02:22, flags: sT
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet1/1, Forward/Sparse, 00:00:38/00:02:22
+
+(192.168.40.1, 232.1.1.1), 00:00:40/00:02:20, flags: sT
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.5
+  Outgoing interface list:
+    FastEthernet1/1, Forward/Sparse, 00:00:40/00:02:20
+```
+
+💡 **Observe:**
+
+- As entradas aparecem no **formato (S,G) — indicando a árvore por fonte**;
+- Não há nenhuma **linha (,G), pois o SSM não utiliza RP**;
+- O campo flags: **sT confirma o modo Source-Specific ativo**.
+
+### 🧪 5️⃣ Captura e análise via Wireshark
 
 📌 **Local ideal para captura:**  
-  
-**R01 – FastEthernet0/1 (ligação direta com R02)**  
 
+Interface entre R04 e o Host02, onde ocorrem os IGMPv3 Membership Reports.  
+  
 📌 **Filtro recomendado:**  
 
-```wireshark
-pim.type == 4 or pim.type == 9
+```whiresahrk
+igmp.type == 0x22
 ```
-  
-✅ PIM type 4 = anúncios dos RP candidates  
-✅ PIM type 9 = mensagens Bootstrap emitidas pelo BSR eleito  
-  
-📸 **Captura real**  
 
-Nesta captura vemos a mensagem PIM Type 9 (Bootstrap) contendo:  
+💡 **Explicação:**
 
-- BSR Address
-- BSR Priority
-- Hash Mask Length
-- Lista de RP Candidates
-- Group-to-RP mapping
+- **0x22** identifica mensagens **IGMPv3 Membership Report**;
+- Dentro dessas mensagens, é possível observar **os pares (S,G) solicitados**;  
+- Verifique os endereços das **fontes (192.168.10.1 e 192.168.40.1)** listados como Source Addresses.
   
-![Whireshark](Imagens/03.png)  
+📸 **Captura real:**  
+  
+As mensagens IGMPv3 confirmam que o Host02 requisitou fluxos multicast apenas das fontes autorizadas, validando o funcionamento do SSM com múltiplas fontes simultâneas.  
+
+🧠 **Resumo**
+
+| Função                  | Protocolo / Comando                  | Observação técnica                              |
+|-------------------------|--------------------------------------|-------------------------------------------------|
+| Definir range SSM       | ip pim ssm range 232.0.0.0 255.0.0.0 | Ativa o modo Source-Specific para o bloco 232/8 |
+| Ativar IGMPv3           | ip igmp version 3                    | Necessário para joins específicos (S,G)         |
+| Associar receptor (S,G) | ip igmp join-group <G> source <S>    | Simula associação IGMPv3                        |
+| Verificar rotas         | show ip mroute                       | Mostra entradas (S,G) no domínio multicast      |
+| Capturar tráfego        | Filtro igmp.type == 0x22             | Exibe os Membership Reports IGMPv3              |
+
+Com isso, o domínio multicast está completamente operacional em modo SSM, e o tráfego das fontes Server01 e Server02 será entregue somente aos hosts que enviarem joins IGMPv3 (S,G).  
+
+--- 
+
+Alterar Daqui
+
+---
 
 ✅ **Validando a eleição REAL do BSR**
   
