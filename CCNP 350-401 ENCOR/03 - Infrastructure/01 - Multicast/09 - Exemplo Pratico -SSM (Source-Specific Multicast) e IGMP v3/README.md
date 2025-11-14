@@ -309,9 +309,9 @@ Neste modelo, o tráfego multicast é estabelecido diretamente entre **fonte (S)
 **🧭 Resumo da Lógica**  
 
 - O **Server (192.168.10.1)** é a **fonte multicast** (S) e envia tráfego para o grupo **239.1.1.1 (G)**.  
-- O **Server02 (192.168.40.1)** é a **fonte multicast02** (S) e envia tráfego para o grupo **239.1.1.2 (G)**.
+- O **Server02 (192.168.40.1)** é a **fonte multicast02** (S) e envia tráfego para o grupo **239.2.2.2 (G)**.
 - O **Host02 (192.168.20.1)** participa utilizando **IGMPv3**, solicitando explicitamente o fluxo **(192.168.10.1, 239.1.1.1)**.  
-- O **Host03 (192.168.30.1)** não envia join, simulando uma rede sem interesse multicast.  
+- O **Host03 (192.168.30.1)** participa utilizando **IGMPv3**, solicitando explicitamente o fluxo **(192.168.10.1, 239.2.2.2)**.  
 - O protocolo **PIM-SSM** é ativado em todas as interfaces participantes do domínio multicast (LANs e links de roteamento).  
 - Os **roteadores não utilizam RP nem BSR**, pois no SSM o DR do receptor envia diretamente o **PIM Join (S,G)** na direção da fonte.  
 - O **RPF (Reverse Path Forwarding)** assegura que o caminho de retorno até a fonte siga o melhor trajeto aprendido via OSPF.  
