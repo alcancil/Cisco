@@ -168,7 +168,7 @@ No SSM, cada receptor escolhe explicitamente a fonte de interesse, conforme a ta
 | Grupo Multicast | Fonte (S)        | Descrição                                   | Receptores Interessados      |
 |-----------------|------------------|---------------------------------------------|------------------------------|
 | 232.1.1.1       | 192.168.10.1     | Tráfego multicast gerado pelo SERVER        | HOST02 e HOST03              |
-| 232.1.1.2       | 192.168.40.1     | Tráfego multicast gerado pelo SERVER02      | HOST02 (exemplo)             |
+| 232.2.2.2       | 192.168.40.1     | Tráfego multicast gerado pelo SERVER02      | HOST02 (exemplo)             |
 
 Dessa forma, o domínio PIM forma **árvores diretas (Shortest Path Trees)** de cada receptor até sua fonte específica, eliminando qualquer dependência de RP.
 
