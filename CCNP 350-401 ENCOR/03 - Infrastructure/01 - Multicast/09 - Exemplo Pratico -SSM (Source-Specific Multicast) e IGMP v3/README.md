@@ -134,12 +134,12 @@ Assim, os hosts podem escolher exatamente de quais fontes desejam receber tráfe
 
 ### 🧩 1️⃣ Fontes e Receptores no Cenário
 
-Neste cenário, temos **duas fontes multicast** e **três receptores**, distribuídos nas seguintes redes:
+Neste cenário, temos **duas fontes multicast** e **um receptor**, distribuídos nas seguintes redes:
 
 | Função         | Dispositivo | Rede/Sub-rede        | Interface  | Endereço IP        | Descrição                                      |
 |----------------|-------------|----------------------|------------|--------------------|------------------------------------------------|
 | **Fonte 1**    | SERVER      | 192.168.10.0/24      | fa0/0      | 192.168.10.1       | Envia tráfego multicast para o grupo 232.1.1.1 |
-| **Fonte 2**    | SERVER02    | 192.168.40.0/24      | fa0/0      | 192.168.40.1       | Envia tráfego multicast para o grupo 232.1.1.2 |
+| **Fonte 2**    | SERVER02    | 192.168.40.0/24      | fa0/0      | 192.168.40.1       | Envia tráfego multicast para o grupo 232.2.2.2 |
 | **Receptor 1** | HOST02      | 192.168.20.0/24      | fa0/0      | 192.168.20.1       | Participa de grupos multicast via IGMPv3       |
 | **Receptor 2** | HOST03      | 192.168.30.0/24      | fa0/0      | 192.168.30.1       | Participa de grupos multicast via IGMPv3       |
 | **Receptor 3** | (opcional)  | —                    | —          | —                  | Pode ser adicionado em qualquer outra sub-rede |
