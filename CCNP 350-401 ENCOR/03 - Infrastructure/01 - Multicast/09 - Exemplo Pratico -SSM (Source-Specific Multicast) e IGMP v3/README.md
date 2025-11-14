@@ -18,9 +18,8 @@
       - [📡 5️⃣ Vantagens do SSM sobre o PIM-SM](#-5️⃣-vantagens-do-ssm-sobre-o-pim-sm)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [🔍 Testes Preliminares](#-testes-preliminares)
-    - [🌍 Onde o PIM deve ser ativado](#-onde-o-pim-deve-ser-ativado)
     - [🧩 Principais diferenças do SSM em relação ao PIM-SM](#-principais-diferenças-do-ssm-em-relação-ao-pim-sm)
-    - [📘 Onde o PIM deve ser ativado no SSM](#-onde-o-pim-deve-ser-ativado-no-ssm)
+    - [🌍 Onde o PIM deve ser ativado](#-onde-o-pim-deve-ser-ativado)
     - [💡 Observação sobre as fontes multicast](#-observação-sobre-as-fontes-multicast)
     - [🔹 Exemplo com IGMPv3](#-exemplo-com-igmpv3)
     - [⚙️ Nosso cenário SSM com IGMPv3](#️-nosso-cenário-ssm-com-igmpv3)
@@ -305,19 +304,41 @@ Neste modelo, o tráfego multicast é estabelecido diretamente entre **fonte (S)
 | **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.1.1.1) — fluxo do Server                     |
 | **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.2.2.2) — fluxo do Server02                   |
 | **Host03**        | Fa0/0         | 192.168.30.1 /24               | Receptor multicast                                              |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.1.1.1) — fluxo do Server                     |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.2.2.2) — fluxo do Server02                   |
+| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 232.1.1.1) — fluxo do Server                     |
+| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 232.2.2.2) — fluxo do Server02                   |
 
 **OBS:** como o SSM com IGMPv3 aceita múltiplas fontes, então aqui vamos simular que os **Host02 e Hos03** vão receber 02 fluxos cada, 1 de cada Server.
 
+🎯 Intervalo Oficial de Endereços SSM (RFC 4607)
+
+O Source-Specific Multicast (SSM) utiliza um intervalo de endereços multicast exclusivo e padronizado pelo IETF:  
+
+> 232.0.0.0/8
+
+Esse bloco — **também chamado de 232/8** — é reservado **exclusivamente para operações SSM** e deve ser utilizado sempre que o ambiente suportar **IGMPv3/PIM-SSM**. Ao usar esse intervalo, garantimos total conformidade com a RFC 4607, interoperabilidade entre fabricantes e comportamento previsível no roteamento multicast.  
+Por esse motivo, neste laboratório adotaremos os grupos:  
+
+- **232.1.1.1 para o Server01**
+- **232.2.2.2 para o Server02**
+
+📌 **Intervalo oficial do SSM (RFC 4607)**  
+
+| Descrição               | Endereço        |
+|-------------------------|-----------------|
+| Início do intervalo SSM | 232.0.0.0       |
+| Fim do intervalo SSM    | 232.255.255.255 |
+| Máscara / Notação       | 232.0.0.0/8     |
+
+Esses endereços atendem às boas práticas e refletem corretamente o funcionamento do SSM baseado em IGMPv3.  
+  
 ---
 
 **🧭 Resumo da Lógica**  
 
-- O **Server (192.168.10.1)** é a **fonte multicast** (S) e envia tráfego para o grupo **239.1.1.1 (G)**.  
-- O **Server02 (192.168.40.1)** é a **fonte multicast02** (S) e envia tráfego para o grupo **239.2.2.2 (G)**.
-- O **Host02 (192.168.20.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 239.1.1.1)** e **(192.168.40.1, 239.2.2.2)**.  
-- O **Host03 (192.168.30.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 239.2.2.2)** e **(192.168.40.1, 239.2.2.2)**.  
+- O **Server (192.168.10.1)** é a **fonte multicast** (S) e envia tráfego para o grupo **232.1.1.1 (G)**.  
+- O **Server02 (192.168.40.1)** é a **fonte multicast02** (S) e envia tráfego para o grupo **232.2.2.2 (G)**.
+- O **Host02 (192.168.20.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 232.1.1.1)** e **(192.168.40.1, 232.2.2.2)**.  
+- O **Host03 (192.168.30.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 232.2.2.2)** e **(192.168.40.1, 232.2.2.2)**.  
 - O protocolo **PIM-SSM** é ativado em todas as interfaces participantes do domínio multicast (LANs e links de roteamento).  
 - Os **roteadores não utilizam RP nem BSR**, pois no SSM o DR do receptor envia diretamente o **PIM Join (S,G)** na direção da fonte.  
 - O **RPF (Reverse Path Forwarding)** assegura que o caminho de retorno até a fonte siga o melhor trajeto aprendido via OSPF.  
@@ -368,13 +389,6 @@ R01#show ip multicast
 Com o roteamento multicast ativo, o próximo passo é habilitar o protocolo PIM nas interfaces participantes (LANs e links entre roteadores).  
 Repita esse processo de R01 a R05, garantindo que todas as interfaces de roteamento participem do domínio **PIM-SSM**.  
 
-### 🌍 Onde o PIM deve ser ativado
-
-No modo **Source-Specific Multicast (PIM-SSM)**, o tráfego multicast é encaminhado **somente para receptores que solicitam explicitamente uma fonte e um grupo multicast** — ou seja, o modelo baseia-se na relação **(S,G)**, onde **S = Source** e **G = Group**.  
-  
-Diferente do **PIM-SM tradicional**, o SSM **não utiliza Rendezvous Point (RP)** nem Bootstrap Router (BSR).  
-O roteamento multicast é direto entre os receptores e as fontes conhecidas, simplificando o domínio multicast e eliminando pontos de falha.
-
 ---
 
 ### 🧩 Principais diferenças do SSM em relação ao PIM-SM
@@ -389,7 +403,12 @@ O roteamento multicast é direto entre os receptores e as fontes conhecidas, sim
 
 ---
 
-### 📘 Onde o PIM deve ser ativado no SSM
+### 🌍 Onde o PIM deve ser ativado
+
+No modo **Source-Specific Multicast (PIM-SSM)**, o tráfego multicast é encaminhado **somente para receptores que solicitam explicitamente uma fonte e um grupo multicast** — ou seja, o modelo baseia-se na relação **(S,G)**, onde **S = Source** e **G = Group**.  
+  
+Diferente do **PIM-SM tradicional**, o SSM **não utiliza Rendezvous Point (RP)** nem Bootstrap Router (BSR).  
+O roteamento multicast é direto entre os receptores e as fontes conhecidas, simplificando o domínio multicast e eliminando pontos de falha.
 
 Embora o SSM dispense RP e Bootstrap, o PIM ainda precisa ser **ativado nas interfaces que participam do encaminhamento multicast**, garantindo que as mensagens PIM **Join/Prune** sejam trocadas corretamente entre roteadores.  
 
@@ -401,7 +420,7 @@ Embora o SSM dispense RP e Bootstrap, o PIM ainda precisa ser **ativado nas inte
 | Interface com host receptor (IGMP) | ✅ Sim               | Permite ao DR receber IGMPv3 Reports com a fonte específica            |
 | Interface com fonte multicast      | ✅ Sim               | O DR da fonte inicia o fluxo multicast diretamente para os receptores  |
 | Loopback apenas como Router-ID     | ⚙️ Opcional          | Pode ser omitido, usada apenas para identificação OSPF                 |
-
+  
 ---
 
 ### 💡 Observação sobre as fontes multicast
@@ -428,8 +447,8 @@ Se o Host02 quiser receber tráfego das duas fontes, ele enviará um IGMPv3 Memb
 
 | Fonte (S)    | Grupo (G) | Descrição                     |
 |--------------|-----------|-------------------------------|
-| 192.168.10.1 | 239.1.1.1 | Fluxo proveniente do SERVER   |
-| 192.168.40.1 | 239.1.1.1 | Fluxo proveniente do SERVER02 |
+| 192.168.10.1 | 232.1.1.1 | Fluxo proveniente do SERVER   |
+| 192.168.40.1 | 232.2.2.2 | Fluxo proveniente do SERVER02 |
 
 O roteador conectado ao **Host02 (o Designated Router)** registra ambos os pares e aciona o processo PIM-SSM, construindo **duas árvores independentes (S,G)** — uma para cada fonte.  
 Dessa forma, o tráfego chega de cada servidor por caminhos otimizados, conforme o **RPF (Reverse Path Forwarding) determinado pelo OSPF.**  
@@ -441,8 +460,8 @@ O SSM com IGMPv3 oferece controle total ao receptor sobre quais fontes deseja ou
 
 Você tem:  
 
-- Server01 (192.168.10.10) transmitindo para o grupo **239.1.1.1**
-- Server02 (192.168.40.10) transmitindo também **para o mesmo grupo 239.1.1.1 (ou pode ser outro, não importa)**
+- Server01 (192.168.10.10) transmitindo para o grupo **232.1.1.1**
+- Server02 (192.168.40.10) transmitindo também **para o mesmo grupo 232.2.2.2 (ou pode ser outro, não importa)**
 - Host01 quer receber **os dois fluxos multicast, um de cada servidor**.
 
 🧠 **Como o SSM trata isso?**  
@@ -454,15 +473,15 @@ Então o Host01 vai enviar **dois IGMPv3 Reports**, um para cada fonte, assim:
 
 | Fluxo | Fonte (S)               | Grupo (G)  | Tipo de IGMPv3 Report |
 |-------|-------------------------|------------|-----------------------|
-| 1️⃣   | 192.168.10.10 (Server01) | 239.1.1.1  | INCLUDE (S,G)         |
-| 2️⃣   | 192.168.40.10 (Server02) | 239.1.1.1  | INCLUDE (S,G)         |
+| 1️⃣   | 192.168.10.10 (Server01) | 232.1.1.1  | INCLUDE (S,G)         |
+| 2️⃣   | 192.168.40.10 (Server02) | 232.2.2.2  | INCLUDE (S,G)         |
 
 🔁 **O que acontece no roteador (Designated Router)**  
 
 - O roteador conectado ao Host01 recebe dois IGMPv3 Reports.
 - Ele cria duas entradas separadas na sua tabela de multicast:
-  - **(192.168.10.10, 239.1.1.1)**
-  - **(192.168.40.10, 239.1.1.1)**
+  - **(192.168.10.10, 232.1.1.1)**
+  - **(192.168.40.10, 232.2.2.2)**
 - O roteador envia duas mensagens **PIM Join (S,G)** em direção a cada fonte.
 - **Duas árvores independentes (S,G)** são criadas — uma para cada fonte.
 - O tráfego de ambas as fontes chega até o Host01, misturado no mesmo **grupo multicast (G), mas com origem diferente (S)**.
@@ -470,8 +489,8 @@ Então o Host01 vai enviar **dois IGMPv3 Reports**, um para cada fonte, assim:
 🔎 **Visualmente:**  
 
 ```text
-         (S1,G) 192.168.10.10 → 239.1.1.1
-         (S2,G) 192.168.40.10 → 239.1.1.1
+         (S1,G) 192.168.10.10 → 232.1.1.1
+         (S2,G) 192.168.40.10 → 232.2.2.2
                │
                ▼
           [Roteador DR]
@@ -482,34 +501,34 @@ Então o Host01 vai enviar **dois IGMPv3 Reports**, um para cada fonte, assim:
   
 O Host01 vai receber dois fluxos simultâneos:  
 
-- Um vindo da árvore (192.168.10.10, 239.1.1.1)
-- Outro vindo da árvore (192.168.40.10, 239.1.1.1)
+- Um vindo da árvore (192.168.10.10, 232.1.1.1)
+- Outro vindo da árvore (192.168.40.10, 232.2.2.2)
 
 🧩 **E se o Host01 quiser apenas uma das fontes?**
 
 Ele simplesmente envia um único IGMPv3 Report:  
 
 ```ios
-INCLUDE { 239.1.1.1 : 192.168.10.10 }
+INCLUDE { 232.1.1.1 : 192.168.10.10 }
 ```
 
 🚫 **E se ele quiser bloquear uma das fontes?**
 
 O IGMPv3 permite o **EXCLUDE mode**, em que o host pode dizer:  
   
-> “Quero o grupo 239.1.1.1, mas exclua o tráfego vindo de 192.168.40.10.”
+> “Quero o grupo 232.1.1.1, mas exclua o tráfego vindo de 192.168.40.10.”
 
 Isso é útil em cenários de redundância (duas fontes transmitindo o mesmo conteúdo).  
-Mas no nosso laboratório, normalmente usamos INCLUDE mode, porque é o padrão simples do SSM.  
+Mas no nosso laboratório, normalmente usamos **INCLUDE** mode, porque é o padrão simples do SSM.  
 
 💬 **Resumo final**  
 
-| Caso                      | IGMPv3 Report                                        | Resultado                           |
-|---------------------------|------------------------------------------------------|-------------------------------------|
-| Host quer apenas Server01 | INCLUDE { 239.1.1.1 : 192.168.10.10 }                | Recebe só o fluxo do Server01       |
-| Host quer apenas Server02 | INCLUDE { 239.1.1.1 : 192.168.40.10 }                | Recebe só o fluxo do Server02       |
-| Host quer os dois         | INCLUDE { 239.1.1.1 : 192.168.10.10, 192.168.40.10 } | Recebe ambos os fluxos              |
-| Host quer excluir um      | EXCLUDE { 239.1.1.1 : 192.168.40.10 }                | Recebe o grupo, mas ignora Server02 |
+| Caso                      | IGMPv3 Report                                                      | Resultado                           |
+|---------------------------|--------------------------------------------------------------------|-------------------------------------|
+| Host quer apenas Server01 | INCLUDE { 232.1.1.1 : 192.168.10.10 }                              | Recebe só o fluxo do Server01       |
+| Host quer apenas Server02 | INCLUDE { 232.2.2.2 : 192.168.40.10 }                              | Recebe só o fluxo do Server02       |
+| Host quer os dois         | INCLUDE { (232.1.1.1, 192.168.10.10), (232.2.2.2, 192.168.40.10) } | Recebe ambos os fluxos              |
+| Host quer excluir um      | EXCLUDE { 232.1.1.1 : 192.168.40.10 }                              | Recebe o grupo, mas ignora Server02 |
 
 👉 **Em resumo:**
 
@@ -522,11 +541,11 @@ Nosso laboratório foi expandido para incluir **duas fontes multicast distintas*
 
 | Fonte       | Roteador conectado | Sub-rede             | Grupo multicast utilizado (exemplo)  |
 |-------------|--------------------|----------------------|--------------------------------------|
-| **SERVER**  | R01                | 192.168.10.0/24      | 239.1.1.1                            |
-| **SERVER02**| R03                | 192.168.40.0/24      | 239.2.2.2                            |
+| **SERVER**  | R01                | 192.168.10.0/24      | 232.1.1.1                            |
+| **SERVER02**| R03                | 192.168.40.0/24      | 232.2.2.2                            |
 
 Os receptores multicast (hosts simulados) enviam **mensagens IGMPv3** especificando exatamente qual fonte desejam escutar.  
-Por exemplo, um host pode ingressar no grupo `239.1.1.1` proveniente de `192.168.10.10`, enquanto outro pode escutar o grupo `239.2.2.2` proveniente de `192.168.40.10`.
+Por exemplo, um host pode ingressar no grupo `232.1.1.1` proveniente de `192.168.10.10`, enquanto outro pode escutar o grupo `232.2.2.2` proveniente de `192.168.40.10`.
 
 ---
 
@@ -569,8 +588,8 @@ Com isso, teremos um domínio totalmente funcional de **PIM-SSM com IGMPv3**, su
 
 | Elemento                     | Função no cenário                                |
 |------------------------------|--------------------------------------------------|
-| **Server (192.168.10.10)**   | Fonte multicast principal (grupo 239.1.1.1)      |
-| **Server02 (192.168.40.10)** | Segunda fonte multicast (grupo 239.2.2.2)        |
+| **Server (192.168.10.10)**   | Fonte multicast principal (grupo 232.1.1.1)      |
+| **Server02 (192.168.40.10)** | Segunda fonte multicast (grupo 232.2.2.2)        |
 | **Host02 / Host03**          | Receptores multicast (enviam IGMPv3 Reports)     |
 | **Roteadores R01–R05**       | Encaminham tráfego multicast via PIM-SSM         |
 | **OSPF**                     | Mantém conectividade unicast entre os roteadores |
@@ -625,6 +644,8 @@ R01(config-if)#ip pim sparse-mode
 ```
 
 Após a configuração, o roteador passa a participar ativamente do domínio multicast, trocando mensagens PIM Hello e identificando vizinhos diretamente conectados.  
+  
+**OBS:** fazer isso para todos os ROTEADORES (de R01 a R05).  
   
 ✅ **Verificação do roteamento multicast**
   
@@ -688,11 +709,11 @@ Essas mensagens também informam o modo de operação **(SSM)**, a prioridade do
 
 ⚙️ **Funções principais das mensagens Hello**  
 
-| Função                 | Descrição                                                                          |
-|------------------------|------------------------------------------------------------------------------------|
-| Descoberta de vizinhos | Roteadores PIM trocam Hellos para identificar dispositivos ativos na mesma LAN.    |
-| Troca de parâmetros    | Define tempo de expiração, prioridade de DR e modo de operação.                    |
-| Monitoramento          | Se um vizinho deixa de enviar Hellos dentro do holdtime, é removido da tabela PIM. |
+| **Função**                 | **Descrição**                                                                          |
+|----------------------------|------------------------------------------------------------------------------------|
+| **Descoberta de vizinhos** | Roteadores PIM trocam Hellos para identificar dispositivos ativos na mesma LAN.    |
+| **Troca de parâmetros**    | Define tempo de expiração, prioridade de DR e modo de operação.                    |
+| **Monitoramento**          | Se um vizinho deixa de enviar Hellos dentro do holdtime, é removido da tabela PIM. |
 
 ---
 
@@ -765,12 +786,6 @@ Isso evita que múltiplos roteadores enviem PIM Joins duplicados para a mesma fo
 - Mas ele não envia PIM Register nem usa RP/BSR.
 - Sua única função é processar IGMPv3 dos hosts locais e iniciar os PIM Join (S,G) diretamente em direção à fonte.
 
----
-
-Alterar daqui
-
----
-
 ### ⚙️ Configurando o PIM-SSM (Source-Specific Multicast)
 
 Agora que o **PIM** está ativo em todas as interfaces, podemos configurar o domínio multicast para operar em **Source-Specific Multicast (SSM)** — modo no qual **não há Rendezvous Point (RP)** nem mensagens Bootstrap.  
@@ -790,6 +805,22 @@ Ainda assim, é boa prática **declarar explicitamente o range SSM** para evitar
 ```ios
 R01(config)#ip pim ssm range 232.0.0.0 255.0.0.0
 ```
+
+---
+
+Ajustar daqui
+
+R01(config)#ip pim ssm range 232.0.0.0
+% Invalid access list name.
+R01(config)#ip pim ssm range ?
+  <1-99>  Access list number
+  WORD    IP named access list
+
+R01(config)#ip pim ssm range
+
+O comando acima não existe da forma citada
+
+---
 
 💡 **Explicação:**  
 
