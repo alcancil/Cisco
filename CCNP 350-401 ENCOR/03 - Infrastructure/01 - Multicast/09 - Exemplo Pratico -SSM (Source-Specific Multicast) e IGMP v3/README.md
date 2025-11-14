@@ -302,7 +302,7 @@ Neste modelo, o tráfego multicast é estabelecido diretamente entre **fonte (S)
 | **Server**      | Fa0/0         | 192.168.10.1 /24               | Fonte multicast (sender)                                        |
 | **Server02**    | Fa0/0         | 192.168.40.1 /24               | Fonte multicast (sender)                                        |
 | **Host02**      | Fa0/0         | 192.168.20.1 /24               | Receptor multicast (IGMPv3 join para (192.168.10.1, 239.1.1.1)) |
-| **Host03**      | Fa0/0         | 192.168.30.1 /24               | Host sem participação (sem join IGMP)                           |
+| **Host03**      | Fa0/0         | 192.168.30.1 /24               | Receptor multicast (IGMPv3 join para (192.168.10.1, 239.2.2.2)) |
 
 ---
 
