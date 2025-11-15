@@ -802,33 +802,57 @@ Ainda assim, é boa prática **declarar explicitamente o range SSM** para evitar
 
 ➡️ **Comando no modo global:**
 
+- Primeiro devemos definir o range do intervalo multicast a ser utilizado:
+
 ```ios
-R01(config)#ip pim ssm range 232.0.0.0 255.0.0.0
+R01(config)#access-list 10 permit 232.0.0.0 255.0.0.0
 ```
 
----
+- Depois precisamos aplicar o range no comando:
 
-Ajustar daqui
+```ios
+R01(config)#ip pim ssm ?
+  default  Use 232/8 group range for SSM
+  range    ACL for group range to be used for SSM
 
-R01(config)#ip pim ssm range 232.0.0.0
-% Invalid access list name.
-R01(config)#ip pim ssm range ?
-  <1-99>  Access list number
-  WORD    IP named access list
-
-R01(config)#ip pim ssm range
-
-O comando acima não existe da forma citada
+R01(config)#ip pim ssm range 10
+R01(config)#
+```
 
 ---
 
 💡 **Explicação:**  
 
-- Define o bloco de endereços que será tratado como SSM;
+- O **access-list** define o bloco de endereços que será tratado como SSM;
 - Qualquer grupo dentro de **232.0.0.0/8** será gerenciado sem RP;
+- Como é mostrado na saída, é possível se utilizar outro tipo de range dentro do multicast, porém se estiver fora do range **232/8** estaremos fora da **RFC 4607** que não é uma boa prática
 - Isso permite que o roteador processe **joins específicos (S,G) vindos via IGMPv3**.
+
+⚠️ **Observação importante sobre ip pim ssm-range no IOS**  
   
+No **IOS clássico (12.x e 15.x)**, o comando ip pim ssm-range não aceita diretamente o prefixo, exigindo a definição do intervalo SSM por meio de uma ACL:
+
+```ios
+access-list 10 permit 232.0.0.0 255.0.0.0
+ip pim ssm range 10
+```
+
+Já em sistemas mais recentes — como IOS XE, NX-OS e IOS XR — o intervalo SSM pode ser configurado diretamente:  
+
+```ios
+ip pim ssm-range 232.0.0.0 255.0.0.0
+```
+
+Neste laboratório utilizamos o IOS clássico, portanto adotamos o método baseado em ACL.
+
 ---
+
+🔧 **Configuração do SSM em Todo o Domínio PIM**
+
+Para que o Source-Specific Multicast (SSM) funcione corretamente, todos os roteadores do domínio PIM devem possuir o intervalo SSM configurado. Isso garante que cada roteador interprete corretamente os grupos do intervalo 232.0.0.0/8 como SSM, evitando a busca por RP, a criação de (*,G) e qualquer comportamento associado ao PIM Sparse Mode tradicional.  
+
+💡 **Boa prática:**
+Em laboratórios e ambientes reais, o SSM-range deve estar presente em todos os hops entre o Host e o Server, garantindo que os **joins (S,G)** sejam aceitos e propagados ao longo de toda a árvore **PIM-SSM**.  
 
 ### 🧭 2️⃣ Habilitando o IGMPv3 nos roteadores
 
@@ -847,6 +871,88 @@ Faça o mesmo nas interfaces onde há receptores multicast (ex.: R04 e R05).
 💡 **Dica:**
 Mesmo que alguns roteadores suportem IGMPv3 por padrão, é recomendado forçar a versão explicitamente para evitar incompatibilidades.  
 
+Para verificar o estado/versão do **IGMP**, execute o comando:  
+
+```ios
+show ip igmp interface
+```
+
+Exemplo em R01  
+
+```ios
+R01#show ip igmp interface
+Loopback0 is up, line protocol is up
+  Internet address is 1.1.1.1/32
+  IGMP is enabled on interface
+  Current IGMP host version is 3
+  Current IGMP router version is 3
+  IGMP query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 1 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 1.1.1.1 (this system)
+  IGMP querying router is 1.1.1.1 (this system)
+  Multicast groups joined by this system (number of users):
+      224.0.1.40(1)
+FastEthernet0/0 is up, line protocol is up
+  Internet address is 192.168.10.254/24
+  IGMP is enabled on interface
+  Current IGMP host version is 3
+  Current IGMP router version is 3
+  IGMP query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 192.168.10.254 (this system)
+  IGMP querying router is 192.168.10.254 (this system)
+  No multicast groups joined by this system
+FastEthernet0/1 is up, line protocol is up
+  Internet address is 10.0.0.1/30
+  IGMP is enabled on interface
+  Current IGMP host version is 3
+  Current IGMP router version is 3
+  IGMP query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 1 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 10.0.0.2
+  IGMP querying router is 10.0.0.1 (this system)
+  No multicast groups joined by this system
+FastEthernet1/0 is up, line protocol is up
+  Internet address is 10.0.0.18/30
+  IGMP is enabled on interface
+  Current IGMP host version is 3
+  Current IGMP router version is 3
+  IGMP query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 10.0.0.18 (this system)
+  IGMP querying router is 10.0.0.17
+  No multicast groups joined by this system
+R01#
+```
+
 ---
 
 ### 🧰 3️⃣ Associando hosts e fontes multicast
@@ -856,37 +962,84 @@ Neste laboratório, temos duas fontes e um ou mais receptores:
 | Dispositivo | Função             | IP           | Grupo (G)                            |
 |-------------|--------------------|--------------|--------------------------------------|
 | Server01    | Fonte multicast #1 | 192.168.10.1 | 232.1.1.1                            |
-| Server02    | Fonte multicast #2 | 192.168.40.1 | 232.1.1.1                            |
+| Server02    | Fonte multicast #2 | 192.168.40.1 | 232.2.2.2                            |
 | Host02      | Receptor multicast | 192.168.20.1 | (S,G) Join para Server01 e Server02  |
-| Host03      | Host sem interesse | 192.168.30.1 | —                                    |
+| Host03      | Receptor multicast | 192.168.30.1 | (S,G) Join para Server01 e Server02  |
 
 📘 **Comando de Join nos receptores (simulados com roteadores Cisco):**  
+
+Devemos executar os mesmos comandos em HOST02 e HOST03
 
 ```ios
 Host02(config)#int fa0/0
 Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.10.1
-Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.40.1
+Host02(config-if)#ip igmp join-group 232.2.2.2 source 192.168.40.1
+```
+
+Agora vamos verificar a tabela de **roteamento multicast** em **R04 e R05** com o comando:
+
+```ios
+show ip mroute
 ```
 
 Exemplo de saída esperada:  
 
 ```ios
-(192.168.10.1, 232.1.1.1), 00:00:38/00:02:22, flags: sT
-  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.2
-  Outgoing interface list:
-    FastEthernet1/1, Forward/Sparse, 00:00:38/00:02:22
+R04#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
 
-(192.168.40.1, 232.1.1.1), 00:00:40/00:02:20, flags: sT
-  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.5
+(*, 232.2.2.2), 00:02:25/00:02:58, RP 0.0.0.0, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
   Outgoing interface list:
-    FastEthernet1/1, Forward/Sparse, 00:00:40/00:02:20
+    FastEthernet1/0, Forward/Sparse, 00:02:25/00:02:58
+
+(*, 232.1.1.1), 00:05:51/00:02:54, RP 0.0.0.0, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:05:51/00:02:54
+
+(*, 224.0.1.40), 00:29:06/00:02:50, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 00:29:06/00:02:50
+
+R04#
 ```
 
 💡 **Observe:**
 
 - As entradas aparecem no **formato (S,G) — indicando a árvore por fonte**;
 - Não há nenhuma **linha (,G), pois o SSM não utiliza RP**;
-- O campo flags: **sT confirma o modo Source-Specific ativo**.
+- O campo flags: **SJC confirma o modo Source-Specific ativo**.
+
+📌 **Observação Importante**  
+
+Em redes multicast, o querier define a versão do IGMP utilizada em cada segmento da LAN.  
+Isso significa que:  
+
+- Mesmo se um roteador ou host estiver configurado com ip igmp version 3,
+- Se o querier enviar IGMPv2 Queries, todos os dispositivos do segmento passam automaticamente a operar em IGMPv2.
+
+💡 **No IOS clássico, isso é um comportamento padrão do protocolo.**
+
+📌 **Forçar o querier atual a usar IGMPv3**
+
+Nos roteadores **R04 e R05** que estão atuando como querier, executar nas interfaces ligadas aos roteadores multicast:  
+
+```ios
+interface FaX/Y
+ ip igmp version 3
+```
 
 ### 🧪 5️⃣ Captura e análise via Wireshark
 
@@ -899,6 +1052,8 @@ Interface entre R04 e o Host02, onde ocorrem os IGMPv3 Membership Reports.
 ```whiresahrk
 igmp.type == 0x22
 ```
+
+![Whireshark](Imagens/)
 
 💡 **Explicação:**
 
