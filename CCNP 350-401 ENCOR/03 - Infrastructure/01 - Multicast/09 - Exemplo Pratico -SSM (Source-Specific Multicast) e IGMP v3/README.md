@@ -1053,7 +1053,7 @@ Interface entre R04 e o Host02, onde ocorrem os IGMPv3 Membership Reports.
 igmp.type == 0x22
 ```
 
-![Whireshark](Imagens/)
+![Whireshark](Imagens/02.png)
 
 💡 **Explicação:**
 
