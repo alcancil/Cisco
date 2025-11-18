@@ -47,8 +47,8 @@
   - [💡 Conclusões gerais](#-conclusões-gerais)
   - [🗺️ Fluxo conceitual do SSM (S,G)](#️-fluxo-conceitual-do-ssm-sg)
   - [📘 Tabela de Comandos](#-tabela-de-comandos)
-    - [🖥️ R01 – BSR Primário e DR da LAN do Servidor](#️-r01--bsr-primário-e-dr-da-lan-do-servidor)
-    - [📗 R02 – Candidate RP e BSR Secundário](#-r02--candidate-rp-e-bsr-secundário)
+    - [🖥️ Função	—	R01 atua como Designated Router (DR) para a LAN dos servidores](#️-funçãor01-atua-como-designated-router-dr-para-a-lan-dos-servidores)
+    - [📗 R02 – Router de Núcleo / Intermediário do Domínio SSM](#-r02--router-de-núcleo--intermediário-do-domínio-ssm)
     - [📙 R03 – Candidate RP Secundário](#-r03--candidate-rp-secundário)
     - [📒 R04 – DR do Segmento do Host02](#-r04--dr-do-segmento-do-host02)
     - [📕 R05 – Roteador de trânsito com Host Não Inscrito (Host03)](#-r05--roteador-de-trânsito-com-host-não-inscrito-host03)
@@ -1304,32 +1304,63 @@ O foco foi entender como o host escolhe exatamente qual fonte (S) deseja receber
 
 ## 📘 Tabela de Comandos
 
-### 🖥️ R01 – BSR Primário e DR da LAN do Servidor
+### 🖥️ Função	—	R01 atua como Designated Router (DR) para a LAN dos servidores
 
-| **Seção**           | **Comando / Configuração**                                                                          | **Descrição**                                            |
-|---------------------|-----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                                                                              | Habilita o roteamento multicast                          |
-| **Global**          | `ip pim bsr-candidate Loopback0 30`                                                                 | Define R01 como **BSR Candidate** (hash-mask 30)         |
-| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`<br>`ip pim sparse-mode`                                        | Loopback usada como Router-ID e origem das mensagens PIM |
-| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip igmp join-group 239.1.1.1` | Conexão com o Server; participa do grupo 239.1.1.1       |
-| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`<br>`ip pim sparse-mode`                                       | Link P2P com R02 — domínio PIM ativo                     |
-| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R05 — participa do domínio PIM              |
-| **OSPF**            | `router ospf 100`<br>`router-id 1.1.1.1`<br>`network 192.168.10.0 0.0.0.255 area 0`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0` | Garante conectividade unicast/ RPF para PIM |
-| **Função**          | —                                                                                                   | R01 atua como **BSR principal** e DR da LAN do Server.   |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                |
+|---------------------|-------------------------------------------|----------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita roteamento multicast                |
+| **Global**          | `ip pim ssm range SSM-RANGE`              | Ativa SSM e vincula ao range definido na ACL |
+| **ACL**             | `ip access-list standard SSM-RANGE`       | Define os grupos SSM aceitos                 |
+|                     | `permit 232.1.1.1`                        |                                              |
+|                     | `permit 232.2.2.2`                        |                                              |
+| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`      | Router-ID e origem das mensagens PIM         |
+|                     | `ip pim sparse-mode`                      |                                              |
+|                     | `ip igmp version 3`                       |                                              |
+| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0` | DR da LAN do servidor (HOSTS/SOURCES)        |
+|                     | `ip pim sparse-mode`                      |                                              |
+|                     | `ip igmp version 3`                       |                                              |
+| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`     | Link P2P com R02                             |
+|                     | `ip pim sparse-mode`                      |                                              |
+|                     | `ip igmp version 3`                       | Link P2P com R05                             |
+| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`    |                                              |
+|                     | `ip pim sparse-mode`                      |                                              |
+|                     | `ip igmp version 3`                       |                                              |
+| **OSPF**            | `router ospf 100`                         | Processo OSPF                                |
+|                     | `router-id 1.1.1.1`                       | ID do processo OSPF                          |
+|                     | `network 1.1.1.1 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK0       |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet0/1 |
+|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet1/0 |
+|                     | `network 192.168.10.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/0 |
 
-### 📗 R02 – Candidate RP e BSR Secundário
+### 📗 R02 – Router de Núcleo / Intermediário do Domínio SSM
 
-| **Seção**           | **Comando / Configuração**                                                                                     | **Descrição**                                 |
-|---------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| **Global**          | `ip multicast-routing`                                                                                         | Habilita o roteamento multicast               |
-| **Global**          | `ip pim bsr-candidate Loopback0 20`                                                         | Define R02 como **BSR Candidate** (hash-mask 20) — menor que R01 |
-| **Global**          | `ip pim rp-candidate Loopback0 group-list 1`                                                          | Define R02 como **Candidate RP** para o `group-list 1` |
-| **ACL**             | `access-list 1 permit 224.0.0.0 15.255.255.255`                                                            | ACL usada pelo `group-list 1` (cobre 224.0.0.0/4) |
-| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255`<br>`ip pim sparse-mode`                                                   | Endereço lógico do Candidate RP               |
-| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`<br>`ip pim sparse-mode`                                                  | Link P2P com R01                              |
-| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`<br>`ip pim sparse-mode`                                                  | Link P2P com R03                              |
-| **OSPF**        | `router ospf 100`<br>`router-id 2.2.2.2`<br>`network 10.0.0.0 0.0.0.3 area 0`<br>`network 10.0.0.4 0.0.0.3 area 0` | Garante conectividade unicast/ RPF para PIM   |
-| **Função**      | —                                                                                             | R02 atua como **Candidate RP** primário e BSR secundário / backup. |
+| **Seção**           | **Comando / Configuração**           | **Descrição**                                        |
+| --------------------|--------------------------------------|------------------------------------------------------|
+| **Global**          | `ip multicast-routing`               | Habilita roteamento multicast                        |
+| **Global**          | `ip pim ssm range SSM-RANGE`         | Ativa SSM sob os grupos definidos na ACL             |
+| **ACL**             | `ip access-list standard SSM-RANGE`  | Grupos definidos para operação SSM                   |
+|                     | `permit 232.1.1.1`                   |                                                      |
+|                     | `permit 232.2.2.2`                   |                                                      |
+| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255` | Router-ID e origem das mensagens PIM                 |
+|                     | `ip pim sparse-mode`                 |                                                      |
+|                     | `ip igmp version 3`                  |                                                      |
+| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`| Link P2P com R01 – participa do domínio PIM          |
+|                     | `ip pim sparse-mode`                 |                                                      |
+|                     | `ip igmp version 3`                  |                                                      |
+| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`| Link P2P com R03 – trânsito para o domínio multicast |
+|                     | `ip pim sparse-mode`                 |                                                      |
+|                     | `ip igmp version 3`                  |                                                      |
+| **OSPF**            | `router ospf 100`                    | Processo OSPF                                        |
+|                     | `router-id 2.2.2.2`                  | ID do processo OSPF                                  |
+|                     | `network 2.2.2.2 0.0.0.0 area 0`     | Ativando o OSPF na Interface LOOPBACK0               |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`    | Ativando o OSPF na Interface FastEthernet0/1         |
+|                     | `network 10.0.0.4 0.0.0.3 area 0`    | Ativando o OSPF na Interface FastEthernet1/0         |
+
+---
+
+Alterar daqui
+
+---
 
 ### 📙 R03 – Candidate RP Secundário
 
