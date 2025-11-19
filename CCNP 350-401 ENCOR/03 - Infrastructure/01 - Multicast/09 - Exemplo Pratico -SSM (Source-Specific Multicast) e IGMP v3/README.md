@@ -50,11 +50,12 @@
     - [🖥️ Função	—	R01 atua como Designated Router (DR) para a LAN dos servidores](#️-funçãor01-atua-como-designated-router-dr-para-a-lan-dos-servidores)
     - [📗 R02 – Router de Núcleo / Intermediário do Domínio SSM](#-r02--router-de-núcleo--intermediário-do-domínio-ssm)
     - [📙 R03 – DR da LAN do Host + Roteador de Trânsito no SSM](#-r03--dr-da-lan-do-host--roteador-de-trânsito-no-ssm)
-    - [📒 R04 – DR do Segmento do Host02](#-r04--dr-do-segmento-do-host02)
-    - [📕 R05 – Roteador de trânsito com Host Não Inscrito (Host03)](#-r05--roteador-de-trânsito-com-host-não-inscrito-host03)
+    - [📒 R04 – DR da LAN do Host02 + Roteador de Trânsito no SSM](#-r04--dr-da-lan-do-host02--roteador-de-trânsito-no-ssm)
+    - [📕 R05 – Roteador de Trânsito + DR da LAN do Host03](#-r05--roteador-de-trânsito--dr-da-lan-do-host03)
     - [🖥️ SERVER – Fonte Multicast (Sender)](#️-server--fonte-multicast-sender)
-    - [💻 HOST02 – Receptor Multicast](#-host02--receptor-multicast)
-    - [🖥️ HOST03 – Host Não Inscrito](#️-host03--host-não-inscrito)
+    - [🖥️ SERVER02 – Fonte Multicast (Sender)](#️-server02--fonte-multicast-sender)
+    - [💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)](#-host02--receptor-multicast-igmpv3--ssm)
+    - [🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)](#️-host03--receptor-multicast-secundário-ssm-com-múltiplas-fontes)
 
 ## 09 - Exemplo Pratico - SSM (Source-Specific Multicast) e IGMP v3
 
@@ -1385,57 +1386,103 @@ O foco foi entender como o host escolhe exatamente qual fonte (S) deseja receber
 |                     | `network 192.168.40.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/1                 |
 | **Função**          | —                                         | **DR da LAN dos hosts** + **router de trânsito do SSM**      |
 
----
+### 📒 R04 – DR da LAN do Host02 + Roteador de Trânsito no SSM
 
-Alterar daqui
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                |
+|---------------------|-------------------------------------------|--------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast                              |
+| **Global**          | `ip pim ssm range SSM-RANGE`              | Define os grupos operando em modo SSM                        |
+| **ACL SSM**         | `ip access-list standard SSM-RANGE`       | Range SSM utilizado pelos receptores                         |
+|                     | `permit 232.1.1.1`                        | Server                                                       |
+|                     | `permit 232.2.2.2`                        | Server02                                                     |
+| **Loopback0**       | `ip address 4.4.4.4 255.255.255.255`      | Router-ID, origem lógica para PIM                            |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
+| **FastEthernet0/0** | `ip address 10.0.0.10 255.255.255.252`    | Link P2P com R03 – trânsito do SSM                           |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
+| **FastEthernet0/1** | `ip address 10.0.0.13 255.255.255.252`    | Link P2P com R05 – trânsito do SSM                           |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
+| **FastEthernet1/0** | `ip address 192.168.20.254 255.255.255.0` | LAN do Host02 — **R04 é o DR desta LAN**                     |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
+| **OSPF**            | `router ospf 100`                         | Garante conectividade IP e RPF correto                       |
+|                     | `router-id 4.4.4.4`                       | ID do processo OSPF                                          |
+|                     | `network 4.4.4.4 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK4                       |
+|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet0/0                 |
+|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet0/1                 |
+|                     | `network 192.168.20.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet1/0                 |
+| **Função**          | —                                         | **DR da LAN do Host02** + **roteador intermediário do SSM**  |
 
----
+### 📕 R05 – Roteador de Trânsito + DR da LAN do Host03
 
-### 📒 R04 – DR do Segmento do Host02
-
-| **Seção**           | **Comando / Configuração**                                                                          | **Descrição**                                            |
-|---------------------|-----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                                                                              | Habilita o roteamento multicast                          |
-| **Loopback0**       | `ip address 4.4.4.4 255.255.255.255`<br>`ip pim sparse-mode`                                        | Identificação lógica e Router-ID do roteador             |
-| **FastEthernet0/0** | `ip address 10.0.0.10 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R03 — domínio PIM ativo                     |
-| **FastEthernet0/1** | `ip address 10.0.0.13 255.255.255.252`<br>`ip pim sparse-mode`                                      | Link P2P com R05 — domínio PIM ativo                     |
-| **FastEthernet1/0** | `ip address 192.168.20.254 255.255.255.0`<br>`ip pim sparse-mode`<br>`ip igmp join-group 239.1.1.1` | Interface conectada ao Host02 (receptor multicast)       |
-| **OSPF**            | `router ospf 100`<br>`router-id 4.4.4.4`<br>`network 192.168.20.0 0.0.0.255 area 0`<br>`network 10.0.0.8 0.0.0.3 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0` | Garante conectividade unicast / RPF |
-| **Função**          | — | Atua como **Designated Router (DR)** para o segmento do Host02, responsável por processar IGMP Reports e enviar PIM Join em direção ao RP. |
-
-### 📕 R05 – Roteador de trânsito com Host Não Inscrito (Host03)
-
-| **Seção**           | **Comando / Configuração**                                        | **Descrição**                                                                              |
-|---------------------|-------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                                            | Habilita o roteamento multicast                                                            |
-| **Loopback0**       | `ip address 5.5.5.5 255.255.255.255`<br>`ip pim sparse-mode`      | Identificação lógica e Router-ID                                                           |
-| **FastEthernet0/0** | `ip address 192.168.30.254 255.255.255.0`<br>`ip pim sparse-mode` | Interface de acesso para o segmento de borda                                               |
-| **FastEthernet0/1** | `ip address 10.0.0.14 255.255.255.252`<br>`ip pim sparse-mode`    | Link P2P com R04 — participa do domínio PIM                                                |
-| **FastEthernet1/0** | `ip address 10.0.0.17 255.255.255.252`<br>`ip pim sparse-mode`    | Link P2P com R01 — participa do domínio PIM                                                |
-| **OSPF**            | `router ospf 100`<br>`router-id 5.5.5.5`<br>`network 192.168.30.0 0.0.0.255 area 0`<br>`network 10.0.0.12 0.0.0.3 area 0`<br>`network 10.0.0.16 0.0.0.3 area 0` | Mantém conectividade unicast e suporta o RPF |
-| **Função**          | —                                                                 | Atua como **roteador de trânsito** dentro do domínio PIM-SM, garantindo conectividade entre os segmentos do receptor (R04) e da fonte (R01/SERVER). |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                     |
+|---------------------|-------------------------------------------|-------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast                                   |
+| **Global**          | `ip pim ssm range SSM-RANGE`              | Define os grupos operando em modo SSM                             |
+| **ACL SSM**         | `ip access-list standard SSM-RANGE`       | Lista de grupos permitidos para SSM                               |
+|                     | `permit 232.1.1.1`                        | Server                                                            |
+|                     | `permit 232.2.2.2`                        | Server02                                                          |
+| **Loopback0**       | `ip address 5.5.5.5 255.255.255.255`      | Router-ID do R05 e origem PIM                                     |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
+| **FastEthernet0/0** | `ip address 192.168.30.254 255.255.255.0` | LAN do Host03 — **R05 é o DR deste segmento**                     |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
+| **FastEthernet0/1** | `ip address 10.0.0.14 255.255.255.252`    | Link P2P com R04 — trânsito do SSM                                |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
+| **FastEthernet1/0** | `ip address 10.0.0.17 255.255.255.252`    | Link P2P com R01 — caminho em direção às fontes                   |
+|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
+|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
+| **OSPF**            | `router ospf 100`                         | Mantém conectividade IP e garante RPF correto                     |
+|                     | `router-id 5.5.5.5`                       | ID do processo OSPF                                               |
+|                     | `network 5.5.5.5 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK5                            |
+|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet0/1                      |
+|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet1/0                      |
+|                     | `network 192.168.30.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/0                      |
+| **Função**          | —                                         | **Roteador de trânsito SSM** + **DR da LAN do Host03**            |
 
 ### 🖥️ SERVER – Fonte Multicast (Sender)
 
-| **Seção**               | **Comando / Configuração**                                                | **Descrição**                                                         |
-|-------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| **Global**              | `ip multicast-routing`                                                    | Habilita o roteamento multicast no servidor                           |
-| **Fa0/0 (LAN com R01)** | `ip address 192.168.10.1 255.255.255.0`<br>`ip igmp join-group 239.1.1.1` | Interface do servidor multicast; envia tráfego para o grupo 239.1.1.1 |
-| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 192.168.10.254`                                 | Define R01 como gateway padrão (Designated Router da LAN do servidor) |
-| **Função no cenário**   | **Fonte multicast (S = 192.168.10.1)**                     | Envia tráfego multicast para o grupo 239.1.1.1; origem do fluxo multicast no domínio |
+| **Seção**               | **Comando / Configuração**                | **Descrição**                                                                   |
+|-------------------------|-------------------------------------------|---------------------------------------------------------------------------------|
+| **Global**              | `ip multicast-routing`                    | Habilita o roteamento multicast no equipamento                                  |
+| **FastEthernet0/0**     | `ip address 192.168.10.1 255.255.255.0`   | Interface conectada ao R01 — origem do fluxo multicast (S)                      |
+| **Rota Padrão**         | `ip route 0.0.0.0 0.0.0.0 192.168.10.254` | Define R01 como gateway padrão (DR da LAN do servidor)                          |
+| **Função no cenário**   | —                                         | Atua como **fonte multicast** enviando tráfego para grupos SSM (ex.: 232.x.x.x) |
 
-### 💻 HOST02 – Receptor Multicast
+### 🖥️ SERVER02 – Fonte Multicast (Sender)
 
-| **Seção**                         | **Comando / Configuração**                                                | **Descrição**                                                        |
-|-----------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------|
-| **Interface Fa0/0 (LAN com R04)** | `ip address 192.168.20.1 255.255.255.0`<br>`ip igmp join-group 239.1.1.1` | Host inscrito no grupo multicast 239.1.1.1 (receptor)                |
-| **Rota padrão**                   | `ip route 0.0.0.0 0.0.0.0 192.168.20.254`                                 | Define R04 como gateway padrão                                       |
-| **Função no cenário**             | **Receptor Multicast (Receiver)**             | Envia relatórios IGMP (Join) para o grupo 239.1.1.1, solicitando participação no fluxo multicast |
+| **Seção**               | **Comando / Configuração**                | **Descrição**                                                               |
+|-------------------------|-------------------------------------------|-----------------------------------------------------------------------------|
+| **Global**              | `ip multicast-routing`                    | Habilita o processamento multicast (necessário para gerar tráfego SSM)      |
+| **FastEthernet0/0**     | `ip address 192.168.40.1 255.255.255.0`   | Interface conectada ao R03 — origem do fluxo multicast (S = 192.168.40.1)   |
+| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 192.168.40.254` | Usa R03 como gateway padrão                                                 |
+| **Função no cenário**   | —                                         | Atua como **fonte multicast** para grupos SSM (ex.: 232.2.2.2)              |
 
-### 🖥️ HOST03 – Host Não Inscrito
+### 💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)
 
-| **Seção**                         | **Comando / Configuração**                | **Descrição**                                                                                       |
-|-----------------------------------|-------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| **Interface Fa0/0 (LAN com R05)** | `ip address 192.168.30.1 255.255.255.0`   | Host não inscrito em grupos multicast                                                               |
-| **Rota padrão**                   | `ip route 0.0.0.0 0.0.0.0 192.168.30.254` | Define R05 como gateway padrão                                                                      |
-| **Função no cenário**             | **Host sem participação multicast** | Serve como referência para uma rede sem receptores (verificação do comportamento do PIM-SM sem IGMP Join) |
+| **Seção**                    | **Comando / Configuração**                         | **Descrição**                                                                                    |
+|------------------------------|----------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| **Fa0/0 (LAN com R04)**      | `ip address 192.168.20.1 255.255.255.0`            | Host inscrito em **dois grupos (G)** e **duas fontes (S)** por grupo — simulação completa de SSM |
+|                              | `ip igmp join-group 232.1.1.1 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
+|                              | `ip igmp join-group 232.1.1.1 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
+|                              | `ip igmp join-group 232.2.2.2 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                              |
+|                              | `ip igmp join-group 232.2.2.2 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
+| **Rota padrão**              | `ip route 0.0.0.0 0.0.0.0 192.168.20.254`          | Usa R04 como gateway padrão (DR do segmento)                                                     |
+| **Função no cenário**        | —                                                  | Atua como **Receptor SSM (IGMPv3)** — envia Joins (S,G) diretamente ao DR                        |
+
+### 🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)
+
+| **Seção**                         | **Comando / Configuração**                         | **Descrição**                                                                               |
+|-----------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------|
+| **Interface Fa0/0 (LAN com R05)** | `ip address 192.168.30.1 255.255.255.0`            | Host inscrito **em duas fontes (S)** para **dois grupos (G)** — comportamento SSM completo  |
+|                                   | `ip igmp join-group 232.1.1.1 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                           |
+|                                   | `ip igmp join-group 232.2.2.2 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                         |
+|                                   | `ip igmp join-group 232.1.1.1 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER                                           |
+|                                   | `ip igmp join-group 232.2.2.2 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                         |
+| **Rota padrão**                   | `ip route 0.0.0.0 0.0.0.0 192.168.30.254`          | Define R05 como gateway padrão (DR do segmento)                                             |
+| **Função no cenário**             | —                                              | Atua como **Receptor SSM** equivalente ao Host02; valida replicação multicast por outro caminho |
+
