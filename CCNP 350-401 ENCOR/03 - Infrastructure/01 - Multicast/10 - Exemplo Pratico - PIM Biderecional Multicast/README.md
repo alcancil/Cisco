@@ -7,7 +7,9 @@
   - [📚 O que você vai aprender](#-o-que-você-vai-aprender)
     - [💼 Relevância prática](#-relevância-prática)
   - [🧠 Explicação do Cenário](#-explicação-do-cenário)
-    - [🌐 Do PIM-SM ao Source-Specific Multicast (SSM)](#-do-pim-sm-ao-source-specific-multicast-ssm)
+    - [🌐 Do PIM-SM Tradicional ao PIM Bidirectional (BIDIR)](#-do-pim-sm-tradicional-ao-pim-bidirectional-bidir)
+    - [🔁 O que é SPT Switching?](#-o-que-é-spt-switching)
+    - [🔁 Sobre o SPT Switching no Contexto do PIM BIDIR](#-sobre-o-spt-switching-no-contexto-do-pim-bidir)
     - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
     - [📡 Grupos Multicast e Fontes Definidas](#-grupos-multicast-e-fontes-definidas)
@@ -134,31 +136,59 @@ A topologia em anel foi propositalmente escolhida para facilitar a observação 
 
 ![cenário](Imagens/cenario.png)  
 
+Neste laboratório, utilizamos cinco roteadores Cisco (R01 a R05) interconectados, responsáveis pelo encaminhamento do tráfego unicast e multicast no domínio de rede. O ambiente também conta com **três hosts simulados — SERVER, SERVER02 e HOSTS**— que representam **fontes e receptores multicast** em um cenário **many-to-many**, característico do **PIM Bidirectional (BIDIR)**.
+
+Os hosts são configurados **exclusivamente com endereçamento IP e IGMP (tipicamente IGMPv2)**, sem participação em protocolos de roteamento dinâmico, refletindo o comportamento esperado de dispositivos finais em ambientes multicast BIDIR.
+
+Os roteadores intermediários executam **OSPF**, garantindo a **convergência do roteamento unicast e a conectividade IP completa** entre todas as sub-redes antes da habilitação do **PIM Sparse Mode operando em modo Bidirectional (BIDIR)**. Essa conectividade unicast é um pré-requisito fundamental para o correto funcionamento do RP estático e para a eleição adequada do **Designated Forwarder (DF)** em cada enlace.
+
+---
+
+### 🌐 Do PIM-SM Tradicional ao PIM Bidirectional (BIDIR)
+
+Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, no qual o tráfego multicast inicialmente é encaminhado da fonte para o **Rendezvous Point (RP)** e, posteriormente, comuta para árvores de menor custo **(SPT), o PIM Bidirectional (BIDIR)** adota um modelo **many-to-many**, no qual **fontes e receptores compartilham a mesma árvore multicast bidirecional**.  
+  
+No **PIM BIDIR, o Rendezvous Point (RP)** continua sendo um elemento central do domínio multicast, **porém não atua como ponto de rendezvous de dados**, e sim como **raiz lógica da árvore compartilhada (Shared Tree)**.  
+O tráfego multicast nunca é encapsulado ou redirecionado para o RP, sendo encaminhado de forma nativa em ambas as direções ao longo da árvore.  
+
+Esse modelo oferece benefícios importantes em cenários com múltiplas fontes simultâneas, tais como:
+
+- **Redução significativa de estado (state) nas tabelas mroute**, pois não há criação de entradas (S,G);
+- **Eliminação do processo de SPT switch**, reduzindo overhead e instabilidade;
+- **Escalabilidade elevada** em ambientes many-to-many, como aplicações financeiras, colaboração em tempo real e protocolos de controle;
+- **Caminhos de encaminhamento previsíveis**, baseados exclusivamente na árvore compartilhada (*,G).
+
+No PIM BIDIR, os receptores utilizam IGMP (normalmente IGMPv2) para expressar interesse em grupos multicast ((*,G)), sem necessidade de especificação de fontes.  
+A seleção do encaminhamento correto é garantida pelo mecanismo de Designated Forwarder (DF), que define qual roteador será responsável pelo tráfego multicast em cada enlace, evitando loops e duplicações.  
+
+### 🔁 O que é SPT Switching?
+
+**SPT Switching (Shortest Path Tree Switching)** é o processo pelo qual um roteador abandona a árvore compartilhada (*,G) e passa a receber o tráfego multicast diretamente da fonte (S) pela árvore de menor custo (S,G).  
+
+👉 **Em outras palavras:**  
+
+- o tráfego multicast deixa de passar pelo RP e passa a seguir o caminho mais curto entre a fonte e o receptor, conforme a tabela de roteamento unicast.
+
+### 🔁 Sobre o SPT Switching no Contexto do PIM BIDIR
+
+No **PIM Sparse Mode tradicional (PIM-SM)**, o tráfego multicast é inicialmente encaminhado por meio da árvore compartilhada (*,G), com raiz no Rendezvous Point (RP). À medida que o fluxo multicast se estabelece, os roteadores próximos aos receptores podem realizar o SPT Switching (Shortest Path Tree Switching), migrando o tráfego para uma árvore de menor custo (S,G), eliminando o RP do caminho de dados e otimizando o encaminhamento.  
+
+Entretanto, no **PIM Bidirectional (BIDIR)**, o conceito de **SPT Switching** não se aplica. Nesse modo, não são criadas árvores (S,G), e todo o tráfego multicast é encaminhado exclusivamente por meio de **uma única árvore compartilhada (*,G), com raiz lógica no RP**.
+
+Essa decisão arquitetural é intencional e traz benefícios claros:
+
+- Elimina completamente o processo de SPT switch, reduzindo overhead e complexidade operacional;
+- Evita a criação de múltiplos estados (S,G) nas tabelas mroute;
+- Garante previsibilidade de caminhos e estabilidade do tráfego multicast;
+- Torna o PIM BIDIR altamente escalável, especialmente em cenários many-to-many com múltiplas fontes simultâneas.
+
+Assim, diferentemente do PIM-SM, o PIM BIDIR prioriza simplicidade e escalabilidade, mantendo todo o encaminhamento multicast baseado exclusivamente na árvore compartilhada (*,G).
+
+---
+
 ---
 
 Alterar daqui
-
----
-
-Neste laboratório, utilizamos **cinco roteadores Cisco (R01 a R05)**, além de **três hosts simulados** (SERVER, SERVER02 e HOSTS) que representam as **fontes e receptores multicast**.  
-Os hosts são configurados apenas com **endereçamento IP e IGMPv3**, sem participar de roteamento dinâmico.  
-Os roteadores intermediários executam **OSPF**, garantindo a convergência e a conectividade IP entre todas as sub-redes antes da ativação do PIM-SSM.
-
----
-
-### 🌐 Do PIM-SM ao Source-Specific Multicast (SSM)
-
-Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, que depende de um **Rendezvous Point (RP)** para interligar fontes e receptores, o **SSM (Source-Specific Multicast)** elimina completamente o uso de RP.  
-No modelo **(S,G)**, o receptor declara explicitamente de qual **fonte (S)** deseja receber o tráfego multicast associado a um determinado **grupo (G)**.
-
-Esse método simplifica a operação e aumenta a segurança, pois:
-
-- Apenas as fontes autorizadas transmitem o fluxo;
-- O tráfego multicast é entregue **somente** aos receptores que expressaram interesse explícito em (S,G);
-- Não há necessidade de configuração manual de RP nem de mecanismos como Auto-RP ou BSR.
-
-O **SSM** é implementado em conjunto com o **IGMPv3**, que introduz a capacidade de inscrição seletiva em fontes.  
-Assim, os hosts podem escolher exatamente de quais fontes desejam receber tráfego multicast — algo impossível nas versões anteriores (IGMPv1/v2).
 
 ---
 
