@@ -1,12 +1,12 @@
 # Índice
 
 - [Índice](#índice)
-  - [09 - Exemplo Pratico - SSM (Source-Specific Multicast) e IGMP v3](#09---exemplo-pratico---ssm-source-specific-multicast-e-igmp-v3)
+  - [10 - Exemplo Pratico - PIM Biderecional Multicast](#10---exemplo-pratico---pim-biderecional-multicast)
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
   - [📚 O que você vai aprender](#-o-que-você-vai-aprender)
-  - [💼 Relevância prática](#-relevância-prática)
-    - [🧠 Explicação do Cenário](#-explicação-do-cenário)
+    - [💼 Relevância prática](#-relevância-prática)
+  - [🧠 Explicação do Cenário](#-explicação-do-cenário)
     - [🌐 Do PIM-SM ao Source-Specific Multicast (SSM)](#-do-pim-sm-ao-source-specific-multicast-ssm)
     - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
@@ -56,6 +56,7 @@
     - [🖥️ SERVER02 – Fonte Multicast (Sender)](#️-server02--fonte-multicast-sender)
     - [💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)](#-host02--receptor-multicast-igmpv3--ssm)
     - [🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)](#️-host03--receptor-multicast-secundário-ssm-com-múltiplas-fontes)
+
 
 ## 10 - Exemplo Pratico - PIM Biderecional Multicast
 
