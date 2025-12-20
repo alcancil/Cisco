@@ -86,45 +86,58 @@ O laboratório a seguir demonstra como configurar e validar o PIM BIDIR em rotea
   
 Esse estudo evidencia como o PIM BIDIR simplifica o controle multicast em ambientes complexos, ao mesmo tempo em que mantém eficiência e escalabilidade.  
 
+## 🎯 Objetivo do Laboratório
+
+O objetivo deste laboratório é compreender o funcionamento do PIM Bidirectional (BIDIR) e seu comportamento em cenários multicast many-to-many, onde múltiplos dispositivos podem atuar simultaneamente como fontes e receptores.  
+  
+Durante os testes, iremos observar:  
+
+- Como o PIM BIDIR opera a partir de uma árvore multicast compartilhada (*,G);
+- O papel do Rendezvous Point (RP) como núcleo permanente da árvore multicast, sem transição para SPT;
+- A eleição e a função do Designated Forwarder (DF) em cada enlace;
+- O comportamento das tabelas mroute no modelo bidirecional;
+- O processo de RPF (Reverse Path Forwarding) aplicado em direção ao RP;
+- E a entrega eficiente do tráfego multicast em ambientes com múltiplas fontes e múltiplos receptores.
+
+Dessa forma, o laboratório demonstra na prática como o PIM BIDIR simplifica o controle multicast, reduz o estado de roteamento e melhora a escalabilidade em redes corporativas e de grande porte.  
+
+## 📚 O que você vai aprender
+
+- Como configurar PIM BIDIR com RP estático em roteadores Cisco;
+- Como associar grupos multicast específicos ao modo BIDIR;
+- Como funciona a eleição do Designated Forwarder (DF) baseada no custo até o RP;
+- Como o tráfego multicast é sempre encaminhado pela árvore compartilhada (*,G);
+- Como validar o funcionamento do BIDIR por meio de comandos show ip pim e show ip mroute;
+- Como simular um ambiente many-to-many multicast em laboratório.
+
+### 💼 Relevância prática
+
+O **PIM BIDIR** é amplamente utilizado em ambientes onde há grande número de participantes ativos, como:  
+  
+- Sistemas de conferência e colaboração em grupo
+- Aplicações financeiras distribuídas
+- Ambientes de controle e monitoramento
+- Serviços multicast corporativos de larga escala  
+
+Por manter uma árvore única e estável, o BIDIR reduz significativamente o overhead de sinalização e o consumo de memória nos roteadores, tornando-se uma solução eficiente para redes multicast complexas.  
+
+## 🧠 Explicação do Cenário
+
+Como mencionado anteriormente, o cenário já possui o roteamento unicast totalmente funcional (via OSPF), permitindo que o foco do laboratório seja exclusivamente o tráfego multicast utilizando PIM Bidirectional (BIDIR).  
+  
+A topologia em anel foi propositalmente escolhida para facilitar a observação de:  
+  
+- Eleição do Designated Forwarder (DF)
+- Comportamento do tráfego multicast em condições normais
+- Impacto de falhas de enlace no encaminhamento multicast
+
+![cenário](Imagens/cenario.png)  
+
 ---
 
 Alterar daqui
 
 ---
-
-## 🎯 Objetivo do Laboratório
-
-O objetivo deste laboratório é compreender o funcionamento do **Source-Specific Multicast (SSM)** e o papel do **IGMPv3** na seleção de fontes multicast específicas.  
-
-Durante os testes, iremos observar:
-
-- Como o **PIM-SM** opera no modo **SSM**, sem uso de RP;
-- Como o **IGMPv3** permite que o receptor declare interesse em uma fonte específica (S) e grupo (G);
-- A formação da **árvore direta (Shortest Path Tree - SPT)** entre a fonte e o receptor;
-- O comportamento das tabelas **mroute** e o processo de **RPF (Reverse Path Forwarding)**;
-- E a entrega eficiente do fluxo multicast apenas aos receptores inscritos no par (S,G).
-
-Assim, este laboratório demonstra na prática como o **SSM simplifica o roteamento multicast**, melhora o controle de assinaturas e aumenta a escalabilidade em ambientes modernos, alinhando-se às recomendações do **IETF (RFC 4607)**.
-
-📘 [IETF RFC 4607 – Source-Specific Multicast for IP](https://datatracker.ietf.org/doc/html/rfc4607)
-
-## 📚 O que você vai aprender
-
-- Como habilitar e validar SSM usando ACL e ip pim ssm range
-- Como o IGMPv3 permite controle granular de fontes no modelo (S,G)
-- Como funcionam joins específicos e múltiplas fontes simultâneas
-- Como verificar a formação das árvores SSM e o fluxo multicast pelo domínio PIM
-- Como simular uma aplicação multicast em roteadores Cisco
-
-## 💼 Relevância prática
-
-SSM + IGMPv3 é utilizado em ambientes de alta escala como streaming IPTV, telemetria, sistemas financeiros, transporte de vídeo corporativo, distribuição de conteúdo, entre outros. É o modelo multicast mais moderno e seguro, pois elimina RP e reduz drasticamente o overhead.  
-
-### 🧠 Explicação do Cenário
-
-Como mencionado anteriormente, nosso cenário já possui **roteamento unicast totalmente funcional** (via OSPF), permitindo que o foco agora seja o **tráfego multicast baseado em SSM (Source-Specific Multicast)**.  
-
-![cenário](Imagens/cenario.png)  
 
 Neste laboratório, utilizamos **cinco roteadores Cisco (R01 a R05)**, além de **três hosts simulados** (SERVER, SERVER02 e HOSTS) que representam as **fontes e receptores multicast**.  
 Os hosts são configurados apenas com **endereçamento IP e IGMPv3**, sem participar de roteamento dinâmico.  
