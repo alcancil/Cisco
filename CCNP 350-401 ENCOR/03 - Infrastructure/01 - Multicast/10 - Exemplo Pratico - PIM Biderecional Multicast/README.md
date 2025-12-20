@@ -12,7 +12,7 @@
     - [🔁 Sobre o SPT Switching no Contexto do PIM BIDIR](#-sobre-o-spt-switching-no-contexto-do-pim-bidir)
     - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
-    - [📡 Grupos Multicast e Fontes Definidas](#-grupos-multicast-e-fontes-definidas)
+    - [📡 Grupos Multicast no PIM Bidirectional](#-grupos-multicast-no-pim-bidirectional)
     - [🧩 Conclusão](#-conclusão)
     - [🛰️ O que muda no SSM (Source-Specific Multicast)](#️-o-que-muda-no-ssm-source-specific-multicast)
       - [🌳 1️⃣ O comportamento do PIM-SSM](#-1️⃣-o-comportamento-do-pim-ssm)
@@ -186,31 +186,32 @@ Assim, diferentemente do PIM-SM, o PIM BIDIR prioriza simplicidade e escalabilid
 
 ---
 
----
-
-Alterar daqui
-
----
-
 ### 🧩 1️⃣ Fontes e Receptores no Cenário
 
-Neste cenário, temos **duas fontes multicast** e **um receptor**, distribuídos nas seguintes redes:
+Neste cenário, temos múltiplas fontes e múltiplos receptores multicast, caracterizando um ambiente **many-to-many**, típico do **PIM Bidirectional (BIDIR)**.
 
-| Função         | Dispositivo | Rede/Sub-rede        | Interface  | Endereço IP        | Descrição                                      |
-|----------------|-------------|----------------------|------------|--------------------|------------------------------------------------|
-| **Fonte 1**    | SERVER      | 192.168.10.0/24      | fa0/0      | 192.168.10.1       | Envia tráfego multicast para o grupo 232.1.1.1 |
-| **Fonte 2**    | SERVER02    | 192.168.40.0/24      | fa0/0      | 192.168.40.1       | Envia tráfego multicast para o grupo 232.2.2.2 |
-| **Receptor 1** | HOST02      | 192.168.20.0/24      | fa0/0      | 192.168.20.1       | Participa de grupos multicast via IGMPv3       |
-| **Receptor 2** | HOST03      | 192.168.30.0/24      | fa0/0      | 192.168.30.1       | Participa de grupos multicast via IGMPv3       |
-| **Receptor 3** | (opcional)  | —                    | —          | —                  | Pode ser adicionado em qualquer outra sub-rede |
+As fontes e receptores compartilham os mesmos grupos multicast, utilizando exclusivamente o modelo **(*,G)**, sem associação explícita a uma fonte específica.
+
+| Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                      |
+|----------------|-------------|-----------------|-----------|-----------------|------------------------------------------------|
+| **Fonte 1**    | SERVER      | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
+| **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
+| **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
+| **Receptor 2** | HOST03      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
+| **Receptor 3** | (opcional)  | —               | —         | —               | Pode ser adicionado em qualquer outra sub-rede |
 
 ---
 
 ### 🧭 Estrutura do Roteamento
 
-Todos os roteadores (R01 a R05) fazem parte de uma **única área OSPF (Área 0)**, garantindo o roteamento unicast completo antes da ativação do PIM.  
-As redes de backbone e interconexão seguem o seguinte mapeamento:
+Todos os roteadores (**R01 a R05**) participam de uma **única área OSPF (Área 0)**, garantindo conectividade unicast completa antes da ativação do multicast.  
+  
+Essa conectividade é essencial para:
 
+- Construção da árvore compartilhada **(*,G)**;
+- Funcionamento do **Rendezvous Point (RP)** como raiz lógica;
+- Eleição correta do **Designated Forwarder (DF)** em cada enlace.  
+  
 | Link Ponto-a-Ponto | Rede / Máscara | Interface Local | Interface Remota |
 |--------------------|----------------|-----------------|------------------|
 | R01 – R02          | 10.0.0.0/30    | Fa0/1 (R01)     | Fa1/0 (R02)      |
@@ -221,16 +222,26 @@ As redes de backbone e interconexão seguem o seguinte mapeamento:
 
 ---
 
-### 📡 Grupos Multicast e Fontes Definidas
+### 📡 Grupos Multicast no PIM Bidirectional
 
-No SSM, cada receptor escolhe explicitamente a fonte de interesse, conforme a tabela abaixo:
+No **PIM Bidirectional (BIDIR)**, os grupos multicast operam exclusivamente no modelo **(*,G)**.
 
-| Grupo Multicast | Fonte (S)        | Descrição                                   | Receptores Interessados      |
-|-----------------|------------------|---------------------------------------------|------------------------------|
-| 232.1.1.1       | 192.168.10.1     | Tráfego multicast gerado pelo SERVER        | HOST02 e HOST03              |
-| 232.2.2.2       | 192.168.40.1     | Tráfego multicast gerado pelo SERVER02      | HOST02 (exemplo)             |
+| Grupo Multicast | Modelo PIM | Descrição                                          |
+|-----------------|------------|----------------------------------------------------|
+| 239.1.1.1       | (*,G)      | Grupo multicast compartilhado por múltiplas fontes |
 
-Dessa forma, o domínio PIM forma **árvores diretas (Shortest Path Trees)** de cada receptor até sua fonte específica, eliminando qualquer dependência de RP.
+Nesse modelo:  
+
+- Não há criação de estados **(S,G)**;
+- Não ocorre **SPT Switching**;
+- O tráfego multicast flui bidirecionalmente pela árvore compartilhada;
+- O **RP atua apenas como raiz lógica**, não como ponto de comutação de dados.
+
+O **PIM BIDIR** prioriza simplicidade, previsibilidade e escalabilidade em cenários **many-to-many**.
+
+---
+
+Alterar daqui
 
 ---
 
