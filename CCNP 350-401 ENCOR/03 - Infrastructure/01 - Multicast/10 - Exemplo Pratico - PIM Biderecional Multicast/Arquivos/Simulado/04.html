@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast - 04</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast - IGMP (Parte 1)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre IGMP. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="question-count" class="text-sm font-semibold text-slate-500">Questão 1 de 10</span>
+        <span id="quiz-timer" class="text-sm font-semibold text-slate-500">10:00</span>
+      </div>
+      <h2 id="question-text" class="text-xl font-semibold mb-6"></h2>
+      <div id="options-container" class="space-y-3"></div>
+      <div class="flex justify-between items-center mt-6">
+        <button id="next-btn" onclick="nextQuestion()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">Próximo</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2 class="text-2xl font-bold text-center mb-4">Resultados</h2>
+      <p id="score-el" class="text-lg text-center mb-6"></p>
+      <div id="review-el"></div>
+    </div>
+  </div>
+
+<script>
+  const SIMULADO_ID = 'simulado_04';
+  const SIMULADO_TITULO = 'Simulado Multicast - IGMP (Parte 1)';
+
+  const quizData = [
+    {
+    question: "No fluxograma do PIM Dense Mode, o que acontece quando NÃO há receptores interessados no tráfego multicast?",
+    options: ["Mantém o tráfego ativo", "Envia mensagem PIM Prune para cortar o galho", "Reconstrói a árvore multicast", "Ativa o modo sparse"],
+    answer: "Envia mensagem PIM Prune para cortar o galho",
+    explanation: "Quando não há receptores interessados, o PIM Dense Mode envia mensagem PIM Prune para remover galhos desnecessários, otimizando a árvore multicast após o processo inicial de flood."
+  },
+  {
+    question: "Qual protocolo o receptor utiliza no início do processo PIM Source-Specific Multicast (PIM-SSM)?",
+    options: ["PIM Join", "IGMP Join", "IGMPv3 Join com (S,G)", "MLD Join"],
+    answer: "IGMPv3 Join com (S,G)",
+    explanation: "No PIM-SSM, o receptor envia IGMPv3 Join especificando tanto a origem (S) quanto o grupo (G), permitindo que o roteador receba pedido com origem e grupo específicos."
+  },
+  {
+    question: "Segundo as características do PIM Sparse Mode, o que significa 'Padrão para redes empresariais e ISPs'?",
+    options: ["É o mais simples de configurar", "Oferece melhor balance entre escalabilidade e eficiência", "Consome menos CPU", "Funciona apenas em redes grandes"],
+    answer: "Oferece melhor balance entre escalabilidade e eficiência",
+    explanation: "O PIM-SM é padrão para redes empresariais e ISPs porque oferece alta escalabilidade, conserva largura de banda através do modelo pull, sendo mais complexo mas eficiente para redes distribuídas."
+  },
+  {
+    question: "No PIM Bidirectional, o que significa 'Múltiplas origens podem usar a mesma árvore'?",
+    options: ["Apenas uma origem transmite por vez", "Diferentes origens compartilham infraestrutura da árvore", "Origens devem ser do mesmo grupo", "Origens precisam de configuração especial"],
+    answer: "Diferentes origens compartilham infraestrutura da árvore",
+    explanation: "No PIM-BIDIR, múltiplas origens podem usar a mesma infraestrutura de árvore compartilhada, reduzindo drasticamente o estado nos roteadores e sendo ideal para aplicações colaborativas."
+  },
+  {
+    question: "Qual é a principal vantagem do PIM Dense Mode mencionada nas características?",
+    options: ["Alta escalabilidade", "Uso otimizado de banda", "Simples de configurar e entender", "Suporte a múltiplas origens"],
+    answer: "Simples de configurar e entender",
+    explanation: "O PIM Dense Mode é caracterizado como simples de configurar e entender, sendo sua principal vantagem apesar de desperdiçar largura de banda inicialmente e não ser escalável para redes grandes."
+  },
+  {
+    question: "No fluxograma do PIM Sparse Dense Mode (PIM-SDM), qual é o critério de decisão para escolher entre os modos?",
+    options: ["Número de receptores", "Qual modo de operação para o Grupo G?", "Largura de banda disponível", "Localização geográfica"],
+    answer: "Qual modo de operação para o Grupo G?",
+    explanation: "O PIM-SDM decide o modo baseado na configuração específica para cada grupo multicast: se configurado como PIM-DM (flood), PIM-SM (via RP), ou usa modo padrão definido."
+  },
+  {
+    question: "Segundo a tabela comparativa, qual modo tem 'Alto inicial' no uso de banda?",
+    options: ["PIM-SM", "PIM-SSM", "PIM-BIDIR", "PIM-DM"],
+    answer: "PIM-DM",
+    explanation: "O PIM Dense Mode tem uso de banda 'Alto inicial' porque inunda todo o tráfego por todas as interfaces antes de podar os galhos desnecessários, desperdiçando banda no processo inicial."
+  },
+  {
+    question: "Qual característica diferencia o PIM-SSM na integração com outros protocolos?",
+    options: ["Usa apenas IGMP v2", "Integra-se com IGMPv3/MLDv2", "Não precisa de IGMP", "Funciona apenas com PIMv1"],
+    answer: "Integra-se com IGMPv3/MLDv2",
+    explanation: "O PIM-SSM requer integração com IGMPv3/MLDv2 para que os receptores possam especificar tanto a origem quanto o grupo, sendo essencial para sua operação source-specific."
+  },
+  {
+    question: "No contexto do PIM Any-Source Multicast (PIM-ASM), o que significa 'termo conceitual'?",
+    options: ["É um protocolo específico", "Refere-se ao PIM-SM tradicional onde qualquer origem pode enviar", "É uma configuração especial", "Substitui todos os outros modos"],
+    answer: "Refere-se ao PIM-SM tradicional onde qualquer origem pode enviar",
+    explanation: "PIM-ASM não é um modo específico, mas sim um termo conceitual que se refere ao PIM-SM tradicional, onde qualquer origem pode enviar para um grupo, contrastando com o Source-Specific (SSM)."
+  },
+  {
+    question: "Qual é o cenário ideal mencionado para o uso do PIM Bidirectional?",
+    options: ["LANs densas", "IPTV/Streaming", "Aplicações colaborativas, jogos online, muitas origens", "Redes corporativas pequenas"],
+    answer: "Aplicações colaborativas, jogos online, muitas origens",
+    explanation: "O PIM-BIDIR é ideal para aplicações colaborativas, jogos online e cenários com muitas origens, pois permite tráfego bidirecional e mantém poucos estados nos roteadores mesmo com múltiplas fontes."
+  }
+  ];
+  
+  // --- Código JavaScript do Quiz (pode ser reutilizado de 01.html) ---
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+  const questionCount = document.getElementById('question-count');
+  const quizTimer = document.getElementById('quiz-timer');
+  const scoreEl = document.getElementById('score-el');
+  const reviewEl = document.getElementById('review-el');
+  const userNameInput = document.getElementById('user-name');
+  
+  let currentQuestionIndex = 0;
+  let userAnswers = [];
+  let score = 0;
+  let timer;
+  let timeSpentSeconds = 0;
+  let currentUserName = '';
+
+  const MAX_TIME = 600; // 10 minutes
+
+  function formatSeconds(secs) {
+      const minutes = Math.floor(secs / 60);
+      const seconds = secs % 60;
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function startQuiz() {
+      const name = userNameInput.value.trim();
+      if (!name) {
+          alert("Por favor, digite seu nome para começar.");
+          return;
+      }
+      currentUserName = name;
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      timeSpentSeconds = 0;
+      quizTimer.textContent = formatSeconds(MAX_TIME);
+      userAnswers = [];
+      score = 0;
+      currentQuestionIndex = 0;
+      timer = setInterval(() => {
+          timeSpentSeconds++;
+          quizTimer.textContent = formatSeconds(MAX_TIME - timeSpentSeconds);
+          if (timeSpentSeconds >= MAX_TIME) {
+              endQuiz();
+          }
+      }, 1000);
+      showQuestion();
+  }
+
+  function showQuestion() {
+      const question = quizData[currentQuestionIndex];
+      questionText.textContent = question.question;
+      optionsContainer.innerHTML = '';
+      questionCount.textContent = `Questão ${currentQuestionIndex + 1} de ${quizData.length}`;
+      nextBtn.classList.add('hidden');
+
+      question.options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.textContent = option;
+          button.className = 'w-full text-left p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors';
+          button.onclick = () => selectAnswer(index);
+          optionsContainer.appendChild(button);
+      });
+  }
+
+  function selectAnswer(selectedIndex) {
+      if (userAnswers[currentQuestionIndex] !== undefined) return;
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      
+      const isCorrect = (selectedIndex === quizData[currentQuestionIndex].answer);
+      if (isCorrect) {
+          score++;
+      }
+      
+      const buttons = optionsContainer.getElementsByTagName('button');
+      for (let i = 0; i < buttons.length; i++) {
+          const button = buttons[i];
+          if (i === quizData[currentQuestionIndex].answer) {
+              button.classList.add('bg-green-200', 'border-green-600');
+          } else if (i === selectedIndex) {
+              button.classList.add('bg-red-200', 'border-red-600');
+          }
+          button.disabled = true;
+      }
+      nextBtn.classList.remove('hidden');
+  }
+
+  function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+          showQuestion();
+      } else {
+          endQuiz();
+      }
+  }
+
+  function endQuiz() {
+    const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+    };
+
+    let results = JSON.parse(localStorage.getItem('quizResults')) || [];
+    results.push(resultRecord);
+    localStorage.setItem('quizResults', JSON.stringify(results));
+      
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+          const isCorrect = userAnswers[i] === q.answer;
+          const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+          const userOptionText = q.options[userAnswers[i]] || 'Não respondida';
+          const correctOptionText = q.options[q.answer];
+
+          return `
+            <div class="p-4 border rounded-lg ${resultClass} mb-4">
+              <p class="font-semibold">Q${i+1}: ${q.question}</p>
+              <p class="text-sm">Sua Resposta: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-medium">${userOptionText}</span></p>
+              ${!isCorrect ? `<p class="text-sm">Resposta Correta: <span class="text-green-600 font-medium">${correctOptionText}</span></p>` : ''}
+              <p class="mt-2 text-sm text-slate-700">Explicação: ${q.rationale}</p>
+            </div>
+          `;
+      }).join('');
+  }
+</script>
+</body>
+</html>
