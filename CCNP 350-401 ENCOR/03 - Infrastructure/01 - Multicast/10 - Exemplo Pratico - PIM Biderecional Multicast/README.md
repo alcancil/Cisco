@@ -57,22 +57,40 @@
     - [💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)](#-host02--receptor-multicast-igmpv3--ssm)
     - [🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)](#️-host03--receptor-multicast-secundário-ssm-com-múltiplas-fontes)
 
-## 09 - Exemplo Pratico - SSM (Source-Specific Multicast) e IGMP v3
+## 10 - Exemplo Pratico - PIM Biderecional Multicast
 
 ## 🧾 Introdução
+  
+**PIM Bidirectional (BIDIR) Multicast**  
+  
+Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco CCNP ENCOR (350-401).  
+O objetivo é compreender, de forma prática, o funcionamento do PIM Bidirectional (BIDIR), analisando seu comportamento em cenários com múltiplas fontes e múltiplos receptores, comuns em redes corporativas e ambientes de larga escala.  
 
-Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco **CCNP ENCOR (350-401)**.  
-O objetivo é compreender, de forma prática, o funcionamento do **Source-Specific Multicast (SSM)** e sua integração com o **IGMPv3**, explorando como esses protocolos permitem o controle preciso sobre as fontes de tráfego multicast em uma rede corporativa.  
+O PIM BIDIR é uma variação do PIM Sparse Mode (PIM-SM) projetada para ambientes onde diversos dispositivos atuam simultaneamente como fontes e receptores de tráfego multicast.
+Diferentemente do modelo tradicional do PIM-SM, o BIDIR não realiza a transição para Shortest Path Tree (SPT). Todo o tráfego multicast é sempre encaminhado por meio de um Rendezvous Point (RP), garantindo previsibilidade e simplicidade no plano de controle.  
+  
+Nesse modelo, o RP deixa de ser apenas um ponto de encontro inicial e passa a ser o núcleo permanente da árvore multicast, formando uma árvore bidirecional compartilhada (*,G). Isso reduz o estado multicast na rede e torna o BIDIR especialmente eficiente para aplicações como conferências, colaboração em grupo e serviços many-to-many.
+  
+💡 ***Um conceito fundamental no PIM BIDIR é o Designated Forwarder (DF).***  
+Ao contrário do DR tradicional, o DF é eleito por interface, com base no custo até o RP e, em caso de empate, no endereço IP do roteador. O DF é responsável por encaminhar o tráfego multicast em direção ao RP, garantindo o fluxo correto dentro da árvore bidirecional.  
+  
+O IGMP, normalmente em sua versão v2, é utilizado para o gerenciamento de membros nos segmentos de acesso. Diferentemente do SSM, o BIDIR não exige que os receptores especifiquem a fonte, pois o modelo é baseado no grupo multicast (*,G), e não em pares (S,G).  
+  
+O laboratório a seguir demonstra como configurar e validar o PIM BIDIR em roteadores Cisco, incluindo:  
 
-O **SSM** representa uma evolução do modelo tradicional **PIM Sparse Mode (PIM-SM)**.  
-Enquanto o PIM-SM utiliza um **Rendezvous Point (RP)** como ponto central para conectar fontes e receptores, o **SSM elimina completamente a necessidade do RP**, permitindo que os receptores indiquem **explicitamente qual fonte (S) desejam receber** para um determinado grupo multicast (G).  
+- Definição de RP estático
+- Associação de grupos multicast ao modo BIDIR
+- Eleição e validação do Designated Forwarder (DF)
+- Análise da tabela multicast e do fluxo de tráfego
+- Comportamento da rede em cenários de falha de link
+  
+Esse estudo evidencia como o PIM BIDIR simplifica o controle multicast em ambientes complexos, ao mesmo tempo em que mantém eficiência e escalabilidade.  
 
-Dessa forma, o modelo **SSM (Source, Group)** — representado pela notação **(S,G)** — garante maior **eficiência, segurança e simplicidade operacional**, já que o tráfego multicast é entregue apenas aos hosts que solicitam dados de uma fonte específica.  
+---
 
-💡 O **SSM é suportado por meio do IGMPv3**, que introduz novos tipos de mensagens capazes de especificar a origem desejada do fluxo multicast.  
-Ao contrário do IGMPv1/v2, que apenas informavam interesse em um grupo (G), o IGMPv3 permite que os hosts definam quais fontes (S) devem ou não ser aceitas para esse grupo, viabilizando o comportamento SSM.  
+Alterar daqui
 
-O laboratório a seguir demonstra como configurar e validar o **SSM com PIM Sparse Mode e IGMPv3** em roteadores Cisco, observando a construção da árvore multicast diretamente da fonte até o receptor, sem dependência de RP.
+---
 
 ## 🎯 Objetivo do Laboratório
 
