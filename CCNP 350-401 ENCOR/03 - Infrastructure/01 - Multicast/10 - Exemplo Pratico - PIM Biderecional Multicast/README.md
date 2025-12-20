@@ -14,12 +14,12 @@
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
     - [📡 Grupos Multicast no PIM Bidirectional](#-grupos-multicast-no-pim-bidirectional)
     - [🧩 Conclusão](#-conclusão)
-    - [🛰️ O que muda no SSM (Source-Specific Multicast)](#️-o-que-muda-no-ssm-source-specific-multicast)
-      - [🌳 1️⃣ O comportamento do PIM-SSM](#-1️⃣-o-comportamento-do-pim-ssm)
-      - [🔹 2️⃣ O papel do IGMPv3](#-2️⃣-o-papel-do-igmpv3)
-      - [🔀 3️⃣ Como o DR encontra a fonte (S)](#-3️⃣-como-o-dr-encontra-a-fonte-s)
-      - [🛰️ 4️⃣ Quando a fonte começa a transmitir](#️-4️⃣-quando-a-fonte-começa-a-transmitir)
-      - [📡 5️⃣ Vantagens do SSM sobre o PIM-SM](#-5️⃣-vantagens-do-ssm-sobre-o-pim-sm)
+    - [🛰️ O que muda no PIM Bidirectional (BIDIR)](#️-o-que-muda-no-pim-bidirectional-bidir)
+      - [🌳 1️⃣ O comportamento do PIM BIDIR](#-1️⃣-o-comportamento-do-pim-bidir)
+      - [🔹 2️⃣ O papel do IGMP no PIM BIDIR](#-2️⃣-o-papel-do-igmp-no-pim-bidir)
+      - [🔀 3️⃣ Designated Forwarder (DF) e prevenção de loops](#-3️⃣-designated-forwarder-df-e-prevenção-de-loops)
+      - [🛰️ 4️⃣ Quando as fontes começam a transmitir](#️-4️⃣-quando-as-fontes-começam-a-transmitir)
+      - [📡 5️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional](#-5️⃣-vantagens-do-pim-bidir-sobre-o-pim-sm-tradicional)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [🔍 Testes Preliminares](#-testes-preliminares)
     - [🧩 Principais diferenças do SSM em relação ao PIM-SM](#-principais-diferenças-do-ssm-em-relação-ao-pim-sm)
@@ -239,103 +239,109 @@ Nesse modelo:
 
 O **PIM BIDIR** prioriza simplicidade, previsibilidade e escalabilidade em cenários **many-to-many**.
 
+### 🧩 Conclusão
+
+Com esse modelo, o laboratório demonstra como o **PIM Bidirectional (BIDIR)** oferece um roteamento multicast **estável, previsível e altamente escalável** para cenários **many-to-many**, nos quais múltiplas fontes e múltiplos receptores participam simultaneamente do mesmo grupo multicast.  
+  
+Ao utilizar **apenas uma árvore compartilhada (*,G)** e eliminar completamente o **SPT Switching**, o PIM BIDIR reduz drasticamente o estado multicast nos roteadores, simplifica a operação e mantém caminhos de encaminhamento consistentes — tornando o ambiente ideal para **aplicações financeiras, colaboração em tempo real, controle distribuído e sistemas multicast de larga escala**.  
+  
+---
+
+### 🛰️ O que muda no PIM Bidirectional (BIDIR)
+  
+Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, no qual o tráfego multicast pode migrar da árvore compartilhada (*,G) para árvores de menor custo (S,G) por meio do **SPT Switching**, o **PIM Bidirectional (BIDIR)** opera **exclusivamente com uma única árvore compartilhada (*,G)**.  
+  
+No BIDIR:
+
+- O **Rendezvous Point (RP)** continua existindo, mas atua apenas como **raiz lógica da árvore**, não como ponto de encontro de dados;
+- O tráfego multicast **nunca é encapsulado nem redirecionado ao RP**;
+- Não são criadas árvores (S,G) em nenhum momento.
+  
+O resultado é um domínio multicast **mais simples e previsível**, com menor consumo de recursos e maior estabilidade.  
+
+---
+
+#### 🌳 1️⃣ O comportamento do PIM BIDIR
+
+No **PIM Bidirectional**, todas as fontes e receptores compartilham a **mesma árvore multicast (*,G)**.  
+Não há distinção entre tráfego inicial e otimizado, pois **não existe transição de árvore**.  
+  
+As principais características desse comportamento são:
+  
+- Ausência total de **SPT Switching**;
+- Uso exclusivo de estado **(*,G)** nas tabelas **mroute**;
+- Caminhos de encaminhamento definidos com base na árvore compartilhada;
+- Alta escalabilidade em ambientes com múltiplas fontes simultâneas.
+
+Esse modelo é especialmente eficiente quando **não é desejável ou necessário otimizar caminhos por fonte**, priorizando simplicidade e estabilidade.
+
+---
+
+#### 🔹 2️⃣ O papel do IGMP no PIM BIDIR
+
+No **PIM BIDIR**, os hosts utilizam **IGMP (tipicamente IGMPv2)** apenas para **informar interesse em um grupo multicast (G)**.  
+  
+Diferente do SSM:  
+  
+- Os hosts **não especificam fontes**;
+- Não existe o conceito de inscrição (S,G);
+- A decisão de encaminhamento é feita exclusivamente no domínio PIM.
+  
+O roteador diretamente conectado ao host (**Designated Router – DR**) registra o interesse no grupo e passa a participar da árvore compartilhada (*,G).  
+
+---
+
+#### 🔀 3️⃣ Designated Forwarder (DF) e prevenção de loops
+
+Como o tráfego multicast no BIDIR pode fluir **em ambas as direções** ao longo da árvore compartilhada, o protocolo utiliza o conceito de **Designated Forwarder (DF)**.  
+  
+O **DF** é eleito em cada enlace multicast e é responsável por:  
+
+- Decidir qual roteador pode encaminhar tráfego multicast naquele segmento;
+- Evitar loops e duplicação de pacotes;
+- Garantir encaminhamento consistente em ambientes com múltiplas fontes.
+  
+A eleição do DF é baseada em métricas unicast em direção ao RP.  
+  
+---
+  
+#### 🛰️ 4️⃣ Quando as fontes começam a transmitir
+  
+Quando uma ou mais fontes passam a enviar tráfego para um determinado grupo multicast:  
+  
+- O tráfego é imediatamente encaminhado pela **árvore compartilhada (*,G)**;
+- Não há registro, encapsulamento ou redirecionamento para o RP;
+- Todos os receptores inscritos no grupo recebem os fluxos multicast.
+  
+O comportamento é **simétrico e contínuo**, independentemente do número de fontes ativas.  
+  
+---
+  
+#### 📡 5️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional
+
+| Aspecto                    | PIM Sparse Mode (tradicional) | PIM Bidirectional (BIDIR) |
+|----------------------------|-------------------------------|---------------------------|
+| Tipo de árvore             | (*,G) + (S,G)                 | Apenas (*,G)              |
+| SPT Switching              | Sim                           | ❌ Não                    |
+| Estado multicast           | Elevado em muitos fluxos      | Reduzido                  |
+| Dependência do RP          | Funcional                     | Apenas lógica             |
+| Encapsulamento (Register)  | Sim                           | ❌ Não                    |
+| Escalabilidade             | Moderada                      | Alta                      |
+| Modelo de comunicação      | One-to-many                   | Many-to-many              |
+
+---
+
+👉 **Resumo:**  
+O **PIM Bidirectional (BIDIR)** é projetado para cenários multicast **de larga escala e múltiplas fontes**, onde previsibilidade, simplicidade e estabilidade são mais importantes do que a otimização individual de caminhos.  
+Ao eliminar o **SPT Switching** e manter todo o domínio baseado em **uma única árvore compartilhada (*,G)**, o BIDIR se torna uma solução robusta e eficiente para ambientes corporativos e críticos.
+
 ---
 
 Alterar daqui
 
 ---
 
-### 🧩 Conclusão
 
-Com esse modelo, o laboratório demonstra como o **SSM e IGMPv3** tornam o roteamento multicast mais previsível, seguro e escalável.  
-A eliminação do RP e o uso explícito de (S,G) simplificam o controle de fluxos, tornando o ambiente ideal para **streaming, replicação de dados e aplicações em tempo real**.
-
-### 🛰️ O que muda no SSM (Source-Specific Multicast)
-
-Diferente do modelo **PIM Sparse Mode tradicional (PIM-SM)**, que depende de um **Rendezvous Point (RP)** para conectar fontes e receptores, o **SSM (Source-Specific Multicast)** elimina totalmente a necessidade de um ponto central de encontro.  
-
-No SSM, o receptor informa explicitamente **qual fonte (S)** deseja ouvir, junto com o **grupo multicast (G)** — formando o par **(S,G)**.  
-Isso simplifica o roteamento multicast e aumenta a segurança, já que **somente fluxos de fontes autorizadas** são encaminhados.  
-
-Em outras palavras:
-
-- O receptor diz: “quero receber o grupo **G = 232.1.1.1** vindo da fonte **S = 192.168.10.1**”;  
-- O roteador local cria a rota (S,G) e forma a **árvore de distribuição direta (Shortest Path Tree)** até a fonte;  
-- Nenhum RP, BSR ou Auto-RP é necessário.  
-
----
-
-#### 🌳 1️⃣ O comportamento do PIM-SSM
-
-O **PIM-SSM** segue o mesmo princípio de economia de banda do PIM-SM: **somente interfaces com receptores interessados** participam da árvore multicast.  
-A diferença é que o **SSM trabalha sempre em modo por fonte (S,G)** — sem precisar construir árvores compartilhadas (*,G).  
-
-Assim, o PIM inicia diretamente o caminho entre o receptor e a fonte específica, garantindo:
-
-- **Baixa latência** (sem RP intermediário);  
-- **Caminho otimizado** (SPT desde o início);  
-- **Menos processamento e estado multicast** nos roteadores.  
-
----
-
-#### 🔹 2️⃣ O papel do IGMPv3
-
-O **IGMPv3** é essencial para o funcionamento do **SSM**.  
-Ele introduz o conceito de **inscrição seletiva**, permitindo que um host indique explicitamente de qual fonte deseja receber o tráfego multicast.  
-
-O processo funciona assim:
-
-1. O host envia uma mensagem **IGMPv3 Membership Report**, informando o par **(S,G)** de interesse;  
-2. O roteador diretamente conectado ao host (conhecido como **Designated Router – DR**) registra esse interesse;  
-3. O DR, por sua vez, envia uma mensagem **PIM Join (S,G)** diretamente em direção à fonte **S**, utilizando a rota unicast normal para encontrá-la.  
-
-Dessa forma, a árvore multicast é formada de forma **direta, seletiva e eficiente**.  
-
----
-
-#### 🔀 3️⃣ Como o DR encontra a fonte (S)
-
-No modelo SSM, **não há descoberta de RP** nem mensagens Bootstrap.  
-O **Designated Router (DR)** usa sua **tabela de roteamento unicast** (aprendida via OSPF, no caso deste laboratório) para alcançar a fonte.  
-
-Quando o DR recebe um pedido IGMPv3 indicando:
-
-```ios
-(S,G) = (192.168.10.1, 232.1.1.1)
-```
-
-ele simplesmente consulta sua rota para `192.168.10.1` e envia o **PIM Join (S,G)** seguindo esse caminho.  
-Os roteadores intermediários criam entradas **(S,G)** em suas tabelas multicast, estabelecendo o caminho reverso até a fonte.  
-
----
-
-#### 🛰️ 4️⃣ Quando a fonte começa a transmitir
-
-Quando a fonte — por exemplo, o servidor `192.168.10.1` — envia pacotes multicast para `232.1.1.1`, os roteadores no caminho reconhecem o fluxo e o associam à árvore (S,G) existente.  
-Os receptores que solicitaram esse fluxo começam imediatamente a receber os pacotes.  
-
-Não há necessidade de registros, mensagens encapsuladas ou intermediação por RP.  
-Todo o processo é **automático e direto**, pois o **PIM-SSM** já conhece exatamente quem é a fonte e quem são os receptores interessados.  
-
----
-
-#### 📡 5️⃣ Vantagens do SSM sobre o PIM-SM
-
-| Aspecto                     | PIM Sparse Mode (tradicional)        | Source-Specific Multicast (SSM)           |
-|-----------------------------|--------------------------------------|-------------------------------------------|
-| Dependência de RP           | Sim                                  | ❌ Não                                   |
-| Tipo de árvore inicial      | Compartilhada (*,G)                  | Direta (S,G)                              |
-| Controle sobre as fontes    | Limitado                             | Total — receptor escolhe a fonte          |
-| Mensagens adicionais        | PIM Register, Bootstrap, RP-Adv      | Nenhuma (apenas PIM Join/Prune)           |
-| Versão IGMP necessária      | IGMPv2                               | IGMPv3                                    |
-| Segurança e escalabilidade  | Moderada                             | Alta — menos estados e fluxos indevidos   |
-
----
-
-👉 **Resumo:**  
-O **SSM (Source-Specific Multicast)** representa a evolução natural do multicast em redes IP.  
-Ele remove completamente a complexidade do RP e do BSR, simplificando a operação e melhorando o desempenho.  
-Em conjunto com o **IGMPv3**, o SSM fornece uma arquitetura **mais segura, previsível e escalável** — ideal para **aplicações de streaming, replicação de dados e videoconferência**.
 
 ## 🌐 Topologia do Laboratório
 
