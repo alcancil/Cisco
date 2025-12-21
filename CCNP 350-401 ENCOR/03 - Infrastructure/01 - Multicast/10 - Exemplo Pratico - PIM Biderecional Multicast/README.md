@@ -401,32 +401,26 @@ Esse comportamento reflete fielmente o funcionamento do **PIM Bidirectional (BID
 
 ---
 
-
----
-
-Alterar daqui
-
----
-
 **🧭 Resumo da Lógica**  
 
-- O **Server (192.168.10.1)** é a **fonte multicast** (S) e envia tráfego para o grupo **232.1.1.1 (G)**.  
-- O **Server02 (192.168.40.1)** é a **fonte multicast02** (S) e envia tráfego para o grupo **232.2.2.2 (G)**.
-- O **Host02 (192.168.20.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 232.1.1.1)** e **(192.168.40.1, 232.2.2.2)**.  
-- O **Host03 (192.168.30.1)** participa utilizando **IGMPv3**, solicitando explicitamente os fluxos **(192.168.10.1, 232.2.2.2)** e **(192.168.40.1, 232.2.2.2)**.  
-- O protocolo **PIM-SSM** é ativado em todas as interfaces participantes do domínio multicast (LANs e links de roteamento).  
-- Os **roteadores não utilizam RP nem BSR**, pois no SSM o DR do receptor envia diretamente o **PIM Join (S,G)** na direção da fonte.  
-- O **RPF (Reverse Path Forwarding)** assegura que o caminho de retorno até a fonte siga o melhor trajeto aprendido via OSPF.  
+- O **Server (192.168.10.1)** atua como **fonte multicast**, enviando tráfego para o **grupo multicast 239.1.1.1 (G)**.  
+- O **Server02 (192.168.40.1)** também atua como **fonte multicast**, enviando tráfego para o **mesmo grupo multicast 239.1.1.1 (G)**.  
+- O **Host02 (192.168.20.1)** participa do domínio multicast utilizando **IGMP (tipicamente IGMPv2)**, inscrevendo-se no **grupo multicast (*,G)**.  
+- O **Host03 (192.168.30.1)** participa do domínio multicast utilizando **IGMP (tipicamente IGMPv2)**, inscrevendo-se no **grupo multicast (*,G)**.  
+- O protocolo **PIM Bidirectional (BIDIR)** é ativado em todas as interfaces participantes do domínio multicast (LANs e links de roteamento).  
+- Os **roteadores utilizam um Rendezvous Point (RP)**, que atua **apenas como raiz lógica da árvore compartilhada**, sem receber ou encapsular tráfego multicast.  
+- O encaminhamento do tráfego multicast é controlado pelo **Designated Forwarder (DF)** em cada enlace, evitando loops e duplicações.  
+- O **RPF (Reverse Path Forwarding)** é utilizado para validar o encaminhamento multicast com base na **melhor rota unicast em direção ao RP**, aprendida via OSPF.  
 
-Assim, o laboratório demonstra a operação do **Source-Specific Multicast**, onde o encaminhamento multicast é estabelecido **somente entre fonte e receptor interessados**, sem dependência de mecanismos centralizados de controle.
+Assim, o laboratório demonstra a operação do **PIM Bidirectional (BIDIR)**, no qual múltiplas fontes e múltiplos receptores compartilham uma **única árvore multicast (*,G)**, sem criação de estados **(S,G)** e **sem SPT Switching**, priorizando simplicidade, previsibilidade e escalabilidade.
 
 ---
 
 ### 🔍 Testes Preliminares
 
-Antes de ativar o multicast, é importante confirmar a **conectividade unicast** entre todos os dispositivos.  
+Antes de ativar o multicast, é essencial confirmar a **conectividade unicast** entre todos os dispositivos.
 
-Cada roteador possui uma **interface de Loopback** usada como **Router-ID** no OSPF:  
+Cada roteador possui uma **interface Loopback** utilizada como **Router-ID** no OSPF:
 
 - R01 → 1.1.1.1/32  
 - R02 → 2.2.2.2/32  
@@ -434,12 +428,20 @@ Cada roteador possui uma **interface de Loopback** usada como **Router-ID** no O
 - R04 → 4.4.4.4/32  
 - R05 → 5.5.5.5/32  
 
-Após o OSPF estar operacional, verifique a conectividade com **ping entre todas as loopbacks**.
+Após o OSPF estar operacional, valide a conectividade com **ping entre todas as loopbacks**.
 
 ![01](Imagens/01.png)
 
-Se todos os roteadores se alcançam, a infraestrutura unicast está pronta.  
-Lembre-se: o **PIM-SSM** depende de uma **base unicast funcional** para realizar o **RPF check**.
+Se todos os roteadores se alcançam, a infraestrutura unicast está pronta para o multicast.  
+Lembre-se: o **PIM BIDIR** depende de uma **base unicast funcional** para a correta construção da árvore compartilhada e para o processo de **eleição do Designated Forwarder (DF)**.
+
+---
+
+Alterar daqui
+
+---
+
+
 
 ---
 
