@@ -21,6 +21,8 @@
       - [🛰️ 4️⃣ Quando as fontes começam a transmitir](#️-4️⃣-quando-as-fontes-começam-a-transmitir)
       - [📡 5️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional](#-5️⃣-vantagens-do-pim-bidir-sobre-o-pim-sm-tradicional)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
+    - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
+    - [📡 Grupos Multicast no PIM Bidirectional - resumo](#-grupos-multicast-no-pim-bidirectional---resumo)
     - [🔍 Testes Preliminares](#-testes-preliminares)
     - [🧩 Principais diferenças do SSM em relação ao PIM-SM](#-principais-diferenças-do-ssm-em-relação-ao-pim-sm)
     - [🌍 Onde o PIM deve ser ativado](#-onde-o-pim-deve-ser-ativado)
@@ -335,80 +337,75 @@ O comportamento é **simétrico e contínuo**, independentemente do número de f
 O **PIM Bidirectional (BIDIR)** é projetado para cenários multicast **de larga escala e múltiplas fontes**, onde previsibilidade, simplicidade e estabilidade são mais importantes do que a otimização individual de caminhos.  
 Ao eliminar o **SPT Switching** e manter todo o domínio baseado em **uma única árvore compartilhada (*,G)**, o BIDIR se torna uma solução robusta e eficiente para ambientes corporativos e críticos.
 
+## 🌐 Topologia do Laboratório
+
+A topologia deste laboratório é composta por **cinco roteadores principais (R01 a R05)** e **quatro hosts simulados (Server, Server02, Host02 e Host03)**.  
+Os hosts são roteadores Cisco configurados de forma simplificada, apenas com **endereçamento IP** e **participação em grupos multicast via IGMP (tipicamente IGMPv2)**, simulando o comportamento de dispositivos finais.
+
+O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Bidirectional (BIDIR)** é utilizado para o roteamento multicast.  
+Diferente do **PIM Sparse Mode tradicional**, o **PIM BIDIR** utiliza **uma única árvore compartilhada (*,G)** para todos os fluxos multicast, **sem criação de estados (S,G)** e **sem SPT Switching**.
+
+Neste modelo, múltiplas **fontes e receptores** compartilham o mesmo grupo multicast, caracterizando um ambiente **many-to-many**, no qual o tráfego flui **bidirecionalmente** ao longo da árvore, com o **Rendezvous Point (RP)** atuando apenas como **raiz lógica** do domínio multicast.
+
+---
+
+### 🔧 Endereçamento e Funções
+
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                 |
+|-----------------|---------------|---------------------------|------------------------------------------------------|
+| **R01**         | Loopback0     | 1.1.1.1 /32               | Identificação / Router-ID OSPF                       |
+|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server — Gateway multicast                    |
+|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM BIDIR + OSPF                      |
+|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM BIDIR + OSPF                      |
+| **R02**         | Loopback0     | 2.2.2.2 /32               | Identificação / Router-ID OSPF                       |
+|                 | Fa0/0         | 10.0.0.2 /30              | Link com R01 — PIM BIDIR + OSPF                      |
+|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM BIDIR + OSPF                      |
+| **R03**         | Loopback0     | 3.3.3.3 /32               | Identificação / Router-ID OSPF                       |
+|                 | Fa0/0         | 10.0.0.6 /30              | Link com R02 — PIM BIDIR + OSPF                      |
+|                 | Fa1/0         | 10.0.0.9 /30              | Link com R04 — PIM BIDIR + OSPF                      |
+| **R04**         | Loopback0     | 4.4.4.4 /32               | Identificação / Router-ID OSPF                       |
+|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM BIDIR + OSPF                      |
+|                 | Fa1/0         | 10.0.0.13 /30             | Link com R05 — PIM BIDIR + OSPF                      |
+|                 | Fa1/1         | 192.168.20.254 /24        | LAN do Host02 — Gateway multicast                    |
+| **R05**         | Loopback0     | 5.5.5.5 /32               | Identificação / Router-ID OSPF                       |
+|                 | Fa0/0         | 10.0.0.14 /30             | Link com R04 — PIM BIDIR + OSPF                      |
+|                 | Fa1/0         | 10.0.0.17 /30             | Link com R01 — PIM BIDIR + OSPF                      |
+|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                    |
+| **Server**      | Fa0/0         | 192.168.10.1 /24          | Fonte multicast                                      |
+| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast                                      |
+| **Host02**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast (IGMP (*,G))                      |
+| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast (IGMP (*,G))                      |
+
+---
+
+### 📡 Grupos Multicast no PIM Bidirectional - resumo
+
+No **PIM BIDIR**, os grupos multicast utilizam exclusivamente o modelo **(*,G)**.  
+Os hosts **não escolhem fontes específicas** e todos os emissores podem enviar tráfego para o mesmo grupo multicast.
+
+Neste laboratório, será utilizado o seguinte grupo:
+
+| Grupo Multicast | Modelo | Descrição                                      |
+|-----------------|--------|------------------------------------------------|
+| 239.1.1.1       | (*,G)  | Grupo multicast compartilhado por múltiplas fontes |
+
+📌 **Observações importantes:**
+
+- Não há uso de endereços SSM (232/8);
+- Não existem inscrições (S,G);
+- Não ocorre SPT Switching;
+- O encaminhamento é controlado pelo **Designated Forwarder (DF)** em cada enlace;
+- O **RP atua apenas como raiz lógica** da árvore compartilhada.
+
+Esse comportamento reflete fielmente o funcionamento do **PIM Bidirectional (BIDIR)** em ambientes **many-to-many**, priorizando **simplicidade, previsibilidade e escalabilidade**.
+
+---
+
+
 ---
 
 Alterar daqui
 
----
-
-
-
-## 🌐 Topologia do Laboratório
-
-A topologia deste laboratório é composta por **cinco roteadores principais (R01 a R05)** e **quatro hosts simulados (Server, Server02, Host02 e Host03)**.  
-Os hosts são roteadores Cisco configurados de forma simplificada, apenas com IP e participação em grupos multicast via IGMPv3, simulando o comportamento de dispositivos finais.  
-
-O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM-SSM (Source-Specific Multicast)** é utilizado para o roteamento multicast.  
-Diferente dos modos Dense ou Sparse tradicionais, o **SSM elimina completamente a necessidade de um RP (Rendezvous Point)**.  
-Neste modelo, o tráfego multicast é estabelecido diretamente entre **fonte (S)** e **receptor (G)**, criando pares (S,G) sem passar por um ponto central de encontro.  
-
----
-
-**🔧 Endereçamento e Funções**  
-
-| **Dispositivo**   | **Interface** | **Endereço IP / Máscara Rede** | **Conexão / Função**                                            |
-|-------------------|---------------|--------------------------------|-----------------------------------------------------------------|
-| **R01**           | Loopback0     | 1.1.1.1 /32                    | Identificação / Router-ID OSPF                                  |
-|                   | Fa0/0         | 192.168.10.254 /24             | LAN do Server — Gateway multicast                               |
-|                   | Fa0/1         | 10.0.0.1 /30                   | Link com R02 — PIM + OSPF                                       |
-|                   | Fa1/0         | 10.0.0.18 /30                  | Link com R05 — PIM + OSPF                                       |
-| **R02**           | Loopback0     | 2.2.2.2 /32                    | Identificação / Router-ID OSPF                                  |
-|                   | Fa0/0         | 10.0.0.2 /30                   | Link com R01 — PIM + OSPF                                       |
-|                   | Fa1/0         | 10.0.0.5 /30                   | Link com R03 — PIM + OSPF                                       |
-| **R03**           | Loopback0     | 3.3.3.3 /32                    | Identificação / Router-ID OSPF                                  |
-|                   | Fa0/0         | 10.0.0.6 /30                   | Link com R02 — PIM + OSPF                                       |
-|                   | Fa1/0         | 10.0.0.9 /30                   | Link com R04 — PIM + OSPF                                       |
-| **R04**           | Loopback0     | 4.4.4.4 /32                    | Identificação / Router-ID OSPF                                  |
-|                   | Fa0/0         | 10.0.0.10 /30                  | Link com R03 — PIM + OSPF                                       |
-|                   | Fa1/0         | 10.0.0.13 /30                  | Link com R05 — PIM + OSPF                                       |
-|                   | Fa1/1         | 192.168.20.254 /24             | LAN do Host02 — Gateway multicast                               |
-| **R05**           | Loopback0     | 5.5.5.5 /32                    | Identificação / Router-ID OSPF                                  |
-|                   | Fa0/0         | 10.0.0.14 /30                  | Link com R04 — PIM + OSPF                                       |
-|                   | Fa1/0         | 10.0.0.17 /30                  | Link com R01 — PIM + OSPF                                       |
-|                   | Fa0/1         | 192.168.30.254 /24             | LAN do Host03 — Gateway multicast                               |
-| **Server**        | Fa0/0         | 192.168.10.1 /24               | Fonte multicast (sender)                                        |
-| **Server02**      | Fa0/0         | 192.168.40.1 /24               | Fonte multicast (sender)                                        |
-| **Host02**        | Fa0/0         | 192.168.20.1 /24               | Receptor multicast                                              |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.1.1.1) — fluxo do Server                     |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 231.2.2.2) — fluxo do Server02                   |
-| **Host03**        | Fa0/0         | 192.168.30.1 /24               | Receptor multicast                                              |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 232.1.1.1) — fluxo do Server                     |
-| **IGMPv3 joins:** | 01            | -                              | (192.168.10.1, 232.2.2.2) — fluxo do Server02                   |
-
-**OBS:** como o SSM com IGMPv3 aceita múltiplas fontes, então aqui vamos simular que os **Host02 e Hos03** vão receber 02 fluxos cada, 1 de cada Server.
-
-🎯 Intervalo Oficial de Endereços SSM (RFC 4607)
-
-O Source-Specific Multicast (SSM) utiliza um intervalo de endereços multicast exclusivo e padronizado pelo IETF:  
-
-> 232.0.0.0/8
-
-Esse bloco — **também chamado de 232/8** — é reservado **exclusivamente para operações SSM** e deve ser utilizado sempre que o ambiente suportar **IGMPv3/PIM-SSM**. Ao usar esse intervalo, garantimos total conformidade com a RFC 4607, interoperabilidade entre fabricantes e comportamento previsível no roteamento multicast.  
-Por esse motivo, neste laboratório adotaremos os grupos:  
-
-- **232.1.1.1 para o Server01**
-- **232.2.2.2 para o Server02**
-
-📌 **Intervalo oficial do SSM (RFC 4607)**  
-
-| Descrição               | Endereço        |
-|-------------------------|-----------------|
-| Início do intervalo SSM | 232.0.0.0       |
-| Fim do intervalo SSM    | 232.255.255.255 |
-| Máscara / Notação       | 232.0.0.0/8     |
-
-Esses endereços atendem às boas práticas e refletem corretamente o funcionamento do SSM baseado em IGMPv3.  
-  
 ---
 
 **🧭 Resumo da Lógica**  
