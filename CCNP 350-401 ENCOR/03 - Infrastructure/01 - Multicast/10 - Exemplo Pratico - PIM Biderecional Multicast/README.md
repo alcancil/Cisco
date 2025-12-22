@@ -28,6 +28,9 @@
     - [🧩 Principais Diferenças do PIM BIDIR em Relação ao PIM-SM](#-principais-diferenças-do-pim-bidir-em-relação-ao-pim-sm)
     - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
     - [💡 Observação Sobre as Fontes Multicast](#-observação-sobre-as-fontes-multicast)
+    - [🧩 E se o Host01 quiser apenas uma das fontes?](#-e-se-o-host01-quiser-apenas-uma-das-fontes)
+    - [🚫 E se o Host01 quiser bloquear uma das fontes?](#-e-se-o-host01-quiser-bloquear-uma-das-fontes)
+    - [🧠 Resumo Final](#-resumo-final)
     - [⚙️ Nosso cenário SSM com IGMPv3](#️-nosso-cenário-ssm-com-igmpv3)
     - [📡 Papel do IGMPv3 no SSM](#-papel-do-igmpv3-no-ssm)
     - [🔁 Funcionamento geral do SSM](#-funcionamento-geral-do-ssm)
@@ -527,76 +530,149 @@ O **PIM Bidirectional (BIDIR)** elimina a complexidade associada ao **SPT Switch
   
 Esse modelo oferece simplicidade operacional, previsibilidade de caminhos e alta escalabilidade, sendo ideal para ambientes **many-to-many com múltiplas fontes ativas**.  
 
----
-
-Alterar daqui
-
----
-
 🎯 **Situação**
 
 Você tem:  
-
-- Server01 (192.168.10.10) transmitindo para o grupo **232.1.1.1**
-- Server02 (192.168.40.10) transmitindo também **para o mesmo grupo 232.2.2.2 (ou pode ser outro, não importa)**
-- Host01 quer receber **os dois fluxos multicast, um de cada servidor**.
-
-🧠 **Como o SSM trata isso?**  
-
-O **IGMPv3** trabalha com a relação **(S,G) — Source e Group.**  
-Isso significa que cada fonte representa um fluxo separado, mesmo que **o grupo (G) seja o mesmo**.  
   
-Então o Host01 vai enviar **dois IGMPv3 Reports**, um para cada fonte, assim:  
+- **Server01 (192.168.10.10)** transmitindo tráfego multicast  
+- **Server02 (192.168.40.10)** transmitindo tráfego multicast  
+- Ambos transmitem para **o mesmo grupo multicast (G)**, por exemplo **239.1.1.1**
+- **Host01** quer receber **todo o tráfego multicast desse grupo**, independentemente de qual servidor seja a fonte
+  
+Esse cenário representa um modelo clássico **many-to-many**, ideal para **PIM Bidirectional (BIDIR)**.
 
-| Fluxo | Fonte (S)               | Grupo (G)  | Tipo de IGMPv3 Report |
-|-------|-------------------------|------------|-----------------------|
-| 1️⃣   | 192.168.10.10 (Server01) | 232.1.1.1  | INCLUDE (S,G)         |
-| 2️⃣   | 192.168.40.10 (Server02) | 232.2.2.2  | INCLUDE (S,G)         |
+---
 
-🔁 **O que acontece no roteador (Designated Router)**  
+🧠 **Como o PIM BIDIR trata isso?**
 
-- O roteador conectado ao Host01 recebe dois IGMPv3 Reports.
-- Ele cria duas entradas separadas na sua tabela de multicast:
-  - **(192.168.10.10, 232.1.1.1)**
-  - **(192.168.40.10, 232.2.2.2)**
-- O roteador envia duas mensagens **PIM Join (S,G)** em direção a cada fonte.
-- **Duas árvores independentes (S,G)** são criadas — uma para cada fonte.
-- O tráfego de ambas as fontes chega até o Host01, misturado no mesmo **grupo multicast (G), mas com origem diferente (S)**.
+No **PIM Bidirectional**, o encaminhamento multicast **não é baseado em (S,G)**.  
+Ele utiliza **exclusivamente a árvore compartilhada (*,G)**.
 
-🔎 **Visualmente:**  
+Isso significa que:
+
+- O **host não escolhe fontes**
+- Não existe controle por origem
+- Todas as fontes que transmitem para o grupo **compartilham a mesma árvore multicast**
+
+O **IGMP (v2 ou v3)** é usado **apenas para sinalizar interesse no grupo (G)**.
+
+---
+
+📩 **Sinalização do Host (IGMP)**
+
+O **Host01** envia **um único IGMP Report**, informando que deseja participar do grupo multicast:
 
 ```text
-         (S1,G) 192.168.10.10 → 232.1.1.1
-         (S2,G) 192.168.40.10 → 232.2.2.2
-               │
-               ▼
+IGMP Report (*, 239.1.1.1)
+```  
+
+📩 **Sinalização do Host (IGMP)**
+
+No **PIM BIDIR**, **não há INCLUDE (S,G)** nem qualquer tipo de **seleção de fonte**.  
+O host simplesmente sinaliza interesse **no grupo multicast (G)**.
+
+> “Quero receber o grupo **239.1.1.1**.”
+
+---
+
+🔁 **O que acontece no roteador (Designated Router – DR)**
+
+- O roteador conectado ao **Host01** recebe o **IGMP Join para o grupo (G)**  
+- Ele cria **uma única entrada multicast (*,G)** na sua tabela  
+- O roteador envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**  
+
+⚠️ **Importante**  
+No **PIM BIDIR**, o **RP é apenas a raiz lógica da árvore multicast**.  
+Ele:
+
+- ❌ Não recebe tráfego  
+- ❌ Não realiza encapsulamento  
+- ❌ Não participa do caminho de dados  
+
+---
+
+🌳 **Construção da Árvore Multicast**
+
+- Uma **única árvore (*,G)** é construída para o grupo **239.1.1.1**
+- Essa árvore é usada **simultaneamente por todas as fontes e todos os receptores**
+- **Não ocorre**:
+  - ❌ SPT Switching  
+  - ❌ Criação de árvores (S,G)  
+  - ❌ PIM Register  
+
+O tráfego multicast entra na árvore pelo **roteador conectado à fonte**, respeitando o papel do **Designated Forwarder (DF)** em cada enlace.
+
+---
+
+🔎 **Visualmente**
+
+```text
+      Server01 (192.168.10.10)
+                │
+                │
+      Server02 (192.168.40.10)
+                │
+                ▼
+          Árvore Compartilhada (*,G)
+                │
+          [RP – raiz lógica]
+                │
           [Roteador DR]
-               │
-               ▼
+                │
+                ▼
              [Host01]
-```
-  
-O Host01 vai receber dois fluxos simultâneos:  
+```  
 
-- Um vindo da árvore (192.168.10.10, 232.1.1.1)
-- Outro vindo da árvore (192.168.40.10, 232.2.2.2)
+O **Host01** recebe todo o tráfego multicast do grupo **239.1.1.1**, vindo de:
 
-🧩 **E se o Host01 quiser apenas uma das fontes?**
+- **Server01**
+- **Server02**
 
-Ele simplesmente envia um único IGMPv3 Report:  
+Sem qualquer distinção por origem.
 
-```ios
-INCLUDE { 232.1.1.1 : 192.168.10.10 }
-```
+---
 
-🚫 **E se ele quiser bloquear uma das fontes?**
+### 🧩 E se o Host01 quiser apenas uma das fontes?
 
-O IGMPv3 permite o **EXCLUDE mode**, em que o host pode dizer:  
-  
-> “Quero o grupo 232.1.1.1, mas exclua o tráfego vindo de 192.168.40.10.”
+➡️ **Não é possível no PIM BIDIR.**
 
-Isso é útil em cenários de redundância (duas fontes transmitindo o mesmo conteúdo).  
-Mas no nosso laboratório, normalmente usamos **INCLUDE** mode, porque é o padrão simples do SSM.  
+O modelo não permite filtragem por fonte, pois:
+
+- Não existem estados **(S,G)**
+- O **IGMP não controla origem**
+- O **PIM encaminha todo o tráfego do grupo**
+
+Se esse tipo de controle for necessário, o modelo correto é **SSM com IGMPv3**.
+
+---
+
+### 🚫 E se o Host01 quiser bloquear uma das fontes?
+
+➡️ **Também não é possível no PIM BIDIR.**
+
+O BIDIR assume que:
+
+- Todas as fontes do grupo são válidas
+- O controle de conteúdo ocorre **na aplicação**, não na rede
+- O foco é **simplicidade, escalabilidade e previsibilidade**
+
+---
+
+### 🧠 Resumo Final
+
+- **PIM BIDIR trabalha apenas com (*,G)**
+- Uma **única árvore multicast** é usada por todas as fontes
+- **Não há SPT Switching** nem seleção de fonte
+- Ideal para cenários **many-to-many**
+- Controle por origem **não faz parte do modelo**
+
+Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambientes com **múltiplas fontes ativas**, como aplicações financeiras, sistemas de replicação e serviços de colaboração em tempo real.
+
+----
+
+Alterar Daqui
+
+---
 
 💬 **Resumo final**  
 
