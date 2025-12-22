@@ -31,8 +31,9 @@
     - [🧩 E se o Host01 quiser apenas uma das fontes?](#-e-se-o-host01-quiser-apenas-uma-das-fontes)
     - [🚫 E se o Host01 quiser bloquear uma das fontes?](#-e-se-o-host01-quiser-bloquear-uma-das-fontes)
     - [🧠 Resumo Final](#-resumo-final)
-  - [⚙️ Ativando o protocolo PIM-SSM (Source-Specific Multicast)](#️-ativando-o-protocolo-pim-ssm-source-specific-multicast)
-    - [🔧 Configuração do PIM-SSM](#-configuração-do-pim-ssm)
+  - [⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)](#️-ativando-o-protocolo-pim-bidirectional-pim-bidir)
+    - [🔧 Configuração do PIM-BIDIR](#-configuração-do-pim-bidir)
+      - [Exemplo – Ativando o PIM nas interfaces do R01](#exemplo--ativando-o-pim-nas-interfaces-do-r01)
   - [🧩 Eleição do Designated Router (DR)](#-eleição-do-designated-router-dr)
   - [💬 Mensagens PIM Hello](#-mensagens-pim-hello)
     - [⚙️ Configurando o PIM-SSM (Source-Specific Multicast)](#️-configurando-o-pim-ssm-source-specific-multicast)
@@ -767,18 +768,31 @@ Alterar daqui
 
 ---
 
-## ⚙️ Ativando o protocolo PIM-SSM (Source-Specific Multicast)
+## ⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)
 
-Com o ambiente unicast devidamente funcional e as bases teóricas sobre o **SSM e o IGMPv3** já estabelecidas, é hora de ativar o **PIM-SSM** nos roteadores do domínio multicast.  
-O objetivo agora é permitir que cada receptor solicite fluxos específicos com base nas **fontes (S)** de interesse, sem depender de **Rendezvous Points (RP)** nem de mensagens Bootstrap.
+Com o ambiente **unicast totalmente operacional** e os conceitos de **multicast many-to-many** já estabelecidos, é hora de ativar o **PIM Bidirectional (PIM-BIDIR)** nos roteadores do domínio multicast.
 
-Diferente do modelo anterior (PIM-SM com Bootstrap), o SSM é totalmente **direcionado por demanda**: o tráfego multicast só é estabelecido quando o receptor envia um **IGMPv3 Membership Report (S,G)** informando explicitamente de qual servidor deseja receber.
+Este modelo é indicado para cenários em que **múltiplas fontes e múltiplos receptores** participam simultaneamente de um mesmo grupo multicast, como em ambientes financeiros, colaboração em tempo real e aplicações distribuídas.
+
+Diferente do **PIM-SSM**, onde os receptores solicitam explicitamente pares **(S,G)** via **IGMPv3**, o **PIM-BIDIR** trabalha exclusivamente com **(*,G)** e utiliza um **Rendezvous Point (RP)** estável como ponto lógico central para o encaminhamento do tráfego.
+
+No BIDIR:
+- Não há construção de **Shortest Path Tree (SPT)**  
+- Não existem mensagens **PIM Register**
+- O tráfego flui **bidirecionalmente** em direção ao RP ao longo de uma **árvore compartilhada**
 
 ---
 
-### 🔧 Configuração do PIM-SSM
+### 🔧 Configuração do PIM-BIDIR
 
-O PIM precisa ser habilitado em todas as interfaces que transportarão tráfego multicast, tanto nas **LANs com fontes e receptores**, quanto nos **links entre roteadores**.
+O PIM deve ser habilitado em **todas as interfaces que transportarão tráfego multicast**, incluindo:
+- LANs com **fontes e receptores**
+- Links **entre roteadores**
+- Interfaces envolvidas no caminho até o **RP**
+
+> ⚠️ **Importante:** Para que o PIM-BIDIR funcione corretamente, o **RP deve estar previamente configurado como BIDIR** em todos os roteadores do domínio multicast.
+
+#### Exemplo – Ativando o PIM nas interfaces do R01
 
 ```ios
 R01#show ip int br
@@ -808,50 +822,50 @@ R01(config-if)#ip pim sparse-mode
 *Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-Após a configuração, o roteador passa a participar ativamente do domínio multicast, trocando mensagens PIM Hello e identificando vizinhos diretamente conectados.  
+Após essa configuração, o roteador passa a participar do domínio multicast BIDIR, trocando mensagens **PIM Hello**, elegendo **Designated Routers (DR)** nas LANs e encaminhando tráfego multicast ao longo da **árvore compartilhada (*,G).**    
   
-**OBS:** fazer isso para todos os ROTEADORES (de R01 a R05).  
+📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).
   
-✅ **Verificação do roteamento multicast**
+✅ **Verificação do roteamento multicast**  
   
-Para confirmar que o roteamento multicast está operacional:  
+Para confirmar que o roteamento multicast está ativo:
 
-```ios
+```ios  
 R01#show ip multicast
-  Multicast Routing: enabled
-  Multicast Multipath: disabled
-  Multicast Route limit: No limit
-  Multicast Triggered RPF check: enabled
-  Multicast Fallback group mode: Sparse
-  Multicast DVMRP Interoperability: disabled
+Multicast Routing: enabled
+Multicast Multipath: disabled
+Multicast Route limit: No limit
+Multicast Triggered RPF check: enabled
+Multicast Fallback group mode: Sparse
+Multicast DVMRP Interoperability: disabled
 ```
 
-E a tabela de rotas multicast:  
+E a tabela de rotas multicast:
 
 ```ios
 R01#show ip mrout
 IP Multicast Routing Table
 Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
        L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
-Timers: Uptime/Expires
-Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 224.0.0.0), 00:10:57/00:02:04, RP 0.0.0.0, flags: SCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
+       T - SPT-bit set, J - Join SPT
+...
+(*, 239.1.1.1), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
   Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 00:10:57/00:02:04
+    FastEthernet0/0, Forward/Bidir, 00:12:34/00:02:25
 ```
 
-💡 **Dica:**
-Em um domínio **S**SM, as entradas (S,G)** só aparecerão quando um **host IGMPv3** manifestar interesse em uma fonte específica.  
-Não existem mensagens **Bootstrap, nem anúncios de RP.** O controle é completamente descentralizado e guiado pelas solicitações **IGMPv3 dos receptores.**  
-  
+💡 **Dica Importante:**
+Em um domínio PIM-BIDIR, somente **entradas (*,G) são criadas**.  
+Não existem **estados (S,G)**, nem comutação para **SPT**.  
+O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**
+
+---
+
+Alterar Daqui
+
+---
+
 ## 🧩 Eleição do Designated Router (DR)
 
 O **Designated Router (DR)** é o roteador responsável por interagir com os hosts de uma **LAN multicast.**  
