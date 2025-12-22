@@ -1,7 +1,7 @@
 # Índice
 
 - [Índice](#índice)
-  - [10 - Exemplo Pratico - PIM Biderecional Multicast](#10---exemplo-pratico---pim-biderecional-multicast)
+  - [10 - Exemplo Pratico - PIM Bidirecional Multicast](#10---exemplo-pratico---pim-bidirecional-multicast)
   - [🧾 Introdução](#-introdução)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
   - [📚 O que você vai aprender](#-o-que-você-vai-aprender)
@@ -31,10 +31,6 @@
     - [🧩 E se o Host01 quiser apenas uma das fontes?](#-e-se-o-host01-quiser-apenas-uma-das-fontes)
     - [🚫 E se o Host01 quiser bloquear uma das fontes?](#-e-se-o-host01-quiser-bloquear-uma-das-fontes)
     - [🧠 Resumo Final](#-resumo-final)
-    - [⚙️ Nosso cenário SSM com IGMPv3](#️-nosso-cenário-ssm-com-igmpv3)
-    - [📡 Papel do IGMPv3 no SSM](#-papel-do-igmpv3-no-ssm)
-    - [🔁 Funcionamento geral do SSM](#-funcionamento-geral-do-ssm)
-    - [🧱 No nosso laboratório](#-no-nosso-laboratório)
   - [⚙️ Ativando o protocolo PIM-SSM (Source-Specific Multicast)](#️-ativando-o-protocolo-pim-ssm-source-specific-multicast)
     - [🔧 Configuração do PIM-SSM](#-configuração-do-pim-ssm)
   - [🧩 Eleição do Designated Router (DR)](#-eleição-do-designated-router-dr)
@@ -64,8 +60,7 @@
     - [💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)](#-host02--receptor-multicast-igmpv3--ssm)
     - [🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)](#️-host03--receptor-multicast-secundário-ssm-com-múltiplas-fontes)
 
-
-## 10 - Exemplo Pratico - PIM Biderecional Multicast
+## 10 - Exemplo Pratico - PIM Bidirecional Multicast
 
 ## 🧾 Introdução
   
@@ -392,8 +387,8 @@ Os hosts **não escolhem fontes específicas** e todos os emissores podem enviar
 
 Neste laboratório, será utilizado o seguinte grupo:
 
-| Grupo Multicast | Modelo | Descrição                                      |
-|-----------------|--------|------------------------------------------------|
+| Grupo Multicast | Modelo | Descrição                                          |
+|-----------------|--------|----------------------------------------------------|
 | 239.1.1.1       | (*,G)  | Grupo multicast compartilhado por múltiplas fontes |
 
 📌 **Observações importantes:**
@@ -671,7 +666,7 @@ O BIDIR assume que:
 - Controle por origem **não faz parte do modelo**
 
 Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambientes com **múltiplas fontes ativas**, como aplicações financeiras, sistemas de replicação e serviços de colaboração em tempo real.
-
+  
 ----
 
 Alterar Daqui
@@ -679,85 +674,98 @@ Alterar Daqui
 ---
 
 💬 **Resumo final**  
+  
+| Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |                 |
+|-----------------------------|-----------------------------|------------------------------------|
+| Host quer Server01          | Join (*,G)                  | Recebe tráfego do Server01         |
+| Host quer Server02          | Join (*,G)                  | Recebe tráfego do Server02         |
+| Host quer os dois           | Join (*,G)                  | Recebe tráfego de ambas as fontes  |
+| Host quer excluir uma fonte | Não suportado               | Recebe todo o tráfego do grupo     |
 
-| Caso                      | IGMPv3 Report                                                      | Resultado                           |
-|---------------------------|--------------------------------------------------------------------|-------------------------------------|
-| Host quer apenas Server01 | INCLUDE { 232.1.1.1 : 192.168.10.10 }                              | Recebe só o fluxo do Server01       |
-| Host quer apenas Server02 | INCLUDE { 232.2.2.2 : 192.168.40.10 }                              | Recebe só o fluxo do Server02       |
-| Host quer os dois         | INCLUDE { (232.1.1.1, 192.168.10.10), (232.2.2.2, 192.168.40.10) } | Recebe ambos os fluxos              |
-| Host quer excluir um      | EXCLUDE { 232.1.1.1 : 192.168.40.10 }                              | Recebe o grupo, mas ignora Server02 |
+👉 **Em resumo:**  
 
-👉 **Em resumo:**
+- No PIM Bidirectional, o controle é feito apenas por grupo (*,G).
+- Não existe seleção, exclusão ou combinação de fontes no nível da rede.
+- Todos os fluxos pertencentes ao grupo multicast são encaminhados pela mesma árvore.
+  
+---
 
-- No SSM, cada (S,G) é uma sessão multicast independente.
-- O receptor pode selecionar, combinar ou excluir fontes de forma totalmente controlada, e o roteador cria uma árvore separada por fluxo (S,G).
+⚙️ **Nosso cenário PIM BIDIR**  
 
-### ⚙️ Nosso cenário SSM com IGMPv3
+Nosso laboratório considera múltiplas fontes multicast ativas simultaneamente, todas transmitindo para o mesmo grupo multicast, caracterizando um cenário many-to-many.  
+  
+| Fonte     | Roteador conectado | Sub-rede        | Grupo multicast utilizado   |
+|-----------|--------------------|-----------------|-----------------------------|
+| SERVER    | R01                | 192.168.10.0/24 | 239.1.1.1                   |
+| SERVER02  | R03                | 192.168.40.0/24 | 239.1.1.1                   |
 
-Nosso laboratório foi expandido para incluir **duas fontes multicast distintas**:
+Os receptores multicast (hosts simulados) não especificam fontes.  
+Eles apenas ingressam no grupo multicast desejado, por exemplo 239.1.1.1, e passam a receber todo o tráfego associado a esse grupo, independentemente da origem.  
+  
+📡 **Papel do IGMP no PIM BIDIR**  
+  
+No PIM BIDIR, o IGMP é utilizado somente para sinalizar interesse no grupo multicast (G).
 
-| Fonte       | Roteador conectado | Sub-rede             | Grupo multicast utilizado (exemplo)  |
-|-------------|--------------------|----------------------|--------------------------------------|
-| **SERVER**  | R01                | 192.168.10.0/24      | 232.1.1.1                            |
-| **SERVER02**| R03                | 192.168.40.0/24      | 232.2.2.2                            |
+- Não existe INCLUDE (S,G)
+- Não existe EXCLUDE (S,G)
+- Não há Source Filtering
 
-Os receptores multicast (hosts simulados) enviam **mensagens IGMPv3** especificando exatamente qual fonte desejam escutar.  
-Por exemplo, um host pode ingressar no grupo `232.1.1.1` proveniente de `192.168.10.10`, enquanto outro pode escutar o grupo `232.2.2.2` proveniente de `192.168.40.10`.
+| Tipo de Mensagem IGMP | Descrição                                                                 |
+|-----------------------|---------------------------------------------------------------------------|
+| Membership Report     | Informa ao roteador local que o host deseja receber o grupo multicast (G) |
+| Leave Group           | Indica que o host não quer mais receber o tráfego do grupo                |
+
+O IGMP não controla origem no modelo Bidirectional.  
+  
+🔁 **Funcionamento geral do PIM BIDIR**  
+  
+1. O receptor envia um IGMP Join solicitando apenas o grupo multicast (G).
+2. O roteador de borda (Designated Router) cria uma entrada (*,G) na tabela multicast.
+3. O roteador envia PIM Join (*,G) em direção ao Rendezvous Point (RP).
+4. Uma única árvore multicast compartilhada (*,G) é construída.
+5. Todas as fontes injetam tráfego nessa árvore, e todos os receptores recebem.
+  
+Não ocorre:  
+
+- SPT Switching
+- Criação de árvores (S,G)
+- PIM Register
+- Encapsulamento de tráfego no RP
+  
+🧱 **No nosso laboratório**
+  
+O PIM Bidirectional será ativado em todos os roteadores e interfaces relevantes:  
+
+- Entre os roteadores R01 a R05, formando o domínio PIM BIDIR
+- Nas interfaces LAN conectadas às fontes multicast (SERVER e SERVER02)
+- Nas interfaces LAN conectadas aos receptores (Host02 e Host03)
+- Nas Loopbacks, apenas como Router-ID para OSPF
+- O Rendezvous Point (RP) é configurado manualmente e atua como raiz lógica da árvore, sem receber ou encaminhar tráfego multicast.
+
+🧩 **Resumo prático**  
+  
+| Elemento                 | Função no cenário                                 |
+|--------------------------|---------------------------------------------------|
+| SERVER (192.168.10.10)   | Fonte multicast (grupo 239.1.1.1)                 |
+| SERVER02 (192.168.40.10) | Segunda fonte multicast (mesmo grupo)             |
+| Host02 / Host03          | Receptores multicast (Join apenas por grupo)      |
+| Roteadores R01–R05       | Encaminham tráfego via PIM BIDIR                  |
+| OSPF                     | Mantém conectividade unicast (base para RPF)      |
+| RP                       | Raiz lógica da árvore (*,G), sem tráfego de dados |
+
+💬 **Conclusão**  
+
+O **PIM Bidirectional (BIDIR)** oferece uma arquitetura multicast simples, previsível e altamente escalável, ideal para **cenários many-to-many**.  
+Ao utilizar **uma única árvore compartilhada (*,G)**, o modelo elimina a complexidade de múltiplas árvores por fonte, dispensa SPT Switching e reduz drasticamente o estado multicast nos roteadores.  
+
+O controle por origem não faz parte do modelo — todo o tráfego pertencente ao grupo é encaminhado igualmente.  
+Esse comportamento torna o PIM BIDIR especialmente adequado para ambientes como sistemas financeiros, replicação distribuída, colaboração em tempo real e aplicações com múltiplos produtores simultâneos.  
 
 ---
 
-### 📡 Papel do IGMPv3 no SSM
-
-O **IGMPv3** é fundamental para o funcionamento do SSM, pois ele introduz o conceito de **Source Filtering**, permitindo que um receptor defina **quais fontes deseja (INCLUDE mode)** ou **quais não deseja (EXCLUDE mode)**.  
-
-No nosso caso, todos os receptores utilizam **INCLUDE mode**, ou seja, solicitam explicitamente o fluxo multicast de uma ou mais fontes conhecidas.
-
-| Tipo de Mensagem                | Descrição                                                                        |
-|---------------------------------|----------------------------------------------------------------------------------|
-| **Membership Report (INCLUDE)** | Informa ao roteador local (Designated Router) o grupo e a(s) fonte(s) desejadas. |
-| **Leave Group**                 | Indica que o host não quer mais receber o tráfego daquele grupo/fonte.           |
+Alterar daqui
 
 ---
-
-### 🔁 Funcionamento geral do SSM
-
-1. O **receptor** envia um **IGMPv3 Report** informando o grupo e a fonte (S,G) desejada.  
-2. O roteador de borda (Designated Router) cria a árvore SSM diretamente para a fonte — **sem RP**.  
-3. O tráfego multicast é encaminhado da **fonte** ao **receptor** pela árvore (S,G).  
-4. Se o receptor deixar o grupo, o roteador envia **PIM Prune (S,G)**, encerrando o fluxo.  
-
----
-
-### 🧱 No nosso laboratório
-
-O SSM será ativado em todos os roteadores e interfaces relevantes:
-
-- **Entre os roteadores R01 a R05**, formando o domínio PIM-SSM;  
-- **Nas interfaces LAN** conectadas às fontes multicast (**Server** e **Server02**);  
-- **Nas interfaces LAN** conectadas aos receptores (Host02 e Host03);  
-- **Nas Loopbacks**, apenas como *Router-ID* para OSPF (sem necessidade de PIM).  
-
-Com isso, teremos um domínio totalmente funcional de **PIM-SSM com IGMPv3**, suportando múltiplas fontes e fluxos multicast independentes, sem depender de RP, Bootstrap ou Auto-RP.
-
----
-
-🧩 **Resumo prático**
-
-| Elemento                     | Função no cenário                                |
-|------------------------------|--------------------------------------------------|
-| **Server (192.168.10.10)**   | Fonte multicast principal (grupo 232.1.1.1)      |
-| **Server02 (192.168.40.10)** | Segunda fonte multicast (grupo 232.2.2.2)        |
-| **Host02 / Host03**          | Receptores multicast (enviam IGMPv3 Reports)     |
-| **Roteadores R01–R05**       | Encaminham tráfego multicast via PIM-SSM         |
-| **OSPF**                     | Mantém conectividade unicast entre os roteadores |
-| **Sem RP / Sem BSR**         | O SSM elimina esses componentes completamente    |
-
----
-
-💬 **Conclusão**
-
-O uso de **SSM com IGMPv3** traz uma abordagem mais simples, escalável e segura para multicast.  
-Cada receptor escolhe exatamente **de qual fonte** receberá o tráfego, eliminando a necessidade de RP, reduzindo o overhead de controle e tornando o comportamento multicast totalmente determinístico.
 
 ## ⚙️ Ativando o protocolo PIM-SSM (Source-Specific Multicast)
 
