@@ -822,7 +822,7 @@ R01(config-if)#ip pim sparse-mode
 *Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-Após essa configuração, o roteador passa a participar do domínio multicast BIDIR, trocando mensagens **PIM Hello**, elegendo **Designated Routers (DR)** nas LANs e encaminhando tráfego multicast ao longo da **árvore compartilhada (*,G).**    
+Após essa configuração, o roteador passa a participar do domínio multicast BIDIR, trocando mensagens **PIM Hello**, elegendo **Designated Routers (DR)** nas LANs e encaminhando tráfego multicast ao longo da **árvore compartilhada (*,G).**  
   
 📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).
   
@@ -843,13 +843,13 @@ Multicast DVMRP Interoperability: disabled
 E a tabela de rotas multicast:
 
 ```ios
-R01#show ip mrout
+R01#show ip mroute
 IP Multicast Routing Table
 Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
        L - Local, P - Pruned, R - RP-bit set, F - Register flag,
        T - SPT-bit set, J - Join SPT
 ...
-(*, 239.1.1.1), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
+(*, 224.0.1.40), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
   Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
   Outgoing interface list:
     FastEthernet0/0, Forward/Bidir, 00:12:34/00:02:25
@@ -858,7 +858,9 @@ Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
 💡 **Dica Importante:**
 Em um domínio PIM-BIDIR, somente **entradas (*,G) são criadas**.  
 Não existem **estados (S,G)**, nem comutação para **SPT**.  
-O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**
+O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**  
+
+A entrada **(*,224.0.1.40)** representa tráfego de controle do PIM e aparece independentemente de fontes ou receptores. Entradas **(,239.x.x.x)** só são criadas quando há interesse explícito via IGMP ou tráfego multicast ativo, especialmente em cenários PIM-BIDIR.  
 
 ---
 
