@@ -756,12 +756,6 @@ Ao utilizar **uma única árvore compartilhada (*,G)**, o modelo elimina a compl
 O controle por origem não faz parte do modelo — todo o tráfego pertencente ao grupo é encaminhado igualmente.  
 Esse comportamento torna o PIM BIDIR especialmente adequado para ambientes como sistemas financeiros, replicação distribuída, colaboração em tempo real e aplicações com múltiplos produtores simultâneos.  
 
----
-
-Alterar daqui
-
----
-
 ## ⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)
 
 Com o ambiente **unicast totalmente operacional** e os conceitos de **multicast many-to-many** já estabelecidos, é hora de ativar o **PIM Bidirectional (PIM-BIDIR)** nos roteadores do domínio multicast.
@@ -771,6 +765,7 @@ Este modelo é indicado para cenários em que **múltiplas fontes e múltiplos r
 Diferente do **PIM-SSM**, onde os receptores solicitam explicitamente pares **(S,G)** via **IGMPv3**, o **PIM-BIDIR** trabalha exclusivamente com **(*,G)** e utiliza um **Rendezvous Point (RP)** estável como ponto lógico central para o encaminhamento do tráfego.
 
 No BIDIR:
+
 - Não há construção de **Shortest Path Tree (SPT)**  
 - Não existem mensagens **PIM Register**
 - O tráfego flui **bidirecionalmente** em direção ao RP ao longo de uma **árvore compartilhada**
@@ -780,6 +775,7 @@ No BIDIR:
 ### 🔧 Configuração do PIM-BIDIR
 
 O PIM deve ser habilitado em **todas as interfaces que transportarão tráfego multicast**, incluindo:
+
 - LANs com **fontes e receptores**
 - Links **entre roteadores**
 - Interfaces envolvidas no caminho até o **RP**
