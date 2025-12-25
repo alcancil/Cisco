@@ -676,7 +676,7 @@ Alterar Daqui
 
 💬 **Resumo final**  
   
-| Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |                 |
+| Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |
 |-----------------------------|-----------------------------|------------------------------------|
 | Host quer Server01          | Join (*,G)                  | Recebe tráfego do Server01         |
 | Host quer Server02          | Join (*,G)                  | Recebe tráfego do Server02         |
