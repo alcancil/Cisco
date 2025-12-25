@@ -51,11 +51,15 @@
     - [3️⃣ Confirmar a interface LAN envolvida](#3️⃣-confirmar-a-interface-lan-envolvida)
     - [🧠 Evidência via captura de pacotes (Wireshark)](#-evidência-via-captura-de-pacotes-wireshark)
     - [✅ Conclusão deste estágio do laboratório](#-conclusão-deste-estágio-do-laboratório)
-    - [⚙️ Configurando o PIM-SSM (Source-Specific Multicast)](#️-configurando-o-pim-ssm-source-specific-multicast)
-    - [🧩 1️⃣ Definindo o intervalo de endereços SSM](#-1️⃣-definindo-o-intervalo-de-endereços-ssm)
-    - [🧭 2️⃣ Habilitando o IGMPv3 nos roteadores](#-2️⃣-habilitando-o-igmpv3-nos-roteadores)
-    - [🧰 3️⃣ Associando hosts e fontes multicast](#-3️⃣-associando-hosts-e-fontes-multicast)
-    - [🧪 5️⃣ Captura e análise via Wireshark](#-5️⃣-captura-e-análise-via-wireshark)
+  - [🔄 Transição para PIM BIDIR (Bidirectional PIM)](#-transição-para-pim-bidir-bidirectional-pim)
+    - [🎯 Características fundamentais do PIM BIDIR](#-características-fundamentais-do-pim-bidir)
+    - [🧭 DR x DF — Comparação Conceitual](#-dr-x-df--comparação-conceitual)
+  - [📘 PIM BIDIR — Configuração do RP e Eleição do DF](#-pim-bidir--configuração-do-rp-e-eleição-do-df)
+    - [Introdução do papel DF (Designated Forwarder)](#introdução-do-papel-df-designated-forwarder)
+    - [🧩 1️⃣ Configurando o Rendezvous Point (RP) BIDIR](#-1️⃣-configurando-o-rendezvous-point-rp-bidir)
+    - [🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR](#-2️⃣-associando-grupos-multicast-ao-rp-em-modo-bidir)
+    - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
+    - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1089,363 +1093,220 @@ Neste momento não existe DF, pois:
 - O RP BIDIR ainda não foi configurado
 - O DF só surge em cenários PIM-BIDIR, após a definição do RP
 
+💡 **Resumo prático — DR no contexto atual do laboratório**
+
+Mesmo no SSM, quando há dois ou mais roteadores em uma mesma LAN (por exemplo, R1 e R2 ligados ao mesmo segmento onde está o Host01), um deles precisa atuar como **Designated Router (DR)**.
+
+Isso evita que múltiplos roteadores processem relatórios IGMP e enviem **PIM Joins duplicados** para o mesmo grupo multicast.
+
+➡️ Portanto, neste estágio do laboratório:
+
+- O **DR existe e é eleito automaticamente**;
+- O critério de eleição permanece:
+  - maior **DR Priority** (se configurada)
+  - ou maior **endereço IP ativo na interface**;
+- A eleição ocorre por meio das **mensagens PIM Hello**;
+- No **SSM**, o DR:
+  - **não interage com RP**;
+  - **não envia PIM Register**;
+  - processa diretamente os **relatórios IGMPv3** e inicia **joins (S,G)** rumo à fonte.
+
+🧭 **Conclusão deste estágio**
+
+- Até aqui, o laboratório opera com **DR**, não com DF.
+- O comportamento observado é consistente com **PIM Sparse Mode + SSM**.
+- A introdução de **DF só ocorre quando habilitarmos PIM BIDIR**, o que será feito a seguir.
+
+## 🔄 Transição para PIM BIDIR (Bidirectional PIM)
+
+Até este ponto, o laboratório operou com **PIM Sparse Mode tradicional** e **SSM**, onde o **Designated Router (DR)** é responsável por processar IGMP e iniciar os joins multicast.  
+  
+A partir de agora, o cenário será estendido para **PIM BIDIR**, um modelo projetado para ambientes **many-to-many**, no qual **múltiplas fontes e múltiplos receptores** coexistem de forma simultânea e dinâmica.  
+  
+📌 **Exemplos de uso:**
+
+- ambientes financeiros
+- colaboração em tempo real
+- replicação distribuída
+- aplicações onde não há uma “fonte central” bem definida
+
 ---
 
-alterar daqui
+### 🎯 Características fundamentais do PIM BIDIR
+
+No **PIM BIDIR**:
+
+- O **Rendezvous Point (RP)** é **obrigatório**;
+- Não existem árvores (*S,G*) nem SPT;
+- Todo o tráfego flui por uma **árvore compartilhada (*,G*) bidirecional**;
+- Não há PIM Register;
+- O papel do **DR muda** e surge um novo conceito: o **Designated Forwarder (DF)**.
+
+⚠️ **Importante:**  
+Mesmo em PIM BIDIR, o **DR ainda existe**, pois ele é um conceito **por LAN** e relacionado ao **IGMP**.  
+Porém, **para o tráfego bidirecional em direção ao RP**, quem manda é o **DF**.  
 
 ---
 
+### 🧭 DR x DF — Comparação Conceitual
 
-💡 **Resumo prático**  
-  
-Mesmo no SSM, quando há dois ou mais roteadores em uma mesma LAN (por exemplo, R1 e R2 ligados ao mesmo segmento onde está o Host01), um deles precisa ser o DR.
-Isso evita que múltiplos roteadores enviem PIM Joins duplicados para a mesma fonte.  
+| Função     | DR (Designated Router)        | DF (Designated Forwarder)        |
+|------------|-------------------------------|----------------------------------|
+| Existe em  | PIM-SM, SSM, BIDIR            | **Somente em PIM BIDIR**         |
+| Escopo     | LAN local                     | LAN local em relação ao RP       |
+| Eleição    | Maior prioridade / maior IP   | Métrica de caminho até o RP      |
+| Atua sobre | IGMP e joins                  | Encaminhamento de tráfego BIDIR  |
+| Usa RP     | Não (SSM) / parcialmente (SM) | **Sim (obrigatório)**            |
 
-➡️ Portanto:
+👉 Em PIM BIDIR:
 
-- O processo de eleição do DR permanece igual: **o roteador com maior IP ativo vence**;
-- O tráfego de eleição usa as **mesmas mensagens PIM Hello com o campo DR Priority**;
-- A diferença é que o DR não interage com RP, e sim diretamente com as fontes informadas nos **relatórios IGMPv3**.  
-  
-🧭 **Conclusão**  
-  
-- O DR existe e é eleito automaticamente no PIM-SSM.
-- Mas ele não envia PIM Register nem usa RP/BSR.
-- Sua única função é processar IGMPv3 dos hosts locais e iniciar os PIM Join (S,G) diretamente em direção à fonte.
-
-### ⚙️ Configurando o PIM-SSM (Source-Specific Multicast)
-
-Agora que o **PIM** está ativo em todas as interfaces, podemos configurar o domínio multicast para operar em **Source-Specific Multicast (SSM)** — modo no qual **não há Rendezvous Point (RP)** nem mensagens Bootstrap.  
-O tráfego multicast flui diretamente da **fonte (S)** para os **receptores interessados (G)**, conforme indicado pelas mensagens **IGMPv3**.
-
-Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, que utiliza RPs para coordenar o fluxo, o **SSM** utiliza **pares (*S,G*)** formados dinamicamente, garantindo simplicidade, segurança e menor dependência de controle.
+- Pode existir **um DR e outro DF na mesma LAN**
+- Eles **não precisam ser o mesmo roteador**
 
 ---
 
-### 🧩 1️⃣ Definindo o intervalo de endereços SSM
+## 📘 PIM BIDIR — Configuração do RP e Eleição do DF
 
-Por padrão, as redes Cisco utilizam o intervalo **232.0.0.0/8** para o **Source-Specific Multicast (SSM)**, conforme definido pelo IANA (RFC 4607).  
-Ainda assim, é boa prática **declarar explicitamente o range SSM** para evitar ambiguidade entre grupos tradicionais (*,G*) e específicos (*S,G*).
+🚦 **Transição do laboratório para PIM BIDIR**  
 
-➡️ **Comando no modo global:**
+A partir deste ponto, o laboratório passa a operar exclusivamente em **PIM Sparse Mode Bidirectional (PIM BIDIR).**  
 
-- Primeiro devemos definir o range do intervalo multicast a ser utilizado:
+📌 **Características do PIM BIDIR:**
+
+- Modelo (*,G) — não existem entradas (S,G)
+- Uso obrigatório de Rendezvous Point (RP)
+- Não há PIM Register
+- Não há SPT
+
+### Introdução do papel DF (Designated Forwarder)
+
+DR e DF coexistem, com funções distintas
+
+👉 **Observação:** agora vamos entrar em todos os roteadores e ativar o protocolo **PIM** em **SPARSE-MODE** em todas as interface **loopback**:
+
+### 🧩 1️⃣ Configurando o Rendezvous Point (RP) BIDIR
+
+Neste laboratório, o R01 será o RP, utilizando a Loopback0 como endereço lógico.  
+
+📍 **Configuração da Loopback do RP**
 
 ```ios
-R01(config)#access-list 10 permit 232.0.0.0 255.0.0.0
+R01(config)#int lo0
+R01(config-if)#ip pim sparse-mode
+R01(config-if)#
+*Mar  1 02:10:41.083: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
+R01(config-if)#
 ```
 
-- Depois precisamos aplicar o range no comando:
+📌 **A ativação do PIM na loopback garante:**  
+
+- Participação correta no domínio multicast
+- Cálculo consistente de RPF
+- Eleição adequada do DF nos enlaces BIDIR
+
+### 🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR
 
 ```ios
-R01(config)#ip pim ssm ?
-  default  Use 232/8 group range for SSM
-  range    ACL for group range to be used for SSM
+R01(config)#ip pim rp-address 1.1.1.1 bidir
+```
 
-R01(config)#ip pim ssm range 10
+👉 **Observação:** aqui caba uma pequena ressalva sobre o comando. Observe a saída:  
+
+```ios
+R01(config)#ip pim rp-address 1.1.1.1 ?
+  <1-99>       Access-list reference for group
+  <1300-1999>  Access-list reference for group (expanded range)
+  WORD         IP Named Standard Access list
+  override     Overrides dynamically learnt RP mappings
+  <cr>
+
 R01(config)#
 ```
 
-⚠️ **Observação Importante — Limitação do IOS 12.4 com Wildcards Grandes**
+Se analisarmos as opções na configuração do **RP BIDIR** podemos pensar que a palavra bidir é uma acl e que depois teremos que configurá-la.  
+Na realidade, por escolha de projeto, o **IOS** implementou a palava **bidir** como uma palavra *especial*.  
+no IOS clássico o bidir é implementado internamente como uma ACL implícita.
+Mesmo quando você não define nenhuma ACL, o IOS cria uma ACL lógica chamada bidir para representar:  
   
-No IOS clássico (como o 12.4) existe uma limitação conhecida no parser de **ACLs STANDARD:**  
-
-- wildcards muito amplos, como **255.0.0.0**, fazem o roteador zerar o endereço base, exibindo:
-
-```ios
-permit 0.0.0.0 255.0.0.0
-```
-
-Isso não representa corretamente o bloco **232/8** e não deve ser usado em laboratórios que dependem de SSM.  
+> “este RP é BIDIR para todos os grupos”
   
-💡 **Solução recomendada para o IOS 12.4:**
-Defina explicitamente apenas os grupos SSM usados no laboratório, evitando wildcards extensos.
-
-Exemplo:
-
-```ios
-ip access-list standard SSM-RANGE
- permit 232.1.1.1
- permit 232.2.2.2
-!
-ip pim ssm range SSM-RANGE
-```
-
-Assim, o SSM funciona corretamente e evita que o roteador degrade a ACL para 0.0.0.0 255.0.0.0, comportamento normal do IOS mais antigo.  
-
----
-
-💡 **Explicação:**  
-
-- O **access-list** define o bloco de endereços que será tratado como SSM;
-- Qualquer grupo dentro de **232.0.0.0/8** será gerenciado sem RP;
-- Como é mostrado na saída, é possível se utilizar outro tipo de range dentro do multicast, porém se estiver fora do range **232/8** estaremos fora da **RFC 4607** que não é uma boa prática
-- Isso permite que o roteador processe **joins específicos (S,G) vindos via IGMPv3**.
-
-⚠️ **Observação importante sobre ip pim ssm-range no IOS**  
+Por isso o comando mostra como ACL, mesmo não sendo uma ACL configurável por você.  
   
-No **IOS clássico (12.x e 15.x)**, o comando ip pim ssm-range não aceita diretamente o prefixo, exigindo a definição do intervalo SSM por meio de uma ACL:
+Quando você executa:
 
 ```ios
-access-list 10 permit 232.0.0.0 255.0.0.0
-ip pim ssm range 10
+R01(config)#ip pim rp-address 1.1.1.1 bidir
 ```
 
-Já em sistemas mais recentes — como IOS XE, NX-OS e IOS XR — o intervalo SSM pode ser configurado diretamente:  
+Você está dizendo ao IOS:
+  
+> “Associe o RP 1.1.1.1 a todos os grupos multicast usando PIM Bidirectional”
+  
+No modelo interno do IOS, todo mapeamento RP ↔ grupo precisa estar ligado a um filtro de grupos.  
+
+📌 **Importante:**
+
+A palavra-chave **bidir** ativa o comportamento **PIM BIDIR**  
+Sem ela, o domínio operaria como **PIM Sparse Mode tradicional**  
+
+Então o IOS já faz a associação do grupo somente onde temos o **RP configurado**. Observe a saída:
 
 ```ios
-ip pim ssm-range 232.0.0.0 255.0.0.0
+R01#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Acl: bidir, Static
+    RP: 1.1.1.1 (?)
 ```
 
-Neste laboratório utilizamos o IOS clássico, portanto adotamos o método baseado em ACL.
+👉 **Observação:** O **(?)** significa apenas:
 
----
+>“Este RP está associado a grupos BIDIR, mas o IOS não exibe o range porque ele não está vinculado a uma ACL explícita.”
 
-🔧 **Configuração do SSM em Todo o Domínio PIM**
+É possível também se configurar a ACL para escolher os grupos que vão fazer parte do BIDIR.  
 
-Para que o Source-Specific Multicast (SSM) funcione corretamente, todos os roteadores do domínio PIM devem possuir o intervalo SSM configurado. Isso garante que cada roteador interprete corretamente os grupos do intervalo 232.0.0.0/8 como SSM, evitando a busca por RP, a criação de (*,G) e qualquer comportamento associado ao PIM Sparse Mode tradicional.  
-
-💡 **Boa prática:**
-Em laboratórios e ambientes reais, o SSM-range deve estar presente em todos os hops entre o Host e o Server, garantindo que os **joins (S,G)** sejam aceitos e propagados ao longo de toda a árvore **PIM-SSM**.  
-
-### 🧭 2️⃣ Habilitando o IGMPv3 nos roteadores
-
-O IGMPv3 é fundamental para o funcionamento do SSM, pois ele permite que os receptores especifiquem as fontes (S) das quais desejam receber tráfego.  
-Sem IGMPv3, o roteador não reconhece solicitações do tipo (S,G).  
-
-➡️ Comando por interface LAN conectada aos hosts receptores:  
+Então, vamos analisar o **RP** configurado em **R01** para termos certeza de que ficou correto:  
 
 ```ios
-R04(config)#int fa1/1
-R04(config-if)#ip igmp version 3
-```
-
-Faça o mesmo nas interfaces onde há receptores multicast (ex.: R04 e R05).  
-
-💡 **Dica:**
-Mesmo que alguns roteadores suportem IGMPv3 por padrão, é recomendado forçar a versão explicitamente para evitar incompatibilidades.  
-
-Para verificar o estado/versão do **IGMP**, execute o comando:  
-
-```ios
-show ip igmp interface
-```
-
-Exemplo em R01  
-
-```ios
-R01#show ip igmp interface
-Loopback0 is up, line protocol is up
-  Internet address is 1.1.1.1/32
-  IGMP is enabled on interface
-  Current IGMP host version is 3
-  Current IGMP router version is 3
-  IGMP query interval is 60 seconds
-  IGMP querier timeout is 120 seconds
-  IGMP max query response time is 10 seconds
-  Last member query count is 2
-  Last member query response interval is 1000 ms
-  Inbound IGMP access group is not set
-  IGMP activity: 1 joins, 0 leaves
-  Multicast routing is enabled on interface
-  Multicast TTL threshold is 0
-  Multicast designated router (DR) is 1.1.1.1 (this system)
-  IGMP querying router is 1.1.1.1 (this system)
-  Multicast groups joined by this system (number of users):
-      224.0.1.40(1)
-FastEthernet0/0 is up, line protocol is up
-  Internet address is 192.168.10.254/24
-  IGMP is enabled on interface
-  Current IGMP host version is 3
-  Current IGMP router version is 3
-  IGMP query interval is 60 seconds
-  IGMP querier timeout is 120 seconds
-  IGMP max query response time is 10 seconds
-  Last member query count is 2
-  Last member query response interval is 1000 ms
-  Inbound IGMP access group is not set
-  IGMP activity: 0 joins, 0 leaves
-  Multicast routing is enabled on interface
-  Multicast TTL threshold is 0
-  Multicast designated router (DR) is 192.168.10.254 (this system)
-  IGMP querying router is 192.168.10.254 (this system)
-  No multicast groups joined by this system
-FastEthernet0/1 is up, line protocol is up
-  Internet address is 10.0.0.1/30
-  IGMP is enabled on interface
-  Current IGMP host version is 3
-  Current IGMP router version is 3
-  IGMP query interval is 60 seconds
-  IGMP querier timeout is 120 seconds
-  IGMP max query response time is 10 seconds
-  Last member query count is 2
-  Last member query response interval is 1000 ms
-  Inbound IGMP access group is not set
-  IGMP activity: 1 joins, 0 leaves
-  Multicast routing is enabled on interface
-  Multicast TTL threshold is 0
-  Multicast designated router (DR) is 10.0.0.2
-  IGMP querying router is 10.0.0.1 (this system)
-  No multicast groups joined by this system
-FastEthernet1/0 is up, line protocol is up
-  Internet address is 10.0.0.18/30
-  IGMP is enabled on interface
-  Current IGMP host version is 3
-  Current IGMP router version is 3
-  IGMP query interval is 60 seconds
-  IGMP querier timeout is 120 seconds
-  IGMP max query response time is 10 seconds
-  Last member query count is 2
-  Last member query response interval is 1000 ms
-  Inbound IGMP access group is not set
-  IGMP activity: 0 joins, 0 leaves
-  Multicast routing is enabled on interface
-  Multicast TTL threshold is 0
-  Multicast designated router (DR) is 10.0.0.18 (this system)
-  IGMP querying router is 10.0.0.17
-  No multicast groups joined by this system
+R01#show ip pim rp
+Group: 224.0.1.40, RP: 1.1.1.1, next RP-reachable in 00:01:27
 R01#
 ```
 
+### 🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR
+  
+🔹 **Designated Router (DR)**  
+  
+- Eleito por LAN
+- Interage com hosts IGMP
+- Representa a LAN no domínio multicast
+- Sempre existe, independentemente do modo PIM
+  
+🔹 **Designated Forwarder (DF)**  
+  
+- Exclusivo do PIM BIDIR
+- Eleito por interface em direção ao RP
+- Decide qual roteador encaminha tráfego multicast para o RP
+- Evita loops e tráfego duplicado
+  
+📌 **Um roteador pode ser DR e DF simultaneamente, ou apenas um deles.**  
+
+### 📊 Comparação prática: DR x DF
+
+| Característica       | DR                     | DF                       |
+|----------------------|------------------------|--------------------------|
+| Escopo               | LAN                    | Interface rumo ao RP     |
+| Eleição              | Maior IP / DR Priority | Melhor RPF para o RP     |
+| Relacionado a IGMP   | ✅ Sim                | ❌ Não                   |
+| Relacionado ao RP    | ❌ Não                |  ✅ Sim                  |
+| Existe fora do BIDIR | ✅ Sim                | ❌ Não                   |
+| Função principal     | Representar hosts      | Encaminhar tráfego ao RP |
+
 ---
 
-### 🧰 3️⃣ Associando hosts e fontes multicast
+Alterar Daqui
 
-Neste laboratório, temos duas fontes e um ou mais receptores:
-
-| Dispositivo | Função             | IP           | Grupo (G)                            |
-|-------------|--------------------|--------------|--------------------------------------|
-| Server01    | Fonte multicast #1 | 192.168.10.1 | 232.1.1.1                            |
-| Server02    | Fonte multicast #2 | 192.168.40.1 | 232.2.2.2                            |
-| Host02      | Receptor multicast | 192.168.20.1 | (S,G) Join para Server01 e Server02  |
-| Host03      | Receptor multicast | 192.168.30.1 | (S,G) Join para Server01 e Server02  |
-
-📘 **Comando de Join nos receptores (simulados com roteadores Cisco):**  
-
-Devemos executar os mesmos comandos em HOST02 e HOST03
-
-**Host02**  
-
-```ios
-Host02(config)#int fa0/0
-Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.10.1
-Host02(config-if)#ip igmp join-group 232.1.1.1 source 192.168.40.1
-Host02(config-if)#ip igmp join-group 232.2.2.2 source 192.168.10.1
-Host02(config-if)#ip igmp join-group 232.2.2.2 source 192.168.40.1
-```
-
-**Host03**  
-
-```ios
-Host03(config)#int fa0/0
-Host03(config)#ip igmp join-group 232.1.1.1 source 192.168.40.1
-Host03(config)#ip igmp join-group 232.2.2.2 source 192.168.10.1
-Host03(config)#ip igmp join-group 232.1.1.1 source 192.168.10.1
-Host03(config)#ip igmp join-group 232.2.2.2 source 192.168.40.1
-```
-
-**OBS:** agora no **SSM + IGMPv3** quando vamos realizar o join group precisamos informar a fonte. Por essa questão, não é mais necessário se fazer o join nos servidores. Isso era feito nos laboratórios anteriores para fecharmos o par (S, G) e, nesse caso, se fizermos o join nos servidores pode ser que quando executarmos o teste de ping a interface de gateway responda pode gerar um loop.  
-
-Agora vamos verificar a tabela de **roteamento multicast** em **R04 e R05** com o comando:
-
-```ios
-show ip mroute
-```
-
-Exemplo de saída esperada:  
-
-```ios
-R04#show ip mroute
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 232.2.2.2), 00:02:25/00:02:58, RP 0.0.0.0, flags: SJC
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:02:25/00:02:58
-
-(*, 232.1.1.1), 00:05:51/00:02:54, RP 0.0.0.0, flags: SJC
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:05:51/00:02:54
-
-(*, 224.0.1.40), 00:29:06/00:02:50, RP 0.0.0.0, flags: DCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    Loopback0, Forward/Sparse, 00:29:06/00:02:50
-
-R04#
-```
-
-💡 **Observe:**
-
-- As entradas aparecem no **formato (S,G) — indicando a árvore por fonte**;
-- Não há nenhuma **linha (,G), pois o SSM não utiliza RP**;
-- O campo flags: **SJC confirma o modo Source-Specific ativo**.
-
-📌 **Observação Importante**  
-
-Em redes multicast, o querier define a versão do IGMP utilizada em cada segmento da LAN.  
-Isso significa que:  
-
-- Mesmo se um roteador ou host estiver configurado com ip igmp version 3,
-- Se o querier enviar IGMPv2 Queries, todos os dispositivos do segmento passam automaticamente a operar em IGMPv2.
-
-💡 **No IOS clássico, isso é um comportamento padrão do protocolo.**
-
-📌 **Forçar o querier atual a usar IGMPv3**
-
-Nos roteadores **R04 e R05** que estão atuando como querier, executar nas interfaces ligadas aos roteadores multicast:  
-
-```ios
-interface FaX/Y
- ip igmp version 3
-```
-
-### 🧪 5️⃣ Captura e análise via Wireshark
-
-📌 **Local ideal para captura:**  
-
-Interface entre R04 e o Host02, onde ocorrem os IGMPv3 Membership Reports.  
-  
-📌 **Filtro recomendado:**  
-
-```whiresahrk
-igmp.type == 0x22
-```
-
-![Whireshark](Imagens/02.png)
-
-💡 **Explicação:**
-
-- **0x22** identifica mensagens **IGMPv3 Membership Report**;
-- Dentro dessas mensagens, é possível observar **os pares (S,G) solicitados**;  
-- Verifique os endereços das **fontes (192.168.10.1 e 192.168.40.1)** listados como Source Addresses.
-  
-📸 **Captura real:**  
-  
-As mensagens IGMPv3 confirmam que o Host02 requisitou fluxos multicast apenas das fontes autorizadas, validando o funcionamento do SSM com múltiplas fontes simultâneas.  
-
-🧠 **Resumo**
-
-| Função                  | Protocolo / Comando                  | Observação técnica                              |
-|-------------------------|--------------------------------------|-------------------------------------------------|
-| Definir range SSM       | ip pim ssm range 232.0.0.0 255.0.0.0 | Ativa o modo Source-Specific para o bloco 232/8 |
-| Ativar IGMPv3           | ip igmp version 3                    | Necessário para joins específicos (S,G)         |
-| Associar receptor (S,G) | ip igmp join-group <G> source <S>    | Simula associação IGMPv3                        |
-| Verificar rotas         | show ip mroute                       | Mostra entradas (S,G) no domínio multicast      |
-| Capturar tráfego        | Filtro igmp.type == 0x22             | Exibe os Membership Reports IGMPv3              |
-
-Com isso, o domínio multicast está completamente operacional em modo SSM, e o tráfego das fontes Server01 e Server02 será entregue somente aos hosts que enviarem joins IGMPv3 (S,G).  
+---
 
 ### 🎥 Configurando os servidores simulados (senders)
 
