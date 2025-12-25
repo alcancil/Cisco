@@ -34,8 +34,14 @@
   - [⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)](#️-ativando-o-protocolo-pim-bidirectional-pim-bidir)
     - [🔧 Configuração do PIM-BIDIR](#-configuração-do-pim-bidir)
       - [Exemplo – Ativando o PIM nas interfaces do R01](#exemplo--ativando-o-pim-nas-interfaces-do-r01)
-  - [🧩 Eleição do Designated Router (DR)](#-eleição-do-designated-router-dr)
-  - [💬 Mensagens PIM Hello](#-mensagens-pim-hello)
+  - [🧩 Eleição do Designated Router (DR) no PIM-BIDIR](#-eleição-do-designated-router-dr-no-pim-bidir)
+    - [⚙️ Critérios de eleição do DR](#️-critérios-de-eleição-do-dr)
+  - [💬 Mensagens PIM Hello no PIM-BIDIR](#-mensagens-pim-hello-no-pim-bidir)
+    - [⚙️ Funções principais das mensagens Hello](#️-funções-principais-das-mensagens-hello)
+    - [🧩 Estrutura simplificada da mensagem PIM Hello](#-estrutura-simplificada-da-mensagem-pim-hello)
+  - [🔍 Exemplo de log da eleição do DR](#-exemplo-de-log-da-eleição-do-dr)
+  - [🧭 Surgimento do Designated Forwarder (DF) no PIM-BIDIR](#-surgimento-do-designated-forwarder-df-no-pim-bidir)
+  - [📊 Comparação clara: DR × DF no PIM-BIDIR](#-comparação-clara-dr--df-no-pim-bidir)
     - [⚙️ Configurando o PIM-SSM (Source-Specific Multicast)](#️-configurando-o-pim-ssm-source-specific-multicast)
     - [🧩 1️⃣ Definindo o intervalo de endereços SSM](#-1️⃣-definindo-o-intervalo-de-endereços-ssm)
     - [🧭 2️⃣ Habilitando o IGMPv3 nos roteadores](#-2️⃣-habilitando-o-igmpv3-nos-roteadores)
@@ -858,87 +864,116 @@ Alterar Daqui
 
 ---
 
-## 🧩 Eleição do Designated Router (DR)
+## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
 
-O **Designated Router (DR)** é o roteador responsável por interagir com os hosts de uma **LAN multicast.**  
-Ele recebe os relatórios IGMPv3, interpreta os pares (S,G) e envia mensagens PIM Join diretamente em direção à fonte indicada.  
-A eleição do DR acontece automaticamente entre os roteadores PIM conectados à mesma rede local.  
+Mesmo no **PIM Bidirectional (PIM-BIDIR)**, o **Designated Router (DR)** continua existindo e sendo eleito em cada **LAN multicast com hosts**.
 
-**Critérios de eleição:**
+O DR é o roteador responsável por representar aquela LAN dentro do domínio multicast, atuando como ponto de interconexão entre os **hosts IGMP** e a **árvore multicast (*,G)**.
 
-- O roteador com o maior endereço IP ativo na LAN é eleito DR;
-- Se ele falhar, outro roteador assume o papel após o timeout dos Hellos (30 segundos, por padrão).
+No PIM-BIDIR, o DR:
 
-💡 **Essa eleição ocorre de forma transparente, sem necessidade de configuração manual.**
+- Recebe relatórios **IGMP (*,G)** dos hosts
+- Cria estado multicast **(*,G)** local
+- Encaminha o interesse do grupo em direção ao **Rendezvous Point (RP BIDIR)**
+- **Não interpreta pares (S,G)**
+- **Não envia mensagens PIM Register**
+- **Não constrói Shortest Path Tree (SPT)**
 
-## 💬 Mensagens PIM Hello
+A eleição do DR ocorre automaticamente entre os roteadores PIM conectados à mesma LAN.
 
-As mensagens **PIM Hello** são o primeiro passo para o estabelecimento de vizinhanças PIM.  
-Elas são enviadas periodicamente no grupo **224.0.0.13 (PIM Routers) com TTL 1,** e permitem que os roteadores descubram vizinhos ativos, negociem parâmetros e mantenham a topologia multicast estável.  
-  
-Essas mensagens também informam o modo de operação **(SSM)**, a prioridade do DR e o holdtime de vizinhança.  
+### ⚙️ Critérios de eleição do DR
 
-⚙️ **Funções principais das mensagens Hello**  
+- O roteador com o **maior endereço IP ativo na LAN** é eleito DR;
+- Em caso de falha, um novo DR é eleito após o **timeout das mensagens PIM Hello** (30 segundos por padrão).
 
-| **Função**                 | **Descrição**                                                                          |
-|----------------------------|------------------------------------------------------------------------------------|
-| **Descoberta de vizinhos** | Roteadores PIM trocam Hellos para identificar dispositivos ativos na mesma LAN.    |
-| **Troca de parâmetros**    | Define tempo de expiração, prioridade de DR e modo de operação.                    |
-| **Monitoramento**          | Se um vizinho deixa de enviar Hellos dentro do holdtime, é removido da tabela PIM. |
+💡 **Essa eleição ocorre de forma transparente e não requer configuração manual.**
 
 ---
 
-🧩 **Estrutura simplificada da mensagem Hello**  
+## 💬 Mensagens PIM Hello no PIM-BIDIR
 
-| Campo          | Função                                                  | Valor típico |
-|----------------|---------------------------------------------------------|--------------|
-| Type           | Tipo da mensagem PIM (Hello = 0x00)                     | 0x00         |
-| Holdtime       | Tempo máximo de inatividade antes da remoção do vizinho | 105 s        |
-| DR Priority    | Prioridade do Designated Router (maior vence)           | 1 (padrão)   |
-| Generation ID  | Valor aleatório que muda a cada boot                    | Aleatório    |
-| Hello Interval | Tempo entre Hellos consecutivos                         | 30 s         |
+As mensagens **PIM Hello** são utilizadas para o estabelecimento e manutenção de vizinhanças PIM.  
+Elas são enviadas periodicamente ao grupo **224.0.0.13 (PIM Routers)** com **TTL 1**, garantindo que apenas roteadores na mesma LAN participem da vizinhança.
 
-💡 **Dica:**
-Use o Wireshark com o filtro **pim.type == 0** para observar essas mensagens em tempo real.  
-  
-🔍 **Exemplo de log da eleição do DR**
+Essas mensagens são responsáveis por:
 
-Logo após ativar o PIM-SSM, o log do roteador mostrará a eleição automática do Designated Router:  
+- Descobrir roteadores PIM vizinhos
+- Negociar parâmetros operacionais
+- Eleger o **Designated Router (DR)** por segmento LAN
+
+No **PIM-BIDIR**, as mensagens Hello **não sinalizam fontes**, **não criam estados (S,G)** e **não iniciam SPTs**.  
+Elas mantêm exclusivamente o **plano de controle multicast**.
+
+### ⚙️ Funções principais das mensagens Hello
+
+| Função                     | Descrição                                                                 |
+|----------------------------|---------------------------------------------------------------------------|
+| Descoberta de vizinhos     | Identifica roteadores PIM ativos na mesma LAN                              |
+| Troca de parâmetros        | Define holdtime, prioridade de DR e capacidades PIM                        |
+| Eleição do DR              | Permite a escolha automática do DR por segmento LAN                        |
+| Monitoramento              | Remove vizinhos inativos após o tempo de holdtime                          |
+
+---
+
+### 🧩 Estrutura simplificada da mensagem PIM Hello
+
+| Campo           | Função                                                  | Valor típico |
+|-----------------|---------------------------------------------------------|--------------|
+| Type            | Tipo da mensagem PIM (Hello = 0x00)                     | 0x00         |
+| Holdtime        | Tempo máximo sem Hellos antes de remover o vizinho      | 105 s        |
+| DR Priority     | Prioridade do DR (maior vence)                          | 1 (padrão)   |
+| Generation ID   | Identificador que muda a cada reboot                    | Aleatório    |
+| Hello Interval  | Intervalo entre mensagens Hello                         | 30 s         |
+
+💡 **Dica:**  
+Use o Wireshark com o filtro **`pim.type == 0`** para observar as mensagens PIM Hello em tempo real.
+
+---
+
+## 🔍 Exemplo de log da eleição do DR
 
 ```ios
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
 ```
   
-👉 Isso indica que o roteador 10.0.0.18 foi eleito DR na interface FastEthernet1/0, responsável por processar os relatórios IGMPv3 dos hosts.  
+👉 O roteador **10.0.0.18** foi eleito Designated Router na interface FastEthernet1/0, passando **a representar aquela LAN no domínio multicast BIDIR.**  
   
-👏 **Mas ainda existe eleição do DR?**  
+## 🧭 Surgimento do Designated Forwarder (DF) no PIM-BIDIR
 
-👉 Sim, o PIM-SSM (Source-Specific Multicast) ainda tem eleição de Designated Router (DR) — mas com uma diferença importante no papel funcional dele.  
-
-Vamos detalhar didaticamente:  
-
-- ⚙️ O DR existe no SSM, mas faz menos coisas que no PIM-SM
-- Mesmo no SSM, quando há mais de um roteador conectado à mesma LAN multicast, o protocolo PIM precisa eleger um único roteador responsável por representar aquela LAN.
-- Esse roteador eleito é o Designated Router (DR).
+Além do **DR, o PIM-BIDIR** introduz um novo papel exclusivo: **o Designated Forwarder (DF)**.  
   
-🔹 **Por que ele ainda é necessário?**
+**O DF não substitui o DR.**  
+Eles coexistem e atuam em pontos diferentes da topologia, resolvendo problemas distintos.  
 
-Porque o DR é quem recebe os relatórios **IGMPv3 (Membership Reports)** dos hosts na LAN e toma as decisões iniciais de multicast:
+O **Designated Forwarder (DF)** é responsável por controlar **o encaminhamento efetivo do tráfego multicast em cada enlace entre roteadores, evitando loops em uma árvore bidirecional (*,G)**.  
 
-- Ele interpreta os pares (S,G) recebidos dos hosts;
-- Gera as entradas correspondentes na tabela multicast;
-- E envia mensagens PIM Join (S,G) diretamente em direção à fonte (S).
+A eleição do DF:  
 
-📊 **Diferença prática entre PIM-SM e PIM-SSM quanto ao DR**  
+- Ocorre por enlace, e não por LAN de hosts
+- É baseada no RPF em direção ao RP
+- Define qual roteador pode encaminhar tráfego multicast naquele link
 
-| Função                          | PIM Sparse Mode (com RP)                 | PIM-SSM (com IGMPv3)           |
-|---------------------------------|------------------------------------------|--------------------------------|
-| Receber IGMP                    | Sim                                      | Sim                            |
-| Enviar PIM Join                 | Sim — mas em direção ao RP               | Sim — direto para a fonte (S)  |
-| Enviar PIM Register             | Sim — envia registros encapsulados ao RP | ❌ Não existe registro no SSM  |
-| Descobrir RP / BSR              | Sim                                      | ❌ Não aplicável               |
-| Participa na árvore (*,G)       | Sim                                      | ❌ Só (S,G)                    |
-| Eleição entre roteadores na LAN | Sim                                      | Sim                            |
+## 📊 Comparação clara: DR × DF no PIM-BIDIR
+
+| Característica             | Designated Router (DR)   | Designated Forwarder (DF)  |
+|----------------------------|--------------------------|----------------------------|
+| Existe no PIM-BIDIR        | ✅ Sim                   | ✅ Sim                    |
+| Onde atua                  | LAN com hosts            | Enlaces entre roteadores   |
+| Interage com hosts         | ✅ Sim                   | ❌ Não                    |
+| Recebe IGMP                | ✅ Sim                   | ❌ Não                    |
+| Tipo de estado multicast   | (*,G)                    | (*,G)                      |
+| Base da eleição            | Maior IP / prioridade    | RPF em direção ao RP       |
+|Encaminha tráfego multicast | ❌ Não (controle apenas) | ✅ Sim                    |
+| Evita loops                | ❌ Não                   | ✅ Sim                    |
+
+💡 **Resumo conceitual importante:**  
+No **PIM-BIDIR, o Designated Router (DR)** continua sendo o ponto de entrada da LAN multicast, enquanto o **Designated Forwarder (DF) é o mecanismo que garante encaminhamento bidirecional sem loops na árvore compartilhada (*,G)**.
+
+---
+
+Alterar daqui
+
+---
 
 💡 **Resumo prático**  
   
