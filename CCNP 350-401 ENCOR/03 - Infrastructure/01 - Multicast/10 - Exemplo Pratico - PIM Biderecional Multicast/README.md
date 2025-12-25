@@ -42,6 +42,15 @@
   - [🔍 Exemplo de log da eleição do DR](#-exemplo-de-log-da-eleição-do-dr)
   - [🧭 Surgimento do Designated Forwarder (DF) no PIM-BIDIR](#-surgimento-do-designated-forwarder-df-no-pim-bidir)
   - [📊 Comparação clara: DR × DF no PIM-BIDIR](#-comparação-clara-dr--df-no-pim-bidir)
+  - [🧪 Identificação do Designated Router (DR) no Domínio PIM](#-identificação-do-designated-router-dr-no-domínio-pim)
+  - [⚙️ Como o DR é eleito neste estágio](#️-como-o-dr-é-eleito-neste-estágio)
+  - [🔍 Comandos para identificar o DR](#-comandos-para-identificar-o-dr)
+    - [0️⃣ Verificar em que interfaces o PIM está ativado](#0️⃣-verificar-em-que-interfaces-o-pim-está-ativado)
+    - [1️⃣ Verificar vizinhança PIM](#1️⃣-verificar-vizinhança-pim)
+    - [2️⃣ Verificar logs de eleição do DR em tempo real](#2️⃣-verificar-logs-de-eleição-do-dr-em-tempo-real)
+    - [3️⃣ Confirmar a interface LAN envolvida](#3️⃣-confirmar-a-interface-lan-envolvida)
+    - [🧠 Evidência via captura de pacotes (Wireshark)](#-evidência-via-captura-de-pacotes-wireshark)
+    - [✅ Conclusão deste estágio do laboratório](#-conclusão-deste-estágio-do-laboratório)
     - [⚙️ Configurando o PIM-SSM (Source-Specific Multicast)](#️-configurando-o-pim-ssm-source-specific-multicast)
     - [🧩 1️⃣ Definindo o intervalo de endereços SSM](#-1️⃣-definindo-o-intervalo-de-endereços-ssm)
     - [🧭 2️⃣ Habilitando o IGMPv3 nos roteadores](#-2️⃣-habilitando-o-igmpv3-nos-roteadores)
@@ -858,12 +867,6 @@ O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma
 
 A entrada **(*,224.0.1.40)** representa tráfego de controle do PIM e aparece independentemente de fontes ou receptores. Entradas **(,239.x.x.x)** só são criadas quando há interesse explícito via IGMP ou tráfego multicast ativo, especialmente em cenários PIM-BIDIR.  
 
----
-
-Alterar Daqui
-
----
-
 ## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
 
 Mesmo no **PIM Bidirectional (PIM-BIDIR)**, o **Designated Router (DR)** continua existindo e sendo eleito em cada **LAN multicast com hosts**.
@@ -955,16 +958,16 @@ A eleição do DF:
 
 ## 📊 Comparação clara: DR × DF no PIM-BIDIR
 
-| Característica             | Designated Router (DR)   | Designated Forwarder (DF)  |
-|----------------------------|--------------------------|----------------------------|
-| Existe no PIM-BIDIR        | ✅ Sim                   | ✅ Sim                    |
-| Onde atua                  | LAN com hosts            | Enlaces entre roteadores   |
-| Interage com hosts         | ✅ Sim                   | ❌ Não                    |
-| Recebe IGMP                | ✅ Sim                   | ❌ Não                    |
-| Tipo de estado multicast   | (*,G)                    | (*,G)                      |
-| Base da eleição            | Maior IP / prioridade    | RPF em direção ao RP       |
-|Encaminha tráfego multicast | ❌ Não (controle apenas) | ✅ Sim                    |
-| Evita loops                | ❌ Não                   | ✅ Sim                    |
+| Característica              | Designated Router (DR)    | Designated Forwarder (DF)  |
+|-----------------------------|---------------------------|----------------------------|
+| Existe no PIM-BIDIR         | ✅ Sim                    | ✅ Sim                    |
+| Onde atua                   | LAN com hosts             | Enlaces entre roteadores   |
+| Interage com hosts          | ✅ Sim                    | ❌ Não                    |
+| Recebe IGMP                 | ✅ Sim                    | ❌ Não                    |
+| Tipo de estado multicast    | (*,G)                     | (*,G)                      |
+| Base da eleição             | Maior IP / prioridade     | RPF em direção ao RP       |
+| Encaminha tráfego multicast | ❌ Não (controle apenas)  | ✅ Sim                    |
+| Evita loops                 | ❌ Não                    | ✅ Sim                    |
 
 💡 **Resumo conceitual importante:**  
 No **PIM-BIDIR, o Designated Router (DR)** continua sendo o ponto de entrada da LAN multicast, enquanto o **Designated Forwarder (DF) é o mecanismo que garante encaminhamento bidirecional sem loops na árvore compartilhada (*,G)**.
@@ -974,6 +977,130 @@ No **PIM-BIDIR, o Designated Router (DR)** continua sendo o ponto de entrada da 
 Alterar daqui
 
 ---
+
+## 🧪 Identificação do Designated Router (DR) no Domínio PIM
+
+Até este ponto do laboratório, **nenhuma configuração explícita de DR ou DF foi realizada**.  
+Foram aplicados apenas os comandos:
+
+- `ip multicast-routing`
+- `ip pim sparse-mode` nas interfaces
+
+Mesmo assim, o **Designated Router (DR)** já é automaticamente eleito em cada segmento LAN multicast.
+
+Isso ocorre porque:
+
+- A **eleição do DR é implícita**
+- Baseia-se exclusivamente nas **mensagens PIM Hello**
+- Não depende de RP, SSM ou BIDIR configurado
+
+---
+
+## ⚙️ Como o DR é eleito neste estágio
+
+Em qualquer LAN com dois ou mais roteadores PIM:
+
+1. Todos enviam **PIM Hello** para o grupo `224.0.0.13`
+2. Os Hellos carregam:
+   - Endereço IP da interface
+   - DR Priority (default = 1)
+3. O roteador com o **maior IP ativo na LAN** é eleito **DR**
+
+📌 **Nenhum comando adicional é necessário.**
+
+---
+
+## 🔍 Comandos para identificar o DR
+
+### 0️⃣ Verificar em que interfaces o PIM está ativado
+
+```ios
+R01#show ip pim interface
+
+Address          Interface                Ver/   Nbr    Query  DR     DR
+                                          Mode   Count  Intvl  Prior
+192.168.10.254   FastEthernet0/0          v2/S   0      30     1      192.168.10.254
+10.0.0.1         FastEthernet0/1          v2/S   1      30     1      10.0.0.2
+10.0.0.18        FastEthernet1/0          v2/S   1      30     1      10.0.0.18
+R01#
+```
+
+### 1️⃣ Verificar vizinhança PIM
+
+```ios
+R01#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.2          FastEthernet0/1          00:05:29/00:01:40 v2    1 / DR S
+10.0.0.17         FastEthernet1/0          00:05:29/00:01:40 v2    1 / S
+R01#
+```
+
+### 2️⃣ Verificar logs de eleição do DR em tempo real
+
+```ios
+R01#terminal monitor
+
+%PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.2 on interface FastEthernet0/1
+```
+
+### 3️⃣ Confirmar a interface LAN envolvida
+
+```ios
+R01#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.17         FastEthernet1/0          00:04:13/00:01:27 v2    1 / S
+10.0.0.2          FastEthernet0/1          00:03:54/00:01:15 v2    1 / DR S
+  
+R01#show ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
+FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
+FastEthernet1/0            10.0.0.18       YES NVRAM  up                    up
+Loopback0                  1.1.1.1         YES NVRAM  up                    up
+R01#
+```
+
+### 🧠 Evidência via captura de pacotes (Wireshark)
+
+Vamos entrar em R01 e ativar a captura de pacotes na Interface **FastEthernet0/1** com o seguinte filtro:  
+
+```Whireshark
+pim.type == 0
+```
+
+![Whireshark](Imagens/Whireshark01.png)
+
+### ✅ Conclusão deste estágio do laboratório
+
+- O DR já existe, mesmo sem configuração manual
+- A eleição ocorre automaticamente via PIM Hello
+
+O DR é válido para:
+
+- Receber mensagens IGMP
+- Representar a LAN no domínio multicast
+- Servir como base para os próximos passos (RP e DF)
+
+🚧 **Importante:**
+Neste momento não existe DF, pois:
+
+- O RP BIDIR ainda não foi configurado
+- O DF só surge em cenários PIM-BIDIR, após a definição do RP
+
+---
+
+alterar daqui
+
+---
+
 
 💡 **Resumo prático**  
   
