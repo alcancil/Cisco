@@ -972,12 +972,6 @@ A eleição do DF:
 💡 **Resumo conceitual importante:**  
 No **PIM-BIDIR, o Designated Router (DR)** continua sendo o ponto de entrada da LAN multicast, enquanto o **Designated Forwarder (DF) é o mecanismo que garante encaminhamento bidirecional sem loops na árvore compartilhada (*,G)**.
 
----
-
-Alterar daqui
-
----
-
 ## 🧪 Identificação do Designated Router (DR) no Domínio PIM
 
 Até este ponto do laboratório, **nenhuma configuração explícita de DR ou DF foi realizada**.  
