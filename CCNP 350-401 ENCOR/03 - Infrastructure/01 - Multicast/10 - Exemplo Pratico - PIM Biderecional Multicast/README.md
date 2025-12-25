@@ -668,12 +668,6 @@ O BIDIR assume que:
 
 Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambientes com **múltiplas fontes ativas**, como aplicações financeiras, sistemas de replicação e serviços de colaboração em tempo real.
   
-----
-
-Alterar Daqui
-
----
-
 💬 **Resumo final**  
   
 | Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |
