@@ -61,6 +61,13 @@
     - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
     - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
     - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
+  - [Escopo dos Grupos Multicast no Domínio PIM BIDIR](#escopo-dos-grupos-multicast-no-domínio-pim-bidir)
+    - [📋 Grupos Multicast Utilizados no Laboratório](#-grupos-multicast-utilizados-no-laboratório)
+  - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
+    - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
+    - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
+    - [🧠 Implicações no Plano de Controle](#-implicações-no-plano-de-controle)
+    - [🔍 Observação do Estado Multicast (Pré-tráfego)](#-observação-do-estado-multicast-pré-tráfego)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1321,6 +1328,140 @@ pim.type == 0
 ![Whireshark](Imagens/Whireshark02.png)
 
 Agora podemos notar que aparce o campo: **Option 22: Bidirecional Capable** que confirma que BIDIR agora está ativo.
+
+## Escopo dos Grupos Multicast no Domínio PIM BIDIR
+
+Neste laboratório, o RP foi configurado em modo BIDIR utilizando o comando:
+
+```plaintext
+ip pim rp-address 1.1.1.1 bidir
+```
+
+Esta configuração tem um impacto importante no escopo dos grupos multicast do ambiente.  
+
+⚠️ **Impacto do bidir no IOS 12.4T**  
+  
+Embora o **PIM BIDIR** seja conceitualmente aplicado por grupo multicast, a implementação do IOS 12.4T trata o comando bidir como um comportamento global.  
+  
+Como resultado:
+
+- Todos os grupos multicast definidos no laboratório passam a operar em modo BIDIR
+- Não existe associação seletiva de grupos via ACL quando o parâmetro bidir é utilizado
+- Todo o domínio multicast passa a utilizar exclusivamente árvores compartilhadas (*,G)
+  
+📌 Ou seja, ao ativar o RP em **modo BIDIR**, o roteador considera **implicitamente todos os grupos multicast como pertencentes ao domínio BIDIR**.  
+
+### 📋 Grupos Multicast Utilizados no Laboratório
+
+Para fins didáticos, os seguintes grupos multicast são utilizados neste ambiente:  
+  
+**239.1.1.1**  
+  
+(outros grupos podem existir conforme o cenário, e também serão tratados como BIDIR)  
+  
+Todos esses grupos:
+
+- Operam em modo PIM BIDIR
+- Não criam estados (S,G)
+- Não realizam transição para SPT
+  
+🎯 **Grupo Selecionado para Análise do Laboratório**  
+  
+Embora todos os grupos multicast estejam operando em modo BIDIR, este laboratório irá focar no grupo:  
+
+Grupo multicast: **239.1.1.1**  
+  
+Este grupo será utilizado para:
+
+- Geração de tráfego multicast
+- Observação da árvore (*,G)
+- Análise do papel do DF (Designated Forwarder)
+- Validação do comportamento many-to-many do PIM BIDIR
+  
+Os conceitos apresentados a seguir se aplicam igualmente a qualquer outro grupo multicast neste domínio.  
+
+## Mudanças no Plano de Controle Multicast: SPT vs (*,G)
+
+Com o RP configurado em modo BIDIR, o comportamento do **plano de controle multicast** passa a ser significativamente diferente do PIM Sparse-Mode tradicional.  
+Este item tem como objetivo esclarecer **o que muda internamente no protocolo**, antes da introdução de receptores, fontes ou tráfego multicast.  
+
+---
+
+### 🔄 PIM Sparse-Mode Tradicional (Referência)
+
+No PIM Sparse-Mode convencional, o fluxo multicast segue, de forma simplificada, o seguinte processo:  
+  
+1. Receptores enviam mensagens **IGMP Join**
+2. O roteador DR cria uma árvore compartilhada **(*,G)** em direção ao RP
+3. Quando uma fonte começa a transmitir:
+   - O DR da fonte envia mensagens **Register** ao RP
+4. Após a validação do tráfego:
+   - O receptor pode migrar para uma árvore **(S,G)** (Shortest Path Tree – SPT)
+
+📌 Neste modelo:
+
+- O RP é o ponto inicial do tráfego
+- Estados (*,G) e (S,G) coexistem
+- O tráfego pode deixar de passar pelo RP após a transição para SPT
+
+---
+
+### 🔁 PIM BIDIR – Plano de Controle Simplificado
+
+No PIM BIDIR, esse comportamento é **intencionalmente simplificado**.  
+  
+Quando o RP é configurado em modo BIDIR:
+
+- ❌ Não existe processo de **Register**
+- ❌ Não são criados estados **(S,G)**
+- ❌ Não ocorre transição para **SPT**
+- ❌ O RP não atua como ponto obrigatório de entrada do tráfego
+  
+Em vez disso:  
+
+- ✔️ Todo o domínio multicast utiliza **apenas árvores compartilhadas (*,G)**
+- ✔️ Fontes e receptores utilizam a **mesma árvore bidirecional**
+- ✔️ O tráfego pode fluir em **ambas as direções** na árvore
+  
+📌 O estado (*,G) passa a ser o **único estado multicast válido** no domínio BIDIR.
+  
+---
+
+### 🧠 Implicações no Plano de Controle
+  
+As principais implicações desse modelo são:
+
+- 🔹 Redução significativa do número de estados multicast
+- 🔹 Eliminação da lógica de transição (*,G) → (S,G)
+- 🔹 Previsibilidade no caminho do tráfego
+- 🔹 Melhor escalabilidade em cenários many-to-many
+  
+Este comportamento torna o PIM BIDIR particularmente adequado para ambientes onde:
+
+- Múltiplas fontes transmitem simultaneamente
+- O volume de estados (S,G) seria proibitivo
+- A simplicidade do controle-plane é prioritária
+
+---
+
+### 🔍 Observação do Estado Multicast (Pré-tráfego)
+
+Antes da introdução de receptores e fontes, é esperado que:  
+  
+- A tabela multicast **não contenha estados ativos**, ou
+- Apresente apenas entradas (*,G) **sem tráfego associado**
+  
+O comando abaixo pode ser utilizado para observação inicial:
+
+```plaintext
+R01# show ip mroute
+```
+
+📌 **Nesta fase**:
+
+- Não devem existir entradas (S,G)
+- Qualquer estado observado será exclusivamente do tipo **(*,G)**
+- Este comportamento é consistente com o funcionamento do PIM BIDIR e servirá de base para os próximos passos do laboratório.
 
 ---
 
