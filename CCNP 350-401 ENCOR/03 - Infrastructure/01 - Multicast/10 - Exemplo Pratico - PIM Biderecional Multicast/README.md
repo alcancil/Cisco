@@ -68,6 +68,12 @@
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
     - [🧠 Implicações no Plano de Controle](#-implicações-no-plano-de-controle)
     - [🔍 Observação do Estado Multicast (Pré-tráfego)](#-observação-do-estado-multicast-pré-tráfego)
+  - [3️⃣ Designated Forwarder (DF) no PIM BIDIR — Conceito e Observação no LAB](#3️⃣-designated-forwarder-df-no-pim-bidir--conceito-e-observação-no-lab)
+    - [🔄 Por que o DR não é suficiente no PIM BIDIR](#-por-que-o-dr-não-é-suficiente-no-pim-bidir)
+    - [🧠 Conceito do Designated Forwarder (DF)](#-conceito-do-designated-forwarder-df)
+    - [🧩 Separação entre DR e DF](#-separação-entre-dr-e-df)
+  - [🔎 Observação do Ambiente PIM BIDIR (LAB)](#-observação-do-ambiente-pim-bidir-lab)
+    - [📌 Verificação das Interfaces PIM](#-verificação-das-interfaces-pim)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1462,6 +1468,111 @@ R01# show ip mroute
 - Não devem existir entradas (S,G)
 - Qualquer estado observado será exclusivamente do tipo **(*,G)**
 - Este comportamento é consistente com o funcionamento do PIM BIDIR e servirá de base para os próximos passos do laboratório.
+
+## 3️⃣ Designated Forwarder (DF) no PIM BIDIR — Conceito e Observação no LAB
+
+Com o RP configurado em modo BIDIR e o plano de controle operando exclusivamente com estados (*,G), o PIM BIDIR introduz o papel do **Designated Forwarder (DF)**.
+
+Este item apresenta:
+- O **conceito do DF**
+- Sua **função no encaminhamento multicast**
+- E a **observação prática do ambiente**, ainda **sem analisar a eleição do DF**, que será tratada no próximo item.
+
+---
+
+### 🔄 Por que o DR não é suficiente no PIM BIDIR
+
+No PIM Sparse-Mode tradicional, o **Designated Router (DR)** é responsável por encaminhar o tráfego multicast das fontes para o RP.
+
+No entanto, em cenários **many-to-many**:
+
+- Múltiplas fontes podem existir no mesmo segmento
+- Múltiplos roteadores podem ter caminho válido até o RP
+- Permitir múltiplos encaminhamentos upstream causaria **loops e duplicação de tráfego**
+
+Por esse motivo, o PIM BIDIR **não utiliza o DR para encaminhamento upstream**.
+
+---
+
+### 🧠 Conceito do Designated Forwarder (DF)
+
+O **Designated Forwarder (DF)** é o roteador responsável por:  
+  
+- Encaminhar tráfego multicast **upstream** na árvore (*,G)
+- Garantir que **apenas um roteador por segmento** envie tráfego em direção ao RP-tree
+- Prevenir loops multicast em árvores bidirecionais
+  
+📌 Características importantes do DF:
+
+- É exclusivo do **PIM BIDIR**
+- Atua apenas no encaminhamento upstream
+- É eleito **por interface**
+- Independe do DR tradicional
+  
+---
+  
+### 🧩 Separação entre DR e DF
+
+Mesmo que um roteador seja DR em uma interface, isso **não implica** que ele será o DF naquele segmento.
+
+| Papel | Protocolo       | Função                        |
+|-------|-----------------|-------------------------------|
+| DR    | PIM Sparse-Mode | Register, SPT                 |
+| DF    | PIM BIDIR       | Encaminhamento upstream (*,G) |
+
+---
+
+## 🔎 Observação do Ambiente PIM BIDIR (LAB)
+  
+Antes da introdução de receptores e fontes multicast, já é possível **validar o ambiente necessário para a atuação do DF**, observando o plano de controle PIM.  
+  
+### 📌 Verificação das Interfaces PIM
+
+```plaintext
+R01#show ip pim interface
+
+Address          Interface                Ver/   Nbr    Query  DR     DR
+                                          Mode   Count  Intvl  Prior
+1.1.1.1          Loopback0                v2/S   0      30     1      1.1.1.1
+192.168.10.254   FastEthernet0/0          v2/S   0      30     1      192.168.10.254
+10.0.0.1         FastEthernet0/1          v2/S   1      30     1      10.0.0.2
+10.0.0.18        FastEthernet1/0          v2/S   1      30     1      10.0.0.18
+R01#
+```
+  
+📌 Neste ponto:  
+  
+- Todas as interfaces já são candidatas à função de DF
+- Nenhuma eleição foi ainda analisada
+  
+📌 **Verificação das Vizinhanças PIM**
+
+```ios
+R01#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      S - State Refresh Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+10.0.0.2          FastEthernet0/1          01:00:19/00:01:27 v2    1 / DR B S
+10.0.0.17         FastEthernet1/0          01:00:19/00:01:26 v2    1 / B S
+R01#
+```
+  
+📌 **Sem vizinhança PIM:**
+
+- Não há eleição de DF
+- Não há encaminhamento multicast BIDIR
+  
+📌 **Estado do LAB Neste Momento**
+  
+Neste estágio do laboratório:
+
+- O RP BIDIR já está definido
+- O plano de controle opera apenas com estados (*,G)
+- O papel do DF já é conceitualmente necessário
+- O ambiente PIM está pronto para a eleição do DF
+- Ainda não existe tráfego multicast ativo  
 
 ---
 
