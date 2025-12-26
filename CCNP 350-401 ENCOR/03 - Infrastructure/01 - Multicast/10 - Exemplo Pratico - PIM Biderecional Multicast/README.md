@@ -60,6 +60,7 @@
     - [🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR](#-2️⃣-associando-grupos-multicast-ao-rp-em-modo-bidir)
     - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
     - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
+    - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1301,6 +1302,25 @@ R01#
 | Relacionado ao RP    | ❌ Não                |  ✅ Sim                  |
 | Existe fora do BIDIR | ✅ Sim                | ❌ Não                   |
 | Função principal     | Representar hosts      | Encaminhar tráfego ao RP |
+
+### 📌 Nota sobre compatibilidade de IOS
+
+Este laboratório foi desenvolvido utilizando Cisco IOS 12.4(15)T, onde o suporte a **PIM Bidirectional é habilitado globalmente**, através do comando:
+
+```ios
+R01(config)#ip pim bidir-enable
+```
+
+Para o funcionamento correto, devemos habilitar o comando em todos os roteadores.  
+Logo após, vamos confirmar com o Whireshark. Vamos entrar em R01, na interface fastethernet0/0 e realizar a captura com o seguinte filtro:
+
+```whireshark
+pim.type == 0
+```
+
+![Whireshark](Imagens/Whireshark02.png)
+
+Agora podemos notar que aparce o campo: **Option 22: Bidirecional Capable** que confirma que BIDIR agora está ativo.
 
 ---
 
