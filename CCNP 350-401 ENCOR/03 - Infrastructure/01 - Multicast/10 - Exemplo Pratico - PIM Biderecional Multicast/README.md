@@ -91,7 +91,10 @@
   - [Fontes Multicast – Cenário Many-to-Many](#fontes-multicast--cenário-many-to-many)
     - [🧠 Conceito de Many-to-Many no PIM BIDIR](#-conceito-de-many-to-many-no-pim-bidir)
     - [🖥️ Topologia das Fontes](#️-topologia-das-fontes)
+    - [Ajuste de Topologia — Fontes e Receptores no PIM BIDIR](#ajuste-de-topologia--fontes-e-receptores-no-pim-bidir)
     - [🔧 Preparação das Interfaces de Acesso (Fontes)](#-preparação-das-interfaces-de-acesso-fontes)
+    - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
+      - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
     - [Realizando testes - Simulando fluxo nos servidores](#realizando-testes---simulando-fluxo-nos-servidores)
   - [🛠️ Troubleshooting](#️-troubleshooting)
@@ -2103,8 +2106,8 @@ No PIM BIDIR:
 
 Neste laboratório, serão utilizadas **duas fontes multicast**:
 
-- **SERVER** → conectado ao **R01**
 - **SERVER02** → conectado ao **R03**
+- **SERVER03** → conectado ao **R02**
 
 Grupo multicast utilizado:
 
@@ -2114,6 +2117,28 @@ Ambos os hosts:
 
 - Enviam tráfego para o mesmo grupo
 - Operam de forma simultânea (many-to-many)
+
+### Ajuste de Topologia — Fontes e Receptores no PIM BIDIR
+
+Para que o comportamento do PIM Bidirectional seja corretamente demonstrado, foi necessário ajustar a posição das fontes multicast no laboratório.
+
+Inicialmente, o **Server01** estava conectado diretamente ao **R01**, que atua como **Rendezvous Point (RP)**. Embora a comunicação multicast funcione nesse cenário, essa topologia não evidencia adequadamente o funcionamento do **tráfego upstream no PIM BIDIR**, uma vez que a fonte está local ao RP, eliminando a necessidade de encaminhamento bidirecional no core da rede.
+
+Para demonstrar corretamente o modelo **many-to-many** e a construção dinâmica da tabela **mroute** com tráfego upstream e downstream, o laboratório foi ajustado da seguinte forma:
+
+- **Fontes multicast:**
+  - **Server02**, conectado ao **R03**
+  - **Server03**, conectado ao **R02**
+
+- **Receptores multicast:**
+  - **Host02**, conectado ao **R04**
+  - **Host03**, conectado ao **R05**
+
+O **Server01**, conectado ao **R01**, permanece no diagrama apenas como referência topológica e **não é utilizado como fonte de tráfego multicast neste laboratório**.
+
+Esse ajuste garante que o tráfego multicast atravesse múltiplos roteadores, permitindo a observação clara do comportamento do **PIM BIDIR**, incluindo o papel do **Designated Forwarder (DF)**, a criação de entradas **(*,G)** e a validação do fluxo bidirecional na rede.
+
+![Cenário01](Imagens/cenario01.png)
 
 ---
 
@@ -2130,6 +2155,7 @@ Nas interfaces conectadas às fontes, deve-se garantir:
 ```plaintext
 R02(config)# interface FastEthernet1/0
 R02(config-if)# ip pim sparse-mode
+```
 
 ---
 
