@@ -87,8 +87,10 @@
     - [🖥️ Simulação dos Hosts Receptores](#️-simulação-dos-hosts-receptores)
     - [🔍 Verificação dos Receptores no Roteador](#-verificação-dos-receptores-no-roteador)
     - [🔍 Verificação do Estado Multicast no PIM](#-verificação-do-estado-multicast-no-pim)
-    - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
-      - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
+  - [Fontes Multicast – Cenário Many-to-Many](#fontes-multicast--cenário-many-to-many)
+    - [🧠 Conceito de Many-to-Many no PIM BIDIR](#-conceito-de-many-to-many-no-pim-bidir)
+    - [🖥️ Topologia das Fontes](#️-topologia-das-fontes)
+    - [🔧 Preparação das Interfaces de Acesso (Fontes)](#-preparação-das-interfaces-de-acesso-fontes)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
     - [Realizando testes - Simulando fluxo nos servidores](#realizando-testes---simulando-fluxo-nos-servidores)
   - [🛠️ Troubleshooting](#️-troubleshooting)
@@ -2052,7 +2054,66 @@ R05#
 - Flag B indicando modo BIDIR
 - Nenhum estado (S,G) criado
 
+## Fontes Multicast – Cenário Many-to-Many
 
+Com os receptores multicast já ativos e a árvore compartilhada (*,G) formada no domínio PIM BIDIR, o próximo passo do laboratório é a **introdução das fontes multicast**.
+
+Neste item, o objetivo é:
+
+- Ativar **múltiplas fontes multicast**
+- Demonstrar o comportamento **many-to-many**
+- Confirmar que o tráfego utiliza **exclusivamente a árvore (*,G)**
+- Validar que **não há criação de estados (S,G)**
+  
+📌 Diferente do PIM Sparse tradicional, **qualquer roteador pode ser fonte** em um ambiente BIDIR, sem depender de SPT.  
+
+---
+
+### 🧠 Conceito de Many-to-Many no PIM BIDIR
+
+No PIM BIDIR:
+
+- Não existe distinção rígida entre **fonte** e **receptor**
+- Qualquer nó pode atuar como **fonte e receptor simultaneamente**
+- O tráfego multicast:
+  - Sobe em direção ao RP via DF
+  - É distribuído pela árvore compartilhada (*,G)
+
+📌 Todas as fontes utilizam a **mesma árvore bidirecional**.
+
+---
+
+### 🖥️ Topologia das Fontes
+
+Neste laboratório, serão utilizadas **duas fontes multicast**:
+
+- **SERVER** → conectado ao **R01**
+- **SERVER02** → conectado ao **R03**
+
+Grupo multicast utilizado:
+
+- **239.1.1.1**
+
+Ambos os hosts:
+
+- Enviam tráfego para o mesmo grupo
+- Operam de forma simultânea (many-to-many)
+
+---
+
+### 🔧 Preparação das Interfaces de Acesso (Fontes)
+
+Nas interfaces conectadas às fontes, deve-se garantir:
+
+- IP configurado
+- PIM ativado
+- Multicast habilitado globalmente
+
+📌 Exemplo no R01:
+
+```plaintext
+R02(config)# interface FastEthernet1/0
+R02(config-if)# ip pim sparse-mode
 
 ---
 
