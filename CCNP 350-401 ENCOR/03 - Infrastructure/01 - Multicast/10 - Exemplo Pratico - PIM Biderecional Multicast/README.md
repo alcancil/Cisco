@@ -118,7 +118,9 @@
   
 Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco CCNP ENCOR (350-401).  
 O objetivo é compreender, de forma prática, o funcionamento do PIM Bidirectional (BIDIR), analisando seu comportamento em cenários com múltiplas fontes e múltiplos receptores, comuns em redes corporativas e ambientes de larga escala.  
-
+  
+Este laboratório simula um cenário multicast many-to-many com PIM Bidirectional, comumente utilizado em ambientes enterprise que exigem comunicação multicast altamente escalável, como sistemas financeiros, colaboração em tempo real, distribuição de dados e aplicações de replicação distribuída.  
+  
 O PIM BIDIR é uma variação do PIM Sparse Mode (PIM-SM) projetada para ambientes onde diversos dispositivos atuam simultaneamente como fontes e receptores de tráfego multicast.
 Diferentemente do modelo tradicional do PIM-SM, o BIDIR não realiza a transição para Shortest Path Tree (SPT). Todo o tráfego multicast é sempre encaminhado por meio de um Rendezvous Point (RP), garantindo previsibilidade e simplicidade no plano de controle.  
   
@@ -128,6 +130,8 @@ Nesse modelo, o RP deixa de ser apenas um ponto de encontro inicial e passa a se
 Ao contrário do DR tradicional, o DF é eleito por interface, com base no custo até o RP e, em caso de empate, no endereço IP do roteador. O DF é responsável por encaminhar o tráfego multicast em direção ao RP, garantindo o fluxo correto dentro da árvore bidirecional.  
   
 O IGMP, normalmente em sua versão v2, é utilizado para o gerenciamento de membros nos segmentos de acesso. Diferentemente do SSM, o BIDIR não exige que os receptores especifiquem a fonte, pois o modelo é baseado no grupo multicast (*,G), e não em pares (S,G).  
+
+O objetivo deste laboratório é demonstrar não apenas a configuração do PIM BIDIR, mas também o entendimento do seu funcionamento interno, tomada de decisões de design e validação operacional, refletindo cenários encontrados em ambientes corporativos reais.  
   
 O laboratório a seguir demonstra como configurar e validar o PIM BIDIR em roteadores Cisco, incluindo:  
 
@@ -944,8 +948,8 @@ Elas mantêm exclusivamente o **plano de controle multicast**.
 
 ### ⚙️ Funções principais das mensagens Hello
 
-| Função                     | Descrição                                                                 |
-|----------------------------|---------------------------------------------------------------------------|
+| Função                     | Descrição                                                                  |
+|----------------------------|----------------------------------------------------------------------------|
 | Descoberta de vizinhos     | Identifica roteadores PIM ativos na mesma LAN                              |
 | Troca de parâmetros        | Define holdtime, prioridade de DR e capacidades PIM                        |
 | Eleição do DR              | Permite a escolha automática do DR por segmento LAN                        |
@@ -1335,12 +1339,8 @@ R01#
 
 ### 📌 Nota sobre compatibilidade de IOS
 
-Este laboratório foi desenvolvido utilizando Cisco IOS 12.4(15)T, onde o suporte a **PIM Bidirectional é habilitado globalmente**, através do comando:
-
-```ios
-R01(config)#ip pim bidir-enable
-```
-
+Neste laboratório é utilizado **Cisco IOS 12.4(15)T**, onde o PIM Bidirectional é habilitado **globalmente** via `ip pim bidir-enable`, seguindo o comportamento específico desta versão do IOS.  
+  
 Para o funcionamento correto, devemos habilitar o comando em todos os roteadores.  
 Logo após, vamos confirmar com o Whireshark. Vamos entrar em R01, na interface fastethernet0/0 e realizar a captura com o seguinte filtro:
 
