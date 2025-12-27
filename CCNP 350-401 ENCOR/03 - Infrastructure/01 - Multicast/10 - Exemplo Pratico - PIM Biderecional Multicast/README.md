@@ -74,6 +74,12 @@
     - [🧩 Separação entre DR e DF](#-separação-entre-dr-e-df)
   - [🔎 Observação do Ambiente PIM BIDIR (LAB)](#-observação-do-ambiente-pim-bidir-lab)
     - [📌 Verificação das Interfaces PIM](#-verificação-das-interfaces-pim)
+  - [Eleição do Designated Forwarder (DF) no PIM BIDIR](#eleição-do-designated-forwarder-df-no-pim-bidir)
+    - [🧠 Conceito de Eleição do DF no PIM BIDIR](#-conceito-de-eleição-do-df-no-pim-bidir)
+    - [📌 Critério de Eleição do DF](#-critério-de-eleição-do-df)
+    - [🔍 Verificação do Caminho RPF até o RP](#-verificação-do-caminho-rpf-até-o-rp)
+    - [🧠 O que esse comando realmente mostra](#-o-que-esse-comando-realmente-mostra)
+    - [🔎 Determinação do DF (Análise da Métrica Unicast)](#-determinação-do-df-análise-da-métrica-unicast)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1573,6 +1579,249 @@ Neste estágio do laboratório:
 - O papel do DF já é conceitualmente necessário
 - O ambiente PIM está pronto para a eleição do DF
 - Ainda não existe tráfego multicast ativo  
+
+## Eleição do Designated Forwarder (DF) no PIM BIDIR
+
+Com o ambiente PIM BIDIR devidamente preparado, o próximo passo é **analisar como ocorre a eleição do Designated Forwarder (DF)** em cada segmento da rede.  
+
+Neste item, o foco é:  
+
+- Entender **como o DF é determinado**
+- Relacionar a eleição do DF com o **RPF em direção ao RP**
+- Identificar **qual roteador atua como DF em cada segmento**
+
+Neste momento do laboratório, **ainda não existem fontes nem receptores multicast ativos**.  
+Toda a análise é feita exclusivamente no **plano de controle**.
+
+---
+
+### 🧠 Conceito de Eleição do DF no PIM BIDIR
+
+No PIM BIDIR, a eleição do **Designated Forwarder (DF)** ocorre **por segmento de rede** (interface compartilhada) e tem como objetivo definir **qual roteador será responsável por encaminhar o tráfego multicast upstream em direção ao RP**.  
+  
+📌 Diferente do PIM Sparse tradicional, **não existe SPT** no BIDIR.  
+Todo o tráfego utiliza exclusivamente a árvore compartilhada (*,G).
+
+---
+
+### 📌 Critério de Eleição do DF
+
+A eleição do DF é baseada **exclusivamente no caminho RPF em direção ao RP**, seguindo esta lógica:  
+
+1. **Melhor caminho unicast até o RP**
+   - Determinado pela tabela de roteamento unicast (OSPF neste laboratório)
+2. **Menor métrica unicast até o RP**
+3. **Endereço IP como critério de desempate**
+
+📌 O roteador que possuir o **menor custo unicast até o RP** será eleito **DF naquele segmento**.  
+
+> Importante:  
+> Um roteador pode ser DF em uma interface e **não ser DF em outra**, dependendo do caminho até o RP.
+
+---
+
+### 🔍 Verificação do Caminho RPF até o RP
+
+O primeiro comando utilizado na análise é:
+
+```plaintext
+show ip rpf 1.1.1.1
+```
+
+📌 **Neste laboratório, o endereço 1.1.1.1 corresponde ao RP configurado.**
+
+### 🧠 O que esse comando realmente mostra
+
+O comando **show ip rpf** não exibe métricas nem declara explicitamente quem é o DF.  
+Ele responde apenas à seguinte pergunta:  
+
+> “Por qual interface e vizinho este roteador encaminharia tráfego multicast em direção ao RP?”
+  
+Ou seja, ele mostra:  
+
+- Interface RPF em direção ao RP
+- Next-hop (vizinho RPF)
+
+**R01**  
+
+```ios
+R01#show ip rpf 1.1.1.1
+RPF information for ? (1.1.1.1)
+  RPF interface: Loopback0
+  RPF neighbor: ? (1.1.1.1) - directly connected
+  RPF route/mask: 1.1.1.1/32
+  RPF type: unicast (connected)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R01#
+```
+
+**R02**  
+
+```ios
+R02#show ip rpf 1.1.1.1
+RPF information for ? (1.1.1.1)
+  RPF interface: FastEthernet0/1
+  RPF neighbor: ? (10.0.0.1)
+  RPF route/mask: 1.1.1.1/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R02#
+```
+
+**R03**  
+
+```ios
+R03#show ip rpf 1.1.1.1
+RPF information for ? (1.1.1.1)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.5)
+  RPF route/mask: 1.1.1.1/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R03#
+```
+
+**R04**  
+
+```ios
+R04#show ip rpf 1.1.1.1
+RPF information for ? (1.1.1.1)
+  RPF interface: FastEthernet0/1
+  RPF neighbor: ? (10.0.0.14)
+  RPF route/mask: 1.1.1.1/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R04#
+```
+
+**R05**  
+
+```ios
+R05#show ip rpf 1.1.1.1
+RPF information for ? (1.1.1.1)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.18)
+  RPF route/mask: 1.1.1.1/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R05#
+```
+  
+📌 **Esta saída não indica diretamente quem é o DF, apenas confirma por onde o tráfego multicast seguirá em direção ao RP.**
+
+---
+
+### 🔎 Determinação do DF (Análise da Métrica Unicast)
+
+Como o **DF é escolhido com base na menor métrica unicast até o RP**, é necessário analisar a tabela de roteamento unicast.  
+Para isso, deve-se executar o seguinte comando em cada roteador do segmento:
+
+```ios
+show ip route 1.1.1.1
+```
+
+🔍 **O que observar na saída**
+
+- Protocolo de roteamento utilizado (OSPF)
+- Custo/métrica até o RP
+- Interface de saída
+
+**R01**  
+
+```ios
+R01#show ip route 1.1.1.1
+Routing entry for 1.1.1.1/32
+  Known via "connected", distance 0, metric 0 (connected, via interface)
+  Routing Descriptor Blocks:
+  * directly connected, via Loopback0
+      Route metric is 0, traffic share count is 1
+
+R01#
+```
+
+**R02**  
+
+```ios
+R02#show ip route 1.1.1.1
+Routing entry for 1.1.1.1/32
+  Known via "ospf 100", distance 110, metric 11, type intra area
+  Last update from 10.0.0.1 on FastEthernet0/1, 02:50:46 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.1, from 1.1.1.1, 02:50:46 ago, via FastEthernet0/1
+      Route metric is 11, traffic share count is 1
+
+R02#
+```
+
+**R03**  
+
+```ios
+R03#show ip route 1.1.1.1
+Routing entry for 1.1.1.1/32
+  Known via "ospf 100", distance 110, metric 12, type intra area
+  Last update from 10.0.0.5 on FastEthernet1/0, 02:51:30 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.5, from 1.1.1.1, 02:51:30 ago, via FastEthernet1/0
+      Route metric is 12, traffic share count is 1
+
+R03#
+```
+
+**R04**  
+
+```ios
+R04#show ip route 1.1.1.1
+Routing entry for 1.1.1.1/32
+  Known via "ospf 100", distance 110, metric 12, type intra area
+  Last update from 10.0.0.14 on FastEthernet0/1, 02:52:50 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.14, from 1.1.1.1, 02:52:50 ago, via FastEthernet0/1
+      Route metric is 12, traffic share count is 1
+
+R04#
+```
+
+**R05**  
+
+```ios
+R05#show ip route 1.1.1.1
+Routing entry for 1.1.1.1/32
+  Known via "ospf 100", distance 110, metric 2, type intra area
+  Last update from 10.0.0.18 on FastEthernet1/0, 02:55:31 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.18, from 1.1.1.1, 02:55:31 ago, via FastEthernet1/0
+      Route metric is 2, traffic share count is 1
+
+R05#
+```
+
+Com base na análise da tabela de roteamento unicast, observa-se que o R01 apresenta a **menor métrica OSPF** até o RP (1.1.1.1).  
+  
+📌 No IOS, a eleição do DF utiliza a **métrica unicast** (`route metric`) resultante do cálculo SPF, e não o *cost* individual de interfaces.
+  
+Dessa forma, o R01 é considerado o **Designated Forwarder (DF)** no segmento analisado.  
+
+📌 O roteador que apresentar o menor custo OSPF até o RP será o Designated Forwarder (DF) naquele segmento.  
+📌 Caso dois roteadores tenham custos idênticos, o endereço IP será utilizado como critério de desempate.  
+📌 Observação Importante sobre o IOS 12.4T  
+  
+**No IOS 12.4T:**  
+  
+- Não existe comando que exiba explicitamente o DF
+- O comando show ip pim interface não indica o papel de DF
+
+A identificação do DF é feita por dedução, com base:
+
+- no RPF em direção ao RP
+- na métrica unicast (OSPF)
+
+📌 Esse comportamento é esperado e faz parte das limitações das implementações mais antigas do IOS.  
+
 
 ---
 
