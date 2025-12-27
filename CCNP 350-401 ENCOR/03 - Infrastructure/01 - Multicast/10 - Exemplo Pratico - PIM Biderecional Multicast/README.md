@@ -61,6 +61,7 @@
     - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
     - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
     - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
+    - [📘 Referência ao padrão IETF (RFC)](#-referência-ao-padrão-ietf-rfc)
   - [Escopo dos Grupos Multicast no Domínio PIM BIDIR](#escopo-dos-grupos-multicast-no-domínio-pim-bidir)
     - [📋 Grupos Multicast Utilizados no Laboratório](#-grupos-multicast-utilizados-no-laboratório)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
@@ -245,6 +246,7 @@ As fontes e receptores compartilham os mesmos grupos multicast, utilizando exclu
 |----------------|-------------|-----------------|-----------|-----------------|------------------------------------------------|
 | **Fonte 1**    | SERVER      | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
 | **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
+| **Fonte 3**    | SERVER02    | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
 | **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
 | **Receptor 2** | HOST03      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
 | **Receptor 3** | (opcional)  | —               | —         | —               | Pode ser adicionado em qualquer outra sub-rede |
@@ -1349,6 +1351,20 @@ pim.type == 0
 ![Whireshark](Imagens/Whireshark02.png)
 
 Agora podemos notar que aparce o campo: **Option 22: Bidirecional Capable** que confirma que BIDIR agora está ativo.
+
+### 📘 Referência ao padrão IETF (RFC)
+
+O comportamento descrito neste laboratório segue o padrão definido pela **[RFC 5015 — Bidirectional Protocol Independent Multicast (BIDIR-PIM)](https://www.rfc-editor.org/rfc/rfc5015.html)**, publicada pelo IETF.
+
+Essa RFC especifica o funcionamento do PIM Bidirectional, incluindo:
+
+- O uso exclusivo de árvores compartilhadas (*,G);
+- A ausência de estados (S,G) e de transição para SPT;
+- O papel permanente do Rendezvous Point (RP);
+- A introdução do **Designated Forwarder (DF)** como mecanismo de prevenção de loops e controle do fluxo multicast.
+
+As observações e validações realizadas neste laboratório estão alinhadas com o comportamento descrito na RFC, considerando também as particularidades de implementação do **Cisco IOS 12.4T**, onde o suporte ao BIDIR requer habilitação global.
+
 
 ## Escopo dos Grupos Multicast no Domínio PIM BIDIR
 
