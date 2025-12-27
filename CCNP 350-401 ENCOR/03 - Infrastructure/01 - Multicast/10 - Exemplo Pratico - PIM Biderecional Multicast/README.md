@@ -80,6 +80,13 @@
     - [🔍 Verificação do Caminho RPF até o RP](#-verificação-do-caminho-rpf-até-o-rp)
     - [🧠 O que esse comando realmente mostra](#-o-que-esse-comando-realmente-mostra)
     - [🔎 Determinação do DF (Análise da Métrica Unicast)](#-determinação-do-df-análise-da-métrica-unicast)
+  - [IGMP / Receptores Multicast](#igmp--receptores-multicast)
+    - [🧠 Papel do IGMP no PIM BIDIR](#-papel-do-igmp-no-pim-bidir)
+    - [🖥️ Topologia dos Receptores](#️-topologia-dos-receptores)
+    - [🔧 Configuração do IGMP nas Interfaces de Acesso](#-configuração-do-igmp-nas-interfaces-de-acesso)
+    - [🖥️ Simulação dos Hosts Receptores](#️-simulação-dos-hosts-receptores)
+    - [🔍 Verificação dos Receptores no Roteador](#-verificação-dos-receptores-no-roteador)
+    - [🔍 Verificação do Estado Multicast no PIM](#-verificação-do-estado-multicast-no-pim)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1480,6 +1487,7 @@ R01# show ip mroute
 Com o RP configurado em modo BIDIR e o plano de controle operando exclusivamente com estados (*,G), o PIM BIDIR introduz o papel do **Designated Forwarder (DF)**.
 
 Este item apresenta:
+
 - O **conceito do DF**
 - Sua **função no encaminhamento multicast**
 - E a **observação prática do ambiente**, ainda **sem analisar a eleição do DF**, que será tratada no próximo item.
@@ -1821,6 +1829,229 @@ A identificação do DF é feita por dedução, com base:
 - na métrica unicast (OSPF)
 
 📌 Esse comportamento é esperado e faz parte das limitações das implementações mais antigas do IOS.  
+
+## IGMP / Receptores Multicast
+
+Com o RP BIDIR configurado e o DF já implicitamente eleito em cada segmento, o próximo passo do laboratório é a **introdução de receptores multicast**.  
+
+Neste item, o objetivo é:
+
+- Ativar **IGMP** nas redes de acesso
+- Simular **hosts receptores**
+- Verificar a criação dos estados (*,G) no domínio PIM BIDIR
+- Confirmar que **nenhum SPT é criado**
+  
+📌 Neste momento, **ainda não existem fontes multicast ativas**.  
+A análise continua focada no **plano de controle**, agora com participação do IGMP.  
+
+---
+
+### 🧠 Papel do IGMP no PIM BIDIR
+
+O IGMP (Internet Group Management Protocol) é utilizado pelos **hosts** para informar aos roteadores que desejam **receber tráfego de um grupo multicast**.  
+
+No contexto do PIM BIDIR:
+
+- O IGMP **não dispara SPT**
+- O roteador de acesso envia **Join (*,G)** em direção ao RP
+- Toda a árvore multicast permanece **bidirecional e compartilhada**
+  
+📌 A presença de receptores é o que inicia a formação da árvore (*,G).  
+
+---
+
+### 🖥️ Topologia dos Receptores
+
+Neste laboratório, os receptores estão conectados às redes de acesso, por exemplo:
+
+- **HOST02** → conectado ao R04
+- **HOST03** → conectado ao R05
+  
+Grupo multicast utilizado no cenário:
+
+- **239.1.1.1**
+
+---
+
+### 🔧 Configuração do IGMP nas Interfaces de Acesso
+
+Nas interfaces que conectam os hosts receptores, é necessário garantir que o IGMP esteja ativo.  
+No IOS, o IGMP é habilitado automaticamente ao configurar PIM, mas o comando pode ser explicitado para fins didáticos.  
+
+📌 Configurar R04 e R05 (interface de acesso):
+
+**R04**  
+  
+```ios
+R04(config)# interface FastEthernet1/0
+R04(config-if)# ip pim sparse-mode
+R04(config-if)# ip igmp version 2
+```
+
+**R05**  
+
+```ios
+R05(config)#interface fastEthernet 0/0
+R05(config-if)#ip pim sparse-mode
+R05(config-if)#ip igmp version 2
+```
+
+### 🖥️ Simulação dos Hosts Receptores
+
+Nos hosts, é iniciado o ingresso no grupo multicast.  
+
+📌 Configurar em Host02 e Host03:  
+
+**Host02**  
+
+```ios
+HOST02(config)#int f0/0
+HOST02(config-if)#ip igm
+HOST02(config-if)#ip igmp joi
+HOST02(config-if)#ip igmp join-group 239.1.1.1
+```
+
+**Host03**  
+
+```ios
+HOST03(config)#int f0/0
+HOST03(config-if)#ip igmp
+HOST03(config-if)#ip igmp joi
+HOST03(config-if)#ip igmp join-group 239.1.1.1
+```
+
+### 🔍 Verificação dos Receptores no Roteador
+
+Após os hosts ingressarem no grupo, deve-se verificar se o roteador reconheceu os receptores IGMP.  
+
+```ios
+show ip igmp groups
+```
+
+⚠️ **Observação:** antes de erificarmos os grupos, devemos executar um ping para o grupo. Assim ele vai ser registrado e deve aparecer no comando de verificação.  
+
+**HOST02**  
+
+```ios
+HOST02#ping 239.1.1.1
+
+Type escape sequence to abort.
+Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.20.1, 8 ms
+HOST02#
+```
+
+**HOST03**  
+
+```ios
+HOST03#ping 239.1.1.1
+
+Type escape sequence to abort.
+Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.30.1, 4 ms
+HOST03#
+```
+
+Agora vamos checar os grupos em R04 e R05.  
+
+**R04**  
+
+```ios
+R04#show ip igmp groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+239.1.1.1        FastEthernet1/0          00:00:38  00:02:26  192.168.20.1
+224.0.1.40       Loopback0                04:28:34  00:02:34  4.4.4.4
+R04#
+```
+  
+**R05**  
+
+```ios
+R05#show ip igmp groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+239.1.1.1        FastEthernet0/0          00:07:18  00:02:41  192.168.30.1
+224.0.1.40       Loopback0                04:28:53  00:02:35  5.5.5.5
+R05#
+```
+  
+📌 Essa saída confirma:  
+
+- Existência de receptores
+- Interface de acesso associada ao grupo
+- Grupo multicast ativo no roteador
+
+### 🔍 Verificação do Estado Multicast no PIM
+
+Com receptores ativos, o domínio PIM BIDIR passa a manter estados (*,G).
+
+**R04**  
+
+```ios
+R04#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:21:03/00:02:48, RP 0.0.0.0, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:19:33/00:02:48
+
+(*, 224.0.1.40), 04:47:28/00:02:43, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 04:47:28/00:02:43
+
+R04#
+```
+
+**R05**  
+
+```ios
+R05#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:40:14/00:02:49, RP 0.0.0.0, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:26:03/00:02:49
+
+(*, 224.0.1.40), 04:47:38/00:02:54, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 04:47:38/00:02:54
+
+R05#
+```
+  
+📌 **Pontos importantes da saída:**
+
+- Presença apenas de estados (*,G)
+- Flag B indicando modo BIDIR
+- Nenhum estado (S,G) criado
+
 
 
 ---
