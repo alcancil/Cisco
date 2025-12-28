@@ -92,7 +92,11 @@
     - [🧠 Conceito de Many-to-Many no PIM BIDIR](#-conceito-de-many-to-many-no-pim-bidir)
     - [🖥️ Topologia das Fontes](#️-topologia-das-fontes)
     - [Ajuste de Topologia — Fontes e Receptores no PIM BIDIR](#ajuste-de-topologia--fontes-e-receptores-no-pim-bidir)
-    - [🔧 Preparação das Interfaces de Acesso (Fontes)](#-preparação-das-interfaces-de-acesso-fontes)
+    - [🎥 Configuração das Fontes Multicast (Many-to-Many)](#-configuração-das-fontes-multicast-many-to-many)
+    - [🧠 Considerações sobre IGMP em Laboratórios BIDIR](#-considerações-sobre-igmp-em-laboratórios-bidir)
+    - [🟦 Configuração dos Servidores (Fontes)](#-configuração-dos-servidores-fontes)
+      - [🟦 Server02](#-server02)
+    - [🟩 Server03](#-server03)
     - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
       - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
     - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
@@ -1248,7 +1252,7 @@ R01(config-if)#
 R01(config)#ip pim rp-address 1.1.1.1 bidir
 ```
 
-👉 **Observação:** aqui caba uma pequena ressalva sobre o comando. Observe a saída:  
+👉 **Observação:** aqui cabe uma pequena ressalva sobre o comando. Observe a saída:  
 
 ```ios
 R01(config)#ip pim rp-address 1.1.1.1 ?
@@ -1280,7 +1284,15 @@ Você está dizendo ao IOS:
   
 > “Associe o RP 1.1.1.1 a todos os grupos multicast usando PIM Bidirectional”
   
-No modelo interno do IOS, todo mapeamento RP ↔ grupo precisa estar ligado a um filtro de grupos.  
+No modelo interno do IOS, todo mapeamento RP ↔ grupo precisa estar ligado a um filtro de grupos.
+
+Para confirmar, podemos executar o comando e observar a saída:  
+
+```ios
+R01#show ip access-lists
+Standard IP access list bidir
+R01#
+```
 
 📌 **Importante:**
 
@@ -2139,23 +2151,55 @@ O **Server01**, conectado ao **R01**, permanece no diagrama apenas como referên
 Esse ajuste garante que o tráfego multicast atravesse múltiplos roteadores, permitindo a observação clara do comportamento do **PIM BIDIR**, incluindo o papel do **Designated Forwarder (DF)**, a criação de entradas **(*,G)** e a validação do fluxo bidirecional na rede.
 
 ![Cenário01](Imagens/cenario01.png)
+  
+Essa separação garante a visualização correta do **encaminhamento upstream e downstream**, bem como da atuação do **Designated Forwarder (DF)** nos segmentos BIDIR.  
 
 ---
 
-### 🔧 Preparação das Interfaces de Acesso (Fontes)
+### 🎥 Configuração das Fontes Multicast (Many-to-Many)
 
-Nas interfaces conectadas às fontes, deve-se garantir:
+Neste ponto do laboratório, inicia-se a simulação de **fontes multicast many-to-many**, característica fundamental do **PIM BIDIR**.
 
-- IP configurado
-- PIM ativado
-- Multicast habilitado globalmente
+⚠️ **Observação importante sobre o cenário**  
+Embora exista um **Server01 conectado diretamente ao R01 (RP)**, ele **não será utilizado como fonte de tráfego multicast** neste laboratório.  
+Uma fonte conectada diretamente ao RP não permite observar corretamente o comportamento **upstream bidirecional**, pois não há encaminhamento real em direção ao RP.
 
-📌 Exemplo no R01:
+---
 
-```plaintext
-R02(config)# interface FastEthernet1/0
-R02(config-if)# ip pim sparse-mode
+### 🧠 Considerações sobre IGMP em Laboratórios BIDIR
+
+Em ambientes reais, **fontes multicast não executam IGMP join-group**.  
+O envio de tráfego multicast é iniciado diretamente pela aplicação, enquanto **IGMP é utilizado exclusivamente pelos receptores**.  
+  
+Entretanto, como neste laboratório os servidores são **roteadores Cisco simulando hosts**, não existe uma aplicação multicast real (como VLC, ffmpeg ou encoders de vídeo).  
+  
+📌 Por esse motivo:
+
+- **Não utilizamos `ip igmp join-group` nos servidores**
+- Utilizamos **ping para endereços multicast** apenas para **simular a geração de tráfego**
+- O IGMPv3 é configurado nas interfaces para manter consistência com o cenário SSM/BIDIR e evitar comportamento legado do IGMPv2
+
+---
+
+### 🟦 Configuração dos Servidores (Fontes)
+
+Nos servidores simulados, apenas garantimos o uso do **IGMPv2** na interface conectada ao roteador de acesso.
+
+#### 🟦 Server02
+
+```ios
+interface FastEthernet0/0
+ ip igmp version 2
 ```
+
+### 🟩 Server03
+
+```ios
+interface FastEthernet0/0
+ ip igmp version 3
+```
+
+Cada servidor atuará como **fonte multicast independente**, representando aplicações distintas em um ambiente **many-to-many**.
 
 ---
 
