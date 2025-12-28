@@ -58,6 +58,7 @@
     - [Introdução do papel DF (Designated Forwarder)](#introdução-do-papel-df-designated-forwarder)
     - [🧩 1️⃣ Configurando o Rendezvous Point (RP) BIDIR](#-1️⃣-configurando-o-rendezvous-point-rp-bidir)
     - [🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR](#-2️⃣-associando-grupos-multicast-ao-rp-em-modo-bidir)
+    - [📌 Nota Importante sobre a Configuração do RP](#-nota-importante-sobre-a-configuração-do-rp)
     - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
     - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
     - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
@@ -729,8 +730,6 @@ O BIDIR assume que:
 
 Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambientes com **múltiplas fontes ativas**, como aplicações financeiras, sistemas de replicação e serviços de colaboração em tempo real.
   
-💬 **Resumo final**  
-  
 | Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |
 |-----------------------------|-----------------------------|------------------------------------|
 | Host quer Server01          | Join (*,G)                  | Recebe tráfego do Server01         |
@@ -1322,6 +1321,26 @@ R01#show ip pim rp
 Group: 224.0.1.40, RP: 1.1.1.1, next RP-reachable in 00:01:27
 R01#
 ```
+
+### 📌 Nota Importante sobre a Configuração do RP
+
+Neste laboratório, o RP (Rendezvous Point) foi configurado manualmente apenas no roteador R01 utilizando o comando:
+
+```plaintext
+ip pim rp-address 1.1.1.1 bidir
+```
+
+Em ambientes **PIM-SM e PIM Bidirectional, todos os roteadores participantes do domínio multicast precisam conhecer o RP**, pois os PIM Join do tipo (*,G) gerados a partir das mensagens IGMP dos clientes devem ser encaminhados até o RP para a correta construção do estado multicast.  
+  
+Caso apenas o RP conheça a si próprio, os roteadores intermediários não terão como encaminhar os PIM Join corretamente, o que inviabiliza o funcionamento adequado do multicast em um cenário real.  
+
+Neste laboratório, essa configuração foi mantida de forma simplificada e centralizada com fins exclusivamente didáticos. Em ambientes de produção, o RP deve ser configurado em todos os roteadores do domínio multicast ou distribuído por mecanismos como **Auto-RP ou BSR**.
+
+Este laboratório utiliza a configuração manual de RP com o objetivo de simplificar o entendimento do funcionamento do PIM Bidirectional e do papel do Rendezvous Point na construção do estado multicast `(*,G)`.  
+  
+Mecanismos de redundância e failover de RP, como os obtidos por meio de Auto-RP ou BSR, não fazem parte do escopo deste cenário. Em laboratórios anteriores, esses mecanismos já foram explorados, incluindo o uso de Candidate-RP e a reconvergência automática do domínio multicast em caso de falha do RP principal.  
+  
+Dessa forma, a ausência de eleição ou failover automático neste laboratório é uma decisão intencional, focada na clareza conceitual do PIM BIDIR com RP estático, e não uma limitação do protocolo ou da arquitetura multicast.  
 
 ### 🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR
   
