@@ -79,6 +79,12 @@
   - [Eleição do Designated Forwarder (DF) no PIM BIDIR](#eleição-do-designated-forwarder-df-no-pim-bidir)
     - [🧠 Conceito de Eleição do DF no PIM BIDIR](#-conceito-de-eleição-do-df-no-pim-bidir)
     - [📌 Critério de Eleição do DF](#-critério-de-eleição-do-df)
+    - [🧭 Designated Forwarder (DF) por enlace no cenário do laboratório](#-designated-forwarder-df-por-enlace-no-cenário-do-laboratório)
+      - [📌 DF eleito por trecho](#-df-eleito-por-trecho)
+    - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
+      - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
+      - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
+    - [🧠 Por que o tráfego “volta” a partir do RP?](#-por-que-o-tráfego-volta-a-partir-do-rp)
     - [🔍 Verificação do Caminho RPF até o RP](#-verificação-do-caminho-rpf-até-o-rp)
     - [🧠 O que esse comando realmente mostra](#-o-que-esse-comando-realmente-mostra)
     - [🔎 Determinação do DF (Análise da Métrica Unicast)](#-determinação-do-df-análise-da-métrica-unicast)
@@ -1677,6 +1683,83 @@ A eleição do DF é baseada **exclusivamente no caminho RPF em direção ao RP*
 
 > Importante:  
 > Um roteador pode ser DF em uma interface e **não ser DF em outra**, dependendo do caminho até o RP.
+
+---
+
+### 🧭 Designated Forwarder (DF) por enlace no cenário do laboratório
+
+No **PIM Bidirectional (BIDIR)**, a eleição do **Designated Forwarder (DF)** ocorre **por enlace (trecho)**, e não globalmente no domínio multicast.  
+Isso significa que **em cada link entre dois roteadores PIM**, apenas **um deles será responsável por encaminhar o tráfego multicast naquele segmento**, evitando loops e duplicações.
+
+A eleição do DF é baseada exclusivamente no **caminho unicast até o Rendezvous Point (RP)**, utilizando os seguintes critérios:
+
+1. **Menor métrica unicast (OSPF) até o RP**
+2. Em caso de empate, **maior endereço IP do roteador**
+
+---
+
+#### 📌 DF eleito por trecho
+
+No cenário deste laboratório, o **Rendezvous Point (RP)** está configurado como **1.1.1.1 (Loopback do R01)**.    
+A eleição do **Designated Forwarder (DF)** ocorre **independentemente em cada enlace**, sempre com base no **menor custo unicast (OSPF) até o RP**.  
+
+A tabela abaixo resume, por enlace, **quem é o DF**, **o motivo da eleição** e **como o tráfego multicast se comporta em relação ao RP**.
+
+| Enlace           | DF Eleito | Motivo da Eleição                                | Tráfego Upstream (→ RP)  | Tráfego Downstream (← RP)  |
+|------------------|-----------|--------------------------------------------------|--------------------------|----------------------------|
+| R02 ↔ R03        | R02       | Menor métrica OSPF até o RP (1.1.1.1)            | R02 → R03 → RP           | RP → R03 → R02             |
+| R03 ↔ R04        | R03       | Menor métrica OSPF até o RP                      | R03 → RP                 | RP → R03 → R04             |
+| R04 ↔ R05        | R04       | Menor custo unicast até o RP                     | R04 → R03 → RP           | RP → R03 → R04 → R05       |
+
+📌 **Observações importantes**:
+
+- Apenas o **DF de cada enlace** é autorizado a encaminhar tráfego multicast naquele segmento.
+- O **tráfego upstream** sempre ocorre **em direção ao RP**, representando a inserção da fonte na árvore (*,G).
+- O **tráfego downstream** ocorre **a partir do RP**, seguindo as interfaces com estado (*,G) criado via **PIM Join**.
+- A eleição do DF é **independente da direção do tráfego** e pode ser recalculada automaticamente em caso de falha de link ou alteração de métrica unicast.
+
+---
+
+### 🔀 Direção do tráfego no PIM BIDIR: upstream e downstream
+
+No **PIM BIDIR**, o conceito de direção de tráfego é sempre **relativo ao RP**, que atua como **raiz lógica da árvore compartilhada (*,G)**.
+
+#### 🔺 Tráfego Upstream (em direção ao RP)
+
+- Ocorre quando **uma fonte multicast começa a transmitir**
+- O tráfego é encaminhado **em direção ao RP**
+- Apenas o **DF de cada enlace** está autorizado a encaminhar esse tráfego
+- Esse mecanismo garante que **o fluxo suba pela árvore sem loops**
+
+👉 **Esse é o tráfego de inserção do multicast na árvore (*,G)**.
+
+---
+
+#### 🔻 Tráfego Downstream (a partir do RP)
+
+Uma vez que o tráfego multicast **atinge logicamente o RP**, ele passa a ser encaminhado **para fora da árvore**, seguindo as **interfaces que possuem interesse registrado (*,G)**.
+
+Esse encaminhamento ocorre porque:
+
+- Os roteadores que possuem receptores enviaram **PIM Join (*,G)** em direção ao RP
+- Isso cria um caminho de retorno baseado em **RPF (Reverse Path Forwarding)**
+- O tráfego multicast é então replicado e enviado **pelas interfaces RPF válidas**
+
+👉 **Esse é o tráfego de distribuição multicast para os receptores**, caracterizando o fluxo **downstream**.
+
+---
+
+### 🧠 Por que o tráfego “volta” a partir do RP?
+
+Embora o **RP não receba nem encaminhe dados diretamente**, ele define a **orientação lógica da árvore multicast**.
+
+No BIDIR:
+
+- O **upstream** garante que todas as fontes injetem tráfego de forma consistente
+- O **downstream** garante que os receptores recebam o tráfego corretamente
+- O **DF controla ambos os sentidos**, sempre baseado no caminho unicast até o RP
+
+Esse modelo permite que **múltiplas fontes e múltiplos receptores** compartilhem a mesma árvore multicast (*,G), mantendo **simplicidade, previsibilidade e ausência de loops**.
 
 ---
 
