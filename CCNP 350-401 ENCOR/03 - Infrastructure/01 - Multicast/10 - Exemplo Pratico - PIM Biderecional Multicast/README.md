@@ -15,11 +15,10 @@
     - [📡 Grupos Multicast no PIM Bidirectional](#-grupos-multicast-no-pim-bidirectional)
     - [🧩 Conclusão](#-conclusão)
     - [🛰️ O que muda no PIM Bidirectional (BIDIR)](#️-o-que-muda-no-pim-bidirectional-bidir)
-      - [🌳 1️⃣ O comportamento do PIM BIDIR](#-1️⃣-o-comportamento-do-pim-bidir)
-      - [🔹 2️⃣ O papel do IGMP no PIM BIDIR](#-2️⃣-o-papel-do-igmp-no-pim-bidir)
-      - [🔀 3️⃣ Designated Forwarder (DF) e prevenção de loops](#-3️⃣-designated-forwarder-df-e-prevenção-de-loops)
-      - [🛰️ 4️⃣ Quando as fontes começam a transmitir](#️-4️⃣-quando-as-fontes-começam-a-transmitir)
-      - [📡 5️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional](#-5️⃣-vantagens-do-pim-bidir-sobre-o-pim-sm-tradicional)
+      - [🔹 1️⃣ O papel do IGMP no PIM BIDIR](#-1️⃣-o-papel-do-igmp-no-pim-bidir)
+      - [🔀 2️⃣ Designated Forwarder (DF) e prevenção de loops](#-2️⃣-designated-forwarder-df-e-prevenção-de-loops)
+      - [🛰️ 3️⃣ Quando as fontes começam a transmitir](#️-3️⃣-quando-as-fontes-começam-a-transmitir)
+      - [📡 4️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional](#-4️⃣-vantagens-do-pim-bidir-sobre-o-pim-sm-tradicional)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
     - [📡 Grupos Multicast no PIM Bidirectional - resumo](#-grupos-multicast-no-pim-bidirectional---resumo)
@@ -239,9 +238,9 @@ A seleção do encaminhamento correto é garantida pelo mecanismo de Designated 
 
 ### 🔁 Sobre o SPT Switching no Contexto do PIM BIDIR
 
-No **PIM Sparse Mode tradicional (PIM-SM)**, o tráfego multicast é inicialmente encaminhado por meio da árvore compartilhada (*,G), com raiz no Rendezvous Point (RP). À medida que o fluxo multicast se estabelece, os roteadores próximos aos receptores podem realizar o SPT Switching (Shortest Path Tree Switching), migrando o tráfego para uma árvore de menor custo (S,G), eliminando o RP do caminho de dados e otimizando o encaminhamento.  
+No **PIM Sparse Mode tradicional (PIM-SM)**, o tráfego multicast é inicialmente encaminhado via **árvore compartilhada (∗,G)**, com raiz no **Rendezvous Point (RP)**. Quando o fluxo se estabiliza, ocorre o **SPT Switching (Shortest Path Tree)**, migrando o tráfego para uma **árvore de menor custo (S,G)**, eliminando o RP do caminho de dados.  
 
-Entretanto, no **PIM Bidirectional (BIDIR)**, o conceito de **SPT Switching** não se aplica. Nesse modo, não são criadas árvores (S,G), e todo o tráfego multicast é encaminhado exclusivamente por meio de **uma única árvore compartilhada (*,G), com raiz lógica no RP**.
+No **PIM Bidirectional (BIDIR)**, o conceito de SPT Switching **não existe**. Todo o tráfego é encaminhado exclusivamente por **uma única árvore compartilhada (∗,G)**, onde o RP atua apenas como raiz lógica, e não como ponto de encapsulamento ou comutação de dados.  
 
 Essa decisão arquitetural é intencional e traz benefícios claros:
 
@@ -249,8 +248,6 @@ Essa decisão arquitetural é intencional e traz benefícios claros:
 - Evita a criação de múltiplos estados (S,G) nas tabelas mroute;
 - Garante previsibilidade de caminhos e estabilidade do tráfego multicast;
 - Torna o PIM BIDIR altamente escalável, especialmente em cenários many-to-many com múltiplas fontes simultâneas.
-
-Assim, diferentemente do PIM-SM, o PIM BIDIR prioriza simplicidade e escalabilidade, mantendo todo o encaminhamento multicast baseado exclusivamente na árvore compartilhada (*,G).
 
 ---
 
@@ -260,14 +257,14 @@ Neste cenário, temos múltiplas fontes e múltiplos receptores multicast, carac
 
 As fontes e receptores compartilham os mesmos grupos multicast, utilizando exclusivamente o modelo **(*,G)**, sem associação explícita a uma fonte específica.
 
-| Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                      |
-|----------------|-------------|-----------------|-----------|-----------------|------------------------------------------------|
-| **Fonte 1**    | SERVER      | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
-| **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
-| **Fonte 3**    | SERVER02    | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Envia tráfego multicast para o grupo 239.1.1.1 |
-| **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
-| **Receptor 2** | HOST03      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Inscreve-se no grupo multicast via IGMP (*,G)  |
-| **Receptor 3** | (opcional)  | —               | —         | —               | Pode ser adicionado em qualquer outra sub-rede |
+| Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                              |
+|----------------|-------------|-----------------|-----------|-----------------|--------------------------------------------------------|
+| **Fonte 1**    | SERVER      | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Não será utilizado nesse laboratório por simplificação |
+| **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Envia tráfego multicast para o grupo 239.1.1.1         |
+| **Fonte 3**    | SERVER03    | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Envia tráfego multicast para o grupo 239.1.1.1         |
+| **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Inscreve-se no grupo multicast via IGMP (*,G)          |
+| **Receptor 2** | HOST03      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Inscreve-se no grupo multicast via IGMP (*,G)          |
+| **Receptor 3** | (opcional)  | —               | —         | —               | Pode ser adicionado em qualquer outra sub-rede         |
 
 ---
 
@@ -293,60 +290,21 @@ Essa conectividade é essencial para:
 
 ### 📡 Grupos Multicast no PIM Bidirectional
 
-No **PIM Bidirectional (BIDIR)**, os grupos multicast operam exclusivamente no modelo **(*,G)**.
+Abaixo, o grupo configurado para este laboratório. Note que, independentemente do número de fontes, o estado na tabela mroute permanecerá consolidado.
 
-| Grupo Multicast | Modelo PIM | Descrição                                          |
-|-----------------|------------|----------------------------------------------------|
-| 239.1.1.1       | (*,G)      | Grupo multicast compartilhado por múltiplas fontes |
-
-Nesse modelo:  
-
-- Não há criação de estados **(S,G)**;
-- Não ocorre **SPT Switching**;
-- O tráfego multicast flui bidirecionalmente pela árvore compartilhada;
-- O **RP atua apenas como raiz lógica**, não como ponto de comutação de dados.
-
-O **PIM BIDIR** prioriza simplicidade, previsibilidade e escalabilidade em cenários **many-to-many**.
+| Grupo Multicast | Modelo PIM | Comportamento Esperado                                                     |
+|-----------------|------------|----------------------------------------------------------------------------|
+| 239.1.1.1       | (*,G)      | Fluxo bidirecional via árvore compartilhada; sem criação de estados (S,G). |
 
 ### 🧩 Conclusão
 
-Com esse modelo, o laboratório demonstra como o **PIM Bidirectional (BIDIR)** oferece um roteamento multicast **estável, previsível e altamente escalável** para cenários **many-to-many**, nos quais múltiplas fontes e múltiplos receptores participam simultaneamente do mesmo grupo multicast.  
-  
-Ao utilizar **apenas uma árvore compartilhada (*,G)** e eliminar completamente o **SPT Switching**, o PIM BIDIR reduz drasticamente o estado multicast nos roteadores, simplifica a operação e mantém caminhos de encaminhamento consistentes — tornando o ambiente ideal para **aplicações financeiras, colaboração em tempo real, controle distribuído e sistemas multicast de larga escala**.  
-  
+Este laboratório demonstra a **eficiência do PIM Bidirectional (BIDIR)** em reduzir drasticamente a complexidade da rede multicast. Ao consolidar o encaminhamento em **uma única árvore (∗,G) e eliminar a transição para SPT**, o protocolo oferece uma operação mais enxuta e estável. É a solução padrão para redes de larga escala que exigem baixa latência e alta previsibilidade, como sistemas de controle distribuído e plataformas do setor financeiro.
+
 ---
 
 ### 🛰️ O que muda no PIM Bidirectional (BIDIR)
   
-Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, no qual o tráfego multicast pode migrar da árvore compartilhada (*,G) para árvores de menor custo (S,G) por meio do **SPT Switching**, o **PIM Bidirectional (BIDIR)** opera **exclusivamente com uma única árvore compartilhada (*,G)**.  
-  
-No BIDIR:
-
-- O **Rendezvous Point (RP)** continua existindo, mas atua apenas como **raiz lógica da árvore**, não como ponto de encontro de dados;
-- O tráfego multicast **nunca é encapsulado nem redirecionado ao RP**;
-- Não são criadas árvores (S,G) em nenhum momento.
-  
-O resultado é um domínio multicast **mais simples e previsível**, com menor consumo de recursos e maior estabilidade.  
-
----
-
-#### 🌳 1️⃣ O comportamento do PIM BIDIR
-
-No **PIM Bidirectional**, todas as fontes e receptores compartilham a **mesma árvore multicast (*,G)**.  
-Não há distinção entre tráfego inicial e otimizado, pois **não existe transição de árvore**.  
-  
-As principais características desse comportamento são:
-  
-- Ausência total de **SPT Switching**;
-- Uso exclusivo de estado **(*,G)** nas tabelas **mroute**;
-- Caminhos de encaminhamento definidos com base na árvore compartilhada;
-- Alta escalabilidade em ambientes com múltiplas fontes simultâneas.
-
-Esse modelo é especialmente eficiente quando **não é desejável ou necessário otimizar caminhos por fonte**, priorizando simplicidade e estabilidade.
-
----
-
-#### 🔹 2️⃣ O papel do IGMP no PIM BIDIR
+#### 🔹 1️⃣ O papel do IGMP no PIM BIDIR
 
 No **PIM BIDIR**, os hosts utilizam **IGMP (tipicamente IGMPv2)** apenas para **informar interesse em um grupo multicast (G)**.  
   
@@ -360,7 +318,7 @@ O roteador diretamente conectado ao host (**Designated Router – DR**) registra
 
 ---
 
-#### 🔀 3️⃣ Designated Forwarder (DF) e prevenção de loops
+#### 🔀 2️⃣ Designated Forwarder (DF) e prevenção de loops
 
 Como o tráfego multicast no BIDIR pode fluir **em ambas as direções** ao longo da árvore compartilhada, o protocolo utiliza o conceito de **Designated Forwarder (DF)**.  
   
@@ -374,7 +332,7 @@ A eleição do DF é baseada em métricas unicast em direção ao RP.
   
 ---
   
-#### 🛰️ 4️⃣ Quando as fontes começam a transmitir
+#### 🛰️ 3️⃣ Quando as fontes começam a transmitir
   
 Quando uma ou mais fontes passam a enviar tráfego para um determinado grupo multicast:  
   
@@ -386,7 +344,7 @@ O comportamento é **simétrico e contínuo**, independentemente do número de f
   
 ---
   
-#### 📡 5️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional
+#### 📡 4️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional
 
 | Aspecto                    | PIM Sparse Mode (tradicional) | PIM Bidirectional (BIDIR) |
 |----------------------------|-------------------------------|---------------------------|
@@ -403,6 +361,12 @@ O comportamento é **simétrico e contínuo**, independentemente do número de f
 👉 **Resumo:**  
 O **PIM Bidirectional (BIDIR)** é projetado para cenários multicast **de larga escala e múltiplas fontes**, onde previsibilidade, simplicidade e estabilidade são mais importantes do que a otimização individual de caminhos.  
 Ao eliminar o **SPT Switching** e manter todo o domínio baseado em **uma única árvore compartilhada (*,G)**, o BIDIR se torna uma solução robusta e eficiente para ambientes corporativos e críticos.
+
+----
+
+Ajustar Daqui
+
+----
 
 ## 🌐 Topologia do Laboratório
 
