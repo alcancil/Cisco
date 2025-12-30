@@ -27,9 +27,11 @@
     - [🧩 Principais Diferenças do PIM BIDIR em Relação ao PIM-SM](#-principais-diferenças-do-pim-bidir-em-relação-ao-pim-sm)
     - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
     - [💡 Observação Sobre as Fontes Multicast](#-observação-sobre-as-fontes-multicast)
-    - [🧩 E se o Host01 quiser apenas uma das fontes?](#-e-se-o-host01-quiser-apenas-uma-das-fontes)
-    - [🚫 E se o Host01 quiser bloquear uma das fontes?](#-e-se-o-host01-quiser-bloquear-uma-das-fontes)
-    - [🧠 Resumo Final](#-resumo-final)
+    - [🔁 O que acontece no roteador (Designated Router – DR)](#-o-que-acontece-no-roteador-designated-router--dr)
+    - [🌳 Construção da Árvore Multicast](#-construção-da-árvore-multicast)
+    - [🧩 Limitações Intencionais do Modelo](#-limitações-intencionais-do-modelo)
+    - [📊 Matriz de Comportamento: Host vs. Fontes](#-matriz-de-comportamento-host-vs-fontes)
+  - [⚙️ Ativando o roteamento multicast](#️-ativando-o-roteamento-multicast)
   - [⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)](#️-ativando-o-protocolo-pim-bidirectional-pim-bidir)
     - [🔧 Configuração do PIM-BIDIR](#-configuração-do-pim-bidir)
       - [Exemplo – Ativando o PIM nas interfaces do R01](#exemplo--ativando-o-pim-nas-interfaces-do-r01)
@@ -362,12 +364,6 @@ O comportamento é **simétrico e contínuo**, independentemente do número de f
 O **PIM Bidirectional (BIDIR)** é projetado para cenários multicast **de larga escala e múltiplas fontes**, onde previsibilidade, simplicidade e estabilidade são mais importantes do que a otimização individual de caminhos.  
 Ao eliminar o **SPT Switching** e manter todo o domínio baseado em **uma única árvore compartilhada (*,G)**, o BIDIR se torna uma solução robusta e eficiente para ambientes corporativos e críticos.
 
-----
-
-Ajustar Daqui
-
-----
-
 ## 🌐 Topologia do Laboratório
 
 Este laboratório simula um cenário enterprise de multicast **many-to-many**, comum em ambientes financeiros, sistemas de colaboração em tempo real e plataformas de replicação distribuída.  
@@ -493,7 +489,7 @@ R01#show ip multicast
 ```
   
 Com o roteamento multicast ativo, o próximo passo é habilitar o **PIM Bidirectional (BIDIR)** nas interfaces participantes (LANs e links entre roteadores).  
-Esse procedimento deve ser repetido em R01 a R05, garantindo que todas as interfaces de roteamento façam parte do domínio **PIM BIDIR**.  
+Esse procedimento deve ser repetido de R01 a R05, garantindo que todas as interfaces de roteamento façam parte do domínio **PIM BIDIR**.  
 
 ---
 
@@ -537,39 +533,24 @@ Apesar disso, o PIM deve ser ativado em todas as interfaces que participam do do
 
 ### 💡 Observação Sobre as Fontes Multicast
 
-No PIM Bidirectional (BIDIR):
+No **PIM Bidirectional (BIDIR)**, as fontes operam de forma simplificada, sem a necessidade de sinalização complexa com o RP:
 
-- As fontes multicast **não se registram em RP**;
-- Não existem mensagens **PIM Register**;
-- O tráfego multicast é inserido diretamente na **árvore compartilhada (*,G)** pelo roteador conectado à fonte;
-- O encaminhamento é controlado pelo **Designated Forwarder (DF)** em cada enlace.
-- Todas as fontes que enviam tráfego para o mesmo grupo multicast **compartilham a mesma árvore**, sem criação de caminhos independentes por fonte.
+- **Sem PIM Register:** O tráfego não é encapsulado; é inserido diretamente na árvore compartilhada (*,G) pelo roteador conectado à fonte.
+- **Controle via DF:** O encaminhamento é gerido pelo *Designated Forwarder* (DF) de cada enlace, garantindo um caminho livre de loops.
+- **Fluxo Unificado:** Todas as fontes que enviam tráfego para o mesmo grupo compartilham a mesma árvore, eliminando a criação de estados (S,G) individuais.
 
-No contexto deste laboratório, **SERVER e SERVER02** transmitem simultaneamente para o mesmo grupo multicast (ex.: 239.1.1.1).  
-Todos os receptores inscritos nesse grupo passam a receber os fluxos multicast, independentemente de qual fonte os originou.  
-  
-Diferente do SSM:  
-  
-- O receptor **não escolhe fontes específicas**;
-- Não há filtragem por origem;
-- O controle ocorre exclusivamente no domínio PIM.
+No contexto deste laboratório, os servidores **SERVER02 e SERVER03** transmitem simultaneamente para o grupo **239.1.1.1**. Diferente do modelo SSM que vimos anteriormente, aqui o receptor não filtra fontes; ele aceita qualquer tráfego destinado ao grupo, simplificando drasticamente o plano de controle da rede.
 
 ---
-
-💡 **Em resumo:**  
-  
-O **PIM Bidirectional (BIDIR)** elimina a complexidade associada ao **SPT Switching** e à criação de múltiplas árvores multicast, mantendo todo o domínio baseado em **uma única árvore compartilhada (*,G)**.  
-  
-Esse modelo oferece simplicidade operacional, previsibilidade de caminhos e alta escalabilidade, sendo ideal para ambientes **many-to-many com múltiplas fontes ativas**.  
 
 🎯 **Situação**
 
 Você tem:  
   
-- **Server01 (192.168.10.10)** transmitindo tráfego multicast  
-- **Server02 (192.168.40.10)** transmitindo tráfego multicast  
+- **Server02 (192.168.40.01)** transmitindo tráfego multicast  
+- **Server03 (192.168.50.01)** transmitindo tráfego multicast  
 - Ambos transmitem para **o mesmo grupo multicast (G)**, por exemplo **239.1.1.1**
-- **Host01** quer receber **todo o tráfego multicast desse grupo**, independentemente de qual servidor seja a fonte
+- **Host02 e Host03** querem receber **todo o tráfego multicast desse grupo**, independentemente de qual servidor seja a fonte
   
 Esse cenário representa um modelo clássico **many-to-many**, ideal para **PIM Bidirectional (BIDIR)**.
 
@@ -592,7 +573,7 @@ O **IGMP (v2 ou v3)** é usado **apenas para sinalizar interesse no grupo (G)**.
 
 📩 **Sinalização do Host (IGMP)**
 
-O **Host01** envia **um único IGMP Report**, informando que deseja participar do grupo multicast:
+O **Host02 e Host03** enviam **um único IGMP Report**, informando que deseja participar do grupo multicast:
 
 ```text
 IGMP Report (*, 239.1.1.1)
@@ -601,7 +582,7 @@ IGMP Report (*, 239.1.1.1)
 📩 **Sinalização do Host (IGMP)**
 
 No **PIM BIDIR**, **não há INCLUDE (S,G)** nem qualquer tipo de **seleção de fonte**.  
-O host simplesmente sinaliza interesse **no grupo multicast (G)**.
+Os hosts simplesmente sinalizam interesse **no grupo multicast (G)**.
 
 > “Quero receber o grupo **239.1.1.1**.”
 
@@ -609,9 +590,12 @@ O host simplesmente sinaliza interesse **no grupo multicast (G)**.
 
 🔁 **O que acontece no roteador (Designated Router – DR)**
 
-- O roteador conectado ao **Host01** recebe o **IGMP Join para o grupo (G)**  
+- O **roteador04** conectado ao **Host02** recebe o **IGMP Join para o grupo (G)**  
 - Ele cria **uma única entrada multicast (*,G)** na sua tabela  
-- O roteador envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**  
+- O **roteador04** envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**  
+- Ao mesmo tempo, o **roteador05** recebe o  **IGMP Join para o grupo (G)**
+- Ele cria **uma única entrada multicast (*,G)** na sua tabela  
+- O **roteador05** envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**
 
 ⚠️ **Importante**  
 No **PIM BIDIR**, o **RP é apenas a raiz lógica da árvore multicast**.  
@@ -634,79 +618,87 @@ Ele:
 
 O tráfego multicast entra na árvore pelo **roteador conectado à fonte**, respeitando o papel do **Designated Forwarder (DF)** em cada enlace.
 
+### 🔁 O que acontece no roteador (Designated Router – DR)
+
+Quando os receptores manifestam interesse no conteúdo, o processo de sinalização ocorre da seguinte forma:
+
+- **Roteador04 (DR do Host02):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e envia um **PIM Join (*,G)** em direção ao RP.
+- **Roteador05 (DR do Host03):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e também envia um **PIM Join (*,G)** em direção ao RP.
+
+⚠️ **Importante: O Papel do RP no PIM BIDIR**
+Diferente do PIM-SM, aqui o RP é estritamente a **raiz lógica** da árvore:
+
+- ❌ **Sem Mensagens de Register:** As fontes não encapsulam tráfego para o RP.
+- ❌ **Sem Ponto de Encontro de Dados:** O RP não precisa "desencapsular" pacotes; ele apenas define o ponto central para a eleição do **DF (Designated Forwarder)**.
+- ❌ **Caminho Nativo:** O tráfego flui nativamente pela árvore assim que a fonte começa a transmitir.
+
+---
+
+### 🌳 Construção da Árvore Multicast
+
+Diferente de outros modos PIM, o BIDIR estabelece uma estrutura única:
+
+- **Árvore Única:** Uma única árvore compartilhada **(*,G)** é construída para o grupo (ex: 239.1.1.1).
+- **Uso Simultâneo:** Essa árvore atende todas as fontes e todos os receptores ao mesmo tempo.
+- **Eficiência de Plano de Controle:**
+  - ❌ **Não ocorre SPT Switching:** O tráfego nunca migra para árvores (S,G).
+  - ❌ **Sem Estados (S,G):** A tabela mroute permanece limpa e escalável.
+  - ❌ **Encaminhamento via DF:** O tráfego entra e sai da árvore respeitando a eleição do **Designated Forwarder** em cada link, o que previne loops bidirecionais.
+
 ---
 
 🔎 **Visualmente**
 
 ```text
-      Server01 (192.168.10.10)
-                │
-                │
-      Server02 (192.168.40.10)
-                │
-                ▼
-          Árvore Compartilhada (*,G)
-                │
-          [RP – raiz lógica]
-                │
-          [Roteador DR]
-                │
-                ▼
-             [Host01]
+
+    ┌──────────────────────────┐    ┌──────────────────────────┐
+    │ SERVER02 (192.168.40.1)  │    │ SERVER03 (192.168.50.1)  │
+    └──────────────────────────┘    └──────────────────────────┘
+                │                            │
+                └─────────────┬──────────────┘
+                              │
+                              ▼
+                 ┌────────────────────────────┐             
+                 │ Árvore Compartilhada (*,G) │
+                 └────────────────────────────┘             
+                              │
+                              ▼
+                     ┌───────────────────┐
+                     │ RP – Raiz Lógica  │
+                     └───────────────────┘
+                              │
+                     ┌───────────────────┐         
+                     │    Roteador DR    │
+                     └───────────────────┘    
+                              │
+                              ▼
+                      ┌───────────────┐
+                      │     Host02    │
+                      └───────────────┘
 ```  
 
-O **Host01** recebe todo o tráfego multicast do grupo **239.1.1.1**, vindo de:
-
-- **Server01**
-- **Server02**
-
-Sem qualquer distinção por origem.
+O **Host02 (e demais receptores)** recebe todo o tráfego do **grupo 239.1.1.1* de forma agregada. No PIM BIDIR, a rede trata o grupo **como um canal único*: se o SERVER02 e o SERVER03 estiverem transmitindo, o **receptor recebe ambos sem distinção**.
 
 ---
 
-### 🧩 E se o Host01 quiser apenas uma das fontes?
+### 🧩 Limitações Intencionais do Modelo
 
-➡️ **Não é possível no PIM BIDIR.**
+Muitos administradores tentam aplicar filtros de origem no BIDIR, mas é preciso entender que:
 
-O modelo não permite filtragem por fonte, pois:
+- Seleção de Fonte: O Host não pode escolher receber apenas do SERVER02. O IGMPv2 não possui campos para origem e o PIM BIDIR não cria estados (S,G).
+- Bloqueio de Fonte: Não é possível bloquear uma fonte específica na rede. O BIDIR assume que o controle de conteúdo deve ser feito na camada de aplicação.
 
-- Não existem estados **(S,G)**
-- O **IGMP não controla origem**
-- O **PIM encaminha todo o tráfego do grupo**
+Se o seu projeto exige que o receptor escolha ou bloqueie fontes específicas, o modelo correto é o **PIM SSM (Source-Specific Multicast).**
 
-Se esse tipo de controle for necessário, o modelo correto é **SSM com IGMPv3**.
+### 📊 Matriz de Comportamento: Host vs. Fontes
 
----
-
-### 🚫 E se o Host01 quiser bloquear uma das fontes?
-
-➡️ **Também não é possível no PIM BIDIR.**
-
-O BIDIR assume que:
-
-- Todas as fontes do grupo são válidas
-- O controle de conteúdo ocorre **na aplicação**, não na rede
-- O foco é **simplicidade, escalabilidade e previsibilidade**
-
----
-
-### 🧠 Resumo Final
-
-- **PIM BIDIR trabalha apenas com (*,G)**
-- Uma **única árvore multicast** é usada por todas as fontes
-- **Não há SPT Switching** nem seleção de fonte
-- Ideal para cenários **many-to-many**
-- Controle por origem **não faz parte do modelo**
-
-Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambientes com **múltiplas fontes ativas**, como aplicações financeiras, sistemas de replicação e serviços de colaboração em tempo real.
+| Intenção do Receptor   | IGMP Join enviado | Resultado no PIM BIDIR                |
+|------------------------|-------------------|---------------------------------------|
+| Quer apenas SERVER02   | Join (*,G)        | Recebe SERVER02 e SERVER03 (Agregado) |
+| Quer apenas SERVER03   | Join (*,G)        | Recebe SERVER02 e SERVER03 (Agregado) |
+| Quer ambas as fontes   | Join (*,G)        | Recebe todo o fluxo do grupo          |
+| Quer excluir uma fonte | Não suportado     | Recebe todo o tráfego do grupo        |
   
-| Caso                        | IGMP Join enviado pelo host | Resultado no PIM BIDIR             |
-|-----------------------------|-----------------------------|------------------------------------|
-| Host quer Server01          | Join (*,G)                  | Recebe tráfego do Server01         |
-| Host quer Server02          | Join (*,G)                  | Recebe tráfego do Server02         |
-| Host quer os dois           | Join (*,G)                  | Recebe tráfego de ambas as fontes  |
-| Host quer excluir uma fonte | Não suportado               | Recebe todo o tráfego do grupo     |
-
 👉 **Em resumo:**  
 
 - No PIM Bidirectional, o controle é feito apenas por grupo (*,G).
@@ -717,15 +709,14 @@ Esse comportamento torna o **PIM Bidirectional** extremamente eficiente em ambie
 
 ⚙️ **Nosso cenário PIM BIDIR**  
 
-Nosso laboratório considera múltiplas fontes multicast ativas simultaneamente, todas transmitindo para o mesmo grupo multicast, caracterizando um cenário many-to-many.  
-  
-| Fonte     | Roteador conectado | Sub-rede        | Grupo multicast utilizado   |
-|-----------|--------------------|-----------------|-----------------------------|
-| SERVER    | R01                | 192.168.10.0/24 | 239.1.1.1                   |
-| SERVER02  | R03                | 192.168.40.0/24 | 239.1.1.1                   |
+Para validar este comportamento, utilizaremos as seguintes fontes:
 
-Os receptores multicast (hosts simulados) não especificam fontes.  
-Eles apenas ingressam no grupo multicast desejado, por exemplo 239.1.1.1, e passam a receber todo o tráfego associado a esse grupo, independentemente da origem.  
+| Fonte    | Gateway (DR)   | Sub-rede        | Grupo Multicast  |
+|----------|----------------|-----------------|------------------|
+| SERVER02 | R03            | 192.168.40.0/24 | 239.1.1.1        |
+| SERVER03 | R02            | 192.168.50.0/24 | 239.1.1.1        |
+
+Comportamento esperado: Assim que os receptores ingressarem no grupo 239.1.1.1, eles passarão a receber os fluxos de ambos os servidores. A verificação via **show ip mroute** mostrará apenas a entrada (*,G), confirmando que não há caminhos dedicados por fonte.  
   
 📡 **Papel do IGMP no PIM BIDIR**  
   
@@ -762,7 +753,7 @@ Não ocorre:
 O PIM Bidirectional será ativado em todos os roteadores e interfaces relevantes:  
 
 - Entre os roteadores R01 a R05, formando o domínio PIM BIDIR
-- Nas interfaces LAN conectadas às fontes multicast (SERVER e SERVER02)
+- Nas interfaces LAN conectadas às fontes multicast (SERVER02 e SERVER03)
 - Nas interfaces LAN conectadas aos receptores (Host02 e Host03)
 - Nas Loopbacks, apenas como Router-ID para OSPF
 - O Rendezvous Point (RP) é configurado manualmente e atua como raiz lógica da árvore, sem receber ou encaminhar tráfego multicast.
@@ -771,8 +762,8 @@ O PIM Bidirectional será ativado em todos os roteadores e interfaces relevantes
   
 | Elemento                 | Função no cenário                                 |
 |--------------------------|---------------------------------------------------|
-| SERVER (192.168.10.10)   | Fonte multicast (grupo 239.1.1.1)                 |
-| SERVER02 (192.168.40.10) | Segunda fonte multicast (mesmo grupo)             |
+| SERVER (192.168.10.01)   | Fonte multicast (grupo 239.1.1.1)                 |
+| SERVER02 (192.168.40.01) | Segunda fonte multicast (mesmo grupo)             |
 | Host02 / Host03          | Receptores multicast (Join apenas por grupo)      |
 | Roteadores R01–R05       | Encaminham tráfego via PIM BIDIR                  |
 | OSPF                     | Mantém conectividade unicast (base para RPF)      |
@@ -785,6 +776,50 @@ Ao utilizar **uma única árvore compartilhada (*,G)**, o modelo elimina a compl
 
 O controle por origem não faz parte do modelo — todo o tráfego pertencente ao grupo é encaminhado igualmente.  
 Esse comportamento torna o PIM BIDIR especialmente adequado para ambientes como sistemas financeiros, replicação distribuída, colaboração em tempo real e aplicações com múltiplos produtores simultâneos.  
+
+## ⚙️ Ativando o roteamento multicast
+
+O roteamento multicast deve ser ativado em todos os roteador em modo global com o comando:
+
+```ios
+R01(config)#ip multicast-routing
+```
+
+✅ **Verificação do roteamento multicast**  
+  
+Para confirmar que o roteamento multicast está ativo:
+
+```ios  
+R01#show ip multicast
+Multicast Routing: enabled
+Multicast Multipath: disabled
+Multicast Route limit: No limit
+Multicast Triggered RPF check: enabled
+Multicast Fallback group mode: Sparse
+Multicast DVMRP Interoperability: disabled
+```
+
+E a tabela de rotas multicast:
+
+```ios
+R01#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT
+...
+(*, 224.0.1.40), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Bidir, 00:12:34/00:02:25
+```
+
+💡 **Dica Importante:**
+Em um domínio PIM-BIDIR, somente **entradas (*,G) são criadas**.  
+Não existem **estados (S,G)**, nem comutação para **SPT**.  
+O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**  
+
+A entrada **(*,224.0.1.40)** representa tráfego de controle do PIM e aparece independentemente de fontes ou receptores. Entradas **(,239.x.x.x)** só são criadas quando há interesse explícito via IGMP ou tráfego multicast ativo, especialmente em cenários PIM-BIDIR.  
 
 ## ⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)
 
@@ -844,43 +879,9 @@ R01(config-if)#ip pim sparse-mode
 
 Após essa configuração, o roteador passa a participar do domínio multicast BIDIR, trocando mensagens **PIM Hello**, elegendo **Designated Routers (DR)** nas LANs e encaminhando tráfego multicast ao longo da **árvore compartilhada (*,G).**  
   
-📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).
+📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).  
   
-✅ **Verificação do roteamento multicast**  
-  
-Para confirmar que o roteamento multicast está ativo:
-
-```ios  
-R01#show ip multicast
-Multicast Routing: enabled
-Multicast Multipath: disabled
-Multicast Route limit: No limit
-Multicast Triggered RPF check: enabled
-Multicast Fallback group mode: Sparse
-Multicast DVMRP Interoperability: disabled
-```
-
-E a tabela de rotas multicast:
-
-```ios
-R01#show ip mroute
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT
-...
-(*, 224.0.1.40), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
-  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Bidir, 00:12:34/00:02:25
-```
-
-💡 **Dica Importante:**
-Em um domínio PIM-BIDIR, somente **entradas (*,G) são criadas**.  
-Não existem **estados (S,G)**, nem comutação para **SPT**.  
-O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**  
-
-A entrada **(*,224.0.1.40)** representa tráfego de controle do PIM e aparece independentemente de fontes ou receptores. Entradas **(,239.x.x.x)** só são criadas quando há interesse explícito via IGMP ou tráfego multicast ativo, especialmente em cenários PIM-BIDIR.  
+⚠️ **Nota:** Embora o PIM BIDIR seja habilitado globalmente neste IOS apenas após o comando ip pim bidir-enable, a ativação inicial do ip pim sparse-mode é apresentada primeiro para manter a progressão conceitual do protocolo.
 
 ## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
 
