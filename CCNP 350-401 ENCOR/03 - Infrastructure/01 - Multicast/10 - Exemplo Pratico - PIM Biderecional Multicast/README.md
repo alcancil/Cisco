@@ -105,25 +105,22 @@
     - [🟦 Configuração dos Servidores (Fontes)](#-configuração-dos-servidores-fontes)
       - [🟦 Server02](#-server02)
     - [🟩 Server03](#-server03)
-    - [🎥 Configurando os servidores simulados (senders)](#-configurando-os-servidores-simulados-senders)
-      - [🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2](#-server01--transmitindo-para-232111-e-232222)
-    - [🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2](#-server02--transmitindo-para-231111-e-232222)
     - [Realizando testes - Simulando fluxo nos servidores](#realizando-testes---simulando-fluxo-nos-servidores)
-  - [🛠️ Troubleshooting](#️-troubleshooting)
-  - [🧩 O que aprendemos com este laboratório (SSM + IGMPv3)](#-o-que-aprendemos-com-este-laboratório-ssm--igmpv3)
+  - [🛠️ Troubleshooting (PIM BIDIR)](#️-troubleshooting-pim-bidir)
+  - [🧩 O que aprendemos com este laboratório (PIM BIDIR)](#-o-que-aprendemos-com-este-laboratório-pim-bidir)
   - [🎯 Principais aprendizados](#-principais-aprendizados)
   - [💡 Conclusões gerais](#-conclusões-gerais)
-  - [🗺️ Fluxo conceitual do SSM (S,G)](#️-fluxo-conceitual-do-ssm-sg)
+  - [🗺️ Fluxo conceitual do PIM BIDIR (\*,G)](#️-fluxo-conceitual-do-pim-bidir-g)
   - [📘 Tabela de Comandos](#-tabela-de-comandos)
-    - [🖥️ Função	—	R01 atua como Designated Router (DR) para a LAN dos servidores](#️-funçãor01-atua-como-designated-router-dr-para-a-lan-dos-servidores)
-    - [📗 R02 – Router de Núcleo / Intermediário do Domínio SSM](#-r02--router-de-núcleo--intermediário-do-domínio-ssm)
-    - [📙 R03 – DR da LAN do Host + Roteador de Trânsito no SSM](#-r03--dr-da-lan-do-host--roteador-de-trânsito-no-ssm)
-    - [📒 R04 – DR da LAN do Host02 + Roteador de Trânsito no SSM](#-r04--dr-da-lan-do-host02--roteador-de-trânsito-no-ssm)
-    - [📕 R05 – Roteador de Trânsito + DR da LAN do Host03](#-r05--roteador-de-trânsito--dr-da-lan-do-host03)
-    - [🖥️ SERVER – Fonte Multicast (Sender)](#️-server--fonte-multicast-sender)
-    - [🖥️ SERVER02 – Fonte Multicast (Sender)](#️-server02--fonte-multicast-sender)
-    - [💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)](#-host02--receptor-multicast-igmpv3--ssm)
-    - [🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)](#️-host03--receptor-multicast-secundário-ssm-com-múltiplas-fontes)
+    - [🖥️ Função — R01 atua como Designated Forwarder (DF) no domínio PIM BIDIR](#️-função--r01-atua-como-designated-forwarder-df-no-domínio-pim-bidir)
+    - [📘 R02 — Roteador de Núcleo / Intermediário do Domínio PIM BIDIR](#-r02--roteador-de-núcleo--intermediário-do-domínio-pim-bidir)
+    - [📙 R03 — DF da LAN dos Hosts + Roteador de Trânsito no Domínio PIM BIDIR](#-r03--df-da-lan-dos-hosts--roteador-de-trânsito-no-domínio-pim-bidir)
+    - [📒 R04 — DF da LAN do Host02 + Roteador de Trânsito no Domínio PIM BIDIR](#-r04--df-da-lan-do-host02--roteador-de-trânsito-no-domínio-pim-bidir)
+    - [📕 R05 — DF da LAN do Host03 + Roteador de Trânsito no Domínio PIM BIDIR](#-r05--df-da-lan-do-host03--roteador-de-trânsito-no-domínio-pim-bidir)
+    - [🖥️ SERVER03 — Fonte Multicast no Domínio PIM BIDIR](#️-server03--fonte-multicast-no-domínio-pim-bidir)
+    - [🖥️ SERVER02 — Fonte Multicast no Domínio PIM BIDIR](#️-server02--fonte-multicast-no-domínio-pim-bidir)
+    - [💻 HOST02 — Receptor Multicast no Domínio PIM BIDIR](#-host02--receptor-multicast-no-domínio-pim-bidir)
+    - [🖥️ HOST03 — Receptor Multicast no Domínio PIM BIDIR](#️-host03--receptor-multicast-no-domínio-pim-bidir)
 
 ## 10 - Exemplo Pratico - PIM Bidirecional Multicast
 
@@ -881,7 +878,7 @@ Após essa configuração, o roteador passa a participar do domínio multicast B
   
 📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).  
   
-⚠️ **Nota:** Embora o PIM BIDIR seja habilitado globalmente neste IOS apenas após o comando ip pim bidir-enable, a ativação inicial do ip pim sparse-mode é apresentada primeiro para manter a progressão conceitual do protocolo.
+⚠️ **Nota:** Embora o PIM BIDIR seja habilitado globalmente neste IOS apenas após o comando `ip pim bidir-enable`, a ativação inicial do ip pim sparse-mode é apresentada primeiro para manter a progressão conceitual do protocolo.
 
 ## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
 
@@ -1121,7 +1118,7 @@ Isso evita que múltiplos roteadores processem relatórios IGMP e enviem **PIM J
 - No **SSM**, o DR:
   - **não interage com RP**;
   - **não envia PIM Register**;
-  - processa diretamente os **relatórios IGMPv3** e inicia **joins (S,G)** rumo à fonte.
+  - processa diretamente os **relatórios IGMPv2** e inicia **joins (S,G)** rumo à fonte.
 
 🧭 **Conclusão deste estágio**
 
@@ -1134,13 +1131,6 @@ Isso evita que múltiplos roteadores processem relatórios IGMP e enviem **PIM J
 Até este ponto, o laboratório operou com **PIM Sparse Mode tradicional** e **SSM**, onde o **Designated Router (DR)** é responsável por processar IGMP e iniciar os joins multicast.  
   
 A partir de agora, o cenário será estendido para **PIM BIDIR**, um modelo projetado para ambientes **many-to-many**, no qual **múltiplas fontes e múltiplos receptores** coexistem de forma simultânea e dinâmica.  
-  
-📌 **Exemplos de uso:**
-
-- ambientes financeiros
-- colaboração em tempo real
-- replicação distribuída
-- aplicações onde não há uma “fonte central” bem definida
 
 ---
 
@@ -1369,7 +1359,6 @@ Essa RFC especifica o funcionamento do PIM Bidirectional, incluindo:
 - A introdução do **Designated Forwarder (DF)** como mecanismo de prevenção de loops e controle do fluxo multicast.
 
 As observações e validações realizadas neste laboratório estão alinhadas com o comportamento descrito na RFC, considerando também as particularidades de implementação do **Cisco IOS 12.4T**, onde o suporte ao BIDIR requer habilitação global.
-
 
 ## Escopo dos Grupos Multicast no Domínio PIM BIDIR
 
@@ -1665,7 +1654,7 @@ A eleição do DF é baseada exclusivamente no **caminho unicast até o Rendezvo
 
 #### 📌 DF eleito por trecho
 
-No cenário deste laboratório, o **Rendezvous Point (RP)** está configurado como **1.1.1.1 (Loopback do R01)**.    
+No cenário deste laboratório, o **Rendezvous Point (RP)** está configurado como **1.1.1.1 (Loopback do R01)**.  
 A eleição do **Designated Forwarder (DF)** ocorre **independentemente em cada enlace**, sempre com base no **menor custo unicast (OSPF) até o RP**.  
 
 A tabela abaixo resume, por enlace, **quem é o DF**, **o motivo da eleição** e **como o tráfego multicast se comporta em relação ao RP**.
@@ -1996,6 +1985,8 @@ R05(config-if)#ip pim sparse-mode
 R05(config-if)#ip igmp version 2
 ```
 
+**OBS:** só foi demonstrado nas interfaces de acesso de R04 e R05, mas por motivos de padronização o mesmo procedimento também dever ser feito em todos os demais roteadores para que todos utilizem a mesma versão de **IGMPv2**.
+
 ### 🖥️ Simulação dos Hosts Receptores
 
 Nos hosts, é iniciado o ingresso no grupo multicast.  
@@ -2006,8 +1997,7 @@ Nos hosts, é iniciado o ingresso no grupo multicast.
 
 ```ios
 HOST02(config)#int f0/0
-HOST02(config-if)#ip igm
-HOST02(config-if)#ip igmp joi
+HOST02(config-if)#ip igmp
 HOST02(config-if)#ip igmp join-group 239.1.1.1
 ```
 
@@ -2015,8 +2005,7 @@ HOST02(config-if)#ip igmp join-group 239.1.1.1
 
 ```ios
 HOST03(config)#int f0/0
-HOST03(config-if)#ip igmp
-HOST03(config-if)#ip igmp joi
+HOST03(config-if)#ip igmpp
 HOST03(config-if)#ip igmp join-group 239.1.1.1
 ```
 
@@ -2026,32 +2015,6 @@ Após os hosts ingressarem no grupo, deve-se verificar se o roteador reconheceu 
 
 ```ios
 show ip igmp groups
-```
-
-⚠️ **Observação:** antes de erificarmos os grupos, devemos executar um ping para o grupo. Assim ele vai ser registrado e deve aparecer no comando de verificação.  
-
-**HOST02**  
-
-```ios
-HOST02#ping 239.1.1.1
-
-Type escape sequence to abort.
-Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-
-Reply to request 0 from 192.168.20.1, 8 ms
-HOST02#
-```
-
-**HOST03**  
-
-```ios
-HOST03#ping 239.1.1.1
-
-Type escape sequence to abort.
-Sending 1, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-
-Reply to request 0 from 192.168.30.1, 4 ms
-HOST03#
 ```
 
 Agora vamos checar os grupos em R04 e R05.  
@@ -2244,7 +2207,7 @@ Entretanto, como neste laboratório os servidores são **roteadores Cisco simula
 
 - **Não utilizamos `ip igmp join-group` nos servidores**
 - Utilizamos **ping para endereços multicast** apenas para **simular a geração de tráfego**
-- O IGMPv3 é configurado nas interfaces para manter consistência com o cenário SSM/BIDIR e evitar comportamento legado do IGMPv2
+- O IGMPv2 é configurado nas interfaces para manter consistência com o cenário
 
 ---
 
@@ -2263,381 +2226,325 @@ interface FastEthernet0/0
 
 ```ios
 interface FastEthernet0/0
- ip igmp version 3
+ ip igmp version 2
 ```
 
 Cada servidor atuará como **fonte multicast independente**, representando aplicações distintas em um ambiente **many-to-many**.
 
----
-
-Alterar Daqui
-
----
-
-### 🎥 Configurando os servidores simulados (senders)
-
-Como os servidores deste laboratório são roteadores Cisco simulando PCs, não existe aplicação multicast real (como VLC ou ffmpeg) para abrir um socket e transmitir para um grupo multicast.  
-  
-Por isso, para simular corretamente o envio do fluxo multicast, é necessário que a interface do “servidor” execute um **IGMP join-group** apenas para o **grupo que ele irá transmitir**. Isso ativa o socket multicast interno do IOS, permitindo gerar tráfego para o endereço do grupo.  
-
-#### 🟩 Server01 – Transmitindo para 232.1.1.1 e 232.2.2.2
-
-Como explicado anteriormente, não devemos fazer um ip igmp join-group nos nossos servidores. Só iremos configurar a interface ligada aos roteadores de trânsito para que se utilize o **igmpv3** para garantirmos que toda nossa rede funcione na **versão 3 e não na 2**.
-
-```ios
-interface fa0/0
- ip igmp version 3
-```
-
-### 🟦 Server02 – Transmitindo para 231.1.1.1 e 232.2.2.2
-
-```ios
-interface fa0/0
- ip igmp version 3
-```
-
-Cada servidor anuncia apenas um único grupo, como ocorre em aplicações multicast reais. Os receptores **(Host02 e Host03)** fazem os joins **IGMPv3 (S,G)** para ambas as fontes, recebendo dois fluxos simultâneos.
-
 ### Realizando testes - Simulando fluxo nos servidores
 
-Agora vamos entrar em **Server** e executar:
+Agora vamos entrar em **Server03** e executar:
 
-`ping 232.1.1.1 repeat 1000 size 1500 source Fa0/0`  
+`ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0`  
   
-`ping 232.2.2.2 repeat 1000 size 1500 source F0/0`  
-
-
 Demos entrar em **Server02** e executar também:  
 
-`ping 232.1.1.1 repeat 1000 size 1500 source Fa0/0`  
+`ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0`  
   
-`ping 232.2.2.2 repeat 1000 size 1500 source F0/0`
-
-
 Devemos ter uma saída assim:  
 
+**Server03**  
+
 ```ios
-SERVER#ping 232.1.1.1 repeat 10000 size 1500 source Fa0/0
+SERVER03#ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0
 
 Type escape sequence to abort.
-Sending 10000, 1500-byte ICMP Echos to 232.1.1.1, timeout is 2 seconds:
-Packet sent with a source address of 192.168.10.1
-...
-Reply to request 3 from 192.168.30.1, 48 ms
-Reply to request 3 from 192.168.20.1, 76 ms
-Reply to request 4 from 192.168.30.1, 84 ms
-Reply to request 4 from 192.168.20.1, 120 ms
-Reply to request 5 from 192.168.30.1, 128 ms
-Reply to request 5 from 192.168.20.1, 168 ms
-Reply to request 6 from 192.168.30.1, 136 ms
-Reply to request 6 from 192.168.20.1, 172 ms
-Reply to request 7 from 192.168.30.1, 124 ms
-Reply to request 7 from 192.168.20.1, 160 ms
-SERVER#ping 232.2.2.2 repeat 10000 size 1500 source Fa0/0
-
-Type escape sequence to abort.
-Sending 10000, 1500-byte ICMP Echos to 232.2.2.2, timeout is 2 seconds:
-Packet sent with a source address of 192.168.10.1
-
-Reply to request 0 from 192.168.30.1, 36 ms
-Reply to request 0 from 192.168.20.1, 60 ms
-Reply to request 1 from 192.168.30.1, 160 ms
-Reply to request 1 from 192.168.20.1, 196 ms
-Reply to request 2 from 192.168.30.1, 120 ms
-Reply to request 2 from 192.168.20.1, 156 ms
-Reply to request 3 from 192.168.30.1, 132 ms
-Reply to request 3 from 192.168.20.1, 168 ms
-Reply to request 4 from 192.168.30.1, 116 ms
-Reply to request 4 from 192.168.20.1, 152 ms
-Reply to request 5 from 192.168.30.1, 132 ms
-Reply to request 5 from 192.168.20.1, 168 ms
-Reply to request 6 from 192.168.30.1, 104 ms
-Reply to request 6 from 192.168.20.1, 144 ms
-SERVER#wr
-Building configuration...
-[OK]
-SERVER#
+Sending 1000, 1500-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+Packet sent with a source address of 192.168.50.1
+....
+Reply to request 4 from 192.168.20.1, 24 ms
+Reply to request 4 from 192.168.30.1, 52 ms
+Reply to request 5 from 192.168.30.1, 104 ms
+Reply to request 5 from 192.168.20.1, 144 ms
+Reply to request 6 from 192.168.30.1, 128 ms
+Reply to request 6 from 192.168.20.1, 164 ms
+Reply to request 7 from 192.168.30.1, 112 ms
+Reply to request 7 from 192.168.20.1, 148 ms
 ```
 
-Repetir o mesmo para o SERVER02.  
+**SERVER02**.  
 
-🔎 **Observação importante sobre joins simulados e testes com ping**  
+```ios
+SERVER02#ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0
 
-Em ambientes de produção, os servidores e aplicações multicast não executam **ip igmp join-group manualmente**.  
-Quem realiza essa função é a aplicação (como VLC, encoders de vídeo, sistemas de monitoramento, middleware de streaming etc.), que informa ao sistema operacional em quais grupos multicast deve transmitir ou receber.  
+Type escape sequence to abort.
+Sending 1000, 1500-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+Packet sent with a source address of 192.168.40.1
+.
+Reply to request 1 from 192.168.20.1, 72 ms
+Reply to request 1 from 192.168.30.1, 84 ms
+Reply to request 2 from 192.168.20.1, 112 ms
+Reply to request 2 from 192.168.30.1, 148 ms
+Reply to request 3 from 192.168.30.1, 120 ms
+Reply to request 3 from 192.168.20.1, 156 ms
+Reply to request 4 from 192.168.20.1, 120 ms
+Reply to request 4 from 192.168.30.1, 156 ms
+Reply to request 5 from 192.168.20.1, 120 ms
+Reply to request 5 from 192.168.30.1, 156 ms
+Reply to request 6 from 192.168.20.1, 164 ms
+Reply to request 6 from 192.168.30.1, 200 ms
+Reply to request 7 from 192.168.20.1, 132 ms
+Reply to request 7 from 192.168.30.1, 200 ms
+Reply to request 8 from 192.168.20.1, 112 ms
+Reply to request 8 from 192.168.30.1, 148 ms
+```
+
+## 🛠️ Troubleshooting (PIM BIDIR)
+
+| **Sintoma**                       | **Causa Provável**                       | **Comandos de Verificação** | **Correção / Observação**                                      |
+|-----------------------------------|------------------------------------------|-----------------------------|----------------------------------------------------------------|
+| **Não aparecem entradas (*,G) no  |                                          |                             |                                                                |
+| `show ip mroute`**                | Não há receptores IGMP                   | `show ip igmp groups`       | Verificar se os hosts realizaram join no grupo                 |
+|                                   | PIM não habilitado na interface          | `show ip pim interface`     | Ativar `ip pim sparse-mode` na interface                       |
+|                                   | RP BIDIR não configurado                 | `show ip pim rp`            | Configurar `ip pim rp-address <RP> bidir`                      |
+| **Grupo aparece como “stopped”**  | Não há tráfego multicast ativo           | `show ip mroute count`      | Gerar tráfego multicast (ping multicast)                       |
+|                                   | Apenas join, sem envio                   | `show ip igmp groups`       | Confirmar que existe fonte transmitindo                        |
+| **Tráfego multicast não atravessa o enlace** | Roteador não é o DF do segmento | `show ip pim interface`     | Verificar eleição do DF (custo até o RP)                     |
+|                                   | Métrica até o RP maior que o vizinho     | `show ip route <RP>`        | Ajustar custo IGP                                              |
+| **Tráfego não chega ao RP**       | Falha de RPF em direção ao RP            | `show ip rpf <RP>`          | Corrigir roteamento unicast até o RP                           |
+|                                   | Rota inconsistente                       | `show ip route`             | Garantir convergência do IGP                                   |
+| **Sem vizinhos PIM**              | Interface incorreta ou PIM ausente       | `show ip pim neighbor`      | Habilitar PIM na interface correta                             |
+|                                   | Problema de camada 2 / adjacência        | `show ip ospf interface`    | Verificar estado L2/L3                                         |
+| **Host não recebe tráfego multicast** | Host não realizou join IGMP          | `show ip igmp groups`       | Verificar configuração do host                                 |
+|                                   | Interface de saída não eleita DF         | `show ip pim interface`     | Confirmar DF no segmento                                       |
+| **Ping multicast responde apenas localmente** | **Comportamento esperado** no ICMP multicast | —  | Ping multicast é usado **apenas para gerar tráfego**, não para resposta |
+
+## 🧩 O que aprendemos com este laboratório (PIM BIDIR)
+
+Neste laboratório exploramos o funcionamento do **Protocol Independent Multicast – Bidirectional (PIM BIDIR)**, um modelo de multicast **many-to-many**, amplamente utilizado em ambientes enterprise que exigem **alta escalabilidade** e **baixo estado de controle** nos roteadores.  
   
-Como no laboratório estamos usando roteadores **Cisco simulando servidores**, não existe uma aplicação real para gerar fluxos multicast.  
-Por isso, os comandos **ip igmp join-group e ping <grupo>** são apenas uma simulação da lógica que uma aplicação multicast executaria automaticamente.  
-
-**Isso significa que:**
-
-- **ip igmp join-group** nos “hosts” serve apenas para formar a **entrada (S,G)** e permitir que o laboratório funcione;
-- O uso de **ping** para enviar pacotes ICMP ao grupo não representa tráfego multicast real, mas garante um fluxo contínuo para validar **a árvore SSM;**
-- Em **um ambiente real, o servidor só transmite, e o host só recebe**, sem qualquer necessidade de comandos manuais.
-- Essa distinção é essencial para não confundir o funcionamento prático do protocolo com a abordagem usada no laboratório.
-
-## 🛠️ Troubleshooting
-
-| **Sintoma**                                   | **Causa Provável**             | **Comandos de Verificação** | **Correção**                                                    |
-|-----------------------------------------------|--------------------------------|-----------------------------|-----------------------------------------------------------------|
-| **Não aparece (S,G) no `show ip mroute`**     | - IGMPv3 desabilitado          | `show ip igmp interface`    | Ativar IGMPv3                                                   |
-|                                               | - ACL SSM errada               | `show run \| i pim ssm`     | Corrigir ACL                                                    |
-|                                               | - RPF falhando                 | `show ip rpf <S>`           | Corrigir rota da fonte                                          |
-| **Grupo aparece como ”stopped”**              | Não há tráfego multicast ativo | `show ip mroute count`      | Gerar tráfego (ping multicast)                                  |
-|                                               |                                | `show ip igmp groups`       | Confirmar joins                                                 |
-| **Roteador forma **\*,G** ao invés de (S,G)** | Grupo fora do range SSM        | `show access-lists`         | Ajustar ACL SSM                                                 |
-|                                               |                                | `show ip igmp interface`    | Habilitar IGMPv3                                                |
-| **`show ip mroute count` vazio**              | Fonte não transmite            | `debug ip packet detail`    | Validar tráfego real                                            |
-|                                               | Ping respondido localmente     | `show ip rpf`               | Garantir saída pela interface certa                             |
-|                                               | RPF falha                      | `show ip route`             | Corrigir RPF                                                    |
-| **Sem vizinhos PIM**                          | Interface LAN em p2p           | `show ip pim neighbor`      | Habilitar PIM                                                   |
-|                                               | PIM ausente                    | `show ip pim interface`     | Ajustar tipo da interface                                       |
-|                                               | L2/L1 com problema             | `show ip ospf interface`    | Verificar camada 2                                              |
-| **RPF Failure**                               | Rota errada para a fonte (S)   | `show ip rpf <S>`           | Ajustar OSPF                                                    |
-|                                               |                                | `show ip route`             | revisar métricas e next-hops                                    |
-| **Host recebe apenas 1 fluxo**                | Uma fonte não transmite        | `show ip igmp groups`       | Corrigir ACL                                                    |
-|                                               | ACL SSM incompleta             | `show access-lists`         | Garantir tráfego das duas fontes                                |
-| **Ping multicast responde só do gateway**     | **Normal** —ICMP multicast     | —                           | Entender que o ping é **somente gerador de tráfego**, não teste |
-|                                               | não vira unicast pros hosts    | —                           | de reachability                                                 |
-
-## 🧩 O que aprendemos com este laboratório (SSM + IGMPv3)
-
-Neste laboratório exploramos o funcionamento do Source-Specific Multicast (SSM) com PIM-SSM e IGMPv3, o modelo mais moderno e simples de multicast — sem RP, sem árvores compartilhadas e sem Bootstrap.  
+Diferente do PIM-SM tradicional, o PIM BIDIR elimina o uso de árvores específicas por fonte (S,G), mantendo apenas **árvores compartilhadas (*,G)** ancoradas em um **Rendezvous Point (RP)** lógico. Nesse modelo, tanto fontes quanto receptores utilizam a mesma infraestrutura de distribuição multicast, sem a criação de Shortest Path Trees (SPT).  
   
-O foco foi entender como o host escolhe exatamente qual fonte (S) deseja receber para um determinado grupo (G) dentro do intervalo 232.0.0.0/8, e como o domínio PIM constrói a árvore (S,G) de forma direta e otimizada.  
-
+---
+  
 ## 🎯 Principais aprendizados
 
-| Tópico                      | Conceito-chave                                                                                                      |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------|
-| SSM ativado com ACL         | A rede só entra em modo SSM quando configuramos ip pim ssm default ou uma ACL definindo o range (ex.: 232.0.0.0/8). |
-| IGMPv3 obrigatório          | Apenas IGMPv3 permite o join específico da fonte, enviando relatórios contendo Include {S,G}.                       |
-| Árvore direta (S,G)         | Diferente do PIM-SM clássico, o SSM cria imediatamente o caminho mais curto até a fonte — sem RP e sem Shared Tree. |
-| DR recebendo joins          | O roteador DR recebe o IGMPv3 Report e envia um PIM Join diretamente para a fonte S, construindo a árvore.          |
-| Sem Register / Sem RP       | Em SSM não existe processo de Register, RP Designation, Bootstrap ou failover de RP. É tudo direto e simples.       |
-| Testes com tráfego simulado | Utilizamos ping multicast apenas como mecanismo de geração de tráfego, não como teste de reachability.              |
-| Validação da árvore         | O comportamento correto é ver entradas (S,G) no show ip mroute e contadores subindo no show ip mroute count.        |
+| Tópico                         | Conceito-chave                                                                                                      |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| RP como ponto lógico           | No PIM BIDIR, o RP atua como referência lógica da árvore (*,G), sem participação direta no encaminhamento de dados. |
+| Apenas entradas (*,G)          | O domínio multicast mantém somente estados (*,G), reduzindo drasticamente o consumo de memória e CPU.               |
+| Ausência de SPT                | Não ocorre migração para Shortest Path Tree, garantindo previsibilidade e simplicidade operacional.                 |
+| Eleição de DF por enlace       | Em cada segmento multicast, apenas o **Designated Forwarder (DF)** encaminha tráfego em direção ao RP.              |
+| Critério de eleição do DF      | O DF é eleito com base no **menor custo unicast até o RP**, e, em caso de empate, pelo **maior endereço IP**.       |
+| RPF em direção ao RP           | A verificação de RPF ocorre sempre no sentido do RP, e não da fonte, como em PIM-SM clássico.                       |
+| IGMP como mecanismo de join    | Hosts utilizam IGMP para sinalizar interesse no grupo (G), sem especificação de fonte.                              |
+| Tráfego many-to-many           | Múltiplas fontes e múltiplos receptores podem coexistir de forma eficiente no mesmo grupo multicast.                |
+| Testes com tráfego simulado    | O ping multicast foi utilizado apenas como **gerador de tráfego**, não como teste de reachability.                  |
+
+---
 
 ## 💡 Conclusões gerais
 
-- O **SSM** simplifica radicalmente o multicast, **removendo RP, Register, BSR, Auto-RP e qualquer forma de árvore compartilhada.**
-- Com **IGMPv3**, cada host escolhe exatamente qual fonte quer receber, aumentando segurança e previsibilidade.
-- É o modelo ideal para aplicações modernas: IPTV, streaming unidirecional, monitoramento e telemetria.
-- Em laboratórios, a geração de tráfego via ping multicast é suficiente para validar a operação da árvore (S,G).
+- O **PIM BIDIR** é ideal para cenários **many-to-many**, como colaboração em tempo real, aplicações financeiras e replicação distribuída.
+- A utilização exclusiva de **árvores (*,G)** reduz drasticamente o estado de controle nos roteadores do domínio multicast.
+- A **eleição do DF por enlace** garante encaminhamento consistente e evita loops, mesmo com múltiplas fontes ativas.
+- A ausência de SPT e de processos de Register simplifica o plano de controle e melhora a escalabilidade.
+- Em ambientes de laboratório, a geração de tráfego via ping multicast é suficiente para validar o funcionamento da árvore (*,G) e do encaminhamento bidirecional.
 
-## 🗺️ Fluxo conceitual do SSM (S,G)
+## 🗺️ Fluxo conceitual do PIM BIDIR (*,G)
 
 ```text
-┌────────────────────────────┐
-│ 1. Host envia IGMPv3 Join  │
-│     Include {S,G}          │
-└──────────────┬─────────────┘
-               │
-               ▼
-┌────────────────────────────┐
-│ 2. DR recebe o Join        │
-│    e instala interesse     │
-└──────────────┬─────────────┘
-               │
-               ▼
-┌────────────────────────────┐
-│ 3. DR envia PIM Join → S   │
-│    (sem RP, sem Shared Tree)│
-└──────────────┬─────────────┘
-               │
-               ▼
-┌────────────────────────────┐
-│ 4. Roteadores no caminho   │
-│    criam estado (S,G)      │
-└──────────────┬─────────────┘
-               │
-               ▼
-┌────────────────────────────┐
-│ 5. Tráfego flui direto     │
-│    da fonte para o host    │
-└────────────────────────────┘
+┌────────────────────────────────────┐
+│ 1. Host envia IGMP Join para (G)   │
+│    (sem especificar fonte)         │
+└───────────────┬────────────────────┘
+                │
+                ▼
+┌────────────────────────────────────┐
+│ 2. DR recebe o Join IGMP           │
+│    e registra interesse no grupo   │
+└───────────────┬────────────────────┘
+                │
+                ▼
+┌────────────────────────────────────┐
+│ 3. Roteador verifica RPF           │
+│    em direção ao RP                │
+└───────────────┬────────────────────┘
+                │
+                ▼
+┌────────────────────────────────────┐
+│ 4. Eleição do DF por enlace        │
+│    (menor custo até o RP)          │
+└───────────────┬────────────────────┘
+                │
+                ▼
+┌────────────────────────────────────┐
+│ 5. DF encaminha tráfego            │
+│    multicast (*,G) em direção ao RP│
+└───────────────┬────────────────────┘
+                │
+                ▼
+┌────────────────────────────────────┐
+│ 6. Árvore (*,G) é compartilhada    │
+│    por fontes e receptores         │
+└────────────────────────────────────┘
 ```
 
 ## 📘 Tabela de Comandos
 
-### 🖥️ Função	—	R01 atua como Designated Router (DR) para a LAN dos servidores
+### 🖥️ Função — R01 atua como Designated Forwarder (DF) no domínio PIM BIDIR
 
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                |
-|---------------------|-------------------------------------------|----------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita roteamento multicast                |
-| **Global**          | `ip pim ssm range SSM-RANGE`              | Ativa SSM e vincula ao range definido na ACL |
-| **ACL**             | `ip access-list standard SSM-RANGE`       | Define os grupos SSM aceitos                 |
-|                     | `permit 232.1.1.1`                        | Server                                       |
-|                     | `permit 232.2.2.2`                        | Server02                                     |
-| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`      | Router-ID e origem das mensagens PIM         |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                     |
-| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0` | DR da LAN do servidor (HOSTS/SOURCES)        |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo                            |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                     |
-| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`     | Link P2P com R02                             |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                        |
-|                     | `ip igmp version 3`                       | Link P2P com R05                             |
-| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`    | Link P2P com R05 – participa do domínio PIM  |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                     |
-| **OSPF**            | `router ospf 100`                         | Processo OSPF                                |
-|                     | `router-id 1.1.1.1`                       | ID do processo OSPF                          |
-|                     | `network 1.1.1.1 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK0       |
-|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet0/1 |
-|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet1/0 |
-|                     | `network 192.168.10.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/0 |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                          |
+|---------------------|-------------------------------------------|------------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                            |
+| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
+| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
+| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`      | Router-ID e endereço lógico do RP                                      |
+|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
+| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0` | Interface LAN dos servidores (hosts e possíveis fontes multicast)      |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`     | Link P2P com R02                                                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`    | Link P2P com R05                                                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
+|                     | `router-id 1.1.1.1`                       | Router-ID do OSPF                                                      |
+|                     | `network 1.1.1.1 0.0.0.0 area 0`          | Ativa OSPF na Loopback (RP lógico)                                     |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                           |
+|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativa OSPF no enlace com R05                                           |
+|                     | `network 192.168.10.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos servidores                                       |
 
-### 📗 R02 – Router de Núcleo / Intermediário do Domínio SSM
+### 📘 R02 — Roteador de Núcleo / Intermediário do Domínio PIM BIDIR
 
-| **Seção**           | **Comando / Configuração**           | **Descrição**                                        |
-| --------------------|--------------------------------------|------------------------------------------------------|
-| **Global**          | `ip multicast-routing`               | Habilita roteamento multicast                        |
-| **Global**          | `ip pim ssm range SSM-RANGE`         | Ativa SSM sob os grupos definidos na ACL             |
-| **ACL**             | `ip access-list standard SSM-RANGE`  | Grupos definidos para operação SSM                   |
-|                     | `permit 232.1.1.1`                   | Server                                               |
-|                     | `permit 232.2.2.2`                   | Server02                                             |
-| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255` | Router-ID e origem das mensagens PIM                 |
-|                     | `ip pim sparse-mode`                 | Modo do protocolo PIM                                |
-|                     | `ip igmp version 3`                  | Versão do protocolo IGMP                             |
-| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`| Link P2P com R01 – participa do domínio PIM          |
-|                     | `ip pim sparse-mode`                 | Modo do protocolo PIM                                |
-|                     | `ip igmp version 3`                  | Versão do protocolo IGMP                             |
-| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`| Link P2P com R03 – trânsito para o domínio multicast |
-|                     | `ip pim sparse-mode`                 | Modo do protocolo PIM                                |
-|                     | `ip igmp version 3`                  | Versão do protocolo IGMP                             |
-| **OSPF**            | `router ospf 100`                    | Processo OSPF                                        |
-|                     | `router-id 2.2.2.2`                  | ID do processo OSPF                                  |
-|                     | `network 2.2.2.2 0.0.0.0 area 0`     | Ativando o OSPF na Interface LOOPBACK0               |
-|                     | `network 10.0.0.0 0.0.0.3 area 0`    | Ativando o OSPF na Interface FastEthernet0/1         |
-|                     | `network 10.0.0.4 0.0.0.3 area 0`    | Ativando o OSPF na Interface FastEthernet1/0         |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
+|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                           |
+| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
+| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
+| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
+|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
+| **FastEthernet0/0** | `ip address 192.168.50.254 255.255.255.0` | Interface LAN local (participa do domínio multicast)                   |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`     | Link P2P com R01                                                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`     | Link P2P com R03                                                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
+|                     | `router-id 2.2.2.2`                       | Router-ID do processo OSPF                                             |
+|                     | `network 2.2.2.2 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R01                                           |
+|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R03                                           |
+|                     | `network 192.168.50.0 0.0.0.255 area 0`   | Ativa OSPF na LAN local                                                |
 
-### 📙 R03 – DR da LAN do Host + Roteador de Trânsito no SSM
+### 📙 R03 — DF da LAN dos Hosts + Roteador de Trânsito no Domínio PIM BIDIR
 
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                |
-|---------------------|-------------------------------------------|--------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Ativa roteamento multicast                                   |
-| **Global**          | `ip pim ssm range SSM-RANGE`              | Define os grupos utilizados em modo SSM                      |
-| **ACL SSM**         | `ip access-list standard SSM-RANGE`       | Range SSM (S,G) permitido                                    |
-|                     | `permit 232.1.1.1`                        | Server                                                       |
-|                     | `permit 232.2.2.2`                        | Server02                                                     |
-| **Loopback0**       | `ip address 3.3.3.3 255.255.255.255`      | Router-ID e origem das mensagens PIM                         |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **FastEthernet0/0** | `ip address 10.0.0.9 255.255.255.252`     | Link P2P com R04 – participa do domínio SSM                  |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     |  `ip igmp version 3`                      | Versão do protocolo IGMP                                     |
-| **FastEthernet0/1** | `ip address 192.168.40.254 255.255.255.0` | LAN do Host – **R03 é o DR deste segmento**                  |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **FastEthernet1/0** | `ip address 10.0.0.6 255.255.255.252`     | Link P2P com R02 – domínio multicast                         |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **OSPF**            | `router ospf 100`                         | Garante conectividade IP e RPF correto                       |
-|                     | `router-id 3.3.3.3`                       | ID do processo OSPF                                          |
-|                     | `network 3.3.3.3 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK0                       |
-|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet1/0                 |
-|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet1/0                 |
-|                     | `network 192.168.40.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/1                 |
-| **Função**          | —                                         | **DR da LAN dos hosts** + **router de trânsito do SSM**      |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
+|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                           |
+| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
+| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
+| **Loopback0**       | `ip address 3.3.3.3 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
+|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
+| **FastEthernet0/0** | `ip address 10.0.0.9 255.255.255.252`     | Link P2P com R04 – trânsito no domínio multicast                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet0/1** | `ip address 192.168.40.254 255.255.255.0` | LAN dos hosts multicast                                                |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR (DF eleito por custo até o RP)          |
+| **FastEthernet1/0** | `ip address 10.0.0.6 255.255.255.252`     | Link P2P com R02                                                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
+|                     | `router-id 3.3.3.3`                       | Router-ID do processo OSPF                                             |
+|                     | `network 3.3.3.3 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
+|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                           |
+|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativa OSPF no enlace com R04                                           |
+|                     | `network 192.168.40.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos hosts                                            |
+| **Função**          | —                                         | **DF da LAN dos hosts** + **roteador de trânsito PIM BIDIR**           |
 
-### 📒 R04 – DR da LAN do Host02 + Roteador de Trânsito no SSM
+### 📒 R04 — DF da LAN do Host02 + Roteador de Trânsito no Domínio PIM BIDIR
 
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                |
-|---------------------|-------------------------------------------|--------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast                              |
-| **Global**          | `ip pim ssm range SSM-RANGE`              | Define os grupos operando em modo SSM                        |
-| **ACL SSM**         | `ip access-list standard SSM-RANGE`       | Range SSM utilizado pelos receptores                         |
-|                     | `permit 232.1.1.1`                        | Server                                                       |
-|                     | `permit 232.2.2.2`                        | Server02                                                     |
-| **Loopback0**       | `ip address 4.4.4.4 255.255.255.255`      | Router-ID, origem lógica para PIM                            |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **FastEthernet0/0** | `ip address 10.0.0.10 255.255.255.252`    | Link P2P com R03 – trânsito do SSM                           |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **FastEthernet0/1** | `ip address 10.0.0.13 255.255.255.252`    | Link P2P com R05 – trânsito do SSM                           |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **FastEthernet1/0** | `ip address 192.168.20.254 255.255.255.0` | LAN do Host02 — **R04 é o DR desta LAN**                     |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                        |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                     |
-| **OSPF**            | `router ospf 100`                         | Garante conectividade IP e RPF correto                       |
-|                     | `router-id 4.4.4.4`                       | ID do processo OSPF                                          |
-|                     | `network 4.4.4.4 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK4                       |
-|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativando o OSPF na Interface FastEthernet0/0                 |
-|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet0/1                 |
-|                     | `network 192.168.20.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet1/0                 |
-| **Função**          | —                                         | **DR da LAN do Host02** + **roteador intermediário do SSM**  |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
+|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                           |
+| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
+| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
+| **Loopback0**       | `ip address 4.4.4.4 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
+|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
+| **FastEthernet0/0** | `ip address 10.0.0.10 255.255.255.252`    | Link P2P com R03 – trânsito no domínio multicast                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet0/1** | `ip address 10.0.0.13 255.255.255.252`    | Link P2P com R05 – trânsito no domínio multicast                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet1/0** | `ip address 192.168.20.254 255.255.255.0` | LAN do Host02                                                          |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR (DF eleito por custo até o RP)          |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
+|                     | `router-id 4.4.4.4`                       | Router-ID do processo OSPF                                             |
+|                     | `network 4.4.4.4 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
+|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativa OSPF no enlace com R03                                           |
+|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativa OSPF no enlace com R05                                           |
+|                     | `network 192.168.20.0 0.0.0.255 area 0`   | Ativa OSPF na LAN do Host02                                            |
+| **Função**          | —                                         | **DF da LAN do Host02** + **roteador de trânsito PIM BIDIR**           |
 
-### 📕 R05 – Roteador de Trânsito + DR da LAN do Host03
+### 📕 R05 — DF da LAN do Host03 + Roteador de Trânsito no Domínio PIM BIDIR
 
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                     |
-|---------------------|-------------------------------------------|-------------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast                                   |
-| **Global**          | `ip pim ssm range SSM-RANGE`              | Define os grupos operando em modo SSM                             |
-| **ACL SSM**         | `ip access-list standard SSM-RANGE`       | Lista de grupos permitidos para SSM                               |
-|                     | `permit 232.1.1.1`                        | Server                                                            |
-|                     | `permit 232.2.2.2`                        | Server02                                                          |
-| **Loopback0**       | `ip address 5.5.5.5 255.255.255.255`      | Router-ID do R05 e origem PIM                                     |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
-| **FastEthernet0/0** | `ip address 192.168.30.254 255.255.255.0` | LAN do Host03 — **R05 é o DR deste segmento**                     |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
-| **FastEthernet0/1** | `ip address 10.0.0.14 255.255.255.252`    | Link P2P com R04 — trânsito do SSM                                |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
-| **FastEthernet1/0** | `ip address 10.0.0.17 255.255.255.252`    | Link P2P com R01 — caminho em direção às fontes                   |
-|                     | `ip pim sparse-mode`                      | Modo do protocolo PIM                                             |
-|                     | `ip igmp version 3`                       | Versão do protocolo IGMP                                          |
-| **OSPF**            | `router ospf 100`                         | Mantém conectividade IP e garante RPF correto                     |
-|                     | `router-id 5.5.5.5`                       | ID do processo OSPF                                               |
-|                     | `network 5.5.5.5 0.0.0.0 area 0`          | Ativando o OSPF na Interface LOOPBACK5                            |
-|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet0/1                      |
-|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativando o OSPF na Interface FastEthernet1/0                      |
-|                     | `network 192.168.30.0 0.0.0.255 area 0`   | Ativando o OSPF na Interface FastEthernet0/0                      |
-| **Função**          | —                                         | **Roteador de trânsito SSM** + **DR da LAN do Host03**            |
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
+|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast                                       |
+| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
+| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
+| **Loopback0**       | `ip address 5.5.5.5 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
+|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
+| **FastEthernet0/0** | `ip address 192.168.30.254 255.255.255.0` | LAN do Host03                                                          |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR (DF eleito por custo até o RP)          |
+| **FastEthernet0/1** | `ip address 10.0.0.14 255.255.255.252`    | Link P2P com R04 – trânsito no domínio multicast                       |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **FastEthernet1/0** | `ip address 10.0.0.17 255.255.255.252`    | Link P2P com R01 – caminho em direção ao RP                            |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
+|                     | `router-id 5.5.5.5`                       | Router-ID do processo OSPF                                             |
+|                     | `network 5.5.5.5 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
+|                     | `network 10.0.0.12 0.0.0.3 area 0`        | Ativa OSPF no enlace com R04                                           |
+|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativa OSPF no enlace com R01                                           |
+|                     | `network 192.168.30.0 0.0.0.255 area 0`   | Ativa OSPF na LAN do Host03                                            |
+| **Função**          | —                                         | **DF da LAN do Host03** + **roteador de trânsito PIM BIDIR**           |
 
-### 🖥️ SERVER – Fonte Multicast (Sender)
+### 🖥️ SERVER03 — Fonte Multicast no Domínio PIM BIDIR
 
-| **Seção**               | **Comando / Configuração**                | **Descrição**                                                                   |
-|-------------------------|-------------------------------------------|---------------------------------------------------------------------------------|
-| **Global**              | `ip multicast-routing`                    | Habilita o roteamento multicast no equipamento                                  |
-| **FastEthernet0/0**     | `ip address 192.168.10.1 255.255.255.0`   | Interface conectada ao R01 — origem do fluxo multicast (S)                      |
-| **Rota Padrão**         | `ip route 0.0.0.0 0.0.0.0 192.168.10.254` | Define R01 como gateway padrão (DR da LAN do servidor)                          |
-| **Função no cenário**   | —                                         | Atua como **fonte multicast** enviando tráfego para grupos SSM (ex.: 232.x.x.x) |
+| **Seção**             | **Comando / Configuração**                 | **Descrição**                                                          |
+|-----------------------|--------------------------------------------|------------------------------------------------------------------------|
+| **FastEthernet0/0**   | `ip address 192.168.50.1 255.255.255.0`    | Interface conectada ao roteador de acesso ao domínio multicast         |
+| **Rota Padrão**       | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0` | Envia todo o tráfego unicast ao roteador adjacente                     |
+| **Função no cenário** | —                                          | Atua como **fonte multicast**, enviando tráfego para grupos (*,G)      |
+| **Observação**        | —                                          | O servidor **não executa PIM ou IGMP** — apenas gera tráfego multicast |
 
-### 🖥️ SERVER02 – Fonte Multicast (Sender)
+📌 **Nota:**  
 
-| **Seção**               | **Comando / Configuração**                | **Descrição**                                                               |
-|-------------------------|-------------------------------------------|-----------------------------------------------------------------------------|
-| **Global**              | `ip multicast-routing`                    | Habilita o processamento multicast (necessário para gerar tráfego SSM)      |
-| **FastEthernet0/0**     | `ip address 192.168.40.1 255.255.255.0`   | Interface conectada ao R03 — origem do fluxo multicast (S = 192.168.40.1)   |
-| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 192.168.40.254` | Usa R03 como gateway padrão                                                 |
-| **Função no cenário**   | —                                         | Atua como **fonte multicast** para grupos SSM (ex.: 232.2.2.2)              |
+- Em PIM Bidirectional, a fonte multicast não estabelece estados (S,G).
+- O tráfego é encaminhado através de uma árvore compartilhada (*,G), com o RP atuando como ponto lógico de referência do domínio multicast.
 
-### 💻 HOST02 – Receptor Multicast (IGMPv3 + SSM)
+### 🖥️ SERVER02 — Fonte Multicast no Domínio PIM BIDIR
 
-| **Seção**                    | **Comando / Configuração**                         | **Descrição**                                                                                    |
-|------------------------------|----------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| **Fa0/0 (LAN com R04)**      | `ip address 192.168.20.1 255.255.255.0`            | Host inscrito em **dois grupos (G)** e **duas fontes (S)** por grupo — simulação completa de SSM |
-|                              | `ip igmp join-group 232.1.1.1 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
-|                              | `ip igmp join-group 232.1.1.1 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
-|                              | `ip igmp join-group 232.2.2.2 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                              |
-|                              | `ip igmp join-group 232.2.2.2 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                                |
-| **Rota padrão**              | `ip route 0.0.0.0 0.0.0.0 192.168.20.254`          | Usa R04 como gateway padrão (DR do segmento)                                                     |
-| **Função no cenário**        | —                                                  | Atua como **Receptor SSM (IGMPv3)** — envia Joins (S,G) diretamente ao DR                        |
+| **Seção**             | **Comando / Configuração**                 | **Descrição**                                                                 |
+|-----------------------|--------------------------------------------|-------------------------------------------------------------------------------|
+| **FastEthernet0/0**   | `ip address 192.168.40.1 255.255.255.0`    | Interface conectada ao R03 — origem do tráfego multicast                      |
+| **Rota padrão**       | `ip route 0.0.0.0 0.0.0.0 192.168.40.254`  | Define R03 como gateway padrão para encaminhamento IP                         |
+| **Função no cenário** | —                                          | Atua como **fonte multicast**, enviando tráfego para grupos (*,G)             |
+| **Observação**        | —                                          | O servidor **não executa PIM nem IGMP** — apenas gera tráfego multicast       |
 
-### 🖥️ HOST03 – Receptor Multicast Secundário (SSM com múltiplas fontes)
+📌 **Nota:**  
 
-| **Seção**                         | **Comando / Configuração**                         | **Descrição**                                                                               |
-|-----------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------|
-| **Interface Fa0/0 (LAN com R05)** | `ip address 192.168.30.1 255.255.255.0`            | Host inscrito **em duas fontes (S)** para **dois grupos (G)** — comportamento SSM completo  |
-|                                   | `ip igmp join-group 232.1.1.1 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER                                           |
-|                                   | `ip igmp join-group 232.2.2.2 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                         |
-|                                   | `ip igmp join-group 232.1.1.1 source 192.168.10.1` | Escolhendo a fonte de fluxo multicast como SERVER                                           |
-|                                   | `ip igmp join-group 232.2.2.2 source 192.168.40.1` | Escolhendo a fonte de fluxo multicast como SERVER02                                         |
-| **Rota padrão**                   | `ip route 0.0.0.0 0.0.0.0 192.168.30.254`          | Define R05 como gateway padrão (DR do segmento)                                             |
-| **Função no cenário**             | —                                              | Atua como **Receptor SSM** equivalente ao Host02; valida replicação multicast por outro caminho |
+- Em PIM Bidirectional, as fontes multicast não constroem estados (S,G).
+- O tráfego é encaminhado por uma árvore compartilhada (*,G), utilizando o RP apenas como referência lógica para o domínio multicast.
 
+### 💻 HOST02 — Receptor Multicast no Domínio PIM BIDIR
+
+| **Seção**               | **Comando / Configuração**              | **Descrição**                                                              |
+|-------------------------|------------------------------------------|---------------------------------------------------------------------------|
+| **Fa1/0 (LAN com R04)** | `ip address 192.168.20.1 255.255.255.0` | Host conectado à LAN do R04                                                |
+|                         | `ip igmp join-group 239.1.1.1`           | Inscrição no grupo multicast (G) — modelo (*,G)                           |
+| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 FastEthernet1/0` | Encaminha tráfego via R04 (DR da LAN)                                   |
+| **Função no cenário**   | —                                        | Atua como **receptor multicast** em ambiente **PIM Bidirectional**        |
+
+📌 **Nota:**  
+
+- Em PIM Bidirectional, os receptores utilizam IGMP para sinalizar interesse apenas no grupo multicast (G). Não há seleção explícita de fontes, e o encaminhamento ocorre através de uma árvore compartilhada (*,G), com base no RP e no DF eleito por enlace.
+
+### 🖥️ HOST03 — Receptor Multicast no Domínio PIM BIDIR
+
+| **Seção**                        | **Comando / Configuração**               | **Descrição**                                                                 |
+|----------------------------------|------------------------------------------|-------------------------------------------------------------------------------|
+| **Fa0/0 (LAN com R05)**          | `ip address 192.168.30.1 255.255.255.0`  | Host conectado à LAN do R05                                                   |
+|                                  | `ip igmp join-group 239.1.1.1`           | Inscrição no grupo multicast (G) — modelo (*,G)                               |
+| **Rota padrão**                  | `ip route 0.0.0.0 0.0.0.0 192.168.30.254`| Encaminha tráfego via R05 (DR da LAN)                                         |
+| **Função no cenário**            | —                                        | Atua como **receptor multicast** em ambiente **PIM Bidirectional**            |
+
+📌 **Observação:**  
+
+- Em PIM Bidirectional, múltiplos receptores podem se inscrever no mesmo grupo (G) em diferentes pontos da topologia. O tráfego multicast é replicado ao longo da árvore compartilhada (*,G), com base no RP e no DF eleito por enlace, independentemente da localização da fonte.
