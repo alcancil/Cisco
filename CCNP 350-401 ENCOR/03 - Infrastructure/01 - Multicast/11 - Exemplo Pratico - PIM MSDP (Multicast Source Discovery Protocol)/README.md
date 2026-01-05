@@ -10,10 +10,9 @@
   - [📚 O que você vai aprender](#-o-que-você-vai-aprender)
     - [💼 Relevância prática](#-relevância-prática)
   - [🧠 Explicação do Cenário](#-explicação-do-cenário)
-    - [🌐 Do PIM-SM Tradicional ao PIM Bidirectional (BIDIR)](#-do-pim-sm-tradicional-ao-pim-bidirectional-bidir)
-    - [🔁 O que é SPT Switching?](#-o-que-é-spt-switching)
-    - [🔁 Sobre o SPT Switching no Contexto do PIM BIDIR](#-sobre-o-spt-switching-no-contexto-do-pim-bidir)
-    - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
+  - [🌐 Multicast em múltiplos domínios com PIM-SM](#-multicast-em-múltiplos-domínios-com-pim-sm)
+  - [🔄 O papel do MSDP no cenário](#-o-papel-do-msdp-no-cenário)
+  - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
     - [📡 Grupos Multicast no PIM Bidirectional](#-grupos-multicast-no-pim-bidirectional)
     - [🧩 Conclusão](#-conclusão)
@@ -200,98 +199,85 @@ Com isso, o laboratório demonstra como o MSDP resolve limitações arquiteturai
 - Como validar o encaminhamento multicast utilizando comandos de verificação do PIM e do MSDP;
 - Como correlacionar decisões de design multicast com cenários reais de redes corporativas.
 
-
----
-
-Ajustar Daqui
-
----
-
 ### 💼 Relevância prática
 
-O **PIM BIDIR** é amplamente utilizado em ambientes onde há grande número de participantes ativos, como:  
+Em ambientes corporativos distribuídos, o multicast raramente se limita a um único domínio de rede. Organizações com múltiplos datacenters, redes segmentadas por critérios administrativos ou ambientes geograficamente dispersos frequentemente adotam **domínios multicast independentes**, cada um com seu próprio **Rendezvous Point (RP)**.  
   
-- Sistemas de conferência e colaboração em grupo
-- Aplicações financeiras distribuídas
-- Ambientes de controle e monitoramento
-- Serviços multicast corporativos de larga escala  
+Nesses cenários, embora o multicast funcione corretamente dentro de cada domínio PIM-SM, a **descoberta de fontes multicast entre domínios distintos não ocorre de forma automática**. Essa limitação impacta diretamente aplicações corporativas que dependem da distribuição eficiente de dados multicast entre diferentes partes da organização.  
+  
+O **Multicast Source Discovery Protocol (MSDP)** é amplamente utilizado nesses ambientes para viabilizar a comunicação multicast entre domínios independentes, permitindo que **RPs distintos compartilhem informações sobre fontes multicast ativas**, sem comprometer a autonomia operacional de cada domínio.  
+  
+Casos comuns de uso incluem:
+  
+- Ambientes corporativos com múltiplos datacenters
+- Redes segmentadas por domínios administrativos
+- Aplicações multicast distribuídas
+- Infraestruturas legadas que utilizam PIM-SM com RPs distintos
 
-Por manter uma árvore única e estável, o BIDIR reduz significativamente o overhead de sinalização e o consumo de memória nos roteadores, tornando-se uma solução eficiente para redes multicast complexas.  
+---
 
 ## 🧠 Explicação do Cenário
-
-Como mencionado anteriormente, o cenário já possui o roteamento unicast totalmente funcional (via OSPF), permitindo que o foco do laboratório seja exclusivamente o tráfego multicast utilizando PIM Bidirectional (BIDIR).  
   
-A topologia em anel foi propositalmente escolhida para facilitar a observação de:  
+O cenário deste laboratório já possui o roteamento unicast totalmente funcional por meio do **OSPF**, garantindo conectividade IP completa entre todas as sub-redes. Essa etapa é fundamental, pois o correto funcionamento do multicast depende diretamente da convergência do plano unicast.  
   
-- Eleição do Designated Forwarder (DF)
-- Comportamento do tráfego multicast em condições normais
-- Impacto de falhas de enlace no encaminhamento multicast
+A topologia física em anel foi mantida propositalmente para demonstrar que a **separação de domínios multicast é lógica**, e não física. Embora todos os roteadores estejam interconectados, o ambiente foi segmentado em **dois domínios multicast independentes**, cada um com seu próprio RP.  
+  
+![cenário](Imagens/cenario.png)
+  
+Neste laboratório, utilizamos cinco roteadores Cisco (R01 a R05), responsáveis pelo encaminhamento unicast e multicast, e um conjunto de hosts que representam **fontes e receptores multicast distribuídos em domínios distintos**.  
+  
+Os hosts são configurados exclusivamente com **endereçamento IP e IGMP (tipicamente IGMPv2)**, sem participação em protocolos de roteamento dinâmico, refletindo o comportamento esperado de dispositivos finais em ambientes multicast reais.  
+  
+Os roteadores intermediários executam **PIM Sparse Mode (PIM-SM)**, com **RPs estáticos distintos para cada domínio multicast**, e sessões **MSDP estabelecidas exclusivamente entre os RPs**, permitindo a troca de informações sobre fontes multicast ativas entre os domínios.  
+  
+---
+  
+## 🌐 Multicast em múltiplos domínios com PIM-SM
+  
+Dentro de cada domínio multicast, o **PIM Sparse Mode (PIM-SM)** opera de forma tradicional, utilizando o RP como ponto central para a descoberta inicial de fontes multicast e a construção das árvores multicast.  
+  
+Cada domínio multicast mantém sua própria lógica de controle, incluindo:  
+  
+- RP dedicado;
+- Processos independentes de registro de fontes;  
+- Construção local das árvores multicast (*,G) e (S,G).
+  
+Sem o uso do MSDP, esses domínios operariam de forma isolada, impossibilitando que receptores de um domínio descubram fontes multicast localizadas em outro.  
+  
+---
 
-![cenário](Imagens/cenario.png)  
+## 🔄 O papel do MSDP no cenário
 
-Neste laboratório, utilizamos cinco roteadores Cisco (R01 a R05) interconectados, responsáveis pelo encaminhamento do tráfego unicast e multicast no domínio de rede. O ambiente também conta com **três hosts simulados — SERVER, SERVER02 e HOSTS**— que representam **fontes e receptores multicast** em um cenário **many-to-many**, característico do **PIM Bidirectional (BIDIR)**.
+O **MSDP** atua como um mecanismo de intercâmbio de informações entre os **Rendezvous Points (RPs)** de domínios multicast distintos. Por meio de sessões MSDP, os RPs trocam mensagens **Source-Active (SA)**, informando a existência de fontes multicast ativas em seus respectivos domínios.
+  
+É importante destacar que:
+  
+- O MSDP **não transporta tráfego multicast**;
+- O tráfego multicast continua sendo encaminhado diretamente pelos mecanismos do PIM-SM;
+- O MSDP atua exclusivamente no **plano de controle**, viabilizando a descoberta de fontes remotas.
+  
+A partir das informações recebidas via MSDP, cada RP passa a conhecer fontes multicast externas ao seu domínio, permitindo que os receptores locais estabeleçam os fluxos multicast necessários.  
+  
+---
+  
+## 🧩 1️⃣ Fontes e Receptores no Cenário
 
-Os hosts são configurados **exclusivamente com endereçamento IP e IGMP (tipicamente IGMPv2)**, sem participação em protocolos de roteamento dinâmico, refletindo o comportamento esperado de dispositivos finais em ambientes multicast BIDIR.
+Neste cenário, as **fontes e receptores multicast estão distribuídos em domínios multicast distintos**, caracterizando um ambiente típico de **multicast inter-domínios com MSDP**.  
+  
+Cada fonte é registrada localmente em seu domínio multicast, enquanto os receptores utilizam **IGMP** para expressar interesse em grupos multicast. A descoberta das fontes remotas ocorre por meio da troca de mensagens **SA** entre os RPs.  
 
-Os roteadores intermediários executam **OSPF**, garantindo a **convergência do roteamento unicast e a conectividade IP completa** entre todas as sub-redes antes da habilitação do **PIM Sparse Mode operando em modo Bidirectional (BIDIR)**. Essa conectividade unicast é um pré-requisito fundamental para o correto funcionamento do RP estático e para a eleição adequada do **Designated Forwarder (DF)** em cada enlace.
+| Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                                   |
+|----------------|-------------|-----------------|-----------|-----------------|-------------------------------------------------------------|
+| **Fonte 1**    | SERVER01    | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Fonte multicast localizada no Domínio 01                    |
+| **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Fonte multicast localizada no Domínio 02                    |
+| **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Receptor multicast no Domínio 01                            |
+| **Receptor 2** | HOST03      | 192.168.60.0/24 | fa0/0     | 192.168.60.1    | Receptor multicast no Domínio 01                            |
+| **Receptor 3** | HOST04      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Receptor multicast no Domínio 02                            |
+| **Receptor 4** | HOST05      | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Receptor multicast no Domínio 02                            |
 
 ---
 
-### 🌐 Do PIM-SM Tradicional ao PIM Bidirectional (BIDIR)
-
-Diferente do **PIM Sparse Mode tradicional (PIM-SM)**, no qual o tráfego multicast inicialmente é encaminhado da fonte para o **Rendezvous Point (RP)** e, posteriormente, comuta para árvores de menor custo **(SPT), o PIM Bidirectional (BIDIR)** adota um modelo **many-to-many**, no qual **fontes e receptores compartilham a mesma árvore multicast bidirecional**.  
-  
-No **PIM BIDIR, o Rendezvous Point (RP)** continua sendo um elemento central do domínio multicast, **porém não atua como ponto de rendezvous de dados**, e sim como **raiz lógica da árvore compartilhada (Shared Tree)**.  
-O tráfego multicast nunca é encapsulado ou redirecionado para o RP, sendo encaminhado de forma nativa em ambas as direções ao longo da árvore.  
-
-Esse modelo oferece benefícios importantes em cenários com múltiplas fontes simultâneas, tais como:
-
-- **Redução significativa de estado (state) nas tabelas mroute**, pois não há criação de entradas (S,G);
-- **Eliminação do processo de SPT switch**, reduzindo overhead e instabilidade;
-- **Escalabilidade elevada** em ambientes many-to-many, como aplicações financeiras, colaboração em tempo real e protocolos de controle;
-- **Caminhos de encaminhamento previsíveis**, baseados exclusivamente na árvore compartilhada (*,G).
-
-No PIM BIDIR, os receptores utilizam IGMP (normalmente IGMPv2) para expressar interesse em grupos multicast ((*,G)), sem necessidade de especificação de fontes.  
-A seleção do encaminhamento correto é garantida pelo mecanismo de Designated Forwarder (DF), que define qual roteador será responsável pelo tráfego multicast em cada enlace, evitando loops e duplicações.  
-
-### 🔁 O que é SPT Switching?
-
-**SPT Switching (Shortest Path Tree Switching)** é o processo pelo qual um roteador abandona a árvore compartilhada (*,G) e passa a receber o tráfego multicast diretamente da fonte (S) pela árvore de menor custo (S,G).  
-
-👉 **Em outras palavras:**  
-
-- o tráfego multicast deixa de passar pelo RP e passa a seguir o caminho mais curto entre a fonte e o receptor, conforme a tabela de roteamento unicast.
-
-### 🔁 Sobre o SPT Switching no Contexto do PIM BIDIR
-
-No **PIM Sparse Mode tradicional (PIM-SM)**, o tráfego multicast é inicialmente encaminhado via **árvore compartilhada (∗,G)**, com raiz no **Rendezvous Point (RP)**. Quando o fluxo se estabiliza, ocorre o **SPT Switching (Shortest Path Tree)**, migrando o tráfego para uma **árvore de menor custo (S,G)**, eliminando o RP do caminho de dados.  
-
-No **PIM Bidirectional (BIDIR)**, o conceito de SPT Switching **não existe**. Todo o tráfego é encaminhado exclusivamente por **uma única árvore compartilhada (∗,G)**, onde o RP atua apenas como raiz lógica, e não como ponto de encapsulamento ou comutação de dados.  
-
-Essa decisão arquitetural é intencional e traz benefícios claros:
-
-- Elimina completamente o processo de SPT switch, reduzindo overhead e complexidade operacional;
-- Evita a criação de múltiplos estados (S,G) nas tabelas mroute;
-- Garante previsibilidade de caminhos e estabilidade do tráfego multicast;
-- Torna o PIM BIDIR altamente escalável, especialmente em cenários many-to-many com múltiplas fontes simultâneas.
-
----
-
-### 🧩 1️⃣ Fontes e Receptores no Cenário
-
-Neste cenário, temos múltiplas fontes e múltiplos receptores multicast, caracterizando um ambiente **many-to-many**, típico do **PIM Bidirectional (BIDIR)**.
-
-As fontes e receptores compartilham os mesmos grupos multicast, utilizando exclusivamente o modelo **(*,G)**, sem associação explícita a uma fonte específica.
-
-| Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                              |
-|----------------|-------------|-----------------|-----------|-----------------|--------------------------------------------------------|
-| **Fonte 1**    | SERVER      | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Não será utilizado nesse laboratório por simplificação |
-| **Fonte 2**    | SERVER02    | 192.168.40.0/24 | fa0/0     | 192.168.40.1    | Envia tráfego multicast para o grupo 239.1.1.1         |
-| **Fonte 3**    | SERVER03    | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Envia tráfego multicast para o grupo 239.1.1.1         |
-| **Receptor 1** | HOST02      | 192.168.20.0/24 | fa0/0     | 192.168.20.1    | Inscreve-se no grupo multicast via IGMP (*,G)          |
-| **Receptor 2** | HOST03      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Inscreve-se no grupo multicast via IGMP (*,G)          |
-| **Receptor 3** | (opcional)  | —               | —         | —               | Pode ser adicionado em qualquer outra sub-rede         |
+ALterar Daqui
 
 ---
 
