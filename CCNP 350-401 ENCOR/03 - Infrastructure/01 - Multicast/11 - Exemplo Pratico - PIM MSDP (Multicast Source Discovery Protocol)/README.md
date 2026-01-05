@@ -22,8 +22,10 @@
       - [🛰️ 3️⃣ Quando as fontes começam a transmitir](#️-3️⃣-quando-as-fontes-começam-a-transmitir)
       - [📡 4️⃣ Vantagens do PIM-SM com MSDP](#-4️⃣-vantagens-do-pim-sm-com-msdp)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
+    - [🖼️ Topologia Lógica – Domínios Multicast e RPs](#️-topologia-lógica--domínios-multicast-e-rps)
     - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
-    - [📡 Grupos Multicast no PIM Bidirectional - resumo](#-grupos-multicast-no-pim-bidirectional---resumo)
+    - [📡 Grupos Multicast no cenário com MSDP – resumo](#-grupos-multicast-no-cenário-com-msdp--resumo)
+    - [🧭 Resumo da Lógica](#-resumo-da-lógica)
     - [🔍 Testes Preliminares](#-testes-preliminares)
   - [🚀 Ativação do Roteamento Multicast](#-ativação-do-roteamento-multicast)
     - [🧩 Principais Diferenças do PIM BIDIR em Relação ao PIM-SM](#-principais-diferenças-do-pim-bidir-em-relação-ao-pim-sm)
@@ -386,92 +388,104 @@ Quando uma fonte multicast inicia a transmissão em seu domínio local:
 O uso do **MSDP** permite que redes multicast baseadas em **PIM Sparse Mode** evoluam para arquiteturas **distribuídas e escaláveis**, sem exigir a centralização total do controle multicast.  
 Essa abordagem é especialmente relevante em ambientes corporativos reais, onde autonomia, previsibilidade e interoperabilidade são fatores decisivos de design.  
 
----
-
-Alterar daqui
-
----
-
 ## 🌐 Topologia do Laboratório
 
-Este laboratório simula um cenário enterprise de multicast **many-to-many**, comum em ambientes financeiros, sistemas de colaboração em tempo real e plataformas de replicação distribuída.  
+Este laboratório simula um cenário enterprise de multicast baseado em **múltiplos domínios multicast independentes**, arquitetura comum em ambientes corporativos com **segmentação administrativa**, **múltiplos datacenters** ou **crescimento orgânico da rede**.  
   
-O objetivo é demonstrar, de forma prática e didática, o funcionamento do **PIM Bidirectional (PIM BIDIR)**, destacando sua arquitetura baseada em **árvore compartilhada (*,G)**, a ausência de **SPT Switching** e o papel do **Rendezvous Point como raiz lógica** da topologia multicast.  
-
-A topologia deste laboratório é composta por **cinco roteadores principais (R01 a R05)** e **quatro hosts simulados (Server, Server02, Host02 e Host03)**.  
-Os hosts são roteadores Cisco configurados de forma simplificada, apenas com **endereçamento IP** e **participação em grupos multicast via IGMP (tipicamente IGMPv2)**, simulando o comportamento de dispositivos finais.
-
-O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Bidirectional (BIDIR)** é utilizado para o roteamento multicast.  
-Diferente do **PIM Sparse Mode tradicional**, o **PIM BIDIR** utiliza **uma única árvore compartilhada (*,G)** para todos os fluxos multicast, **sem criação de estados (S,G)** e **sem SPT Switching**.
-
-Neste modelo, múltiplas **fontes e receptores** compartilham o mesmo grupo multicast, caracterizando um ambiente **many-to-many**, no qual o tráfego flui **bidirecionalmente** ao longo da árvore, com o **Rendezvous Point (RP)** atuando apenas como **raiz lógica** do domínio multicast.
-
+O objetivo é demonstrar, de forma prática e progressiva, o funcionamento do **PIM Sparse Mode (PIM-SM)** em conjunto com o **Multicast Source Discovery Protocol (MSDP)**, evidenciando:  
+  
+- A separação lógica de **domínios multicast**;
+- O papel do **Rendezvous Point (RP)** em cada domínio;
+- A troca de informações de fontes multicast entre domínios via **MSDP**.
+  
+A topologia deste laboratório é composta por **seis roteadores principais (R01 a R06)** e **seis hosts simulados (Server01, Server02, Host01, Host02, Host03 e Host04)**.  
+Os hosts são roteadores Cisco configurados de forma simplificada, apenas com **endereçamento IP** e **participação em grupos multicast via IGMP (tipicamente IGMPv2)**, simulando o comportamento de dispositivos finais em ambientes reais.  
+  
+O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** é utilizado para o roteamento multicast dentro de cada domínio.  
+O **MSDP** é empregado para permitir que **fontes multicast localizadas em um domínio sejam descobertas por outros domínios**, sem a necessidade de um RP único para toda a rede.  
+  
+Neste modelo, cada domínio multicast mantém sua própria árvore compartilhada (*,G), enquanto o MSDP atua exclusivamente no **plano de controle**, trocando informações sobre fontes ativas entre os RPs.  
+  
 ---
+  
+### 🖼️ Topologia Lógica – Domínios Multicast e RPs
+  
+A figura abaixo representa a **topologia lógica multicast**, destacando:
+  
+- A divisão da rede em **domínios multicast distintos**;
+- O **Rendezvous Point (RP)** de cada domínio;
+- As **sessões MSDP** estabelecidas entre os RPs.
+  
+> 📌 Esta visão lógica é essencial para compreender o papel do MSDP e a separação entre o plano de dados multicast e o plano de controle.
+  
+<!-- Inserir imagem da topologia lógica multicast com domínios e RPs -->
+![Topologia Lógica Multicast – Domínios e RPs](Imagens/topologia-logica-msdp.png)
+  
+  ---
 
 ### 🔧 Endereçamento e Funções
 
-| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                 |
-|-----------------|---------------|---------------------------|------------------------------------------------------|
-| **R01**         | Loopback0     | 1.1.1.1 /32               | Identificação / Router-ID OSPF                       |
-|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server — Gateway multicast                    |
-|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM BIDIR + OSPF                      |
-|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM BIDIR + OSPF                      |
-| **R02**         | Loopback0     | 2.2.2.2 /32               | Identificação / Router-ID OSPF                       |
-|                 | Fa0/0         | 10.0.0.2 /30              | Link com R01 — PIM BIDIR + OSPF                      |
-|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM BIDIR + OSPF                      |
-| **R03**         | Loopback0     | 3.3.3.3 /32               | Identificação / Router-ID OSPF                       |
-|                 | Fa0/0         | 10.0.0.6 /30              | Link com R02 — PIM BIDIR + OSPF                      |
-|                 | Fa1/0         | 10.0.0.9 /30              | Link com R04 — PIM BIDIR + OSPF                      |
-| **R04**         | Loopback0     | 4.4.4.4 /32               | Identificação / Router-ID OSPF                       |
-|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM BIDIR + OSPF                      |
-|                 | Fa1/0         | 10.0.0.13 /30             | Link com R05 — PIM BIDIR + OSPF                      |
-|                 | Fa1/1         | 192.168.20.254 /24        | LAN do Host02 — Gateway multicast                    |
-| **R05**         | Loopback0     | 5.5.5.5 /32               | Identificação / Router-ID OSPF                       |
-|                 | Fa0/0         | 10.0.0.14 /30             | Link com R04 — PIM BIDIR + OSPF                      |
-|                 | Fa1/0         | 10.0.0.17 /30             | Link com R01 — PIM BIDIR + OSPF                      |
-|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                    |
-| **Server**      | Fa0/0         | 192.168.10.1 /24          | Fonte multicast                                      |
-| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast                                      |
-| **Host02**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast (IGMP (*,G))                      |
-| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast (IGMP (*,G))                      |
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                  |
+|-----------------|---------------|---------------------------|-------------------------------------------------------|
+| **R01**         | Loopback0     | 1.1.1.1 /32               | Identificação / Router-ID OSPF / RP (Domínio A)       |
+|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server — Gateway multicast                     |
+|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM-SM + OSPF                          |
+|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM-SM + OSPF                          |
+| **R02**         | Loopback0     | 2.2.2.2 /32               | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.2 /30              | Link com R01 — PIM-SM + OSPF                          |
+|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM-SM + OSPF                          |
+| **R03**         | Loopback0     | 3.3.3.3 /32               | Identificação / Router-ID OSPF / RP (Domínio B)       |
+|                 | Fa0/0         | 10.0.0.6 /30              | Link com R02 — PIM-SM + OSPF                          |
+|                 | Fa1/0         | 10.0.0.9 /30              | Link com R04 — PIM-SM + OSPF                          |
+| **R04**         | Loopback0     | 4.4.4.4 /32               | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM-SM + OSPF                          |
+|                 | Fa1/0         | 10.0.0.13 /30             | Link com R05 — PIM-SM + OSPF                          |
+|                 | Fa1/1         | 192.168.20.254 /24        | LAN do Host02 — Gateway multicast                     |
+| **R05**         | Loopback0     | 5.5.5.5 /32               | Identificação / Router-ID OSPF                        |
+|                 | Fa0/0         | 10.0.0.14 /30             | Link com R04 — PIM-SM + OSPF                          |
+|                 | Fa1/0         | 10.0.0.17 /30             | Link com R01 — PIM-SM + OSPF                          |
+|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                     |
+| **Server**      | Fa0/0         | 192.168.10.1 /24          | Fonte multicast (Domínio A)                           |
+| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast (Domínio B)                           |
+| **Host02**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast (IGMP (*,G))                       |
+| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast (IGMP (*,G))                       |
 
 ---
 
-### 📡 Grupos Multicast no PIM Bidirectional - resumo
+### 📡 Grupos Multicast no cenário com MSDP – resumo
 
-No **PIM BIDIR**, os grupos multicast utilizam exclusivamente o modelo **(*,G)**.  
-Os hosts **não escolhem fontes específicas** e todos os emissores podem enviar tráfego para o mesmo grupo multicast.
+Neste laboratório, os grupos multicast utilizam o **modelo clássico do PIM Sparse Mode**, com evolução dinâmica do estado multicast conforme o fluxo de tráfego.
 
-Neste laboratório, será utilizado o seguinte grupo:
-
-| Grupo Multicast | Modelo | Descrição                                          |
-|-----------------|--------|----------------------------------------------------|
-| 239.1.1.1       | (*,G)  | Grupo multicast compartilhado por múltiplas fontes |
+| Grupo Multicast | Modelo           | Descrição                                                             |
+|-----------------|------------------|-----------------------------------------------------------------------|
+| 239.1.1.1       | (*,G) → (S,G)    | Registro no RP local e descoberta de fontes remotas via MSDP          |
 
 📌 **Observações importantes:**
 
-- Não há uso de endereços SSM (232/8);
-- Não existem inscrições (S,G);
-- Não ocorre SPT Switching;
-- O encaminhamento é controlado pelo **Designated Forwarder (DF)** em cada enlace;
-- O **RP atua apenas como raiz lógica** da árvore compartilhada.
-
-Esse comportamento reflete fielmente o funcionamento do **PIM Bidirectional (BIDIR)** em ambientes **many-to-many**, priorizando **simplicidade, previsibilidade e escalabilidade**.
+- Não é utilizado SSM (232/8);
+- O tráfego multicast é inicialmente associado à árvore compartilhada (*,G);
+- Estados (S,G) podem ser criados conforme o fluxo e o comportamento da rede;
+- O MSDP é utilizado apenas para **descoberta de fontes**, não para transporte de dados;
+- O RP atua como ponto de controle inicial do domínio multicast.
 
 ---
 
-**🧭 Resumo da Lógica**  
+### 🧭 Resumo da Lógica
 
-- O **Server (192.168.10.1)** atua como **fonte multicast**, enviando tráfego para o **grupo multicast 239.1.1.1 (G)**.  
-- O **Server02 (192.168.40.1)** também atua como **fonte multicast**, enviando tráfego para o **mesmo grupo multicast 239.1.1.1 (G)**.  
-- O **Host02 (192.168.20.1)** participa do domínio multicast utilizando **IGMP (tipicamente IGMPv2)**, inscrevendo-se no **grupo multicast (*,G)**.  
-- O **Host03 (192.168.30.1)** participa do domínio multicast utilizando **IGMP (tipicamente IGMPv2)**, inscrevendo-se no **grupo multicast (*,G)**.  
-- O protocolo **PIM Bidirectional (BIDIR)** é ativado em todas as interfaces participantes do domínio multicast (LANs e links de roteamento).  
-- Os **roteadores utilizam um Rendezvous Point (RP)**, que atua **apenas como raiz lógica da árvore compartilhada**, sem receber ou encapsular tráfego multicast.  
-- O encaminhamento do tráfego multicast é controlado pelo **Designated Forwarder (DF)** em cada enlace, evitando loops e duplicações.  
-- O **RPF (Reverse Path Forwarding)** é utilizado para validar o encaminhamento multicast com base na **melhor rota unicast em direção ao RP**, aprendida via OSPF.  
+- O **Server01 (192.168.10.1)** atua como **fonte multicast** no **Domínio A**, enviando tráfego para o grupo **239.1.1.1**.
+- O **Server02 (192.168.40.1)** atua como **fonte multicast** no **Domínio B**, utilizando o mesmo grupo multicast.
+- O **Host01 (192.168.20.1)** inscreve-se no grupo multicast via **IGMP (*,G)**.
+- Os **Host02 (192.168.60.1), Host03 (192.168.30.1) e Host04 (192.168.50.1)** também participam do grupo multicast utilizando **IGMP (*,G)**.
+- Cada domínio multicast possui seu **Rendezvous Point (RP)** local.
+- Os RPs estabelecem **sessões MSDP**, permitindo a troca de informações sobre fontes multicast ativas.
+- O tráfego multicast segue os caminhos definidos pelo **PIM Sparse Mode**, com validação via **RPF**, baseada na tabela unicast do OSPF.
 
-Assim, o laboratório demonstra a operação do **PIM Bidirectional (BIDIR)**, no qual múltiplas fontes e múltiplos receptores compartilham uma **única árvore multicast (*,G)**, sem criação de estados **(S,G)** e **sem SPT Switching**, priorizando simplicidade, previsibilidade e escalabilidade.
+Assim, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre fontes e receptores distribuídos na rede.
+
+
+---
+
+Alterar Daqui
 
 ---
 
