@@ -1,8 +1,11 @@
 # Índice
 
 - [Índice](#índice)
-  - [10 - Exemplo Pratico - PIM Bidirecional Multicast](#10---exemplo-pratico---pim-bidirecional-multicast)
+  - [11 - Exemplo Prático - Multicast Inter domínios com MSDP (Multicast Source Discovery Protocol)](#11---exemplo-prático---multicast-inter-domínios-com-msdp-multicast-source-discovery-protocol)
   - [🧾 Introdução](#-introdução)
+  - [🌐 O problema: multicast além de um único domínio](#-o-problema-multicast-além-de-um-único-domínio)
+  - [🔄 Onde o MSDP entra nessa arquitetura](#-onde-o-msdp-entra-nessa-arquitetura)
+  - [🎯 Escopo deste laboratório](#-escopo-deste-laboratório)
   - [🎯 Objetivo do Laboratório](#-objetivo-do-laboratório)
   - [📚 O que você vai aprender](#-o-que-você-vai-aprender)
     - [💼 Relevância prática](#-relevância-prática)
@@ -122,62 +125,87 @@
     - [💻 HOST02 — Receptor Multicast no Domínio PIM BIDIR](#-host02--receptor-multicast-no-domínio-pim-bidir)
     - [🖥️ HOST03 — Receptor Multicast no Domínio PIM BIDIR](#️-host03--receptor-multicast-no-domínio-pim-bidir)
 
-## 10 - Exemplo Pratico - PIM Bidirecional Multicast
+## 11 - Exemplo Prático - Multicast Inter domínios com MSDP (Multicast Source Discovery Protocol)
 
 ## 🧾 Introdução
-  
-**PIM Bidirectional (BIDIR) Multicast**  
-  
-Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco CCNP ENCOR (350-401).  
-O objetivo é compreender, de forma prática, o funcionamento do PIM Bidirectional (BIDIR), analisando seu comportamento em cenários com múltiplas fontes e múltiplos receptores, comuns em redes corporativas e ambientes de larga escala.  
-  
-Este laboratório simula um cenário multicast many-to-many com PIM Bidirectional, comumente utilizado em ambientes enterprise que exigem comunicação multicast altamente escalável, como sistemas financeiros, colaboração em tempo real, distribuição de dados e aplicações de replicação distribuída.  
-  
-O PIM BIDIR é uma variação do PIM Sparse Mode (PIM-SM) projetada para ambientes onde diversos dispositivos atuam simultaneamente como fontes e receptores de tráfego multicast.
-Diferentemente do modelo tradicional do PIM-SM, o BIDIR não realiza a transição para Shortest Path Tree (SPT). Todo o tráfego multicast é sempre encaminhado por meio de um Rendezvous Point (RP), garantindo previsibilidade e simplicidade no plano de controle.  
-  
-Nesse modelo, o RP deixa de ser apenas um ponto de encontro inicial e passa a ser o núcleo permanente da árvore multicast, formando uma árvore bidirecional compartilhada (*,G). Isso reduz o estado multicast na rede e torna o BIDIR especialmente eficiente para aplicações como conferências, colaboração em grupo e serviços many-to-many.
-  
-💡 ***Um conceito fundamental no PIM BIDIR é o Designated Forwarder (DF).***  
-Ao contrário do DR tradicional, o DF é eleito por interface, com base no custo até o RP e, em caso de empate, no endereço IP do roteador. O DF é responsável por encaminhar o tráfego multicast em direção ao RP, garantindo o fluxo correto dentro da árvore bidirecional.  
-  
-O IGMP, normalmente em sua versão v2, é utilizado para o gerenciamento de membros nos segmentos de acesso. Diferentemente do SSM, o BIDIR não exige que os receptores especifiquem a fonte, pois o modelo é baseado no grupo multicast (*,G), e não em pares (S,G).  
 
-O objetivo deste laboratório é demonstrar não apenas a configuração do PIM BIDIR, mas também o entendimento do seu funcionamento interno, tomada de decisões de design e validação operacional, refletindo cenários encontrados em ambientes corporativos reais.  
+Em ambientes corporativos de pequeno e médio porte, o multicast costuma operar de forma simples e previsível. Uma fonte envia tráfego para um grupo multicast, os receptores interessados se associam a esse grupo e o encaminhamento ocorre normalmente dentro de um único domínio multicast, geralmente controlado por um único Rendezvous Point (RP).  
   
-O laboratório a seguir demonstra como configurar e validar o PIM BIDIR em roteadores Cisco, incluindo:  
+À medida que a rede cresce, esse modelo passa a apresentar limitações. Organizações com múltiplos domínios administrativos, datacenters distribuídos ou redes segmentadas por requisitos operacionais frequentemente adotam RPs independentes em cada domínio multicast. Embora o multicast continue funcionando localmente em cada domínio, a descoberta de fontes multicast entre domínios distintos deixa de ocorrer de forma automática.  
+  
+Na prática, isso significa que uma aplicação multicast ativa em um domínio pode se tornar invisível para receptores localizados em outro, mesmo existindo conectividade IP plena entre as redes. Essa limitação não está relacionada ao transporte do tráfego multicast em si, mas à ausência de um mecanismo que permita a troca de informações sobre fontes multicast entre diferentes RPs.  
+  
+O Multicast Source Discovery Protocol (MSDP) foi projetado exatamente para resolver esse cenário. O MSDP permite que RPs pertencentes a domínios multicast distintos compartilhem informações sobre fontes multicast ativas, viabilizando a comunicação multicast entre domínios independentes, sem alterar o funcionamento interno do PIM Sparse Mode (PIM-SM).  
+  
+Este laboratório foi desenvolvido como parte do meu estudo para a certificação Cisco CCNP ENCOR (350-401) e tem como objetivo demonstrar, de forma prática, como o MSDP é utilizado para interconectar domínios multicast baseados em PIM-SM, refletindo situações reais encontradas em redes corporativas distribuídas.  
+  
+---
+  
+## 🌐 O problema: multicast além de um único domínio
 
-- Definição de RP estático
-- Associação de grupos multicast ao modo BIDIR
-- Eleição e validação do Designated Forwarder (DF)
-- Análise da tabela multicast e do fluxo de tráfego
-- Comportamento da rede em cenários de falha de link
+Dentro de um único domínio multicast, o PIM-SM utiliza o RP como ponto central para a descoberta inicial de fontes e a construção das árvores multicast. Esse modelo funciona de forma eficiente enquanto todos os roteadores participantes compartilham o mesmo RP.  
   
-Esse estudo evidencia como o PIM BIDIR simplifica o controle multicast em ambientes complexos, ao mesmo tempo em que mantém eficiência e escalabilidade.  
+Entretanto, quando diferentes partes da rede utilizam RPs distintos, cada domínio multicast passa a operar de forma isolada. Fontes multicast registradas em um domínio não são automaticamente conhecidas por RPs de outros domínios, impedindo que receptores remotos descubram e recebam esse tráfego.  
+  
+Esse tipo de cenário é comum em ambientes corporativos reais, especialmente em redes distribuídas geograficamente, ambientes com múltiplos datacenters ou organizações que segmentam suas redes por critérios administrativos ou de segurança.  
+
+---
+
+## 🔄 Onde o MSDP entra nessa arquitetura
+
+O MSDP atua como um mecanismo de intercâmbio de informações entre RPs pertencentes a domínios multicast distintos. Por meio do estabelecimento de sessões MSDP, os RPs passam a trocar mensagens de anúncio de fontes multicast, conhecidas como Source-Active (SA).  
+  
+É importante destacar que o MSDP não transporta tráfego multicast. Seu papel é exclusivamente informativo: ele permite que um RP saiba da existência de fontes multicast em outros domínios. A partir dessa informação, o próprio PIM-SM se encarrega de estabelecer os fluxos multicast necessários para atender os receptores interessados.  
+  
+Dessa forma, o MSDP viabiliza a comunicação multicast inter-domínios mantendo a independência operacional de cada domínio multicast e preservando a arquitetura baseada em RPs locais.
+
+---
+
+## 🎯 Escopo deste laboratório
+
+Este laboratório simula um ambiente multicast composto por múltiplos domínios PIM-SM interconectados por meio do MSDP, com foco nos seguintes aspectos:
+
+- Separação lógica de domínios multicast, cada um com seu próprio RP;
+- Estabelecimento de sessões MSDP entre RPs de domínios distintos;
+- Descoberta de fontes multicast remotas por meio de mensagens SA;
+- Distribuição de tráfego multicast entre domínios independentes;
+- Validação operacional do funcionamento do MSDP e do PIM-SM em conjunto.
+
+O cenário foi mantido intencionalmente simples para facilitar o entendimento do fluxo de controle e de dados, sem perder aderência a situações encontradas em ambientes corporativos reais.
+
+---
 
 ## 🎯 Objetivo do Laboratório
 
-O objetivo deste laboratório é compreender o funcionamento do PIM Bidirectional (BIDIR) e seu comportamento em cenários multicast many-to-many, onde múltiplos dispositivos podem atuar simultaneamente como fontes e receptores.  
-  
-Durante os testes, iremos observar:  
+O objetivo deste laboratório é compreender como o Multicast Source Discovery Protocol (MSDP) permite a comunicação multicast entre domínios PIM-SM distintos, preservando a autonomia de cada domínio multicast e seus respectivos RPs.
 
-- Como o PIM BIDIR opera a partir de uma árvore multicast compartilhada (*,G);
-- O papel do Rendezvous Point (RP) como núcleo permanente da árvore multicast, sem transição para SPT;
-- A eleição e a função do Designated Forwarder (DF) em cada enlace;
-- O comportamento das tabelas mroute no modelo bidirecional;
-- O processo de RPF (Reverse Path Forwarding) aplicado em direção ao RP;
-- E a entrega eficiente do tráfego multicast em ambientes com múltiplas fontes e múltiplos receptores.
+Durante os testes, serão observados:
 
-Dessa forma, o laboratório demonstra na prática como o PIM BIDIR simplifica o controle multicast, reduz o estado de roteamento e melhora a escalabilidade em redes corporativas e de grande porte.  
+- O comportamento do PIM-SM dentro de cada domínio multicast;
+- O papel do RP como fronteira lógica do domínio multicast;
+- O funcionamento das sessões MSDP entre RPs;
+- O processo de anúncio e aprendizado de fontes multicast remotas;
+- A construção e validação dos fluxos multicast entre domínios distintos.
+
+Com isso, o laboratório demonstra como o MSDP resolve limitações arquiteturais do multicast tradicional em ambientes distribuídos, mantendo previsibilidade, escalabilidade e clareza operacional.
+
+---
 
 ## 📚 O que você vai aprender
 
-- Como configurar PIM BIDIR com RP estático em roteadores Cisco;
-- Como associar grupos multicast específicos ao modo BIDIR;
-- Como funciona a eleição do Designated Forwarder (DF) baseada no custo até o RP;
-- Como o tráfego multicast é sempre encaminhado pela árvore compartilhada (*,G);
-- Como validar o funcionamento do BIDIR por meio de comandos show ip pim e show ip mroute;
-- Como simular um ambiente many-to-many multicast em laboratório.
+- Como estruturar domínios multicast independentes utilizando PIM-SM;
+- Como definir e validar RPs distintos em cada domínio multicast;
+- Como configurar e verificar sessões MSDP entre RPs;
+- Como analisar o processo de descoberta de fontes multicast inter-domínios;
+- Como validar o encaminhamento multicast utilizando comandos de verificação do PIM e do MSDP;
+- Como correlacionar decisões de design multicast com cenários reais de redes corporativas.
+
+
+---
+
+Ajustar Daqui
+
+---
 
 ### 💼 Relevância prática
 
