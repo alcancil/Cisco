@@ -277,12 +277,6 @@ Cada fonte é registrada localmente em seu domínio multicast, enquanto os recep
 | **Receptor 3** | HOST04      | 192.168.30.0/24 | fa0/0     | 192.168.30.1    | Receptor multicast no Domínio 02                            |
 | **Receptor 4** | HOST05      | 192.168.50.0/24 | fa0/0     | 192.168.50.1    | Receptor multicast no Domínio 02                            |
 
----
-
-ALterar Daqui
-
----
-
 ### 🧭 Estrutura do Roteamento
 
 Todos os roteadores (**R01 a R05**) participam de uma **única área OSPF (Área 0)**, garantindo conectividade unicast completa antes da ativação do multicast.  
