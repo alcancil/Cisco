@@ -14,13 +14,13 @@
   - [🔄 O papel do MSDP no cenário](#-o-papel-do-msdp-no-cenário)
   - [🧩 1️⃣ Fontes e Receptores no Cenário](#-1️⃣-fontes-e-receptores-no-cenário)
     - [🧭 Estrutura do Roteamento](#-estrutura-do-roteamento)
-    - [📡 Grupos Multicast no PIM Bidirectional](#-grupos-multicast-no-pim-bidirectional)
+    - [📡 Grupos Multicast no cenário com MSDP](#-grupos-multicast-no-cenário-com-msdp)
     - [🧩 Conclusão](#-conclusão)
-    - [🛰️ O que muda no PIM Bidirectional (BIDIR)](#️-o-que-muda-no-pim-bidirectional-bidir)
-      - [🔹 1️⃣ O papel do IGMP no PIM BIDIR](#-1️⃣-o-papel-do-igmp-no-pim-bidir)
-      - [🔀 2️⃣ Designated Forwarder (DF) e prevenção de loops](#-2️⃣-designated-forwarder-df-e-prevenção-de-loops)
+    - [🛰️ O que muda ao introduzir o MSDP no ambiente multicast](#️-o-que-muda-ao-introduzir-o-msdp-no-ambiente-multicast)
+      - [🔹 1️⃣ O papel do IGMP em ambientes com MSDP](#-1️⃣-o-papel-do-igmp-em-ambientes-com-msdp)
+      - [🔀 2️⃣ MSDP e a troca de informações entre RPs](#-2️⃣-msdp-e-a-troca-de-informações-entre-rps)
       - [🛰️ 3️⃣ Quando as fontes começam a transmitir](#️-3️⃣-quando-as-fontes-começam-a-transmitir)
-      - [📡 4️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional](#-4️⃣-vantagens-do-pim-bidir-sobre-o-pim-sm-tradicional)
+      - [📡 4️⃣ Vantagens do PIM-SM com MSDP](#-4️⃣-vantagens-do-pim-sm-com-msdp)
   - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
     - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
     - [📡 Grupos Multicast no PIM Bidirectional - resumo](#-grupos-multicast-no-pim-bidirectional---resumo)
@@ -285,95 +285,112 @@ ALterar Daqui
 
 Todos os roteadores (**R01 a R05**) participam de uma **única área OSPF (Área 0)**, garantindo conectividade unicast completa antes da ativação do multicast.  
   
-Essa conectividade é essencial para:
-
-- Construção da árvore compartilhada **(*,G)**;
-- Funcionamento do **Rendezvous Point (RP)** como raiz lógica;
-- Eleição correta do **Designated Forwarder (DF)** em cada enlace.  
+Essa etapa é proposital e fundamental, pois tanto o **PIM Sparse Mode (PIM-SM)** quanto o **MSDP** dependem diretamente do roteamento unicast para:  
+  
+- Cálculo correto do **RPF (Reverse Path Forwarding)**;
+- Encaminhamento eficiente do tráfego multicast;
+- Estabelecimento e manutenção das **sessões MSDP entre os RPs**;
+- Convergência previsível em cenários de falha.
+  
+Neste laboratório, o OSPF fornece a base estável sobre a qual o controle multicast é construído, refletindo práticas comuns em ambientes corporativos reais.  
   
 | Link Ponto-a-Ponto | Rede / Máscara | Interface Local | Interface Remota |
 |--------------------|----------------|-----------------|------------------|
-| R01 – R02          | 10.0.0.0/30    | Fa0/1 (R01)     | Fa1/0 (R02)      |
+| R01 – R02          | 10.0.0.0/30    | Fa0/1 (R01)     | Fa0/1 (R02)      |
 | R02 – R03          | 10.0.0.4/30    | Fa1/0 (R02)     | Fa1/0 (R03)      |
 | R03 – R04          | 10.0.0.8/30    | Fa0/0 (R03)     | Fa0/0 (R04)      |
 | R04 – R05          | 10.0.0.12/30   | Fa0/1 (R04)     | Fa0/1 (R05)      |
-| R05 – R01          | 10.0.0.16/30   | Fa1/0 (R05)     | Fa1/0 (R01)      |
+| R05 – R06          | 10.0.0.16/30   | Fa1/0 (R05)     | Fa1/0 (R06)      |
+| R06 – R01          | 10.0.0.20/30   | Fa1/0 (R06)     | Fa1/0 (R01)      |
 
 ---
 
-### 📡 Grupos Multicast no PIM Bidirectional
+### 📡 Grupos Multicast no cenário com MSDP
 
-Abaixo, o grupo configurado para este laboratório. Note que, independentemente do número de fontes, o estado na tabela mroute permanecerá consolidado.
+Neste laboratório, os grupos multicast são utilizados em um **ambiente PIM Sparse Mode tradicional**, com **Rendezvous Points distintos por domínio multicast**.  
+  
+Cada domínio mantém seu próprio controle multicast local, enquanto o **MSDP permite a descoberta de fontes multicast remotas**, sem a necessidade de um RP único para toda a rede.  
 
-| Grupo Multicast | Modelo PIM | Comportamento Esperado                                                     |
-|-----------------|------------|----------------------------------------------------------------------------|
-| 239.1.1.1       | (*,G)      | Fluxo bidirecional via árvore compartilhada; sem criação de estados (S,G). |
+| Grupo Multicast | Modelo PIM    | Comportamento Esperado                                                                                             |
+|-----------------|---------------|--------------------------------------------------------------------------------------------------------------------|
+| 239.1.1.1       | (*,G) / (S,G) | Registro inicial no RP local, descoberta de fontes remotas via MSDP e criação de estados (S,G) conforme necessário |
+
+Nesse modelo, o estado multicast pode evoluir de (*,G) para (S,G), dependendo do fluxo, da topologia e do comportamento da rede, refletindo o funcionamento clássico do PIM-SM em ambientes corporativos.  
+
+---
 
 ### 🧩 Conclusão
 
-Este laboratório demonstra a **eficiência do PIM Bidirectional (BIDIR)** em reduzir drasticamente a complexidade da rede multicast. Ao consolidar o encaminhamento em **uma única árvore (∗,G) e eliminar a transição para SPT**, o protocolo oferece uma operação mais enxuta e estável. É a solução padrão para redes de larga escala que exigem baixa latência e alta previsibilidade, como sistemas de controle distribuído e plataformas do setor financeiro.
+Este laboratório demonstra como o **MSDP complementa o PIM Sparse Mode** em ambientes com **múltiplos domínios multicast independentes**, permitindo que fontes localizadas em diferentes partes da rede sejam descobertas sem comprometer a autonomia de cada domínio.  
+  
+A separação lógica de domínios multicast, aliada à troca controlada de informações entre RPs, oferece uma solução escalável e amplamente adotada em redes corporativas de médio e grande porte, especialmente em cenários com múltiplos datacenters ou segmentação administrativa.  
+  
+---
+
+### 🛰️ O que muda ao introduzir o MSDP no ambiente multicast
+
+#### 🔹 1️⃣ O papel do IGMP em ambientes com MSDP
+
+Os hosts continuam utilizando **IGMP (tipicamente IGMPv2)** exclusivamente para **expressar interesse em grupos multicast (G)**.  
+
+Do ponto de vista do host:  
+
+- Não há conhecimento de domínios multicast;
+- Não há interação direta com MSDP;
+- O comportamento é idêntico a um ambiente PIM-SM tradicional.
+  
+Toda a complexidade associada à descoberta de fontes remotas é tratada no **plano de controle dos roteadores**, de forma transparente para os dispositivos finais.  
 
 ---
 
-### 🛰️ O que muda no PIM Bidirectional (BIDIR)
-  
-#### 🔹 1️⃣ O papel do IGMP no PIM BIDIR
+#### 🔀 2️⃣ MSDP e a troca de informações entre RPs
 
-No **PIM BIDIR**, os hosts utilizam **IGMP (tipicamente IGMPv2)** apenas para **informar interesse em um grupo multicast (G)**.  
-  
-Diferente do SSM:  
-  
-- Os hosts **não especificam fontes**;
-- Não existe o conceito de inscrição (S,G);
-- A decisão de encaminhamento é feita exclusivamente no domínio PIM.
-  
-O roteador diretamente conectado ao host (**Designated Router – DR**) registra o interesse no grupo e passa a participar da árvore compartilhada (*,G).  
+O **MSDP** estabelece sessões TCP entre **Rendezvous Points de domínios multicast distintos**, permitindo a troca de mensagens **Source-Active (SA)**.  
+
+Essas mensagens informam:
+
+- Qual fonte multicast está ativa;
+- Para qual grupo multicast ela transmite;
+- Em qual domínio multicast essa fonte se encontra.
+
+Com base nessas informações, cada RP pode iniciar os processos necessários para permitir que receptores locais recebam tráfego multicast proveniente de fontes remotas.  
 
 ---
 
-#### 🔀 2️⃣ Designated Forwarder (DF) e prevenção de loops
-
-Como o tráfego multicast no BIDIR pode fluir **em ambas as direções** ao longo da árvore compartilhada, o protocolo utiliza o conceito de **Designated Forwarder (DF)**.  
-  
-O **DF** é eleito em cada enlace multicast e é responsável por:  
-
-- Decidir qual roteador pode encaminhar tráfego multicast naquele segmento;
-- Evitar loops e duplicação de pacotes;
-- Garantir encaminhamento consistente em ambientes com múltiplas fontes.
-  
-A eleição do DF é baseada em métricas unicast em direção ao RP.  
-  
----
-  
 #### 🛰️ 3️⃣ Quando as fontes começam a transmitir
-  
-Quando uma ou mais fontes passam a enviar tráfego para um determinado grupo multicast:  
-  
-- O tráfego é imediatamente encaminhado pela **árvore compartilhada (*,G)**;
-- Não há registro, encapsulamento ou redirecionamento para o RP;
-- Todos os receptores inscritos no grupo recebem os fluxos multicast.
-  
-O comportamento é **simétrico e contínuo**, independentemente do número de fontes ativas.  
-  
----
-  
-#### 📡 4️⃣ Vantagens do PIM BIDIR sobre o PIM-SM tradicional
 
-| Aspecto                    | PIM Sparse Mode (tradicional) | PIM Bidirectional (BIDIR) |
-|----------------------------|-------------------------------|---------------------------|
-| Tipo de árvore             | (*,G) + (S,G)                 | Apenas (*,G)              |
-| SPT Switching              | Sim                           | ❌ Não                    |
-| Estado multicast           | Elevado em muitos fluxos      | Reduzido                  |
-| Dependência do RP          | Funcional                     | Apenas lógica             |
-| Encapsulamento (Register)  | Sim                           | ❌ Não                    |
-| Escalabilidade             | Moderada                      | Alta                      |
-| Modelo de comunicação      | One-to-many                   | Many-to-many              |
+Quando uma fonte multicast inicia a transmissão em seu domínio local:  
+
+- O tráfego é inicialmente registrado no **RP local**;
+- O RP anuncia a existência dessa fonte aos demais RPs por meio de **mensagens SA do MSDP**;
+- Receptores em outros domínios passam a conhecer a fonte e podem construir os fluxos multicast necessários utilizando o PIM-SM.
+
+É importante destacar que o **tráfego multicast em si não atravessa as sessões MSDP**. Apenas informações de controle são trocadas entre os RPs.
+
+---
+
+#### 📡 4️⃣ Vantagens do PIM-SM com MSDP
+
+| Aspecto                     | PIM-SM sem MSDP              | PIM-SM com MSDP                  |
+|-----------------------------|------------------------------|----------------------------------|
+| Descoberta de fontes remotas| ❌ Não                       | ✅ Sim                          |
+| Domínios multicast          | Único                        | Múltiplos domínios independentes |
+| Dependência de RP único     | Alta                         | Reduzida                         |
+| Escalabilidade              | Limitada em redes grandes    | Alta                             |
+| Uso em múltiplos datacenters| Pouco flexível               | Amplamente utilizado             |
+| Plano de controle           | Local                        | Distribuído entre RPs            |
 
 ---
 
 👉 **Resumo:**  
-O **PIM Bidirectional (BIDIR)** é projetado para cenários multicast **de larga escala e múltiplas fontes**, onde previsibilidade, simplicidade e estabilidade são mais importantes do que a otimização individual de caminhos.  
-Ao eliminar o **SPT Switching** e manter todo o domínio baseado em **uma única árvore compartilhada (*,G)**, o BIDIR se torna uma solução robusta e eficiente para ambientes corporativos e críticos.
+O uso do **MSDP** permite que redes multicast baseadas em **PIM Sparse Mode** evoluam para arquiteturas **distribuídas e escaláveis**, sem exigir a centralização total do controle multicast.  
+Essa abordagem é especialmente relevante em ambientes corporativos reais, onde autonomia, previsibilidade e interoperabilidade são fatores decisivos de design.  
+
+---
+
+Alterar daqui
+
+---
 
 ## 🌐 Topologia do Laboratório
 
