@@ -26,10 +26,16 @@
     - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
     - [📡 Grupos Multicast no cenário com MSDP – resumo](#-grupos-multicast-no-cenário-com-msdp--resumo)
     - [🧭 Resumo da Lógica](#-resumo-da-lógica)
+    - [🧠 Decisão de Design: Dois Domínios Multicast e RPs Distribuídos](#-decisão-de-design-dois-domínios-multicast-e-rps-distribuídos)
+      - [🔹 Por que dois domínios multicast?](#-por-que-dois-domínios-multicast)
+      - [🔹 Justificativa da escolha dos RPs](#-justificativa-da-escolha-dos-rps)
+      - [🔹 Benefício didático da abordagem](#-benefício-didático-da-abordagem)
     - [🔍 Testes Preliminares](#-testes-preliminares)
   - [🚀 Ativação do Roteamento Multicast](#-ativação-do-roteamento-multicast)
-    - [🧩 Principais Diferenças do PIM BIDIR em Relação ao PIM-SM](#-principais-diferenças-do-pim-bidir-em-relação-ao-pim-sm)
-    - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
+  - [🌐 Papel do PIM Sparse Mode no Contexto do MSDP](#-papel-do-pim-sparse-mode-no-contexto-do-msdp)
+  - [🔄 PIM-SM Tradicional vs PIM-SM com MSDP](#-pim-sm-tradicional-vs-pim-sm-com-msdp)
+  - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
+    - [✅ Interfaces onde o PIM-SM deve ser ativado](#-interfaces-onde-o-pim-sm-deve-ser-ativado)
     - [💡 Observação Sobre as Fontes Multicast](#-observação-sobre-as-fontes-multicast)
     - [🔁 O que acontece no roteador (Designated Router – DR)](#-o-que-acontece-no-roteador-designated-router--dr)
     - [🌳 Construção da Árvore Multicast](#-construção-da-árvore-multicast)
@@ -485,6 +491,50 @@ Neste laboratório, os grupos multicast utilizam o **modelo clássico do PIM Spa
 
 Dessa forma, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast independentes**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre **fontes e receptores distribuídos**, sem a necessidade de um RP global.
 
+### 🧠 Decisão de Design: Dois Domínios Multicast e RPs Distribuídos
+
+Para fins didáticos e de clareza conceitual, este laboratório foi estruturado com **dois domínios multicast distintos**, denominados **Domínio Multicast A** e **Domínio Multicast B**, cada um operando de forma **independente**, com seu próprio **Rendezvous Point (RP)**.  
+  
+Essa decisão não é apenas uma simplificação do cenário, mas uma **escolha arquitetural intencional**, alinhada tanto com o **blueprint do CCNP ENCOR (350-401)** quanto com práticas encontradas em ambientes corporativos reais.  
+  
+#### 🔹 Por que dois domínios multicast?
+
+Utilizar apenas **dois domínios multicast** permite que o laboratório foque claramente no **papel do MSDP**, sem introduzir complexidade desnecessária logo no início.  
+Com essa abordagem, torna-se mais fácil observar:
+  
+- A **autonomia de cada domínio multicast**, com controle local de RP;
+- O comportamento do **PIM Sparse Mode (PIM-SM)** dentro de cada domínio;
+- A função do **MSDP como mecanismo de interconexão entre domínios**, e não como parte do encaminhamento de dados;
+- A troca de informações sobre **fontes multicast ativas (SA – Source-Active)** entre RPs.
+  
+Esse modelo reflete cenários reais onde **domínios administrativos diferentes**, sites distintos ou regiões geográficas independentes precisam compartilhar tráfego multicast **sem abrir mão do controle local**.  
+
+#### 🔹 Justificativa da escolha dos RPs
+  
+Os **Rendezvous Points foram posicionados de forma distribuída**, conforme o diagrama lógico do laboratório:
+  
+- **R01** atua como **RP do Domínio Multicast A**;
+- **R05** atua como **RP do Domínio Multicast B**.
+
+Essa distribuição permite visualizar claramente:
+
+- O funcionamento do **RP como ponto de controle do domínio multicast**, e não como elemento centralizador global;
+- A necessidade do **MSDP para interligar domínios multicast distintos**, cada um com seu próprio RP;
+- A troca de informações MSDP ocorrendo **exclusivamente entre os RPs**, sem impacto direto no encaminhamento do tráfego multicast.
+  
+Além disso, a escolha de RPs em roteadores distintos reforça o conceito de **desacoplamento entre domínios**, evitando a falsa impressão de que o multicast depende de um único RP global.
+
+#### 🔹 Benefício didático da abordagem
+
+Ao limitar o cenário a **dois domínios multicast**, o laboratório mantém:
+
+- **Alta clareza visual**
+- **Facilidade de reprodução**
+- **Foco no conceito central do MSDP**
+- **Base sólida para futuras expansões**, como múltiplos peers MSDP, filtros SA ou cenários de redundância
+
+Essa progressão torna o laboratório acessível para quem está iniciando no multicast avançado, sem perder relevância técnica para profissionais mais experientes.
+
 
 ---
 
@@ -494,34 +544,42 @@ Alterar Daqui
 
 ### 🔍 Testes Preliminares
 
-Antes de ativar o multicast, é essencial confirmar a **conectividade unicast** entre todos os dispositivos.
+Antes de qualquer configuração multicast, é fundamental validar que a **infraestrutura unicast está plenamente funcional**.  
+No contexto do **PIM Sparse Mode (PIM-SM)** e do **MSDP**, todo o controle e validação de encaminhamento multicast depende diretamente da **tabela de roteamento unicast**.
 
-Cada roteador possui uma **interface Loopback** utilizada como **Router-ID** no OSPF:
+Cada roteador possui uma **interface Loopback**, utilizada como **Router-ID do OSPF** e como **identificador lógico estável** para o domínio:
 
 - R01 → 1.1.1.1/32  
 - R02 → 2.2.2.2/32  
 - R03 → 3.3.3.3/32  
 - R04 → 4.4.4.4/32  
 - R05 → 5.5.5.5/32  
+- R06 → 6.6.6.6/32  
 
-Após o OSPF estar operacional, valide a conectividade com **ping entre todas as loopbacks**.
+Com o **OSPF convergido**, valide a conectividade realizando **ping entre todas as loopbacks**.
 
 ![01](Imagens/01.png)
 
-Se todos os roteadores se alcançam, a infraestrutura unicast está pronta para o multicast.  
-Lembre-se: o **PIM BIDIR** depende de uma **base unicast funcional** para a correta construção da árvore compartilhada e para o processo de **eleição do Designated Forwarder (DF)**.
+Se todos os roteadores se alcançam via unicast, a base necessária para o funcionamento do **PIM-SM e do MSDP** está garantida.
+
+📌 **Importante:**  
+No modelo PIM-SM com MSDP, **falhas de conectividade unicast impactam diretamente**:
+
+- o cálculo de **RPF (Reverse Path Forwarding)**;
+- o encaminhamento multicast;
+- e a troca de informações de fontes ativas (**Source-Active – SA**) entre os RPs.
 
 ---
 
-## 🚀 Ativação do Roteamento Multicast  
-  
-Agora podemos ativar o **roteamento multicast** globalmente:
+## 🚀 Ativação do Roteamento Multicast
+
+Com a conectividade unicast validada, o próximo passo é habilitar o **roteamento multicast globalmente** em todos os roteadores participantes do laboratório.
 
 ```ios
 R01(config)#ip multicast-routing
 ```
 
-Confirme que o recurso foi habilitado:  
+Verifique se o recurso foi habilitado corretamente:
 
 ```ios
 R01#show ip multicast
@@ -532,47 +590,62 @@ R01#show ip multicast
   Multicast Fallback group mode: Sparse
   Multicast DVMRP Interoperability: disabled
 ```
-  
-Com o roteamento multicast ativo, o próximo passo é habilitar o **PIM Bidirectional (BIDIR)** nas interfaces participantes (LANs e links entre roteadores).  
-Esse procedimento deve ser repetido de R01 a R05, garantindo que todas as interfaces de roteamento façam parte do domínio **PIM BIDIR**.  
+
+A partir deste ponto, os roteadores estão aptos a participar de domínios multicast baseados em **PIM Sparse Mode (PIM-SM)**.  
 
 ---
 
-### 🧩 Principais Diferenças do PIM BIDIR em Relação ao PIM-SM  
+## 🌐 Papel do PIM Sparse Mode no Contexto do MSDP
 
-| Característica            | PIM Sparse Mode (tradicional) | PIM Bidirectional (BIDIR)  |
-|---------------------------|-------------------------------|----------------------------|
-| Tipo de árvore            | (*,G) e (S,G)                 | Apenas (*,G)               |
-| SPT Switching             | Sim                           | ❌ Não                     |
-| Encapsulamento (Register) | Sim                           | ❌ Não                     |
-| Uso do RP                 | Dados passam pelo RP          | RP é apenas raiz lógica    |
-| Estado multicast          | Elevado                       | Reduzido                   |
-| Modelo de comunicação     | One-to-many                   | Many-to-many               |
-| Escalabilidade            | Moderada                      | Alta                       |
+Neste laboratório, o **PIM Sparse Mode (PIM-SM)** é utilizado **dentro de cada domínio multicast**, enquanto o MSDP é responsável por **interligar os domínios.**  
+
+Cada domínio multicast possui:
+
+- seu próprio **Rendezvous Point (RP)**;
+- sua própria árvore multicast (*,G);
+- controle local sobre fontes e receptores.
+
+O **MSDP não substitui o PIM**, nem participa do encaminhamento de dados.  
+Seu papel é **exclusivamente de controle**, permitindo que os RPs compartilhem informações sobre **fontes multicast ativas**.  
+
+## 🔄 PIM-SM Tradicional vs PIM-SM com MSDP
+
+| Característica             | PIM-SM isolado      | PIM-SM com MSDP     |
+|----------------------------|---------------------|---------------------|
+| Domínios multicast         | Único               | Múltiplos           |
+| Rendezvous Point           | Local               | Local por domínio   |
+| Compartilhamento de fontes | ❌ Não              | ✅ Sim (via MSDP)  |
+| Encaminhamento multicast   | PIM-SM              | PIM-SM              |
+| Troca de informações SA    | ❌ Não              | ✅ Sim (entre RPs) |
+| Escopo de controle         | Limitado ao domínio | Inter - domínios    |
+
+## 🌍 Onde o PIM Deve Ser Ativado
+
+No modelo **PIM Sparse Mode com MSDP**, o PIM continua sendo responsável pelo **encaminhamento multicast dentro de cada domínio**.  
+Por isso, ele deve ser ativado em todas as interfaces que participam do transporte multicast.  
+
+### ✅ Interfaces onde o PIM-SM deve ser ativado
+
+| Situação                           | PIM deve ser ativado? | Motivo                                                                   |
+|------------------------------------|-----------------------|--------------------------------------------------------------------------|
+| Interface entre roteadores         | ✅ Sim               | Construção da árvore multicast e troca de mensagens PIM                   |
+| Interface com host receptor (IGMP) | ✅ Sim               | Registro de interesse nos grupos multicast                                |
+| Interface com fonte multicast      | ✅ Sim               | Inserção do tráfego multicast na árvore                                   |
+| Loopback usada como Router-ID      | ❌ Não               | Utilizada apenas para identificação e sessões de controle (MSDP/OSPF)     |
+
+**📌 Observação importante:**  
+
+Embora as Loopbacks não participem do encaminhamento multicast, elas são fundamentais para:  
+
+- identificação dos RPs;
+- estabelecimento das sessões MSDP;
+- estabilidade do controle multicast.
+
+
 
 ---
 
-### 🌍 Onde o PIM Deve Ser Ativado
-
-No PIM Bidirectional **(BIDIR)**, o tráfego multicast é encaminhado por meio de uma única **árvore compartilhada (*,G)**, utilizada simultaneamente por **múltiplas fontes e múltiplos receptores**.  
-  
-Diferente do PIM-SM tradicional e do SSM, o **BIDIR**:
-
-- Não cria estados **(S,G)**;
-- Não realiza **SPT Switching**;
-- Não encapsula tráfego multicast;
-- Utiliza o **Rendezvous Point (RP) apenas como raiz lógica da árvore**.  
-  
-Apesar disso, o PIM deve ser ativado em todas as interfaces que participam do domínio multicast, garantindo a troca correta de mensagens PIM Join/Prune (*,G) e a eleição adequada do Designated Forwarder (DF).  
-
-✅ **Interfaces onde o PIM deve ser ativado**
-
-| Situação                           | PIM deve ser ativado? | Motivo                                                 |
-|------------------------------------|-----------------------|--------------------------------------------------------|
-| Interface entre roteadores         | ✅ Sim                | Construção da árvore (*,G) e troca de mensagens PIM    |
-| Interface com host receptor (IGMP) | ✅ Sim                | Registro de interesse no grupo multicast               |
-| Interface com fonte multicast      | ✅ Sim                | Inserção correta do tráfego multicast na árvore (*,G)  |
-| Loopback apenas como Router-ID     | ⚙️ Opcional           | Usada apenas para identificação OSPF                   |
+Alterar Daqui
 
 ---
 
