@@ -37,10 +37,13 @@
   - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
     - [✅ Interfaces onde o PIM-SM deve ser ativado](#-interfaces-onde-o-pim-sm-deve-ser-ativado)
     - [💡 Observação Sobre as Fontes Multicast (PIM-SM + MSDP)](#-observação-sobre-as-fontes-multicast-pim-sm--msdp)
-    - [🔁 O que acontece no roteador (Designated Router – DR)](#-o-que-acontece-no-roteador-designated-router--dr)
-    - [🌳 Construção da Árvore Multicast](#-construção-da-árvore-multicast)
-    - [🧩 Limitações Intencionais do Modelo](#-limitações-intencionais-do-modelo)
-    - [📊 Matriz de Comportamento: Host vs. Fontes](#-matriz-de-comportamento-host-vs-fontes)
+    - [🔄 O que acontece no roteador (Designated Router – DR)](#-o-que-acontece-no-roteador-designated-router--dr)
+    - [🌳 Construção da Árvore Multicast Inter-domínio](#-construção-da-árvore-multicast-inter-domínio)
+    - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
+    - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
+    - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
+    - [🔁 Funcionamento Geral do MSDP](#-funcionamento-geral-do-msdp)
+    - [🧱 No nosso laboratório](#-no-nosso-laboratório)
   - [⚙️ Ativando o roteamento multicast](#️-ativando-o-roteamento-multicast)
   - [⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)](#️-ativando-o-protocolo-pim-bidirectional-pim-bidir)
     - [🔧 Configuração do PIM-BIDIR](#-configuração-do-pim-bidir)
@@ -710,200 +713,132 @@ Esse comportamento é consistente com o modelo **ASM (Any-Source Multicast)**, o
 - O MSDP atua exclusivamente no plano de controle
 - O receptor recebe tráfego de todas as fontes ativas do grupo, inclusive de outros domínios multicast
 
+### 🔄 O que acontece no roteador (Designated Router – DR)
+
+Quando os receptores manifestam interesse no conteúdo, o processo de sinalização ocorre da seguinte forma dentro do domínio PIM-SM:  
+
+- **Roteador04 (DR do Host02):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e envia um **PIM Join (*,G)** em direção ao seu **RP Local**.
+- **Roteador05 (DR do Host03):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e também envia um **PIM Join (*,G)** em direção ao seu **RP Local**.  
+  
+⚠️ **Importante: O Papel do MSDP na Descoberta de Fontes**  
+Diferente do PIM-SM isolado, onde o RP só conhece fontes do seu próprio domínio, o MSDP expande essa visão:  
+
+- ✅ **Sessões TCP (Porta 639):** Os RPs de domínios diferentes estabelecem uma conexão confiável para trocar informações.
+- ✅ **Mensagens Source-Active (SA):** Quando uma fonte começa a transmitir no Domínio A, o RP local informa aos seus peers MSDP (RPs de outros domínios) sobre a existência dessa fonte (S,G).  
+- ✅ **Caminho Inter-domínio:** Assim que o RP do receptor recebe o anúncio SA, ele pode iniciar a construção da árvore (S,G) em direção à fonte no domínio remoto.
+  
 ---
-
-ALterar Daqui
-
----
-
-🔁 **O que acontece no roteador (Designated Router – DR)**
-
-- O **roteador04** conectado ao **Host02** recebe o **IGMP Join para o grupo (G)**  
-- Ele cria **uma única entrada multicast (*,G)** na sua tabela  
-- O **roteador04** envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**  
-- Ao mesmo tempo, o **roteador05** recebe o  **IGMP Join para o grupo (G)**
-- Ele cria **uma única entrada multicast (*,G)** na sua tabela  
-- O **roteador05** envia **PIM Join (*,G)** na direção do **Rendezvous Point (RP)**
-
-⚠️ **Importante**  
-No **PIM BIDIR**, o **RP é apenas a raiz lógica da árvore multicast**.  
-Ele:
-
-- ❌ Não recebe tráfego  
-- ❌ Não realiza encapsulamento  
-- ❌ Não participa do caminho de dados  
-
----
-
-🌳 **Construção da Árvore Multicast**
-
-- Uma **única árvore (*,G)** é construída para o grupo **239.1.1.1**
-- Essa árvore é usada **simultaneamente por todas as fontes e todos os receptores**
-- **Não ocorre**:
-  - ❌ SPT Switching  
-  - ❌ Criação de árvores (S,G)  
-  - ❌ PIM Register  
-
-O tráfego multicast entra na árvore pelo **roteador conectado à fonte**, respeitando o papel do **Designated Forwarder (DF)** em cada enlace.
-
-### 🔁 O que acontece no roteador (Designated Router – DR)
-
-Quando os receptores manifestam interesse no conteúdo, o processo de sinalização ocorre da seguinte forma:
-
-- **Roteador04 (DR do Host02):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e envia um **PIM Join (*,G)** em direção ao RP.
-- **Roteador05 (DR do Host03):** Recebe o **IGMP Join** para o grupo (G), cria uma entrada multicast **(*,G)** e também envia um **PIM Join (*,G)** em direção ao RP.
-
-⚠️ **Importante: O Papel do RP no PIM BIDIR**
-Diferente do PIM-SM, aqui o RP é estritamente a **raiz lógica** da árvore:
-
-- ❌ **Sem Mensagens de Register:** As fontes não encapsulam tráfego para o RP.
-- ❌ **Sem Ponto de Encontro de Dados:** O RP não precisa "desencapsular" pacotes; ele apenas define o ponto central para a eleição do **DF (Designated Forwarder)**.
-- ❌ **Caminho Nativo:** O tráfego flui nativamente pela árvore assim que a fonte começa a transmitir.
+  
+### 🌳 Construção da Árvore Multicast Inter-domínio
+  
+No modelo MSDP com PIM-SM, a estrutura da árvore é dinâmica e segmentada:  
+  
+- **Árvore Compartilhada (*,G):** É mantida dentro de cada domínio, conectando os receptores aos seus respectivos RPs locais.
+- **Árvore de Caminho Curto (SPT):** Ao descobrir a fonte via MSDP, o tráfego flui através de árvores **(S,G)**, permitindo o roteamento multicast entre diferentes sistemas autônomos ou domínios.
+- **Eficiência e Controle:**
+  - ✅ **Sinalização via PIM Register:** As fontes continuam usando o processo de registro no RP local.
+  - ✅ **Visibilidade Total:** Diferente do BIDIR, aqui a tabela `mroute` exibe as origens específicas (S,G), permitindo auditoria e filtros precisos.
+  - ✅ **Independência de Domínio:** Falhas no RP de um domínio não derrubam o tráfego multicast interno de outros domínios.
 
 ---
 
-### 🌳 Construção da Árvore Multicast
-
-Diferente de outros modos PIM, o BIDIR estabelece uma estrutura única:
-
-- **Árvore Única:** Uma única árvore compartilhada **(*,G)** é construída para o grupo (ex: 239.1.1.1).
-- **Uso Simultâneo:** Essa árvore atende todas as fontes e todos os receptores ao mesmo tempo.
-- **Eficiência de Plano de Controle:**
-  - ❌ **Não ocorre SPT Switching:** O tráfego nunca migra para árvores (S,G).
-  - ❌ **Sem Estados (S,G):** A tabela mroute permanece limpa e escalável.
-  - ❌ **Encaminhamento via DF:** O tráfego entra e sai da árvore respeitando a eleição do **Designated Forwarder** em cada link, o que previne loops bidirecionais.
-
----
-
-🔎 **Visualmente**
+🔎 **Visualmente (Fluxo MSDP)**
 
 ```text
+      Domínio A (Fonte)                     Domínio B (Receptor)
+    ┌───────────────────┐                   ┌───────────────────┐
+    │  FONTE ATIVA (S)  │                   │  RECEPTOR (H)     │
+    └────────┬──────────┘                   └─────────┬─────────┘
+             │                                        │
+             ▼                                        ▼
+    ┌───────────────────┐      Sessão TCP     ┌───────────────────┐
+    │     RP LOCAL A    │ <────────────────>  │     RP LOCAL B    │
+    │  (Anuncia SA)     │      Porta 639      │  (Recebe SA)      │
+    └───────────────────┘                     └───────────────────┘
+             ▲                                      │
+             │ PIM Register                         │ PIM Join (*,G)
+             │                                      ▼
+    ┌───────────────────┐                    ┌───────────────────┐
+    │    Roteador DR    │                    │    Roteador DR    │
+    └───────────────────┘                    └───────────────────┘
+```
 
-    ┌──────────────────────────┐    ┌──────────────────────────┐
-    │ SERVER02 (192.168.40.1)  │    │ SERVER03 (192.168.50.1)  │
-    └──────────────────────────┘    └──────────────────────────┘
-                │                            │
-                └─────────────┬──────────────┘
-                              │
-                              ▼
-                 ┌────────────────────────────┐             
-                 │ Árvore Compartilhada (*,G) │
-                 └────────────────────────────┘             
-                              │
-                              ▼
-                     ┌───────────────────┐
-                     │ RP – Raiz Lógica  │
-                     └───────────────────┘
-                              │
-                     ┌───────────────────┐         
-                     │    Roteador DR    │
-                     └───────────────────┘    
-                              │
-                              ▼
-                      ┌───────────────┐
-                      │     Host02    │
-                      └───────────────┘
-```  
+### 🧩 Vantagens Técnicas do MSDP
 
-O **Host02 (e demais receptores)** recebe todo o tráfego do **grupo 239.1.1.1* de forma agregada. No PIM BIDIR, a rede trata o grupo **como um canal único*: se o SERVER02 e o SERVER03 estiverem transmitindo, o **receptor recebe ambos sem distinção**.
+- **Escalabilidade**: Permite que cada domínio tenha sua própria política de RP.
+- **Filtros de Origem**: Suporta IGMPv3 e políticas de segurança baseadas no IP da fonte.
+- **Descoberta Dinâmica**: Automatiza a comunicação entre ilhas multicast independentes.
+
+### 📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)
+
+| Intenção do Receptor   | IGMP Join enviado | Resultado com MSDP + PIM-SM             |
+|------------------------|-------------------|-----------------------------------------|
+| Quer apenas SERVER01   | Join (S1, G)      | Recebe apenas fluxo do Domínio A        |
+| Quer apenas SERVER02   | Join (S2, G)      | Recebe apenas fluxo do Domínio B        |
+| Quer ambas as fontes   | Join (*, G)       | Recebe fluxos via RPs interconectados   |
+| Quer filtrar fontes    | Suportado (SSM)   | Controle granular por IP de origem      |
+
+👉 **Em resumo:** - No MSDP, o controle é feito no nível de **(S,G)** através das mensagens **Source-Active (SA)**.
+
+- Diferente do BIDIR, existe seleção, exclusão e isolamento de fontes.
+- O RP de cada domínio decide quais fontes "vazar" para os peers vizinhos via sessão TCP.
 
 ---
 
-### 🧩 Limitações Intencionais do Modelo
+### ⚙️ Nosso cenário Multicast MSDP
 
-Muitos administradores tentam aplicar filtros de origem no BIDIR, mas é preciso entender que:
+Para validar a interoperabilidade, as fontes estão isoladas em domínios distintos:
 
-- Seleção de Fonte: O Host não pode escolher receber apenas do SERVER02. O IGMPv2 não possui campos para origem e o PIM BIDIR não cria estados (S,G).
-- Bloqueio de Fonte: Não é possível bloquear uma fonte específica na rede. O BIDIR assume que o controle de conteúdo deve ser feito na camada de aplicação.
+| Fonte    | Gateway (DR)   | Domínio Multicast | Grupo Multicast  |
+|----------|----------------|-------------------|------------------|
+| SERVER01 | R03            | **Domínio A**     | 239.1.1.1        |
+| SERVER02 | R02            | **Domínio B**     | 239.1.1.1        |
 
-Se o seu projeto exige que o receptor escolha ou bloqueie fontes específicas, o modelo correto é o **PIM SSM (Source-Specific Multicast).**
+**Comportamento esperado:** Quando os receptores ingressarem no grupo, o RP local consultará o seu **SA-Cache**. Se houver um Peer MSDP ativo, ele aprenderá a origem remota. A verificação via `show ip mroute` exibirá entradas **(S,G)**, confirmando que o tráfego é roteado pela árvore de caminho mais curto (SPT) entre os domínios.
 
-### 📊 Matriz de Comportamento: Host vs. Fontes
+📡 **Papel do IGMP no Contexto MSDP**
 
-| Intenção do Receptor   | IGMP Join enviado | Resultado no PIM BIDIR                |
-|------------------------|-------------------|---------------------------------------|
-| Quer apenas SERVER02   | Join (*,G)        | Recebe SERVER02 e SERVER03 (Agregado) |
-| Quer apenas SERVER03   | Join (*,G)        | Recebe SERVER02 e SERVER03 (Agregado) |
-| Quer ambas as fontes   | Join (*,G)        | Recebe todo o fluxo do grupo          |
-| Quer excluir uma fonte | Não suportado     | Recebe todo o tráfego do grupo        |
-  
-👉 **Em resumo:**  
+No modelo de domínios interconectados, o IGMP (preferencialmente v3) permite o filtro de origens:
 
-- No PIM Bidirectional, o controle é feito apenas por grupo (*,G).
-- Não existe seleção, exclusão ou combinação de fontes no nível da rede.
-- Todos os fluxos pertencentes ao grupo multicast são encaminhados pela mesma árvore.
-  
----
-
-⚙️ **Nosso cenário PIM BIDIR**  
-
-Para validar este comportamento, utilizaremos as seguintes fontes:
-
-| Fonte    | Gateway (DR)   | Sub-rede        | Grupo Multicast  |
-|----------|----------------|-----------------|------------------|
-| SERVER02 | R03            | 192.168.40.0/24 | 239.1.1.1        |
-| SERVER03 | R02            | 192.168.50.0/24 | 239.1.1.1        |
-
-Comportamento esperado: Assim que os receptores ingressarem no grupo 239.1.1.1, eles passarão a receber os fluxos de ambos os servidores. A verificação via **show ip mroute** mostrará apenas a entrada (*,G), confirmando que não há caminhos dedicados por fonte.  
-  
-📡 **Papel do IGMP no PIM BIDIR**  
-  
-No PIM BIDIR, o IGMP é utilizado somente para sinalizar interesse no grupo multicast (G).
-
-- Não existe INCLUDE (S,G)
-- Não existe EXCLUDE (S,G)
-- Não há Source Filtering
-
-| Tipo de Mensagem IGMP | Descrição                                                                 |
+| Tipo de Mensagem IGMP | Função no Modelo MSDP                                                     |
 |-----------------------|---------------------------------------------------------------------------|
-| Membership Report     | Informa ao roteador local que o host deseja receber o grupo multicast (G) |
-| Leave Group           | Indica que o host não quer mais receber o tráfego do grupo                |
+| **Membership Report** | Sinaliza ao DR local o interesse no grupo ou fonte específica.            |
+| **Source Filtering**  | Permite que o host aceite ou bloqueie fontes vindas de domínios remotos.  |
 
-O IGMP não controla origem no modelo Bidirectional.  
-  
-🔁 **Funcionamento geral do PIM BIDIR**  
-  
-1. O receptor envia um IGMP Join solicitando apenas o grupo multicast (G).
-2. O roteador de borda (Designated Router) cria uma entrada (*,G) na tabela multicast.
-3. O roteador envia PIM Join (*,G) em direção ao Rendezvous Point (RP).
-4. Uma única árvore multicast compartilhada (*,G) é construída.
-5. Todas as fontes injetam tráfego nessa árvore, e todos os receptores recebem.
-  
-Não ocorre:  
+---
 
-- SPT Switching
-- Criação de árvores (S,G)
-- PIM Register
-- Encapsulamento de tráfego no RP
-  
-🧱 **No nosso laboratório**
-  
-O PIM Bidirectional será ativado em todos os roteadores e interfaces relevantes:  
+### 🔁 Funcionamento Geral do MSDP
 
-- Entre os roteadores R01 a R05, formando o domínio PIM BIDIR
-- Nas interfaces LAN conectadas às fontes multicast (SERVER02 e SERVER03)
-- Nas interfaces LAN conectadas aos receptores (Host02 e Host03)
-- Nas Loopbacks, apenas como Router-ID para OSPF
-- O Rendezvous Point (RP) é configurado manualmente e atua como raiz lógica da árvore, sem receber ou encaminhar tráfego multicast.
+1. A **Fonte** começa a transmitir no Domínio A.
+2. O **RP do Domínio A** cria uma mensagem **Source-Active (SA)**.
+3. O RP envia essa mensagem via **TCP (porta 639)** para o RP do Domínio B.
+4. O **RP do Domínio B** verifica se tem receptores interessados em (*,G).
+5. Se houver interessados, o RP do Domínio B cria um estado **(S,G)** e busca o tráfego na fonte original.
 
-🧩 **Resumo prático**  
-  
-| Elemento                 | Função no cenário                                 |
+---
+
+### 🧱 No nosso laboratório
+
+O protocolo MSDP será o "elo" entre os domínios PIM-SM:
+
+- **R01 e R05:** Atuarão como os **MSDP Peers** (Pontos de interconexão).
+- **Independência de RP:** R01 é o RP do Domínio A; R05 é o RP do Domínio B.
+- **Plano de Controle:** As mensagens SA garantem que o Host no domínio B saiba que o Server no domínio A está "vivo".
+
+🧩 **Resumo Prático dos Componentes**  
+
+| Elemento                 | Função no Cenário                                 |
 |--------------------------|---------------------------------------------------|
-| SERVER (192.168.10.01)   | Fonte multicast (grupo 239.1.1.1)                 |
-| SERVER02 (192.168.40.01) | Segunda fonte multicast (mesmo grupo)             |
-| Host02 / Host03          | Receptores multicast (Join apenas por grupo)      |
-| Roteadores R01–R05       | Encaminham tráfego via PIM BIDIR                  |
-| OSPF                     | Mantém conectividade unicast (base para RPF)      |
-| RP                       | Raiz lógica da árvore (*,G), sem tráfego de dados |
+| SERVER01 (192.168.10.1)  | Fonte no Domínio A                                |
+| SERVER02 (192.168.40.1)  | Fonte no Domínio B                                |
+| RPs (R01 e R05)          | Estabelecem a adjacência MSDP (TCP 639)           |
+| OSPF / BGP               | Base Unicast para o fechamento das sessões TCP    |
 
-💬 **Conclusão**  
+---
 
-O **PIM Bidirectional (BIDIR)** oferece uma arquitetura multicast simples, previsível e altamente escalável, ideal para **cenários many-to-many**.  
-Ao utilizar **uma única árvore compartilhada (*,G)**, o modelo elimina a complexidade de múltiplas árvores por fonte, dispensa SPT Switching e reduz drasticamente o estado multicast nos roteadores.  
+Alterar Daqui
 
-O controle por origem não faz parte do modelo — todo o tráfego pertencente ao grupo é encaminhado igualmente.  
-Esse comportamento torna o PIM BIDIR especialmente adequado para ambientes como sistemas financeiros, replicação distribuída, colaboração em tempo real e aplicações com múltiplos produtores simultâneos.  
+---
 
 ## ⚙️ Ativando o roteamento multicast
 
