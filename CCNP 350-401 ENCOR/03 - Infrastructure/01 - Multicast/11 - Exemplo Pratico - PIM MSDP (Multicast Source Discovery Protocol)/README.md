@@ -36,7 +36,7 @@
   - [🔄 PIM-SM Tradicional vs PIM-SM com MSDP](#-pim-sm-tradicional-vs-pim-sm-com-msdp)
   - [🌍 Onde o PIM Deve Ser Ativado](#-onde-o-pim-deve-ser-ativado)
     - [✅ Interfaces onde o PIM-SM deve ser ativado](#-interfaces-onde-o-pim-sm-deve-ser-ativado)
-    - [💡 Observação Sobre as Fontes Multicast](#-observação-sobre-as-fontes-multicast)
+    - [💡 Observação Sobre as Fontes Multicast (PIM-SM + MSDP)](#-observação-sobre-as-fontes-multicast-pim-sm--msdp)
     - [🔁 O que acontece no roteador (Designated Router – DR)](#-o-que-acontece-no-roteador-designated-router--dr)
     - [🌳 Construção da Árvore Multicast](#-construção-da-árvore-multicast)
     - [🧩 Limitações Intencionais do Modelo](#-limitações-intencionais-do-modelo)
@@ -535,13 +535,6 @@ Ao limitar o cenário a **dois domínios multicast**, o laboratório mantém:
 
 Essa progressão torna o laboratório acessível para quem está iniciando no multicast avançado, sem perder relevância técnica para profissionais mais experientes.
 
-
----
-
-Alterar Daqui
-
----
-
 ### 🔍 Testes Preliminares
 
 Antes de qualquer configuração multicast, é fundamental validar que a **infraestrutura unicast está plenamente funcional**.  
@@ -641,68 +634,85 @@ Embora as Loopbacks não participem do encaminhamento multicast, elas são funda
 - estabelecimento das sessões MSDP;
 - estabilidade do controle multicast.
 
+### 💡 Observação Sobre as Fontes Multicast (PIM-SM + MSDP)
 
-
----
-
-Alterar Daqui
-
----
-
-### 💡 Observação Sobre as Fontes Multicast
-
-No **PIM Bidirectional (BIDIR)**, as fontes operam de forma simplificada, sem a necessidade de sinalização complexa com o RP:
-
-- **Sem PIM Register:** O tráfego não é encapsulado; é inserido diretamente na árvore compartilhada (*,G) pelo roteador conectado à fonte.
-- **Controle via DF:** O encaminhamento é gerido pelo *Designated Forwarder* (DF) de cada enlace, garantindo um caminho livre de loops.
-- **Fluxo Unificado:** Todas as fontes que enviam tráfego para o mesmo grupo compartilham a mesma árvore, eliminando a criação de estados (S,G) individuais.
-
-No contexto deste laboratório, os servidores **SERVER02 e SERVER03** transmitem simultaneamente para o grupo **239.1.1.1**. Diferente do modelo SSM que vimos anteriormente, aqui o receptor não filtra fontes; ele aceita qualquer tráfego destinado ao grupo, simplificando drasticamente o plano de controle da rede.
-
----
-
-🎯 **Situação**
-
-Você tem:  
+Neste laboratório, o encaminhamento multicast **dentro de cada domínio** é realizado utilizando **PIM Sparse Mode (PIM-SM)**, enquanto o **MSDP** é responsável por permitir o compartilhamento de informações sobre **fontes multicast ativas** entre **múltiplos domínios multicast**.  
   
-- **Server02 (192.168.40.01)** transmitindo tráfego multicast  
-- **Server03 (192.168.50.01)** transmitindo tráfego multicast  
-- Ambos transmitem para **o mesmo grupo multicast (G)**, por exemplo **239.1.1.1**
-- **Host02 e Host03** querem receber **todo o tráfego multicast desse grupo**, independentemente de qual servidor seja a fonte
+Diferente do PIM Bidirectional, no **PIM-SM tradicional** o comportamento das fontes envolve uma etapa explícita de sinalização com o **Rendezvous Point (RP)**.  
   
-Esse cenário representa um modelo clássico **many-to-many**, ideal para **PIM Bidirectional (BIDIR)**.
+Principais pontos:
+
+- **Uso de PIM Register:**  
+  O primeiro roteador conectado à fonte encapsula o tráfego multicast em mensagens **PIM Register** e o envia ao RP do domínio.  
+- **Criação de estado (S,G):**  
+  O RP aprende a existência da fonte e pode criar estados específicos por origem, dependendo do fluxo.  
+- **Separação entre controle e dados:**  
+  A sinalização inicial ocorre via Register, mas o tráfego de dados passa a fluir de forma otimizada após a convergência.  
+  
+No contexto do **MSDP**, essas informações sobre fontes ativas **não ficam restritas a um único domínio multicast**.
+  
+---
+
+🎯 **Situação do Laboratório**
+
+Neste cenário, temos:  
+
+- **Server01 (192.168.10.01)** atuando como fonte multicast em um domínio  
+- **Server02 (192.168.40.01)** atuando como fonte multicast em outro domínio  
+- Ambos transmitem para o **mesmo grupo multicast (G)**, por exemplo **239.1.1.1**
+- **Host01, Host02, Host03 e Host04** desejam receber **todo o tráfego multicast do grupo**, independentemente do domínio onde a fonte está localizada
+  
+Esse cenário representa um **ambiente multi-domínio multicast**, típico de redes corporativas maiores ou ambientes interconectados entre provedores.
 
 ---
 
-🧠 **Como o PIM BIDIR trata isso?**
+🧠 **Como o PIM-SM + MSDP trata esse cenário?**
 
-No **PIM Bidirectional**, o encaminhamento multicast **não é baseado em (S,G)**.  
-Ele utiliza **exclusivamente a árvore compartilhada (*,G)**.
+Dentro de **cada domínio multicast**:  
 
-Isso significa que:
+- O PIM-SM opera normalmente, utilizando:
+  - árvores compartilhadas (*,G)
+  - e, quando necessário, árvores específicas (S,G)
+- O **RP local** aprende as fontes através de mensagens **PIM Register**
 
-- O **host não escolhe fontes**
-- Não existe controle por origem
-- Todas as fontes que transmitem para o grupo **compartilham a mesma árvore multicast**
-
-O **IGMP (v2 ou v3)** é usado **apenas para sinalizar interesse no grupo (G)**.
+Entre **domínios diferentes**:  
+  
+- O **MSDP** permite que os **RPs troquem informações de fontes ativas (SA – Source-Active)**.
+- Quando um RP aprende uma nova fonte via MSDP, ele pode:
+  - criar estado (*,G) localmente
+  - e permitir que os receptores daquele domínio recebam tráfego de fontes externas
+  
+📌 **Importante:**  
+O MSDP **não transporta tráfego multicast**.  
+Ele transporta apenas **informações de controle sobre fontes**, permitindo que o PIM-SM faça o encaminhamento corretamente.  
 
 ---
 
 📩 **Sinalização do Host (IGMP)**
 
-O **Host02 e Host03** enviam **um único IGMP Report**, informando que deseja participar do grupo multicast:
+Os **Host01, Host02, Host03 e Host04** utilizam **IGMP** para sinalizar interesse **no grupo multicast**, sem referência direta à origem:
 
 ```text
 IGMP Report (*, 239.1.1.1)
-```  
+```
 
-📩 **Sinalização do Host (IGMP)**
+Esse comportamento é consistente com o modelo **ASM (Any-Source Multicast)**, onde:  
 
-No **PIM BIDIR**, **não há INCLUDE (S,G)** nem qualquer tipo de **seleção de fonte**.  
-Os hosts simplesmente sinalizam interesse **no grupo multicast (G)**.
+- o host solicita o grupo (G)
+- o RP decide quais fontes são válidas
+- o MSDP permite que fontes de outros domínios sejam conhecidas
+  
+📌 **Resumo Conceitual**  
 
-> “Quero receber o grupo **239.1.1.1**.”
+- Hosts não escolhem fontes
+- Fontes são aprendidas via PIM Register (local) e **MSDP SA messages (remoto)**
+- O PIM-SM é responsável pelo encaminhamento
+- O MSDP atua exclusivamente no plano de controle
+- O receptor recebe tráfego de todas as fontes ativas do grupo, inclusive de outros domínios multicast
+
+---
+
+ALterar Daqui
 
 ---
 
