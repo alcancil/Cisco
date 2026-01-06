@@ -419,30 +419,38 @@ A figura abaixo representa a **topologia lógica multicast**, destacando:
 
 ### 🔧 Endereçamento e Funções
 
-| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                  |
-|-----------------|---------------|---------------------------|-------------------------------------------------------|
-| **R01**         | Loopback0     | 1.1.1.1 /32               | Identificação / Router-ID OSPF / RP (Domínio A)       |
-|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server — Gateway multicast                     |
-|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM-SM + OSPF                          |
-|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM-SM + OSPF                          |
-| **R02**         | Loopback0     | 2.2.2.2 /32               | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.2 /30              | Link com R01 — PIM-SM + OSPF                          |
-|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM-SM + OSPF                          |
-| **R03**         | Loopback0     | 3.3.3.3 /32               | Identificação / Router-ID OSPF / RP (Domínio B)       |
-|                 | Fa0/0         | 10.0.0.6 /30              | Link com R02 — PIM-SM + OSPF                          |
-|                 | Fa1/0         | 10.0.0.9 /30              | Link com R04 — PIM-SM + OSPF                          |
-| **R04**         | Loopback0     | 4.4.4.4 /32               | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM-SM + OSPF                          |
-|                 | Fa1/0         | 10.0.0.13 /30             | Link com R05 — PIM-SM + OSPF                          |
-|                 | Fa1/1         | 192.168.20.254 /24        | LAN do Host02 — Gateway multicast                     |
-| **R05**         | Loopback0     | 5.5.5.5 /32               | Identificação / Router-ID OSPF                        |
-|                 | Fa0/0         | 10.0.0.14 /30             | Link com R04 — PIM-SM + OSPF                          |
-|                 | Fa1/0         | 10.0.0.17 /30             | Link com R01 — PIM-SM + OSPF                          |
-|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                     |
-| **Server**      | Fa0/0         | 192.168.10.1 /24          | Fonte multicast (Domínio A)                           |
-| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast (Domínio B)                           |
-| **Host02**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast (IGMP (*,G))                       |
-| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast (IGMP (*,G))                       |
+| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                      |
+|-----------------|---------------|---------------------------|-----------------------------------------------------------|
+| **R01**         | Loopback0     | 1.1.1.1 /32               | Router-ID OSPF / RP do Domínio Multicast A                |
+|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server01 — Gateway multicast                       |
+|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM-SM + OSPF                              |
+|                 | Fa1/0         | 10.0.0.22 /30             | Link com R06 — PIM-SM + OSPF                              |
+| **R02**         | Loopback0     | 2.2.2.2 /32               | Router-ID OSPF                                            |
+|                 | Fa0/0         | 192.168.20.254 /24        | LAN do Host01 — Gateway multicast                         |
+|                 | Fa0/1         | 10.0.0.2 /30              | Link com R01 — PIM-SM + OSPF                              |
+|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM-SM + OSPF                              |
+| **R03**         | Loopback0     | 3.3.3.3 /32               | Router-ID OSPF                                            |
+|                 | Fa1/0         | 10.0.0.6 /30              | Link com R02 — PIM-SM + OSPF                              |
+|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                         |
+|                 | Fa0/0         | 10.0.0.9 /30              | Link com R04 — PIM-SM + OSPF                              |
+| **R04**         | Loopback0     | 4.4.4.4 /32               | Router-ID OSPF                                            |
+|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM-SM + OSPF                              |
+|                 | Fa1/0         | 192.168.40.254 /24        | LAN do Server02 — Gateway multicast                       |
+|                 | Fa0/1         | 10.0.0.13 /30             | Link com R05 — PIM-SM + OSPF                              |
+| **R05**         | Loopback0     | 5.5.5.5 /32               | Router-ID OSPF / RP do Domínio Multicast B                |
+|                 | Fa0/0         | 192.168.50.254 /24        | LAN do Host04 — Gateway multicast                         |
+|                 | Fa0/1         | 10.0.0.14 /30             | Link com R04 — PIM-SM + OSPF                              |
+|                 | Fa1/0         | 10.0.0.17 /30             | Link com R06 — PIM-SM + OSPF                              |
+| **R06**         | Loopback0     | 6.6.6.6 /32               | Router-ID OSPF                                            |
+|                 | Fa0/0         | 192.168.60.254 /24        | LAN do Host02 — Gateway multicast                         |
+|                 | Fa0/1         | 10.0.0.21 /30             | Link com R01 — PIM-SM + OSPF                              |
+|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM-SM + OSPF                              |
+| **Server01**    | Fa0/0         | 192.168.10.1 /24          | Fonte multicast — Domínio Multicast A                     |
+| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast — Domínio Multicast B                     |
+| **Host01**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast via IGMP (*,G)                         |
+| **Host02**      | Fa0/0         | 192.168.60.1 /24          | Receptor multicast via IGMP (*,G)                         |
+| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast via IGMP (*,G)                         |
+| **Host04**      | Fa0/0         | 192.168.50.1 /24          | Receptor multicast via IGMP (*,G)                         |
 
 ---
 
@@ -466,15 +474,16 @@ Neste laboratório, os grupos multicast utilizam o **modelo clássico do PIM Spa
 
 ### 🧭 Resumo da Lógica
 
-- O **Server01 (192.168.10.1)** atua como **fonte multicast** no **Domínio A**, enviando tráfego para o grupo **239.1.1.1**.
-- O **Server02 (192.168.40.1)** atua como **fonte multicast** no **Domínio B**, utilizando o mesmo grupo multicast.
-- O **Host01 (192.168.20.1)** inscreve-se no grupo multicast via **IGMP (*,G)**.
-- Os **Host02 (192.168.60.1), Host03 (192.168.30.1) e Host04 (192.168.50.1)** também participam do grupo multicast utilizando **IGMP (*,G)**.
-- Cada domínio multicast possui seu **Rendezvous Point (RP)** local.
-- Os RPs estabelecem **sessões MSDP**, permitindo a troca de informações sobre fontes multicast ativas.
-- O tráfego multicast segue os caminhos definidos pelo **PIM Sparse Mode**, com validação via **RPF**, baseada na tabela unicast do OSPF.
+- O **Server01 (192.168.10.1)** atua como **fonte multicast** no **Domínio Multicast A**, enviando tráfego para o grupo **239.1.1.1**.
+- O **Server02 (192.168.40.1)** atua como **fonte multicast** no **Domínio Multicast B**, utilizando o mesmo grupo multicast.
+- O **Host01 (192.168.20.1)** participa do domínio multicast por meio de **IGMP (*,G)**.
+- Os **Host02 (192.168.60.1)**, **Host03 (192.168.30.1)** e **Host04 (192.168.50.1)** também se inscrevem no grupo multicast utilizando **IGMP (*,G)**.
+- O **R01** atua como **Rendezvous Point (RP)** do **Domínio Multicast A**.
+- O **R05** atua como **Rendezvous Point (RP)** do **Domínio Multicast B**.
+- Os RPs estabelecem **sessões MSDP**, permitindo a **troca de informações sobre fontes multicast ativas** entre os domínios.
+- O tráfego multicast é encaminhado via **PIM Sparse Mode (PIM-SM)** dentro de cada domínio, com validação **RPF baseada na tabela unicast aprendida via OSPF**.
 
-Assim, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre fontes e receptores distribuídos na rede.
+Dessa forma, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast independentes**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre **fontes e receptores distribuídos**, sem a necessidade de um RP global.
 
 
 ---
