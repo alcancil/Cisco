@@ -26,6 +26,10 @@
     - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
     - [📡 Grupos Multicast no cenário com MSDP – resumo](#-grupos-multicast-no-cenário-com-msdp--resumo)
     - [🧭 Resumo da Lógica](#-resumo-da-lógica)
+  - [🧠 O que é um Domínio Multicast?](#-o-que-é-um-domínio-multicast)
+    - [🔹 Um grupo multicast pode existir em mais de um domínio?](#-um-grupo-multicast-pode-existir-em-mais-de-um-domínio)
+    - [🔹 O que acontece sem MSDP?](#-o-que-acontece-sem-msdp)
+    - [🔹 Onde o MSDP entra nesse modelo?](#-onde-o-msdp-entra-nesse-modelo)
     - [🧠 Decisão de Design: Dois Domínios Multicast e RPs Distribuídos](#-decisão-de-design-dois-domínios-multicast-e-rps-distribuídos)
       - [🔹 Por que dois domínios multicast?](#-por-que-dois-domínios-multicast)
       - [🔹 Justificativa da escolha dos RPs](#-justificativa-da-escolha-dos-rps)
@@ -493,6 +497,77 @@ Neste laboratório, os grupos multicast utilizam o **modelo clássico do PIM Spa
 - O tráfego multicast é encaminhado via **PIM Sparse Mode (PIM-SM)** dentro de cada domínio, com validação **RPF baseada na tabela unicast aprendida via OSPF**.
 
 Dessa forma, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast independentes**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre **fontes e receptores distribuídos**, sem a necessidade de um RP global.
+
+## 🧠 O que é um Domínio Multicast?
+
+Antes de avançar para a configuração do MSDP, é importante esclarecer um conceito fundamental que costuma gerar confusão: **o que exatamente é um domínio multicast**.
+
+Um **domínio multicast** não é definido por uma sub-rede, por uma área de roteamento ou por um trecho físico da topologia.  
+Na prática, um domínio multicast é composto por **todos os roteadores que compartilham a mesma visão de fontes multicast**, controlada por um **Rendezvous Point (RP)** comum.
+
+Em outras palavras, pertencem ao mesmo domínio multicast os roteadores que:
+
+- Utilizam o **mesmo RP** para um determinado conjunto de grupos multicast;
+- Constroem árvores multicast baseadas nesse RP;
+- Possuem conhecimento apenas das fontes aprendidas **localmente** dentro desse domínio.
+
+Cada domínio multicast opera de forma **independente**, mesmo que exista conectividade IP plena entre eles.
+
+---
+
+### 🔹 Um grupo multicast pode existir em mais de um domínio?
+
+Sim — e isso é **normal e esperado** em cenários reais.
+
+O **endereço do grupo multicast (G)**, como por exemplo **239.1.1.1**, é apenas um identificador lógico.  
+Ele **não pertence a um domínio específico**.
+
+Isso significa que:
+
+- O mesmo grupo multicast pode existir em **múltiplos domínios multicast**;
+- Cada domínio pode ter **suas próprias fontes** transmitindo para esse grupo;
+- Sem um mecanismo de interconexão, os domínios **não compartilham informações sobre essas fontes**.
+
+No contexto deste laboratório, tanto o **Domínio Multicast A** quanto o **Domínio Multicast B** utilizam o **mesmo grupo multicast**, porém com **RPs distintos** e **fontes independentes**.
+
+---
+
+### 🔹 O que acontece sem MSDP?
+
+Sem o MSDP:
+
+- Cada RP conhece apenas as fontes **do seu próprio domínio**;
+- Receptores de um domínio **não recebem tráfego** de fontes localizadas em outro;
+- O multicast funciona localmente, mas **não de forma inter-domínio**.
+
+Essa limitação não está relacionada ao PIM em si, mas à **ausência de troca de informações entre RPs**.
+
+---
+
+### 🔹 Onde o MSDP entra nesse modelo?
+
+O **Multicast Source Discovery Protocol (MSDP)** é o mecanismo que permite que **RPs de domínios distintos compartilhem informações sobre fontes multicast ativas**.
+
+Com o MSDP:
+
+- Os RPs trocam mensagens **Source-Active (SA)**;
+- Cada domínio passa a conhecer fontes ativas de outros domínios;
+- Os receptores podem receber tráfego multicast **independentemente do domínio onde a fonte está localizada**.
+
+O MSDP **não transporta tráfego multicast** e **não unifica os domínios**.  
+Ele atua exclusivamente no **plano de controle**, permitindo que o PIM-SM funcione de forma inter-domínio.
+
+---
+
+📌 **Resumo prático**
+
+- Domínio multicast = conjunto de roteadores controlados por um mesmo RP  
+- Um mesmo grupo multicast pode existir em vários domínios  
+- Sem MSDP, os domínios são isolados  
+- Com MSDP, os domínios compartilham informações sobre fontes  
+- O encaminhamento multicast continua sendo responsabilidade do PIM-SM  
+
+Essa separação de responsabilidades é a base para o funcionamento do multicast em ambientes corporativos de grande escala.
 
 ### 🧠 Decisão de Design: Dois Domínios Multicast e RPs Distribuídos
 
