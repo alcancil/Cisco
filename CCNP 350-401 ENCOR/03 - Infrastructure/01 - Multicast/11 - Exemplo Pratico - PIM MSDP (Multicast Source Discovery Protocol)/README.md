@@ -53,14 +53,13 @@
     - [📊 Tabela de Rotas Multicast (Estado Inicial)](#-tabela-de-rotas-multicast-estado-inicial)
     - [⚙️ Ativando o PIM Sparse Mode (PIM-SM)](#️-ativando-o-pim-sparse-mode-pim-sm)
     - [🔧 Onde o PIM Sparse Mode Deve Ser Ativado](#-onde-o-pim-sparse-mode-deve-ser-ativado)
-  - [🧩 Eleição do Designated Router (DR) no PIM-BIDIR](#-eleição-do-designated-router-dr-no-pim-bidir)
+  - [🧩 Eleição do Designated Router (DR) no PIM Sparse Mode](#-eleição-do-designated-router-dr-no-pim-sparse-mode)
     - [⚙️ Critérios de eleição do DR](#️-critérios-de-eleição-do-dr)
-  - [💬 Mensagens PIM Hello no PIM-BIDIR](#-mensagens-pim-hello-no-pim-bidir)
+  - [💬 Mensagens PIM Hello no PIM Sparse Mode](#-mensagens-pim-hello-no-pim-sparse-mode)
     - [⚙️ Funções principais das mensagens Hello](#️-funções-principais-das-mensagens-hello)
     - [🧩 Estrutura simplificada da mensagem PIM Hello](#-estrutura-simplificada-da-mensagem-pim-hello)
   - [🔍 Exemplo de log da eleição do DR](#-exemplo-de-log-da-eleição-do-dr)
-  - [🧭 Surgimento do Designated Forwarder (DF) no PIM-BIDIR](#-surgimento-do-designated-forwarder-df-no-pim-bidir)
-  - [📊 Comparação clara: DR × DF no PIM-BIDIR](#-comparação-clara-dr--df-no-pim-bidir)
+  - [🧭 Papel do DR no Contexto do MSDP](#-papel-do-dr-no-contexto-do-msdp)
   - [🧪 Identificação do Designated Router (DR) no Domínio PIM](#-identificação-do-designated-router-dr-no-domínio-pim)
   - [⚙️ Como o DR é eleito neste estágio](#️-como-o-dr-é-eleito-neste-estágio)
   - [🔍 Comandos para identificar o DR](#-comandos-para-identificar-o-dr)
@@ -910,12 +909,6 @@ O protocolo MSDP será o "elo" entre os domínios PIM-SM:
 | RPs (R01 e R05)          | Estabelecem a adjacência MSDP (TCP 639)           |
 | OSPF / BGP               | Base Unicast para o fechamento das sessões TCP    |
 
----
-
-Alterar Daqui
-
----
-
 ## ⚙️ Ativando o Roteamento Multicast
 
 O primeiro passo para qualquer ambiente multicast é habilitar o **roteamento multicast globalmente** em todos os roteadores que participarão dos domínios multicast.
@@ -1042,20 +1035,19 @@ Alterar Daqui
 
 ---
 
-## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
+## 🧩 Eleição do Designated Router (DR) no PIM Sparse Mode
 
-Mesmo no **PIM Bidirectional (PIM-BIDIR)**, o **Designated Router (DR)** continua existindo e sendo eleito em cada **LAN multicast com hosts**.
+No **PIM Sparse Mode (PIM-SM)**, o **Designated Router (DR)** é um elemento fundamental do funcionamento do multicast, especialmente em **LANs com hosts** (fontes e/ou receptores).
 
-O DR é o roteador responsável por representar aquela LAN dentro do domínio multicast, atuando como ponto de interconexão entre os **hosts IGMP** e a **árvore multicast (*,G)**.
+O **DR** é o roteador responsável por representar aquela LAN dentro do domínio multicast, atuando como ponto de interconexão entre os **hosts IGMP** e a infraestrutura **PIM-SM**.
 
-No PIM-BIDIR, o DR:
+No PIM-SM, o DR:
 
-- Recebe relatórios **IGMP (*,G)** dos hosts
-- Cria estado multicast **(*,G)** local
-- Encaminha o interesse do grupo em direção ao **Rendezvous Point (RP BIDIR)**
-- **Não interpreta pares (S,G)**
-- **Não envia mensagens PIM Register**
-- **Não constrói Shortest Path Tree (SPT)**
+- Recebe relatórios **IGMP (*,G)** dos hosts receptores
+- Encapsula tráfego multicast em **PIM Register** quando conectado a uma fonte
+- Envia **Register messages** em direção ao **Rendezvous Point (RP)** do domínio
+- Cria e mantém estados **(*,G)** e **(S,G)** conforme o fluxo multicast evolui
+- Participa do processo de **SPT Switching**, quando aplicável
 
 A eleição do DR ocorre automaticamente entre os roteadores PIM conectados à mesma LAN.
 
@@ -1068,7 +1060,7 @@ A eleição do DR ocorre automaticamente entre os roteadores PIM conectados à m
 
 ---
 
-## 💬 Mensagens PIM Hello no PIM-BIDIR
+## 💬 Mensagens PIM Hello no PIM Sparse Mode
 
 As mensagens **PIM Hello** são utilizadas para o estabelecimento e manutenção de vizinhanças PIM.  
 Elas são enviadas periodicamente ao grupo **224.0.0.13 (PIM Routers)** com **TTL 1**, garantindo que apenas roteadores na mesma LAN participem da vizinhança.
@@ -1078,9 +1070,9 @@ Essas mensagens são responsáveis por:
 - Descobrir roteadores PIM vizinhos
 - Negociar parâmetros operacionais
 - Eleger o **Designated Router (DR)** por segmento LAN
+- Manter o plano de controle multicast ativo
 
-No **PIM-BIDIR**, as mensagens Hello **não sinalizam fontes**, **não criam estados (S,G)** e **não iniciam SPTs**.  
-Elas mantêm exclusivamente o **plano de controle multicast**.
+No **PIM Sparse Mode**, as mensagens Hello **não transportam informações sobre fontes ou grupos**, mas são essenciais para o correto funcionamento do protocolo.
 
 ### ⚙️ Funções principais das mensagens Hello
 
@@ -1111,41 +1103,31 @@ Use o Wireshark com o filtro **`pim.type == 0`** para observar as mensagens PIM 
 ## 🔍 Exemplo de log da eleição do DR
 
 ```ios
-*Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
+*Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
 ```
+
+👉 **O roteador 192.168.10.254 foi eleito Designated Router na LAN conectada à interface FastEthernet0/0, passando a representar aquela rede no domínio multicast PIM-SM.**
+
+## 🧭 Papel do DR no Contexto do MSDP
+
+Em cenários com múltiplos domínios multicast interconectados via MSDP, o papel do DR **permanece estritamente local ao domínio PIM-SM**.  
   
-👉 O roteador **10.0.0.18** foi eleito Designated Router na interface FastEthernet1/0, passando **a representar aquela LAN no domínio multicast BIDIR.**  
+O DR:
+
+- Encapsula tráfego multicast das fontes locais em PIM Register
+- Entrega essas informações ao Rendezvous Point (RP) do domínio
+- Não participa diretamente do MSDP
   
-## 🧭 Surgimento do Designated Forwarder (DF) no PIM-BIDIR
-
-Além do **DR, o PIM-BIDIR** introduz um novo papel exclusivo: **o Designated Forwarder (DF)**.  
+Já o MSDP **opera exclusivamente entre os RPs**, trocando **mensagens Source-Active (SA)** para anunciar a existência de fontes multicast entre domínios distintos.  
   
-**O DF não substitui o DR.**  
-Eles coexistem e atuam em pontos diferentes da topologia, resolvendo problemas distintos.  
+💡 **Resumo conceitual importante:** 
+No modelo **PIM Sparse Mode + MSDP**, o **DR cuida da relação com hosts e fontes locais**, enquanto o **RP concentra o controle multicast do domínio e a troca de informações entre domínios via MSDP**.  
 
-O **Designated Forwarder (DF)** é responsável por controlar **o encaminhamento efetivo do tráfego multicast em cada enlace entre roteadores, evitando loops em uma árvore bidirecional (*,G)**.  
+---
 
-A eleição do DF:  
+Alterar Daqui
 
-- Ocorre por enlace, e não por LAN de hosts
-- É baseada no RPF em direção ao RP
-- Define qual roteador pode encaminhar tráfego multicast naquele link
-
-## 📊 Comparação clara: DR × DF no PIM-BIDIR
-
-| Característica              | Designated Router (DR)    | Designated Forwarder (DF)  |
-|-----------------------------|---------------------------|----------------------------|
-| Existe no PIM-BIDIR         | ✅ Sim                    | ✅ Sim                    |
-| Onde atua                   | LAN com hosts             | Enlaces entre roteadores   |
-| Interage com hosts          | ✅ Sim                    | ❌ Não                    |
-| Recebe IGMP                 | ✅ Sim                    | ❌ Não                    |
-| Tipo de estado multicast    | (*,G)                     | (*,G)                      |
-| Base da eleição             | Maior IP / prioridade     | RPF em direção ao RP       |
-| Encaminha tráfego multicast | ❌ Não (controle apenas)  | ✅ Sim                    |
-| Evita loops                 | ❌ Não                    | ✅ Sim                    |
-
-💡 **Resumo conceitual importante:**  
-No **PIM-BIDIR, o Designated Router (DR)** continua sendo o ponto de entrada da LAN multicast, enquanto o **Designated Forwarder (DF) é o mecanismo que garante encaminhamento bidirecional sem loops na árvore compartilhada (*,G)**.
+---
 
 ## 🧪 Identificação do Designated Router (DR) no Domínio PIM
 
