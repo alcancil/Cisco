@@ -1344,13 +1344,13 @@ Neste laboratório, serão configurados **dois RPs distintos**, criando **dois d
 
 ### 📍 Domínio Multicast 1
 
-- **RP:** R01  
-- **Endereço lógico:** Loopback0 — `1.1.1.1`
+- **RP:** R02  
+- **Endereço lógico:** Loopback0 — `2.2.2.2`
 
 ### 📍 Domínio Multicast 2
 
-- **RP:** R04  
-- **Endereço lógico:** Loopback0 — `4.4.4.4`
+- **RP:** R05  
+- **Endereço lógico:** Loopback0 — `5.5.5.5`
 
 Cada RP será responsável pelo controle multicast **apenas dos grupos associados ao seu domínio**.
 
@@ -1361,7 +1361,7 @@ Cada RP será responsável pelo controle multicast **apenas dos grupos associado
 ```ios
 R01(config)#interface loopback0
 R01(config-if)#ip pim sparse-mode
-R01(config)#ip pim rp-address 1.1.1.1
+R01(config)#ip pim rp-address 2.2.2.2
 ```
 
 ### 🔧 Configuração do RP no R04
@@ -1369,7 +1369,7 @@ R01(config)#ip pim rp-address 1.1.1.1
 ```ios
 R04(config)#interface loopback0
 R04(config-if)#ip pim sparse-mode
-R04(config)#ip pim rp-address 4.4.4.4
+R04(config)#ip pim rp-address 5.5.5.5
 ```
 
 ---
