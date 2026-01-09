@@ -72,12 +72,14 @@
   - [🔄 Transição para Multicast com Múltiplos Domínios (PIM-SM + MSDP)](#-transição-para-multicast-com-múltiplos-domínios-pim-sm--msdp)
     - [🎯 O que muda a partir da configuração dos RPs](#-o-que-muda-a-partir-da-configuração-dos-rps)
     - [🧭 Próximo passo: interconexão entre domínios](#-próximo-passo-interconexão-entre-domínios)
-    - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
-    - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
-    - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
-    - [📘 Referência ao padrão IETF (RFC)](#-referência-ao-padrão-ietf-rfc)
-  - [Escopo dos Grupos Multicast no Domínio PIM BIDIR](#escopo-dos-grupos-multicast-no-domínio-pim-bidir)
-    - [📋 Grupos Multicast Utilizados no Laboratório](#-grupos-multicast-utilizados-no-laboratório)
+    - [🧠 3️⃣ Designated Router (DR) no PIM Sparse Mode](#-3️⃣-designated-router-dr-no-pim-sparse-mode)
+    - [📊 Papel do DR no PIM Sparse Mode](#-papel-do-dr-no-pim-sparse-mode)
+  - [🧭 Introdução de Múltiplos RPs — Criação de Domínios Multicast](#-introdução-de-múltiplos-rps--criação-de-domínios-multicast)
+  - [🧩 4️⃣ Configuração dos Rendezvous Points (RPs)](#-4️⃣-configuração-dos-rendezvous-points-rps)
+    - [📍 Domínio Multicast 1](#-domínio-multicast-1)
+    - [📍 Domínio Multicast 2](#-domínio-multicast-2)
+    - [🔧 Configuração do RP no R01](#-configuração-do-rp-no-r01)
+    - [🔧 Configuração do RP no R04](#-configuração-do-rp-no-r04)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
     - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
@@ -1280,120 +1282,129 @@ Essa função não é realizada pelo PIM.
 
 ➡️ Para isso, será introduzido o **MSDP (Multicast Source Discovery Protocol)**, que opera **exclusivamente entre os RPs**, permitindo a troca de informações sobre fontes multicast ativas.
 
+### 🧠 3️⃣ Designated Router (DR) no PIM Sparse Mode
+
+Neste estágio do laboratório, o ambiente opera exclusivamente com **PIM Sparse Mode tradicional**, sem PIM BIDIR e sem MSDP configurado.
+
+Portanto, **existe apenas um papel de eleição relacionado ao PIM neste momento: o Designated Router (DR)**.
+
+🔹 **Designated Router (DR)**  
+
+- É eleito **por segmento LAN**
+- Interage diretamente com os **hosts IGMP**
+- Representa aquela LAN dentro do **domínio multicast**
+- É responsável por:
+  - Processar **IGMP Reports**
+  - Iniciar **PIM Join (*,G)** em direção ao RP
+- Sempre existe quando há mais de um roteador PIM na mesma LAN
+
+📌 **Importante:**  
+O conceito de **Designated Forwarder (DF)** **não existe** em PIM Sparse Mode tradicional.  
+O DF é exclusivo do **PIM Bidirectional**, que **não faz parte deste estágio do laboratório**.
+
+---
+
+### 📊 Papel do DR no PIM Sparse Mode
+
+| Característica         | DR (Designated Router) |
+|------------------------|------------------------|
+| Escopo                 | LAN local              |
+| Eleição                | Maior IP / DR Priority |
+| Interage com IGMP      | ✅ Sim                 |
+| Envia PIM Join         | ✅ Sim (*,G)           |
+| Relacionado ao RP      | ✅ Sim                 |
+| Existe fora do BIDIR   | ✅ Sim                 |
+| Encaminha tráfego      | ❌ Não diretamente     |
+
+O DR atua **exclusivamente no plano de controle**, iniciando a construção da árvore multicast em direção ao **Rendezvous Point (RP)**.
+
+---
+
+## 🧭 Introdução de Múltiplos RPs — Criação de Domínios Multicast
+
+A partir deste ponto, o laboratório deixa de operar com **um único domínio multicast** e passa a trabalhar com **múltiplos domínios**, cada um associado a um **Rendezvous Point distinto**.
+
+📌 **Conceito fundamental:**
+
+> Em PIM Sparse Mode, **cada RP define um domínio multicast lógico**.
+
+Isso significa que:
+
+- Fontes registram-se no **RP do seu domínio**
+- Receptores enviam joins para o **RP correspondente**
+- **Não existe compartilhamento de informações de fontes entre RPs** neste estágio
+
+⚠️ **Sem MSDP, os domínios são isolados.**
+
+---
+
+## 🧩 4️⃣ Configuração dos Rendezvous Points (RPs)
+
+Neste laboratório, serão configurados **dois RPs distintos**, criando **dois domínios multicast independentes**.
+
+### 📍 Domínio Multicast 1
+
+- **RP:** R01  
+- **Endereço lógico:** Loopback0 — `1.1.1.1`
+
+### 📍 Domínio Multicast 2
+
+- **RP:** R04  
+- **Endereço lógico:** Loopback0 — `4.4.4.4`
+
+Cada RP será responsável pelo controle multicast **apenas dos grupos associados ao seu domínio**.
+
+---
+
+### 🔧 Configuração do RP no R01
+
+```ios
+R01(config)#interface loopback0
+R01(config-if)#ip pim sparse-mode
+R01(config)#ip pim rp-address 1.1.1.1
+```
+
+### 🔧 Configuração do RP no R04
+
+```ios
+R04(config)#interface loopback0
+R04(config-if)#ip pim sparse-mode
+R04(config)#ip pim rp-address 4.4.4.4
+```
+
+---
+
+📌 **Observação Importante sobre Distribuição do RP**  
+
+Em ambientes reais, todos os roteadores do domínio multicast precisam conhecer todos os RPs, para que os **PIM Join (*,G)** sejam encaminhados corretamente.  
+Neste laboratório, essa associação será mantida manual e explícita, com fins exclusivamente didáticos.  
+Mecanismos automáticos como **Auto-RP ou BSR** não fazem parte do escopo deste cenário.  
+
+---
+
+🧠 **Situação Atual do Laboratório**
+
+Neste ponto do laboratório:
+
+- Existem dois domínios multicast distintos
+- Cada domínio possui seu próprio RP
+  
+O DR:
+  
+- Processa IGMP
+- Envia joins (*,G) ao RP correspondente
+- Não existe troca de informações entre os domínios
+- Uma fonte registrada em um RP não é conhecida pelo outro
+
+🚧 **Essa limitação é intencional.**  
+
+Ela será resolvida na próxima etapa com a introdução do MSDP (Multicast Source Discovery Protocol), permitindo a troca de informações de fontes entre RPs distintos.
 
 ---
 
 Alterar Daqui
 
 ---
-
-### 🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR
-  
-🔹 **Designated Router (DR)**  
-  
-- Eleito por LAN
-- Interage com hosts IGMP
-- Representa a LAN no domínio multicast
-- Sempre existe, independentemente do modo PIM
-  
-🔹 **Designated Forwarder (DF)**  
-  
-- Exclusivo do PIM BIDIR
-- Eleito por interface em direção ao RP
-- Decide qual roteador encaminha tráfego multicast para o RP
-- Evita loops e tráfego duplicado
-  
-📌 **Um roteador pode ser DR e DF simultaneamente, ou apenas um deles.**  
-
-### 📊 Comparação prática: DR x DF
-
-| Característica       | DR                     | DF                       |
-|----------------------|------------------------|--------------------------|
-| Escopo               | LAN                    | Interface rumo ao RP     |
-| Eleição              | Maior IP / DR Priority | Melhor RPF para o RP     |
-| Relacionado a IGMP   | ✅ Sim                | ❌ Não                   |
-| Relacionado ao RP    | ❌ Não                |  ✅ Sim                  |
-| Existe fora do BIDIR | ✅ Sim                | ❌ Não                   |
-| Função principal     | Representar hosts      | Encaminhar tráfego ao RP |
-
-### 📌 Nota sobre compatibilidade de IOS
-
-Neste laboratório é utilizado **Cisco IOS 12.4(15)T**, onde o PIM Bidirectional é habilitado **globalmente** via `ip pim bidir-enable`, seguindo o comportamento específico desta versão do IOS.  
-  
-Para o funcionamento correto, devemos habilitar o comando em todos os roteadores.  
-Logo após, vamos confirmar com o Whireshark. Vamos entrar em R01, na interface fastethernet0/0 e realizar a captura com o seguinte filtro:
-
-```whireshark
-pim.type == 0
-```
-
-![Whireshark](Imagens/Whireshark02.png)
-
-Agora podemos notar que aparce o campo: **Option 22: Bidirecional Capable** que confirma que BIDIR agora está ativo.
-
-### 📘 Referência ao padrão IETF (RFC)
-
-O comportamento descrito neste laboratório segue o padrão definido pela **[RFC 5015 — Bidirectional Protocol Independent Multicast (BIDIR-PIM)](https://www.rfc-editor.org/rfc/rfc5015.html)**, publicada pelo IETF.
-
-Essa RFC especifica o funcionamento do PIM Bidirectional, incluindo:
-
-- O uso exclusivo de árvores compartilhadas (*,G);
-- A ausência de estados (S,G) e de transição para SPT;
-- O papel permanente do Rendezvous Point (RP);
-- A introdução do **Designated Forwarder (DF)** como mecanismo de prevenção de loops e controle do fluxo multicast.
-
-As observações e validações realizadas neste laboratório estão alinhadas com o comportamento descrito na RFC, considerando também as particularidades de implementação do **Cisco IOS 12.4T**, onde o suporte ao BIDIR requer habilitação global.
-
-## Escopo dos Grupos Multicast no Domínio PIM BIDIR
-
-Neste laboratório, o RP foi configurado em modo BIDIR utilizando o comando:
-
-```plaintext
-ip pim rp-address 1.1.1.1 bidir
-```
-
-Esta configuração tem um impacto importante no escopo dos grupos multicast do ambiente.  
-
-⚠️ **Impacto do bidir no IOS 12.4T**  
-  
-Embora o **PIM BIDIR** seja conceitualmente aplicado por grupo multicast, a implementação do IOS 12.4T trata o comando bidir como um comportamento global.  
-  
-Como resultado:
-
-- Todos os grupos multicast definidos no laboratório passam a operar em modo BIDIR
-- Não existe associação seletiva de grupos via ACL quando o parâmetro bidir é utilizado
-- Todo o domínio multicast passa a utilizar exclusivamente árvores compartilhadas (*,G)
-  
-📌 Ou seja, ao ativar o RP em **modo BIDIR**, o roteador considera **implicitamente todos os grupos multicast como pertencentes ao domínio BIDIR**.  
-
-### 📋 Grupos Multicast Utilizados no Laboratório
-
-Para fins didáticos, os seguintes grupos multicast são utilizados neste ambiente:  
-  
-**239.1.1.1**  
-  
-(outros grupos podem existir conforme o cenário, e também serão tratados como BIDIR)  
-  
-Todos esses grupos:
-
-- Operam em modo PIM BIDIR
-- Não criam estados (S,G)
-- Não realizam transição para SPT
-  
-🎯 **Grupo Selecionado para Análise do Laboratório**  
-  
-Embora todos os grupos multicast estejam operando em modo BIDIR, este laboratório irá focar no grupo:  
-
-Grupo multicast: **239.1.1.1**  
-  
-Este grupo será utilizado para:
-
-- Geração de tráfego multicast
-- Observação da árvore (*,G)
-- Análise do papel do DF (Designated Forwarder)
-- Validação do comportamento many-to-many do PIM BIDIR
-  
-Os conceitos apresentados a seguir se aplicam igualmente a qualquer outro grupo multicast neste domínio.  
 
 ## Mudanças no Plano de Controle Multicast: SPT vs (*,G)
 
