@@ -69,14 +69,9 @@
     - [3️⃣ Confirmar a interface LAN envolvida](#3️⃣-confirmar-a-interface-lan-envolvida)
   - [✅ Conclusão deste estágio do laboratório](#-conclusão-deste-estágio-do-laboratório)
   - [🧭 Conexão com o próximo estágio](#-conexão-com-o-próximo-estágio)
-  - [🔄 Transição para PIM BIDIR (Bidirectional PIM)](#-transição-para-pim-bidir-bidirectional-pim)
-    - [🎯 Características fundamentais do PIM BIDIR](#-características-fundamentais-do-pim-bidir)
-    - [🧭 DR x DF — Comparação Conceitual](#-dr-x-df--comparação-conceitual)
-  - [📘 PIM BIDIR — Configuração do RP e Eleição do DF](#-pim-bidir--configuração-do-rp-e-eleição-do-df)
-    - [Introdução do papel DF (Designated Forwarder)](#introdução-do-papel-df-designated-forwarder)
-    - [🧩 1️⃣ Configurando o Rendezvous Point (RP) BIDIR](#-1️⃣-configurando-o-rendezvous-point-rp-bidir)
-    - [🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR](#-2️⃣-associando-grupos-multicast-ao-rp-em-modo-bidir)
-    - [📌 Nota Importante sobre a Configuração do RP](#-nota-importante-sobre-a-configuração-do-rp)
+  - [🔄 Transição para Multicast com Múltiplos Domínios (PIM-SM + MSDP)](#-transição-para-multicast-com-múltiplos-domínios-pim-sm--msdp)
+    - [🎯 O que muda a partir da configuração dos RPs](#-o-que-muda-a-partir-da-configuração-dos-rps)
+    - [🧭 Próximo passo: interconexão entre domínios](#-próximo-passo-interconexão-entre-domínios)
     - [🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR](#-3️⃣-dr-x-df--papéis-distintos-no-pim-bidir)
     - [📊 Comparação prática: DR x DF](#-comparação-prática-dr-x-df)
     - [📌 Nota sobre compatibilidade de IOS](#-nota-sobre-compatibilidade-de-ios)
@@ -1247,188 +1242,50 @@ Com o funcionamento do DR validado, o próximo passo do laboratório será:
 
 Este encadeamento reflete exatamente o que ocorre em ambientes enterprise reais, onde o controle multicast é construído de forma incremental e previsível.
 
+## 🔄 Transição para Multicast com Múltiplos Domínios (PIM-SM + MSDP)
+
+Até este ponto, o laboratório **não possuía domínios multicast definidos**.
+
+Embora o roteamento multicast (`ip multicast-routing`) e o **PIM Sparse Mode** já estivessem habilitados nas interfaces, **nenhum Rendezvous Point (RP) havia sido configurado**, o que significa que:
+
+- Não existia um domínio multicast funcional
+- Não havia árvores (*,G) construídas
+- O papel do PIM limitava-se à eleição de DRs e manutenção de vizinhança
+
+A definição de um **domínio multicast** ocorre somente a partir da configuração de um **RP**.
+
+---
+
+### 🎯 O que muda a partir da configuração dos RPs
+
+A partir da configuração de **dois RPs distintos**, o laboratório passa a ter:
+
+- **Dois domínios multicast independentes**
+- Cada domínio controlado por seu próprio RP
+- Fontes e receptores inicialmente limitados ao seu domínio local
+
+Essa separação é intencional e tem fins didáticos claros:  
+permitir a observação do comportamento multicast **entre domínios distintos**, sem fundi-los em um único domínio lógico.
+
+---
+
+### 🧭 Próximo passo: interconexão entre domínios
+
+Com os domínios multicast agora definidos, surge a necessidade de permitir que:
+
+- Fontes de um domínio sejam conhecidas por outro
+- O mesmo grupo multicast (G) possa ser utilizado em ambos os domínios
+
+Essa função não é realizada pelo PIM.
+
+➡️ Para isso, será introduzido o **MSDP (Multicast Source Discovery Protocol)**, que opera **exclusivamente entre os RPs**, permitindo a troca de informações sobre fontes multicast ativas.
+
+
 ---
 
 Alterar Daqui
 
 ---
-
-## 🔄 Transição para PIM BIDIR (Bidirectional PIM)
-
-Até este ponto, o laboratório operou com **PIM Sparse Mode tradicional** e **SSM**, onde o **Designated Router (DR)** é responsável por processar IGMP e iniciar os joins multicast.  
-  
-A partir de agora, o cenário será estendido para **PIM BIDIR**, um modelo projetado para ambientes **many-to-many**, no qual **múltiplas fontes e múltiplos receptores** coexistem de forma simultânea e dinâmica.  
-
----
-
-### 🎯 Características fundamentais do PIM BIDIR
-
-No **PIM BIDIR**:
-
-- O **Rendezvous Point (RP)** é **obrigatório**;
-- Não existem árvores (*S,G*) nem SPT;
-- Todo o tráfego flui por uma **árvore compartilhada (*,G*) bidirecional**;
-- Não há PIM Register;
-- O papel do **DR muda** e surge um novo conceito: o **Designated Forwarder (DF)**.
-
-⚠️ **Importante:**  
-Mesmo em PIM BIDIR, o **DR ainda existe**, pois ele é um conceito **por LAN** e relacionado ao **IGMP**.  
-Porém, **para o tráfego bidirecional em direção ao RP**, quem manda é o **DF**.  
-
----
-
-### 🧭 DR x DF — Comparação Conceitual
-
-| Função     | DR (Designated Router)        | DF (Designated Forwarder)        |
-|------------|-------------------------------|----------------------------------|
-| Existe em  | PIM-SM, SSM, BIDIR            | **Somente em PIM BIDIR**         |
-| Escopo     | LAN local                     | LAN local em relação ao RP       |
-| Eleição    | Maior prioridade / maior IP   | Métrica de caminho até o RP      |
-| Atua sobre | IGMP e joins                  | Encaminhamento de tráfego BIDIR  |
-| Usa RP     | Não (SSM) / parcialmente (SM) | **Sim (obrigatório)**            |
-
-👉 Em PIM BIDIR:
-
-- Pode existir **um DR e outro DF na mesma LAN**
-- Eles **não precisam ser o mesmo roteador**
-
----
-
-## 📘 PIM BIDIR — Configuração do RP e Eleição do DF
-
-🚦 **Transição do laboratório para PIM BIDIR**  
-
-A partir deste ponto, o laboratório passa a operar exclusivamente em **PIM Sparse Mode Bidirectional (PIM BIDIR).**  
-
-📌 **Características do PIM BIDIR:**
-
-- Modelo (*,G) — não existem entradas (S,G)
-- Uso obrigatório de Rendezvous Point (RP)
-- Não há PIM Register
-- Não há SPT
-
-### Introdução do papel DF (Designated Forwarder)
-
-DR e DF coexistem, com funções distintas
-
-👉 **Observação:** agora vamos entrar em todos os roteadores e ativar o protocolo **PIM** em **SPARSE-MODE** em todas as interface **loopback**:
-
-### 🧩 1️⃣ Configurando o Rendezvous Point (RP) BIDIR
-
-Neste laboratório, o R01 será o RP, utilizando a Loopback0 como endereço lógico.  
-
-📍 **Configuração da Loopback do RP**
-
-```ios
-R01(config)#int lo0
-R01(config-if)#ip pim sparse-mode
-R01(config-if)#
-*Mar  1 02:10:41.083: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
-R01(config-if)#
-```
-
-📌 **A ativação do PIM na loopback garante:**  
-
-- Participação correta no domínio multicast
-- Cálculo consistente de RPF
-- Eleição adequada do DF nos enlaces BIDIR
-
-### 🧩 2️⃣ Associando grupos multicast ao RP em modo BIDIR
-
-```ios
-R01(config)#ip pim rp-address 1.1.1.1 bidir
-```
-
-👉 **Observação:** aqui cabe uma pequena ressalva sobre o comando. Observe a saída:  
-
-```ios
-R01(config)#ip pim rp-address 1.1.1.1 ?
-  <1-99>       Access-list reference for group
-  <1300-1999>  Access-list reference for group (expanded range)
-  WORD         IP Named Standard Access list
-  override     Overrides dynamically learnt RP mappings
-  <cr>
-
-R01(config)#
-```
-
-Se analisarmos as opções na configuração do **RP BIDIR** podemos pensar que a palavra bidir é uma acl e que depois teremos que configurá-la.  
-Na realidade, por escolha de projeto, o **IOS** implementou a palava **bidir** como uma palavra *especial*.  
-no IOS clássico o bidir é implementado internamente como uma ACL implícita.
-Mesmo quando você não define nenhuma ACL, o IOS cria uma ACL lógica chamada bidir para representar:  
-  
-> “este RP é BIDIR para todos os grupos”
-  
-Por isso o comando mostra como ACL, mesmo não sendo uma ACL configurável por você.  
-  
-Quando você executa:
-
-```ios
-R01(config)#ip pim rp-address 1.1.1.1 bidir
-```
-
-Você está dizendo ao IOS:
-  
-> “Associe o RP 1.1.1.1 a todos os grupos multicast usando PIM Bidirectional”
-  
-No modelo interno do IOS, todo mapeamento RP ↔ grupo precisa estar ligado a um filtro de grupos.
-
-Para confirmar, podemos executar o comando e observar a saída:  
-
-```ios
-R01#show ip access-lists
-Standard IP access list bidir
-R01#
-```
-
-📌 **Importante:**
-
-A palavra-chave **bidir** ativa o comportamento **PIM BIDIR**  
-Sem ela, o domínio operaria como **PIM Sparse Mode tradicional**  
-
-Então o IOS já faz a associação do grupo somente onde temos o **RP configurado**. Observe a saída:
-
-```ios
-R01#show ip pim rp mapping
-PIM Group-to-RP Mappings
-
-Acl: bidir, Static
-    RP: 1.1.1.1 (?)
-```
-
-👉 **Observação:** O **(?)** significa apenas:
-
->“Este RP está associado a grupos BIDIR, mas o IOS não exibe o range porque ele não está vinculado a uma ACL explícita.”
-
-É possível também se configurar a ACL para escolher os grupos que vão fazer parte do BIDIR.  
-
-Então, vamos analisar o **RP** configurado em **R01** para termos certeza de que ficou correto:  
-
-```ios
-R01#show ip pim rp
-Group: 224.0.1.40, RP: 1.1.1.1, next RP-reachable in 00:01:27
-R01#
-```
-
-### 📌 Nota Importante sobre a Configuração do RP
-
-Neste laboratório, o RP (Rendezvous Point) foi configurado manualmente apenas no roteador R01 utilizando o comando:
-
-```plaintext
-ip pim rp-address 1.1.1.1 bidir
-```
-
-Em ambientes **PIM-SM e PIM Bidirectional, todos os roteadores participantes do domínio multicast precisam conhecer o RP**, pois os PIM Join do tipo (*,G) gerados a partir das mensagens IGMP dos clientes devem ser encaminhados até o RP para a correta construção do estado multicast.  
-  
-Caso apenas o RP conheça a si próprio, os roteadores intermediários não terão como encaminhar os PIM Join corretamente, o que inviabiliza o funcionamento adequado do multicast em um cenário real.  
-
-Neste laboratório, essa configuração foi mantida de forma simplificada e centralizada com fins exclusivamente didáticos. Em ambientes de produção, o RP deve ser configurado em todos os roteadores do domínio multicast ou distribuído por mecanismos como **Auto-RP ou BSR**.
-
-Este laboratório utiliza a configuração manual de RP com o objetivo de simplificar o entendimento do funcionamento do PIM Bidirectional e do papel do Rendezvous Point na construção do estado multicast `(*,G)`.  
-  
-Mecanismos de redundância e failover de RP, como os obtidos por meio de Auto-RP ou BSR, não fazem parte do escopo deste cenário. Em laboratórios anteriores, esses mecanismos já foram explorados, incluindo o uso de Candidate-RP e a reconvergência automática do domínio multicast em caso de falha do RP principal.  
-  
-Dessa forma, a ausência de eleição ou failover automático neste laboratório é uma decisão intencional, focada na clareza conceitual do PIM BIDIR com RP estático, e não uma limitação do protocolo ou da arquitetura multicast.  
 
 ### 🧠 3️⃣ DR x DF — Papéis distintos no PIM BIDIR
   
