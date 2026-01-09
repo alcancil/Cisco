@@ -60,15 +60,15 @@
     - [🧩 Estrutura simplificada da mensagem PIM Hello](#-estrutura-simplificada-da-mensagem-pim-hello)
   - [🔍 Exemplo de log da eleição do DR](#-exemplo-de-log-da-eleição-do-dr)
   - [🧭 Papel do DR no Contexto do MSDP](#-papel-do-dr-no-contexto-do-msdp)
-  - [🧪 Identificação do Designated Router (DR) no Domínio PIM](#-identificação-do-designated-router-dr-no-domínio-pim)
+  - [🧪 Identificação do Designated Router (DR) no Domínio PIM-SM](#-identificação-do-designated-router-dr-no-domínio-pim-sm)
   - [⚙️ Como o DR é eleito neste estágio](#️-como-o-dr-é-eleito-neste-estágio)
   - [🔍 Comandos para identificar o DR](#-comandos-para-identificar-o-dr)
-    - [0️⃣ Verificar em que interfaces o PIM está ativado](#0️⃣-verificar-em-que-interfaces-o-pim-está-ativado)
-    - [1️⃣ Verificar vizinhança PIM](#1️⃣-verificar-vizinhança-pim)
+    - [0️⃣ Verificar em quais interfaces o PIM está ativo](#0️⃣-verificar-em-quais-interfaces-o-pim-está-ativo)
+    - [1️⃣ Verificar a vizinhança PIM](#1️⃣-verificar-a-vizinhança-pim)
     - [2️⃣ Verificar logs de eleição do DR em tempo real](#2️⃣-verificar-logs-de-eleição-do-dr-em-tempo-real)
     - [3️⃣ Confirmar a interface LAN envolvida](#3️⃣-confirmar-a-interface-lan-envolvida)
-    - [🧠 Evidência via captura de pacotes (Wireshark)](#-evidência-via-captura-de-pacotes-wireshark)
-    - [✅ Conclusão deste estágio do laboratório](#-conclusão-deste-estágio-do-laboratório)
+  - [✅ Conclusão deste estágio do laboratório](#-conclusão-deste-estágio-do-laboratório)
+  - [🧭 Conexão com o próximo estágio](#-conexão-com-o-próximo-estágio)
   - [🔄 Transição para PIM BIDIR (Bidirectional PIM)](#-transição-para-pim-bidir-bidirectional-pim)
     - [🎯 Características fundamentais do PIM BIDIR](#-características-fundamentais-do-pim-bidir)
     - [🧭 DR x DF — Comparação Conceitual](#-dr-x-df--comparação-conceitual)
@@ -1117,39 +1117,33 @@ Já o MSDP **opera exclusivamente entre os RPs**, trocando **mensagens Source-Ac
 💡 **Resumo conceitual importante:** 
 No modelo **PIM Sparse Mode + MSDP**, o **DR cuida da relação com hosts e fontes locais**, enquanto o **RP concentra o controle multicast do domínio e a troca de informações entre domínios via MSDP**.  
 
----
+## 🧪 Identificação do Designated Router (DR) no Domínio PIM-SM
 
-Alterar Daqui
-
----
-
-## 🧪 Identificação do Designated Router (DR) no Domínio PIM
-
-Até este ponto do laboratório, **nenhuma configuração explícita de DR ou DF foi realizada**.  
-Foram aplicados apenas os comandos:
+Até este ponto do laboratório, **nenhuma configuração explícita de Designated Router (DR)** foi realizada.  
+Foram aplicados apenas os comandos básicos de multicast:
 
 - `ip multicast-routing`
-- `ip pim sparse-mode` nas interfaces
+- `ip pim sparse-mode` nas interfaces participantes
 
-Mesmo assim, o **Designated Router (DR)** já é automaticamente eleito em cada segmento LAN multicast.
+Mesmo assim, o **Designated Router (DR)** já é automaticamente eleito em cada **segmento LAN multicast**.
 
 Isso ocorre porque:
 
 - A **eleição do DR é implícita**
 - Baseia-se exclusivamente nas **mensagens PIM Hello**
-- Não depende de RP, SSM ou BIDIR configurado
+- Independe de RP, MSDP ou fontes multicast ativas
 
 ---
 
 ## ⚙️ Como o DR é eleito neste estágio
 
-Em qualquer LAN com dois ou mais roteadores PIM:
+Em qualquer LAN onde dois ou mais roteadores executam **PIM Sparse Mode**:
 
 1. Todos enviam **PIM Hello** para o grupo `224.0.0.13`
 2. Os Hellos carregam:
    - Endereço IP da interface
-   - DR Priority (default = 1)
-3. O roteador com o **maior IP ativo na LAN** é eleito **DR**
+   - DR Priority (padrão = 1)
+3. O roteador com o **maior endereço IP ativo na LAN** é eleito **Designated Router**
 
 📌 **Nenhum comando adicional é necessário.**
 
@@ -1157,7 +1151,7 @@ Em qualquer LAN com dois ou mais roteadores PIM:
 
 ## 🔍 Comandos para identificar o DR
 
-### 0️⃣ Verificar em que interfaces o PIM está ativado
+### 0️⃣ Verificar em quais interfaces o PIM está ativo
 
 ```ios
 R01#show ip pim interface
@@ -1170,12 +1164,12 @@ Address          Interface                Ver/   Nbr    Query  DR     DR
 R01#
 ```
 
-### 1️⃣ Verificar vizinhança PIM
+### 1️⃣ Verificar a vizinhança PIM
 
 ```ios
 R01#show ip pim neighbor
 PIM Neighbor Table
-Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+Mode: DR - Designated Router, N - Default DR Priority,
       S - State Refresh Capable
 Neighbor          Interface                Uptime/Expires    Ver   DR
 Address                                                            Prio/Mode
@@ -1183,6 +1177,8 @@ Address                                                            Prio/Mode
 10.0.0.17         FastEthernet1/0          00:05:29/00:01:40 v2    1 / S
 R01#
 ```
+
+👉 **Neste exemplo, o roteador 10.0.0.2 é o DR no enlace FastEthernet0/1.**  
 
 ### 2️⃣ Verificar logs de eleição do DR em tempo real
 
@@ -1195,16 +1191,7 @@ R01#terminal monitor
 ### 3️⃣ Confirmar a interface LAN envolvida
 
 ```ios
-R01#show ip pim neighbor
-PIM Neighbor Table
-Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
-      S - State Refresh Capable
-Neighbor          Interface                Uptime/Expires    Ver   DR
-Address                                                            Prio/Mode
-10.0.0.17         FastEthernet1/0          00:04:13/00:01:27 v2    1 / S
-10.0.0.2          FastEthernet0/1          00:03:54/00:01:15 v2    1 / DR S
-  
-R01#show ip int br
+R01#show ip int brief
 Interface                  IP-Address      OK? Method Status                Protocol
 FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
 FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
@@ -1213,56 +1200,58 @@ Loopback0                  1.1.1.1         YES NVRAM  up                    up
 R01#
 ```
 
-### 🧠 Evidência via captura de pacotes (Wireshark)
+🧠 **Evidência via captura de pacotes (Wireshark)**
 
-Vamos entrar em R01 e ativar a captura de pacotes na Interface **FastEthernet0/1** com o seguinte filtro:  
+Para observar a eleição do DR no plano de controle multicast, inicie uma captura na interface FastEthernet0/1 e utilize o filtro:  
 
 ```Whireshark
+
 pim.type == 0
+
 ```
 
-![Whireshark](Imagens/Whireshark01.png)
+Essa captura permite visualizar:
 
-### ✅ Conclusão deste estágio do laboratório
+- Mensagens PIM Hello
+- Parâmetros negociados
+- Presença de múltiplos roteadores PIM na mesma LAN
 
-- O DR já existe, mesmo sem configuração manual
+## ✅ Conclusão deste estágio do laboratório
+
+Neste ponto do laboratório:
+
+- O Designated Router (DR) já existe
 - A eleição ocorre automaticamente via PIM Hello
+- Nenhuma configuração manual de DR é necessária
 
-O DR é válido para:
+O DR é responsável por:
 
-- Receber mensagens IGMP
-- Representar a LAN no domínio multicast
-- Servir como base para os próximos passos (RP e DF)
-
+- Receber mensagens IGMP dos hosts
+- Representar a LAN no domínio PIM Sparse Mode
+- Encapsular tráfego multicast de fontes locais em PIM Register, quando aplicável
+- Enviar essas informações ao Rendezvous Point (RP) do domínio
+  
 🚧 **Importante:**
-Neste momento não existe DF, pois:
 
-- O RP BIDIR ainda não foi configurado
-- O DF só surge em cenários PIM-BIDIR, após a definição do RP
+- Não existe Designated Forwarder (DF) neste cenário
+- DF é exclusivo do PIM Bidirectional (BIDIR) e não se aplica ao PIM-SM
+- O laboratório, até aqui, opera exclusivamente com PIM Sparse Mode
 
-💡 **Resumo prático — DR no contexto atual do laboratório**
+## 🧭 Conexão com o próximo estágio
 
-Mesmo no SSM, quando há dois ou mais roteadores em uma mesma LAN (por exemplo, R1 e R2 ligados ao mesmo segmento onde está o Host01), um deles precisa atuar como **Designated Router (DR)**.
+Com o funcionamento do DR validado, o próximo passo do laboratório será:
 
-Isso evita que múltiplos roteadores processem relatórios IGMP e enviem **PIM Joins duplicados** para o mesmo grupo multicast.
+- Definir e configurar o Rendezvous Point (RP) em cada domínio multicast
+- Entender como o RP centraliza o controle multicast no PIM-SM
+- Introduzir o MSDP, permitindo a troca de informações de fontes entre múltiplos domínios multicast
 
-➡️ Portanto, neste estágio do laboratório:
+Este encadeamento reflete exatamente o que ocorre em ambientes enterprise reais, onde o controle multicast é construído de forma incremental e previsível.
 
-- O **DR existe e é eleito automaticamente**;
-- O critério de eleição permanece:
-  - maior **DR Priority** (se configurada)
-  - ou maior **endereço IP ativo na interface**;
-- A eleição ocorre por meio das **mensagens PIM Hello**;
-- No **SSM**, o DR:
-  - **não interage com RP**;
-  - **não envia PIM Register**;
-  - processa diretamente os **relatórios IGMPv2** e inicia **joins (S,G)** rumo à fonte.
+---
 
-🧭 **Conclusão deste estágio**
+Alterar Daqui
 
-- Até aqui, o laboratório opera com **DR**, não com DF.
-- O comportamento observado é consistente com **PIM Sparse Mode + SSM**.
-- A introdução de **DF só ocorre quando habilitarmos PIM BIDIR**, o que será feito a seguir.
+---
 
 ## 🔄 Transição para PIM BIDIR (Bidirectional PIM)
 
