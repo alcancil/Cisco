@@ -48,10 +48,11 @@
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
     - [🔁 Funcionamento Geral do MSDP](#-funcionamento-geral-do-msdp)
     - [🧱 No nosso laboratório](#-no-nosso-laboratório)
-  - [⚙️ Ativando o roteamento multicast](#️-ativando-o-roteamento-multicast)
-  - [⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)](#️-ativando-o-protocolo-pim-bidirectional-pim-bidir)
-    - [🔧 Configuração do PIM-BIDIR](#-configuração-do-pim-bidir)
-      - [Exemplo – Ativando o PIM nas interfaces do R01](#exemplo--ativando-o-pim-nas-interfaces-do-r01)
+  - [⚙️ Ativando o Roteamento Multicast](#️-ativando-o-roteamento-multicast)
+    - [✅ Verificação do Roteamento Multicast](#-verificação-do-roteamento-multicast)
+    - [📊 Tabela de Rotas Multicast (Estado Inicial)](#-tabela-de-rotas-multicast-estado-inicial)
+    - [⚙️ Ativando o PIM Sparse Mode (PIM-SM)](#️-ativando-o-pim-sparse-mode-pim-sm)
+    - [🔧 Onde o PIM Sparse Mode Deve Ser Ativado](#-onde-o-pim-sparse-mode-deve-ser-ativado)
   - [🧩 Eleição do Designated Router (DR) no PIM-BIDIR](#-eleição-do-designated-router-dr-no-pim-bidir)
     - [⚙️ Critérios de eleição do DR](#️-critérios-de-eleição-do-dr)
   - [💬 Mensagens PIM Hello no PIM-BIDIR](#-mensagens-pim-hello-no-pim-bidir)
@@ -915,19 +916,21 @@ Alterar Daqui
 
 ---
 
-## ⚙️ Ativando o roteamento multicast
+## ⚙️ Ativando o Roteamento Multicast
 
-O roteamento multicast deve ser ativado em todos os roteador em modo global com o comando:
+O primeiro passo para qualquer ambiente multicast é habilitar o **roteamento multicast globalmente** em todos os roteadores que participarão dos domínios multicast.
+
+Esse comando **não ativa nenhum protocolo multicast específico**, apenas habilita o plano de controle multicast no equipamento.
 
 ```ios
 R01(config)#ip multicast-routing
 ```
 
-✅ **Verificação do roteamento multicast**  
-  
-Para confirmar que o roteamento multicast está ativo:
+### ✅ Verificação do Roteamento Multicast
 
-```ios  
+Para confirmar que o roteamento multicast está ativo:  
+
+```ios
 R01#show ip multicast
 Multicast Routing: enabled
 Multicast Multipath: disabled
@@ -937,55 +940,63 @@ Multicast Fallback group mode: Sparse
 Multicast DVMRP Interoperability: disabled
 ```
 
-E a tabela de rotas multicast:
+Neste ponto, o roteador está pronto para operar multicast, mas ainda não participa de nenhum domínio multicast, pois nenhum protocolo PIM foi ativado.  
+
+### 📊 Tabela de Rotas Multicast (Estado Inicial)
+
+Antes da ativação do PIM, a tabela multicast contém apenas entradas de controle e grupos reservados, como:
 
 ```ios
 R01#show ip mroute
 IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+Flags: D - Dense, S - Sparse, s - SSM Group, C - Connected,
        L - Local, P - Pruned, R - RP-bit set, F - Register flag,
        T - SPT-bit set, J - Join SPT
 ...
 (*, 224.0.1.40), 00:12:34/00:02:25, RP 1.1.1.1, flags: BSR
-  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Bidir, 00:12:34/00:02:25
 ```
 
-💡 **Dica Importante:**
-Em um domínio PIM-BIDIR, somente **entradas (*,G) são criadas**.  
-Não existem **estados (S,G)**, nem comutação para **SPT**.  
-O **RP** atua como **referência lógica**, e o tráfego multicast flui de forma **bidirecional** ao longo da árvore compartilhada, garantindo **escalabilidade e simplicidade em ambientes many-to-many.**  
+💡 **Observação Importante**  
 
-A entrada **(*,224.0.1.40)** representa tráfego de controle do PIM e aparece independentemente de fontes ou receptores. Entradas **(,239.x.x.x)** só são criadas quando há interesse explícito via IGMP ou tráfego multicast ativo, especialmente em cenários PIM-BIDIR.  
+A entrada **(*,224.0.1.40)** representa tráfego de controle multicast utilizado por protocolos como **PIM e BSR.**  
+Ela aparece independentemente da existência de fontes ou receptores e não representa tráfego de aplicações multicast.  
+  
+Entradas para grupos como **239.x.x.x** só surgirão quando houver:
 
-## ⚙️ Ativando o protocolo PIM Bidirectional (PIM-BIDIR)
-
-Com o ambiente **unicast totalmente operacional** e os conceitos de **multicast many-to-many** já estabelecidos, é hora de ativar o **PIM Bidirectional (PIM-BIDIR)** nos roteadores do domínio multicast.
-
-Este modelo é indicado para cenários em que **múltiplas fontes e múltiplos receptores** participam simultaneamente de um mesmo grupo multicast, como em ambientes financeiros, colaboração em tempo real e aplicações distribuídas.
-
-Diferente do **PIM-SSM**, onde os receptores solicitam explicitamente pares **(S,G)** via **IGMPv3**, o **PIM-BIDIR** trabalha exclusivamente com **(*,G)** e utiliza um **Rendezvous Point (RP)** estável como ponto lógico central para o encaminhamento do tráfego.
-
-No BIDIR:
-
-- Não há construção de **Shortest Path Tree (SPT)**  
-- Não existem mensagens **PIM Register**
-- O tráfego flui **bidirecionalmente** em direção ao RP ao longo de uma **árvore compartilhada**
+- interesse explícito via IGMP
+- ou fontes multicast ativas no domínio
 
 ---
 
-### 🔧 Configuração do PIM-BIDIR
+### ⚙️ Ativando o PIM Sparse Mode (PIM-SM)
 
-O PIM deve ser habilitado em **todas as interfaces que transportarão tráfego multicast**, incluindo:
+Com a infraestrutura unicast totalmente funcional e o roteamento multicast habilitado, o próximo passo é ativar o **PIM Sparse Mode (PIM-SM)**.  
+  
+O PIM-SM é o modo adequado para cenários com:
 
-- LANs com **fontes e receptores**
-- Links **entre roteadores**
-- Interfaces envolvidas no caminho até o **RP**
+- múltiplos domínios multicast
+- RPs independentes por domínio
+- integração via MSDP
+- troca de informações de fontes (S,G)
+  
+Neste laboratório, cada domínio multicast opera de forma autônoma com seu Rendezvous Point (RP) local, enquanto o MSDP permite a troca de informações sobre fontes ativas entre os domínios.  
 
-> ⚠️ **Importante:** Para que o PIM-BIDIR funcione corretamente, o **RP deve estar previamente configurado como BIDIR** em todos os roteadores do domínio multicast.
+---
 
-#### Exemplo – Ativando o PIM nas interfaces do R01
+### 🔧 Onde o PIM Sparse Mode Deve Ser Ativado
+
+O PIM-SM deve ser habilitado em **todas as interfaces que transportam tráfego multicast**, incluindo:
+
+- LANs com fontes multicast
+- LANs com receptores (IGMP)
+- Links entre roteadores
+- Interfaces no caminho até o RP
+  
+> ⚠️ **Importante:**
+> O PIM Sparse Mode não funciona corretamente sem um RP configurado.  
+> O RP deve estar definido antes da ativação efetiva do multicast de aplicações.  
+
+🧪 **Exemplo – Ativando o PIM-SM nas Interfaces do R01**
 
 ```ios
 R01#show ip int br
@@ -998,28 +1009,38 @@ Loopback0                  1.1.1.1         YES NVRAM  up                    up
 R01#conf t
 Enter configuration commands, one per line.  End with CNTL/Z.
 
-R01(config)#int f0/0
+R01(config)#interface FastEthernet0/0
 R01(config-if)#ip pim sparse-mode
 *Mar  1 02:00:05.663: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 192.168.10.254 on interface FastEthernet0/0
 
-R01(config)#int f0/1
+R01(config)#interface FastEthernet0/1
 R01(config-if)#ip pim sparse-mode
 *Mar  1 02:00:20.615: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.1 on interface FastEthernet0/1
 
-R01(config)#int f1/0
+R01(config)#interface FastEthernet1/0
 R01(config-if)#ip pim sparse-mode
 *Mar  1 02:00:36.563: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 10.0.0.18 on interface FastEthernet1/0
 
-R01(config)#int lo0
+R01(config)#interface Loopback0
 R01(config-if)#ip pim sparse-mode
-*Mar  1 00:18:25.859: %PIM-5-DRCHG: DR change from neighbor 0.0.0.0 to 1.1.1.1 on interface Loopback0
 ```
 
-Após essa configuração, o roteador passa a participar do domínio multicast BIDIR, trocando mensagens **PIM Hello**, elegendo **Designated Routers (DR)** nas LANs e encaminhando tráfego multicast ao longo da **árvore compartilhada (*,G).**  
+Após essa configuração, o roteador passa a:
+
+- Trocar mensagens PIM Hello
+- Eleger Designated Routers (DR) nas LANs
+- Construir árvores (*,G) em direção ao RP
+- Registrar fontes multicast por meio de PIM Register
+- Preparar o ambiente para a troca de fontes via MSDP
   
-📌 **OBS**: Este procedimento deve ser repetido em todos os roteadores do domínio multicast (R01 a R05).  
-  
-⚠️ **Nota:** Embora o PIM BIDIR seja habilitado globalmente neste IOS apenas após o comando `ip pim bidir-enable`, a ativação inicial do ip pim sparse-mode é apresentada primeiro para manter a progressão conceitual do protocolo.
+📌 **Observação:**  
+Este procedimento deve ser repetido em todos os roteadores pertencentes a cada domínio multicast, ou seja, de **R01 a R06**.
+
+---
+
+Alterar Daqui
+
+---
 
 ## 🧩 Eleição do Designated Router (DR) no PIM-BIDIR
 
