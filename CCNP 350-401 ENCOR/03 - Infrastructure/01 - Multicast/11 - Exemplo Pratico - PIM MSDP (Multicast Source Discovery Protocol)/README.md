@@ -1029,12 +1029,6 @@ Após essa configuração, o roteador passa a:
 📌 **Observação:**  
 Este procedimento deve ser repetido em todos os roteadores pertencentes a cada domínio multicast, ou seja, de **R01 a R06**.
 
----
-
-Alterar Daqui
-
----
-
 ## 🧩 Eleição do Designated Router (DR) no PIM Sparse Mode
 
 No **PIM Sparse Mode (PIM-SM)**, o **Designated Router (DR)** é um elemento fundamental do funcionamento do multicast, especialmente em **LANs com hosts** (fontes e/ou receptores).
