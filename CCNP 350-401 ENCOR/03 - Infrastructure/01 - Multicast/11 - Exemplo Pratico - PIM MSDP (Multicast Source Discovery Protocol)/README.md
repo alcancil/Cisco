@@ -89,6 +89,14 @@
     - [📋 Interfaces configuradas com IGMP Join](#-interfaces-configuradas-com-igmp-join)
     - [Resultados esperados:](#resultados-esperados)
     - [🎯 Objetivo Didático do Passo](#-objetivo-didático-do-passo)
+  - [⚠️ Observação Importante — Log `%MROUTE-3-NO_PIM_NBR` durante a convergência](#️-observação-importante--log-mroute-3-no_pim_nbr-durante-a-convergência)
+  - [🧠 Interpretação correta do log](#-interpretação-correta-do-log)
+  - [🎯 Ponto didático essencial](#-ponto-didático-essencial)
+  - [⚠️ Observação Importante2 — Log `%PIM-6-INVALID_RP_JOIN`](#️-observação-importante2--log-pim-6-invalid_rp_join)
+  - [🧠 O que esse log realmente significa](#-o-que-esse-log-realmente-significa)
+    - [🔀 Por que o log aparece em um roteador e não em outro?](#-por-que-o-log-aparece-em-um-roteador-e-não-em-outro)
+  - [🎯 Ponto didático fundamental](#-ponto-didático-fundamental)
+    - [Exemplo no nosso Laboratório](#exemplo-no-nosso-laboratório)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
     - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
@@ -1477,7 +1485,7 @@ O comando deve ser aplicado **nas interfaces conectadas às redes de hosts/recep
 |----------|------------------|--------------------------------|
 | R02      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
 | R06      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
-| R03      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| R03      | FastEthernet0/1  | `ip igmp join-group 239.1.1.1` |
 | R05      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
 
 Essas interfaces representam os pontos onde existem receptores multicast nos dois domínios.
@@ -1487,7 +1495,7 @@ Essas interfaces representam os pontos onde existem receptores multicast nos doi
 Com os joins IGMP ativos, gere tráfego multicast somente no Domínio Multicast A, a partir da fonte correspondente (SERVER do domínio A), utilizando o método já adotado no laboratório (ex.: ping multicast).  
 
 ```ios
-
+ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0
 ```
 
 🔍 **Verificações Obrigatórias (Pré-MSDP)**  
@@ -1523,6 +1531,163 @@ Este passo comprova, de forma prática, que:
 - O isolamento multicast é o comportamento esperado e correto por design
   
 Somente após essa validação é seguro avançar para a configuração do MSDP, garantindo clareza conceitual e evitando interpretações incorretas durante a análise do laboratório.  
+
+## ⚠️ Observação Importante — Log `%MROUTE-3-NO_PIM_NBR` durante a convergência
+
+Durante a validação do isolamento entre os domínios multicast (pré-MSDP), pode ser observado, em alguns roteadores, o seguinte log:
+
+```ios
+*Mar  1 00:00:07.991: %MROUTE-3-NO_PIM_NBR: There is no PIM neighbor on this IDB: FastEthernet1/0 -Process= "PIM Process"
+```
+
+## 🧠 Interpretação correta do log
+
+Este comportamento não indica erro de configuração e pode ou não ocorrer, dependendo da ordem e do tempo de inicialização dos roteadores no laboratório.  
+  
+O log ocorre quando:
+
+- Um evento multicast (IGMP Join ou PIM Join) é processado;
+- O **plano de controle PIM** já iniciou a troca de mensagens Hello;
+- Porém, **o plano de dados multicast ainda não possui um vizinho PIM plenamente válido** naquele exato instante.
+  
+Mesmo que o comando show ip pim neighbor exiba vizinhos ativos, o encaminhamento multicast (MROUTE) pode ainda não estar completamente convergido.  
+
+## 🎯 Ponto didático essencial
+
+- O **PIM Hello** estabelece vizinhança no **plano de controle**;
+- O **MROUTE depende de RPF**, RP válido e estado multicast coerente;
+- Durante a convergência inicial, pode existir um descompasso temporário entre esses planos.
+  
+📌 **Após a estabilização da vizinhança PIM e do estado multicast, o log não volta a aparecer e não afeta o funcionamento do laboratório.**
+  
+Este comportamento é esperado em ambientes reais e laboratoriais, especialmente em cenários com:
+
+- Múltiplos domínios multicast
+- RPs distintos
+- Inicialização simultânea dos roteadores
+- Configuração pré-MSDP
+
+## ⚠️ Observação Importante2 — Log `%PIM-6-INVALID_RP_JOIN`
+
+Durante a validação do isolamento entre os domínios multicast (pré-MSDP), pode ser observado o seguinte log em alguns roteadores:
+
+```ios
+*Mar  1 03:08:41.807: %PIM-6-INVALID_RP_JOIN: Received (*, 239.1.1.1) Join from 10.0.0.6 for invalid RP 5.5.5.5
+```
+
+## 🧠 O que esse log realmente significa
+
+Este log não indica erro de configuração e é esperado em um cenário com múltiplos domínios multicast e RPs distintos.  
+  
+Ele indica que:
+
+- Um **PIM Join (*,G)* foi recebido;
+- O Join referencia um *RP diferente daquele configurado localmente**;
+- O roteador **descarta corretamente esse Join** por ele não pertencer ao seu domínio multicast.
+
+📌 Em outras palavras:  
+  
+> “Recebi um Join para o grupo 239.1.1.1, mas ele aponta para um RP que não faz parte do meu domínio multicast.”
+
+### 🔀 Por que o log aparece em um roteador e não em outro?
+
+- Esse comportamento não depende do domínio multicast, e sim do caminho que o PIM Join percorre na topologia.
+- O PIM Join sempre segue o caminho RPF em direção ao RP de origem
+- Apenas os roteadores no caminho desse Join verão o log
+- Roteadores fora desse caminho não recebem o Join e, portanto, não geram o log
+
+📌 **Isso explica por que:**  
+
+- R02 pode exibir o log;
+- R03, R05 ou R06 podem não exibir nada;
+- O comportamento varia conforme a topologia e o fluxo de RPF.
+  
+🔎 **Como validar isso no CLI (recomendado neste ponto do laboratório)**
+
+Use os comandos abaixo para comprovar o caminho lógico do Join:
+
+```ios
+show ip route 5.5.5.5
+```
+
+> Verifica para onde o roteador encaminharia tráfego em direção ao RP remoto.
+
+```ios
+show ip pim rp
+```
+
+> Confirma qual RP é válido localmente naquele domínio.
+
+```ios
+show ip mroute 239.1.1.1
+```
+
+> Mostra se existe (ou não) estado multicast criado para o grupo.
+
+## 🎯 Ponto didático fundamental
+
+- O log prova que os domínios multicast estão isolados
+- O roteador recebe, analisa e descarta corretamente um Join inválido
+- Não há vazamento de multicast entre os domínios
+- Este comportamento é pré-requisito para o funcionamento correto do MSDP
+
+📌 **Se esse log não aparecesse, isso sim indicaria um problema de isolamento.**
+
+### Exemplo no nosso Laboratório
+
+Nesse lbratório, o log `*Mar  1 03:36:22.235: %PIM-6-INVALID_RP_JOIN: Received (*, 224.0.1.40) Join from 10.0.0.6 for invalid RP 5.5.5.5` apareceu em R02. Então vamos validar o log em R02.
+
+```ios
+R02#
+*Mar  1 03:35:17.323: %PIM-6-INVALID_RP_JOIN: Received (*, 239.1.1.1) Join from 10.0.0.6 for invalid RP 5.5.5.5
+R02#
+*Mar  1 03:36:22.235: %PIM-6-INVALID_RP_JOIN: Received (*, 224.0.1.40) Join from 10.0.0.6 for invalid RP 5.5.5.5
+R02#$OIN: Received (*, 224.0.1.40) Join from 10.0.0.6 for invalid RP 5.5.5.5
+
+R02#show ip route 5.5.5.5
+Routing entry for 5.5.5.5/32
+  Known via "ospf 100", distance 110, metric 13, type intra area
+  Last update from 10.0.0.1 on FastEthernet0/1, 03:39:50 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.1, from 5.5.5.5, 03:39:50 ago, via FastEthernet0/1
+      Route metric is 13, traffic share count is 1
+
+R02#show ip route 5.5.5.5
+Routing entry for 5.5.5.5/32
+  Known via "ospf 100", distance 110, metric 13, type intra area
+  Last update from 10.0.0.1 on FastEthernet0/1, 03:40:08 ago
+  Routing Descriptor Blocks:
+  * 10.0.0.1, from 5.5.5.5, 03:40:08 ago, via FastEthernet0/1
+      Route metric is 13, traffic share count is 1
+
+R02#
+
+R02#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 03:42:08/00:02:49, RP 2.2.2.2, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 03:41:32/00:02:49
+    FastEthernet0/0, Forward/Sparse, 03:42:08/00:02:03
+
+R02#
+*Mar  1 03:42:15.211: %PIM-6-INVALID_RP_JOIN: Received (*, 224.0.1.40) Join from 10.0.0.6 for invalid RP 5.5.5.5
+R02#show ip pim rp
+Group: 239.1.1.1, RP: 2.2.2.2, next RP-reachable in 00:01:02
+Group: 224.0.1.40, RP: 2.2.2.2, next RP-reachable in 00:01:02
+R02#
+```
 
 ---
 
