@@ -80,6 +80,10 @@
     - [📍 Domínio Multicast 2](#-domínio-multicast-2)
     - [🔧 Configuração do RP no R01](#-configuração-do-rp-no-r01)
     - [🔧 Configuração do RP no R04](#-configuração-do-rp-no-r04)
+  - [📍 Definição dos RPs por Domínio Multicast](#-definição-dos-rps-por-domínio-multicast)
+    - [🟦 Domínio Multicast A](#-domínio-multicast-a)
+    - [🟩 Domínio Multicast B](#-domínio-multicast-b)
+    - [📋 Associação de RPs nos roteadores](#-associação-de-rps-nos-roteadores)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
     - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
@@ -431,11 +435,11 @@ A figura abaixo representa a **topologia lógica multicast**, destacando:
 
 | **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                      |
 |-----------------|---------------|---------------------------|-----------------------------------------------------------|
-| **R01**         | Loopback0     | 1.1.1.1 /32               | Router-ID OSPF / RP do Domínio Multicast A                |
+| **R01**         | Loopback0     | 1.1.1.1 /32               | Router-ID OSPF                                            |
 |                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server01 — Gateway multicast                       |
 |                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM-SM + OSPF                              |
 |                 | Fa1/0         | 10.0.0.22 /30             | Link com R06 — PIM-SM + OSPF                              |
-| **R02**         | Loopback0     | 2.2.2.2 /32               | Router-ID OSPF                                            |
+| **R02**         | Loopback0     | 2.2.2.2 /32               | Router-ID OSPF / RP do Domínio Multicast A                |
 |                 | Fa0/0         | 192.168.20.254 /24        | LAN do Host01 — Gateway multicast                         |
 |                 | Fa0/1         | 10.0.0.2 /30              | Link com R01 — PIM-SM + OSPF                              |
 |                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM-SM + OSPF                              |
@@ -863,8 +867,8 @@ Para validar a interoperabilidade, as fontes estão isoladas em domínios distin
 
 | Fonte    | Gateway (DR)   | Domínio Multicast | Grupo Multicast  |
 |----------|----------------|-------------------|------------------|
-| SERVER01 | R03            | **Domínio A**     | 239.1.1.1        |
-| SERVER02 | R02            | **Domínio B**     | 239.1.1.1        |
+| SERVER01 | R01            | **Domínio A**     | 239.1.1.1        |
+| SERVER02 | R04            | **Domínio B**     | 239.1.1.1        |
 
 **Comportamento esperado:** Quando os receptores ingressarem no grupo, o RP local consultará o seu **SA-Cache**. Se houver um Peer MSDP ativo, ele aprenderá a origem remota. A verificação via `show ip mroute` exibirá entradas **(S,G)**, confirmando que o tráfego é roteado pela árvore de caminho mais curto (SPT) entre os domínios.
 
@@ -1379,6 +1383,42 @@ R04(config)#ip pim rp-address 5.5.5.5
 Em ambientes reais, todos os roteadores do domínio multicast precisam conhecer todos os RPs, para que os **PIM Join (*,G)** sejam encaminhados corretamente.  
 Neste laboratório, essa associação será mantida manual e explícita, com fins exclusivamente didáticos.  
 Mecanismos automáticos como **Auto-RP ou BSR** não fazem parte do escopo deste cenário.  
+
+## 📍 Definição dos RPs por Domínio Multicast
+
+Antes de interligar os domínios multicast utilizando MSDP, é fundamental garantir que cada roteador pertença **explicitamente a apenas um domínio multicast**.
+
+Neste laboratório, cada domínio é definido pelo **Rendezvous Point (RP)** conhecido pelos roteadores que o compõem.
+
+### 🟦 Domínio Multicast A
+
+- RP: **R02 (2.2.2.2)**
+- Roteadores participantes: **R01, R02, R06**
+
+### 🟩 Domínio Multicast B
+
+- RP: **R05 (5.5.5.5)**
+- Roteadores participantes: **R03, R04, R05**
+
+### 📋 Associação de RPs nos roteadores
+
+| Roteador | Domínio Multicast | Comando configurado              |
+|----------|-------------------|----------------------------------|
+| R01      | Domínio A         | `ip pim rp-address 2.2.2.2`      |
+| R02      | Domínio A (RP)    | `ip pim rp-address 2.2.2.2`      |
+| R06      | Domínio A         | `ip pim rp-address 2.2.2.2`      |
+| R03      | Domínio B         | `ip pim rp-address 5.5.5.5`      |
+| R04      | Domínio B         | `ip pim rp-address 5.5.5.5`      |
+| R05      | Domínio B (RP)    | `ip pim rp-address 5.5.5.5`      |
+
+Neste ponto do laboratório, os domínios multicast **ainda são completamente independentes**.  
+  
+Nenhum tráfego multicast atravessa entre eles, mesmo que:
+
+- O grupo multicast seja o mesmo
+- O endereço de origem seja idêntico
+
+A interligação entre os domínios será realizada **exclusivamente** por meio do **MSDP**, no próximo passo do laboratório.
 
 ---
 
