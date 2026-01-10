@@ -84,6 +84,11 @@
     - [🟦 Domínio Multicast A](#-domínio-multicast-a)
     - [🟩 Domínio Multicast B](#-domínio-multicast-b)
     - [📋 Associação de RPs nos roteadores](#-associação-de-rps-nos-roteadores)
+  - [Validação do Isolamento entre Domínios Multicast (Pré-MSDP)](#validação-do-isolamento-entre-domínios-multicast-pré-msdp)
+    - [📌 Preparação: Simulação de Receptores via IGMP](#-preparação-simulação-de-receptores-via-igmp)
+    - [📋 Interfaces configuradas com IGMP Join](#-interfaces-configuradas-com-igmp-join)
+    - [Resultados esperados:](#resultados-esperados)
+    - [🎯 Objetivo Didático do Passo](#-objetivo-didático-do-passo)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
     - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
@@ -1439,6 +1444,85 @@ O DR:
 🚧 **Essa limitação é intencional.**  
 
 Ela será resolvida na próxima etapa com a introdução do MSDP (Multicast Source Discovery Protocol), permitindo a troca de informações de fontes entre RPs distintos.
+
+## Validação do Isolamento entre Domínios Multicast (Pré-MSDP)
+
+Antes de qualquer configuração de **MSDP**, é fundamental comprovar que os **domínios multicast estão totalmente isolados** entre si.  
+Neste ponto do laboratório, **ainda não existe troca de informações de fontes multicast entre os RPs**, portanto:
+
+- O **Domínio Multicast A** deve aprender **apenas** fontes locais ao seu domínio
+- O **Domínio Multicast B** deve aprender **apenas** fontes locais ao seu domínio
+- Nenhum RP deve ter conhecimento de fontes pertencentes ao outro domínio
+
+Este passo é **obrigatório** para validar que o comportamento observado após o MSDP será, de fato, resultado da interligação entre domínios — e não de uma configuração incorreta prévia.
+
+---
+
+### 📌 Preparação: Simulação de Receptores via IGMP
+
+Para gerar estado multicast no domínio e permitir a criação das árvores (*,G), é necessário simular a presença de **receptores multicast**.  
+Neste laboratório, isso será feito diretamente nos roteadores de acesso, utilizando o comando:
+
+```ios
+ip igmp join-group 239.1.1.1
+```
+
+O comando deve ser aplicado **nas interfaces conectadas às redes de hosts/receptores**, conforme a topologia definida.  
+
+---
+
+### 📋 Interfaces configuradas com IGMP Join
+
+| Roteador | Interface        | Comando                        |
+|----------|------------------|--------------------------------|
+| R02      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| R06      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| R03      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| R05      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+
+Essas interfaces representam os pontos onde existem receptores multicast nos dois domínios.
+
+🔎 **Geração de Tráfego Multicast**  
+  
+Com os joins IGMP ativos, gere tráfego multicast somente no Domínio Multicast A, a partir da fonte correspondente (SERVER do domínio A), utilizando o método já adotado no laboratório (ex.: ping multicast).  
+
+```ios
+
+```
+
+🔍 **Verificações Obrigatórias (Pré-MSDP)**  
+
+Execute os comandos abaixo nos roteadores e, principalmente, nos RPs:  
+
+```ios
+show ip mroute
+show ip pim rp
+```
+
+### Resultados esperados:
+
+O **RP 2.2.2.2 (Domínio A)**:
+
+- Aprende as fontes multicast do Domínio A
+- Cria entradas (*,G) para o grupo 239.1.1.1
+  
+O **RP 5.5.5.5 (Domínio B)**:
+
+- Não aprende nenhuma fonte do Domínio A
+- Não cria estado multicast relacionado ao grupo gerado no Domínio A
+  
+Da mesma forma, ao repetir o teste no Domínio B, o Domínio A não deve apresentar qualquer estado multicast relacionado às fontes do Domínio B.  
+
+### 🎯 Objetivo Didático do Passo
+
+Este passo comprova, de forma prática, que:
+
+- Rendezvous Point não é um conceito global
+- Cada RP define o limite lógico de um domínio multicast
+- Sem MSDP, não existe troca de informações de fontes entre domínios
+- O isolamento multicast é o comportamento esperado e correto por design
+  
+Somente após essa validação é seguro avançar para a configuração do MSDP, garantindo clareza conceitual e evitando interpretações incorretas durante a análise do laboratório.  
 
 ---
 
