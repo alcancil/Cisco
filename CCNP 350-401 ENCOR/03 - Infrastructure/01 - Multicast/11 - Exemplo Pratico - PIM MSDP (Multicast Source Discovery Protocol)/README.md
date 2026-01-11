@@ -97,6 +97,12 @@
     - [🔀 Por que o log aparece em um roteador e não em outro?](#-por-que-o-log-aparece-em-um-roteador-e-não-em-outro)
   - [🎯 Ponto didático fundamental](#-ponto-didático-fundamental)
     - [Exemplo no nosso Laboratório](#exemplo-no-nosso-laboratório)
+  - [1️⃣ Validação do Tráfego Multicast por Domínio (Pré-MSDP)](#1️⃣-validação-do-tráfego-multicast-por-domínio-pré-msdp)
+  - [2️⃣ Geração de Tráfego Multicast no Domínio A](#2️⃣-geração-de-tráfego-multicast-no-domínio-a)
+  - [3️⃣ Validação da Recepção nos Receptores do Domínio A](#3️⃣-validação-da-recepção-nos-receptores-do-domínio-a)
+  - [4️⃣ Confirmação do Isolamento do Domínio B](#4️⃣-confirmação-do-isolamento-do-domínio-b)
+  - [5️⃣ Análise via Captura de Pacotes (Wireshark)](#5️⃣-análise-via-captura-de-pacotes-wireshark)
+  - [6️⃣ Conclusão do Estágio Pré-MSDP](#6️⃣-conclusão-do-estágio-pré-msdp)
   - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
     - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
     - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
@@ -1487,6 +1493,10 @@ O comando deve ser aplicado **nas interfaces conectadas às redes de hosts/recep
 | R06      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
 | R03      | FastEthernet0/1  | `ip igmp join-group 239.1.1.1` |
 | R05      | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| Host01   | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| Host02   | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| Host03   | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
+| Host04   | FastEthernet0/0  | `ip igmp join-group 239.1.1.1` |
 
 Essas interfaces representam os pontos onde existem receptores multicast nos dois domínios.
 
@@ -1688,6 +1698,219 @@ Group: 239.1.1.1, RP: 2.2.2.2, next RP-reachable in 00:01:02
 Group: 224.0.1.40, RP: 2.2.2.2, next RP-reachable in 00:01:02
 R02#
 ```
+
+## 1️⃣ Validação do Tráfego Multicast por Domínio (Pré-MSDP)
+
+Até este ponto, todo o laboratório foi construído para validar **o plano de controle multicast**, garantindo que:
+
+- O roteamento unicast está funcional
+- O PIM Sparse Mode está ativo
+- Os domínios multicast **A** e **B** estão corretamente isolados por seus respectivos RPs
+- Os receptores já sinalizaram interesse no grupo multicast via IGMP
+
+Neste estágio, **ainda não existe MSDP configurado**, portanto **não há troca de informações entre domínios multicast**.
+
+O próximo passo é validar o **plano de dados multicast**, gerando tráfego real e observando seu comportamento.
+
+---
+
+## 2️⃣ Geração de Tráfego Multicast no Domínio A
+
+Vamos iniciar a geração de tráfego multicast **somente no Domínio Multicast A**, utilizando o grupo:
+
+Grupo multicast: **239.1.1.1**
+
+A geração do tráfego pode ser feita a partir da fonte localizada no Domínio A, por exemplo:
+
+```plaintext
+ping 239.1.1.1 source f0/0 repeat 100
+```
+
+📌 **Importante:**  
+Neste momento, espera-se que apenas os receptores pertencentes ao Domínio A recebam o tráfego multicast.  
+Nenhum receptor do Domínio B deve receber pacotes.  
+
+Então vamos acessar **Server01** e executar o teste.
+
+```ios
+SERVER01#ping 239.1.1.1 source f0/0 repeat 100
+
+Type escape sequence to abort.
+Sending 100, 100-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+Packet sent with a source address of 192.168.10.1
+
+Reply to request 0 from 10.0.0.21, 20 ms
+Reply to request 0 from 192.168.60.1, 44 ms
+Reply to request 0 from 192.168.20.1, 36 ms
+Reply to request 1 from 10.0.0.21, 84 ms
+Reply to request 1 from 192.168.20.1, 228 ms
+Reply to request 1 from 192.168.20.1, 188 ms
+Reply to request 1 from 10.0.0.2, 152 ms
+Reply to request 1 from 192.168.60.1, 120 ms
+Reply to request 2 from 10.0.0.21, 80 ms
+Reply to request 2 from 192.168.60.1, 224 ms
+Reply to request 2 from 192.168.20.1, 184 ms
+Reply to request 2 from 10.0.0.2, 116 ms
+...
+```
+
+## 3️⃣ Validação da Recepção nos Receptores do Domínio A
+
+Nos roteadores conectados aos receptores do Domínio A, observe:
+
+- Recebimento contínuo dos pacotes multicast
+- Ausência de perdas
+- Criação de entradas (*,G) na tabela de multicast
+  
+Comando de verificação: `show ip mroute`  
+
+Vamos verificar em **R01**  
+
+```ios
+R01#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 01:02:56/00:03:17, RP 2.2.2.2, flags: SF
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 01:02:54/00:03:17
+
+(192.168.10.1, 239.1.1.1), 00:05:59/00:03:29, flags: FT
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:05:59/00:03:18, A
+    FastEthernet1/0, Forward/Sparse, 00:06:01/00:03:24
+
+(*, 224.0.1.40), 01:03:12/00:02:47, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 01:02:56/00:03:16
+    Loopback0, Forward/Sparse, 01:03:12/00:02:47
+
+R01#
+```
+
+A saída deve apresentar entradas semelhantes a:  
+
+```ios
+(*, 239.1.1.1), RP 2.2.2.2
+```
+
+Isso confirma que:
+
+- O RP correto está sendo utilizado
+- O tráfego multicast está fluindo dentro do domínio esperado
+
+## 4️⃣ Confirmação do Isolamento do Domínio B
+
+Agora, verifique os roteadores e receptores pertencentes ao Domínio Multicast B.  
+  
+Ações esperadas:
+
+- Nenhum pacote multicast recebido
+- Ausência de entradas (*,239.1.1.1) relacionadas à fonte do Domínio A
+- Nenhuma aprendizagem indevida de fontes externas
+
+Comandos úteis:  
+
+```ios
+show ip mroute
+show ip pim rp
+```
+
+Vamos então acessar **R04** para confiramar.  
+
+```ios
+R04#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.0.1.40), 01:08:15/00:02:49, RP 5.5.5.5, flags: SJCL
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.14
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 01:08:15/00:02:49
+
+R04#show ip pim rp
+Group: 224.0.1.40, RP: 5.5.5.5, uptime 01:08:32, expires never
+R04#
+```
+
+🎯 **Resultado esperado:**
+O Domínio B permanece completamente isolado, mesmo com tráfego ativo no Domínio A.
+  
+Isso demonstra que:
+  
+- RP ≠ domínio multicast global
+- O isolamento é um comportamento esperado e correto
+
+## 5️⃣ Análise via Captura de Pacotes (Wireshark)
+
+Para reforçar a validação, vamos utilizar o Wireshark para observar o comportamento do multicast em tempo real.
+
+📌 Capturas recomendadas neste estágio
+🔹 IGMP — Interesse pelo grupo
+
+Filtro: `igmp`  
+
+**Objetivo:**
+  
+Confirmar que os receptores enviaram IGMP Membership Report para o grupo 239.1.1.1
+  
+Então vamos realizar a captura em **R01** na interface **FastEtherent01**.  
+
+![Whireshark](Imagens/Whireshark03.png)  
+
+🔹 **PIM — Construção da árvore multicast**  
+  
+Filtro: `pim`
+
+![Whireshark](Imagens/Whireshark04.png)  
+  
+**Objetivo:** 
+
+- Observar mensagens PIM Join (*,G) sendo encaminhadas em direção ao RP correto
+- Confirmar que os joins não atravessam para o outro domínio
+  
+🔹 **Tráfego multicast (dados)**
+
+Filtro: `ip.dst == 239.1.1.1`  
+  
+![Whireshark](Imagens/Whireshark05.png)  
+  
+**Objetivo:**
+
+- Confirmar entrega do tráfego multicast aos receptores do Domínio A
+- Confirmar ausência total de pacotes no Domínio B
+
+## 6️⃣ Conclusão do Estágio Pré-MSDP
+
+Até este ponto, o laboratório demonstra de forma clara que:
+
+- O multicast funciona corretamente dentro de cada domínio
+- O isolamento entre domínios multicast é intencional
+- O RP define os limites lógicos do domínio multicast
+- Não existe compartilhamento de fontes entre domínios sem um mecanismo adicional
+  
+📌 Este comportamento é o esperado antes da ativação do MSDP.
 
 ---
 
