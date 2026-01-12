@@ -103,22 +103,13 @@
   - [4️⃣ Confirmação do Isolamento do Domínio B](#4️⃣-confirmação-do-isolamento-do-domínio-b)
   - [5️⃣ Análise via Captura de Pacotes (Wireshark)](#5️⃣-análise-via-captura-de-pacotes-wireshark)
   - [6️⃣ Conclusão do Estágio Pré-MSDP](#6️⃣-conclusão-do-estágio-pré-msdp)
-  - [Mudanças no Plano de Controle Multicast: SPT vs (\*,G)](#mudanças-no-plano-de-controle-multicast-spt-vs-g)
-    - [🔄 PIM Sparse-Mode Tradicional (Referência)](#-pim-sparse-mode-tradicional-referência)
-    - [🔁 PIM BIDIR – Plano de Controle Simplificado](#-pim-bidir--plano-de-controle-simplificado)
-    - [🧠 Implicações no Plano de Controle](#-implicações-no-plano-de-controle)
-    - [🔍 Observação do Estado Multicast (Pré-tráfego)](#-observação-do-estado-multicast-pré-tráfego)
-  - [3️⃣ Designated Forwarder (DF) no PIM BIDIR — Conceito e Observação no LAB](#3️⃣-designated-forwarder-df-no-pim-bidir--conceito-e-observação-no-lab)
-    - [🔄 Por que o DR não é suficiente no PIM BIDIR](#-por-que-o-dr-não-é-suficiente-no-pim-bidir)
-    - [🧠 Conceito do Designated Forwarder (DF)](#-conceito-do-designated-forwarder-df)
-    - [🧩 Separação entre DR e DF](#-separação-entre-dr-e-df)
-  - [🔎 Observação do Ambiente PIM BIDIR (LAB)](#-observação-do-ambiente-pim-bidir-lab)
-    - [📌 Verificação das Interfaces PIM](#-verificação-das-interfaces-pim)
-  - [Eleição do Designated Forwarder (DF) no PIM BIDIR](#eleição-do-designated-forwarder-df-no-pim-bidir)
-    - [🧠 Conceito de Eleição do DF no PIM BIDIR](#-conceito-de-eleição-do-df-no-pim-bidir)
-    - [📌 Critério de Eleição do DF](#-critério-de-eleição-do-df)
-    - [🧭 Designated Forwarder (DF) por enlace no cenário do laboratório](#-designated-forwarder-df-por-enlace-no-cenário-do-laboratório)
-      - [📌 DF eleito por trecho](#-df-eleito-por-trecho)
+  - [Mudanças no Plano de Controle Multicast — Introdução ao MSDP](#mudanças-no-plano-de-controle-multicast--introdução-ao-msdp)
+  - [🔄 Limitação do Modelo Atual (Sem MSDP)](#-limitação-do-modelo-atual-sem-msdp)
+  - [🧠 Papel do MSDP no Plano de Controle Multicast](#-papel-do-msdp-no-plano-de-controle-multicast)
+  - [🔗 Relação entre MSDP e PIM](#-relação-entre-msdp-e-pim)
+  - [🔍 Observação do Estado do LAB (Pré-MSDP)](#-observação-do-estado-do-lab-pré-msdp)
+  - [🚦 Ponto de Controle do Laboratório](#-ponto-de-controle-do-laboratório)
+  - [Próxima Etapa — Configuração do MSDP](#próxima-etapa--configuração-do-msdp)
     - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
       - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
       - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
@@ -1885,7 +1876,7 @@ Filtro: `pim`
 
 ![Whireshark](Imagens/Whireshark04.png)  
   
-**Objetivo:** 
+**Objetivo:**  
 
 - Observar mensagens PIM Join (*,G) sendo encaminhadas em direção ao RP correto
 - Confirmar que os joins não atravessam para o outro domínio
@@ -1912,272 +1903,111 @@ Até este ponto, o laboratório demonstra de forma clara que:
   
 📌 Este comportamento é o esperado antes da ativação do MSDP.
 
+⚠️ **Observação:**  
+> “Neste laboratório, o comando ip igmp join-group é utilizado em interfaces de roteadores apenas para simulação e validação do plano de dados multicast via ICMP. Em ambientes reais, o IGMP é iniciado automaticamente pelas aplicações nos hosts finais, e roteadores não atuam como receptores multicast.”
+  
+## Mudanças no Plano de Controle Multicast — Introdução ao MSDP
+  
+Até este ponto do laboratório, os domínios multicast foram **intencionalmente mantidos isolados**, cada um com seu próprio **Rendezvous Point (RP)** e plano de controle PIM totalmente funcional.  
+  
+A partir deste estágio, o foco deixa de ser o funcionamento **interno** do PIM dentro de cada domínio e passa a ser a **troca de informações entre domínios multicast distintos**.  
+É exatamente nesse ponto que o **MSDP (Multicast Source Discovery Protocol)** é introduzido.  
+
+---
+
+## 🔄 Limitação do Modelo Atual (Sem MSDP)
+  
+Sem o MSDP, o comportamento do ambiente multicast é o seguinte:
+
+- Cada RP conhece **apenas as fontes locais** do seu domínio
+- Receptores aprendem grupos multicast **somente se a fonte estiver no mesmo domínio**
+- Não existe qualquer mecanismo de:
+  - Descoberta de fontes remotas
+  - Compartilhamento de informações entre RPs
+  - Interligação lógica entre domínios multicast
+
+📌 Mesmo com roteamento unicast totalmente funcional entre os domínios, **o multicast permanece isolado por design**.  
+  
+Este comportamento já foi validado nas etapas anteriores do laboratório.  
+  
+---
+
+## 🧠 Papel do MSDP no Plano de Controle Multicast
+
+O **MSDP** atua **exclusivamente no plano de controle**, entre **Rendezvous Points**, com o objetivo de:
+
+- Anunciar a existência de **fontes multicast (S,G)** entre domínios
+- Permitir que um RP remoto saiba que determinada fonte existe
+- Viabilizar que receptores de um domínio aprendam fontes localizadas em outro
+
+📌 Importante destacar:
+
+- O MSDP **não transporta tráfego multicast**
+- O MSDP **não substitui o PIM**
+- O MSDP **não cria um domínio multicast único**
+- Cada RP continua **independente**
+
+O MSDP apenas **interliga logicamente os RPs**, mantendo a separação administrativa e topológica dos domínios.  
+  
+---
+  
+## 🔗 Relação entre MSDP e PIM
+
+O funcionamento conjunto ocorre da seguinte forma:
+
+1. Uma fonte multicast é aprendida pelo RP local
+2. O RP anuncia essa fonte via **MSDP (SA – Source Active)**
+3. O RP remoto recebe a informação da fonte
+4. Se houver receptores interessados:
+   - O RP remoto utiliza o **PIM normalmente**
+   - O tráfego multicast passa a fluir **via PIM**, não via MSDP
+  
+📌 O MSDP **para na descoberta da fonte**.  
+O encaminhamento do tráfego continua sendo responsabilidade do **PIM**.  
+
+---
+  
+## 🔍 Observação do Estado do LAB (Pré-MSDP)
+
+Antes da configuração do MSDP, é esperado que:
+
+- Cada RP conheça apenas suas **fontes locais**
+- Não existam informações de fontes remotas
+- Não exista correlação entre domínios multicast
+
+Este estado representa o **baseline correto** antes da introdução do MSDP.
+  
+---
+
+## 🚦 Ponto de Controle do Laboratório
+
+Neste momento do laboratório:
+
+- ✔️ Domínios multicast estão corretamente isolados
+- ✔️ RPs estão definidos e operacionais
+- ✔️ PIM funciona internamente em cada domínio
+- ✔️ Não há troca de informações entre domínios
+- ✔️ O cenário está pronto para o MSDP
+
+📌 **Somente agora faz sentido configurar o MSDP.**  
+  
+---
+
+## Próxima Etapa — Configuração do MSDP
+
+Na próxima etapa do laboratório serão abordados:
+
+- Definição dos **peers MSDP**
+- Estabelecimento das sessões TCP MSDP
+- Troca de mensagens **SA (Source-Active)**
+- Validação da descoberta de fontes entre domínios
+
+A partir daí, os domínios multicast deixam de ser isolados, **sem perder sua independência estrutural**.  
+
+
 ---
 
 Alterar Daqui
-
----
-
-## Mudanças no Plano de Controle Multicast: SPT vs (*,G)
-
-Com o RP configurado em modo BIDIR, o comportamento do **plano de controle multicast** passa a ser significativamente diferente do PIM Sparse-Mode tradicional.  
-Este item tem como objetivo esclarecer **o que muda internamente no protocolo**, antes da introdução de receptores, fontes ou tráfego multicast.  
-
----
-
-### 🔄 PIM Sparse-Mode Tradicional (Referência)
-
-No PIM Sparse-Mode convencional, o fluxo multicast segue, de forma simplificada, o seguinte processo:  
-  
-1. Receptores enviam mensagens **IGMP Join**
-2. O roteador DR cria uma árvore compartilhada **(*,G)** em direção ao RP
-3. Quando uma fonte começa a transmitir:
-   - O DR da fonte envia mensagens **Register** ao RP
-4. Após a validação do tráfego:
-   - O receptor pode migrar para uma árvore **(S,G)** (Shortest Path Tree – SPT)
-
-📌 Neste modelo:
-
-- O RP é o ponto inicial do tráfego
-- Estados (*,G) e (S,G) coexistem
-- O tráfego pode deixar de passar pelo RP após a transição para SPT
-
----
-
-### 🔁 PIM BIDIR – Plano de Controle Simplificado
-
-No PIM BIDIR, esse comportamento é **intencionalmente simplificado**.  
-  
-Quando o RP é configurado em modo BIDIR:
-
-- ❌ Não existe processo de **Register**
-- ❌ Não são criados estados **(S,G)**
-- ❌ Não ocorre transição para **SPT**
-- ❌ O RP não atua como ponto obrigatório de entrada do tráfego
-  
-Em vez disso:  
-
-- ✔️ Todo o domínio multicast utiliza **apenas árvores compartilhadas (*,G)**
-- ✔️ Fontes e receptores utilizam a **mesma árvore bidirecional**
-- ✔️ O tráfego pode fluir em **ambas as direções** na árvore
-  
-📌 O estado (*,G) passa a ser o **único estado multicast válido** no domínio BIDIR.
-  
----
-
-### 🧠 Implicações no Plano de Controle
-  
-As principais implicações desse modelo são:
-
-- 🔹 Redução significativa do número de estados multicast
-- 🔹 Eliminação da lógica de transição (*,G) → (S,G)
-- 🔹 Previsibilidade no caminho do tráfego
-- 🔹 Melhor escalabilidade em cenários many-to-many
-  
-Este comportamento torna o PIM BIDIR particularmente adequado para ambientes onde:
-
-- Múltiplas fontes transmitem simultaneamente
-- O volume de estados (S,G) seria proibitivo
-- A simplicidade do controle-plane é prioritária
-
----
-
-### 🔍 Observação do Estado Multicast (Pré-tráfego)
-
-Antes da introdução de receptores e fontes, é esperado que:  
-  
-- A tabela multicast **não contenha estados ativos**, ou
-- Apresente apenas entradas (*,G) **sem tráfego associado**
-  
-O comando abaixo pode ser utilizado para observação inicial:
-
-```plaintext
-R01# show ip mroute
-```
-
-📌 **Nesta fase**:
-
-- Não devem existir entradas (S,G)
-- Qualquer estado observado será exclusivamente do tipo **(*,G)**
-- Este comportamento é consistente com o funcionamento do PIM BIDIR e servirá de base para os próximos passos do laboratório.
-
-## 3️⃣ Designated Forwarder (DF) no PIM BIDIR — Conceito e Observação no LAB
-
-Com o RP configurado em modo BIDIR e o plano de controle operando exclusivamente com estados (*,G), o PIM BIDIR introduz o papel do **Designated Forwarder (DF)**.
-
-Este item apresenta:
-
-- O **conceito do DF**
-- Sua **função no encaminhamento multicast**
-- E a **observação prática do ambiente**, ainda **sem analisar a eleição do DF**, que será tratada no próximo item.
-
----
-
-### 🔄 Por que o DR não é suficiente no PIM BIDIR
-
-No PIM Sparse-Mode tradicional, o **Designated Router (DR)** é responsável por encaminhar o tráfego multicast das fontes para o RP.
-
-No entanto, em cenários **many-to-many**:
-
-- Múltiplas fontes podem existir no mesmo segmento
-- Múltiplos roteadores podem ter caminho válido até o RP
-- Permitir múltiplos encaminhamentos upstream causaria **loops e duplicação de tráfego**
-
-Por esse motivo, o PIM BIDIR **não utiliza o DR para encaminhamento upstream**.
-
----
-
-### 🧠 Conceito do Designated Forwarder (DF)
-
-O **Designated Forwarder (DF)** é o roteador responsável por:  
-  
-- Encaminhar tráfego multicast **upstream** na árvore (*,G)
-- Garantir que **apenas um roteador por segmento** envie tráfego em direção ao RP-tree
-- Prevenir loops multicast em árvores bidirecionais
-  
-📌 Características importantes do DF:
-
-- É exclusivo do **PIM BIDIR**
-- Atua apenas no encaminhamento upstream
-- É eleito **por interface**
-- Independe do DR tradicional
-  
----
-  
-### 🧩 Separação entre DR e DF
-
-Mesmo que um roteador seja DR em uma interface, isso **não implica** que ele será o DF naquele segmento.
-
-| Papel | Protocolo       | Função                        |
-|-------|-----------------|-------------------------------|
-| DR    | PIM Sparse-Mode | Register, SPT                 |
-| DF    | PIM BIDIR       | Encaminhamento upstream (*,G) |
-
----
-
-## 🔎 Observação do Ambiente PIM BIDIR (LAB)
-  
-Antes da introdução de receptores e fontes multicast, já é possível **validar o ambiente necessário para a atuação do DF**, observando o plano de controle PIM.  
-  
-### 📌 Verificação das Interfaces PIM
-
-```plaintext
-R01#show ip pim interface
-
-Address          Interface                Ver/   Nbr    Query  DR     DR
-                                          Mode   Count  Intvl  Prior
-1.1.1.1          Loopback0                v2/S   0      30     1      1.1.1.1
-192.168.10.254   FastEthernet0/0          v2/S   0      30     1      192.168.10.254
-10.0.0.1         FastEthernet0/1          v2/S   1      30     1      10.0.0.2
-10.0.0.18        FastEthernet1/0          v2/S   1      30     1      10.0.0.18
-R01#
-```
-  
-📌 Neste ponto:  
-  
-- Todas as interfaces já são candidatas à função de DF
-- Nenhuma eleição foi ainda analisada
-  
-📌 **Verificação das Vizinhanças PIM**
-
-```ios
-R01#show ip pim neighbor
-PIM Neighbor Table
-Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
-      S - State Refresh Capable
-Neighbor          Interface                Uptime/Expires    Ver   DR
-Address                                                            Prio/Mode
-10.0.0.2          FastEthernet0/1          01:00:19/00:01:27 v2    1 / DR B S
-10.0.0.17         FastEthernet1/0          01:00:19/00:01:26 v2    1 / B S
-R01#
-```
-  
-📌 **Sem vizinhança PIM:**
-
-- Não há eleição de DF
-- Não há encaminhamento multicast BIDIR
-  
-📌 **Estado do LAB Neste Momento**
-  
-Neste estágio do laboratório:
-
-- O RP BIDIR já está definido
-- O plano de controle opera apenas com estados (*,G)
-- O papel do DF já é conceitualmente necessário
-- O ambiente PIM está pronto para a eleição do DF
-- Ainda não existe tráfego multicast ativo  
-
-## Eleição do Designated Forwarder (DF) no PIM BIDIR
-
-Com o ambiente PIM BIDIR devidamente preparado, o próximo passo é **analisar como ocorre a eleição do Designated Forwarder (DF)** em cada segmento da rede.  
-
-Neste item, o foco é:  
-
-- Entender **como o DF é determinado**
-- Relacionar a eleição do DF com o **RPF em direção ao RP**
-- Identificar **qual roteador atua como DF em cada segmento**
-
-Neste momento do laboratório, **ainda não existem fontes nem receptores multicast ativos**.  
-Toda a análise é feita exclusivamente no **plano de controle**.
-
----
-
-### 🧠 Conceito de Eleição do DF no PIM BIDIR
-
-No PIM BIDIR, a eleição do **Designated Forwarder (DF)** ocorre **por segmento de rede** (interface compartilhada) e tem como objetivo definir **qual roteador será responsável por encaminhar o tráfego multicast upstream em direção ao RP**.  
-  
-📌 Diferente do PIM Sparse tradicional, **não existe SPT** no BIDIR.  
-Todo o tráfego utiliza exclusivamente a árvore compartilhada (*,G).
-
----
-
-### 📌 Critério de Eleição do DF
-
-A eleição do DF é baseada **exclusivamente no caminho RPF em direção ao RP**, seguindo esta lógica:  
-
-1. **Melhor caminho unicast até o RP**
-   - Determinado pela tabela de roteamento unicast (OSPF neste laboratório)
-2. **Menor métrica unicast até o RP**
-3. **Endereço IP como critério de desempate**
-
-📌 O roteador que possuir o **menor custo unicast até o RP** será eleito **DF naquele segmento**.  
-
-> Importante:  
-> Um roteador pode ser DF em uma interface e **não ser DF em outra**, dependendo do caminho até o RP.
-
----
-
-### 🧭 Designated Forwarder (DF) por enlace no cenário do laboratório
-
-No **PIM Bidirectional (BIDIR)**, a eleição do **Designated Forwarder (DF)** ocorre **por enlace (trecho)**, e não globalmente no domínio multicast.  
-Isso significa que **em cada link entre dois roteadores PIM**, apenas **um deles será responsável por encaminhar o tráfego multicast naquele segmento**, evitando loops e duplicações.
-
-A eleição do DF é baseada exclusivamente no **caminho unicast até o Rendezvous Point (RP)**, utilizando os seguintes critérios:
-
-1. **Menor métrica unicast (OSPF) até o RP**
-2. Em caso de empate, **maior endereço IP do roteador**
-
----
-
-#### 📌 DF eleito por trecho
-
-No cenário deste laboratório, o **Rendezvous Point (RP)** está configurado como **1.1.1.1 (Loopback do R01)**.  
-A eleição do **Designated Forwarder (DF)** ocorre **independentemente em cada enlace**, sempre com base no **menor custo unicast (OSPF) até o RP**.  
-
-A tabela abaixo resume, por enlace, **quem é o DF**, **o motivo da eleição** e **como o tráfego multicast se comporta em relação ao RP**.
-
-| Enlace           | DF Eleito | Motivo da Eleição                                | Tráfego Upstream (→ RP)  | Tráfego Downstream (← RP)  |
-|------------------|-----------|--------------------------------------------------|--------------------------|----------------------------|
-| R02 ↔ R03        | R02       | Menor métrica OSPF até o RP (1.1.1.1)            | R02 → R03 → RP           | RP → R03 → R02             |
-| R03 ↔ R04        | R03       | Menor métrica OSPF até o RP                      | R03 → RP                 | RP → R03 → R04             |
-| R04 ↔ R05        | R04       | Menor custo unicast até o RP                     | R04 → R03 → RP           | RP → R03 → R04 → R05       |
-
-📌 **Observações importantes**:
-
-- Apenas o **DF de cada enlace** é autorizado a encaminhar tráfego multicast naquele segmento.
-- O **tráfego upstream** sempre ocorre **em direção ao RP**, representando a inserção da fonte na árvore (*,G).
-- O **tráfego downstream** ocorre **a partir do RP**, seguindo as interfaces com estado (*,G) criado via **PIM Join**.
-- A eleição do DF é **independente da direção do tráfego** e pode ser recalculada automaticamente em caso de falha de link ou alteração de métrica unicast.
 
 ---
 
