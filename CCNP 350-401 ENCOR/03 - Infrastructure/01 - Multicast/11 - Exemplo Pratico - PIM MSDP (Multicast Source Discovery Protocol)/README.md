@@ -110,6 +110,17 @@
   - [🔍 Observação do Estado do LAB (Pré-MSDP)](#-observação-do-estado-do-lab-pré-msdp)
   - [🚦 Ponto de Controle do Laboratório](#-ponto-de-controle-do-laboratório)
   - [Próxima Etapa — Configuração do MSDP](#próxima-etapa--configuração-do-msdp)
+  - [Configuração do MSDP — Interligando os Domínios Multicast](#configuração-do-msdp--interligando-os-domínios-multicast)
+  - [🧠 Visão Lógica do MSDP no LAB](#-visão-lógica-do-msdp-no-lab)
+  - [⚙️ Configuração Básica do MSDP](#️-configuração-básica-do-msdp)
+    - [📌 Configuração no RP do Domínio Multicast A (R02)](#-configuração-no-rp-do-domínio-multicast-a-r02)
+    - [📌 Configuração no RP do Domínio Multicast B (R05)](#-configuração-no-rp-do-domínio-multicast-b-r05)
+    - [🔍 Validação da Sessão MSDP](#-validação-da-sessão-msdp)
+  - [📡 Geração de Tráfego Multicast (Fonte Ativa)](#-geração-de-tráfego-multicast-fonte-ativa)
+  - [🔎 Validação da Descoberta de Fontes via MSDP](#-validação-da-descoberta-de-fontes-via-msdp)
+    - [📥 Entrega do Tráfego Multicast entre Domínios](#-entrega-do-tráfego-multicast-entre-domínios)
+    - [🧪 Comandos de Verificação Final](#-comandos-de-verificação-final)
+    - [✅ Estado Final do Laboratório](#-estado-final-do-laboratório)
     - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
       - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
       - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
@@ -2004,6 +2015,284 @@ Na próxima etapa do laboratório serão abordados:
 
 A partir daí, os domínios multicast deixam de ser isolados, **sem perder sua independência estrutural**.  
 
+## Configuração do MSDP — Interligando os Domínios Multicast
+
+Com os domínios multicast corretamente isolados e validados, inicia-se agora a **configuração do MSDP (Multicast Source Discovery Protocol)**.
+
+O objetivo desta etapa é permitir que:
+
+- Fontes multicast de um domínio sejam **descobertas por outro domínio**
+- Cada RP continue **independente**
+- Não exista fusão dos domínios multicast em um único domínio global
+
+📌 O MSDP atua **exclusivamente entre RPs**, no plano de controle.
+
+---
+
+## 🧠 Visão Lógica do MSDP no LAB
+
+Neste laboratório:
+
+- O **Domínio Multicast A** possui o RP **2.2.2.2**
+- O **Domínio Multicast B** possui o RP **5.5.5.5**
+- O MSDP será configurado **entre esses dois RPs**
+- A comunicação MSDP ocorre via **TCP porta 639**
+  
+📌 A topologia unicast (OSPF) já garante conectividade IP entre os RPs.  
+  
+---
+  
+## ⚙️ Configuração Básica do MSDP
+  
+### 📌 Configuração no RP do Domínio Multicast A (R02)
+
+```ios
+R02(config)# ip msdp peer 5.5.5.5 connect-source Loopback0
+```
+
+### 📌 Configuração no RP do Domínio Multicast B (R05)
+
+```ios
+R05(config)# ip msdp peer 2.2.2.2 connect-source Loopback0
+```
+
+📌 O uso da **Loopback0** como connect-source garante:
+
+- Estabilidade da sessão MSDP
+- Independência de falhas de interface física
+- Previsibilidade no plano de controle
+
+### 🔍 Validação da Sessão MSDP
+
+Após a configuração, a primeira verificação obrigatória é a formação da sessão TCP MSDP.  
+  
+📌 **Verificação do Peer MSDP**  
+
+Entrar em **R02** e executar o comando `R02# show ip msdp peer`
+
+```ios
+R02#show ip msdp peer
+MSDP Peer 5.5.5.5 (?), AS ?
+  Connection status:
+    State: Up, Resets: 0, Connection source: Loopback0 (2.2.2.2)
+    Uptime(Downtime): 00:03:21, Messages sent/received: 4/4
+    Output messages discarded: 0
+    Connection and counters cleared 00:06:21 ago
+  SA Filtering:
+    Input (S,G) filter: none, route-map: none
+    Input RP filter: none, route-map: none
+    Output (S,G) filter: none, route-map: none
+    Output RP filter: none, route-map: none
+  SA-Requests:
+    Input filter: none
+  Peer ttl threshold: 0
+  SAs learned from this peer: 0
+  Input queue size: 0, Output queue size: 0
+  MD5 signature protection on MSDP TCP connection: not enabled
+R02#
+```
+
+📌 Se a sessão **não estiver Established ou UP**, o MSDP não funcionará, independentemente do PIM.  
+  
+## 📡 Geração de Tráfego Multicast (Fonte Ativa)
+
+Com a sessão MSDP estabelecida, o próximo passo é ativar uma fonte multicast em um dos domínios.  
+  
+Exemplo no Domínio Multicast A:
+  
+```ios
+SERVER01# ping 239.1.1.1 repeat 1000 size 1500
+```
+
+📌 Neste momento:
+
+- O RP A aprende a fonte local
+- O RP A anuncia essa fonte via MSDP (SA message)
+- O RP B passa a conhecer uma fonte remota
+
+Então vaos entrar em **Server01** e executar:  
+
+```ios
+SERVER01#ping 239.1.1.1 repeat 1000 size 1500
+
+Type escape sequence to abort.
+Sending 1000, 1500-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 10.0.0.21, 20 ms
+Reply to request 0 from 10.0.0.17, 96 ms
+Reply to request 0 from 192.168.20.1, 56 ms
+Reply to request 0 from 192.168.60.1, 36 ms
+Reply to request 1 from 10.0.0.21, 76 ms
+Reply to request 1 from 192.168.20.1, 320 ms
+Reply to request 1 from 10.0.0.2, 284 ms
+Reply to request 1 from 192.168.50.1, 248 ms
+Reply to request 1 from 192.168.20.1, 216 ms
+Reply to request 1 from 192.168.60.1, 180 ms
+Reply to request 1 from 10.0.0.17, 144 ms
+Reply to request 2 from 10.0.0.21, 88 ms
+Reply to request 2 from 192.168.50.1, 296 ms
+Reply to request 2 from 192.168.20.1, 260 ms
+Reply to request 2 from 192.168.60.1, 228 ms
+Reply to request 2 from 10.0.0.2, 192 ms
+Reply to request 2 from 10.0.0.17, 120 ms
+Reply to request 3 from 10.0.0.2, 100 ms
+Reply to request 3 from 192.168.50.1, 308 ms
+Reply to request 3 from 10.0.0.17, 272 ms
+Reply to request 3 from 192.168.60.1, 240 ms
+Reply to request 3 from 192.168.20.1, 204 ms
+Reply to request 3 from 10.0.0.21, 168 ms
+Reply to request 4 from 10.0.0.21, 84 ms
+Reply to request 4 from 192.168.50.1, 432 ms
+Reply to request 4 from 192.168.20.1, 364 ms
+Reply to request 4 from 10.0.0.17, 328 ms
+...
+```
+
+📌 Neste momento:
+
+- O RP A aprende a fonte local
+- O RP A anuncia essa fonte via MSDP (SA message)
+- O RP B passa a conhecer uma fonte remota
+
+## 🔎 Validação da Descoberta de Fontes via MSDP
+
+📌 **Verificação do SA Cache**
+
+Entrar em **R05** e executar o comando `show ip msdp sa-cache`
+
+```ios
+R05#show ip msdp sa-cache
+MSDP Source-Active Cache - 1 entries
+(192.168.10.1, 239.1.1.1), RP 2.2.2.2, AS ?,00:17:11/00:05:08, Peer 2.2.2.2
+R05#
+```
+
+Resultado esperado:
+
+- Entrada indicando a fonte remota
+- Grupo multicast correspondente (239.1.1.1)
+- Origem aprendida via MSDP
+  
+📌 Este comando prova explicitamente que:  
+  
+- O MSDP está funcionando
+- A troca de informações entre domínios ocorreu
+- Ainda não há tráfego multicast, apenas controle-plane
+  
+### 📥 Entrega do Tráfego Multicast entre Domínios
+
+Se existirem receptores ativos no Domínio Multicast B:  
+
+- O RP B utilizará o PIM normalmente
+- A árvore multicast será construída até a fonte remota
+- O tráfego multicast passará a fluir entre os domínios
+
+📌 **O tráfego não passa pelo MSDP.**  
+O MSDP apenas viabiliza a descoberta da fonte.  
+  
+### 🧪 Comandos de Verificação Final
+
+Executar nos roteadores relevantes:
+
+```ios
+show ip msdp peer
+show ip msdp sa-cache
+show ip mroute
+```
+
+Vamos testar em **R05**:
+
+```ios
+
+R05#show ip msdp peer
+MSDP Peer 2.2.2.2 (?), AS ?
+  Connection status:
+    State: Up, Resets: 0, Connection source: Loopback0 (5.5.5.5)
+    Uptime(Downtime): 00:48:05, Messages sent/received: 48/54
+    Output messages discarded: 0
+    Connection and counters cleared 00:48:53 ago
+  SA Filtering:
+    Input (S,G) filter: none, route-map: none
+    Input RP filter: none, route-map: none
+    Output (S,G) filter: none, route-map: none
+    Output RP filter: none, route-map: none
+  SA-Requests:
+    Input filter: none
+  Peer ttl threshold: 0
+  SAs learned from this peer: 0
+  Input queue size: 0, Output queue size: 0
+  MD5 signature protection on MSDP TCP connection: not enabled
+R05#show ip msdp peer
+MSDP Peer 2.2.2.2 (?), AS ?
+  Connection status:
+    State: Up, Resets: 0, Connection source: Loopback0 (5.5.5.5)
+    Uptime(Downtime): 00:48:55, Messages sent/received: 49/56
+    Output messages discarded: 0
+    Connection and counters cleared 00:49:43 ago
+  SA Filtering:
+    Input (S,G) filter: none, route-map: none
+    Input RP filter: none, route-map: none
+    Output (S,G) filter: none, route-map: none
+    Output RP filter: none, route-map: none
+  SA-Requests:
+    Input filter: none
+  Peer ttl threshold: 0
+  SAs learned from this peer: 1
+  Input queue size: 0, Output queue size: 0
+  MD5 signature protection on MSDP TCP connection: not enabled
+R05#show ip msdp sa-cache
+MSDP Source-Active Cache - 1 entries
+(192.168.10.1, 239.1.1.1), RP 2.2.2.2, AS ?,00:00:32/00:05:27, Peer 2.2.2.2
+R05#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 06:10:52/stopped, RP 5.5.5.5, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 06:10:52/00:02:15
+
+(192.168.10.1, 239.1.1.1), 00:00:36/00:02:23, flags: LM
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.18
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:00:36/00:02:23
+
+(*, 224.0.1.40), 06:10:53/00:02:14, RP 5.5.5.5, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 06:10:47/00:02:33
+    Loopback0, Forward/Sparse, 06:10:53/00:02:14
+
+R05#
+```
+
+Resultados esperados:
+
+- Sessão MSDP estabelecida
+- Fonte remota visível no SA cache
+- Estados multicast ativos (*,G) ou (S,G), conforme o PIM
+
+### ✅ Estado Final do Laboratório
+
+Ao final desta etapa, o laboratório apresenta:
+
+- Domínios multicast distintos
+- RPs independentes
+- Descoberta de fontes entre domínios via MSDP
+- Encaminhamento multicast realizado pelo PIM
+- Controle-plane escalável e bem definido
+  
+📌 Este é o cenário clássico de Multicast Interdomain com MSDP, conforme cobrado em ambientes de nível CCNP/CCIE.
+  
 
 ---
 
