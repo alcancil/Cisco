@@ -134,6 +134,7 @@
     - [🔹 RPF em direção ao RP do Domínio A (2.2.2.2)](#-rpf-em-direção-ao-rp-do-domínio-a-2222)
     - [🔹 RPF em direção ao RP do Domínio B (5.5.5.5)](#-rpf-em-direção-ao-rp-do-domínio-b-5555)
     - [🚫 Impacto Direto no Host03](#-impacto-direto-no-host03)
+    - [📌 Formalização da limitação do PIM Sparse Mode](#-formalização-da-limitação-do-pim-sparse-mode)
     - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
       - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
       - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
@@ -2575,7 +2576,42 @@ O Host03 só responde a pings multicast originados no mesmo domínio quando o pi
 - O Join é descartado
 - O tráfego não atravessa
 - Não há resposta
+
+### 📌 Formalização da limitação do PIM Sparse Mode
+
+Neste laboratório, o PIM Sparse Mode (PIM-SM) foi adotado de forma intencional e didática, com o objetivo de evidenciar não apenas o seu funcionamento, mas principalmente as suas limitações arquiteturais em cenários multicast mais complexos.  
   
+O PIM Sparse Mode é um protocolo RP-centric, no qual toda a construção inicial da árvore multicast depende de um Rendezvous Point (RP). Nesse modelo, o estabelecimento do tráfego multicast segue uma lógica inerentemente unidirecional, baseada no relacionamento entre receptores, fontes e RP.  
+  
+De forma conceitual, o fluxo ocorre da seguinte maneira:
+
+- Receptores enviam Join messages (*,G) em direção ao RP (upstream)
+- O tráfego multicast flui do RP em direção aos receptores (downstream)
+- O encaminhamento do tráfego depende da existência de interesse ativo no sentido correto do fluxo
+  
+Esse comportamento atende adequadamente cenários one-to-many, como IPTV, streaming de vídeo ou distribuição de conteúdo, onde há uma fonte bem definida e múltiplos receptores passivos.  
+  
+Entretanto, em cenários many-to-many, especialmente quando há múltiplos domínios multicast independentes, o PIM Sparse Mode apresenta limitações claras de design. Isso ocorre porque o protocolo:
+
+- Não garante simetria de tráfego
+- Depende da posição do RP no domínio
+- Depende do caminho RPF em relação ao RP
+- Exige tráfego upstream ativo para permitir forwarding downstream
+  
+No contexto deste laboratório, essa limitação ficou evidente quando determinados hosts não conseguiram receber ou responder tráfego multicast ao tentar atravessar domínios distintos. Mesmo com o MSDP corretamente configurado e funcional, permitindo o compartilhamento de informações de fontes entre RPs, o tráfego multicast não foi encaminhado de forma bidirecional.
+  
+É fundamental destacar que:
+
+- O MSDP atua no plano de controle, compartilhando informações de fontes ativas entre RPs
+- O PIM Sparse Mode define o plano de dados, e seu comportamento de forwarding permanece inalterado
+- Como consequência prática, observou-se:
+- Entradas (*,G) em estado stopped
+- Logs de INVALID_RP_JOIN
+- Fluxos multicast restritos ao domínio de origem
+- Hosts respondendo apenas quando fonte e receptor estavam no mesmo domínio multicast
+  
+Esse comportamento não caracteriza erro de configuração, nem falha de interoperabilidade. Trata-se de uma característica intrínseca do PIM Sparse Mode, que o torna inadequado para cenários many-to-many distribuídos, nos quais o tráfego precisa fluir de forma previsível e bidirecional entre múltiplos domínios.  
+
 ---
 
 Alterar Daqui
