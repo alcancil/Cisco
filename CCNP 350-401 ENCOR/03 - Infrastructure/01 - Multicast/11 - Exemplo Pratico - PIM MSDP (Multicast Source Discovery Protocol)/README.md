@@ -121,6 +121,19 @@
     - [📥 Entrega do Tráfego Multicast entre Domínios](#-entrega-do-tráfego-multicast-entre-domínios)
     - [🧪 Comandos de Verificação Final](#-comandos-de-verificação-final)
     - [✅ Estado Final do Laboratório](#-estado-final-do-laboratório)
+  - [📌 Comportamento Observado: Host03 não responde a pings interdomínio](#-comportamento-observado-host03-não-responde-a-pings-interdomínio)
+  - [🧠 Análise Técnica do Comportamento](#-análise-técnica-do-comportamento)
+  - [🔁 O que ocorre na prática entre os domínios](#-o-que-ocorre-na-prática-entre-os-domínios)
+    - [🔹 Domínio A → Domínio B](#-domínio-a--domínio-b)
+    - [🔹 Domínio B → Domínio A](#-domínio-b--domínio-a)
+  - [🧩 Relação com o estado (\*,G) `stopped`](#-relação-com-o-estado-g-stopped)
+  - [⚠️ Conclusão Técnica](#️-conclusão-técnica)
+  - [🎯 Implicação de Arquitetura](#-implicação-de-arquitetura)
+  - [🔍 Evidência do Sentido do Fluxo Multicast via RPF (Root Path Forwarding)](#-evidência-do-sentido-do-fluxo-multicast-via-rpf-root-path-forwarding)
+  - [📌 Análise de RPF no R02](#-análise-de-rpf-no-r02)
+    - [🔹 RPF em direção ao RP do Domínio A (2.2.2.2)](#-rpf-em-direção-ao-rp-do-domínio-a-2222)
+    - [🔹 RPF em direção ao RP do Domínio B (5.5.5.5)](#-rpf-em-direção-ao-rp-do-domínio-b-5555)
+    - [🚫 Impacto Direto no Host03](#-impacto-direto-no-host03)
     - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
       - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
       - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
@@ -2293,7 +2306,276 @@ Ao final desta etapa, o laboratório apresenta:
   
 📌 Este é o cenário clássico de Multicast Interdomain com MSDP, conforme cobrado em ambientes de nível CCNP/CCIE.
   
+## 📌 Comportamento Observado: Host03 não responde a pings interdomínio
 
+Durante os testes de validação do tráfego multicast, foi observado o seguinte comportamento:
+
+- **Host03 (192.168.30.1)** responde normalmente a pings multicast quando a origem do tráfego está **no mesmo domínio multicast**
+- O mesmo Host03 **não responde** quando o ping multicast é iniciado a partir do **outro domínio multicast**
+- Simultaneamente, o roteador **R02** passa a registrar logs do tipo:
+  
+```ios
+%PIM-6-INVALID_RP_JOIN: Received (*, 239.1.1.1) Join from X.X.X.X for invalid RP 5.5.5.5
+```
+  
+Este comportamento, à primeira vista, pode parecer um erro de configuração ou falha de interoperabilidade entre os domínios.  
+No entanto, após análise do plano de controle e do fluxo multicast, conclui-se que **este comportamento é esperado e correto**, dado o **modelo de multicast escolhido**.
+
+---
+
+## 🧠 Análise Técnica do Comportamento
+
+O laboratório foi construído utilizando:
+
+- **PIM Sparse-Mode**
+- **Dois domínios multicast independentes**
+- **RPs distintos por domínio**
+- **Interconexão via MSDP**
+
+Este modelo introduz uma característica fundamental:
+
+> **O tráfego multicast em PIM Sparse-Mode é inerentemente assimétrico.**
+
+Ou seja:
+
+- O **tráfego upstream** (Join) sempre ocorre **em direção ao RP**
+- O **tráfego downstream** só ocorre **se existir interesse previamente estabelecido naquele domínio**
+
+---
+
+## 🔁 O que ocorre na prática entre os domínios
+
+### 🔹 Domínio A → Domínio B
+
+1. Um host no Domínio A inicia um ping para o grupo **239.1.1.1**
+2. O Join (*,G) sobe em direção ao **RP do Domínio A**
+3. O MSDP anuncia a **existência da fonte**, mas **não cria tráfego**
+4. No Domínio B:
+   - Se não houver tráfego downstream ativo
+   - E se o caminho até o RP do Domínio B não for acionado
+   - O estado (*,G) permanece **stopped**
+
+Resultado:
+
+- O host no Domínio B **não recebe tráfego**
+- Logo, **não responde ao ping**
+
+---
+
+### 🔹 Domínio B → Domínio A
+
+O inverso também ocorre:
+
+- O Join sobe em direção ao RP do Domínio B
+- O roteador de borda do Domínio A recebe o Join
+- Como o RP anunciado **não pertence ao seu domínio**, o Join é rejeitado
+- O evento é registrado como **INVALID_RP_JOIN**
+
+📌 **Este log não indica erro**, mas sim que o roteador está:
+> protegendo o domínio multicast local e evitando a criação de estados inválidos
+
+---
+
+## 🧩 Relação com o estado (*,G) `stopped`
+
+Ao analisar os comandos `show ip mroute`, observa-se que:
+
+- Existem entradas (*,G)
+- Porém, algumas delas aparecem com estado **stopped**
+
+Isso indica que:
+
+- O Join foi recebido
+- Mas **não há tráfego downstream suficiente**
+- Nem fluxo ativo para ativar a árvore compartilhada naquele sentido
+
+📌 Em PIM Sparse-Mode, **MSDP não cria tráfego**, apenas anuncia fontes.
+
+---
+
+## ⚠️ Conclusão Técnica
+
+Este comportamento não representa:
+
+- ❌ Falha de configuração
+- ❌ Erro de roteamento
+- ❌ Problema de interoperabilidade
+
+Ele representa uma **limitação estrutural do modelo PIM Sparse-Mode + MSDP** quando aplicado a cenários que exigem:
+
+- Comunicação **many-to-many**
+- Simetria total entre domínios
+- Garantia de entrega bidirecional independente da origem do tráfego
+
+---
+
+## 🎯 Implicação de Arquitetura
+
+Neste cenário, **não é possível garantir** que:
+
+- Todas as fontes sejam vistas por todos os receptores
+- Todos os hosts respondam a pings multicast interdomínio
+
+📌 Para atender esse requisito, é necessário utilizar um modelo multicast que:
+
+- Elimine a dependência de Register
+- Elimine a assimetria upstream/downstream
+- Utilize apenas árvores compartilhadas
+
+➡️ **PIM Bidirectional (BIDIR)**
+
+Este laboratório será finalizado demonstrando essa limitação e, na próxima etapa, o mesmo cenário será reimplementado utilizando **PIM BIDIR**, evidenciando a diferença de comportamento.
+
+## 🔍 Evidência do Sentido do Fluxo Multicast via RPF (Root Path Forwarding)
+
+Para comprovar o comportamento observado no laboratório, foram coletadas evidências do **sentido do tráfego multicast** a partir do cálculo de **RPF em direção aos RPs** de cada domínio.
+
+O objetivo desta etapa é demonstrar que:
+
+- Os **Joins multicast seguem corretamente o RPF**
+- O descarte observado em R02 é **resultado direto do design**
+- O tráfego multicast **não consegue atravessar os domínios de forma simétrica**
+- Este comportamento explica por que o **Host03 não responde a pings interdomínio**
+
+---
+
+## 📌 Análise de RPF no R02
+
+### 🔹 RPF em direção ao RP do Domínio A (2.2.2.2)
+
+Vaos excutar os testes nos equipamentos **R02**, **R03** e **R05**.  
+
+**R02**  
+  
+```plaintext
+R02#show ip rpf 2.2.2.2
+RPF interface: Loopback0
+RPF neighbor: 2.2.2.2 (diretamente conectado)
+```
+  
+📌 **Interpretação:**
+
+- O RP 2.2.2.2 pertence ao Domínio A
+- O R02 alcança esse RP localmente
+- Qualquer Join (*,G) para esse RP é válido e aceito
+  
+### 🔹 RPF em direção ao RP do Domínio B (5.5.5.5)
+
+```ios
+R02#show ip rpf 5.5.5.5
+RPF interface: FastEthernet0/1
+RPF neighbor: 10.0.0.1
+```
+  
+📌 **Interpretação:**  
+  
+Para alcançar o RP 5.5.5.5, o tráfego deve seguir em direção ao R03, ou seja, R03 é o próximo salto RPF para o RP do Domínio B.  
+  
+📌 **Aqui nasce o problema estrutural:**
+
+- Quando o R02 recebe um Join (*,239.1.1.1) originado do Domínio B, ele verifica:
+- O RP anunciado (5.5.5.5) não pertence ao seu domínio
+- O Join está tentando subir em direção a um RP externo
+- O Join é então descartado, gerando o log:
+
+```ios
+%PIM-6-INVALID_RP_JOIN
+```
+  
+➡️ **Este descarte é intencional e protege o domínio multicast local.**  
+  
+**R03**  
+
+```ios
+R03#show ip rpf 2.2.2.2
+RPF information for ? (2.2.2.2)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.5)
+  RPF route/mask: 2.2.2.2/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R03#show ip rpf 5.5.5.5
+RPF information for ? (5.5.5.5)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.5)
+  RPF route/mask: 5.5.5.5/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R03#
+```
+  
+📌 **Interpretação:**
+
+Ambos os RPs são alcançados pelo mesmo caminho.  
+Para o R03, tanto o RP 2.2.2.2 quanto o RP 5.5.5.5 estão **upstream**.  
+  
+Logo:
+
+- O R03 envia Joins em direção ao R02
+- Esperando que o tráfego volte downstream
+  
+📌 **Porém:**  
+
+- O R02 não aceita Joins cujo RP não pertence ao seu domínio
+- O Join vindo do R03 para o RP 5.5.5.5 é descartado
+- O estado (*,G) não se ativa
+  
+**R05**  
+
+```ios
+R05#show ip rpf 2.2.2.2
+RPF information for ? (2.2.2.2)
+  RPF interface: FastEthernet1/0
+  RPF neighbor: ? (10.0.0.18)
+  RPF route/mask: 2.2.2.2/32
+  RPF type: unicast (ospf 100)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R05#show ip rpf 5.5.5.5
+RPF information for ? (5.5.5.5)
+  RPF interface: Loopback0
+  RPF neighbor: ? (5.5.5.5) - directly connected
+  RPF route/mask: 5.5.5.5/32
+  RPF type: unicast (connected)
+  RPF recursion count: 0
+  Doing distance-preferred lookups across tables
+R05#
+```
+
+📌 **Interpretação:**  
+
+- O R05 pertence ao Domínio B
+- O RP 5.5.5.5 é local
+- Joins e tráfego multicast funcionam corretamente dentro do domínio
+
+📌 **Porém:**
+
+- Para alcançar o RP do Domínio A, o tráfego segue **upstream**
+- Não há tráfego **downstream** vindo do outro domínio
+- O estado (*,G) permanece stopped
+
+### 🚫 Impacto Direto no Host03
+
+Com base no comportamento observado:
+
+- O **Host03** depende de tráfego multicast vindo do outro domínio
+- O Join sobe corretamente até o RP do seu domínio
+  
+Porém:
+
+- O tráfego multicast não retorna downstream
+- O estado (*,G) não é ativado no caminho interdomínio
+  
+📌 **Resultado prático:**
+
+O Host03 só responde a pings multicast originados no mesmo domínio quando o ping vem do outro domínio: 
+
+- O Join é descartado
+- O tráfego não atravessa
+- Não há resposta
+  
 ---
 
 Alterar Daqui
