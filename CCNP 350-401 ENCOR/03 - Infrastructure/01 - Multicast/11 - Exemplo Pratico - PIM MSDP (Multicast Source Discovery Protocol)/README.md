@@ -135,6 +135,13 @@
     - [🔹 RPF em direção ao RP do Domínio B (5.5.5.5)](#-rpf-em-direção-ao-rp-do-domínio-b-5555)
     - [🚫 Impacto Direto no Host03](#-impacto-direto-no-host03)
     - [📌 Formalização da limitação do PIM Sparse Mode](#-formalização-da-limitação-do-pim-sparse-mode)
+  - [Validar que o MSDP está funcional, mas não resolve o problema](#validar-que-o-msdp-está-funcional-mas-não-resolve-o-problema)
+    - [MSDP operacional no plano de controle](#msdp-operacional-no-plano-de-controle)
+    - [Mensagens SA (Source-Active) no contexto do MSDP](#mensagens-sa-source-active-no-contexto-do-msdp)
+    - [Principais campos de uma mensagem SA](#principais-campos-de-uma-mensagem-sa)
+    - [Captura das mensagens SA no Wireshark](#captura-das-mensagens-sa-no-wireshark)
+    - [SA anunciadas corretamente, mas sem impacto no forwarding](#sa-anunciadas-corretamente-mas-sem-impacto-no-forwarding)
+    - [O problema não é controle-plane, e sim data-plane / modelo de forwarding](#o-problema-não-é-controle-plane-e-sim-data-plane--modelo-de-forwarding)
     - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
       - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
       - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
@@ -2612,6 +2619,110 @@ No contexto deste laboratório, essa limitação ficou evidente quando determina
   
 Esse comportamento não caracteriza erro de configuração, nem falha de interoperabilidade. Trata-se de uma característica intrínseca do PIM Sparse Mode, que o torna inadequado para cenários many-to-many distribuídos, nos quais o tráfego precisa fluir de forma previsível e bidirecional entre múltiplos domínios.  
 
+## Validar que o MSDP está funcional, mas não resolve o problema
+
+Nesta etapa, o objetivo é demonstrar de forma objetiva que o **MSDP (Multicast Source Discovery Protocol)** está **corretamente operacional**, porém **não resolve o problema observado no laboratório**, pois a limitação não está no **plano de controle**, e sim no **plano de dados e no modelo de forwarding do PIM Sparse Mode**.
+
+### MSDP operacional no plano de controle
+
+A validação do MSDP é realizada confirmando que os **Rendezvous Points (RPs)** estão trocando corretamente informações de **Source-Active (SA)**.  
+Essas mensagens permitem que um RP informe outros RPs sobre a existência de fontes multicast ativas em seu domínio.
+
+Com isso, é possível afirmar que:
+
+- A vizinhança MSDP está estabelecida corretamente  
+- As mensagens **SA** estão sendo anunciadas e recebidas  
+- As fontes multicast são conhecidas entre os domínios multicast  
+
+Esse comportamento comprova que **o plano de controle está funcional e consistente**.
+
+### Mensagens SA (Source-Active) no contexto do MSDP
+
+As **mensagens SA (Source-Active)** são o principal mecanismo do **MSDP** para a troca de informações sobre **fontes multicast ativas** entre diferentes domínios multicast.  
+  
+De forma conceitual, uma mensagem SA indica que:  
+  
+> *“Existe uma fonte **S** enviando tráfego para um grupo **G** neste domínio multicast.”*
+
+Essas mensagens **não carregam tráfego multicast de dados**, apenas **informações de controle**, permitindo que outros **Rendezvous Points (RPs)** tomem conhecimento da existência dessa fonte.  
+
+### Principais campos de uma mensagem SA
+  
+Uma mensagem SA contém, de forma simplificada, os seguintes campos relevantes:
+
+- **Source Address (S)**  
+  Endereço IP da fonte multicast ativa.  
+  
+- **Group Address (G)**  
+  Endereço do grupo multicast ao qual a fonte está enviando tráfego.  
+  
+- **RP Originator**  
+  RP que originou a mensagem SA, responsável por anunciar a fonte para outros domínios.  
+  
+- **MSDP Peer**  
+  Identificação do vizinho MSDP que está trocando a informação.
+
+- **TTL / Flags de controle**  
+  Utilizados para controle de propagação e loop prevention.  
+  
+Esses campos permitem que outros RPs saibam **quem é a fonte**, **qual grupo está ativo** e **em qual domínio multicast essa fonte existe**.
+
+### Captura das mensagens SA no Wireshark
+
+Para evidenciar o funcionamento do MSDP, recomenda-se realizar uma captura no **Wireshark** em uma interface de trânsito entre os RPs.
+
+📸 **Sugestões de captura:**
+
+- Aplicar filtro de display:  
+  `msdp`
+
+- Verificar pacotes do tipo:
+- **MSDP Source-Active**
+- Mensagens TCP na porta **639**
+
+Na captura, deve ser possível observar:
+
+- Mensagens SA sendo enviadas periodicamente
+- Campos **Source (S)** e **Group (G)** preenchidos corretamente
+- Comunicação ativa entre os RPs dos diferentes domínios multicast
+
+Essa captura comprova de forma visual que:
+
+- O **MSDP está operacional**
+- As **SA announcements estão corretas**
+- O problema observado no laboratório **não está na descoberta de fontes**, e sim no **modelo de forwarding do PIM Sparse Mode**
+
+Então, aqui vamos agora realizar uma capturade pacotes em **R02** na interface  **Fastethernet0/1**  
+
+![Whireshark](Imagens/Whireshark06.png)  
+
+Agora vamos fazer a mesma captura em **R02** na intrface **Fastethernet1/0**  
+
+![Whireshark](Imagens/Whireshark07.png)
+
+### SA anunciadas corretamente, mas sem impacto no forwarding
+
+Mesmo com as SA sendo propagadas via MSDP, o simples conhecimento da existência de uma fonte multicast **não garante a criação de uma árvore de distribuição funcional no plano de dados**.
+
+No **PIM Sparse Mode**, o forwarding multicast continua dependente de:
+
+- **Joins upstream explícitos em direção ao RP**
+- Um modelo de construção de árvore **RP-centric**
+- Fluxo downstream válido para permitir o encaminhamento do tráfego
+  
+Assim, apesar das SA announcements estarem corretas, **o tráfego multicast efetivo não flui entre os domínios**, pois não existe uma condição de forwarding válida que permita a construção completa da árvore multicast.  
+  
+### O problema não é controle-plane, e sim data-plane / modelo de forwarding
+
+Este comportamento confirma que:
+
+- O MSDP atua exclusivamente no **plano de controle**
+- Ele resolve apenas a **descoberta de fontes multicast**
+- O problema observado está no **plano de dados**
+- A limitação é inerente ao **modelo de forwarding do PIM Sparse Mode**
+  
+Portanto, o MSDP **não corrige nem contorna** a natureza unidirecional e dependente de RP do PIM-SM em cenários **many-to-many** com múltiplos domínios multicast.  
+  
 ---
 
 Alterar Daqui
