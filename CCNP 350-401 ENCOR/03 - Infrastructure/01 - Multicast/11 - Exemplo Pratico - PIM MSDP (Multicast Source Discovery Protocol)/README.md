@@ -150,11 +150,11 @@
   - [🧩 O que aprendemos com este laboratório (PIM Sparse Mode + MSDP)](#-o-que-aprendemos-com-este-laboratório-pim-sparse-mode--msdp)
   - [🎯 Principais aprendizados](#-principais-aprendizados)
   - [💡 Conclusões gerais](#-conclusões-gerais)
-  - [🗺️ Fluxo conceitual do PIM BIDIR (\*,G)](#️-fluxo-conceitual-do-pim-bidir-g)
+  - [🗺️ Fluxo conceitual do MSDP (PIM Sparse Mode)](#️-fluxo-conceitual-do-msdp-pim-sparse-mode)
   - [📘 Tabela de Comandos](#-tabela-de-comandos)
-    - [🖥️ Função — R01 atua como Designated Forwarder (DF) no domínio PIM BIDIR](#️-função--r01-atua-como-designated-forwarder-df-no-domínio-pim-bidir)
-    - [📘 R02 — Roteador de Núcleo / Intermediário do Domínio PIM BIDIR](#-r02--roteador-de-núcleo--intermediário-do-domínio-pim-bidir)
-    - [📙 R03 — DF da LAN dos Hosts + Roteador de Trânsito no Domínio PIM BIDIR](#-r03--df-da-lan-dos-hosts--roteador-de-trânsito-no-domínio-pim-bidir)
+    - [🖥️ Função — R01 no plano de dados PIM Sparse Mode com RP fora do domínio local](#️-função--r01-no-plano-de-dados-pim-sparse-mode-com-rp-fora-do-domínio-local)
+    - [📘 R02 — Rendezvous Point (RP) do Domínio Multicast A](#-r02--rendezvous-point-rp-do-domínio-multicast-a)
+    - [📙 R03 — Roteador de Trânsito no Domínio Multicast (PIM Sparse Mode + MSDP)](#-r03--roteador-de-trânsito-no-domínio-multicast-pim-sparse-mode--msdp)
     - [📒 R04 — DF da LAN do Host02 + Roteador de Trânsito no Domínio PIM BIDIR](#-r04--df-da-lan-do-host02--roteador-de-trânsito-no-domínio-pim-bidir)
     - [📕 R05 — DF da LAN do Host03 + Roteador de Trânsito no Domínio PIM BIDIR](#-r05--df-da-lan-do-host03--roteador-de-trânsito-no-domínio-pim-bidir)
     - [🖥️ SERVER03 — Fonte Multicast no Domínio PIM BIDIR](#️-server03--fonte-multicast-no-domínio-pim-bidir)
@@ -2817,6 +2817,120 @@ Diferente de abordagens many-to-many, o PIM Sparse Mode opera de forma **RP-cent
 
 📌 Esses aprendizados fundamentam a decisão estratégica de evoluir o cenário na **Parte 02**, adotando um modelo multicast **realmente bidirecional**, capaz de sustentar comunicação many-to-many de forma consistente.
 
+## 🗺️ Fluxo conceitual do MSDP (PIM Sparse Mode)
+
+O fluxograma abaixo representa, de forma simplificada, **como o MSDP atua exclusivamente no plano de controle**, e como ele se integra ao funcionamento do **PIM Sparse Mode**, sem interferir diretamente no encaminhamento de dados multicast.
+
+```text
+┌──────────────────────────────────────────┐
+│ 1. Fonte multicast inicia transmissão    │
+│    para o grupo (G) em seu domínio       │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 2. RP local aprende a fonte (S,G)        │
+│    via Register (PIM Sparse Mode)        │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 3. RP anuncia a fonte via MSDP           │
+│    (mensagem Source-Active – SA)         │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 4. RP remoto recebe a SA                 │
+│    e aprende a existência da fonte       │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 5. Receptores no outro domínio           │
+│    enviam IGMP Join para o grupo (G)     │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 6. Roteadores avaliam RPF em direção     │
+│    à fonte (S) anunciada via MSDP        │
+└────────────────────┬─────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────┐
+│ 7. Tráfego multicast só é encaminhado    │
+│    se existir upstream e downstream      │
+│    válidos no data-plane                 │
+└──────────────────────────────────────────┘
+```
+
+## 📘 Tabela de Comandos
+
+### 🖥️ Função — R01 no plano de dados PIM Sparse Mode com RP fora do domínio local
+
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                                 |
+|---------------------|-------------------------------------------|-------------------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                                   |
+| **Global**          | `ip pim rp-address 2.2.2.2`               | Define um **RP remoto**, pertencente a outro domínio multicast                |
+| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`      | Router-ID do roteador e identificação lógica no plano de controle              |
+|                     | `ip pim sparse-mode`                      | Habilita PIM Sparse Mode na interface                                         |
+| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0` | Interface LAN dos hosts (receptores e possíveis fontes multicast)              |
+|                     | `ip pim sparse-mode`                      | Interface participante do domínio PIM Sparse Mode                              |
+| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`     | Link P2P com R02                                                               |
+|                     | `ip pim sparse-mode`                      | Transporte de tráfego multicast e sinalização PIM                              |
+| **FastEthernet1/0** | `ip address 10.0.0.22 255.255.255.252`    | Link P2P com R05                                                               |
+|                     | `ip pim sparse-mode`                      | Transporte de tráfego multicast e sinalização PIM                              |
+| **OSPF**            | `router ospf 100`                         | IGP utilizado para convergência unicast e cálculo de RPF                       |
+|                     | `router-id 1.1.1.1`                       | Router-ID do processo OSPF                                                     |
+|                     | `network 1.1.1.1 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                         |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                                   |
+|                     | `network 10.0.0.20 0.0.0.3 area 0`        | Ativa OSPF no enlace com R05                                                   |
+|                     | `network 192.168.10.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos servidores                                               |
+
+### 📘 R02 — Rendezvous Point (RP) do Domínio Multicast A
+
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                                  |
+|---------------------|-------------------------------------------|--------------------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                                    |
+| **Global**          | `ip pim rp-address 2.2.2.2`               | Define o próprio R02 como **RP do domínio multicast A**                        |
+| **Global**          | `ip msdp peer 5.5.5.5 connect-source Loopback0` | Estabelece sessão MSDP com RP remoto para troca de SA messages           |
+| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255`      | Endereço lógico do RP e Router-ID no plano de controle                         |
+|                     | `ip pim sparse-mode`                      | Habilita PIM Sparse Mode na interface                                          |
+| **FastEthernet0/0** | `ip address 192.168.20.254 255.255.255.0` | Interface LAN local com hosts multicast                                        |
+|                     | `ip pim sparse-mode`                      | Participa do domínio PIM Sparse Mode                                           |
+|                     | `ip igmp join-group 239.1.1.1`            | Simula receptor multicast para manter estado (*,G) ativo                       |
+| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`     | Link P2P com R01                                                               |
+|                     | `ip pim sparse-mode`                      | Transporte de sinalização PIM e tráfego multicast                              |
+| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`     | Link P2P com R03                                                               |
+|                     | `ip pim sparse-mode`                      | Transporte de sinalização PIM e tráfego multicast                              |
+| **OSPF**            | `router ospf 100`                         | IGP utilizado para convergência unicast e cálculo de RPF                       |
+|                     | `router-id 2.2.2.2`                       | Router-ID do processo OSPF                                                     |
+|                     | `network 2.2.2.2 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                         |
+|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R01                                                   |
+|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R03                                                   |
+|                     | `network 192.168.20.0 0.0.0.255 area 0`   | Ativa OSPF na LAN local                                                        |
+
+### 📙 R03 — Roteador de Trânsito no Domínio Multicast (PIM Sparse Mode + MSDP)
+
+| **Seção**           | **Comando / Configuração**                | **Descrição**                                                                 |
+|---------------------|-------------------------------------------|-------------------------------------------------------------------------------|
+| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                                   |
+| **Global**          | `ip pim rp-address 5.5.5.5`               | Define o **RP do domínio multicast ao qual o R03 pertence**                   |
+| **Loopback0**       | `ip address 3.3.3.3 255.255.255.255`      | Router-ID utilizado pelo OSPF                                                 |
+| **FastEthernet1/0** | `ip address 10.0.0.6 255.255.255.252`     | Link P2P com R02                                                              |
+|                     | `ip pim sparse-mode`                      | Interface participante do domínio multicast                                   |
+| **FastEthernet0/0** | `ip address 10.0.0.9 255.255.255.252`     | Link P2P com R04 – trânsito multicast entre roteadores                        |
+|                     | `ip pim sparse-mode`                      | Transporte de sinalização PIM e possível tráfego multicast                    |
+| **FastEthernet0/1** | `ip address 192.168.40.254 255.255.255.0` | LAN dos hosts multicast                                                       |
+|                     | `ip pim sparse-mode`                      | Interface de acesso onde ocorrem IGMP Joins                                   |
+| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast e cálculo de RPF                       |
+|                     | `router-id 3.3.3.3`                       | Router-ID do processo OSPF                                                    |
+|                     | `network 3.3.3.3 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                        |
+|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                                  |
+|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativa OSPF no enlace com R04                                                  |
+|                     | `network 192.168.40.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos hosts                                                   |
+| **Função**          | —                                         | Roteador de trânsito multicast dependente do RP remoto (modelo RP-centric)    |
 
 ---
 
@@ -2824,113 +2938,6 @@ Alterar Daqui
 
 ---
 
-## 🗺️ Fluxo conceitual do PIM BIDIR (*,G)
-
-```text
-┌────────────────────────────────────┐
-│ 1. Host envia IGMP Join para (G)   │
-│    (sem especificar fonte)         │
-└───────────────┬────────────────────┘
-                │
-                ▼
-┌────────────────────────────────────┐
-│ 2. DR recebe o Join IGMP           │
-│    e registra interesse no grupo   │
-└───────────────┬────────────────────┘
-                │
-                ▼
-┌────────────────────────────────────┐
-│ 3. Roteador verifica RPF           │
-│    em direção ao RP                │
-└───────────────┬────────────────────┘
-                │
-                ▼
-┌────────────────────────────────────┐
-│ 4. Eleição do DF por enlace        │
-│    (menor custo até o RP)          │
-└───────────────┬────────────────────┘
-                │
-                ▼
-┌────────────────────────────────────┐
-│ 5. DF encaminha tráfego            │
-│    multicast (*,G) em direção ao RP│
-└───────────────┬────────────────────┘
-                │
-                ▼
-┌────────────────────────────────────┐
-│ 6. Árvore (*,G) é compartilhada    │
-│    por fontes e receptores         │
-└────────────────────────────────────┘
-```
-
-## 📘 Tabela de Comandos
-
-### 🖥️ Função — R01 atua como Designated Forwarder (DF) no domínio PIM BIDIR
-
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                          |
-|---------------------|-------------------------------------------|------------------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                            |
-| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
-| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
-| **Loopback0**       | `ip address 1.1.1.1 255.255.255.255`      | Router-ID e endereço lógico do RP                                      |
-|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
-| **FastEthernet0/0** | `ip address 192.168.10.254 255.255.255.0` | Interface LAN dos servidores (hosts e possíveis fontes multicast)      |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **FastEthernet0/1** | `ip address 10.0.0.1 255.255.255.252`     | Link P2P com R02                                                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **FastEthernet1/0** | `ip address 10.0.0.18 255.255.255.252`    | Link P2P com R05                                                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
-|                     | `router-id 1.1.1.1`                       | Router-ID do OSPF                                                      |
-|                     | `network 1.1.1.1 0.0.0.0 area 0`          | Ativa OSPF na Loopback (RP lógico)                                     |
-|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                           |
-|                     | `network 10.0.0.16 0.0.0.3 area 0`        | Ativa OSPF no enlace com R05                                           |
-|                     | `network 192.168.10.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos servidores                                       |
-
-### 📘 R02 — Roteador de Núcleo / Intermediário do Domínio PIM BIDIR
-
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
-|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                           |
-| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
-| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
-| **Loopback0**       | `ip address 2.2.2.2 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
-|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
-| **FastEthernet0/0** | `ip address 192.168.50.254 255.255.255.0` | Interface LAN local (participa do domínio multicast)                   |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **FastEthernet0/1** | `ip address 10.0.0.2 255.255.255.252`     | Link P2P com R01                                                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **FastEthernet1/0** | `ip address 10.0.0.5 255.255.255.252`     | Link P2P com R03                                                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
-|                     | `router-id 2.2.2.2`                       | Router-ID do processo OSPF                                             |
-|                     | `network 2.2.2.2 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
-|                     | `network 10.0.0.0 0.0.0.3 area 0`         | Ativa OSPF no enlace com R01                                           |
-|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R03                                           |
-|                     | `network 192.168.50.0 0.0.0.255 area 0`   | Ativa OSPF na LAN local                                                |
-
-### 📙 R03 — DF da LAN dos Hosts + Roteador de Trânsito no Domínio PIM BIDIR
-
-| **Seção**           | **Comando / Configuração**                | **Descrição**                                                         |
-|---------------------|-------------------------------------------|-----------------------------------------------------------------------|
-| **Global**          | `ip multicast-routing`                    | Habilita o roteamento multicast no roteador                           |
-| **Global**          | `ip pim bidir-enable`                     | Ativa globalmente o modo PIM Bidirectional                             |
-| **Global**          | `ip pim rp-address 1.1.1.1 bidir`         | Define o RP lógico do domínio PIM BIDIR                                |
-| **Loopback0**       | `ip address 3.3.3.3 255.255.255.255`      | Router-ID e identificação lógica do roteador                           |
-|                     | `ip pim sparse-mode`                      | Habilita PIM na interface                                              |
-| **FastEthernet0/0** | `ip address 10.0.0.9 255.255.255.252`     | Link P2P com R04 – trânsito no domínio multicast                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **FastEthernet0/1** | `ip address 192.168.40.254 255.255.255.0` | LAN dos hosts multicast                                                |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR (DF eleito por custo até o RP)          |
-| **FastEthernet1/0** | `ip address 10.0.0.6 255.255.255.252`     | Link P2P com R02                                                       |
-|                     | `ip pim sparse-mode`                      | Participa do domínio PIM BIDIR                                         |
-| **OSPF**            | `router ospf 100`                         | Processo IGP para convergência unicast                                 |
-|                     | `router-id 3.3.3.3`                       | Router-ID do processo OSPF                                             |
-|                     | `network 3.3.3.3 0.0.0.0 area 0`          | Ativa OSPF na Loopback                                                 |
-|                     | `network 10.0.0.4 0.0.0.3 area 0`         | Ativa OSPF no enlace com R02                                           |
-|                     | `network 10.0.0.8 0.0.0.3 area 0`         | Ativa OSPF no enlace com R04                                           |
-|                     | `network 192.168.40.0 0.0.0.255 area 0`   | Ativa OSPF na LAN dos hosts                                            |
-| **Função**          | —                                         | **DF da LAN dos hosts** + **roteador de trânsito PIM BIDIR**           |
 
 ### 📒 R04 — DF da LAN do Host02 + Roteador de Trânsito no Domínio PIM BIDIR
 
