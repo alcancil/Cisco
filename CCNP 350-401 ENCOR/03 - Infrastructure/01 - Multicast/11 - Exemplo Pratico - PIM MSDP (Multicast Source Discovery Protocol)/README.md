@@ -2757,11 +2757,11 @@ O foco aqui **não é fornecer uma receita de correção**, mas sim apoiar o **d
 
 | **Sintoma Observado**      | **Interpretação Técnica**                         | **Comandos de Verificação**| **Observação Importante**                                     |
 |----------------------------|---------------------------------------------------|----------------------------|---------------------------------------------------------------|
-| **Entrada (*,G)** <br>     | Existe interesse no grupo, porém **não há fluxo** | `show ip mroute`           | Em PIM Sparse Mode, o forwarding depende de um <br>           |
+| **Entrada (*,G)**          | Existe interesse no grupo, porém **não há fluxo** | `show ip mroute`           | Em PIM Sparse Mode, o forwarding depende de um                |
 | **estado `stopped`**       | **de dados válido** atravessando o domínio        | `show ip igmp groups`      |  **upstream válido **até o RP ou até a fonte**                |
-| **Logs de** <br>           | O roteador recebeu um Join apontando para um      | `show ip pim rp`           | Comportamento **esperado** em ambientes com                   |
+| **Logs de**                | O roteador recebeu um Join apontando para um      | `show ip pim rp`           | Comportamento **esperado** em ambientes com                   |
 | `%PIM-6-INVALID_RP_JOIN`   | **RP que não pertence ao seu domínio multicast**  | `show ip rpf <RP>`         | múltiplos domínios e RPs distintos                            |
-|  **SA-cache presente, mas**| O **MSDP está funcional**, porém apenas no        | `show ip msdp sa-cache`    | MSDP **não cria forwarding**, <br>                            |
+|  **SA-cache presente, mas**| O **MSDP está funcional**, porém apenas no        | `show ip msdp sa-cache`    | MSDP **não cria forwarding**,                                 |
 | **sem tráfego multicast**  | **plano de controle**                             | `show ip msdp peer`        | apenas anuncia fontes ativas                                  |
 | **Host responde apenas**   | O modelo RP-centric do Sparse Mode **não**        | `show ip rpf <source>`     | Limitação estrutural do Sparse Mode,                          |
 | **dentro do mesmo domínio**| **sustenta fluxo many-to-many entre domínios**    | `show ip mroute`           | não falha de configuração                                     |
