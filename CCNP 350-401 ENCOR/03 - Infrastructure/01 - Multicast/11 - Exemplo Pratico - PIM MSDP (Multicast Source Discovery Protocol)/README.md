@@ -147,7 +147,7 @@
   - [Evolução do Design](#evolução-do-design)
   - [🛠️ Troubleshooting — PIM Sparse Mode + MSDP](#️-troubleshooting--pim-sparse-mode--msdp)
     - [Consideração final de troubleshooting](#consideração-final-de-troubleshooting)
-  - [🧩 O que aprendemos com este laboratório (PIM BIDIR)](#-o-que-aprendemos-com-este-laboratório-pim-bidir)
+  - [🧩 O que aprendemos com este laboratório (PIM Sparse Mode + MSDP)](#-o-que-aprendemos-com-este-laboratório-pim-sparse-mode--msdp)
   - [🎯 Principais aprendizados](#-principais-aprendizados)
   - [💡 Conclusões gerais](#-conclusões-gerais)
   - [🗺️ Fluxo conceitual do PIM BIDIR (\*,G)](#️-fluxo-conceitual-do-pim-bidir-g)
@@ -2782,43 +2782,47 @@ Os sintomas observados **não indicam erro de implementação**, mas sim a **mat
 
 Essa constatação fundamenta, de forma objetiva, a transição para o **PIM BIDIR** na Parte 02 do laboratório.
 
+## 🧩 O que aprendemos com este laboratório (PIM Sparse Mode + MSDP)
+
+Neste laboratório foi explorado o funcionamento do **multicast em PIM Sparse Mode**, interligando **múltiplos domínios multicast independentes** por meio do **Multicast Source Discovery Protocol (MSDP)**.  
+O foco não esteve apenas na configuração, mas principalmente na **observação prática do comportamento do plano de controle e do plano de dados**, evidenciando limitações estruturais do modelo.
+
+Diferente de abordagens many-to-many, o PIM Sparse Mode opera de forma **RP-centric**, exigindo coerência entre **upstream, downstream e verificação RPF** para que o tráfego multicast seja efetivamente encaminhado entre domínios distintos.
+
 ---
 
-Alterar Daqui
-
----
-
-## 🧩 O que aprendemos com este laboratório (PIM BIDIR)
-
-Neste laboratório exploramos o funcionamento do **Protocol Independent Multicast – Bidirectional (PIM BIDIR)**, um modelo de multicast **many-to-many**, amplamente utilizado em ambientes enterprise que exigem **alta escalabilidade** e **baixo estado de controle** nos roteadores.  
-  
-Diferente do PIM-SM tradicional, o PIM BIDIR elimina o uso de árvores específicas por fonte (S,G), mantendo apenas **árvores compartilhadas (*,G)** ancoradas em um **Rendezvous Point (RP)** lógico. Nesse modelo, tanto fontes quanto receptores utilizam a mesma infraestrutura de distribuição multicast, sem a criação de Shortest Path Trees (SPT).  
-  
----
-  
 ## 🎯 Principais aprendizados
 
-| Tópico                         | Conceito-chave                                                                                                      |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| RP como ponto lógico           | No PIM BIDIR, o RP atua como referência lógica da árvore (*,G), sem participação direta no encaminhamento de dados. |
-| Apenas entradas (*,G)          | O domínio multicast mantém somente estados (*,G), reduzindo drasticamente o consumo de memória e CPU.               |
-| Ausência de SPT                | Não ocorre migração para Shortest Path Tree, garantindo previsibilidade e simplicidade operacional.                 |
-| Eleição de DF por enlace       | Em cada segmento multicast, apenas o **Designated Forwarder (DF)** encaminha tráfego em direção ao RP.              |
-| Critério de eleição do DF      | O DF é eleito com base no **menor custo unicast até o RP**, e, em caso de empate, pelo **maior endereço IP**.       |
-| RPF em direção ao RP           | A verificação de RPF ocorre sempre no sentido do RP, e não da fonte, como em PIM-SM clássico.                       |
-| IGMP como mecanismo de join    | Hosts utilizam IGMP para sinalizar interesse no grupo (G), sem especificação de fonte.                              |
-| Tráfego many-to-many           | Múltiplas fontes e múltiplos receptores podem coexistir de forma eficiente no mesmo grupo multicast.                |
-| Testes com tráfego simulado    | O ping multicast foi utilizado apenas como **gerador de tráfego**, não como teste de reachability.                  |
+| Tópico                             | Conceito-chave                                                                                                                        |
+|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Sparse Mode ≠ many-to-many         | O PIM Sparse Mode não sustenta comunicação bidirecional plena entre múltiplas fontes e receptores distribuídos em domínios diferentes |
+| RP como âncora do fluxo            | O encaminhamento multicast depende fortemente do RP e do caminho RPF em direção a ele                                                 |
+| MSDP atua apenas no controle-plane | O MSDP anuncia fontes ativas (SA), mas **não cria forwarding multicast**                                                              |
+| SA ≠ tráfego multicast             | A presença de entradas no `sa-cache` não garante entrega de dados multicast                                                           |
+| RPF é determinante                 | Joins e tráfego só são aceitos se respeitarem o caminho RPF esperado                                                                  |
+| (*,G) pode existir sem forwarding  | Estados (*,G) podem permanecer em `stopped` mesmo com interesse IGMP                                                                  |
+| Logs INVALID_RP_JOIN são esperados | Em ambientes multi-RP, esses logs indicam **filtragem correta**, não erro                                                             |
+| Design supera configuração         | Multicast funciona ou falha principalmente por **decisão de arquitetura**, não por comandos                                           |
+| Ping multicast é ferramenta, não teste | ICMP multicast serve para **gerar tráfego**, não para validar reachability                                                        |
 
 ---
 
 ## 💡 Conclusões gerais
 
-- O **PIM BIDIR** é ideal para cenários **many-to-many**, como colaboração em tempo real, aplicações financeiras e replicação distribuída.
-- A utilização exclusiva de **árvores (*,G)** reduz drasticamente o estado de controle nos roteadores do domínio multicast.
-- A **eleição do DF por enlace** garante encaminhamento consistente e evita loops, mesmo com múltiplas fontes ativas.
-- A ausência de SPT e de processos de Register simplifica o plano de controle e melhora a escalabilidade.
-- Em ambientes de laboratório, a geração de tráfego via ping multicast é suficiente para validar o funcionamento da árvore (*,G) e do encaminhamento bidirecional.
+- O **PIM Sparse Mode**, mesmo com MSDP operacional, **não resolve cenários many-to-many** entre múltiplos domínios multicast.
+- O **MSDP cumpre corretamente seu papel**, limitando-se ao **plano de controle**, sem interferir no modelo de encaminhamento.
+- A dependência de **fluxo upstream válido e simetria de RPF** impõe restrições claras à propagação do tráfego multicast.
+- Estados multicast podem existir sem que haja entrega efetiva de dados, reforçando a separação entre **controle-plane e data-plane**.
+- Este laboratório demonstra, de forma prática, que **multicast exige decisões conscientes de design**, e que a escolha do modo PIM define os limites do que é possível operacionalmente.
+
+📌 Esses aprendizados fundamentam a decisão estratégica de evoluir o cenário na **Parte 02**, adotando um modelo multicast **realmente bidirecional**, capaz de sustentar comunicação many-to-many de forma consistente.
+
+
+---
+
+Alterar Daqui
+
+---
 
 ## 🗺️ Fluxo conceitual do PIM BIDIR (*,G)
 
