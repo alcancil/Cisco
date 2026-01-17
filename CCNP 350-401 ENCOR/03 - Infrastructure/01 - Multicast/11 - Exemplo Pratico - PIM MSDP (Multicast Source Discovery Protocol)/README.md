@@ -142,31 +142,11 @@
     - [Captura das mensagens SA no Wireshark](#captura-das-mensagens-sa-no-wireshark)
     - [SA anunciadas corretamente, mas sem impacto no forwarding](#sa-anunciadas-corretamente-mas-sem-impacto-no-forwarding)
     - [O problema não é controle-plane, e sim data-plane / modelo de forwarding](#o-problema-não-é-controle-plane-e-sim-data-plane--modelo-de-forwarding)
-    - [🔀 Direção do tráfego no PIM BIDIR: upstream e downstream](#-direção-do-tráfego-no-pim-bidir-upstream-e-downstream)
-      - [🔺 Tráfego Upstream (em direção ao RP)](#-tráfego-upstream-em-direção-ao-rp)
-      - [🔻 Tráfego Downstream (a partir do RP)](#-tráfego-downstream-a-partir-do-rp)
-    - [🧠 Por que o tráfego “volta” a partir do RP?](#-por-que-o-tráfego-volta-a-partir-do-rp)
-    - [🔍 Verificação do Caminho RPF até o RP](#-verificação-do-caminho-rpf-até-o-rp)
-    - [🧠 O que esse comando realmente mostra](#-o-que-esse-comando-realmente-mostra)
-    - [🔎 Determinação do DF (Análise da Métrica Unicast)](#-determinação-do-df-análise-da-métrica-unicast)
-  - [IGMP / Receptores Multicast](#igmp--receptores-multicast)
-    - [🧠 Papel do IGMP no PIM BIDIR](#-papel-do-igmp-no-pim-bidir)
-    - [🖥️ Topologia dos Receptores](#️-topologia-dos-receptores)
-    - [🔧 Configuração do IGMP nas Interfaces de Acesso](#-configuração-do-igmp-nas-interfaces-de-acesso)
-    - [🖥️ Simulação dos Hosts Receptores](#️-simulação-dos-hosts-receptores)
-    - [🔍 Verificação dos Receptores no Roteador](#-verificação-dos-receptores-no-roteador)
-    - [🔍 Verificação do Estado Multicast no PIM](#-verificação-do-estado-multicast-no-pim)
-  - [Fontes Multicast – Cenário Many-to-Many](#fontes-multicast--cenário-many-to-many)
-    - [🧠 Conceito de Many-to-Many no PIM BIDIR](#-conceito-de-many-to-many-no-pim-bidir)
-    - [🖥️ Topologia das Fontes](#️-topologia-das-fontes)
-    - [Ajuste de Topologia — Fontes e Receptores no PIM BIDIR](#ajuste-de-topologia--fontes-e-receptores-no-pim-bidir)
-    - [🎥 Configuração das Fontes Multicast (Many-to-Many)](#-configuração-das-fontes-multicast-many-to-many)
-    - [🧠 Considerações sobre IGMP em Laboratórios BIDIR](#-considerações-sobre-igmp-em-laboratórios-bidir)
-    - [🟦 Configuração dos Servidores (Fontes)](#-configuração-dos-servidores-fontes)
-      - [🟦 Server02](#-server02)
-    - [🟩 Server03](#-server03)
-    - [Realizando testes - Simulando fluxo nos servidores](#realizando-testes---simulando-fluxo-nos-servidores)
-  - [🛠️ Troubleshooting (PIM BIDIR)](#️-troubleshooting-pim-bidir)
+  - [Fechamento da Parte 01 — Consolidação do Cenário](#fechamento-da-parte-01--consolidação-do-cenário)
+  - [Transição para a Parte 02 — Evolução do Design](#transição-para-a-parte-02--evolução-do-design)
+  - [Evolução do Design](#evolução-do-design)
+  - [🛠️ Troubleshooting — PIM Sparse Mode + MSDP](#️-troubleshooting--pim-sparse-mode--msdp)
+    - [Consideração final de troubleshooting](#consideração-final-de-troubleshooting)
   - [🧩 O que aprendemos com este laboratório (PIM BIDIR)](#-o-que-aprendemos-com-este-laboratório-pim-bidir)
   - [🎯 Principais aprendizados](#-principais-aprendizados)
   - [💡 Conclusões gerais](#-conclusões-gerais)
@@ -2722,647 +2702,91 @@ Este comportamento confirma que:
 - A limitação é inerente ao **modelo de forwarding do PIM Sparse Mode**
   
 Portanto, o MSDP **não corrige nem contorna** a natureza unidirecional e dependente de RP do PIM-SM em cenários **many-to-many** com múltiplos domínios multicast.  
+
+## Fechamento da Parte 01 — Consolidação do Cenário
+
+Com os testes realizados e os comportamentos observados, é possível consolidar de forma clara o resultado desta primeira etapa do laboratório.
+
+O objetivo inicial foi construir **dois domínios multicast independentes**, cada um com seu próprio RP, interligados por **MSDP**, para avaliar até onde essa arquitetura é capaz de escalar e atender cenários reais. Todas as decisões de design foram tomadas de forma consciente, priorizando **clareza didática** em vez de otimizações avançadas.
+
+Ao longo do laboratório, ficou comprovado que:
+
+- O **MSDP está plenamente funcional no plano de controle**
+- As mensagens **Source-Active (SA)** são trocadas corretamente entre os RPs
+- As fontes multicast são conhecidas entre os domínios
+- Não há falhas de configuração ou inconsistências de controle-plane
+
+Entretanto, o comportamento observado no **plano de dados** evidencia uma limitação estrutural:
+
+- O **PIM Sparse Mode é RP-centric**
+- O fluxo multicast depende de upstream e downstream bem definidos
+- O encaminhamento não é simétrico
+- Cenários **many-to-many distribuídos** não são atendidos de forma consistente
+- O MSDP **não resolve problemas de forwarding**, apenas de descoberta de fontes
+
+A ausência de respostas de determinados hosts e a presença recorrente de logs como **INVALID_RP_JOIN** não representam erro operacional, mas sim o funcionamento esperado do protocolo dentro desse modelo.
+
+Com isso, esta Parte 01 cumpre seu papel: **demonstrar na prática por que essa arquitetura não é aceitável em produção para determinados cenários**. O laboratório fecha seu arco lógico ao provar que a limitação não está na implementação, mas no **modelo de funcionamento do PIM Sparse Mode**.
+
+Este entendimento estabelece, de forma natural e técnica, a necessidade de evolução do design, preparando o terreno para a **Parte 02**, onde o uso do **PIM BIDIR** passa a ser não apenas uma alternativa, mas uma consequência direta do aprendizado obtido até aqui.
+
+## Transição para a Parte 02 — Evolução do Design
+
+A próxima etapa deste laboratório não deve ser interpretada como uma correção de falhas ou ajustes de configuração. A **Parte 02 representa uma evolução natural do design**, baseada nas limitações comprovadas empiricamente na Parte 01.
+
+O comportamento observado deixa claro que o problema não está no MSDP, nem no controle-plane, mas no **modelo de encaminhamento imposto pelo PIM Sparse Mode**, que é RP-centric e inerentemente direcional. Esse modelo não atende de forma consistente cenários **many-to-many**, especialmente quando há múltiplos domínios multicast interligados.
+
+Diante desse contexto, o **PIM BIDIR surge como uma resposta direta e técnica** à limitação observada. Ao eliminar a dependência de árvores direcionais por fonte e permitir **fluxo bidirecional nativo**, o BIDIR resolve o problema estrutural identificado neste laboratório.
+
+Assim, a Parte 02 não altera o objetivo original do cenário, mas o **evolui**, aplicando o modo de operação mais adequado ao tipo de comunicação multicast proposto desde o início.
+
+## Evolução do Design
+
+A próxima etapa deste laboratório não deve ser interpretada como uma correção de falhas ou ajustes de configuração. A **Parte 02 representa uma evolução natural do design**, baseada nas limitações comprovadas empiricamente na Parte 01.  
   
+O comportamento observado deixa claro que o problema não está no MSDP, nem no controle-plane, mas no **modelo de encaminhamento imposto pelo PIM Sparse Mode**, que é RP-centric e inerentemente direcional. Esse modelo não atende de forma consistente cenários **many-to-many**, especialmente quando há múltiplos domínios multicast interligados.
+
+Diante desse contexto, o **PIM BIDIR surge como uma resposta direta e técnica** à limitação observada. Ao eliminar a dependência de árvores direcionais por fonte e permitir **fluxo bidirecional nativo**, o BIDIR resolve o problema estrutural identificado neste laboratório.
+
+Assim, a Parte 02 não altera o objetivo original do cenário, mas o **evolui**, aplicando o modo de operação mais adequado ao tipo de comunicação multicast proposto desde o início.
+
+## 🛠️ Troubleshooting — PIM Sparse Mode + MSDP
+
+Esta seção tem como objetivo **interpretar sintomas observados no laboratório**, correlacionando-os com o funcionamento do **PIM Sparse Mode combinado com MSDP**.  
+O foco aqui **não é fornecer uma receita de correção**, mas sim apoiar o **diagnóstico técnico e o entendimento do comportamento do protocolo**.
+
+| **Sintoma Observado**      | **Interpretação Técnica**                         | **Comandos de Verificação**| **Observação Importante**                                     |
+|----------------------------|---------------------------------------------------|----------------------------|---------------------------------------------------------------|
+| **Entrada (*,G)** <br>     | Existe interesse no grupo, porém **não há fluxo** | `show ip mroute`           | Em PIM Sparse Mode, o forwarding depende de um <br>           |
+| **estado `stopped`**       | **de dados válido** atravessando o domínio        | `show ip igmp groups`      |  **upstream válido **até o RP ou até a fonte**                |
+| **Logs de** <br>           | O roteador recebeu um Join apontando para um      | `show ip pim rp`           | Comportamento **esperado** em ambientes com                   |
+| `%PIM-6-INVALID_RP_JOIN`   | **RP que não pertence ao seu domínio multicast**  | `show ip rpf <RP>`         | múltiplos domínios e RPs distintos                            |
+|  **SA-cache presente, mas**| O **MSDP está funcional**, porém apenas no        | `show ip msdp sa-cache`    | MSDP **não cria forwarding**, <br>                            |
+| **sem tráfego multicast**  | **plano de controle**                             | `show ip msdp peer`        | apenas anuncia fontes ativas                                  |
+| **Host responde apenas**   | O modelo RP-centric do Sparse Mode **não**        | `show ip rpf <source>`     | Limitação estrutural do Sparse Mode,                          |
+| **dentro do mesmo domínio**| **sustenta fluxo many-to-many entre domínios**    | `show ip mroute`           | não falha de configuração                                     |
+| **Ausência de tráfego**    | Falta de tráfego downstream ativo para sustentar  | Wireshark (PIM / MSDP      | O forwarding depende de **demanda ativa e simetria**          |
+| **multicast cruzando**     | o upstream                                        | / IGMP)                    | de fluxo, inexistente neste cenário                           |
+| **domínios**               |                                                   |                            |                                                               |
+| **SA announcements**       | Separação clara entre **controle-plane**          | Wireshark (MSDP SA messages)|  Evidência prática de que o problema **não é o MSDP**        |
+| **visíveis no Wireshark,** | e **data-plane**                                  |                            |                                                               |
+| **sem dados**              |                                                   |                            |                                                               |
+
+### Consideração final de troubleshooting
+
+Os sintomas observados **não indicam erro de implementação**, mas sim a **materialização das limitações do PIM Sparse Mode** quando aplicado a cenários com:
+
+- múltiplos domínios multicast  
+- múltiplos RPs  
+- comunicação many-to-many  
+
+Essa constatação fundamenta, de forma objetiva, a transição para o **PIM BIDIR** na Parte 02 do laboratório.
+
 ---
 
 Alterar Daqui
 
 ---
-
-### 🔀 Direção do tráfego no PIM BIDIR: upstream e downstream
-
-No **PIM BIDIR**, o conceito de direção de tráfego é sempre **relativo ao RP**, que atua como **raiz lógica da árvore compartilhada (*,G)**.
-
-#### 🔺 Tráfego Upstream (em direção ao RP)
-
-- Ocorre quando **uma fonte multicast começa a transmitir**
-- O tráfego é encaminhado **em direção ao RP**
-- Apenas o **DF de cada enlace** está autorizado a encaminhar esse tráfego
-- Esse mecanismo garante que **o fluxo suba pela árvore sem loops**
-
-👉 **Esse é o tráfego de inserção do multicast na árvore (*,G)**.
-
----
-
-#### 🔻 Tráfego Downstream (a partir do RP)
-
-Uma vez que o tráfego multicast **atinge logicamente o RP**, ele passa a ser encaminhado **para fora da árvore**, seguindo as **interfaces que possuem interesse registrado (*,G)**.
-
-Esse encaminhamento ocorre porque:
-
-- Os roteadores que possuem receptores enviaram **PIM Join (*,G)** em direção ao RP
-- Isso cria um caminho de retorno baseado em **RPF (Reverse Path Forwarding)**
-- O tráfego multicast é então replicado e enviado **pelas interfaces RPF válidas**
-
-👉 **Esse é o tráfego de distribuição multicast para os receptores**, caracterizando o fluxo **downstream**.
-
----
-
-### 🧠 Por que o tráfego “volta” a partir do RP?
-
-Embora o **RP não receba nem encaminhe dados diretamente**, ele define a **orientação lógica da árvore multicast**.
-
-No BIDIR:
-
-- O **upstream** garante que todas as fontes injetem tráfego de forma consistente
-- O **downstream** garante que os receptores recebam o tráfego corretamente
-- O **DF controla ambos os sentidos**, sempre baseado no caminho unicast até o RP
-
-Esse modelo permite que **múltiplas fontes e múltiplos receptores** compartilhem a mesma árvore multicast (*,G), mantendo **simplicidade, previsibilidade e ausência de loops**.
-
----
-
-### 🔍 Verificação do Caminho RPF até o RP
-
-O primeiro comando utilizado na análise é:
-
-```plaintext
-show ip rpf 1.1.1.1
-```
-
-📌 **Neste laboratório, o endereço 1.1.1.1 corresponde ao RP configurado.**
-
-### 🧠 O que esse comando realmente mostra
-
-O comando **show ip rpf** não exibe métricas nem declara explicitamente quem é o DF.  
-Ele responde apenas à seguinte pergunta:  
-
-> “Por qual interface e vizinho este roteador encaminharia tráfego multicast em direção ao RP?”
-  
-Ou seja, ele mostra:  
-
-- Interface RPF em direção ao RP
-- Next-hop (vizinho RPF)
-
-**R01**  
-
-```ios
-R01#show ip rpf 1.1.1.1
-RPF information for ? (1.1.1.1)
-  RPF interface: Loopback0
-  RPF neighbor: ? (1.1.1.1) - directly connected
-  RPF route/mask: 1.1.1.1/32
-  RPF type: unicast (connected)
-  RPF recursion count: 0
-  Doing distance-preferred lookups across tables
-R01#
-```
-
-**R02**  
-
-```ios
-R02#show ip rpf 1.1.1.1
-RPF information for ? (1.1.1.1)
-  RPF interface: FastEthernet0/1
-  RPF neighbor: ? (10.0.0.1)
-  RPF route/mask: 1.1.1.1/32
-  RPF type: unicast (ospf 100)
-  RPF recursion count: 0
-  Doing distance-preferred lookups across tables
-R02#
-```
-
-**R03**  
-
-```ios
-R03#show ip rpf 1.1.1.1
-RPF information for ? (1.1.1.1)
-  RPF interface: FastEthernet1/0
-  RPF neighbor: ? (10.0.0.5)
-  RPF route/mask: 1.1.1.1/32
-  RPF type: unicast (ospf 100)
-  RPF recursion count: 0
-  Doing distance-preferred lookups across tables
-R03#
-```
-
-**R04**  
-
-```ios
-R04#show ip rpf 1.1.1.1
-RPF information for ? (1.1.1.1)
-  RPF interface: FastEthernet0/1
-  RPF neighbor: ? (10.0.0.14)
-  RPF route/mask: 1.1.1.1/32
-  RPF type: unicast (ospf 100)
-  RPF recursion count: 0
-  Doing distance-preferred lookups across tables
-R04#
-```
-
-**R05**  
-
-```ios
-R05#show ip rpf 1.1.1.1
-RPF information for ? (1.1.1.1)
-  RPF interface: FastEthernet1/0
-  RPF neighbor: ? (10.0.0.18)
-  RPF route/mask: 1.1.1.1/32
-  RPF type: unicast (ospf 100)
-  RPF recursion count: 0
-  Doing distance-preferred lookups across tables
-R05#
-```
-  
-📌 **Esta saída não indica diretamente quem é o DF, apenas confirma por onde o tráfego multicast seguirá em direção ao RP.**
-
----
-
-### 🔎 Determinação do DF (Análise da Métrica Unicast)
-
-Como o **DF é escolhido com base na menor métrica unicast até o RP**, é necessário analisar a tabela de roteamento unicast.  
-Para isso, deve-se executar o seguinte comando em cada roteador do segmento:
-
-```ios
-show ip route 1.1.1.1
-```
-
-🔍 **O que observar na saída**
-
-- Protocolo de roteamento utilizado (OSPF)
-- Custo/métrica até o RP
-- Interface de saída
-
-**R01**  
-
-```ios
-R01#show ip route 1.1.1.1
-Routing entry for 1.1.1.1/32
-  Known via "connected", distance 0, metric 0 (connected, via interface)
-  Routing Descriptor Blocks:
-  * directly connected, via Loopback0
-      Route metric is 0, traffic share count is 1
-
-R01#
-```
-
-**R02**  
-
-```ios
-R02#show ip route 1.1.1.1
-Routing entry for 1.1.1.1/32
-  Known via "ospf 100", distance 110, metric 11, type intra area
-  Last update from 10.0.0.1 on FastEthernet0/1, 02:50:46 ago
-  Routing Descriptor Blocks:
-  * 10.0.0.1, from 1.1.1.1, 02:50:46 ago, via FastEthernet0/1
-      Route metric is 11, traffic share count is 1
-
-R02#
-```
-
-**R03**  
-
-```ios
-R03#show ip route 1.1.1.1
-Routing entry for 1.1.1.1/32
-  Known via "ospf 100", distance 110, metric 12, type intra area
-  Last update from 10.0.0.5 on FastEthernet1/0, 02:51:30 ago
-  Routing Descriptor Blocks:
-  * 10.0.0.5, from 1.1.1.1, 02:51:30 ago, via FastEthernet1/0
-      Route metric is 12, traffic share count is 1
-
-R03#
-```
-
-**R04**  
-
-```ios
-R04#show ip route 1.1.1.1
-Routing entry for 1.1.1.1/32
-  Known via "ospf 100", distance 110, metric 12, type intra area
-  Last update from 10.0.0.14 on FastEthernet0/1, 02:52:50 ago
-  Routing Descriptor Blocks:
-  * 10.0.0.14, from 1.1.1.1, 02:52:50 ago, via FastEthernet0/1
-      Route metric is 12, traffic share count is 1
-
-R04#
-```
-
-**R05**  
-
-```ios
-R05#show ip route 1.1.1.1
-Routing entry for 1.1.1.1/32
-  Known via "ospf 100", distance 110, metric 2, type intra area
-  Last update from 10.0.0.18 on FastEthernet1/0, 02:55:31 ago
-  Routing Descriptor Blocks:
-  * 10.0.0.18, from 1.1.1.1, 02:55:31 ago, via FastEthernet1/0
-      Route metric is 2, traffic share count is 1
-
-R05#
-```
-
-Com base na análise da tabela de roteamento unicast, observa-se que o R01 apresenta a **menor métrica OSPF** até o RP (1.1.1.1).  
-  
-📌 No IOS, a eleição do DF utiliza a **métrica unicast** (`route metric`) resultante do cálculo SPF, e não o *cost* individual de interfaces.
-  
-Dessa forma, o R01 é considerado o **Designated Forwarder (DF)** no segmento analisado.  
-
-📌 O roteador que apresentar o menor custo OSPF até o RP será o Designated Forwarder (DF) naquele segmento.  
-📌 Caso dois roteadores tenham custos idênticos, o endereço IP será utilizado como critério de desempate.  
-📌 Observação Importante sobre o IOS 12.4T  
-  
-**No IOS 12.4T:**  
-  
-- Não existe comando que exiba explicitamente o DF
-- O comando show ip pim interface não indica o papel de DF
-
-A identificação do DF é feita por dedução, com base:
-
-- no RPF em direção ao RP
-- na métrica unicast (OSPF)
-
-📌 Esse comportamento é esperado e faz parte das limitações das implementações mais antigas do IOS.  
-
-## IGMP / Receptores Multicast
-
-Com o RP BIDIR configurado e o DF já implicitamente eleito em cada segmento, o próximo passo do laboratório é a **introdução de receptores multicast**.  
-
-Neste item, o objetivo é:
-
-- Ativar **IGMP** nas redes de acesso
-- Simular **hosts receptores**
-- Verificar a criação dos estados (*,G) no domínio PIM BIDIR
-- Confirmar que **nenhum SPT é criado**
-  
-📌 Neste momento, **ainda não existem fontes multicast ativas**.  
-A análise continua focada no **plano de controle**, agora com participação do IGMP.  
-
----
-
-### 🧠 Papel do IGMP no PIM BIDIR
-
-O IGMP (Internet Group Management Protocol) é utilizado pelos **hosts** para informar aos roteadores que desejam **receber tráfego de um grupo multicast**.  
-
-No contexto do PIM BIDIR:
-
-- O IGMP **não dispara SPT**
-- O roteador de acesso envia **Join (*,G)** em direção ao RP
-- Toda a árvore multicast permanece **bidirecional e compartilhada**
-  
-📌 A presença de receptores é o que inicia a formação da árvore (*,G).  
-
----
-
-### 🖥️ Topologia dos Receptores
-
-Neste laboratório, os receptores estão conectados às redes de acesso, por exemplo:
-
-- **HOST02** → conectado ao R04
-- **HOST03** → conectado ao R05
-  
-Grupo multicast utilizado no cenário:
-
-- **239.1.1.1**
-
----
-
-### 🔧 Configuração do IGMP nas Interfaces de Acesso
-
-Nas interfaces que conectam os hosts receptores, é necessário garantir que o IGMP esteja ativo.  
-No IOS, o IGMP é habilitado automaticamente ao configurar PIM, mas o comando pode ser explicitado para fins didáticos.  
-
-📌 Configurar R04 e R05 (interface de acesso):
-
-**R04**  
-  
-```ios
-R04(config)# interface FastEthernet1/0
-R04(config-if)# ip pim sparse-mode
-R04(config-if)# ip igmp version 2
-```
-
-**R05**  
-
-```ios
-R05(config)#interface fastEthernet 0/0
-R05(config-if)#ip pim sparse-mode
-R05(config-if)#ip igmp version 2
-```
-
-**OBS:** só foi demonstrado nas interfaces de acesso de R04 e R05, mas por motivos de padronização o mesmo procedimento também dever ser feito em todos os demais roteadores para que todos utilizem a mesma versão de **IGMPv2**.
-
-### 🖥️ Simulação dos Hosts Receptores
-
-Nos hosts, é iniciado o ingresso no grupo multicast.  
-
-📌 Configurar em Host02 e Host03:  
-
-**Host02**  
-
-```ios
-HOST02(config)#int f0/0
-HOST02(config-if)#ip igmp
-HOST02(config-if)#ip igmp join-group 239.1.1.1
-```
-
-**Host03**  
-
-```ios
-HOST03(config)#int f0/0
-HOST03(config-if)#ip igmpp
-HOST03(config-if)#ip igmp join-group 239.1.1.1
-```
-
-### 🔍 Verificação dos Receptores no Roteador
-
-Após os hosts ingressarem no grupo, deve-se verificar se o roteador reconheceu os receptores IGMP.  
-
-```ios
-show ip igmp groups
-```
-
-Agora vamos checar os grupos em R04 e R05.  
-
-**R04**  
-
-```ios
-R04#show ip igmp groups
-IGMP Connected Group Membership
-Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
-239.1.1.1        FastEthernet1/0          00:00:38  00:02:26  192.168.20.1
-224.0.1.40       Loopback0                04:28:34  00:02:34  4.4.4.4
-R04#
-```
-  
-**R05**  
-
-```ios
-R05#show ip igmp groups
-IGMP Connected Group Membership
-Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
-239.1.1.1        FastEthernet0/0          00:07:18  00:02:41  192.168.30.1
-224.0.1.40       Loopback0                04:28:53  00:02:35  5.5.5.5
-R05#
-```
-  
-📌 Essa saída confirma:  
-
-- Existência de receptores
-- Interface de acesso associada ao grupo
-- Grupo multicast ativo no roteador
-
-### 🔍 Verificação do Estado Multicast no PIM
-
-Com receptores ativos, o domínio PIM BIDIR passa a manter estados (*,G).
-
-**R04**  
-
-```ios
-R04#show ip mroute
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 239.1.1.1), 00:21:03/00:02:48, RP 0.0.0.0, flags: SJC
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet1/0, Forward/Sparse, 00:19:33/00:02:48
-
-(*, 224.0.1.40), 04:47:28/00:02:43, RP 0.0.0.0, flags: DCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    Loopback0, Forward/Sparse, 04:47:28/00:02:43
-
-R04#
-```
-
-**R05**  
-
-```ios
-R05#show ip mroute
-IP Multicast Routing Table
-Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
-       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
-       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
-       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
-       U - URD, I - Received Source Specific Host Report,
-       Z - Multicast Tunnel, z - MDT-data group sender,
-       Y - Joined MDT-data group, y - Sending to MDT-data group
-Outgoing interface flags: H - Hardware switched, A - Assert winner
- Timers: Uptime/Expires
- Interface state: Interface, Next-Hop or VCD, State/Mode
-
-(*, 239.1.1.1), 00:40:14/00:02:49, RP 0.0.0.0, flags: SJC
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    FastEthernet0/0, Forward/Sparse, 00:26:03/00:02:49
-
-(*, 224.0.1.40), 04:47:38/00:02:54, RP 0.0.0.0, flags: DCL
-  Incoming interface: Null, RPF nbr 0.0.0.0
-  Outgoing interface list:
-    Loopback0, Forward/Sparse, 04:47:38/00:02:54
-
-R05#
-```
-  
-📌 **Pontos importantes da saída:**
-
-- Presença apenas de estados (*,G)
-- Flag B indicando modo BIDIR
-- Nenhum estado (S,G) criado
-
-## Fontes Multicast – Cenário Many-to-Many
-
-Com os receptores multicast já ativos e a árvore compartilhada (*,G) formada no domínio PIM BIDIR, o próximo passo do laboratório é a **introdução das fontes multicast**.
-
-Neste item, o objetivo é:
-
-- Ativar **múltiplas fontes multicast**
-- Demonstrar o comportamento **many-to-many**
-- Confirmar que o tráfego utiliza **exclusivamente a árvore (*,G)**
-- Validar que **não há criação de estados (S,G)**
-  
-📌 Diferente do PIM Sparse tradicional, **qualquer roteador pode ser fonte** em um ambiente BIDIR, sem depender de SPT.  
-
----
-
-### 🧠 Conceito de Many-to-Many no PIM BIDIR
-
-No PIM BIDIR:
-
-- Não existe distinção rígida entre **fonte** e **receptor**
-- Qualquer nó pode atuar como **fonte e receptor simultaneamente**
-- O tráfego multicast:
-  - Sobe em direção ao RP via DF
-  - É distribuído pela árvore compartilhada (*,G)
-
-📌 Todas as fontes utilizam a **mesma árvore bidirecional**.
-
----
-
-### 🖥️ Topologia das Fontes
-
-Neste laboratório, serão utilizadas **duas fontes multicast**:
-
-- **SERVER02** → conectado ao **R03**
-- **SERVER03** → conectado ao **R02**
-
-Grupo multicast utilizado:
-
-- **239.1.1.1**
-
-Ambos os hosts:
-
-- Enviam tráfego para o mesmo grupo
-- Operam de forma simultânea (many-to-many)
-
-### Ajuste de Topologia — Fontes e Receptores no PIM BIDIR
-
-Para que o comportamento do PIM Bidirectional seja corretamente demonstrado, foi necessário ajustar a posição das fontes multicast no laboratório.
-
-Inicialmente, o **Server01** estava conectado diretamente ao **R01**, que atua como **Rendezvous Point (RP)**. Embora a comunicação multicast funcione nesse cenário, essa topologia não evidencia adequadamente o funcionamento do **tráfego upstream no PIM BIDIR**, uma vez que a fonte está local ao RP, eliminando a necessidade de encaminhamento bidirecional no core da rede.
-
-Para demonstrar corretamente o modelo **many-to-many** e a construção dinâmica da tabela **mroute** com tráfego upstream e downstream, o laboratório foi ajustado da seguinte forma:
-
-- **Fontes multicast:**
-  - **Server02**, conectado ao **R03**
-  - **Server03**, conectado ao **R02**
-
-- **Receptores multicast:**
-  - **Host02**, conectado ao **R04**
-  - **Host03**, conectado ao **R05**
-
-O **Server01**, conectado ao **R01**, permanece no diagrama apenas como referência topológica e **não é utilizado como fonte de tráfego multicast neste laboratório**.
-
-Esse ajuste garante que o tráfego multicast atravesse múltiplos roteadores, permitindo a observação clara do comportamento do **PIM BIDIR**, incluindo o papel do **Designated Forwarder (DF)**, a criação de entradas **(*,G)** e a validação do fluxo bidirecional na rede.
-
-![Cenário01](Imagens/cenario01.png)
-  
-Essa separação garante a visualização correta do **encaminhamento upstream e downstream**, bem como da atuação do **Designated Forwarder (DF)** nos segmentos BIDIR.  
-
----
-
-### 🎥 Configuração das Fontes Multicast (Many-to-Many)
-
-Neste ponto do laboratório, inicia-se a simulação de **fontes multicast many-to-many**, característica fundamental do **PIM BIDIR**.
-
-⚠️ **Observação importante sobre o cenário**  
-Embora exista um **Server01 conectado diretamente ao R01 (RP)**, ele **não será utilizado como fonte de tráfego multicast** neste laboratório.  
-Uma fonte conectada diretamente ao RP não permite observar corretamente o comportamento **upstream bidirecional**, pois não há encaminhamento real em direção ao RP.
-
----
-
-### 🧠 Considerações sobre IGMP em Laboratórios BIDIR
-
-Em ambientes reais, **fontes multicast não executam IGMP join-group**.  
-O envio de tráfego multicast é iniciado diretamente pela aplicação, enquanto **IGMP é utilizado exclusivamente pelos receptores**.  
-  
-Entretanto, como neste laboratório os servidores são **roteadores Cisco simulando hosts**, não existe uma aplicação multicast real (como VLC, ffmpeg ou encoders de vídeo).  
-  
-📌 Por esse motivo:
-
-- **Não utilizamos `ip igmp join-group` nos servidores**
-- Utilizamos **ping para endereços multicast** apenas para **simular a geração de tráfego**
-- O IGMPv2 é configurado nas interfaces para manter consistência com o cenário
-
----
-
-### 🟦 Configuração dos Servidores (Fontes)
-
-Nos servidores simulados, apenas garantimos o uso do **IGMPv2** na interface conectada ao roteador de acesso.
-
-#### 🟦 Server02
-
-```ios
-interface FastEthernet0/0
- ip igmp version 2
-```
-
-### 🟩 Server03
-
-```ios
-interface FastEthernet0/0
- ip igmp version 2
-```
-
-Cada servidor atuará como **fonte multicast independente**, representando aplicações distintas em um ambiente **many-to-many**.
-
-### Realizando testes - Simulando fluxo nos servidores
-
-Agora vamos entrar em **Server03** e executar:
-
-`ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0`  
-  
-Demos entrar em **Server02** e executar também:  
-
-`ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0`  
-  
-Devemos ter uma saída assim:  
-
-**Server03**  
-
-```ios
-SERVER03#ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0
-
-Type escape sequence to abort.
-Sending 1000, 1500-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-Packet sent with a source address of 192.168.50.1
-....
-Reply to request 4 from 192.168.20.1, 24 ms
-Reply to request 4 from 192.168.30.1, 52 ms
-Reply to request 5 from 192.168.30.1, 104 ms
-Reply to request 5 from 192.168.20.1, 144 ms
-Reply to request 6 from 192.168.30.1, 128 ms
-Reply to request 6 from 192.168.20.1, 164 ms
-Reply to request 7 from 192.168.30.1, 112 ms
-Reply to request 7 from 192.168.20.1, 148 ms
-```
-
-**SERVER02**.  
-
-```ios
-SERVER02#ping 239.1.1.1 repeat 1000 size 1500 source Fa0/0
-
-Type escape sequence to abort.
-Sending 1000, 1500-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
-Packet sent with a source address of 192.168.40.1
-.
-Reply to request 1 from 192.168.20.1, 72 ms
-Reply to request 1 from 192.168.30.1, 84 ms
-Reply to request 2 from 192.168.20.1, 112 ms
-Reply to request 2 from 192.168.30.1, 148 ms
-Reply to request 3 from 192.168.30.1, 120 ms
-Reply to request 3 from 192.168.20.1, 156 ms
-Reply to request 4 from 192.168.20.1, 120 ms
-Reply to request 4 from 192.168.30.1, 156 ms
-Reply to request 5 from 192.168.20.1, 120 ms
-Reply to request 5 from 192.168.30.1, 156 ms
-Reply to request 6 from 192.168.20.1, 164 ms
-Reply to request 6 from 192.168.30.1, 200 ms
-Reply to request 7 from 192.168.20.1, 132 ms
-Reply to request 7 from 192.168.30.1, 200 ms
-Reply to request 8 from 192.168.20.1, 112 ms
-Reply to request 8 from 192.168.30.1, 148 ms
-```
-
-## 🛠️ Troubleshooting (PIM BIDIR)
-
-| **Sintoma**                       | **Causa Provável**                       | **Comandos de Verificação** | **Correção / Observação**                                      |
-|-----------------------------------|------------------------------------------|-----------------------------|----------------------------------------------------------------|
-| **Não aparecem entradas (*,G) no  |                                          |                             |                                                                |
-| `show ip mroute`**                | Não há receptores IGMP                   | `show ip igmp groups`       | Verificar se os hosts realizaram join no grupo                 |
-|                                   | PIM não habilitado na interface          | `show ip pim interface`     | Ativar `ip pim sparse-mode` na interface                       |
-|                                   | RP BIDIR não configurado                 | `show ip pim rp`            | Configurar `ip pim rp-address <RP> bidir`                      |
-| **Grupo aparece como “stopped”**  | Não há tráfego multicast ativo           | `show ip mroute count`      | Gerar tráfego multicast (ping multicast)                       |
-|                                   | Apenas join, sem envio                   | `show ip igmp groups`       | Confirmar que existe fonte transmitindo                        |
-| **Tráfego multicast não atravessa o enlace** | Roteador não é o DF do segmento | `show ip pim interface`     | Verificar eleição do DF (custo até o RP)                     |
-|                                   | Métrica até o RP maior que o vizinho     | `show ip route <RP>`        | Ajustar custo IGP                                              |
-| **Tráfego não chega ao RP**       | Falha de RPF em direção ao RP            | `show ip rpf <RP>`          | Corrigir roteamento unicast até o RP                           |
-|                                   | Rota inconsistente                       | `show ip route`             | Garantir convergência do IGP                                   |
-| **Sem vizinhos PIM**              | Interface incorreta ou PIM ausente       | `show ip pim neighbor`      | Habilitar PIM na interface correta                             |
-|                                   | Problema de camada 2 / adjacência        | `show ip ospf interface`    | Verificar estado L2/L3                                         |
-| **Host não recebe tráfego multicast** | Host não realizou join IGMP          | `show ip igmp groups`       | Verificar configuração do host                                 |
-|                                   | Interface de saída não eleita DF         | `show ip pim interface`     | Confirmar DF no segmento                                       |
-| **Ping multicast responde apenas localmente** | **Comportamento esperado** no ICMP multicast | —  | Ping multicast é usado **apenas para gerar tráfego**, não para resposta |
 
 ## 🧩 O que aprendemos com este laboratório (PIM BIDIR)
 
