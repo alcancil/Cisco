@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Multicast</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Multicast</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Multicast. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+    question: "Qual protocolo foi mencionado como uma das primeiras tentativas de integrar multicast ao OSPF?",
+    options: ["DVMRP", "MOSPF", "PIM-DM", "IGMP"],
+    answer: "MOSPF",
+    explanation: "O MOSPF (Multicast Extensions to OSPF) foi uma das primeiras tentativas de integrar funcionalidades multicast ao protocolo OSPF, mas tinha limitações significativas em termos de escalabilidade."
+  },
+  {
+    question: "Segundo o material, qual é a principal limitação do IGMP em relação ao roteamento multicast?",
+    options: ["Não funciona com IPv6", "Opera apenas no escopo da rede local", "Consome muita memória", "É incompatível com PIM"],
+    answer: "Opera apenas no escopo da rede local",
+    explanation: "O IGMP permite que hosts participem de grupos multicast e sinalizem interesse, porém opera apenas no escopo da rede local e não tem capacidade de rotear pacotes multicast entre múltiplas redes."
+  },
+  {
+    question: "Na representação visual, qual símbolo indica que o PIM constrói árvores de distribuição inteligentes?",
+    options: ["❌ (X vermelho)", "✅ (Check verde)", "🔄 (Setas circulares)", "📡 (Antena)"],
+    answer: "✅ (Check verde)",
+    explanation: "O material usa o símbolo ✅ (check verde) para indicar que 'PIM constrói árvores de distribuição inteligentes', contrastando com o ❌ que mostra as limitações dos protocolos anteriores."
+  },
+  {
+    question: "Qual é a notação utilizada para representar uma Shared Tree no PIM?",
+    options: ["(S,G)", "(*,G)", "(G,S)", "(*,S)"],
+    answer: "(*,G)",
+    explanation: "A notação (*,G) representa uma Shared Tree (Árvore Compartilhada), onde '*' indica qualquer origem e 'G' representa o grupo multicast. Todas as origens do mesmo grupo compartilham a mesma árvore."
+  },
+  {
+    question: "Segundo o material, o que acontece quando o PIM não transporta o tráfego dos pacotes entre roteadores multicast?",
+    options: ["Os pacotes são descartados", "Ele consulta a tabela de roteamento unicast", "Cria uma nova rota", "Usa broadcast"],
+    answer: "Ele consulta a tabela de roteamento unicast",
+    explanation: "Como o PIM não transporta tráfego por si só, ele consulta a tabela de roteamento unicast formada por protocolos como BGP, OSPF, RIP, BGP, etc., ou até mesmo rotas estáticas para determinar os caminhos."
+  },
+  {
+    question: "Qual modo do PIM é descrito como adequado principalmente para IPTV e streaming?",
+    options: ["PIM Dense Mode", "PIM Sparse Mode", "PIM Source-Specific Multicast (SSM)", "PIM Bidirectional"],
+    answer: "PIM Source-Specific Multicast (SSM)",
+    explanation: "O PIM-SSM é destacado como sendo utilizado principalmente em IPTV e streaming, pois os receptores especificam tanto a origem quanto o grupo, eliminando problemas de segurança do multicast tradicional."
+  },
+  {
+    question: "Qual é a principal característica da Source Tree (S,G) em relação à latência?",
+    options: ["Maior latência devido ao processamento", "Latência variável", "Oferece a menor latência possível", "Latência igual à Shared Tree"],
+    answer: "Oferece a menor latência possível",
+    explanation: "A Source Tree (S,G) utiliza o caminho mais curto da origem para cada receptor, oferecendo a menor latência possível, embora consuma mais memória nos roteadores."
+  },
+  {
+    question: "De acordo com as características apresentadas, qual é uma desvantagem da Shared Tree (*,G)?",
+    options: ["Consome mais memória", "Não oferece o caminho mais curto", "É incompatível com PIM-SM", "Funciona apenas com uma origem"],
+    answer: "Não oferece o caminho mais curto",
+    explanation: "A Shared Tree (*,G) utiliza um ponto central (Rendezvous Point), consome menos memória, mas pode não oferecer o caminho mais curto entre origem e receptor, sendo esta sua principal desvantagem."
+  },
+  {
+    question: "Qual protocolo é mencionado como exemplo junto com BGP, OSPF e RIP na consulta da tabela RIB pelo PIM?",
+    options: ["EIGRP", "ISIS", "Rotas estáticas", "MPLS"],
+    answer: "Rotas estáticas",
+    explanation: "O material menciona que o PIM consulta a tabela RIB que pode ser formada por protocolos como BGP, OSPF, RIP, BGP, etc., ou até mesmo rotas estáticas, demonstrando sua independência de protocolo."
+  },
+  {
+    question: "Segundo o fluxograma apresentado, o que o PIM usa para construir árvores de distribuição?",
+    options: ["Apenas informações IGMP", "Protocolos IGMP, EIGRP, etc.", "Informações de roteamento da tabela RIB", "Configurações manuais"],
+    answer: "Informações de roteamento da tabela RIB",
+    explanation: "O fluxograma mostra que o PIM consulta a tabela RIB (Routing Information Base) e usa essas informações para construir árvores de distribuição multicast para definir caminhos otimizados."
+  }
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

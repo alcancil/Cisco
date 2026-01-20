@@ -1,0 +1,134 @@
+<svg width="1000" height="800" viewBox="0 0 1000 800" style="background-color:#121212; font-family: 'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <style>
+      .text-label { fill: white; font-size: 14px; text-anchor: middle; }
+      .text-label-left { fill: white; font-size: 14px; text-anchor: end; }
+      .text-label-right { fill: white; font-size: 14px; text-anchor: start; }
+      .packet-join { fill: #00ff00; }
+      .packet-data { fill: #ffffff; }
+      .device { fill: #2c3e50; stroke: #34495e; stroke-width: 2; }
+      .cable { stroke: #3498db; stroke-width: 5; }
+      .arrow { fill: #3498db; }
+      .legend-rect { fill: #2c3e50; stroke: #34495e; stroke-width: 1; }
+      .legend-text { fill: white; font-size: 12px; }
+      .text-bold { font-weight: bold; }
+    </style>
+    
+    <circle id="packet1" r="5" class="packet-join">
+      <animateMotion path="M185 680 C185 680, 185 640, 185 580" begin="2s" dur="2s" fill="freeze" />
+      <animateMotion path="M185 580 C185 580, 240 500, 295 440" begin="4s" dur="2s" fill="freeze" />
+    </circle>
+    <circle id="packet2" r="5" class="packet-join">
+      <animateMotion path="M815 680 C815 680, 815 640, 815 580" begin="2s" dur="2s" fill="freeze" />
+      <animateMotion path="M815 580 C815 580, 760 500, 705 440" begin="4s" dur="2s" fill="freeze" />
+    </circle>
+    <circle id="packet3" r="5" class="packet-data">
+      <animateMotion path="M500 150 C500 150, 400 250, 295 440" begin="7s" dur="3s" fill="freeze" />
+      <animateMotion path="M295 440 C295 440, 240 500, 185 580" begin="10s" dur="2s" fill="freeze" />
+      <animateMotion path="M185 580 C185 580, 185 640, 185 680" begin="12s" dur="2s" fill="freeze" />
+    </circle>
+    <circle id="packet4" r="5" class="packet-data">
+      <animateMotion path="M500 150 C500 150, 600 250, 705 440" begin="7s" dur="3s" fill="freeze" />
+      <animateMotion path="M705 440 C705 440, 760 500, 815 580" begin="10s" dur="2s" fill="freeze" />
+      <animateMotion path="M815 580 C815 580, 815 640, 815 680" begin="12s" dur="2s" fill="freeze" />
+    </circle>
+    <circle id="packet5" r="5" class="packet-data">
+      <animateMotion path="M500 150 C500 150, 340 300, 295 440" begin="15s" dur="2s" fill="freeze" />
+      <animateMotion path="M295 440 C295 440, 185 500, 185 580" begin="17s" dur="2s" fill="freeze" />
+      <animateMotion path="M185 580 C185 580, 185 640, 185 680" begin="19s" dur="2s" fill="freeze" />
+    </circle>
+    <circle id="packet6" r="5" class="packet-data">
+      <animateMotion path="M500 150 C500 150, 660 300, 705 440" begin="15s" dur="2s" fill="freeze" />
+      <animateMotion path="M705 440 C705 440, 815 500, 815 580" begin="17s" dur="2s" fill="freeze" />
+      <animateMotion path="M815 580 C815 580, 815 640, 815 680" begin="19s" dur="2s" fill="freeze" />
+    </circle>
+  </defs>
+
+  <text x="500" y="40" class="text-bold" style="fill:white; font-size:24px; text-anchor:middle;">Fluxo Multicast na Rede</text>
+
+  <g id="legend" transform="translate(10, 10)">
+    <rect width="180" height="150" rx="5" ry="5" class="legend-rect" />
+    <text x="90" y="20" class="legend-text text-bold" text-anchor="middle">Legenda</text>
+    <text x="10" y="40" class="legend-text"><tspan style="font-size:18px;">🌐</tspan> Fonte</text>
+    <text x="10" y="60" class="legend-text"><tspan style="font-size:18px;">💻</tspan> Receptor</text>
+    <text x="10" y="80" class="legend-text"><tspan style="font-size:18px;">📡</tspan> Roteador</text>
+    <circle cx="20" cy="100" r="5" fill="#00ff00" />
+    <text x="30" y="105" class="legend-text">IGMP / PIM JOIN</text>
+    <circle cx="20" cy="120" r="5" fill="#ffffff" />
+    <text x="30" y="125" class="legend-text">Tráfego de Dados</text>
+  </g>
+
+  <text x="500" y="760" class="text-bold" style="fill:#00ff00; font-size:20px; opacity:0;">
+    Fase 1: IGMP JOIN (Descoberta)
+    <animate attributeName="opacity" values="0;1;1;0" dur="4s" begin="2s" fill="freeze" />
+  </text>
+  <text x="500" y="760" class="text-bold" style="fill:#00ff00; font-size:20px; opacity:0;">
+    Fase 2: PIM JOIN (Construção da Árvore)
+    <animate attributeName="opacity" values="0;1;1;0" dur="4s" begin="4s" fill="freeze" />
+  </text>
+  <text x="500" y="760" class="text-bold" style="fill:#ffffff; font-size:20px; opacity:0;">
+    Fase 3: Tráfego RPT (Caminho via RP)
+    <animate attributeName="opacity" values="0;1;1;0" dur="7s" begin="7s" fill="freeze" />
+  </text>
+  <text x="500" y="760" class="text-bold" style="fill:#ffffff; font-size:20px; opacity:0;">
+    Fase 4: Tráfego SPT (Caminho Otimizado)
+    <animate attributeName="opacity" values="0;1;1;0" dur="7s" begin="15s" fill="freeze" />
+  </text>
+  
+  <g id="network">
+    <line x1="500" y1="180" x2="500" y2="280" class="cable" />
+    <line x1="500" y1="280" x2="295" y2="420" class="cable" />
+    <line x1="500" y1="280" x2="705" y2="420" class="cable" />
+    <line x1="295" y1="420" x2="295" y2="580" class="cable" />
+    <line x1="705" y1="420" x2="705" y2="580" class="cable" />
+    <line x1="295" y1="420" x2="705" y2="420" class="cable" />
+    <line x1="295" y1="580" x2="185" y2="680" class="cable" />
+    <line x1="705" y1="580" x2="815" y2="680" class="cable" />
+
+    <line x1="500" y1="180" x2="185" y2="580" class="cable" stroke-dasharray="8,8" opacity="0">
+      <animate attributeName="opacity" values="0;1" begin="15s" dur="2s" fill="freeze" />
+    </line>
+    <line x1="500" y1="180" x2="815" y2="580" class="cable" stroke-dasharray="8,8" opacity="0">
+      <animate attributeName="opacity" values="0;1" begin="15s" dur="2s" fill="freeze" />
+    </line>
+    
+    <rect x="450" y="100" width="100" height="80" rx="10" ry="10" class="device" />
+    <text x="500" y="140" class="text-label" style="font-size: 24px;">🌐</text>
+    <text x="500" y="165" class="text-label">Fonte Multicast</text>
+
+    <rect x="450" y="280" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="500" y="315" class="text-label" style="font-size: 20px;">📡</text>
+    <text x="500" y="335" class="text-label">R1 (FHR)</text>
+
+    <rect x="245" y="420" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="295" y="455" class="text-label" style="font-size: 20px;">📡</text>
+    <text x="295" y="475" class="text-label">R2 (RP)</text>
+
+    <rect x="655" y="420" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="705" y="455" class="text-label" style="font-size: 20px;">📡</text>
+    <text x="705" y="475" class="text-label">R3</text>
+
+    <rect x="245" y="580" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="295" y="615" class="text-label" style="font-size: 20px;">📡</text>
+    <text x="295" y="635" class="text-label">R4 (LHR)</text>
+
+    <rect x="655" y="580" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="705" y="615" class="text-label" style="font-size: 20px;">📡</text>
+    <text x="705" y="635" class="text-label">R5 (LHR)</text>
+
+    <rect x="135" y="680" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="185" y="715" class="text-label" style="font-size: 20px;">💻</text>
+    <text x="185" y="735" class="text-label">Receptor</text>
+    
+    <rect x="765" y="680" width="100" height="60" rx="10" ry="10" class="device" />
+    <text x="815" y="715" class="text-label" style="font-size: 20px;">💻</text>
+    <text x="815" y="735" class="text-label">Receptor</text>
+
+    <use href="#packet1" />
+    <use href="#packet2" />
+    <use href="#packet3" />
+    <use href="#packet4" />
+    <use href="#packet5" />
+    <use href="#packet6" />
+  </g>
+</svg>
