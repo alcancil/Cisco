@@ -270,13 +270,6 @@ A combinação de **PIM BIDIR com MSDP** é amplamente utilizada em ambientes re
 
 ---
 
-
----
-
-Alterar Daqui
-
----
-
 ## 🧠 Explicação do Cenário
 
 Este laboratório parte **diretamente do ambiente construído na Parte 01**, onde o roteamento unicast já se encontra **totalmente funcional por meio do OSPF**, garantindo conectividade IP completa entre todas as sub-redes. Esse ponto é fundamental, pois tanto o **PIM** quanto o **MSDP** dependem diretamente da convergência do plano unicast para o cálculo correto de RPF e para o estabelecimento das sessões de controle.  
