@@ -16,16 +16,14 @@
   - [🧭 Estrutura do Roteamento Unicast](#-estrutura-do-roteamento-unicast)
     - [📡 Grupos Multicast no cenário com PIM BIDIR e MSDP](#-grupos-multicast-no-cenário-com-pim-bidir-e-msdp)
     - [🧩 Conclusão](#-conclusão)
-    - [🛰️ O que muda ao introduzir o MSDP no ambiente multicast](#️-o-que-muda-ao-introduzir-o-msdp-no-ambiente-multicast)
-      - [🔹 1️⃣ O papel do IGMP em ambientes com MSDP](#-1️⃣-o-papel-do-igmp-em-ambientes-com-msdp)
-      - [🔀 2️⃣ MSDP e a troca de informações entre RPs](#-2️⃣-msdp-e-a-troca-de-informações-entre-rps)
-      - [🛰️ 3️⃣ Quando as fontes começam a transmitir](#️-3️⃣-quando-as-fontes-começam-a-transmitir)
-      - [📡 4️⃣ Vantagens do PIM-SM com MSDP](#-4️⃣-vantagens-do-pim-sm-com-msdp)
-  - [🌐 Topologia do Laboratório](#-topologia-do-laboratório)
-    - [🖼️ Topologia Lógica – Domínios Multicast e RPs](#️-topologia-lógica--domínios-multicast-e-rps)
-    - [🔧 Endereçamento e Funções](#-endereçamento-e-funções)
-    - [📡 Grupos Multicast no cenário com MSDP – resumo](#-grupos-multicast-no-cenário-com-msdp--resumo)
-    - [🧭 Resumo da Lógica](#-resumo-da-lógica)
+  - [🔁 O que não muda ao migrar de PIM-SM para PIM BIDIR](#-o-que-não-muda-ao-migrar-de-pim-sm-para-pim-bidir)
+  - [🎯 Por que o MSDP passa a funcionar de forma mais previsível com PIM BIDIR ?](#-por-que-o-msdp-passa-a-funcionar-de-forma-mais-previsível-com-pim-bidir-)
+  - [🧠 Por que o problema nunca foi o MSDP](#-por-que-o-problema-nunca-foi-o-msdp)
+  - [🌐 Topologia Lógica e Evolução do Laboratório](#-topologia-lógica-e-evolução-do-laboratório)
+    - [🧠 Visão Lógica do Multicast na Parte 02](#-visão-lógica-do-multicast-na-parte-02)
+    - [🔧 O que muda em relação à Parte 01](#-o-que-muda-em-relação-à-parte-01)
+    - [📡 Grupos Multicast no cenário PIM BIDIR + MSDP](#-grupos-multicast-no-cenário-pim-bidir--msdp)
+    - [🧭 Resumo da Lógica na Parte 02](#-resumo-da-lógica-na-parte-02)
   - [🧠 O que é um Domínio Multicast?](#-o-que-é-um-domínio-multicast)
     - [🔹 Um grupo multicast pode existir em mais de um domínio?](#-um-grupo-multicast-pode-existir-em-mais-de-um-domínio)
     - [🔹 O que acontece sem MSDP?](#-o-que-acontece-sem-msdp)
@@ -278,50 +276,50 @@ A topologia física em anel foi mantida propositalmente para reforçar um concei
   
 ![cenário](Imagens/cenario.png)
 
-O cenário utiliza os mesmos roteadores e enlaces da Parte 01, preservando a topologia original para permitir uma comparação direta de comportamento. Os roteadores são responsáveis tanto pelo encaminhamento unicast quanto multicast, enquanto os hosts representam **fontes e receptores multicast distribuídos entre domínios distintos**.
-
-Os dispositivos finais (hosts e servidores) permanecem configurados exclusivamente com **endereçamento IP e IGMP**, sem participação em protocolos de roteamento dinâmico, refletindo o comportamento esperado de dispositivos finais em ambientes multicast reais.
-
-A principal mudança introduzida nesta etapa está no **modelo de distribuição multicast**. Embora os **RPs continuem distintos por domínio** e as **sessões MSDP permaneçam ativas entre eles**, o PIM deixa de operar no modo Sparse tradicional e passa a utilizar **PIM Bidirectional (BIDIR)**, ajustando o comportamento do data-plane multicast sem alterar o papel do MSDP no plano de controle.
-
+O cenário utiliza os mesmos roteadores e enlaces da Parte 01, preservando a topologia original para permitir uma comparação direta de comportamento. Os roteadores são responsáveis tanto pelo encaminhamento unicast quanto multicast, enquanto os hosts representam **fontes e receptores multicast distribuídos entre domínios distintos**.  
+  
+Os dispositivos finais (hosts e servidores) permanecem configurados exclusivamente com **endereçamento IP e IGMP**, sem participação em protocolos de roteamento dinâmico, refletindo o comportamento esperado de dispositivos finais em ambientes multicast reais.  
+  
+A principal mudança introduzida nesta etapa está no **modelo de distribuição multicast**. Embora os **RPs continuem distintos por domínio** e as **sessões MSDP permaneçam ativas entre eles**, o PIM deixa de operar no modo Sparse tradicional e passa a utilizar **PIM Bidirectional (BIDIR)**, ajustando o comportamento do data-plane multicast sem alterar o papel do MSDP no plano de controle.  
+  
 ---
 
 ## 🌐 Multicast inter-domínios com PIM BIDIR
 
-Em cada domínio multicast, o **PIM BIDIR** passa a operar utilizando uma **árvore compartilhada (*,G) permanente**, tendo o RP como **root lógico estável** da distribuição multicast.
-
-Diferentemente do PIM Sparse Mode tradicional, não ocorre transição para estados (S,G) nem criação dinâmica de árvores específicas por fonte. Todo o tráfego multicast, independentemente da origem, é encaminhado ao longo da árvore compartilhada ancorada no RP.
-
+Em cada domínio multicast, o **PIM BIDIR** passa a operar utilizando uma **árvore compartilhada (*,G) permanente**, tendo o RP como **root lógico estável** da distribuição multicast.  
+  
+Diferentemente do PIM Sparse Mode tradicional, não ocorre transição para estados (S,G) nem criação dinâmica de árvores específicas por fonte. Todo o tráfego multicast, independentemente da origem, é encaminhado ao longo da árvore compartilhada ancorada no RP.  
+  
 Cada domínio multicast mantém de forma independente:
 
 - Seu RP local;
 - Sua árvore multicast (*,G);
 - Seu controle de associação de receptores via IGMP.
-
+  
 Sem o uso do MSDP, esses domínios continuariam isolados do ponto de vista de descoberta de fontes multicast, mesmo com o modelo BIDIR. É nesse ponto que o MSDP permanece essencial.
 
 ---
 
 ## 🔄 O papel do MSDP no cenário com PIM BIDIR
 
-O **MSDP continua atuando exclusivamente no plano de controle**, permitindo que os **RPs dos diferentes domínios multicast compartilhem informações sobre fontes multicast ativas** por meio das mensagens **Source-Active (SA)**.
-
-É importante reforçar que:
-
+O **MSDP continua atuando exclusivamente no plano de controle**, permitindo que os **RPs dos diferentes domínios multicast compartilhem informações sobre fontes multicast ativas** por meio das mensagens **Source-Active (SA)**.  
+  
+É importante reforçar que:  
+  
 - O MSDP **não transporta tráfego multicast**;
 - O MSDP **não cria estados de encaminhamento**;
-- Seu papel é fornecer **visibilidade interdomínios sobre as fontes multicast**.
-
-No contexto do **PIM BIDIR**, essas informações não acionam a criação de estados (S,G). Em vez disso, o MSDP complementa o modelo BIDIR ao garantir que os RPs tenham conhecimento das fontes ativas em outros domínios, enquanto o encaminhamento permanece estável e simétrico sobre a árvore (*,G).
-
+- Seu papel é fornecer **visibilidade inter-domínios sobre as fontes multicast**.
+  
+No contexto do **PIM BIDIR**, essas informações não acionam a criação de estados (S,G). Em vez disso, o MSDP complementa o modelo BIDIR ao garantir que os RPs tenham conhecimento das fontes ativas em outros domínios, enquanto o encaminhamento permanece estável e simétrico sobre a árvore (*,G).  
+  
 ---
-
+  
 ## 🧩 Fontes e Receptores no Cenário
-
-As fontes e os receptores multicast permanecem distribuídos entre os dois domínios multicast, exatamente como na Parte 01. Cada fonte é registrada localmente em seu domínio, enquanto os receptores utilizam **IGMP** para expressar interesse nos grupos multicast.
-
-A diferença fundamental nesta etapa é que, com o uso do **PIM BIDIR**, todos os receptores passam a receber o tráfego multicast de forma consistente, independentemente do domínio onde a fonte esteja localizada.
-
+  
+As fontes e os receptores multicast permanecem distribuídos entre os dois domínios multicast, exatamente como na Parte 01. Cada fonte é registrada localmente em seu domínio, enquanto os receptores utilizam **IGMP** para expressar interesse nos grupos multicast.  
+  
+A diferença fundamental nesta etapa é que, com o uso do **PIM BIDIR**, todos os receptores passam a receber o tráfego multicast de forma consistente, independentemente do domínio onde a fonte esteja localizada.  
+  
 | Função         | Dispositivo | Rede/Sub-rede   | Interface | Endereço IP     | Descrição                                  |
 |----------------|-------------|-----------------|-----------|-----------------|--------------------------------------------|
 | Fonte 1        | SERVER01    | 192.168.10.0/24 | fa0/0     | 192.168.10.1    | Fonte multicast no Domínio A               |
@@ -334,206 +332,182 @@ A diferença fundamental nesta etapa é que, com o uso do **PIM BIDIR**, todos o
 ---
 
 ## 🧭 Estrutura do Roteamento Unicast
-
-Todos os roteadores participam de uma **única área OSPF (Área 0)**, fornecendo a base estável para:
-
+  
+Todos os roteadores participam de uma **única área OSPF (Área 0)**, fornecendo a base estável para:  
+  
 - Cálculo correto de RPF em relação ao RP;
 - Encaminhamento previsível do tráfego multicast;
 - Estabelecimento e manutenção das sessões MSDP;
 - Convergência adequada em cenários de falha.
-
-O OSPF permanece inalterado em relação à Parte 01, reforçando que a evolução do laboratório ocorre exclusivamente no **modelo multicast**, e não no plano unicast.
-
+  
+O OSPF permanece inalterado em relação à Parte 01, reforçando que a evolução do laboratório ocorre exclusivamente no **modelo multicast**, e não no plano unicast.  
+  
 ---
-
+  
 ### 📡 Grupos Multicast no cenário com PIM BIDIR e MSDP
-
-Neste laboratório, os grupos multicast são utilizados em um **ambiente ASM com PIM BIDIR**, mantendo **RPs distintos por domínio multicast** e **MSDP ativo entre eles**.
-
-| Grupo Multicast | Modelo PIM | Comportamento Esperado                                                                 |
-|-----------------|------------|----------------------------------------------------------------------------------------|
-| 239.1.1.1       | (*,G) BIDIR| Encaminhamento via árvore compartilhada (*,G), com visibilidade interdomínios via MSDP |
-
-Nesse modelo, o estado multicast permanece **exclusivamente em (*,G)**, eliminando a complexidade associada à criação e manutenção de estados (S,G).
-
+  
+Neste laboratório, os grupos multicast são utilizados em um **ambiente ASM com PIM BIDIR**, mantendo **RPs distintos por domínio multicast** e **MSDP ativo entre eles**.  
+  
+| Grupo Multicast | Modelo PIM | Comportamento Esperado                                                                  |
+|-----------------|------------|-----------------------------------------------------------------------------------------|
+| 239.1.1.1       | (*,G) BIDIR| Encaminhamento via árvore compartilhada (*,G), com visibilidade inter-domínios via MSDP |
+  
+Nesse modelo, o estado multicast permanece **exclusivamente em (*,G)**, eliminando a complexidade associada à criação e manutenção de estados (S,G).  
+  
 ---
 
 ### 🧩 Conclusão
 
-Esta etapa do laboratório demonstra como a combinação de **PIM BIDIR com MSDP** resolve as limitações observadas no cenário anterior, mantendo a separação lógica de domínios multicast e garantindo **encaminhamento simétrico, previsível e estável**.
-
+Esta etapa do laboratório demonstra como a combinação de **PIM BIDIR com MSDP** resolve as limitações observadas no cenário anterior, mantendo a separação lógica de domínios multicast e garantindo **encaminhamento simétrico, previsível e estável**.  
+  
 O MSDP continua cumprindo seu papel de intercâmbio de informações entre RPs, enquanto o PIM BIDIR corrige as limitações do data-plane associadas ao PIM Sparse Mode tradicional, refletindo um design amplamente utilizado em ambientes corporativos distribuídos e de missão crítica.
 
 ---
 
+## 🔁 O que não muda ao migrar de PIM-SM para PIM BIDIR
 
+A transição do **PIM Sparse Mode tradicional para o PIM Bidirectional (BIDIR)** não altera os fundamentos do funcionamento multicast do ponto de vista dos hosts e do plano de controle inter-domínios.  
+  
+Os seguintes elementos permanecem inalterados neste laboratório:
+
+- IGMP continua sendo utilizado pelos hosts apenas para expressar interesse em grupos multicast (G);
+- Os hosts não possuem qualquer conhecimento sobre domínios multicast, RPs ou MSDP;
+- O MSDP permanece responsável exclusivamente pela troca de informações de controle entre RPs;
+- As mensagens Source-Active (SA) continuam sendo utilizadas para anunciar fontes multicast ativas entre domínios;
+- O MSDP não transporta tráfego multicast, apenas informações sobre fontes.
+  
+Ou seja, do ponto de vista do controle inter-domínios, o MSDP opera exatamente da mesma forma que no laboratório anterior.  
+
+## 🎯 Por que o MSDP passa a funcionar de forma mais previsível com PIM BIDIR ?
+
+No laboratório anterior, ficou evidente que o MSDP estava operacional, as sessões estavam estabelecidas e as mensagens **SA** eram corretamente trocadas entre os **RPs**. Ainda assim, o comportamento do tráfego multicast apresentou inconsistências no plano de dados.  
+  
+Isso ocorre porque, em PIM Sparse Mode, o encaminhamento multicast depende de:
+
+- Criação dinâmica de estados **(*,G) e (S,G)**;
+- Transições entre árvore compartilhada e árvore por fonte;
+- Caminhos **potencialmente assimétricos** entre fonte, RP e receptores.
+  
+Ao migrar para o **PIM BIDIR**, o modelo de distribuição muda de forma significativa:  
+
+- O **RP passa a ser o root permanente da árvore compartilhada (*,G)**;
+- **Não ocorre transição para árvores (S,G);**
+- O encaminhamento multicast se torna **simétrico e previsível**;
+  
+Todos os fluxos multicast seguem a mesma lógica de encaminhamento em ambos os domínios.  
+  
+Nesse contexto, o MSDP deixa de expor limitações do plano de dados e passa a cumprir seu papel de forma consistente: tornar fontes multicast visíveis entre domínios distintos.  
+
+## 🧠 Por que o problema nunca foi o MSDP
+
+Um dos principais aprendizados deste laboratório é compreender que as limitações observadas na Parte 01 não estavam relacionadas ao MSDP, mas sim ao modelo de encaminhamento do PIM Sparse Mode em cenários inter-domínios.  
+  
+O MSDP:
+
+- Descobriu corretamente as fontes multicast remotas;
+- Anunciou essas fontes entre os RPs;
+- Funcionou conforme especificado no plano de controle.
+  
+A inconsistência percebida no comportamento multicast foi consequência direta da **complexidade e da dinâmica do data-plane do PIM-SM**, especialmente em ambientes com múltiplas fontes e múltiplos domínios.  
+  
+Ao adotar o **PIM BIDIR**, o laboratório demonstra que:
+
+- O MSDP não precisa ser alterado;
+- O design multicast se torna mais estável;
+- O comportamento passa a ser alinhado com arquiteturas reais de redes corporativas distribuídas.  
+
+## 🌐 Topologia Lógica e Evolução do Laboratório
+
+Esta **Parte 02** é uma continuação direta do laboratório anterior.  
+A **topologia física**, o **endereçamento IP**, os **links** e o **roteamento unicast via OSPF** permanecem **inalterados**.  
+  
+Toda a base construída na Parte 01 é reutilizada aqui, pois o objetivo agora **não é revalidar conectividade**, mas sim **evoluir o modelo multicast**, corrigindo as limitações observadas anteriormente.  
+  
+A mudança central desta etapa ocorre **exclusivamente na topologia lógica multicast**, com a migração de:
+
+- **PIM Sparse Mode tradicional + MSDP**  
+para  
+- **PIM Bidirectional (BIDIR) + MSDP**
+
+Essa evolução permite analisar o mesmo cenário sob um modelo de encaminhamento multicast mais previsível, estável e alinhado ao papel real do MSDP em ambientes inter-domínios.  
+
+---
+
+### 🧠 Visão Lógica do Multicast na Parte 02
+
+Do ponto de vista lógico, a rede continua segmentada em **dois domínios multicast independentes**:
+
+- **Domínio Multicast A**  
+- **Domínio Multicast B**
+  
+Cada domínio mantém seu próprio **Rendezvous Point (RP)**, agora operando em **modo PIM BIDIR**.  
+A separação entre domínios é **estritamente lógica**, não física — todos os roteadores permanecem interconectados e participam da mesma área OSPF.  
+  
+A figura abaixo representa a **topologia lógica multicast atualizada**, destacando:
+
+- A divisão da rede em domínios multicast A e B;
+- Os **RPs configurados como root permanente da árvore BIDIR**;
+- A **árvore multicast compartilhada (*,G) BIDIR**;
+- As **sessões MSDP entre os RPs**, utilizadas exclusivamente para troca de informações de fontes.
+
+![Topologia Lógica Multicast – PIM BIDIR + MSDP](Imagens/topologia-logica-msdp.png)
+
+📌 Diferentemente do cenário anterior, **não há transição para estados (S,G)**.  
+Toda a distribuição multicast ocorre sobre a **árvore (*,G) BIDIR**, ancorada no RP.  
+  
+---
+  
+### 🔧 O que muda em relação à Parte 01
+  
+Nesta etapa do laboratório, os seguintes ajustes lógicos são introduzidos:
+  
+- O **PIM Sparse Mode tradicional é substituído por PIM Bidirectional (BIDIR)**;
+- Os **RPs passam a atuar como root permanente da árvore multicast**;
+- Não ocorre criação de estados (S,G);
+- O encaminhamento multicast passa a ser **simétrico e determinístico**;
+- O **MSDP é mantido**, agora operando em um ambiente onde o plano de dados não introduz assimetrias.
+  
+É importante reforçar:
+  
+- O **MSDP continua atuando apenas no plano de controle**;
+- Nenhum tráfego multicast atravessa sessões MSDP;
+- O MSDP segue responsável apenas pela **troca de mensagens Source-Active (SA)** entre os RPs.
+  
+---
+  
+### 📡 Grupos Multicast no cenário PIM BIDIR + MSDP
+  
+Os grupos multicast agora operam exclusivamente sob o **modelo BIDIR**, eliminando ambiguidades do PIM-SM clássico.  
+  
+| Grupo Multicast | Modelo      | Comportamento Esperado                                                                      |
+|-----------------|-------------|---------------------------------------------------------------------------------------------|
+| 239.1.1.1       | (*,G) BIDIR | Árvore compartilhada BIDIR ancorada no RP, com fontes locais e remotas descobertas via MSDP |
+
+📌 **Observações importantes:**  
+
+- Não é utilizado SSM (232/8);
+- Não há evolução de (*,G) para (S,G);
+- Todas as fontes sempre encaminham tráfego via RP;
+- O RPF é calculado **em direção ao RP**, e não à fonte;
+- O comportamento multicast torna-se previsível e estável.
+  
+---
+  
+### 🧭 Resumo da Lógica na Parte 02
+
+- As fontes multicast permanecem distribuídas entre os domínios A e B;
+- Os receptores continuam utilizando **IGMP (*,G)**, sem qualquer alteração;
+- Os RPs operam como **root permanente da árvore BIDIR**;
+- O **MSDP garante visibilidade de fontes entre domínios**, sem impactar o plano de dados;
+- O multicast inter-domínios passa a operar de forma **coerente, escalável e consistente**.
+  
+Com isso, a Parte 02 demonstra claramente que, ao alinhar o **modelo de PIM ao papel real do MSDP**, as limitações observadas anteriormente deixam de existir — evidenciando que o desafio nunca esteve no MSDP, mas sim no modelo de encaminhamento utilizado.  
+  
 ---
 
 Alterar Daqui
 
 ---
-
-### 🛰️ O que muda ao introduzir o MSDP no ambiente multicast
-
-#### 🔹 1️⃣ O papel do IGMP em ambientes com MSDP
-
-Os hosts continuam utilizando **IGMP (tipicamente IGMPv2)** exclusivamente para **expressar interesse em grupos multicast (G)**.  
-
-Do ponto de vista do host:  
-
-- Não há conhecimento de domínios multicast;
-- Não há interação direta com MSDP;
-- O comportamento é idêntico a um ambiente PIM-SM tradicional.
-  
-Toda a complexidade associada à descoberta de fontes remotas é tratada no **plano de controle dos roteadores**, de forma transparente para os dispositivos finais.  
-
----
-
-#### 🔀 2️⃣ MSDP e a troca de informações entre RPs
-
-O **MSDP** estabelece sessões TCP entre **Rendezvous Points de domínios multicast distintos**, permitindo a troca de mensagens **Source-Active (SA)**.  
-
-Essas mensagens informam:
-
-- Qual fonte multicast está ativa;
-- Para qual grupo multicast ela transmite;
-- Em qual domínio multicast essa fonte se encontra.
-
-Com base nessas informações, cada RP pode iniciar os processos necessários para permitir que receptores locais recebam tráfego multicast proveniente de fontes remotas.  
-
----
-
-#### 🛰️ 3️⃣ Quando as fontes começam a transmitir
-
-Quando uma fonte multicast inicia a transmissão em seu domínio local:  
-
-- O tráfego é inicialmente registrado no **RP local**;
-- O RP anuncia a existência dessa fonte aos demais RPs por meio de **mensagens SA do MSDP**;
-- Receptores em outros domínios passam a conhecer a fonte e podem construir os fluxos multicast necessários utilizando o PIM-SM.
-
-É importante destacar que o **tráfego multicast em si não atravessa as sessões MSDP**. Apenas informações de controle são trocadas entre os RPs.
-
----
-
-#### 📡 4️⃣ Vantagens do PIM-SM com MSDP
-
-| Aspecto                     | PIM-SM sem MSDP              | PIM-SM com MSDP                  |
-|-----------------------------|------------------------------|----------------------------------|
-| Descoberta de fontes remotas| ❌ Não                       | ✅ Sim                          |
-| Domínios multicast          | Único                        | Múltiplos domínios independentes |
-| Dependência de RP único     | Alta                         | Reduzida                         |
-| Escalabilidade              | Limitada em redes grandes    | Alta                             |
-| Uso em múltiplos datacenters| Pouco flexível               | Amplamente utilizado             |
-| Plano de controle           | Local                        | Distribuído entre RPs            |
-
----
-
-👉 **Resumo:**  
-O uso do **MSDP** permite que redes multicast baseadas em **PIM Sparse Mode** evoluam para arquiteturas **distribuídas e escaláveis**, sem exigir a centralização total do controle multicast.  
-Essa abordagem é especialmente relevante em ambientes corporativos reais, onde autonomia, previsibilidade e interoperabilidade são fatores decisivos de design.  
-
-## 🌐 Topologia do Laboratório
-
-Este laboratório simula um cenário enterprise de multicast baseado em **múltiplos domínios multicast independentes**, arquitetura comum em ambientes corporativos com **segmentação administrativa**, **múltiplos datacenters** ou **crescimento orgânico da rede**.  
-  
-O objetivo é demonstrar, de forma prática e progressiva, o funcionamento do **PIM Sparse Mode (PIM-SM)** em conjunto com o **Multicast Source Discovery Protocol (MSDP)**, evidenciando:  
-  
-- A separação lógica de **domínios multicast**;
-- O papel do **Rendezvous Point (RP)** em cada domínio;
-- A troca de informações de fontes multicast entre domínios via **MSDP**.
-  
-A topologia deste laboratório é composta por **seis roteadores principais (R01 a R06)** e **seis hosts simulados (Server01, Server02, Host01, Host02, Host03 e Host04)**.  
-Os hosts são roteadores Cisco configurados de forma simplificada, apenas com **endereçamento IP** e **participação em grupos multicast via IGMP (tipicamente IGMPv2)**, simulando o comportamento de dispositivos finais em ambientes reais.  
-  
-O protocolo **OSPF** garante a conectividade unicast entre todos os roteadores, enquanto o **PIM Sparse Mode (PIM-SM)** é utilizado para o roteamento multicast dentro de cada domínio.  
-O **MSDP** é empregado para permitir que **fontes multicast localizadas em um domínio sejam descobertas por outros domínios**, sem a necessidade de um RP único para toda a rede.  
-  
-Neste modelo, cada domínio multicast mantém sua própria árvore compartilhada (*,G), enquanto o MSDP atua exclusivamente no **plano de controle**, trocando informações sobre fontes ativas entre os RPs.  
-  
----
-  
-### 🖼️ Topologia Lógica – Domínios Multicast e RPs
-  
-A figura abaixo representa a **topologia lógica multicast**, destacando:
-  
-- A divisão da rede em **domínios multicast distintos**;
-- O **Rendezvous Point (RP)** de cada domínio;
-- As **sessões MSDP** estabelecidas entre os RPs.
-  
-> 📌 Esta visão lógica é essencial para compreender o papel do MSDP e a separação entre o plano de dados multicast e o plano de controle.
-  
-<!-- Inserir imagem da topologia lógica multicast com domínios e RPs -->
-![Topologia Lógica Multicast – Domínios e RPs](Imagens/topologia-logica-msdp.png)
-  
-  ---
-
-### 🔧 Endereçamento e Funções
-
-| **Dispositivo** | **Interface** | **Endereço IP / Máscara** | **Conexão / Função**                                      |
-|-----------------|---------------|---------------------------|-----------------------------------------------------------|
-| **R01**         | Loopback0     | 1.1.1.1 /32               | Router-ID OSPF                                            |
-|                 | Fa0/0         | 192.168.10.254 /24        | LAN do Server01 — Gateway multicast                       |
-|                 | Fa0/1         | 10.0.0.1 /30              | Link com R02 — PIM-SM + OSPF                              |
-|                 | Fa1/0         | 10.0.0.22 /30             | Link com R06 — PIM-SM + OSPF                              |
-| **R02**         | Loopback0     | 2.2.2.2 /32               | Router-ID OSPF / RP do Domínio Multicast A                |
-|                 | Fa0/0         | 192.168.20.254 /24        | LAN do Host01 — Gateway multicast                         |
-|                 | Fa0/1         | 10.0.0.2 /30              | Link com R01 — PIM-SM + OSPF                              |
-|                 | Fa1/0         | 10.0.0.5 /30              | Link com R03 — PIM-SM + OSPF                              |
-| **R03**         | Loopback0     | 3.3.3.3 /32               | Router-ID OSPF                                            |
-|                 | Fa1/0         | 10.0.0.6 /30              | Link com R02 — PIM-SM + OSPF                              |
-|                 | Fa0/1         | 192.168.30.254 /24        | LAN do Host03 — Gateway multicast                         |
-|                 | Fa0/0         | 10.0.0.9 /30              | Link com R04 — PIM-SM + OSPF                              |
-| **R04**         | Loopback0     | 4.4.4.4 /32               | Router-ID OSPF                                            |
-|                 | Fa0/0         | 10.0.0.10 /30             | Link com R03 — PIM-SM + OSPF                              |
-|                 | Fa1/0         | 192.168.40.254 /24        | LAN do Server02 — Gateway multicast                       |
-|                 | Fa0/1         | 10.0.0.13 /30             | Link com R05 — PIM-SM + OSPF                              |
-| **R05**         | Loopback0     | 5.5.5.5 /32               | Router-ID OSPF / RP do Domínio Multicast B                |
-|                 | Fa0/0         | 192.168.50.254 /24        | LAN do Host04 — Gateway multicast                         |
-|                 | Fa0/1         | 10.0.0.14 /30             | Link com R04 — PIM-SM + OSPF                              |
-|                 | Fa1/0         | 10.0.0.17 /30             | Link com R06 — PIM-SM + OSPF                              |
-| **R06**         | Loopback0     | 6.6.6.6 /32               | Router-ID OSPF                                            |
-|                 | Fa0/0         | 192.168.60.254 /24        | LAN do Host02 — Gateway multicast                         |
-|                 | Fa0/1         | 10.0.0.21 /30             | Link com R01 — PIM-SM + OSPF                              |
-|                 | Fa1/0         | 10.0.0.18 /30             | Link com R05 — PIM-SM + OSPF                              |
-| **Server01**    | Fa0/0         | 192.168.10.1 /24          | Fonte multicast — Domínio Multicast A                     |
-| **Server02**    | Fa0/0         | 192.168.40.1 /24          | Fonte multicast — Domínio Multicast B                     |
-| **Host01**      | Fa0/0         | 192.168.20.1 /24          | Receptor multicast via IGMP (*,G)                         |
-| **Host02**      | Fa0/0         | 192.168.60.1 /24          | Receptor multicast via IGMP (*,G)                         |
-| **Host03**      | Fa0/0         | 192.168.30.1 /24          | Receptor multicast via IGMP (*,G)                         |
-| **Host04**      | Fa0/0         | 192.168.50.1 /24          | Receptor multicast via IGMP (*,G)                         |
-
----
-
-### 📡 Grupos Multicast no cenário com MSDP – resumo
-
-Neste laboratório, os grupos multicast utilizam o **modelo clássico do PIM Sparse Mode**, com evolução dinâmica do estado multicast conforme o fluxo de tráfego.
-
-| Grupo Multicast | Modelo           | Descrição                                                             |
-|-----------------|------------------|-----------------------------------------------------------------------|
-| 239.1.1.1       | (*,G) → (S,G)    | Registro no RP local e descoberta de fontes remotas via MSDP          |
-
-📌 **Observações importantes:**
-
-- Não é utilizado SSM (232/8);
-- O tráfego multicast é inicialmente associado à árvore compartilhada (*,G);
-- Estados (S,G) podem ser criados conforme o fluxo e o comportamento da rede;
-- O MSDP é utilizado apenas para **descoberta de fontes**, não para transporte de dados;
-- O RP atua como ponto de controle inicial do domínio multicast.
-
----
-
-### 🧭 Resumo da Lógica
-
-- O **Server01 (192.168.10.1)** atua como **fonte multicast** no **Domínio Multicast A**, enviando tráfego para o grupo **239.1.1.1**.
-- O **Server02 (192.168.40.1)** atua como **fonte multicast** no **Domínio Multicast B**, utilizando o mesmo grupo multicast.
-- O **Host01 (192.168.20.1)** participa do domínio multicast por meio de **IGMP (*,G)**.
-- Os **Host02 (192.168.60.1)**, **Host03 (192.168.30.1)** e **Host04 (192.168.50.1)** também se inscrevem no grupo multicast utilizando **IGMP (*,G)**.
-- O **R01** atua como **Rendezvous Point (RP)** do **Domínio Multicast A**.
-- O **R05** atua como **Rendezvous Point (RP)** do **Domínio Multicast B**.
-- Os RPs estabelecem **sessões MSDP**, permitindo a **troca de informações sobre fontes multicast ativas** entre os domínios.
-- O tráfego multicast é encaminhado via **PIM Sparse Mode (PIM-SM)** dentro de cada domínio, com validação **RPF baseada na tabela unicast aprendida via OSPF**.
-
-Dessa forma, o laboratório demonstra como o **MSDP permite a interconexão de múltiplos domínios multicast independentes**, mantendo a autonomia de cada domínio e possibilitando a comunicação multicast entre **fontes e receptores distribuídos**, sem a necessidade de um RP global.
 
 ## 🧠 O que é um Domínio Multicast?
 
