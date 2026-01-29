@@ -24,6 +24,8 @@
     - [🔧 O que muda em relação à Parte 01](#-o-que-muda-em-relação-à-parte-01)
     - [📡 Grupos Multicast no cenário PIM BIDIR + MSDP](#-grupos-multicast-no-cenário-pim-bidir--msdp)
     - [🧭 Resumo da Lógica na Parte 02](#-resumo-da-lógica-na-parte-02)
+  - [🛠️ Ajustes de Configuração – Migração para PIM BIDIR](#️-ajustes-de-configuração--migração-para-pim-bidir)
+    - [✅ Checklist de Migração – PIM Sparse Mode para PIM BIDIR](#-checklist-de-migração--pim-sparse-mode-para-pim-bidir)
   - [🚀 Ativação do Roteamento Multicast](#-ativação-do-roteamento-multicast)
   - [🌐 Papel do PIM Sparse Mode no Contexto do MSDP](#-papel-do-pim-sparse-mode-no-contexto-do-msdp)
   - [🔄 PIM-SM Tradicional vs PIM-SM com MSDP](#-pim-sm-tradicional-vs-pim-sm-com-msdp)
@@ -499,6 +501,43 @@ Na Parte 01, foram definidos os domínios multicast, os RPs, o papel do MSDP e v
   
 Com esse contexto consolidado, esta Parte 02 **não revisita esses conceitos**, mas parte deles como premissa.  
 O foco agora passa a ser **avaliar o impacto do modelo de encaminhamento multicast** no comportamento do ambiente inter-domínios e demonstrar como a migração de **PIM-SM tradicional para PIM BIDIR**, mantendo o MSDP ativo, resolve as limitações observadas anteriormente.
+
+## 🛠️ Ajustes de Configuração – Migração para PIM BIDIR
+
+Com os conceitos, limitações e decisões de design claramente estabelecidos, iniciamos agora a **fase de ajustes de configuração** do laboratório.
+
+Nesta etapa, **nenhuma modificação será realizada na topologia física, no endereçamento IP, no roteamento unicast ou no MSDP**.  
+O foco será exclusivamente a **migração do modelo de PIM**, substituindo o **PIM Sparse Mode tradicional** pelo **PIM Bidirectional (BIDIR)**, mantendo todo o restante do ambiente inalterado.
+
+Essa abordagem permite isolar a variável correta e avaliar, de forma objetiva, o impacto do **modelo de encaminhamento multicast** no comportamento inter-domínios.
+
+### ✅ Checklist de Migração – PIM Sparse Mode para PIM BIDIR
+
+- [ ] Manter OSPF e conectividade unicast inalterados
+- [ ] Garantir que o MSDP permaneça configurado e operacional
+- [ ] Converter o RP para operação em **modo BIDIR**
+- [ ] Associar corretamente o grupo multicast ao RP BIDIR
+- [ ] Garantir que o RPF seja calculado **em direção ao RP**
+- [ ] Eliminar a criação de estados (S,G)
+- [ ] Validar que todo o tráfego utiliza a árvore compartilhada (*,G)
+  
+**📌 Este checklist pode ser aplicado diretamente em ambientes reais como guia de migração controlada.**  
+  
+Ao eliminar a transição dinâmica entre estados (*,G) e (S,G), o PIM BIDIR reduz significativamente a complexidade operacional, tornando o troubleshooting multicast mais previsível e menos dependente de eventos transitórios da rede.  
+  
+Esse modelo é amplamente encontrado em ambientes corporativos legados e redes distribuídas que utilizam MSDP, onde previsibilidade e estabilidade operacional são mais relevantes do que otimizações baseadas em fonte.  
+  
+Mais do que aplicar uma nova configuração, esta etapa reforça a importância de analisar o comportamento do plano de dados e ajustar o design como parte de um processo contínuo de resolução de problemas complexos em redes reais.  
+  
+Durante a validação, observe principalmente:
+
+- A ausência de estados (S,G)
+- A presença consistente de estados (*,G)
+- O RPF apontando sempre para o RP
+- A estabilidade das tabelas multicast mesmo com múltiplas fontes ativas
+
+Ao final da migração, o tráfego multicast inter-domínios deverá fluir de forma estável e previsível, com todas as fontes sendo corretamente descobertas via MSDP e distribuídas exclusivamente pela árvore (*,G) BIDIR, sem inconsistências no plano de dados.
+
 
 ---
 
