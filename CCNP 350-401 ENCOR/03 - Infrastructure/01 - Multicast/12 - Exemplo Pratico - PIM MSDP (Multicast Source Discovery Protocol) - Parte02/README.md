@@ -656,6 +656,14 @@ Essas evidências reforçam que o plano de controle está funcional, mas o model
   
 ### 🧪 Comandos de Validação (Baseline)
 
+| Etapa | Comando                            | Onde Executar       | O que Verificar                        | Resultado Esperado (Parte 01)                |
+|-------|------------------------------------|---------------------|----------------------------------------|----------------------------------------------|
+| 1     | ping 239.1.1.1 size 50 repeat 1000 | SERVER01 / SERVER02 | Geração contínua de tráfego multicast  | Tráfego ativo para o grupo multicast         |
+| 2     | show ip msdp peer                  | R02 / R05           | Estado da sessão MSDP                  | Sessão UP, peer correto, contadores ativos   |
+| 3     | show ip msdp sa-cache              | R02 / R05           | Entradas SA aprendidas                 | Presença de fontes locais e remotas (S,G)    |
+| 4     | show ip mroute                     | R02 / R05           | Estados multicast ativos               | Estados (*,G) e (S,G), possíveis assimetrias |
+| 5     | show ip pim rp mapping             | R02 / R05           | Associação Grupo → RP                  | RP correto por domínio multicast             |
+
 Primeiro devemos entrar em **SERVER01** e **Server02** e gerar tráfego simulado com o ping: 
 
 ```ios
@@ -701,38 +709,140 @@ Verifique:
 **R05**  
   
 ![Baseline](Imagens/baseline/04.png)
-
+  
+```ios
 show ip mroute
+```
 
 Observe:
 
-Estados (*,G) e (S,G) ativos;
+- Estados (*,G) e (S,G) ativos;
+- Interfaces de entrada e saída;
+- Possíveis assimetrias no encaminhamento.
 
-Interfaces de entrada e saída;
+**R02**  
 
-Possíveis assimetrias no encaminhamento.
+```ios
+R02#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
 
+(*, 239.1.1.1), 00:13:30/00:03:07, RP 2.2.2.2, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:12:59/00:03:07
+    FastEthernet0/0, Forward/Sparse, 00:13:30/00:02:36
+
+(192.168.40.1, 239.1.1.1), 00:10:18/00:01:50, flags: LMT
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.6
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:20/00:02:34
+
+(192.168.10.1, 239.1.1.1), 00:10:40/00:02:19, flags: LTA
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:40/00:02:34
+
+(*, 224.0.1.40), 00:13:31/00:02:32, RP 2.2.2.2, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:13:03/00:02:59
+    Loopback0, Forward/Sparse, 00:13:33/00:02:30
+
+R02#
+```
+
+**R05**  
+
+```ios
+R05#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:13:45/stopped, RP 5.5.5.5, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:13:45/00:02:09
+
+(192.168.40.1, 239.1.1.1), 00:10:34/00:02:09, flags: LTA
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.13
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:10:34/00:02:45
+    FastEthernet0/0, Forward/Sparse, 00:10:35/00:02:08
+
+(192.168.10.1, 239.1.1.1), 00:10:56/00:02:03, flags: LMT
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.18
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:56/00:02:08
+
+(*, 224.0.1.40), 00:13:47/00:02:16, RP 5.5.5.5, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:13:18/00:02:34
+    Loopback0, Forward/Sparse, 00:13:48/00:02:14
+
+R05#
+```
+
+```ios 
 show ip pim rp mapping
+```  
 
 Confirme:
 
-RP correto por domínio multicast;
+- RP correto por domínio multicast;
+- Associação adequada entre grupos e RPs.
 
-Associação adequada entre grupos e RPs.
+**R02**  
 
-📌 Conclusão do Baseline
+```ios
+R02#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Group(s): 224.0.0.0/4, Static
+    RP: 2.2.2.2 (?)
+R02#
+```
+
+**R05**  
+
+```ios
+R05#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Group(s): 224.0.0.0/4, Static
+    RP: 5.5.5.5 (?)
+R05#
+```
+
+**📌 Conclusão do Baseline**  
 
 Ao final desta etapa, deve ficar claro que:
 
-✅ O MSDP está corretamente configurado e funcional;
-
-✅ As fontes multicast são descobertas entre domínios;
-
-❌ O comportamento do tráfego multicast não é totalmente previsível;
-
-📍 A limitação observada não está no MSDP, mas no modelo de encaminhamento do PIM Sparse Mode.
-
-Este baseline técnico é essencial para sustentar, de forma profissional e objetiva, a decisão de migrar para PIM BIDIR, garantindo que a próxima etapa do laboratório seja uma evolução arquitetural, e não uma tentativa de correção empírica.
+- ✅ O MSDP está corretamente configurado e funcional;
+- ✅ As fontes multicast são descobertas entre domínios;
+- ❌ O comportamento do tráfego multicast não é totalmente previsível;
+- 📍 A limitação observada não está no MSDP, mas no modelo de encaminhamento do PIM Sparse Mode.
+  
+Este baseline técnico é essencial para sustentar, de forma profissional e objetiva, a decisão de migrar para PIM BIDIR, garantindo que a próxima etapa do laboratório seja uma evolução arquitetural, e não uma tentativa de correção empírica.  
 
 ---
 
