@@ -34,6 +34,10 @@
     - [📡 Comportamento dos Hosts (inalterado)](#-comportamento-dos-hosts-inalterado)
   - [🔄 Encaminhamento no roteador (Designated Router – DR)](#-encaminhamento-no-roteador-designated-router--dr)
   - [🎯 Resultado operacional esperado](#-resultado-operacional-esperado)
+  - [1️⃣ Confirmação do Estado Inicial (Baseline Técnico)](#1️⃣-confirmação-do-estado-inicial-baseline-técnico)
+    - [🎯 Objetivo deste passo](#-objetivo-deste-passo)
+    - [🔍 Verificações obrigatórias](#-verificações-obrigatórias)
+    - [🧪 Comandos de Validação (Baseline)](#-comandos-de-validação-baseline)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -623,6 +627,113 @@ Após a migração para PIM BIDIR:
   
 Esse modelo é comum em ambientes corporativos distribuídos e infraestruturas legadas, onde previsibilidade, estabilidade e clareza operacional são requisitos de design.
   
+## 1️⃣ Confirmação do Estado Inicial (Baseline Técnico)
+
+Antes de qualquer ajuste no modelo de encaminhamento multicast, é fundamental estabelecer um baseline técnico claro do ambiente, exatamente como ele se encontra ao final da Parte 01 do laboratório.  
+  
+Este passo não tem como objetivo diagnosticar falhas pontuais, mas comprovar tecnicamente que o MSDP está operacional e que as limitações observadas estão relacionadas ao modelo de data-plane do PIM-SM, e não a erros de configuração ou instabilidade no plano de controle.  
+  
+### 🎯 Objetivo deste passo
+
+- Validar que o MSDP está corretamente estabelecido entre os RPs;
+- Confirmar que mensagens Source-Active (SA) estão sendo trocadas;
+- Evidenciar que, mesmo com o MSDP funcional, o tráfego multicast apresenta comportamento inconsistente;
+- Criar um ponto de comparação objetivo para a migração para PIM BIDIR.
+  
+Este baseline será utilizado como referência direta para demonstrar a evolução do comportamento multicast após a conversão do PIM.
+
+### 🔍 Verificações obrigatórias
+
+Durante esta etapa, confirme os seguintes pontos:
+
+- As sessões MSDP estão em estado UP entre os RPs;
+- O cache de SA contém entradas ativas, indicando descoberta de fontes remotas;
+- As tabelas multicast apresentam estados dinâmicos (*,G) e (S,G);
+- Nem todos os receptores recebem o tráfego multicast de forma consistente;
+- O comportamento observado não é determinístico, variando conforme a topologia e o fluxo.
+  
+Essas evidências reforçam que o plano de controle está funcional, mas o modelo de encaminhamento apresenta limitações.
+  
+### 🧪 Comandos de Validação (Baseline)
+
+Primeiro devemos entrar em **SERVER01** e **Server02** e gerar tráfego simulado com o ping: 
+
+```ios
+ping 239.1.1.1 size 50 repeat 1000
+```
+  
+Os comandos abaixo devem ser executados antes de qualquer modificação na configuração do PIM:
+  
+```ios  
+show ip msdp peer
+```
+
+Verifique:
+
+- Estado da sessão (UP);
+- Endereço do peer;
+- Contadores de mensagens trocadas.
+
+Então vamos entrar em **R02** e **R05** e executar os comandos:
+
+**R02**  
+  
+![Baseline](Imagens/baseline/01.png)
+
+**R05**  
+  
+![Baseline](Imagens/baseline/02.png)
+  
+```ios  
+show ip msdp sa-cache
+```
+
+Verifique:
+
+- Presença de entradas (S,G);
+- Origem das fontes (local ou remota);
+- Tempo de vida das entradas SA.
+
+**R02**  
+  
+![Baseline](Imagens/baseline/03.png)
+
+**R05**  
+  
+![Baseline](Imagens/baseline/04.png)
+
+show ip mroute
+
+Observe:
+
+Estados (*,G) e (S,G) ativos;
+
+Interfaces de entrada e saída;
+
+Possíveis assimetrias no encaminhamento.
+
+show ip pim rp mapping
+
+Confirme:
+
+RP correto por domínio multicast;
+
+Associação adequada entre grupos e RPs.
+
+📌 Conclusão do Baseline
+
+Ao final desta etapa, deve ficar claro que:
+
+✅ O MSDP está corretamente configurado e funcional;
+
+✅ As fontes multicast são descobertas entre domínios;
+
+❌ O comportamento do tráfego multicast não é totalmente previsível;
+
+📍 A limitação observada não está no MSDP, mas no modelo de encaminhamento do PIM Sparse Mode.
+
+Este baseline técnico é essencial para sustentar, de forma profissional e objetiva, a decisão de migrar para PIM BIDIR, garantindo que a próxima etapa do laboratório seja uma evolução arquitetural, e não uma tentativa de correção empírica.
+
 ---
 
 Alterar Daqui
