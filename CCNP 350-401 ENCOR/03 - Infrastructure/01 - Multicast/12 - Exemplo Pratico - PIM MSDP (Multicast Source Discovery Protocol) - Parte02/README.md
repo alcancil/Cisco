@@ -38,6 +38,9 @@
     - [🎯 Objetivo deste passo](#-objetivo-deste-passo)
     - [🔍 Verificações obrigatórias](#-verificações-obrigatórias)
     - [🧪 Comandos de Validação (Baseline)](#-comandos-de-validação-baseline)
+  - [2️⃣ Remover dependências específicas de PIM Sparse Mode (SM)](#2️⃣-remover-dependências-específicas-de-pim-sparse-mode-sm)
+    - [🎯 Objetivo técnico do passo](#-objetivo-técnico-do-passo)
+    - [🟢 O que não deve ser alterado](#-o-que-não-deve-ser-alterado)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -843,6 +846,121 @@ Ao final desta etapa, deve ficar claro que:
 - 📍 A limitação observada não está no MSDP, mas no modelo de encaminhamento do PIM Sparse Mode.
   
 Este baseline técnico é essencial para sustentar, de forma profissional e objetiva, a decisão de migrar para PIM BIDIR, garantindo que a próxima etapa do laboratório seja uma evolução arquitetural, e não uma tentativa de correção empírica.  
+
+## 2️⃣ Remover dependências específicas de PIM Sparse Mode (SM)
+
+Nesta etapa iniciamos a transição controlada do modelo **PIM-SM clássico para o PIM BIDIR**, sem alterar o funcionamento geral do multicast no ambiente. O objetivo aqui não é desligar o multicast, mas eliminar comportamentos e dependências que só fazem sentido no Sparse Mode tradicional e que interferem no design **BIDIR**.  
+  
+Do ponto de vista de engenharia, este é um passo crítico: ele cria um marco claro de troubleshooting, permitindo comparar o comportamento antes e depois da mudança do modelo de PIM.  
+  
+### 🎯 Objetivo técnico do passo
+
+- Remover dependências de árvores dependentes de fonte (SPT);
+- Preparar o ambiente para um RP como root permanente da árvore (*,G);
+- Garantir que qualquer mudança observada adiante seja consequência direta do modelo BIDIR, e não de resíduos de configuração do PIM-SM.
+  
+**🧩 O que deve ser ajustado**  
+  
+**🔴 Remover**  
+
+Nos roteadores que participam do domínio multicast:
+
+- Remover ip pim sparse-mode das interfaces de camada 3
+
+Essas configurações são específicas do PIM-SM e não se aplicam ao modelo BIDIR.
+
+Então vamos entrar nos roteadores de **R01 a R06**. Executar os comandos em todos os roteadores.  
+  
+```ios
+R01#show run | sec pim
+ ip pim sparse-mode
+ ip pim sparse-mode
+ ip pim sparse-mode
+ ip pim sparse-mode
+ip pim rp-address 2.2.2.2
+R01#show ip int br
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.10.254  YES NVRAM  up                    up
+FastEthernet0/1            10.0.0.1        YES NVRAM  up                    up
+FastEthernet1/0            10.0.0.22       YES NVRAM  up                    up
+Loopback0                  1.1.1.1         YES NVRAM  up                    up
+R01#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+R01(config)#int f0/0
+R01(config-if)#no ip pim sparse-mode
+R01(config-if)#int f0/1
+R01(config-if)#no ip pim sparse-mode
+R01(config-if)#int f1/0
+R01(config-if)#no ip pim sparse-mode
+R01(config-if)#it
+R01(config)#int lo0
+R01(config-if)#no ip pim sparse-mode
+R01(config-if)#
+```
+
+### 🟢 O que não deve ser alterado
+
+Para garantir consistência do laboratório e valor comparativo:
+
+- **ip multicast-routing** permanece habilitado;
+- **IGMP** continua ativo nas interfaces de acesso;
+- **MSDP** não sofre nenhuma alteração;
+- Endereçamento IP permanece o mesmo;
+- Grupos multicast utilizados no laboratório não mudam.
+  
+📌 **Isso garante que qualquer diferença observada adiante não seja causada por mudanças fora do modelo de PIM.**
+
+🖥️ **Evidências e telas a serem coletadas**  
+  
+Durante este passo, recomenda-se gerar prints comparativos, que serão reutilizados mais adiante:
+
+- Configuração das interfaces  
+  
+```ios
+R01#show run interface fastEthernet 0/0
+Building configuration...
+
+Current configuration : 131 bytes
+!
+interface FastEthernet0/0
+ ip address 192.168.10.254 255.255.255.0
+ ip ospf network point-to-point
+ duplex auto
+ speed auto
+end
+
+R01#
+```
+
+- Mostrar a remoção explícita do ip pim sparse-mode;
+  Saída de show run | section pim
+
+```ios
+R01#show run | section pim
+ip pim rp-address 2.2.2.2
+R01#
+```
+
+- Evidenciar que não há mais parâmetros ligados a SPT;
+  Tabela de multicast logo após a remoção
+
+```ios
+R01#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+R01#
+```
+
 
 ---
 
