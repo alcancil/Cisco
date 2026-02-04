@@ -1059,12 +1059,6 @@ ip pim rp-address 5.5.5.5
 R05#
 ```
 
----
-
-Alterar Daqui
-
----
-
 🔧 **Etapa 3.2 — Definir explicitamente o RP como BIDIR**  
 
 Até este ponto do laboratório, realizamos apenas a mudança lógica do modelo multicast, definindo que o domínio passará a operar em PIM Bidirectional (BIDIR). Essa etapa não tem como objetivo imediato validar tráfego, mas sim preparar o plano de controle para o novo modelo.  
@@ -1382,31 +1376,18 @@ Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da
 | `icmp`                                             | . tráfego de dados não alterna caminho     | ![06](Imagens/Whireshark/R04/06.png) |
 | `icmp`                                             | . não surge sinalização extra de Join SPT  |                                      |
 
-validar que o tráfego está ativo
-
-ver ICMP multicast (ping 239.1.1.1)
-
-validar que o tráfego está ativo
-
-📸 Capturas recomendadas:
-
-Interface do host receptor
-
-Interface de acesso ao RP
-
-📌 Conclusão do Passo 03
-
+📌 **Conclusão do Passo 03**  
+  
 Neste ponto do laboratório, fica evidente que:
 
-✅ O MSDP permanece inalterado e funcional;
-
-✅ A descoberta de fontes continua ocorrendo entre domínios;
-
-✅ O comportamento multicast torna-se previsível e consistente;
+- ✅ O MSDP permanece inalterado e funcional;
+- ✅ A descoberta de fontes continua ocorrendo entre domínios;
+- ✅ O comportamento multicast torna-se previsível e consistente;
 
 🎯 A mudança decisiva ocorreu no modelo de PIM, não no protocolo MSDP.
 
-Este passo consolida o entendimento de que decisões de design no plano de dados têm impacto direto na eficiência do multicast interdomínios, e prepara o cenário para as validações finais de convergência e estabilidade.
+Este passo consolida o entendimento de que decisões de design no plano de dados têm impacto direto na eficiência do multicast interdomínios, e prepara o cenário para as validações finais de convergência e estabilidade.  
+Neste ponto conseguimos consolidar o cenário e podemos provar que temos **dois domínios multicast ( A e B) em PIM BIDIR**. Porém eles ainda não se conversam.  
 
 ---
 
