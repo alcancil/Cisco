@@ -41,6 +41,8 @@
   - [2️⃣ Remover dependências específicas de PIM Sparse Mode (SM)](#2️⃣-remover-dependências-específicas-de-pim-sparse-mode-sm)
     - [🎯 Objetivo técnico do passo](#-objetivo-técnico-do-passo)
     - [🟢 O que não deve ser alterado](#-o-que-não-deve-ser-alterado)
+    - [3️⃣ Definição Explícita do RP como BIDIR (Mudança Lógica Central do Laboratório)](#3️⃣-definição-explícita-do-rp-como-bidir-mudança-lógica-central-do-laboratório)
+    - [⚙️ Configuração do RP como BIDIR](#️-configuração-do-rp-como-bidir)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -961,6 +963,416 @@ Outgoing interface flags: H - Hardware switched, A - Assert winner
 R01#
 ```
 
+### 3️⃣ Definição Explícita do RP como BIDIR (Mudança Lógica Central do Laboratório)
+
+Até este ponto do laboratório, todas as validações e ajustes realizados tiveram como objetivo preparar o ambiente, removendo dependências específicas do modelo PIM Sparse Mode tradicional, sem alterar o funcionamento global do multicast.  
+  
+Neste passo ocorre, de fato, a mudança arquitetural central do laboratório.  
+  
+📌 **Importante**:  
+Aqui não estamos corrigindo o MSDP, nem alterando o plano de controle inter-domínios.  
+O MSDP permanece exatamente igual.  
+O que muda é o **modelo de encaminhamento multicast** dentro de cada domínio, por meio da adoção explícita do **PIM Bidirectional (BIDIR)**.  
+  
+🎯 **Objetivo Técnico do Passo 03**
+  
+Este passo tem como objetivo:
+
+- Transformar o Rendezvous Point (RP) no root permanente da árvore multicast compartilhada (*,G);
+- Eliminar a criação dinâmica de estados (S,G) e a transição para SPT;
+- Garantir encaminhamento simétrico, previsível e determinístico;
+- Permitir que o MSDP opere sem expor limitações do plano de dados.
+
+No contexto deste laboratório:
+
+- **R02** atua como RP do Domínio A;
+- **R05** atua como RP do Domínio B;
+
+Ambos os domínios devem operar com configuração BIDIR consistente.
+
+🧠 **Conceito-Chave: O que muda com o RP BIDIR**
+  
+Antes (PIM-SM tradicional):
+
+- O RP é apenas um ponto inicial de descoberta;
+- O tráfego pode migrar para árvores (S,G);
+- O encaminhamento pode se tornar assimétrico;
+- O MSDP anuncia fontes, mas o data-plane pode se comportar de forma imprevisível.
+
+Depois (PIM BIDIR):
+
+- O RP é o root fixo da árvore (*,G);
+- Não existe transição para (S,G);
+- Todas as fontes e receptores utilizam a mesma árvore compartilhada;
+- O tráfego multicast flui de forma bidirecional e estável.
+  
+📌 **Esse é o motivo pelo qual este passo representa a mudança lógica central do laboratório.**  
+
+### ⚙️ Configuração do RP como BIDIR
+
+🔧 **Etapa 3.1 — Habilitar suporte a BIDIR no domínio**  
+
+Este comando habilita o suporte ao modelo PIM Bidirectional no roteador.  
+  
+Execute nos roteadores envolvidos no domínio multicast. No nosso laboratório, **R02** é o RP do **domínio A** e, **R05** é o RP do **domínio B**.  
+Então vamos entrar em **R02 e R005** e aplicar o comando  
+
+```ios
+ip pim bidir-enable
+```
+
+**R02**  
+
+```ios
+R02(config)#ip pim bidir-enable
+R02(config)#
+```
+
+**R05**  
+
+```ios
+R05(config)#ip pim bidir-enable
+R05(config)#
+```
+
+Agora vamos verificar as configurações com o comando:
+
+```ios
+show running-config | section pim
+```
+
+**R02**  
+
+```ios
+R02#show running-config | section pim
+ip pim bidir-enable
+ip pim rp-address 2.2.2.2
+R02#
+```
+
+**R05**  
+
+```ios
+R05#show running-config | include pim
+ip pim bidir-enable
+ip pim rp-address 5.5.5.5
+R05#
+```
+
+---
+
+Alterar Daqui
+
+---
+
+🔧 **Etapa 3.2 — Definir explicitamente o RP como BIDIR**  
+
+Até este ponto do laboratório, realizamos apenas a mudança lógica do modelo multicast, definindo que o domínio passará a operar em PIM Bidirectional (BIDIR). Essa etapa não tem como objetivo imediato validar tráfego, mas sim preparar o plano de controle para o novo modelo.  
+  
+É importante reforçar um ponto crítico de design e troubleshooting:  
+  
+> ❗ Neste momento, ainda não existe encaminhamento multicast ativo, pois o protocolo PIM foi removido das interfaces na etapa anterior.
+  
+Isso é intencional e faz parte da metodologia do laboratório.  
+Ao remover o comando ip pim sparse-mode de todas as interfaces (R01 a R06), eliminamos completamente o funcionamento do PIM no plano de dados. Como consequência:
+  
+- Nenhuma árvore multicast (*,G) pode ser formada;
+- O comando `show ip mroute` não apresentará entradas relevantes;
+  
+Qualquer teste de tráfego multicast neste ponto não produzirá resultados válidos.
+
+Essa separação clara entre:
+
+- mudança de modelo (controle) e
+- reativação do encaminhamento (data-plane)
+- é fundamental para demonstrar que o comportamento observado posteriormente será consequência direta do PIM BIDIR, e não de resquícios do PIM-SM.
+
+🔧 **Etapa 3.3 — Reativar o PIM nas interfaces em modo BIDIR**
+  
+Somente após definir explicitamente o RP como BIDIR, devemos reativar o protocolo PIM nas interfaces, agora utilizando o modelo bidirectional.  
+  
+Nesta etapa:
+
+- O PIM volta a operar no plano de dados;
+- A árvore multicast passa a ser construída novamente;
+- O RP definido como BIDIR assume o papel de root permanente da árvore (*,G).
+
+📌 **Configuração nas interfaces (R01 a R06)**  
+
+Em todas as interfaces que participam do transporte multicast (links entre roteadores, interfaces com fontes e receptores), configure:
+
+```ios
+interface <interface>
+ ip pim sparse-mode
+```
+
+⚠️ **Atenção (Implementação IOS e Contexto Didático):**  
+  
+- Neste laboratório, as interfaces continuam utilizando ip pim sparse-mode;
+- Isso ocorre porque, na versão do IOS utilizada, o PIM Bidirectional não é configurado como um modo de interface separado;
+- O comportamento BIDIR é ativado globalmente com **ip pim bidir-enable** e definido logicamente no RP por meio do comando **ip pim rp-address <RP> bidir**;
+- A partir dessa associação, o IOS passa a tratar os grupos como BIDIR, eliminando transições para (S,G), uso de PIM Register e SPT, mesmo com sparse-mode nas interfaces;
+- Pode-se interpretar esse comportamento como uma associação lógica implícita entre grupo multicast e RP BIDIR, e não como uma ACL configurável pelo administrador.
+  
+📘 **Nota Didática:**  
+Essa abordagem foi adotada propositalmente para evidenciar a diferença entre modo de interface e modelo de encaminhamento multicast, além de refletir cenários reais de troubleshooting em ambientes legados, onde limitações de IOS influenciam diretamente o design multicast.
+
+Execute o comando de **R01 a R06**  
+
+Agora definimos o RP com o atributo **BIDIR**, garantindo que todos os roteadores do domínio interpretem corretamente o modelo multicast.  
+  
+- Domínio A — RP no R02
+
+```ios
+ip pim rp-address 2.2.2.2 bidir
+```
+
+- Domínio B — RP no R05
+
+```ios
+ip pim rp-address 5.5.5.5 bidir
+```
+  
+📌 **Requisito fundamental:**  
+Essa definição deve ser idêntica em todos os roteadores de cada domínio multicast.
+  
+Agora verificar os roteadores de **R01 a R06**. Executar os comandos:
+
+```ios
+show ip pim rp mapping
+show running-config | include rp-address
+```
+
+**R01**  
+
+```ios
+R01#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Acl: bidir, Static
+    RP: 2.2.2.2 (?)
+R01#show running-config | include rp-address
+ip pim rp-address 2.2.2.2 bidir
+```
+  
+**R04**  
+
+```ios
+R04#show ip pim rp mapping
+PIM Group-to-RP Mappings
+
+Acl: bidir, Static
+    RP: 5.5.5.5 (?)
+R04#show running-config | include rp-address
+ip pim rp-address 5.5.5.5 bidir
+R04#
+```
+
+⚠️ **Atenção**  
+Como estamos simulando o tráfego com o comando **ping**, somente as interfaces dos hosts **Server01, Server02, Host01, Host02, Host03 e Host04** deve conter o comando `ip igp join group 239.1.1.1`  
+
+🔎 **Validação Técnica do Modelo BIDIR**  
+
+Após a aplicação da configuração, valide os seguintes pontos:
+  
+`show ip pim rp mapping`  
+  
+Verifique:
+
+- O RP correto por domínio;
+- A associação do grupo multicast ao RP BIDIR;
+- A ausência de ambiguidade no mapeamento RP.
+  
+Agora para validarmos essa etapa, vamos executar o nosso tráfego simulado através do ping.  
+Executar em **Server01 e Server02**
+
+```ios
+ping 239.1.1.1 size 50 repeat 1000
+```
+
+**Server01**  
+
+```ios
+SERVER01#
+SERVER01#ping 239.1.1.1 size 50 repeat 1000
+
+Type escape sequence to abort.
+Sending 1000, 50-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.10.1, 4 ms
+Reply to request 1 from 192.168.10.1, 4 ms
+Reply to request 2 from 192.168.10.1, 4 ms
+Reply to request 3 from 192.168.10.1, 4 ms
+Reply to request 3 from 192.168.20.1, 124 ms
+Reply to request 3 from 192.168.60.1, 92 ms
+Reply to request 4 from 192.168.10.1, 4 ms
+Reply to request 4 from 192.168.20.1, 180 ms
+Reply to request 4 from 192.168.60.1, 144 ms
+Reply to request 5 from 192.168.10.1, 4 ms
+Reply to request 5 from 192.168.20.1, 160 ms
+Reply to request 5 from 192.168.60.1, 124 ms
+....
+````
+
+**Server02**  
+
+```ios
+SERVER02#ping 239.1.1.1 size 50 repeat 1000
+
+Type escape sequence to abort.
+Sending 1000, 50-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.40.1, 1 ms
+Reply to request 1 from 192.168.40.1, 4 ms
+Reply to request 2 from 192.168.40.1, 4 ms
+Reply to request 2 from 192.168.30.1, 172 ms
+Reply to request 2 from 192.168.50.1, 104 ms
+Reply to request 3 from 192.168.40.1, 4 ms
+Reply to request 3 from 192.168.30.1, 88 ms
+Reply to request 3 from 192.168.50.1, 88 ms
+Reply to request 4 from 192.168.40.1, 4 ms
+Reply to request 4 from 192.168.50.1, 140 ms
+Reply to request 4 from 192.168.30.1, 108 ms
+Reply to request 5 from 192.168.40.1, 4 ms
+Reply to request 5 from 192.168.50.1, 120 ms
+Reply to request 5 from 192.168.30.1, 120 ms
+...
+```
+  
+Logo após, vamos executar o comado:  
+  
+`show ip mroute`  
+  
+Executar de **R01 a R06**  
+
+**R01**  
+
+```ios
+R01#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:13:30/00:02:43, RP 2.2.2.2, flags: BC
+  Bidir-Upstream: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:13:16/00:02:49
+    FastEthernet0/0, Forward/Sparse, 00:13:24/00:02:43
+    FastEthernet0/1, Bidir-Upstream/Sparse, 00:13:25/00:00:00
+
+(*, 224.0.1.40), 00:13:30/00:02:31, RP 2.2.2.2, flags: BCL
+  Bidir-Upstream: FastEthernet0/1, RPF nbr 10.0.0.2
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:13:17/00:02:43
+    Loopback0, Forward/Sparse, 00:13:26/00:02:30
+    FastEthernet0/1, Bidir-Upstream/Sparse, 00:13:26/00:00:00
+
+R01#
+```
+
+**R04**  
+
+```ios
+R04#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:17:30/00:03:04, RP 5.5.5.5, flags: BC
+  Bidir-Upstream: FastEthernet0/1, RPF nbr 10.0.0.14
+  Outgoing interface list:
+    FastEthernet1/0, Forward/Sparse, 00:17:21/00:02:39
+    FastEthernet0/0, Forward/Sparse, 00:17:30/00:02:49
+    FastEthernet0/1, Bidir-Upstream/Sparse, 00:17:30/00:00:00
+
+(*, 224.0.1.40), 00:18:25/00:02:36, RP 5.5.5.5, flags: BCL
+  Bidir-Upstream: FastEthernet0/1, RPF nbr 10.0.0.14
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:17:31/00:02:47
+    Loopback0, Forward/Sparse, 00:17:40/00:02:35
+    FastEthernet0/1, Bidir-Upstream/Sparse, 00:17:41/00:00:00
+
+R04#
+```
+
+Observe atentamente:
+
+- Presença do flag B (Bidir Group);
+- Predominância de estados (*,G);
+- Ausência de transição para (S,G);
+- Encaminhamento simétrico nos dois domínios.
+
+🧪 **Validação Complementar com Wireshark**  
+
+Para reforçar a análise técnica, recomenda-se capturar tráfego multicast em uma interface de acesso aos hosts.  
+  
+Com o Wireshark, observe:
+
+- Ausência de pacotes PIM Register;
+- Fluxo multicast estável;
+- Tráfego fluindo sempre via RP;
+- Redução de sinalização dinâmica relacionada a SPT.
+  
+🎯 **Interface de captura (importante)**  
+  
+Capture na interface do roteador ligada ao host ou no segmento L2 do host, por exemplo:
+  
+- Interface do R04 ↔ SERVER02
+- Interface do R02 ↔ SERVER01
+
+Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da validação.
+
+**R02**  
+
+| Filtro Whireshark                                  | Significado                           | Captura de Tela                      |
+|:--------------------------------------------------:|:-------------------------------------:|:------------------------------------:|
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo  | ![01](Imagens/Whireshark/R01/01.png) |
+|                                                    | . ver ICMP multicast (ping 239.1.1.1) |                                      |
+|                                                    | . validar que o tráfego está ativo    |                                      |
+
+ver ICMP multicast (ping 239.1.1.1)
+
+validar que o tráfego está ativo
+
+ver ICMP multicast (ping 239.1.1.1)
+
+validar que o tráfego está ativo
+
+📸 Capturas recomendadas:
+
+Interface do host receptor
+
+Interface de acesso ao RP
+
+📌 Conclusão do Passo 03
+
+Neste ponto do laboratório, fica evidente que:
+
+✅ O MSDP permanece inalterado e funcional;
+
+✅ A descoberta de fontes continua ocorrendo entre domínios;
+
+✅ O comportamento multicast torna-se previsível e consistente;
+
+🎯 A mudança decisiva ocorreu no modelo de PIM, não no protocolo MSDP.
+
+Este passo consolida o entendimento de que decisões de design no plano de dados têm impacto direto na eficiência do multicast interdomínios, e prepara o cenário para as validações finais de convergência e estabilidade.
 
 ---
 
