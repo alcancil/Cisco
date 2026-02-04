@@ -1355,6 +1355,32 @@ Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da
 | `icmp && ip.dst == 239.1.1.1`                      | . Echo Request enviados ao grupo           |                                      |
 | `icmp && ip.dst == 239.1.1.1`                      | . Echo Reply vindos de múltiplos hosts     | ![04](Imagens/Whireshark/R01/04.png) |
 | `icmp && ip.dst == 239.1.1.1`                      | . múltiplas respostas                      |                                      |
+| `ip.proto == 103`                                  | . tráfego de dados não alterna caminho     | ![05](Imagens/Whireshark/R01/05.png) |
+| `ip.proto == 103`                                  | . não surge sinalização extra de Join SPT  |                                      |
+| `icmp`                                             | . tráfego de dados não alterna caminho     | ![06](Imagens/Whireshark/R01/06.png) |
+| `icmp`                                             | . não surge sinalização extra de Join SPT  |                                      |
+
+**R04**  
+
+| Filtro Whireshark                                  | Significado                                | Captura de Tela                      |
+|:--------------------------------------------------:|:-------------------------------------------|:------------------------------------:|
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo       |                                      |
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . ver ICMP multicast (ping 239.1.1.1)      | ![01](Imagens/Whireshark/R04/01.png) |
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . validar que o tráfego está ativo         |                                      |
+| `pim`                                              | . NÃO aparecem pacotes PIM Register        |                                      |
+| `pim`                                              | . Aparecem apenas: PIM Hello               | ![02](Imagens/Whireshark/R04/02.png) |
+| `pim`                                              | . Aparecem eventualmete: PIM Join/Prune    |                                      |
+| `pim.type == 1`                                    | . zero pacotes                             |                                      |
+| `pim.type == 1`                                    | . “Não foram observados pacotes            | ![03](Imagens/Whireshark/R04/03.png) |
+| `pim.type == 1`                                    | PIM Register, o que confirma a operação em |                                      |
+| `pim.type == 1`                                    | modo Bidirectional PIM.”                   |                                      |
+| `icmp && ip.dst == 239.1.1.1`                      | . Echo Request enviados ao grupo           |                                      |
+| `icmp && ip.dst == 239.1.1.1`                      | . Echo Reply vindos de múltiplos hosts     | ![04](Imagens/Whireshark/R04/04.png) |
+| `icmp && ip.dst == 239.1.1.1`                      | . múltiplas respostas                      |                                      |
+| `ip.proto == 103`                                  | . tráfego de dados não alterna caminho     | ![05](Imagens/Whireshark/R04/05.png) |
+| `ip.proto == 103`                                  | . não surge sinalização extra de Join SPT  |                                      |
+| `icmp`                                             | . tráfego de dados não alterna caminho     | ![06](Imagens/Whireshark/R04/06.png) |
+| `icmp`                                             | . não surge sinalização extra de Join SPT  |                                      |
 
 validar que o tráfego está ativo
 
