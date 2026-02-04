@@ -1340,11 +1340,11 @@ Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da
 
 **R02**  
 
-| Filtro Whireshark                                  | Significado                                | Captura de Tela                      |
-|:--------------------------------------------------:|:------------------------------------------:|:------------------------------------:|
-| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo <br>  | ![01](Imagens/Whireshark/R01/01.png) |
-|                                                    | . ver ICMP multicast (ping 239.1.1.1) <br> |                                      |
-|                                                    | . validar que o tráfego está ativo <br>    |                                      |
+| Filtro Whireshark                                  | Significado                               | Captura de Tela                      |
+|:--------------------------------------------------:|:-----------------------------------------:|:------------------------------------:|
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo<br>  | ![01](Imagens/Whireshark/R01/01.png) |
+|                                                    | . ver ICMP multicast (ping 239.1.1.1)<br> |                                      |
+|                                                    | . validar que o tráfego está ativo<br>    |                                      |
 
 ver ICMP multicast (ping 239.1.1.1)
 
