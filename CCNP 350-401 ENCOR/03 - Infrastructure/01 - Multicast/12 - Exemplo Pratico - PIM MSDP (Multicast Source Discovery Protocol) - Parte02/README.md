@@ -1341,10 +1341,15 @@ Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da
 **R02**  
 
 | Filtro Whireshark                                  | Significado                                | Captura de Tela                      |
-|:--------------------------------------------------:|:------------------------------------------:|:------------------------------------:|
-| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo<br>.  |                                      |
-|                                                    |  . ver ICMP multicast (ping 239.1.1.1)<br> | ![01](Imagens/Whireshark/R01/01.png) |
-|                                                    | . validar que o tráfego está ativo<br>     |                                      |
+|:--------------------------------------------------:|:-------------------------------------------|:------------------------------------:|
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo       |                                      |
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . ver ICMP multicast (ping 239.1.1.1)      | ![01](Imagens/Whireshark/R01/01.png) |
+| `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . validar que o tráfego está ativo         |                                      |
+|----------------------------------------------------|--------------------------------------------|--------------------------------------|
+| `pim`                                              | . NÃO aparecem pacotes PIM Register        |                                      |
+| `pim`                                              | . Aparecem apenas: PIM Hello               | ![02](Imagens/Whireshark/R01/02.png) |
+| `pim`                                              | . Aparecem eventualmete: PIM Join/Prune    |                                      |
+
 
 ver ICMP multicast (ping 239.1.1.1)
 
