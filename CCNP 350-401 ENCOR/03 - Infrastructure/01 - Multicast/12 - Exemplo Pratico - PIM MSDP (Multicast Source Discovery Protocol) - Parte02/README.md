@@ -1345,13 +1345,16 @@ Assim você enxerga o efeito do BIDIR/ASM na borda, que é exatamente o ponto da
 | `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . confirmar fluxo multicast contínuo       |                                      |
 | `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . ver ICMP multicast (ping 239.1.1.1)      | ![01](Imagens/Whireshark/R01/01.png) |
 | `ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255` | . validar que o tráfego está ativo         |                                      |
-| <br>------------------------------------------<br> | <br>----------------------------------<br> | <br>----------------------------<br> |
 | `pim`                                              | . NÃO aparecem pacotes PIM Register        |                                      |
 | `pim`                                              | . Aparecem apenas: PIM Hello               | ![02](Imagens/Whireshark/R01/02.png) |
 | `pim`                                              | . Aparecem eventualmete: PIM Join/Prune    |                                      |
-
-
-ver ICMP multicast (ping 239.1.1.1)
+| `pim.type == 1`                                    | . zero pacotes                             |                                      |
+| `pim.type == 1`                                    | . “Não foram observados pacotes            | ![03](Imagens/Whireshark/R01/03.png) |
+| `pim.type == 1`                                    | PIM Register, o que confirma a operação em |                                      |
+| `pim.type == 1`                                    | modo Bidirectional PIM.”                   |                                      |
+| `icmp && ip.dst == 239.1.1.1`                      | . Echo Request enviados ao grupo           |                                      |
+| `icmp && ip.dst == 239.1.1.1`                      | . Echo Reply vindos de múltiplos hosts     | ![04](Imagens/Whireshark/R01/04.png) |
+| `icmp && ip.dst == 239.1.1.1`                      | . múltiplas respostas                      |                                      |
 
 validar que o tráfego está ativo
 
