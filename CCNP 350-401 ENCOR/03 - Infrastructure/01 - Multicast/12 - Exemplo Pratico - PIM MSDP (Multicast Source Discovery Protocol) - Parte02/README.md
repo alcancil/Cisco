@@ -43,6 +43,10 @@
     - [🟢 O que não deve ser alterado](#-o-que-não-deve-ser-alterado)
     - [3️⃣ Definição Explícita do RP como BIDIR (Mudança Lógica Central do Laboratório)](#3️⃣-definição-explícita-do-rp-como-bidir-mudança-lógica-central-do-laboratório)
     - [⚙️ Configuração do RP como BIDIR](#️-configuração-do-rp-como-bidir)
+  - [Passo 04 – Entendendo o Bloqueio Atual (BIDIR + MSDP)](#passo-04--entendendo-o-bloqueio-atual-bidir--msdp)
+    - [Situação atual](#situação-atual)
+    - [Visão lógica do problema](#visão-lógica-do-problema)
+    - [Conclusão técnica deste estágio](#conclusão-técnica-deste-estágio)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -1395,6 +1399,58 @@ Alterar Daqui
 
 ---
 
+## Passo 04 – Entendendo o Bloqueio Atual (BIDIR + MSDP)
+
+Antes de qualquer ajuste prático, é importante **registrar o estado atual do laboratório**. Neste ponto, o comportamento observado **não é erro de configuração**, mas consequência direta do modelo escolhido.
+
+### Situação atual
+
+* Existem **dois domínios multicast independentes** (Domínio A e Domínio B);
+* Cada domínio utiliza **PIM BIDIR** com seu respectivo RP;
+* O **MSDP está estabelecido em TCP** entre os RPs;
+* Apenas entradas `(*,G)` existem na tabela multicast;
+* **Nenhuma entrada `(S,G)` é gerada**, logo **nenhuma SA é anunciada via MSDP**.
+
+O resultado prático é simples:
+
+> O tráfego multicast funciona **dentro de cada domínio**, mas **não atravessa os domínios**.
+
+### Visão lógica do problema
+
+```mermaid
+graph LR
+  subgraph Domínio A
+    HA[Hosts A]
+    RPA[RP A]
+    HA -->|"(*,G)"| RPA
+  end
+
+  subgraph Domínio B
+    HB[Hosts B]
+    RPB[RP B]
+    HB -->|"(*,G)" | RPB
+  end
+
+  RPA -. MSDP TCP .- RPB
+
+  note1["Somente (*,G)\nNenhum (S,G)"]
+  RPA --- note1
+```
+
+### Conclusão técnica deste estágio
+
+* **PIM BIDIR não cria fontes explícitas**;
+* **MSDP depende de (S,G)** para propagar informação entre domínios;
+* Portanto, **BIDIR puro isola os domínios por definição**.
+
+Este entendimento estabelece o ponto de partida para o próximo passo: **introduzir seletivamente ASM sem desmontar a arquitetura BIDIR existente**.
+
+---
+
+Alterar Daqui
+
+---
+
 ### 🧩 Vantagens Técnicas do MSDP
 
 - **Escalabilidade**: Permite que cada domínio tenha sua própria política de RP.
@@ -1757,8 +1813,9 @@ Loopback0                  1.1.1.1         YES NVRAM  up                    up
 R01#
 ```
 
-🧠 **Evidência via captura de pacotes (Wireshark)**
+🧠 **Evidência via captura de pacotes (Wireshark)**  
 
+A utilização de ferramentas de análise como o Wireshark reforça a capacidade de troubleshooting avançado, permitindo validar hipóteses técnicas com base em evidências reais do tráfego de rede.  
 Para observar a eleição do DR no plano de controle multicast, inicie uma captura na interface FastEthernet0/1 e utilize o filtro:  
 
 ```Whireshark
@@ -2440,6 +2497,7 @@ Filtro: `ip.dst == 239.1.1.1`
 
 ## 6️⃣ Conclusão do Estágio Pré-MSDP
 
+Do ponto de vista didático, este estágio consolida conceitos fundamentais exigidos em certificações Cisco de nível profissional, como a separação entre *control-plane* e *data-plane*, o papel do RP e as limitações operacionais do PIM Sparse Mode em ambientes multi-domínio.  
 Até este ponto, o laboratório demonstra de forma clara que:
 
 - O multicast funciona corretamente dentro de cada domínio
@@ -2841,8 +2899,9 @@ Durante os testes de validação do tráfego multicast, foi observado o seguinte
 ```
   
 Este comportamento, à primeira vista, pode parecer um erro de configuração ou falha de interoperabilidade entre os domínios.  
-No entanto, após análise do plano de controle e do fluxo multicast, conclui-se que **este comportamento é esperado e correto**, dado o **modelo de multicast escolhido**.
-
+No entanto, após análise do plano de controle e do fluxo multicast, conclui-se que **este comportamento é esperado e correto**, dado o **modelo de multicast escolhido**.  
+Esse comportamento é consistente com ambientes de produção onde o plano de controle está operacional, porém o modelo de forwarding adotado não sustenta a propagação multicast entre domínios distintos, reforçando a importância de decisões de design além da simples conectividade de protocolos.  
+  
 ---
 
 ## 🧠 Análise Técnica do Comportamento
