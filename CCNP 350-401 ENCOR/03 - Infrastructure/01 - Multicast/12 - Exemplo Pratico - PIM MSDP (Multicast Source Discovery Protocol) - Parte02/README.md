@@ -47,6 +47,15 @@
     - [Situação atual](#situação-atual)
     - [Visão lógica do problema](#visão-lógica-do-problema)
     - [Conclusão técnica deste estágio](#conclusão-técnica-deste-estágio)
+  - [Definir claramente o papel dos grupos multicast](#definir-claramente-o-papel-dos-grupos-multicast)
+    - [🎯 Decisão arquitetural do laboratório](#-decisão-arquitetural-do-laboratório)
+    - [🧠 Conceito-chave](#-conceito-chave)
+    - [🔧 Ajuste prático no cenário (mão na massa)](#-ajuste-prático-no-cenário-mão-na-massa)
+      - [📐 Estratégia adotada no laboratório (Estratégia A)](#-estratégia-adotada-no-laboratório-estratégia-a)
+      - [🎯 Decisão prática de grupos](#-decisão-prática-de-grupos)
+      - [1️⃣ Configuração do RP para grupos BIDIR (intra-domínio)](#1️⃣-configuração-do-rp-para-grupos-bidir-intra-domínio)
+      - [2️⃣ Configuração do RP para grupos ASM (inter-domínio)](#2️⃣-configuração-do-rp-para-grupos-asm-inter-domínio)
+    - [3️⃣ Configuração do MSDP entre os RPs ASM](#3️⃣-configuração-do-msdp-entre-os-rps-asm)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -1393,23 +1402,17 @@ Neste ponto do laboratório, fica evidente que:
 Este passo consolida o entendimento de que decisões de design no plano de dados têm impacto direto na eficiência do multicast interdomínios, e prepara o cenário para as validações finais de convergência e estabilidade.  
 Neste ponto conseguimos consolidar o cenário e podemos provar que temos **dois domínios multicast ( A e B) em PIM BIDIR**. Porém eles ainda não se conversam.  
 
----
-
-Alterar Daqui
-
----
-
 ## Passo 04 – Entendendo o Bloqueio Atual (BIDIR + MSDP)
 
 Antes de qualquer ajuste prático, é importante **registrar o estado atual do laboratório**. Neste ponto, o comportamento observado **não é erro de configuração**, mas consequência direta do modelo escolhido.
 
 ### Situação atual
 
-* Existem **dois domínios multicast independentes** (Domínio A e Domínio B);
-* Cada domínio utiliza **PIM BIDIR** com seu respectivo RP;
-* O **MSDP está estabelecido em TCP** entre os RPs;
-* Apenas entradas `(*,G)` existem na tabela multicast;
-* **Nenhuma entrada `(S,G)` é gerada**, logo **nenhuma SA é anunciada via MSDP**.
+- Existem **dois domínios multicast independentes** (Domínio A e Domínio B);
+- Cada domínio utiliza **PIM BIDIR** com seu respectivo RP;
+- O **MSDP está estabelecido em TCP** entre os RPs;
+- Apenas entradas `(*,G)` existem na tabela multicast;
+- **Nenhuma entrada `(S,G)` é gerada**, logo **nenhuma SA é anunciada via MSDP**.
 
 O resultado prático é simples:
 
@@ -1439,11 +1442,135 @@ graph LR
 
 ### Conclusão técnica deste estágio
 
-* **PIM BIDIR não cria fontes explícitas**;
-* **MSDP depende de (S,G)** para propagar informação entre domínios;
-* Portanto, **BIDIR puro isola os domínios por definição**.
+- **PIM BIDIR não cria fontes explícitas**;
+- **MSDP depende de (S,G)** para propagar informação entre domínios;
+- Portanto, **BIDIR puro isola os domínios por definição**.
 
 Este entendimento estabelece o ponto de partida para o próximo passo: **introduzir seletivamente ASM sem desmontar a arquitetura BIDIR existente**.
+
+---
+
+Alterar Daqui
+
+---
+
+## Definir claramente o papel dos grupos multicast
+
+Até este ponto do laboratório, ambos os domínios multicast estão operando corretamente com **PIM BIDIR**, garantindo estabilidade, baixo overhead de controle e ausência de transições para SPT dentro de cada domínio.  
+  
+No entanto, ao introduzir **MSDP** para interconectar os domínios, surge uma limitação arquitetural importante:  
+
+> **PIM BIDIR opera exclusivamente com entradas (*,G) e não gera anúncios Source-Active (SA).**  
+> Como consequência, nenhum tráfego multicast é propagado entre domínios via MSDP.  
+  
+Mesmo com a sessão MSDP estabelecida entre os RPs, **não há informações de origem para serem trocadas**, pois não existem entradas *(S,G)*.  
+  
+---
+
+### 🎯 Decisão arquitetural do laboratório
+  
+Para manter o laboratório didático, funcional e alinhado ao funcionamento real do MSDP, foi adotado um **modelo híbrido**:
+
+- **239.1.1.1 → ASM (Any-Source Multicast)**  
+  Utilizado para validar a comunicação **inter-domínios via MSDP**  
+
+- **Demais grupos multicast → BIDIR**  
+  Permanecem restritos a cada domínio, utilizando árvores bidirecionais  
+  
+Essa abordagem reflete cenários reais, onde apenas grupos específicos exigem alcance global, enquanto o restante do tráfego multicast permanece otimizado localmente.  
+  
+---
+  
+### 🧠 Conceito-chave
+  
+O comportamento de um grupo multicast **não é definido pela aplicação**, mas sim pela **política aplicada ao RP**.  
+  
+Assim, o mesmo grupo multicast pode:
+
+- Ser tratado como **BIDIR**, caso esteja incluído na ACL BIDIR;
+- Ou ser tratado como **ASM**, caso seja explicitamente excluído dessa política.
+  
+Esse controle é realizado exclusivamente por **ACL standard**, aplicada na configuração do RP.  
+  
+> Não há “magia” envolvida — apenas decisão de arquitetura.
+  
+---
+
+### 🔧 Ajuste prático no cenário (mão na massa)
+
+Neste ponto do laboratório, torna-se necessário separar explicitamente os papéis do multicast **intra-domínio** e **inter-domínio**, respeitando as limitações do IOS 12.4 e o funcionamento real do MSDP.  
+  
+Como o **PIM BIDIR não gera entradas (S,G)**, ele **não é compatível com MSDP para o mesmo grupo multicast**. Portanto, a solução adotada é a seguinte:  
+  
+---
+  
+#### 📐 Estratégia adotada no laboratório (Estratégia A)
+  
+- **Grupos BIDIR**
+  - Utilizados apenas para **tráfego intra-domínio**
+  - Não participam do MSDP
+  - Mantêm árvore compartilhada estável (*,G)
+  
+- **Grupo ASM**
+  - Utilizado exclusivamente para **tráfego inter-domínio**
+  - Gera entradas (S,G)
+  - Permite anúncios **Source-Active (SA)** via MSDP
+  
+---
+
+#### 🎯 Decisão prática de grupos
+
+| Grupo Multicast     | Função        | Modo  |
+|---------------------|---------------|-------|
+| 239.1.1.1           | Inter-domínio | ASM   |
+| 239.2.2.2 (exemplo) | Intra-domínio | BIDIR |
+
+---
+
+#### 1️⃣ Configuração do RP para grupos BIDIR (intra-domínio)
+
+Em cada domínio multicast, define-se um RP dedicado para os grupos BIDIR:
+
+```ios
+ip pim bidir-enable
+ip pim rp-address 6.6.6.6 bidir
+```
+
+📌 Esse RP não participa do MSDP, pois os grupos BIDIR não geram (S,G).  
+
+#### 2️⃣ Configuração do RP para grupos ASM (inter-domínio)
+
+O grupo 239.1.1.1 passa a operar como ASM, utilizando um RP separado:
+
+```ios
+ip pim rp-address 5.5.5.5
+```
+
+📌 A ausência do parâmetro bidir faz com que o grupo seja tratado como ASM, permitindo:
+  
+- Criação de entradas (S,G)
+- Geração de anúncios Source-Active (SA)
+- Troca de informações entre domínios via MSDP
+  
+### 3️⃣ Configuração do MSDP entre os RPs ASM
+
+Nos RPs ASM de cada domínio:
+
+```ios
+ip msdp peer <IP-RP-REMOTO> connect-source Loopback0
+```
+
+Após essa etapa, os RPs passam a trocar informações de fontes multicast ativas.
+
+---
+
+✅ Resultado esperado após este ajuste
+
+- Grupos BIDIR permanecem restritos ao intra-domínio
+- O grupo 239.1.1.1 opera como ASM
+- Entradas (S,G) são criadas corretamente
+- Os RPs passam a trocar anúncios SA via MSDP
+- O tráfego multicast torna-se visível entre os domínios A e B
 
 ---
 
