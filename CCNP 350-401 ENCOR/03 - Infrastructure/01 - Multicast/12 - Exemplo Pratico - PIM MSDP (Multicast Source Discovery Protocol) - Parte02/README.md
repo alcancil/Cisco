@@ -62,12 +62,10 @@
     - [2️⃣ Remover a associação BIDIR do RP do Domínio B](#2️⃣-remover-a-associação-bidir-do-rp-do-domínio-b)
     - [3️⃣ Definir o RP do Domínio B como ASM](#3️⃣-definir-o-rp-do-domínio-b-como-asm)
     - [4️⃣ Propagar a definição do RP ASM para o domínio](#4️⃣-propagar-a-definição-do-rp-asm-para-o-domínio)
+    - [Diagrama de Funcionamento dos Dominios A e B em PIM ASM](#diagrama-de-funcionamento-dos-dominios-a-e-b-em-pim-asm)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
-    - [🔁 Funcionamento Geral do MSDP](#-funcionamento-geral-do-msdp)
-    - [🧱 No nosso laboratório](#-no-nosso-laboratório)
-  - [⚙️ Ativando o Roteamento Multicast](#️-ativando-o-roteamento-multicast)
     - [✅ Verificação do Roteamento Multicast](#-verificação-do-roteamento-multicast)
     - [📊 Tabela de Rotas Multicast (Estado Inicial)](#-tabela-de-rotas-multicast-estado-inicial)
     - [⚙️ Ativando o PIM Sparse Mode (PIM-SM)](#️-ativando-o-pim-sparse-mode-pim-sm)
@@ -1610,6 +1608,100 @@ Ao final desta etapa:
 - O cenário fica pronto para troca de informações inter-domínio.
   
 A próxima etapa consiste em validar a comunicação entre os RPs ASM dos Domínios A e B via MSDP, consolidando o funcionamento completo do laboratório.
+
+### Diagrama de Funcionamento dos Dominios A e B em PIM ASM
+
+```mermaid
+graph LR
+
+%% =========================
+%% Dominio A - ASM
+%% =========================
+
+subgraph Dominio_A_ASM["Dominio A - PIM Sparse Mode ASM"]
+  SA["Source A"]
+  R01["R01"]
+  R02["RP A - 2.2.2.2"]
+  R06["R06"]
+
+  SA -->|"S,G"| R01
+  R01 -->|"PIM Join"| R02
+  R06 -->|"PIM Join"| R02
+end
+
+%% =========================
+%% Dominio B - ASM
+%% =========================
+
+subgraph Dominio_B_ASM["Dominio B - PIM Sparse Mode ASM"]
+  SB["Source B"]
+  R03["R03"]
+  R05["RP B - 5.5.5.5"]
+  R04["R04"]
+
+  SB -->|"S,G"| R03
+  R03 -->|"PIM Join"| R05
+  R04 -->|"PIM Join"| R05
+end
+
+%% =========================
+%% MSDP
+%% =========================
+
+R02 <-->|"MSDP - SA Exchange"| R05
+
+%% =========================
+%% Annotations
+%% =========================
+
+noteA["ASM gera (S,G)\nRP anuncia Source-Active"]
+noteB["MSDP troca apenas SA\nbaseadas em (S,G)"]
+
+R02 --- noteA
+R05 --- noteA
+R02 --- noteB
+```
+
+---
+
+Alterar Daqui
+
+---
+
+
+### 🧩 Vantagens Técnicas do MSDP
+
+- **Escalabilidade**: Permite que cada domínio tenha sua própria política de RP.
+- **Filtros de Origem**: Suporta IGMPv3 e políticas de segurança baseadas no IP da fonte.
+- **Descoberta Dinâmica**: Automatiza a comunicação entre ilhas multicast independentes.
+
+### 📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)
+
+| Intenção do Receptor   | IGMP Join enviado | Resultado com MSDP + PIM-SM             |
+|------------------------|-------------------|-----------------------------------------|
+| Quer apenas SERVER01   | Join (S1, G)      | Recebe apenas fluxo do Domínio A        |
+| Quer apenas SERVER02   | Join (S2, G)      | Recebe apenas fluxo do Domínio B        |
+| Quer ambas as fontes   | Join (*, G)       | Recebe fluxos via RPs interconectados   |
+| Quer filtrar fontes    | Suportado (SSM)   | Controle granular por IP de origem      |
+
+👉 **Em resumo:** - No MSDP, o controle é feito no nível de **(S,G)** através das mensagens **Source-Active (SA)**.
+
+- Diferente do BIDIR, existe seleção, exclusão e isolamento de fontes.
+- O RP de cada domínio decide quais fontes "vazar" para os peers vizinhos via sessão TCP.
+
+---
+
+### ⚙️ Nosso cenário Multicast MSDP
+
+Para validar a interoperabilidade, as fontes estão isoladas em domínios distintos:
+
+| Fonte    | Gateway (DR)   | Domínio Multicast | Grupo Multicast  |
+|----------|----------------|-------------------|------------------|
+| SERVER01 | R01            | **Domínio A**     | 239.1.1.1        |
+| SERVER02 | R04            | **Domínio B**     | 239.1.1.1        |
+
+**Comportamento esperado:** Quando os receptores ingressarem no grupo, o RP local consultará o seu **SA-Cache**. Se houver um Peer MSDP ativo, ele aprenderá a origem remota. A verificação via `show ip mroute` exibirá entradas **(S,G)**, confirmando que o tráfego é roteado pela árvore de caminho mais curto (SPT) entre os domínios.
+```
 
 ---
 
