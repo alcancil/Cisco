@@ -63,6 +63,12 @@
     - [3️⃣ Definir o RP do Domínio B como ASM](#3️⃣-definir-o-rp-do-domínio-b-como-asm)
     - [4️⃣ Propagar a definição do RP ASM para o domínio](#4️⃣-propagar-a-definição-do-rp-asm-para-o-domínio)
     - [Diagrama de Funcionamento dos Dominios A e B em PIM ASM](#diagrama-de-funcionamento-dos-dominios-a-e-b-em-pim-asm)
+    - [🔧 Apresentar rapidamente a configuração (já feita)](#-apresentar-rapidamente-a-configuração-já-feita)
+  - [🔌 Acesso remoto aos RPs para validação do MSDP](#-acesso-remoto-aos-rps-para-validação-do-msdp)
+    - [🎯 Por que utilizar Telnet neste estágio?](#-por-que-utilizar-telnet-neste-estágio)
+    - [🔧 Configuração básica de Telnet nos RPs](#-configuração-básica-de-telnet-nos-rps)
+    - [🧪 De onde os testes serão realizados?](#-de-onde-os-testes-serão-realizados)
+    - [🚀 Gerando tráfego multicast corretamente](#-gerando-tráfego-multicast-corretamente)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -1661,6 +1667,103 @@ R02 --- noteA
 R05 --- noteA
 R02 --- noteB
 ```
+
+### 🔧 Apresentar rapidamente a configuração (já feita)
+
+A tabela abaixo resume o estado final da configuração multicast após a migração de **PIM BIDIR para ASM** nos dois domínios:
+
+| Domínio | Roteador         | Função           | Modo PIM     | RP Configurado   |
+|---------|------------------|------------------|--------------|------------------|
+| A       | R01              | Router de acesso | ASM (Sparse) | 2.2.2.2          |
+| A       | R02              | RP do domínio A  | ASM (Sparse) | 2.2.2.2          |
+| A       | R06              | Router de acesso | ASM (Sparse) | 2.2.2.2          |
+| B       | R03              | Router de acesso | ASM (Sparse) | 5.5.5.5          |
+| B       | R04              | Router de acesso | ASM (Sparse) | 5.5.5.5          |
+| B       | R05              | RP do domínio B  | ASM (Sparse) | 5.5.5.5          |
+  
+📌 Observações importantes:
+  
+- **PIM BIDIR foi completamente removido** de ambos os domínios;
+- Todos os grupos multicast agora operam em **ASM (Any-Source Multicast)**;
+- Entradas **(S,G)** passam a ser criadas;
+- Os RPs tornam-se elegíveis para **troca de Source-Active (SA) via MSDP**.
+
+Com esse estado consolidado, o cenário está pronto para a **validação do MSDP e análise do `sa-cache`**.
+
+## 🔌 Acesso remoto aos RPs para validação do MSDP
+
+Durante os testes multicast inter-domínio, será necessário **gerar tráfego continuamente** (ping multicast) e, ao mesmo tempo, **observar o comportamento do MSDP em tempo real**.  
+
+Como o comando de ping multicast **bloqueia o terminal**, utilizaremos **sessões Telnet paralelas** para acompanhar os estados internos do protocolo.  
+  
+---
+
+### 🎯 Por que utilizar Telnet neste estágio?
+
+- O ping multicast mantém o terminal ocupado;
+- Precisamos verificar comandos como:
+  - `show ip msdp sa-cache`
+  - `show ip mroute`
+- O uso de Telnet permite:
+  - Um terminal dedicado para **gerar tráfego**
+  - Outro terminal dedicado para **análise e observação**
+  
+Essa abordagem reflete práticas reais de troubleshooting em ambientes de rede.
+
+---
+  
+### 🔧 Configuração básica de Telnet nos RPs
+
+Nos RPs (R02 e R05), configure o acesso remoto com autenticação simples de laboratório:
+
+```ios
+username cisco password cisco
+
+line vty 0 4
+ login local
+ transport input telnet
+```
+  
+📌 Usuário: **cisco**  
+📌 Senha: **cisco**  
+  
+Essa configuração é exclusivamente para fins didáticos, permitindo acesso simultâneo aos roteadores durante os testes.
+
+### 🧪 De onde os testes serão realizados?
+  
+Origem do tráfego multicast  
+
+- Ping multicast será executado diretamente nos RPs
+- Utilizando a Loopback0 como endereço de origem
+  
+Observação e validação
+  
+- Através de sessões Telnet paralelas
+- Monitorando os estados do MSDP e da tabela multicast
+
+### 🚀 Gerando tráfego multicast corretamente
+
+Para que o MSDP funcione, é fundamental que o RP atue como fonte ASM.  
+Por isso, o ping multicast deve ser executado da seguinte forma nos RPs:  
+
+```ios
+ping 239.1.1.1 source Loopback0 size 50 repeat 20
+```
+
+🧠 **Por que usar a Loopback como source?**  
+  
+- Garante que o RP seja visto como fonte multicast estável;
+- Evita dependência de interfaces físicas;
+- Facilita a criação de entradas (S,G);
+  
+Permite que o RP:
+
+- Gere anúncios Source-Active (SA)
+- Propague essas informações via MSDP
+  
+📌 **Sem definir a Loopback como source, o tráfego pode não ser reconhecido corretamente como origem multicast válida para o MSDP.**  
+
+
 
 ---
 
