@@ -54,6 +54,14 @@
     - [2️⃣ Ajuste do RP — Removendo BIDIR](#2️⃣-ajuste-do-rp--removendo-bidir)
     - [3️⃣ Definição do RP ASM no Domínio A](#3️⃣-definição-do-rp-asm-no-domínio-a)
     - [4️⃣ Propagação do RP ASM para os demais roteadores do domínio](#4️⃣-propagação-do-rp-asm-para-os-demais-roteadores-do-domínio)
+  - [🔄 Migração do Domínio B – De PIM BIDIR para ASM](#-migração-do-domínio-b--de-pim-bidir-para-asm)
+    - [🎯 Objetivo desta etapa no domínio B](#-objetivo-desta-etapa-no-domínio-b)
+    - [🧠 Contexto técnico](#-contexto-técnico)
+    - [🔧 Ajustes práticos no Domínio B](#-ajustes-práticos-no-domínio-b)
+    - [1️⃣ Remover o suporte BIDIR dos roteadores do domínio](#1️⃣-remover-o-suporte-bidir-dos-roteadores-do-domínio)
+    - [2️⃣ Remover a associação BIDIR do RP do Domínio B](#2️⃣-remover-a-associação-bidir-do-rp-do-domínio-b)
+    - [3️⃣ Definir o RP do Domínio B como ASM](#3️⃣-definir-o-rp-do-domínio-b-como-asm)
+    - [4️⃣ Propagar a definição do RP ASM para o domínio](#4️⃣-propagar-a-definição-do-rp-asm-para-o-domínio)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -1459,12 +1467,6 @@ Com isso, fica comprovado que **PIM BIDIR, por definição, não atende cenário
 Este ponto marca o encerramento da fase BIDIR do laboratório e prepara o terreno para a próxima etapa:  
 **a transição controlada para ASM**, necessária para viabilizar a troca de informações multicast entre domínios.
 
----
-
-Alterar Daqui
-
----
-
 ## 🔄 Migração do Domínio A — De PIM BIDIR para ASM
 
 Após validar que o **PIM BIDIR isola domínios multicast por definição**, o próximo passo do laboratório é **transformar conscientemente o Domínio A em ASM**, preparando-o para a troca de informações via MSDP.  
@@ -1518,7 +1520,7 @@ ip pim rp-address 2.2.2.2
 
 ### 4️⃣ Propagação do RP ASM para os demais roteadores do domínio
 
-Nos roteadores R01, R02 e R03, garantir que o RP ASM esteja configurado:
+Nos roteadores R01, R02 e R06, garantir que o RP ASM esteja configurado:
 
 ```ios
 ip pim rp-address 2.2.2.2
@@ -1533,7 +1535,81 @@ ip pim rp-address 2.2.2.2
 - O RP (R02) torna-se capaz de anunciar fontes multicast;
 - O domínio está pronto para integração via MSDP no próximo passo.
 
+## 🔄 Migração do Domínio B – De PIM BIDIR para ASM
+  
+Compreendido o motivo pelo qual PIM BIDIR isola domínios multicast quando utilizado em conjunto com MSDP, o próximo passo é aplicar a mesma transição arquitetural no Domínio B, garantindo simetria de funcionamento entre os domínios.  
+  
+Assim como no Domínio A, o objetivo aqui não é corrigir um erro, mas alterar conscientemente o modelo multicast, preparando o cenário para a troca de informações (S,G) via MSDP.  
 
+---
+
+### 🎯 Objetivo desta etapa no domínio B
+
+- Remover o comportamento BIDIR do Domínio B;
+- Habilitar ASM (Any-Source Multicast) para permitir:
+- Criação de entradas (S,G);
+- Geração de anúncios Source-Active (SA);
+- Propagação de fontes multicast entre domínios via MSDP.
+
+### 🧠 Contexto técnico
+
+Enquanto o Domínio B opera em PIM BIDIR, apenas entradas (*,G) são criadas.  
+Esse modelo é eficiente para tráfego interno, porém incompatível com MSDP, que depende exclusivamente de entradas (S,G).  
+  
+Portanto, a migração para ASM é mandatória para viabilizar comunicação inter-domínio.  
+
+### 🔧 Ajustes práticos no Domínio B
+
+### 1️⃣ Remover o suporte BIDIR dos roteadores do domínio
+
+Nos roteadores R03, R04 e R05, remover o suporte global ao PIM BIDIR:
+
+```ios
+no ip pim bidir-enable
+```
+
+📌 Esse comando garante que nenhum grupo multicast seja tratado como BIDIR neste domínio.  
+
+### 2️⃣ Remover a associação BIDIR do RP do Domínio B
+
+No roteador R05 (RP do Domínio B), remover a definição BIDIR:
+
+```ìos
+no ip pim rp-address 5.5.5.5 bidir
+```
+  
+📌 A partir deste ponto, o RP deixa de operar exclusivamente com árvores bidirecionais.  
+  
+### 3️⃣ Definir o RP do Domínio B como ASM
+
+Ainda no R05, configurar o RP em modo ASM:
+
+```ios
+ip pim rp-address 5.5.5.5
+```
+
+📌 A ausência do parâmetro bidir faz com que todos os grupos multicast passem a operar em ASM, permitindo a criação de (S,G).  
+  
+### 4️⃣ Propagar a definição do RP ASM para o domínio
+
+Nos roteadores R03, R04 e R05, garantir a definição do RP ASM:
+
+```ios
+ip pim rp-address 5.5.5.5
+```
+  
+📌 Essa configuração assegura que todo o Domínio B utilize o mesmo RP ASM, mantendo consistência no controle multicast.
+  
+✅ **Estado final esperado do Domínio B**  
+
+Ao final desta etapa:
+
+- O Domínio B deixa de operar em PIM BIDIR;
+- Entradas (S,G) passam a ser criadas;
+- O RP do domínio torna-se compatível com MSDP;
+- O cenário fica pronto para troca de informações inter-domínio.
+  
+A próxima etapa consiste em validar a comunicação entre os RPs ASM dos Domínios A e B via MSDP, consolidando o funcionamento completo do laboratório.
 
 ---
 
