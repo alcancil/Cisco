@@ -69,6 +69,13 @@
     - [🔧 Configuração básica de Telnet nos RPs](#-configuração-básica-de-telnet-nos-rps)
     - [🧪 De onde os testes serão realizados?](#-de-onde-os-testes-serão-realizados)
     - [🚀 Gerando tráfego multicast corretamente](#-gerando-tráfego-multicast-corretamente)
+  - [🧪 Validação Final do Laboratório (ASM + MSDP)](#-validação-final-do-laboratório-asm--msdp)
+    - [1️⃣ Gerar a fonte multicast (criação de (S,G))](#1️⃣-gerar-a-fonte-multicast-criação-de-sg)
+    - [2️⃣ Verificar a criação de entradas (S,G) no RP local](#2️⃣-verificar-a-criação-de-entradas-sg-no-rp-local)
+    - [3️⃣ Verificar a geração de anúncios Source-Active (SA)](#3️⃣-verificar-a-geração-de-anúncios-source-active-sa)
+    - [5️⃣ Validar o encaminhamento multicast inter-domínio](#5️⃣-validar-o-encaminhamento-multicast-inter-domínio)
+    - [🦈 Captura e Análise com Wireshark (Validação Complementar)](#-captura-e-análise-com-wireshark-validação-complementar)
+    - [✅ Conclusão da Validação](#-conclusão-da-validação)
     - [🧩 Vantagens Técnicas do MSDP](#-vantagens-técnicas-do-msdp)
     - [📊 Matriz de Comportamento: Host vs. Fontes (Inter-domínio)](#-matriz-de-comportamento-host-vs-fontes-inter-domínio)
     - [⚙️ Nosso cenário Multicast MSDP](#️-nosso-cenário-multicast-msdp)
@@ -1717,7 +1724,7 @@ Essa abordagem reflete práticas reais de troubleshooting em ambientes de rede.
 Nos RPs (R02 e R05), configure o acesso remoto com autenticação simples de laboratório:
 
 ```ios
-username cisco password cisco
+username cisco privilege 15 password cisco
 
 line vty 0 4
  login local
@@ -1763,8 +1770,559 @@ Permite que o RP:
   
 📌 **Sem definir a Loopback como source, o tráfego pode não ser reconhecido corretamente como origem multicast válida para o MSDP.**  
 
+## 🧪 Validação Final do Laboratório (ASM + MSDP)
+
+Com os Domínios A e B operando exclusivamente em **PIM Sparse Mode (ASM)** e com a sessão **MSDP estabelecida entre os RPs**, esta etapa tem como objetivo **validar, na prática**, a propagação de fontes multicast entre domínios distintos.  
+  
+A validação segue uma ordem lógica:  
+**gerar tráfego → observar estados → confirmar anúncios MSDP → comprovar encaminhamento inter-domínio**.  
+  
+---
+  
+### 1️⃣ Gerar a fonte multicast (criação de (S,G))
+
+📍 **Onde executar:**  
+Nos **RPs ASM** de cada domínio (R02 e R05)
+
+📌 **Por quê:**  
+O MSDP só propaga informações quando existem **entradas (S,G)**.  
+Por isso, é necessário que o RP atue como **fonte multicast explícita**.  
+  
+```ios
+ping 239.1.1.1 source Loopback0 repeat 30
+```
+
+📌 A utilização da Loopback0 como interface de origem garante:  
+  
+- Endereço estável e roteável;
+- Coerência no cálculo de RPF;
+- Geração consistente de anúncios Source-Active (SA).
+
+Aqui vamos entrar em **Server01**, acessar **R02** e executar o ping.
+
+```ios
+SERVER01#telnet 2.2.2.2
+Trying 2.2.2.2 ... Open
 
 
+User Access Verification
+
+Username: cisco
+Password:
+R02#ping 239.1.1.1 size 50 sou
+R02#ping 239.1.1.1 size 50 source Lo
+R02#ping 239.1.1.1 size 50 source Loopback 0 repeat 30
+
+Type escape sequence to abort.
+Sending 30, 50-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+Packet sent with a source address of 2.2.2.2
+
+Reply to request 0 from 192.168.20.1, 12 ms
+Reply to request 0 from 192.168.60.1, 116 ms
+Reply to request 0 from 192.168.60.1, 100 ms
+Reply to request 0 from 192.168.10.1, 96 ms
+Reply to request 0 from 192.168.60.1, 84 ms
+Reply to request 0 from 192.168.10.1, 80 ms
+Reply to request 0 from 192.168.50.1, 72 ms
+Reply to request 0 from 192.168.40.1, 68 ms
+Reply to request 0 from 192.168.10.1, 56 ms
+Reply to request 0 from 192.168.30.1, 36 ms
+Reply to request 0 from 192.168.20.1, 36 ms
+Reply to request 0 from 192.168.20.1, 24 ms
+```
+
+Aqui vamos entrar em **Server02**, acessar **R05** e executar o ping.
+
+```ios
+SERVER02#telnet 5.5.5.5
+Trying 5.5.5.5 ... Open
+
+
+User Access Verification
+
+Username: cisco
+Password:
+R05#ping 239.1.1.1 size 50 source Loopback 0 repeat 30
+
+Type escape sequence to abort.
+Sending 30, 50-byte ICMP Echos to 239.1.1.1, timeout is 2 seconds:
+Packet sent with a source address of 5.5.5.5
+
+Reply to request 0 from 192.168.50.1, 8 ms
+Reply to request 0 from 192.168.30.1, 120 ms
+Reply to request 0 from 192.168.30.1, 116 ms
+Reply to request 0 from 192.168.40.1, 104 ms
+Reply to request 0 from 192.168.40.1, 92 ms
+Reply to request 0 from 192.168.30.1, 80 ms
+Reply to request 0 from 192.168.40.1, 68 ms
+Reply to request 0 from 192.168.20.1, 52 ms
+Reply to request 0 from 192.168.10.1, 48 ms
+Reply to request 0 from 192.168.50.1, 24 ms
+Reply to request 0 from 192.168.50.1, 20 ms
+Reply to request 0 from 192.168.60.1, 16 ms
+Reply to request 1 from 192.168.50.1, 20 ms
+Reply to request 1 from 192.168.30.1, 88 ms
+Reply to request 1 from 192.168.30.1, 80 ms
+Reply to request 1 from 192.168.20.1, 76 ms
+Reply to request 1 from 192.168.10.1, 76 ms
+Reply to request 1 from 192.168.30.1, 72 ms
+Reply to request 1 from 192.168.20.1, 64 ms
+Reply to request 1 from 192.168.40.1, 60 ms
+```
+  
+### 2️⃣ Verificar a criação de entradas (S,G) no RP local
+
+📍 Onde executar:  
+No mesmo RP que está originando o tráfego multicast  
+
+```ios
+show ip mroute 239.1.1.1
+```
+  
+🔍 Resultado esperado:
+  
+- Presença de entrada (S,G);
+- Flag T indicando uso de SPT;
+- Interface de entrada coerente com o RPF.
+
+Agora vamos acessar **R02** e executar o comando.  
+  
+```ios
+R02#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 02:47:55/00:03:03, RP 2.2.2.2, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 02:47:29/00:03:03
+    FastEthernet0/0, Forward/Sparse, 02:47:55/00:02:16
+
+(10.0.0.5, 239.1.1.1), 00:06:07/00:01:24, flags: T
+  Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:06:08/00:02:14
+    FastEthernet0/1, Forward/Sparse, 00:06:08/00:03:01
+
+(10.0.0.17, 239.1.1.1), 00:06:42/00:01:49, flags: TA
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:06:42/00:02:14
+
+(2.2.2.2, 239.1.1.1), 00:07:07/00:01:42, flags: TA
+  Incoming interface: Loopback0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:09/00:02:12
+    FastEthernet0/1, Forward/Sparse, 00:07:09/00:03:13
+
+(10.0.0.2, 239.1.1.1), 00:07:09/00:01:20, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:09/00:02:12
+
+(192.168.20.254, 239.1.1.1), 00:07:09/00:01:56, flags: TA
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:07:09/00:03:13
+
+R02#
+```
+
+Agora vamos acessar **R05** e executar o mesmo teste.  
+
+```ios
+R05#show ip mroute 239.1.1.1
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 02:49:08/00:02:31, RP 5.5.5.5, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 02:48:18/00:02:31
+    FastEthernet0/0, Forward/Sparse, 02:49:08/00:02:52
+
+(10.0.0.17, 239.1.1.1), 00:06:57/00:02:45, flags: T
+  Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:06:58/00:02:50
+    FastEthernet0/1, Forward/Sparse, 00:06:58/00:03:29
+
+(5.5.5.5, 239.1.1.1), 00:07:57/00:02:45, flags: TA
+  Incoming interface: Loopback0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:57/00:02:50
+    FastEthernet0/1, Forward/Sparse, 00:07:57/00:03:29
+
+(10.0.0.14, 239.1.1.1), 00:07:58/00:02:12, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:58/00:02:49
+
+(192.168.50.254, 239.1.1.1), 00:07:58/00:02:43, flags: TA
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:07:58/00:03:27
+
+(10.0.0.5, 239.1.1.1), 00:08:23/00:01:53, flags: TA
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.13
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:08:23/00:02:49
+
+R05#
+```
+
+### 3️⃣ Verificar a geração de anúncios Source-Active (SA)
+
+📍 Onde executar:  
+No RP que está originando o tráfego
+
+```ios
+show ip msdp sa-cache
+```  
+  
+Então vamos no **Server01** vamos acessar via telnet **R02**  
+
+```ios
+R02#show ip msdp sa-cache
+MSDP Source-Active Cache - 4 entries
+(5.5.5.5, 239.1.1.1), RP 5.5.5.5, AS ?,00:00:26/00:05:33, Peer 5.5.5.5
+(10.0.0.5, 239.1.1.1), RP 5.5.5.5, AS ?,00:01:11/00:05:30, Peer 5.5.5.5
+(10.0.0.14, 239.1.1.1), RP 5.5.5.5, AS ?,00:00:26/00:05:33, Peer 5.5.5.5
+(192.168.50.254, 239.1.1.1), RP 5.5.5.5, AS ?,00:00:26/00:05:33, Peer 5.5.5.5
+R02#
+```
+
+Então vamos no **Server02** vamos acessar via telnet **R05**
+  
+```ios
+R05#show ip msdp sa-cache
+MSDP Source-Active Cache - 4 entries
+(2.2.2.2, 239.1.1.1), RP 2.2.2.2, AS ?,00:02:27/00:05:25, Peer 2.2.2.2
+(10.0.0.2, 239.1.1.1), RP 2.2.2.2, AS ?,00:02:27/00:05:25, Peer 2.2.2.2
+(10.0.0.17, 239.1.1.1), RP 2.2.2.2, AS ?,00:01:42/00:05:25, Peer 2.2.2.2
+(192.168.20.254, 239.1.1.1), RP 2.2.2.2, AS ?,00:02:27/00:05:25, Peer 2.2.2.2
+R05#
+```
+  
+### 5️⃣ Validar o encaminhamento multicast inter-domínio
+
+📍 Onde executar:  
+Nos RPs e nos roteadores de borda dos domínios  
+  
+```ios  
+show ip mroute
+```
+
+**R02**  
+
+```ios
+R02#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 03:03:51/00:02:48, RP 2.2.2.2, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 03:03:25/00:02:48
+    FastEthernet0/0, Forward/Sparse, 03:03:51/00:02:20
+
+(10.0.0.5, 239.1.1.1), 00:06:05/00:01:55, flags: T
+  Incoming interface: FastEthernet1/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:06:05/00:02:20
+    FastEthernet0/1, Forward/Sparse, 00:06:05/00:02:48
+
+(10.0.0.17, 239.1.1.1), 00:06:59/00:01:24, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.1
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:06:59/00:02:20
+
+(2.2.2.2, 239.1.1.1), 00:07:04/00:02:04, flags: TA
+  Incoming interface: Loopback0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:07/00:02:16
+    FastEthernet0/1, Forward/Sparse, 00:07:07/00:03:17
+
+(10.0.0.2, 239.1.1.1), 00:07:07/00:01:22, flags: T
+  Incoming interface: FastEthernet0/1, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:07:07/00:02:16
+
+(192.168.20.254, 239.1.1.1), 00:07:07/00:02:01, flags: TA
+  Incoming interface: FastEthernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:07:07/00:03:14
+
+(*, 224.0.1.40), 03:03:59/00:02:47, RP 2.2.2.2, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 03:03:28/00:02:47
+    Loopback0, Forward/Sparse, 03:03:59/00:02:12
+
+R02#
+```
+  
+**R06**  
+  
+```ios
+R06#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 03:05:20/stopped, RP 2.2.2.2, flags: SJCF
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 03:05:20/00:02:41
+
+(10.0.0.17, 239.1.1.1), 00:08:21/00:02:00, flags: FT
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.17
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:08:21/00:03:00
+    FastEthernet0/0, Forward/Sparse, 00:08:23/00:02:40
+
+(2.2.2.2, 239.1.1.1), 00:08:28/00:01:46, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:08:28/00:02:40
+
+(192.168.20.254, 239.1.1.1), 00:08:28/00:01:46, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:08:28/00:02:40
+
+(10.0.0.2, 239.1.1.1), 00:08:28/00:01:46, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:08:28/00:02:40
+
+(*, 224.0.1.40), 03:05:22/00:02:48, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 03:05:22/00:02:48
+
+R06#
+```
+
+**R03**  
+  
+```ios
+R03#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 03:05:53/stopped, RP 5.5.5.5, flags: SJCF
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.10
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 03:05:26/00:02:54
+
+(5.5.5.5, 239.1.1.1), 00:09:25/00:02:25, flags: JT
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.10
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:09:25/00:02:54
+
+(192.168.50.254, 239.1.1.1), 00:09:26/00:02:24, flags: JT
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.10
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:09:26/00:02:53
+
+(10.0.0.14, 239.1.1.1), 00:09:26/00:02:24, flags: JT
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.10
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:09:26/00:02:53
+
+(10.0.0.5, 239.1.1.1), 00:09:33/00:02:52, flags: FT
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.5
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:09:33/00:02:48, A
+    FastEthernet0/1, Forward/Sparse, 00:09:33/00:02:51
+
+(*, 224.0.1.40), 03:06:27/00:02:33, RP 5.5.5.5, flags: SJCL
+  Incoming interface: FastEthernet0/0, RPF nbr 10.0.0.10
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 03:06:27/00:02:33
+
+R03#
+```
+  
+**R06**  
+  
+```ios
+R06#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report,
+       Z - Multicast Tunnel, z - MDT-data group sender,
+       Y - Joined MDT-data group, y - Sending to MDT-data group
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 03:07:05/stopped, RP 2.2.2.2, flags: SJCF
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 03:07:05/00:02:12
+
+(10.0.0.17, 239.1.1.1), 00:10:06/00:02:02, flags: FT
+  Incoming interface: FastEthernet1/0, RPF nbr 10.0.0.17, Registering
+  Outgoing interface list:
+    FastEthernet0/1, Forward/Sparse, 00:10:07/00:03:12
+    FastEthernet0/0, Forward/Sparse, 00:10:07/00:02:11
+
+(2.2.2.2, 239.1.1.1), 00:10:12/00:01:42, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:12/00:02:11
+
+(192.168.20.254, 239.1.1.1), 00:10:12/00:01:42, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:12/00:02:11
+
+(10.0.0.2, 239.1.1.1), 00:10:12/00:01:42, flags: JT
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    FastEthernet0/0, Forward/Sparse, 00:10:12/00:02:11
+
+(*, 224.0.1.40), 03:07:07/00:01:59, RP 2.2.2.2, flags: SJCL
+  Incoming interface: FastEthernet0/1, RPF nbr 10.0.0.22
+  Outgoing interface list:
+    Loopback0, Forward/Sparse, 03:07:07/00:01:59
+
+R06#
+```
+  
+🔍 Resultado esperado:
+
+- Entradas (S,G) com flag M (MSDP);
+- Interfaces de saída apontando para o domínio remoto;
+- Encaminhamento multicast ativo entre os domínios A e B.
+  
+### 🦈 Captura e Análise com Wireshark (Validação Complementar)
+
+Para reforçar a análise técnica, recomenda-se capturar tráfego multicast e de controle em interfaces estratégicas.  
+  
+📍 Pontos recomendados de captura
+
+- Interface entre RP ↔ RP (MSDP);
+- Interface entre RP ↔ Core do domínio.
+  
+🎯 Filtros recomendados
+
+MSDP (controle inter-domínio):
+
+```whireshark
+tcp.port == 639
+```
+
+Em **R02** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R02/01.png)  
+  
+Em **R05** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R05/01.png)  
+
+PIM (controle multicast):
+
+```whireshark
+pim
+```
+
+Em **R02** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R02/02.png)  
+  
+Em **R05** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R05/02.png)
+
+Tráfego multicast IP:
+
+```whireshark
+ip.dst >= 224.0.0.0 && ip.dst <= 239.255.255.255
+```
+
+Em **R02** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R02/03.png)  
+  
+Em **R05** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R05/03.png
+
+ICMP multicast (caso esteja utilizando ping):
+
+```whireshark
+icmp && ip.dst == 239.1.1.1
+```
+
+Em **R02** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R02/04.png)  
+  
+Em **R05** na interface F1/0:  
+  
+![Whireshark](Imagens/Whireshark2/R05/04.png
+
+### ✅ Conclusão da Validação
+
+Com a execução destes testes, o laboratório comprova:
+  
+- Funcionamento correto do ASM;
+- Geração e propagação de (S,G);
+- Troca de anúncios Source-Active via MSDP;
+- Comunicação multicast efetiva entre domínios independentes.
+
+Este conjunto de evidências encerra o laboratório de Multicast MSDP de forma técnica, didática e alinhada ao exame CCNP ENCOR 350-401.  
+  
 ---
 
 Alterar Daqui
