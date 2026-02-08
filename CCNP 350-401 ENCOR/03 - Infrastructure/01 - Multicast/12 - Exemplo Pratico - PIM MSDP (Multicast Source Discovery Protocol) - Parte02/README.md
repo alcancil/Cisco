@@ -91,10 +91,9 @@
     - [🖥️ SERVER01 — Fonte Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#️-server01--fonte-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
     - [🖥️ SERVER02 — Fonte Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#️-server02--fonte-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
     - [💻 HOST01 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#-host01--receptor-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
-    - [💻 HOST02 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#-host02--receptor-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
     - [💻 HOST03 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#-host03--receptor-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
     - [💻 HOST04 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)](#-host04--receptor-multicast-no-domínio-multicast-pim-sparse-mode--msdp)
-    - [🔚 Encerramento da Parte 01 e Transição para a Parte 02](#-encerramento-da-parte-01-e-transição-para-a-parte-02)
+  - [✅ Conclusão](#-conclusão-1)
 
 ## 12 - Exemplo Prático - Multicast Inter domínios com MSDP (Multicast Source Discovery Protocol) - Parte 02
 
@@ -2517,26 +2516,19 @@ Esta seção consolida a Parte 02 do laboratório, onde o Domínio B foi convert
 - A seleção de fontes, verificação de **RPF**, associação ao **RP** e a troca de informações entre domínios via **MSDP** ocorrem exclusivamente nos **roteadores multicast**.
 - O HOST01 passa a receber tráfego multicast **somente após a convergência do plano de controle** (IGMP + PIM no roteador adjacente).
 
+### 💻 HOST03 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)
 
----
-
-Alterar Daqui
-
----
-
-### 💻 HOST02 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)
-
-| **Seção**               | **Comando / Configuração**                 | **Descrição**                                                               |
-|-------------------------|--------------------------------------------|-----------------------------------------------------------------------------|
-| **FastEthernet0/0**     | `ip address 192.168.60.1 255.255.255.252`  | Host conectado à LAN do roteador de acesso ao domínio multicast             |
-|                         | `ip igmp join-group 239.1.1.1`             | Inscrição no grupo multicast (G) via IGMP                                   |
-| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0` | Encaminha todo o tráfego IP ao roteador adjacente (DR da LAN)               |
-| **Função no cenário**   | —                                          | Atua como **receptor multicast**, consumindo tráfego do grupo (G)           |
-| **Observação**          | —                                          | O host **não executa PIM nem MSDP** — apenas sinaliza interesse via IGMP    |
+| **Seção**             | **Comando / Configuração**                 | **Descrição**                                                            |
+| --------------------- | ------------------------------------------ | ------------------------------------------------------------------------ |
+| **FastEthernet0/0**   | `ip address 192.168.30.1 255.255.255.0`    | Host conectado à LAN do roteador de acesso ao domínio multicast          |
+|                       | `ip igmp join-group 239.1.1.1`             | Inscrição no grupo multicast (G) via IGMP                                |
+| **Rota padrão**       | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0` | Encaminha todo o tráfego IP ao roteador adjacente (DR da LAN)            |
+| **Função no cenário** | —                                          | Atua como **receptor multicast**, consumindo tráfego do grupo (G)        |
+| **Observação**        | —                                          | O host **não executa PIM nem MSDP** — apenas sinaliza interesse via IGMP |
 
 📌 **Notas importantes:**
 
-- O **HOST02 participa apenas do plano de controle local**, utilizando **IGMP**.
+- O **HOST03 participa apenas do plano de controle local**, utilizando **IGMP**.
 - A inscrição multicast ocorre no modelo **(*,G)**, independente da fonte.
 - O host **não tem conhecimento das fontes (S)** nem do RP.
 - A descoberta de fontes, construção da árvore multicast e a troca de
@@ -2545,56 +2537,36 @@ Alterar Daqui
 - O recebimento do tráfego multicast depende da convergência correta do
   **IGP (OSPF)** e do **plano multicast** no domínio.
 
-### 💻 HOST03 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)
-
-| **Seção**               | **Comando / Configuração**                | **Descrição**                                                               |
-|-------------------------|-------------------------------------------|-----------------------------------------------------------------------------|
-| **FastEthernet0/0**     | `ip address 192.168.30.1 255.255.255.0`   | Host conectado à LAN do roteador de acesso (R05)                            |
-|                         | `ip igmp join-group 239.1.1.1`            | Inscrição no grupo multicast (G) via IGMP                                   |
-| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0`| Encaminha todo o tráfego IP ao roteador adjacente                           |
-| **Função no cenário**   | —                                         | Atua como **receptor multicast**, consumindo tráfego do grupo (G)           |
-| **Observação**          | —                                         | O host **não executa PIM nem MSDP** — apenas sinaliza interesse via IGMP    |
-
-📌 **Notas importantes:**
-
-- O **HOST03 participa exclusivamente do plano de controle local**, utilizando **IGMP**.
-- A inscrição multicast ocorre no modelo **(*,G)**, sem qualquer conhecimento da fonte (**S**).
-- A seleção de fontes, construção da árvore multicast e a troca de informações
-  entre domínios são responsabilidades dos **roteadores multicast**, através de
-  **PIM Sparse Mode** e **MSDP**.
-- O host permanece completamente **agnóstico ao RP**, à topologia multicast e
-  à origem real do tráfego multicast recebido.
-
 ### 💻 HOST04 — Receptor Multicast no Domínio Multicast (PIM Sparse Mode + MSDP)
- 
-| **Seção**               | **Comando / Configuração**                | **Descrição**                                                               |
-|-------------------------|-------------------------------------------|-----------------------------------------------------------------------------|
-| **FastEthernet0/0**     | `ip address 192.168.50.1 255.255.255.0`   | Host conectado à LAN do roteador de acesso                                  |
-|                         | `ip igmp join-group 239.1.1.1`            | Inscrição no grupo multicast (G) via IGMP                                   |
-| **Rota padrão**         | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0`| Encaminha todo o tráfego IP ao roteador adjacente                           |
-| **Função no cenário**   | —                                         | Atua como **receptor multicast**, recebendo tráfego do grupo (G)            |
-| **Observação**          | —                                         | O host **não executa PIM nem MSDP** — apenas sinaliza interesse via IGMP    |
+
+| **Seção**             | **Comando / Configuração**                 | **Descrição**                                                            |
+| --------------------- | ------------------------------------------ | ------------------------------------------------------------------------ |
+| **FastEthernet0/0**   | `ip address 192.168.50.1 255.255.255.0`    | Host conectado à LAN do roteador de acesso                               |
+|                       | `ip igmp join-group 239.1.1.1`             | Inscrição no grupo multicast (G) via IGMP                                |
+| **Rota padrão**       | `ip route 0.0.0.0 0.0.0.0 FastEthernet0/0` | Encaminha todo o tráfego IP ao roteador adjacente                        |
+| **Função no cenário** | —                                          | Atua como **receptor multicast**, recebendo tráfego do grupo (G)         |
+| **Observação**        | —                                          | O host **não executa PIM nem MSDP** — apenas sinaliza interesse via IGMP |
 
 📌 **Notas importantes:**
 
 - O **HOST04 participa apenas do plano de controle local**, utilizando **IGMP**.
 - A inscrição multicast ocorre no modelo **(*,G)**, sem conhecimento da fonte (**S**).
-- A seleção da fonte multicast e o transporte interdomínios são responsabilidades
-  exclusivas dos **roteadores multicast**, por meio de **PIM Sparse Mode** e **MSDP**.
-- O host permanece totalmente **agnóstico ao RP**, à topologia multicast e à
-  existência de múltiplos domínios multicast.
+- O host **não executa PIM, MSDP ou qualquer protocolo de roteamento**.
+- A seleção da fonte multicast, verificação de **RPF**, associação ao **RP** e o transporte interdomínios são responsabilidades exclusivas dos **roteadores multicast**.
+- O host permanece totalmente **agnóstico à topologia multicast**, ao **RP** e à existência de múltiplos domínios multicast.
 
-### 🔚 Encerramento da Parte 01 e Transição para a Parte 02
+## ✅ Conclusão
 
-Nesta primeira etapa do laboratório, o foco foi compreender o funcionamento do multicast em um cenário controlado, explorando a interação entre **PIM Sparse Mode**, **RPs distintos** e **MSDP**, bem como os impactos dessas decisões no **control-plane** e no **data-plane**.  
+Este laboratório foi construído com o objetivo de ir **além da configuração**, explorando de forma prática e verificável o **comportamento real do multicast em ambientes PIM Sparse Mode com MSDP**, incluindo seus limites arquiteturais e implicações de design.  
   
-O ambiente foi propositalmente construído para evidenciar comportamentos operacionais, gerar logs relevantes e expor limitações naturais de um design ainda não otimizado — servindo como base didática para análise e validação conceitual.  
+O cenário demonstra com clareza a separação entre **plano de controle e plano de dados**, evidenciando que protocolos como **PIM, IGMP e MSDP** não garantem entrega de tráfego por si só — eles apenas constroem o **estado necessário** para que o encaminhamento seja possível. O laboratório reforça conceitos fundamentais cobrados em certificações de nível profissional, como **RPF, RP-centric design, SA messages e dependência do IGP**.  
   
-Na **Parte 02**, seguiremos com **o mesmo laboratório**, porém ajustando-o para um **cenário mais próximo da realidade de produção**, onde:
+O ambiente evidencia que multicast funcional é resultado de **decisão arquitetural**, não de tentativa e erro. A coexistência de múltiplos domínios multicast, múltiplos RPs e a troca de informações via MSDP expõe, de forma controlada, por que o **PIM Sparse Mode não escala bem para cenários many-to-many**, justificando tecnicamente a necessidade de evolução para modelos como **PIM BIDIR**.  
   
-- os domínios multicast estarão corretamente integrados,
-- o uso de MSDP será funcional e silencioso,
-- não haverá geração de logs desnecessários,
-- e todos os hosts multicast passarão a receber tráfego de forma consistente.
+Ete material demonstra domínio prático de protocolos avançados de rede, capacidade de **análise, troubleshooting e documentação técnica**, além de maturidade ao diferenciar sintomas operacionais de falhas de design. O laboratório deixa claro que a compreensão de **como e por que** o multicast funciona — e falha — em ambientes reais.  
   
-A próxima etapa tem como objetivo transformar um cenário apenas funcional em um ambiente **estável, previsível e operacionalmente limpo**, demonstrando a evolução natural do design multicast.  
+O conteúdo revela organização, método, clareza na comunicação e uma progressão lógica de aprendizado. O laboratório não é apenas funcional, mas **bem documentado**, demonstrando disciplina, pensamento estruturado e capacidade de transformar conhecimento técnico complexo em material compreensível.  
+  
+Por fim, este laboratório serve como um marco de evolução: ele conecta teoria à prática, elimina mitos comuns sobre multicast e cria uma base sólida para compreender **por que certas tecnologias existem** e **quando devem ser utilizadas**. Mais do que aprender comandos,  passamos a entender **arquitetura, impacto e limites operacionais**.
+  
+Em resumo, este laboratório comprova que **multicast não é um problema de configuração**, mas sim de **design consciente**. A Parte 01 fundamenta tecnicamente as limitações do PIM Sparse Mode, preparando o terreno para a **Parte 02**, onde a adoção do **PIM BIDIR** surge não como alternativa, mas como **evolução natural e necessária** do cenário.
