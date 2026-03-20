@@ -40,22 +40,22 @@
   - [ ] 17 - SD-Access - Migration Strategies
 
 ### 1.4 Interpret QoS configurations
-- [ ] 18 - QoS - Configuration Interpretation
-- [ ] 19 - QoS - Policy Analysis
-- [ ] 20 - QoS - Traffic Classification
+- [x] 18 - QoS - Configuration Interpretation
+- [x] 19 - QoS - Policy Analysis
+- [x] 20 - QoS - Traffic Classification
 
 ---
 
 ## 🔧 2.0 VIRTUALIZAÇÃO (10%)
 
 ### 2.1 Describe device virtualization technologies
-- [ ] 2.1.a Hypervisor type 1 and 2
-  - [ ] 21 - Virtualization - Type 1 Hypervisor
-  - [ ] 22 - Virtualization - Type 2 Hypervisor
-- [ ] 2.1.b Virtual machine
-  - [ ] 23 - Virtualization - Virtual Machine Concepts
-- [ ] 2.1.c Virtual switching
-  - [ ] 24 - Virtualization - Virtual Switching
+- [x] 2.1.a Hypervisor type 1 and 2
+  - [x] 21 - Virtualization - Type 1 Hypervisor
+  - [x] 22 - Virtualization - Type 2 Hypervisor
+- [x] 2.1.b Virtual machine
+  - [x] 23 - Virtualization - Virtual Machine Concepts
+- [x] 2.1.c Virtual switching
+  - [x] 24 - Virtualization - Virtual Switching
 
 ### 2.2 Configure and verify data path virtualization technologies
 - [ ] 2.2.a VRF
@@ -142,14 +142,23 @@
   - [ ] 80 - HSRP - Verification
   - [ ] 81 - VRRP - Configuration
   - [ ] 82 - VRRP - Verification
-- [ ] 3.3.d Describe multicast protocols
-  - [ ] 83 - Multicast - RPF Check
-  - [ ] 84 - PIM SM - Protocol Independent Multicast Sparse Mode
-  - [ ] 85 - IGMP v2 - Internet Group Management Protocol
-  - [ ] 86 - IGMP v3 - Internet Group Management Protocol
-  - [ ] 87 - SSM - Source Specific Multicast
-  - [ ] 88 - Bidir PIM - Bidirectional PIM
-  - [ ] 89 - MSDP - Multicast Source Discovery Protocol
+- [x] 3.3.d Describe multicast protocols
+  - [x] 83 - Multicast - RPF Check
+  - [x] 84 - PIM SM - Protocol Independent Multicast Sparse Mode
+  - [x] 84 - Pim Dense Mode - Exemplo Prático ( 01 )  
+  - [x] 84 - Pim Sparse Mode Manual - Exemplo Prático ( 01 )  
+  - [x] 84 - Pim Sparse Mode com RP manual - Exemplo Prático ( 01 )
+  - [x] 84 - Pim Sparse Mode com Auto-RP (Cisco Proprietário) - Exemplo Prático ( 01 )
+  - [x] 84 - Pim Sparse Mode com Bootstrap Router IETF - Exemplo Prático ( 01 )
+  - [x] 85 - IGMP v2 - Internet Group Management Protocol
+  - [x] 86 - IGMP v3 - Internet Group Management Protocol
+  - [x] 87 - SSM - Source Specific Multicast
+  - [x] 86 - SSM (Source-Specific Multicast) e IGMP v3 - Exemplo Prático ( 01 )  
+  - [x] 88 - Bidir PIM - Bidirectional PIM
+  - [x] 88 - PIM Biderecional Multicast - Exemplo Prático ( 01 )
+  - [x] 89 - MSDP - Multicast Source Discovery Protocol
+  - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
+  - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
 
 ---
 

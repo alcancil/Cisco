@@ -110,6 +110,7 @@
 ### 6.0 Automation 15%
 
 - [X] 6.1 Interpret basic Python components and scripts
+- [X] 6.1 Exemplo Prático ( 10 )
 - [X] 6.2 Construct valid JSON-encoded files
 - [ ] 6.3 Describe the high-level principles and benefits of a data modeling language, such as YANG
 - [ ] 6.4 Describe APIs for Cisco DNA Center and vManage
