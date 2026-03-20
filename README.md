@@ -146,11 +146,11 @@ Para explorar o conteúdo deste repositório:
 
 A pasta `docs/` centraliza guias e documentações detalhadas que regem a organização e as boas práticas deste repositório:
 
-- [Guia de Commits Profissionais](./docs/git_commit_guide.md): Detalhes sobre a convenção de mensagens de commit adotada.
+- [Guia de Commits Profissionais](./Docs/git_commit_guide.md): Detalhes sobre a convenção de mensagens de commit adotada.
 
-- [Guia de Versionamento Semântico](./docs/guia_versionamento.md) (Em Breve): Explicação sobre como o versionamento de projetos será aplicado.
+- [Guia de Versionamento Semântico](./Docs/guia_versionamento.md): Explicação de como o versionamento é aplicado.
 
-- [Dicionário Semântico](./docs/dicionario_semantico.md) (Em Breve): Definição de termos e padrões de nomenclatura para arquivos e pastas.
+- [Dicionário Semântico](./Docs/dicionario_semantico.md) (Em Breve): Definição de termos e padrões de nomenclatura para arquivos e pastas.
 
 ---
 
