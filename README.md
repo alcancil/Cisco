@@ -14,7 +14,7 @@ Bem-vindo ao meu repositório de estudos e desenvolvimento em **Networking Cisco
   - [⚙️ Padrões de Engenharia](#️-padrões-de-engenharia)
     - [Dicionário Semântico](#dicionário-semântico)
     - [Workflow de Commits Semânticos](#workflow-de-commits-semânticos)
-  - [🏛️ Arquitetura do Repositório](#️-arquitetura-do-repositório)
+    - [Versionamento Semântico (SemVer)](#versionamento-semântico-semver)
   - [🛠️ Ecossistema de Ferramentas](#️-ecossistema-de-ferramentas)
   - [🗺️ Roadmap de Estudos](#️-roadmap-de-estudos)
   - [💡 Guia de Navegação](#-guia-de-navegação)
@@ -41,49 +41,39 @@ Minha dedicação à excelência em redes é evidenciada pelas minhas certifica�
 | Status        | Certificação                                         | Validade | Badges |
 | :---          | :---                                                 | :---     | :---   |
 | ✅ Ativa     | **Cisco Certified Network Associate (CCNA)**          | 2028     | [![CCNA](https://img.shields.io/badge/Cisco-CCNA_Certified-blue?logo=cisco&logoColor=white)](https://www.credly.com/badges/7ea5831f-be04-41f6-80bd-38e20d0f60a1/public_url) | 
-| 📖 Em Estudo | **CCNP Enterprise Core (ENCOR 350-401)**              | -        | |
-| 🚀 Futuro    | **CCNP Enterprise Advanced Routing (ENARSI 300-410)** | -        | |
+| 📖 Em Estudo | **CCNP Enterprise Core (ENCOR 350-401)**              | -        |        |
+| 🚀 Futuro    | **CCNP Enterprise Advanced Routing (ENARSI 300-410)** | -        |        |
 
 ---
 
 ## 🎓 Certificados
 
-Minha dedicação à excelência em redes é evidenciada também pelas meus certificados.
+Além das certificações de carreira, possuo certificados que complementam minha base técnica em automação e fundamentos:
 
 | Status         | Certificação                                         | Obtido em | Badges |
-| :---           | :---                                                 | :---     | :---   |
-| ✅ Completado  | **Python Essentials 01 - PCAP 01**                   | 2023     | [![Python Essentials 1 - PCAP1](https://img.shields.io/badge/Python-Essentials-yellow?logo=python&logoColor=white)](https://www.credly.com/badges/90325923-fdaa-4f86-ba62-ffdb7077906e/public_url) |
-| ✅ Completado  | **Python Essentials 02 - PCAP 02**                   | 2023     | [![Python Essentials 2 - PCAP2](https://img.shields.io/badge/Python-Essentials-yellow?logo=python&logoColor=white)](https://www.credly.com/badges/e4f2b4af-a5cc-4a10-a31a-71fb00286c40/public_url) |  
+| :---           | :---                                                 | :---      | :---   |
+| ✅ Completado  | **Python Essentials 01 - PCAP 01**                   | 2023      | [![Python Essentials 1 - PCAP1](https://img.shields.io/badge/Python-Essentials-yellow?logo=python&logoColor=white)](https://www.credly.com/badges/90325923-fdaa-4f86-ba62-ffdb7077906e/public_url) |
+| ✅ Completado  | **Python Essentials 02 - PCAP 02**                   | 2023      | [![Python Essentials 2 - PCAP2](https://img.shields.io/badge/Python-Essentials-yellow?logo=python&logoColor=white)](https://www.credly.com/badges/e4f2b4af-a5cc-4a10-a31a-71fb00286c40/public_url) |  
 
 ---
 
 ## ⚙️ Padrões de Engenharia
 
-Para garantir um histórico de projeto limpo, rastreável e profissional, adoto as seguintes práticas:
+Para garantir um histórico de projeto limpo, rastreável e profissional, adoto as seguintes práticas fundamentadas em padrões de mercado:
 
 ### Dicionário Semântico
 
-Organizo arquivos e pastas de forma lógica e consistente, utilizando uma nomenclatura clara que reflete o conteúdo e a hierarquia dos estudos. Isso facilita a localização de informações e a compreensão da estrutura do projeto.
+Utilizo o padrão **kebab-case** e prefixos funcionais para organizar arquivos e pastas, garantindo compatibilidade com ambientes Linux e scripts de automação. Para detalhes das normas (POSIX, RFC 3986), consulte o [Dicionário Semântico](./docs/dicionario_semantico.md).
 
 ### Workflow de Commits Semânticos
 
-Utilizo um padrão de **Commits Semânticos** para descrever as alterações de forma padronizada, o que melhora a legibilidade do histórico do Git e permite a automação de changelogs. Para detalhes sobre nossa convenção de mensagens, consulte o [Guia de Commits Profissionais](./docs/git_commit_guide.md).
+Adoto a convenção de **Commits Semânticos** para padronizar o histórico de alterações. Isso permite uma leitura clara da evolução do projeto e facilita a geração automática de logs. Veja o [Guia de Commits Profissionais](./docs/git_commit_guide.md).
 
-Os tipos de commit incluem:
+### Versionamento Semântico (SemVer)
 
-- `feat:` Adição de um novo recurso ou laboratório.
-- `docs:` Alterações na documentação (READMEs, notas de estudo).
-- `fix:` Correção de bugs ou configurações incorretas.
-- `refactor:` Reestruturação de código ou organização de arquivos sem mudança de funcionalidade.
-- `style:` Melhorias de formatação que não afetam o significado do código.
-- `test:` Adição ou correção de testes.
-- `chore:` Manutenção geral do projeto (ex: atualização de dependências).
+Este repositório segue o modelo `MAJOR.MINOR.PATCH` para controle de progresso e releases. Cada marco nos estudos ou grandes adições de labs refletem uma nova versão, conforme detalhado no [Guia de Versionamento Semântico](./docs/guia_versionamento.md).
 
 ---
-
-## 🏛️ Arquitetura do Repositório
-
-A organização deste repositório foi pensada para ser modular e escalável, permitindo a adição de novas certificações e áreas de estudo de forma organizada. A estrutura principal é a seguinte:
 
 ```bash
 ./
@@ -100,8 +90,6 @@ A organização deste repositório foi pensada para ser modular e escalável, pe
 │   ├── CCNP ENARSI/                      # Futuros estudos para o exame ENARSI
 │   │   └── README.md                     # README específico do ENARSI
 │   └── README.md                         # README geral das certificações Cisco
-├── dashboards/                           # Projetos de dashboards e análise de dados
-│   └── README.md                         # README específico dos dashboards
 ├── docs/                                 # Documentação geral do repositório
 ├── .gitignore                            # Arquivos e pastas ignorados pelo Git
 └── README.md                             # Este arquivo: Visão geral do repositório
@@ -115,7 +103,7 @@ Para o desenvolvimento e a prática dos estudos, utilizo um conjunto de ferramen
 
 - **Git & GitHub:** Para controle de versão, colaboração e hospedagem deste portfólio.
 - **Python:** Linguagem de programação essencial para automação de redes, análise de dados e desenvolvimento de dashboards.
-- **GNS3 / EVE-NG / CML / Packet Tracer:** Ferramentas de simulação e emulação para construção e teste de topologias de rede complexas.
+- **GNS3 / EVE-NG / PNETLab / CML / Packet Tracer:** Ferramentas de simulação e emulação para construção e teste de topologias de rede complexas.
 - **Visual Studio Code:** Meu ambiente de desenvolvimento integrado (IDE) preferido.
 
 ---
@@ -128,7 +116,7 @@ Meu planejamento de estudos e objetivos futuros inclui:
 - [ ] Conclusão dos Labs de Architecture (ENCOR)
 - [ ] Conclusão dos Labs de Infrastructure (ENCOR)
 - [ ] Certificação CCNP ENCOR 350-401
-- [ ] Início dos estudos ENARSI
+- [ ] Início dos estudos ENARSI (Ou outra trilha)
 
 ---
 
@@ -137,8 +125,8 @@ Meu planejamento de estudos e objetivos futuros inclui:
 Para explorar o conteúdo deste repositório:
 
 1. **Visão Geral:** Este `README.md` fornece uma introdução ao projeto e seus padrões.
-1. **Certificações Cisco:** Navegue até a pasta `cisco/` para encontrar os estudos organizados por certificação (ex: `CCNP ENCOR 350-401/`).
-1. **Projetos de Dashboards:** A pasta `dashboards/` contém meus projetos de visualização de dados e automação.
+2. **Certificações Cisco:** Navegue até a pasta `cisco/` para encontrar os estudos organizados por certificação (ex: `CCNP ENCOR 350-401/`).
+3. **Histórico:** Verifique o progresso detalhado no `CHANGELOG.md`.
 
 ---
 
@@ -146,11 +134,11 @@ Para explorar o conteúdo deste repositório:
 
 A pasta `docs/` centraliza guias e documentações detalhadas que regem a organização e as boas práticas deste repositório:
 
-- [Guia de Commits Profissionais](./Docs/git_commit_guide.md): Detalhes sobre a convenção de mensagens de commit adotada.
+- [Guia de Commits Profissionais](./docs/git_commit_guide.md): Detalhes sobre a convenção de mensagens de commit adotada.
 
-- [Guia de Versionamento Semântico](./Docs/guia_versionamento.md): Explicação de como o versionamento é aplicado.
+- [Guia de Versionamento Semântico](./docs/guia_versionamento.md): Explicação de como o versionamento é aplicado.
 
-- [Dicionário Semântico](./Docs/dicionario_semantico.md) (Em Breve): Definição de termos e padrões de nomenclatura para arquivos e pastas.
+- [Dicionário Semântico](./docs/dicionario_semantico.md): Definição de termos e padrões de nomenclatura para arquivos e pastas.
 
 ---
 
