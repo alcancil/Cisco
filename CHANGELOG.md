@@ -2,6 +2,12 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.3.1] - 2026-03-22
+
+### Modificado
+
+- fix: correção de case-sensitivity da pasta docs para compatibilidade web.
+
 ## [0.3.0] - 2026-03-22
 
 ### Adicionado
