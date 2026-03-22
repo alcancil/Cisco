@@ -2,6 +2,13 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.3.2] - 2026-03-22
+
+### Modificado
+
+- Refatoração do [Guia de Versionamento Semântico](./docs/guia_versionamento.md) para refletir a jornada de certificações Cisco (ENCOR/ENARSI).
+- Atualização da lógica de incrementos baseada em aprovações de exames e conclusão de domínios.
+
 ## [0.3.1] - 2026-03-22
 
 ### Modificado
