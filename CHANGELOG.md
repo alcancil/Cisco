@@ -2,6 +2,15 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.0.0] - 2024-05-21
+
+### 🚀 Grand Release: Portfolio Ready
+
+- **Refatoração Geral:** Transformação do repositório de arquivos brutos em um portfólio estruturado.
+- **Governança:** Implementação da metodologia de cálculo ponderado por domínio do exame.
+- **Interface:** Novo README.md com indicadores visuais de progresso (Geps.dev).
+- **Compliance:** Alinhamento total com o Blueprint Cisco v1.2 e suporte legado v1.1.
+
 ## [0.3.2] - 2026-03-22
 
 ### Modificado
