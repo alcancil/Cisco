@@ -2,6 +2,12 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.1.1] - 2026-03-25
+
+### Fixed
+
+- Correção da renderização de diagrama Mermaid no GitHub (ajuste de sintaxe do bloco de código)
+
 ## [1.1.0] - 2026-03-25
 
 ### Added

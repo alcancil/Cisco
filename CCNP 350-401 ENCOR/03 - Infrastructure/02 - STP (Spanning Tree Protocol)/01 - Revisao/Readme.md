@@ -443,7 +443,7 @@ Quando os switches são ligados, ocorre o seguinte drama:
 
 ---
 
-```Mermaid
+```mermaid
 flowchart TD
     A[Switch faz o Boot] --> B[Assume-se como Root Bridge]
     B --> C[Envia BPDUs com seu próprio BID como Root ID]
