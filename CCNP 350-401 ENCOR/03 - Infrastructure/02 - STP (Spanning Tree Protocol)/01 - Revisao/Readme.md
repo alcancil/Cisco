@@ -19,6 +19,8 @@
     - [Passo 3: A Recursividade Infinita](#passo-3-a-recursividade-infinita)
   - [O Padrão IEEE 802.1D](#o-padrão-ieee-8021d)
   - [A Solução - Criação do STP](#a-solução---criação-do-stp)
+  - [A Anatomia do BPDU (O "DNA" da Mensagem)](#a-anatomia-do-bpdu-o-dna-da-mensagem)
+    - [Campos Principais do BPDU Configuration](#campos-principais-do-bpdu-configuration)
   - [Funcionamento do Spanning Tree Protocol (STP)](#funcionamento-do-spanning-tree-protocol-stp)
   - [Passos de Funcionamento (Eleição e Convergência)](#passos-de-funcionamento-eleição-e-convergência)
     - [1. Eleição do Root Bridge (Ponto Central)](#1-eleição-do-root-bridge-ponto-central)
@@ -296,6 +298,22 @@ Antes de avançar, considere:
 - Quem decide isso na rede?
   
 Essas perguntas levam diretamente ao funcionamento do STP.
+
+## A Anatomia do BPDU (O "DNA" da Mensagem)
+
+Para que a eleição ocorra, os switches trocam quadros especiais chamados BPDUs. Imagine o BPDU como um formulário que o switch preenche e envia aos vizinhos para dizer: "Este é quem eu sou, este é quem eu acho que é o chefe, e este é o meu custo para chegar lá".
+
+### Campos Principais do BPDU Configuration
+
+- **Protocol ID & Version:** Identifica que estamos falando de Spanning Tree (802.1D).
+- **Flags:** Bits importantes que indicam mudanças na topologia (como o TC e TCA que vimos na Fase 3).
+- **Root ID:** O Bridge ID daquele que o switch acredita ser o Root Bridge.
+- **Root Path Cost:** O custo acumulado para chegar até o Root.
+- **Bridge ID (Sender ID):** O identificador do switch que está enviando este BPDU agora.
+- **Port ID:** Identifica de qual porta física o BPDU saiu (crucial para o quarto critério de desempate).
+- **Timers (Hello, Max Age, Forward Delay):** Os tempos de operação ditados pelo Root Bridge.
+
+![STP_BPDU](Imagens/stp_bpdu.png)
 
 ## Funcionamento do Spanning Tree Protocol (STP)
 

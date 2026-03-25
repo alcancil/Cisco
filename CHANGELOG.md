@@ -4,6 +4,10 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 
 ## [1.1.1] - 2026-03-25
 
+### Added
+
+- Adição de imagem ilustrativa do formato de BPDU para suporte visual ao conteúdo de STP
+
 ### Fixed
 
 - Correção da renderização de diagrama Mermaid no GitHub (ajuste de sintaxe do bloco de código)
