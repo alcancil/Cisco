@@ -2,6 +2,19 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2026-03-27
+
+### Added
+
+- Seção de fundamentos de switching (L2 vs L3, CAM vs Routing)
+- Explicação de loops em camada 2 e camada 3
+- Topologia de rede em 3 camadas
+- Fluxo de decisão de switches
+
+### Changed
+
+- Melhoria da narrativa didática do conteúdo STP
+
 ## [1.1.1] - 2026-03-25
 
 ### Added

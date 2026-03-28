@@ -1,6 +1,6 @@
-# 02 - Layer 2 Infrastructure: Spanning Tree Protocol (STP) - Revisão
+# 01 - Layer 2 Infrastructure: Spanning Tree Protocol (STP) - Revisão
 
-- [02 - Layer 2 Infrastructure: Spanning Tree Protocol (STP) - Revisão](#02---layer-2-infrastructure-spanning-tree-protocol-stp---revisão)
+- [01 - Layer 2 Infrastructure: Spanning Tree Protocol (STP) - Revisão](#01---layer-2-infrastructure-spanning-tree-protocol-stp---revisão)
   - [Glossário Técnico do STP (Dicionário de Camada 2)](#glossário-técnico-do-stp-dicionário-de-camada-2)
     - [Por que diferenciar Bridge ID de Root ID?](#por-que-diferenciar-bridge-id-de-root-id)
   - [Spanning Tree Protocol (STP) – Fundamentos](#spanning-tree-protocol-stp--fundamentos)
