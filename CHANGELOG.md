@@ -10,6 +10,29 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 - Explicação comparativa entre tabela CAM e tabela de roteamento
 - Introdução à topologia de rede em 3 camadas (Core, Distribution, Access)
 - Fluxo de decisão e encaminhamento em switches
+- Criação da Revisão Parte 04 com aprofundamento em STP:
+  - Exemplo de eleição de Root Bridge
+  - Importância da posição do Root no design de rede
+  - Definição de Root Primary e Secondary
+  - Balanceamento de VLANs utilizando STP
+  - Processo de eleição de Root Ports e Designated Ports
+  - Cálculo de custos de porta e Root Path Cost
+  - Critérios de desempate detalhados
+  - Exemplo completo de cálculo de topologia STP
+
+### Changed
+
+- Evolução da narrativa para preparação conceitual antes do aprofundamento em STP
+- Melhoria da progressão didática com foco em raciocínio lógico e troubleshooting
+
+## [1.3.0] - 2026-03-28
+
+### Added
+
+- Seção de fundamentos de switching (Layer 2 vs Layer 3)
+- Explicação comparativa entre tabela CAM e tabela de roteamento
+- Introdução à topologia de rede em 3 camadas (Core, Distribution, Access)
+- Fluxo de decisão e encaminhamento em switches
 
 ### Changed
 
