@@ -4,6 +4,17 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.1] - 2026-03-31
+
+### Added
+
+- Criação de `index.html` na pasta de simulados (Parte 01) para navegação centralizada via GitHub Pages
+
+### Changed
+
+- Ajuste do README para apontar para a central de simulados
+- Melhoria da experiência de navegação (UX) entre simulados e dashboard
+
 ## [1.4.0] - 2026-03-31
 
 ### Added
