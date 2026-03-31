@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Posicionamento do Root Bridge e Design de Rede</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Posicionamento do Root Bridge e Design de Rede</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Por que o Root Bridge deve estar sempre posicionado no core ou na camada de distribuição da rede, nunca no acesso?", 
+        options: ["Porque switches de acesso não suportam BPDUs", "Porque o Root Bridge é o ponto central lógico — Root mal posicionado força tráfego por caminhos ineficientes e subutiliza links de alta capacidade", "Porque o STP não funciona em switches de acesso", "Porque switches de acesso não possuem uplinks suficientes"], 
+        answer: "Porque o Root Bridge é o ponto central lógico — Root mal posicionado força tráfego por caminhos ineficientes e subutiliza links de alta capacidade", explanation: "Todo tráfego converge em direção ao Root Bridge. Se um switch de acesso (baixa capacidade, muitos hosts) for eleito Root, o tráfego será forçado por caminhos subótimos, links de alta capacidade do core ficam subutilizados e a latência aumenta desnecessariamente. O Root deve sempre estar onde o tráfego naturalmente deveria convergir." 
+      },
+
+      { 
+        question: "Em uma topologia triangular onde todos os switches têm a mesma Priority, qual critério determina o Root Bridge?", 
+        options: ["O switch ligado primeiro vence a eleição", "O switch com maior número de portas ativas", "O switch com o menor MAC Address, usado como desempate final", "O switch com mais VLANs configuradas"], 
+        answer: "O switch com o menor MAC Address, usado como desempate final", 
+        explanation: "Com prioridade igual em todos os switches, o critério de desempate final é o MAC Address. O menor valor hexadecimal vence a eleição. Esse é o comportamento padrão — e o motivo pelo qual a eleição não pode ser deixada ao acaso em produção, pois o menor MAC pode ser de um switch antigo e de baixa capacidade." 
+      },
+
+      { 
+        question: "Qual é a consequência prática de não definir manualmente o Root Bridge primário em uma rede corporativa?", 
+        options: ["O STP entra em loop e a rede colapsa", "O switch com menor MAC é eleito — que pode ser o mais antigo ou menos capaz, criando gargalo e caminhos ineficientes", "Todos os switches ficam em estado Blocking", "O PVST+ é ativado automaticamente para compensar"], 
+        answer: "O switch com menor MAC é eleito — que pode ser o mais antigo ou menos capaz, criando gargalo e caminhos ineficientes", 
+        explanation: "Sem configuração manual de Priority, a eleição usa o menor MAC como desempate. MACs menores tendem a ser de equipamentos mais antigos. Um switch de 100Mbps pode ser eleito Root, forçando todo o tráfego da rede por um dispositivo de baixa capacidade e criando um gargalo crítico." 
+      },
+
+      { 
+        question: "Qual é a estratégia correta de configuração de Root Bridge em redes de produção?", 
+        options: ["Deixar a eleição automática para o STP decidir o melhor switch", "Definir um Root Bridge primário com Priority baixa e um Root Bridge secundário com Priority ligeiramente maior como backup", "Configurar prioridade 0 em todos os switches do core", "Definir o Root apenas quando ocorrer falha na rede"], 
+        answer: "Definir um Root Bridge primário com Priority baixa e um Root Bridge secundário com Priority ligeiramente maior como backup", 
+        explanation: "A estratégia correta é: Root primário com Priority 4096, Root secundário com Priority 8192. Se o primário falhar, o secundário assume com comportamento previsível e determinístico. Sem secundário configurado, qualquer switch pode ser eleito Root na falha — comportamento imprevisível." 
+      },
+
+      { 
+        question: "Qual é a relação entre o posicionamento do Root Bridge e o fluxo de tráfego na topologia STP?", 
+        options: ["O Root Bridge não influencia o fluxo — apenas bloqueia portas", "Todo tráfego converge em direção ao Root Bridge — sua posição define os caminhos de encaminhamento de toda a rede", "O Root Bridge influencia apenas o tráfego de broadcast", "O fluxo é determinado pelos switches de acesso, não pelo Root"], 
+        answer: "Todo tráfego converge em direção ao Root Bridge — sua posição define os caminhos de encaminhamento de toda a rede", 
+        explanation: "O Root Bridge é o ponto de referência central do STP. Todos os caminhos são calculados a partir dele. Isso significa que a posição física do Root Bridge determina diretamente quais links serão usados, quais serão bloqueados e como o tráfego fluirá — tornando seu posicionamento a decisão de design mais crítica do STP." 
+      },
+
+      { 
+        question: "Quais são os três problemas causados por um Root Bridge mal posicionado?", 
+        options: ["Broadcast Storm, MAC Flapping e loops infinitos", "Tráfego por caminhos ineficientes, subutilização de links de alta capacidade e aumento desnecessário de latência", "Falha de convergência, perda de BPDUs e timeout de Max Age", "Instabilidade de VLAN, perda de trunk e conflito de Port ID"], 
+        answer: "Tráfego por caminhos ineficientes, subutilização de links de alta capacidade e aumento desnecessário de latência", 
+        explanation: "Com Root mal posicionado: 1) Tráfego faz caminhos mais longos que o necessário, 2) Links de alta capacidade do core podem ser bloqueados enquanto links lentos de acesso ficam ativos, 3) A latência aumenta porque os dados percorrem mais saltos. Nenhum desses problemas é visível imediatamente — eles degradam a rede silenciosamente." 
+      },
+
+      { 
+        question: "Por que a eleição do Root Bridge não pode ser deixada ao acaso em ambientes de produção?", 
+        options: ["Porque o STP pode entrar em loop sem Root definido manualmente", "Porque a eleição automática usa o menor MAC como desempate, tornando o resultado imprevisível e possivelmente ineficiente", "Porque switches sem Priority configurada não participam da eleição", "Porque o Root Bridge automático não suporta múltiplas VLANs"], 
+        answer: "Porque a eleição automática usa o menor MAC como desempate, tornando o resultado imprevisível e possivelmente ineficiente", explanation: "A eleição automática é determinística mas não garante eficiência. O menor MAC pode pertencer a um switch de acesso de 10 anos atrás, com pouca memória e portas de 100Mbps. Em produção, o administrador deve garantir que o switch mais capaz (core ou distribuição) seja o Root, usando Priority configurada manualmente." 
+      },
+
+      { 
+        question: "Qual comando Cisco configura um switch como Root Bridge primário para a VLAN 10?", 
+        options: ["spanning-tree vlan 10 root enable", "spanning-tree vlan 10 priority 4096", "spanning-tree vlan 10 root-bridge primary", "bridge 10 priority lowest"], answer: "spanning-tree vlan 10 priority 4096", 
+        explanation: "O comando correto é 'spanning-tree vlan 10 priority 4096'. O valor 4096 garante que esse switch tenha BID menor que qualquer switch com prioridade padrão (32768). O Root secundário deve usar 'spanning-tree vlan 10 priority 8192'. Ambos são múltiplos de 4096 — valores inválidos geram erro na CLI." 
+      },
+
+      { 
+        question: "O que acontece com a topologia STP quando o Root Bridge primário falha e existe um Root secundário configurado?", 
+        options: ["A rede entra em Broadcast Storm até o primário voltar", "Todos os switches ficam em Blocking aguardando o primário retornar", "O Root secundário assume automaticamente — a reconvergência é previsível e determinística", "O switch com menor MAC assume independente da Priority configurada"], 
+        answer: "O Root secundário assume automaticamente — a reconvergência é previsível e determinística", 
+        explanation: "Com Root secundário configurado (Priority 8192), quando o primário falha e o Max Age expira, a nova eleição tem resultado determinístico: o secundário tem o segundo menor BID e vence. Sem Root secundário, qualquer switch pode ser eleito, tornando a reconvergência imprevisível e potencialmente ineficiente." 
+      },
+
+      { 
+        question: "Qual é a regra de design fundamental sobre onde o Root Bridge deve ser posicionado em uma arquitetura 3-Tier?", 
+        options: ["Sempre no Access Layer — mais próximo dos usuários finais", "Sempre no Core ou Distribution Layer — onde o tráfego naturalmente deveria convergir e onde estão os switches de maior capacidade", "Sempre em um switch dedicado isolado da topologia principal", "Pode ser em qualquer camada desde que tenha Priority configurada"], 
+        answer: "Sempre no Core ou Distribution Layer — onde o tráfego naturalmente deveria convergir e onde estão os switches de maior capacidade", 
+        explanation: "A regra de design do STP alinha o Root Bridge com a arquitetura física da rede: Core e Distribution têm os switches mais rápidos, mais memória, links de maior capacidade e são o ponto natural de convergência do tráfego. Posicionar o Root nessas camadas garante que os caminhos STP espelhem o design físico intencional da rede." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

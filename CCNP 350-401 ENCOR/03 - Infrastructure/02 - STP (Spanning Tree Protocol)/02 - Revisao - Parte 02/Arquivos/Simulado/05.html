@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Topologia 3-Tier, Decisão de Encaminhamento e Visão Geral</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Topologia 3-Tier, Decisão de Encaminhamento e Visão Geral</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Na arquitetura 3-Tier, qual camada é responsável por conectar dispositivos finais e é o principal ponto de ocorrência de loops L2?", 
+        options: ["Core Layer", "Distribution Layer", "Access Layer", "Management Layer"], 
+        answer: "Access Layer", 
+        explanation: "A Access Layer conecta hosts, impressoras, telefones IP e outros dispositivos finais. É a camada com maior densidade de switches L2 e redundância física — portanto, o principal ponto de risco para loops de Camada 2 que o STP previne." 
+      },
+
+      { 
+        question: "Qual camada da arquitetura 3-Tier normalmente opera em Layer 3, tornando o STP menos crítico nesse nível?", 
+        options: ["Access Layer", "Distribution Layer", "Core Layer", "STP é igualmente crítico em todas as camadas"], 
+        answer: "Core Layer", 
+        explanation: "O Core Layer é o backbone da rede, operando em alta velocidade e normalmente em Layer 3. Com roteamento IP e TTL, loops são naturalmente limitados. O STP é mais crítico nas camadas de Access e Distribution, onde há maior uso de Layer 2." 
+      },
+
+      { 
+        question: "Qual é a sequência correta de decisão de encaminhamento de um Switch Layer 2 ao receber um frame?", 
+        options: ["Verifica IP → consulta tabela de roteamento → encaminha", "Aprende Source MAC → verifica Destination MAC → encaminha para porta específica ou realiza flooding", "Consulta tabela ARP → verifica VLAN → encaminha", "Verifica TTL → descarta ou encaminha → atualiza CAM"], 
+        answer: "Aprende Source MAC → verifica Destination MAC → encaminha para porta específica ou realiza flooding", 
+        explanation: "O plano de dados L2: 1) Lê o Source MAC e grava na CAM com a porta de entrada (aprendizado). 2) Verifica o Destination MAC: se conhecido na CAM, encaminha para a porta específica (unicast); se desconhecido/broadcast/multicast, realiza flooding para todas as portas exceto a de origem." 
+      },
+
+      { 
+        question: "O que é MAC Flapping e qual é sua causa direta em um loop L2?", 
+        options: ["Oscilação do link físico causada por defeito no cabo", "Atualização contínua do mesmo MAC address para portas diferentes na tabela CAM, causada pelo loop que traz o mesmo frame por múltiplos caminhos", "Expiração e renovação cíclica de entradas da tabela CAM", "Conflito de endereços MAC entre dois dispositivos"], answer: "Atualização contínua do mesmo MAC address para portas diferentes na tabela CAM, causada pelo loop que traz o mesmo frame por múltiplos caminhos", 
+        explanation: "No loop, o mesmo frame circula por múltiplos caminhos chegando ao switch por portas diferentes em milissegundos. O switch atualiza a entrada do Source MAC para cada porta em que o frame chega — causando instabilidade contínua na tabela CAM, conhecida como MAC Flapping."  
+      },
+
+      { 
+        question: "Qual é o resultado final de uma Broadcast Storm em termos de impacto nos switches da topologia afetada?", 
+        options: ["Apenas o switch mais antigo é afetado; os demais continuam operando", "CPU de todos os switches a 100%, saturação total da banda e perda de acesso remoto de gerência", "Os switches entram em modo de failover automático e isolam o loop", "Apenas o tráfego broadcast é afetado; unicast continua normalmente"], 
+        answer: "CPU de todos os switches a 100%, saturação total da banda e perda de acesso remoto de gerência", 
+        explanation: "Uma Broadcast Storm afeta toda a topologia: CPU dos switches satura processando cópias infinitas de frames BUM (Broadcast, Unknown Unicast, Multicast), a banda é consumida integralmente e o acesso SSH/Telnet é perdido. A única solução costuma ser intervenção física via console." 
+      },
+
+      { 
+        question: "Por que a redundância física é necessária em redes corporativas mesmo sabendo que pode causar loops L2?", 
+        options: ["Porque aumenta a velocidade dos links de acesso", "Porque a alta disponibilidade exige que a falha de um único cabo ou switch não derrube o acesso à rede", "Porque o STP usa os links redundantes para balanceamento de carga", "Porque switches modernos exigem múltiplos uplinks para funcionar"], 
+        answer: "Porque a alta disponibilidade exige que a falha de um único cabo ou switch não derrube o acesso à rede", 
+        explanation: "Em ambientes corporativos, alta disponibilidade é mandatória. Links redundantes garantem que a falha de um cabo, switch ou porta não isole usuários. O STP é o mecanismo que permite ter essa redundância física sem os loops destrutivos que ela causaria sem controle." 
+      },
+
+      { 
+        question: "Qual é o papel da Distribution Layer no contexto do STP em uma arquitetura 3-Tier?", 
+        options: ["Apenas conectar hosts — sem função no STP", "Agregar switches de acesso operando em L2/L3, sendo ponto estratégico para controle de STP e posicionamento do Root Bridge", "Operar exclusivamente em Layer 3, sem nenhuma função STP", "Substituir o Core Layer quando ele falha"], 
+        answer: "Agregar switches de acesso operando em L2/L3, sendo ponto estratégico para controle de STP e posicionamento do Root Bridge", 
+        explanation: "A Distribution Layer agrega os switches de acesso e pode operar em L2/L3. É o ponto estratégico onde o Root Bridge deve ser posicionado (manualmente) para otimizar a topologia STP — evitando que um switch de acesso com menor MAC se torne Root e force tráfego por caminhos subótimos." 
+      },
+
+      { 
+        question: "Como o STP resolve o conflito entre redundância física (necessária para alta disponibilidade) e loops L2 (destrutivos para a rede)?", 
+        options: ["Desativa fisicamente os links redundantes até serem necessários", "Mantém os links físicos ativos mas bloqueia logicamente as portas redundantes — eliminando o loop lógico sem remover a redundância física", "Divide o tráfego igualmente entre todos os links redundantes", "Usa TTL para limitar a propagação de frames em loops"], 
+        answer: "Mantém os links físicos ativos mas bloqueia logicamente as portas redundantes — eliminando o loop lógico sem remover a redundância física", 
+        explanation: "Essa é a elegância do STP: os cabos redundantes continuam fisicamente conectados. O STP apenas coloca as portas redundantes em estado Blocking — sem encaminhar dados, mas monitorando BPDUs. Se o caminho principal falhar, a porta em Blocking pode assumir em até 50s (802.1D) ou menos de 1s (RSTP)." 
+      },
+
+      { 
+        question: "Qual é a diferença funcional entre o encaminhamento L2 (flooding) e o encaminhamento L3 (roteamento) quando o destino é desconhecido?", 
+        options: ["Ambos realizam flooding para encontrar o destino", "L2 realiza flooding para todas as portas exceto a de origem; L3 descarta o pacote e pode enviar ICMP Unreachable para a origem", "L2 descarta silenciosamente; L3 realiza flooding controlado", "Não há diferença — ambos consultam tabelas de encaminhamento"], 
+        answer: "L2 realiza flooding para todas as portas exceto a de origem; L3 descarta o pacote e pode enviar ICMP Unreachable para a origem", 
+        explanation: "No L2, destino desconhecido = flooding para todas as portas. No L3, se não há rota para o destino, o roteador descarta o pacote e pode enviar ICMP Destination Unreachable. O comportamento L3 é determinístico e não propaga tráfego desnecessário — eliminando o risco de loops por flooding." 
+      },
+
+      { 
+        question: "Considerando todos os conceitos do documento 02, qual é a progressão lógica correta do aprendizado sobre STP?", 
+        options: ["Comandos CLI → Timers → Estados → Loops", "Loop L2 → Por que Ethernet não controla loops → STP como solução → Estados e Timers → Limitações do 802.1D → RSTP", "Root Bridge → BPDUs → Loop → Timers → CLI", "Apenas prática em laboratório — teoria não é necessária"], 
+        answer: "Loop L2 → Por que Ethernet não controla loops → STP como solução → Estados e Timers → Limitações do 802.1D → RSTP", 
+        explanation: "Essa é a progressão estruturada do documento: entender o problema do loop L2, compreender por que o Ethernet não tem TTL, ver o STP como solução, aprender estados e timers, reconhecer os 50s como limitação crítica e entender que essa limitação é a motivação direta para o RSTP (802.1w)." 
+      },
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

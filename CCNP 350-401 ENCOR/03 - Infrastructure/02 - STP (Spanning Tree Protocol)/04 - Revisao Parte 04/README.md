@@ -42,6 +42,7 @@
     - [🎯 Resultado Final](#-resultado-final)
   - [🔗 Conexão com Próximos Tópicos](#-conexão-com-próximos-tópicos)
     - [🚀 Próximo passo](#-próximo-passo)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento)
 
 ## 📖 Glossário Técnico do STP (Engenharia de Decisão)
 
@@ -435,4 +436,21 @@ A partir daqui, avançamos para:
 - Você entende a lógica do STP  
 - Você sabe calcular a topologia  
 - Agora é hora de **validar isso na prática**
+
+---
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
+
+- **Simulados temáticos (10 questões / 10 min cada):**
+  1 - [Posicionamento do Root Bridge e Design de Rede](Arquivos/Simulado/01.html)
+  2 - [Bridge ID: Estrutura e Cálculo](Arquivos/Simulado/02.html)
+  3 - [Eleição do Root Bridge e Papéis de Porta](Arquivos/Simulado/03.html)
+  4 - [Critérios de Desempate (Tie-Breakers)](Arquivos/Simulado/04.html)
+  5 - [Consolidação: Estados, Convergência e Evolução](Arquivos/Simulado/05.html)
+
+- **Simulado completo STP:** [50 questões — 75 minutos](Arquivos/Simulado/completo.html)
+
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](Arquivos/Simulado/dashboard.html)
   

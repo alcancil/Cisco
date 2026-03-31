@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Balanceamento de VLANs com PVST+</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Balanceamento de VLANs com PVST+</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a ideia principal do balanceamento de VLANs com STP usando PVST+?", 
+        options: ["Desabilitar STP em VLANs de menor tráfego", "Configurar Root Bridges diferentes por VLAN — ex: SW1 como Root da VLAN 10 e SW2 como Root da VLAN 20", "Usar EtherChannel para eliminar a necessidade de balanceamento", "Configurar todos os switches com a mesma prioridade por VLAN"], 
+        answer: "Configurar Root Bridges diferentes por VLAN — ex: SW1 como Root da VLAN 10 e SW2 como Root da VLAN 20", 
+        explanation: "O PVST+ (Per-VLAN STP) roda uma instância STP por VLAN. Isso permite ter Root Bridges diferentes para cada VLAN. SW1 pode ser Root da VLAN 10 (tráfego de usuários) e SW2 Root da VLAN 20 (tráfego de servidores), distribuindo carga pelos links e evitando gargalos." 
+      },
+
+      { 
+        question: "Quais são os três benefícios do balanceamento de VLANs com Root Bridges diferentes?", 
+        options: ["Convergência mais rápida, menos BPDUs e redução de MAC Flapping", "Melhor uso dos links, redução de gargalos e balanceamento de tráfego", "Eliminação de loops, redução de broadcast e aumento de segurança", "Menor consumo de CPU, mais VLANs suportadas e convergência automática"], 
+        answer: "Melhor uso dos links, redução de gargalos e balanceamento de tráfego", 
+        explanation: "Com Root Bridges diferentes por VLAN, links que seriam bloqueados pelo STP para uma VLAN ficam ativos para outra. Isso resulta em: uso eficiente de todos os links físicos, eliminação de gargalos em switches sobrecarregados e distribuição de tráfego entre os caminhos disponíveis." 
+      },
+
+      { 
+        question: "Em um cenário de balanceamento com SW_A como Root da VLAN 10 e SW_B como Root da VLAN 20, o que acontece se SW_A falhar?", 
+        options: ["A VLAN 10 para de funcionar até SW_A retornar", "SW_B assume o papel de Root Bridge para ambas as VLANs automaticamente, perdendo temporariamente o balanceamento mas mantendo conectividade", "SW_C é eleito Root para a VLAN 10 automaticamente", "O STP desativa a VLAN 10 até nova eleição manual"], 
+        answer: "SW_B assume o papel de Root Bridge para ambas as VLANs automaticamente, perdendo temporariamente o balanceamento mas mantendo conectividade", 
+        explanation: "Se SW_A (Root da VLAN 10 e backup da VLAN 20) cair, SW_B (Root da VLAN 20 e backup da VLAN 10) assume como Root de ambas as VLANs. O balanceamento de carga é temporariamente perdido, mas toda a conectividade é mantida. Os caminhos anteriores da VLAN 10 ficam inativos e todo tráfego converge para SW_B." 
+      },
+
+      { 
+        question: "Por que o balanceamento de VLANs com STP é considerado muito cobrado em prova e muito usado em produção?", 
+        options: ["Porque elimina completamente a necessidade de switches redundantes", "Porque resolve dois problemas simultaneamente: usa todos os links físicos (sem desperdício) e mantém redundância completa via Root secundário", "Porque é a única forma de suportar mais de 100 VLANs em uma rede", "Porque permite convergência sub-segundo sem necessidade de RSTP"], 
+        answer: "Porque resolve dois problemas simultaneamente: usa todos os links físicos (sem desperdício) e mantém redundância completa via Root secundário", 
+        explanation: "Em redes com links redundantes, o STP normalmente bloqueia metade dos links. Com balanceamento por VLAN, esses links bloqueados para uma VLAN ficam ativos para outra. O resultado é: 100% dos links físicos em uso simultâneo + redundância total via failover automático para o Root secundário." 
+      },
+
+      { 
+        question: "Qual recurso Cisco torna o balanceamento de VLANs com Root Bridges diferentes possível?", 
+        options: ["MSTP (802.1s) — que agrupa VLANs em instâncias", "PVST+ (Per-VLAN Spanning Tree Plus) — que roda uma instância STP independente por VLAN", "RSTP (802.1w) — que usa Proposal/Agreement por VLAN", "VTP — que sincroniza VLANs entre switches"], 
+        answer: "PVST+ (Per-VLAN Spanning Tree Plus) — que roda uma instância STP independente por VLAN", 
+        explanation: "O PVST+ é a implementação proprietária da Cisco que executa uma instância STP separada por VLAN. Cada VLAN tem sua própria eleição de Root Bridge, seus próprios papéis de porta e sua própria topologia lógica. Isso é o que permite Root Bridges diferentes por VLAN e o consequente balanceamento de tráfego." 
+      },
+
+      { 
+        question: "Se SW_B falhar em um cenário onde SW_A é Root da VLAN 10 e SW_B é Root da VLAN 20, qual é o comportamento esperado?", 
+        options: ["A VLAN 20 fica inoperante permanentemente", "SW_A assume como Root de ambas as VLANs, mantendo conectividade total mas perdendo o balanceamento temporariamente", "Todos os switches entram em nova eleição completa para ambas as VLANs simultaneamente", "O balanceamento continua normalmente via caminhos alternativos"], 
+        answer: "SW_A assume como Root de ambas as VLANs, mantendo conectividade total mas perdendo o balanceamento temporariamente", 
+        explanation: "Se SW_B (Root da VLAN 20 e backup da VLAN 10) cair, SW_A (Root da VLAN 10 e backup da VLAN 20) assume como Root de ambas. Todo tráfego converge para SW_A pelos caminhos da VLAN 10. Os caminhos anteriores da VLAN 20 ficam inativos. Conectividade total é mantida, balanceamento é temporariamente suspenso." 
+      },
+
+      { 
+        question: "Qual é a diferença fundamental entre PVST+ e MSTP no contexto do balanceamento de VLANs?", 
+        options: ["PVST+ não suporta balanceamento; MSTP suporta", "PVST+ roda uma instância por VLAN (alta granularidade, mais CPU); MSTP agrupa múltiplas VLANs por instância (mais escalável)", "MSTP é proprietário da Cisco; PVST+ é padrão IEEE", "São equivalentes — apenas nomes diferentes para o mesmo protocolo"], 
+        answer: "PVST+ roda uma instância por VLAN (alta granularidade, mais CPU); MSTP agrupa múltiplas VLANs por instância (mais escalável)", 
+        explanation: "PVST+: máxima granularidade (Root diferente por VLAN) com custo de CPU proporcional ao número de VLANs. MSTP (IEEE 802.1s): agrupa VLANs em instâncias compartilhadas, reduzindo drasticamente o número de processos. Em redes com centenas de VLANs, o MSTP é obrigatório para escalabilidade." 
+      },
+
+      { 
+        question: "Em um balanceamento de VLANs, como a prioridade deve ser configurada em SW_A para ser Root primário da VLAN 10 e Root secundário da VLAN 20?", 
+        options: ["VLAN 10: priority 4096 / VLAN 20: priority 4096 (mesma em ambas)", "VLAN 10: priority 4096 (primário) / VLAN 20: priority 8192 (secundário)", "VLAN 10: priority 32768 / VLAN 20: priority 0", "VLAN 10: priority 0 / VLAN 20: priority 65535"], 
+        answer: "VLAN 10: priority 4096 (primário) / VLAN 20: priority 8192 (secundário)", 
+        explanation: "A configuração correta em SW_A: 'spanning-tree vlan 10 priority 4096' (Root primário — menor BID) e 'spanning-tree vlan 20 priority 8192' (Root secundário — segundo menor BID). Em SW_B faz-se o inverso: VLAN 20 com 4096 e VLAN 10 com 8192." 
+      },
+
+      { 
+        question: "O que significa dizer que o balanceamento de VLANs com STP tem 'comportamento determinístico'?", 
+        options: ["O STP escolhe aleatoriamente qual VLAN usa cada link", "Em qualquer cenário de falha, é possível prever exatamente qual Root assumirá e quais caminhos serão usados — sem surpresas", "O balanceamento funciona apenas quando todos os links têm a mesma velocidade", "O comportamento é determinístico apenas em switches Cisco modelo Catalyst"], 
+        answer: "Em qualquer cenário de falha, é possível prever exatamente qual Root assumirá e quais caminhos serão usados — sem surpresas", 
+        explanation: "Com Priority configurada explicitamente para cada VLAN em cada switch, o administrador conhece exatamente o comportamento em qualquer cenário de falha: sabe qual switch assume cada VLAN, quais caminhos ficam ativos e quais são bloqueados. Isso é comportamento determinístico — essencial para planejamento de capacidade e troubleshooting." 
+      },
+
+      { 
+        question: "Por que o balanceamento de VLANs com PVST+ aumenta o consumo de CPU nos switches?", 
+        options: ["Porque o PVST+ gera mais tráfego de dados que o STP padrão", "Porque cada VLAN roda uma instância STP independente — com eleição, BPDUs e cálculo de topologia próprios — multiplicando o trabalho do plano de controle", "Porque o PVST+ usa criptografia nos BPDUs para segurança", "Porque switches com PVST+ precisam manter tabelas CAM separadas por VLAN"], 
+        answer: "Porque cada VLAN roda uma instância STP independente — com eleição, BPDUs e cálculo de topologia próprios — multiplicando o trabalho do plano de controle", explanation: "No PVST+, cada VLAN tem sua própria instância STP completa: eleição de Root Bridge, troca de BPDUs, cálculo de Root Path Cost e definição de papéis de porta. Uma rede com 100 VLANs roda 100 instâncias STP simultaneamente. Isso multiplica proporcionalmente o uso de CPU, memória e banda de controle." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

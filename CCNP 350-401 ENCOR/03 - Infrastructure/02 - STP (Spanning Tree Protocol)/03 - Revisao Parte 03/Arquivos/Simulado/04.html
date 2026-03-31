@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Critérios de Desempate (Tie-Breakers)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Critérios de Desempate (Tie-Breakers)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a ordem correta dos 4 critérios de desempate do STP na eleição da Root Port?", 
+        options: ["BID → Port Priority → Port Number → Root Path Cost", "Root Path Cost → Sender Bridge ID → Sender Port Priority → Sender Port Number", "Port Number → Port Priority → Root Path Cost → BID", "Sender Bridge ID → Root Path Cost → Port Priority → Port Number"], 
+        answer: "Root Path Cost → Sender Bridge ID → Sender Port Priority → Sender Port Number", 
+        explanation: "Os critérios são aplicados em ordem crescente de especificidade: 1) Menor Root Path Cost (custo acumulado total), 2) Menor Sender Bridge ID (BID do vizinho), 3) Menor Sender Port Priority (prioridade da porta do vizinho, padrão 128), 4) Menor Sender Port Number (número físico da porta do vizinho)." 
+      },
+
+      { 
+        question: "Em qual situação prática o quarto critério de desempate (Sender Port Number) é mais comumente aplicado?", 
+        options: ["Quando dois switches têm o mesmo MAC Address", "Quando dois links paralelos conectam os mesmos dois switches — mesmo custo, mesmo Sender BID, mesma Port Priority", "Quando o Root Bridge tem múltiplas VLANs configuradas", "Quando há mais de 10 switches na topologia"], 
+        answer: "Quando dois links paralelos conectam os mesmos dois switches — mesmo custo, mesmo Sender BID, mesma Port Priority", 
+        explanation: "Dois links paralelos entre SW-A e SW-B terão: mesmo Root Path Cost (mesma velocidade), mesmo Sender Bridge ID (mesmo switch vizinho) e mesma Port Priority (padrão 128). O único diferenciador possível é o número físico da porta — a porta de menor número vence." 
+      },
+
+      { 
+        question: "O que é o Sender Bridge ID como critério de desempate e de qual switch ele vem?", 
+        options: ["É o BID do switch local que está escolhendo a Root Port", "É o BID do switch vizinho que enviou o BPDU — o switch com menor BID terá sua porta preferida como caminho", "É o BID do Root Bridge propagado no BPDU", "É calculado somando os BIDs dos dois switches do segmento"], 
+        answer: "É o BID do switch vizinho que enviou o BPDU — o switch com menor BID terá sua porta preferida como caminho", 
+        explanation: "O Sender Bridge ID é o campo 'Bridge ID' do BPDU — identifica quem enviou a mensagem. Quando dois caminhos têm o mesmo Root Path Cost, o switch prefere o caminho que passa pelo vizinho com menor BID. Isso significa que o 'vizinho mais prioritário' é preferido como próximo salto." 
+      },
+
+      { 
+        question: "Qual é o valor padrão da Port Priority e em que múltiplos ela pode ser configurada?", 
+        options: ["64, múltiplos de 16", "128, múltiplos de 16", "100, múltiplos de 10", "256, múltiplos de 64"], 
+        answer: "128, múltiplos de 16", 
+        explanation: "A Port Priority tem valor padrão de 128 e pode ser configurada em múltiplos de 16 (0, 16, 32, 48... 240). Menor valor = maior prioridade. O Port ID completo é Port Priority + Port Number, formando o identificador único da porta usado nos critérios de desempate." 
+      },
+
+      { 
+        question: "Um switch recebe BPDUs por duas portas com o mesmo Root Path Cost e o mesmo Sender Bridge ID. Qual é o próximo critério de desempate?", 
+        options: ["Menor MAC Address do switch local", "Menor Sender Port Priority — a prioridade da porta do switch vizinho que originou o BPDU", "Maior velocidade do link físico", "Menor IP de gerência do switch vizinho"], 
+        answer: "Menor Sender Port Priority — a prioridade da porta do switch vizinho que originou o BPDU", 
+        explanation: "Após empate em Root Path Cost e Sender Bridge ID, o terceiro critério é a Sender Port Priority — o campo de prioridade da porta do switch vizinho que enviou o BPDU. Menor valor vence. O administrador pode manipular esse valor para forçar preferência por um link específico." 
+      },
+
+      { 
+        question: "Por que os critérios de desempate são sempre baseados em informações do switch VIZINHO (Sender) e não do switch local?", 
+        options: ["Por limitação técnica do protocolo — o switch local não conhece seus próprios dados", "Porque o switch local está avaliando qual CAMINHO (via qual vizinho) é melhor para chegar ao Root, não qual porta local é melhor", "Porque os BPDUs não carregam informações do switch local", "Porque o switch local usa apenas o Root Path Cost para todas as decisões"], 
+        answer: "Porque o switch local está avaliando qual CAMINHO (via qual vizinho) é melhor para chegar ao Root, não qual porta local é melhor", 
+        explanation: "Os critérios de desempate respondem à pergunta: 'por qual vizinho devo passar para chegar ao Root?' O switch avalia os BPDUs recebidos — cada um representa um caminho via um vizinho específico. Por isso os critérios são Sender BID, Sender Port Priority e Sender Port Number — todos identificando o melhor vizinho/caminho." 
+      },
+
+      { 
+        question: "Como o administrador pode forçar que um link específico seja preferido como Root Port, quando dois links têm o mesmo custo?", 
+        options: ["Aumentando a velocidade do link preferido", "Reduzindo a Port Priority da porta do switch vizinho no link preferido (menor valor = maior preferência)", "Configurando IP fixo no link preferido", "Desativando o link não preferido temporariamente"], 
+        answer: "Reduzindo a Port Priority da porta do switch vizinho no link preferido (menor valor = maior preferência)", 
+        explanation: "O terceiro critério de desempate é a Sender Port Priority. Ao reduzir a Port Priority da porta no switch vizinho que serve o link preferido, o administrador garante que o switch local prefira esse caminho. Exemplo: 'interface Gi0/1 → spanning-tree port-priority 64' (menor que o padrão 128)." 
+      },
+
+      { 
+        question: "Em um cenário de desempate pelo Sender Port Number, qual porta vence — a de menor ou maior número?", 
+        options: ["Maior número — porque representa a porta mais recente e de maior capacidade", "Menor número — o STP sempre prefere o menor valor em todos os critérios de desempate", "Depende da velocidade do link associado à porta", "O número da porta não é usado diretamente — apenas a prioridade importa"], 
+        answer: "Menor número — o STP sempre prefere o menor valor em todos os critérios de desempate", 
+        explanation: "Em todos os 4 critérios de desempate do STP, a lógica é consistente: menor valor = maior preferência. No Sender Port Number, a porta Gi0/1 (número 1) vence sobre Gi0/2 (número 2) em igualdade de demais critérios. Por isso em laboratório, o link conectado à porta de menor número é tipicamente eleito." 
+      },
+
+      { 
+        question: "O que diferencia o Root Path Cost do Path Cost de uma interface no contexto dos critérios de desempate?", 
+        options: ["São idênticos — Root Path Cost é apenas outro nome para Path Cost", "Path Cost é o custo local da interface; Root Path Cost é o custo total acumulado propagado no BPDU — é ele que o switch compara para eleger a Root Port", "Root Path Cost é configurado manualmente; Path Cost é calculado automaticamente", "Path Cost considera latência; Root Path Cost considera apenas largura de banda"], 
+        answer: "Path Cost é o custo local da interface; Root Path Cost é o custo total acumulado propagado no BPDU — é ele que o switch compara para eleger a Root Port", explanation: "Ao receber um BPDU, o switch soma o Root Path Cost contido no BPDU ao Path Cost da interface por onde chegou. O resultado é o Root Path Cost total para chegar ao Root via aquele caminho. O primeiro critério de desempate compara esses totais — o menor vence." 
+      },
+
+      { 
+        question: "Por que a sequência de desempate termina sempre com o Port Number e nunca resulta em empate absoluto?", 
+        options: ["Porque o administrador deve configurar Port Numbers únicos manualmente", "Porque números de porta física são únicos dentro de um switch — dois BPDUs não podem chegar pela mesma porta física simultaneamente", "Porque o MAC Address é usado como quinto critério caso o Port Number empate", "Porque switches modernos têm hardware que resolve empates automaticamente"], 
+        answer: "Porque números de porta física são únicos dentro de um switch — dois BPDUs não podem chegar pela mesma porta física simultaneamente", 
+        explanation: "O Port Number identifica a porta física do switch vizinho. Como cada porta tem um número único no switch, é matematicamente impossível que dois BPDUs diferentes tenham o mesmo Sender Port Number do mesmo switch. Isso garante que o quarto critério sempre resolve o empate definitivamente."  
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

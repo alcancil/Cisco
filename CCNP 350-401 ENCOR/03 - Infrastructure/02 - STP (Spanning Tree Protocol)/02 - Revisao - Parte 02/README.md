@@ -37,6 +37,7 @@
     - [⚠️ Comparação](#️-comparação)
   - [Conclusão](#conclusão)
   - [🔜 Próxima Etapa](#-próxima-etapa)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento)
 
 ---
 
@@ -510,3 +511,21 @@ No próximo documento, vamos aprofundar no funcionamento interno do STP, analisa
 ## 🔜 Próxima Etapa
 
 Spanning Tree Protocol (STP) – Engenharia e Funcionamento Interno
+
+---
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
+
+- **Simulados temáticos (10 questões / 10 min cada):**
+  1 - [Port States: Os 5 Estados](Arquivos/Simulado/01.html)
+  2 - [Timers: Hello Time, Max Age e Forward Delay](Arquivos/Simulado/02.html)
+  3 - [Switch L2 vs L3 e Tabela CAM](Arquivos/Simulado/03.html)
+  4 - [Reconvergência e Fluxo de Boot-Up](Arquivos/Simulado/04.html)
+  5 - [Topologia 3-Tier, Decisão de Encaminhamento e Visão Geral](Arquivos/Simulado/05.html)
+
+- **Simulado completo STP:** [50 questões — 75 minutos](Arquivos/Simulado/completo.html)
+
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](Arquivos/Simulado/dashboard.html)
+

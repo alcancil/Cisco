@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual papel de porta STP representa o melhor caminho de um switch não-root até o Root Bridge?", 
+        options: ["Designated Port", "Alternate Port", "Root Port", "Blocked Port"], 
+        answer: "Root Port", 
+        explanation: "A Root Port (RP) é eleita em cada switch não-root e representa o caminho de menor custo acumulado até o Root Bridge. Cada switch não-root tem exatamente uma Root Port." 
+      },
+
+      { 
+        question: "O que caracteriza uma Designated Port (DP) no STP?", 
+        options: ["Porta com maior custo no segmento", "Porta responsável por encaminhar tráfego em direção ao Root em cada segmento", "Porta bloqueada para prevenir loops", "Porta exclusiva do Root Bridge"], 
+        answer: "Porta responsável por encaminhar tráfego em direção ao Root em cada segmento", 
+        explanation: "A Designated Port é a porta com o menor custo para alcançar o Root Bridge em cada segmento de rede. No Root Bridge, todas as portas são automaticamente Designated Ports, pois o custo dele até si mesmo é zero." 
+      },
+
+      { 
+        question: "Qual é o estado inicial de uma porta quando o STP bloqueia um caminho redundante para evitar loop?", 
+        options: ["Listening", "Learning", "Forwarding", "Blocking"], 
+        answer: "Blocking", 
+        explanation: "Uma porta Non-Designated (Alternate Port) é colocada no estado Blocking. Ela não encaminha frames de dados nem aprende MACs, mas continua recebendo BPDUs para monitorar a topologia." 
+      },
+
+      { 
+        question: "Em qual estado de porta o switch aprende endereços MAC mas ainda NÃO encaminha frames de dados?", 
+        options: ["Blocking", "Listening", "Learning", "Forwarding"], 
+        answer: "Learning", 
+        explanation: "No estado Learning, a porta já popula a tabela CAM lendo os Source MACs dos frames recebidos, mas não encaminha dados. Isso reduz o flooding quando a porta entrar em Forwarding." 
+      },
+
+      { 
+        question: "Qual estado de porta no STP 802.1D participa da eleição STP mas não aprende MAC nem encaminha dados?", 
+        options: ["Blocking", "Listening", "Learning", "Disabled"], 
+        answer: "Listening", 
+        explanation: "No estado Listening, a porta processa BPDUs e participa da eleição (definindo seu papel), mas não aprende MACs e não encaminha dados. Dura 15 segundos (Forward Delay)." 
+      },
+
+      { 
+        question: "No STP 802.1D, qual é a sequência correta de estados que uma porta percorre ao subir do bloqueio até o encaminhamento?", 
+        options: ["Blocking → Forwarding → Learning", "Blocking → Listening → Learning → Forwarding", "Listening → Blocking → Learning → Forwarding", "Disabled → Learning → Forwarding"], 
+        answer: "Blocking → Listening → Learning → Forwarding", 
+        explanation: "Essa é a jornada completa: Blocking (aguarda BPDUs), Listening (participa da eleição, 15s), Learning (aprende MACs, 15s), Forwarding (encaminha dados). Total de transição: até 50 segundos." 
+      },
+
+      { 
+        question: "Qual é o critério de desempate utilizado quando dois switches possuem o mesmo Root Path Cost na eleição da Root Port?", 
+        options: ["Menor IP de gerência", "Menor Sender Bridge ID do vizinho", "Maior número de portas ativas", "Maior velocidade do link"], 
+        answer: "Menor Sender Bridge ID do vizinho", 
+        explanation: "Os 4 critérios de desempate em ordem são: 1) Menor Root Path Cost, 2) Menor Sender Bridge ID, 3) Menor Sender Port Priority, 4) Menor Sender Port Number. O BID do vizinho é o segundo critério." 
+      },
+
+      { 
+        question: "Uma porta que não é Root Port nem Designated Port recebe qual papel e estado no STP 802.1D?", 
+        options: ["Alternate Port em estado Forwarding", "Non-Designated Port em estado Blocking", "Backup Port em estado Learning", "Passive Port em estado Disabled"], answer: "Non-Designated Port em estado Blocking", 
+        explanation: "Qualquer porta que perca a eleição de RP e DP torna-se Non-Designated (também chamada Alternate no RSTP) e é colocada em Blocking. Ela é o 'disjuntor' que quebra o loop lógico."
+      },
+
+      { 
+        question: "Qual é o custo STP padrão (802.1D short/16-bit) de um link de 1 Gbps?", 
+        options: ["1", "2", "4", "19"], 
+        answer: "4", 
+        explanation: "Tabela de custos 802.1D: 10Mbps=100, 100Mbps=19, 1Gbps=4, 10Gbps=2. Quanto maior a banda, menor o custo. Um switch prefere o caminho com menor custo acumulado (Root Path Cost) para eleger sua Root Port." 
+      },
+
+      { 
+        question: "Por que links acima de 10 Gbps exigem o método de custo Long (32-bit) no STP?", 
+        options: ["Porque o endereço MAC não cabe em 16 bits", "Porque no método 16-bit tanto 10Gbps quanto 100Gbps têm custo 1, impossibilitando diferenciação", "Porque o 802.1D não suporta velocidades acima de 10Gbps", "Porque o Forward Delay precisa ser recalculado"], 
+        answer: "Porque no método 16-bit tanto 10Gbps quanto 100Gbps têm custo 1, impossibilitando diferenciação", 
+        explanation: "No padrão 16-bit (Short), o custo mínimo é 1 e links de 10Gbps, 40Gbps e 100Gbps todos resultam em custo 1. O método Long (32-bit) resolve isso com granularidade suficiente para diferenciar velocidades modernas." 
+
+      }  
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

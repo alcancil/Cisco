@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Cálculo de Root Port e Designated Port</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Cálculo de Root Port e Designated Port </h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a pergunta que um switch faz a si mesmo para eleger sua Root Port?", 
+        options: ["'Qual porta tem o maior link speed?'", "'Qual é o caminho mais barato (menor custo acumulado) até o Root Bridge?'", "'Qual porta está conectada diretamente ao Root Bridge?'", "'Qual porta tem o menor número de interface?'"], 
+        answer: "'Qual é o caminho mais barato (menor custo acumulado) até o Root Bridge?'", 
+        explanation: "A Root Port é sempre a porta com menor Root Path Cost até o Root Bridge. O switch acumula os custos de cada link no caminho e compara os totais. A porta que oferece o menor custo total (mais barato chegar ao Root via ela) é eleita Root Port. É exatamente essa 'pergunta' que o switch resolve ao processar BPDUs." 
+      },
+
+      { 
+        question: "Um switch recebe BPDU com Root Path Cost 4 pela Gi0/1 e Root Path Cost 8 pela Gi0/2. Ambos os links são 1Gbps (custo 4). Qual é a Root Port e qual o Root Path Cost resultante?", 
+        options: ["Gi0/2 com Root Path Cost 12", "Gi0/1 com Root Path Cost 8", "Gi0/1 com Root Path Cost 4", "Gi0/2 com Root Path Cost 8"], 
+        answer: "Gi0/1 com Root Path Cost 8", 
+        explanation: "O switch soma o Root Path Cost recebido no BPDU ao custo da interface local. Via Gi0/1: 4 (BPDU) + 4 (link local) = 8. Via Gi0/2: 8 (BPDU) + 4 (link local) = 12. Menor total = 8 via Gi0/1. Root Port = Gi0/1 com Root Path Cost acumulado de 8." 
+      },
+
+      { 
+        question: "Qual é a diferença entre custo da porta (Port Cost) e Root Path Cost no processo de eleição?", 
+        options: ["São sinônimos — ambos representam o mesmo valor", "Port Cost é o custo local de uma única interface; Root Path Cost é a soma acumulada de todos os custos desde o switch atual até o Root Bridge", "Root Path Cost é configurado manualmente; Port Cost é calculado automaticamente", "Port Cost é usado apenas no Root Bridge; Root Path Cost nos demais switches"], 
+        answer: "Port Cost é o custo local de uma única interface; Root Path Cost é a soma acumulada de todos os custos desde o switch atual até o Root Bridge", 
+        explanation: "Port Cost (ou Link Cost) é o 'pedágio' de uma única estrada: Gigabit = 4, Fast Ethernet = 19. Root Path Cost é o total de pedágios pagos desde o switch atual até o Root Bridge, somando os Port Costs de todos os links no caminho. É o Root Path Cost que determina a Root Port — sempre o menor acumulado." 
+      },
+
+      { 
+        question: "Qual é a regra principal para eleger a Designated Port em um segmento de rede?", 
+        options: ["A porta do switch com maior número de VLANs configuradas", "A porta do switch com menor Root Path Cost até o Root Bridge naquele segmento — 'o switch mais próximo do Root vence o segmento'", "A porta com maior velocidade de link no segmento", "A porta do switch eleito mais recentemente como Root Bridge"], 
+        answer: "A porta do switch com menor Root Path Cost até o Root Bridge naquele segmento — 'o switch mais próximo do Root vence o segmento'", 
+        explanation: "Para cada segmento (link entre dois switches), o STP elege uma única Designated Port. Os dois switches do segmento comparam seus Root Path Costs. O switch com menor custo acumulado até o Root 'ganha' o segmento — sua porta naquele link é eleita Designated Port e fica em Forwarding." 
+      },
+
+      { 
+        question: "Por que o Root Bridge não possui Root Port, mas possui Designated Ports em todas as suas interfaces?", 
+        options: ["Porque o Root Bridge tem prioridade zero e não precisa de Root Port", "Porque Root Port é a porta de menor custo até o Root — e o Root Bridge é o próprio Root, com custo zero até si mesmo; logo, todas as suas portas vencem qualquer segmento como DP", "Porque o Root Bridge desabilita suas Root Ports para evitar loops", "Porque o Root Bridge opera apenas em Layer 3 e não usa Root Ports"], 
+        answer: "Porque Root Port é a porta de menor custo até o Root — e o Root Bridge é o próprio Root, com custo zero até si mesmo; logo, todas as suas portas vencem qualquer segmento como DP", 
+        explanation: "O Root Bridge tem Root Path Cost = 0. Em qualquer segmento conectado ao Root, o switch vizinho tem Root Path Cost ≥ custo do link. Portanto, o Root Bridge sempre tem o menor custo em todos os seus segmentos, elegendo todas as suas portas ativas como Designated Ports em estado Forwarding." 
+      },
+
+      { 
+        question: "Qual é o custo STP de um link de 1 Gbps e de um link de 100 Mbps no padrão 802.1D (short/16-bit)?", 
+        options: ["1Gbps = 1, 100Mbps = 10", "1Gbps = 4, 100Mbps = 19", "1Gbps = 10, 100Mbps = 100", "1Gbps = 2, 100Mbps = 4"], 
+        answer: "1Gbps = 4, 100Mbps = 19", 
+        explanation: "Tabela de custos 802.1D short (16-bit): 10Mbps = 100, 100Mbps = 19, 1Gbps = 4, 10Gbps = 2. Link mais rápido = menor custo = caminho preferido. Essa relação inversa (velocidade ↑ = custo ↓) garante que o STP prefira sempre os links de maior capacidade." 
+      },
+
+      { 
+        question: "Em uma topologia onde SW2 tem dois caminhos para o Root com o mesmo custo acumulado, qual é o segundo critério de desempate para a Root Port?", 
+        options: ["Menor MAC Address do switch local", "Menor Sender Bridge ID — o BID do switch vizinho que enviou o BPDU", "Maior velocidade do link físico", "Menor número da interface local"], 
+        answer: "Menor Sender Bridge ID — o BID do switch vizinho que enviou o BPDU", 
+        explanation: "Quando há empate no Root Path Cost, o segundo critério é o Sender Bridge ID — o BID do switch vizinho que originou o BPDU recebido. O caminho via o vizinho com menor BID é preferido. Importante: é o BID do VIZINHO, não do switch local que está escolhendo a Root Port." 
+      },
+
+      { 
+        question: "O que acontece com uma porta que perde a eleição tanto de Root Port quanto de Designated Port?", 
+        options: ["Ela é automaticamente desabilitada pelo administrador", "Ela vai para estado Blocking como Non-Designated Port — não encaminha dados mas continua monitorando BPDUs", "Ela entra em estado Learning permanente", "Ela assume papel de Backup Port e fica em Forwarding"], 
+        answer: "Ela vai para estado Blocking como Non-Designated Port — não encaminha dados mas continua monitorando BPDUs", 
+        explanation: "Toda porta que não for eleita RP nem DP torna-se Non-Designated e vai para Blocking. Ela não encaminha frames de dados nem aprende MACs, mas processa BPDUs ativamente. É exatamente essa porta que quebra o loop lógico — o cabo físico permanece conectado, mas o caminho circular é eliminado logicamente." 
+      },
+
+      { 
+        question: "Por que o cálculo do Root Path Cost é sempre uma soma acumulada e não apenas o custo do link local?", 
+        options: ["Porque o STP precisa incluir o custo de todos os switches no caminho", "Porque o custo representa a distância total até o Root — cada switch soma o custo do seu link ao custo acumulado recebido no BPDU, construindo o total progressivamente", "Porque links de alta velocidade têm custo variável dependendo do tráfego", "Porque o Root Bridge define o custo total e os switches apenas propagam"], 
+        answer: "Porque o custo representa a distância total até o Root — cada switch soma o custo do seu link ao custo acumulado recebido no BPDU, construindo o total progressivamente", 
+        explanation: "Ao receber um BPDU, o switch lê o Root Path Cost do vizinho (custo acumulado do vizinho até o Root) e soma o custo da interface por onde o BPDU chegou. O resultado é o Root Path Cost total via esse caminho. Esse processo progressivo garante que o custo reflita todo o caminho — não apenas o último salto." 
+      },
+
+      { 
+        question: "Em um segmento entre SW2 e SW3 onde ambos têm o mesmo Root Path Cost, qual critério resolve quem é a Designated Port?", 
+        options: ["A porta com maior velocidade de link físico", "O menor Bridge ID entre SW2 e SW3 — o switch com menor BID elege sua porta como DP", "A porta com menor número de interface no segmento", "O switch que foi ligado primeiro elege sua porta como DP"], 
+        answer: "O menor Bridge ID entre SW2 e SW3 — o switch com menor BID elege sua porta como DP", 
+        explanation: "Para Designated Port, os critérios de desempate são idênticos à Root Port: 1) Menor Root Path Cost, 2) Menor Bridge ID. Com custo igual, o switch com menor BID (Priority + VLAN + MAC) elege sua porta no segmento como Designated Port. O switch perdedor coloca sua porta em Blocking." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

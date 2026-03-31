@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Consolidação: Estados, Convergência e Evolução</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Consolidação: Estados, Convergência e Evolução</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a única limitação estrutural do STP 802.1D que motivou diretamente o desenvolvimento do RSTP (802.1w)?", 
+        options: ["Falta de suporte a IPv6", "Convergência lenta de até 50 segundos, inaceitável para VoIP, 802.1X e aplicações em tempo real", "Incapacidade de operar com múltiplas VLANs", "Dependência de endereços IP para eleger o Root Bridge"], 
+        answer: "Convergência lenta de até 50 segundos, inaceitável para VoIP, 802.1X e aplicações em tempo real", 
+        explanation: "O STP 802.1D converge em até 50s (Max Age 20s + Listening 15s + Learning 15s). Esse tempo causa queda de chamadas VoIP, falha de autenticação 802.1X e timeout de sessões SSH. O RSTP usa Proposal/Agreement ponto a ponto para convergir em menos de 1 segundo — resolvendo exatamente esse problema." 
+      },
+
+      { 
+        question: "Qual das seguintes afirmações sobre o estado Blocking é INCORRETA?", 
+        options: ["A porta em Blocking recebe BPDUs", "A porta em Blocking não encaminha tráfego de dados", "A porta em Blocking não aprende endereços MAC", "A porta em Blocking não participa do STP e é equivalente ao estado Disabled"], 
+        answer: "A porta em Blocking não participa do STP e é equivalente ao estado Disabled", 
+        explanation: "Essa afirmação é incorreta. A porta em Blocking PARTICIPA ativamente do STP — ela recebe e processa BPDUs, monitorando a topologia. A diferença em relação ao Disabled é exatamente essa: Disabled não faz nada, Blocking monitora. Uma porta em Blocking está pronta para assumir se o caminho ativo falhar." 
+      },
+
+      { 
+        question: "Qual cenário de convergência resulta em apenas 30 segundos (e não 50)?", 
+        options: ["Boot-up de um switch com 24 portas", "Falha indireta onde o switch aguarda o Max Age", "Designated Port subindo diretamente — sem necessidade de aguardar o Max Age", "Qualquer falha em switches com PVST+ ativado"], 
+        answer: "Designated Port subindo diretamente — sem necessidade de aguardar o Max Age", 
+        explanation: "Quando uma porta sobe como Designated Port em um link que acabou de ser conectado (link up direto), não há BPDU antigo para expirar — o Max Age não é necessário. A convergência é: Listening (15s) + Learning (15s) = 30 segundos." 
+      },
+
+      { 
+        question: "O TCN (Topology Change Notification) dispara qual ação em todos os switches da rede?", 
+        options: ["Reinicia a eleição do Root Bridge em toda a topologia", "Força o flush acelerado da tabela MAC — reduzindo o tempo de aging de 300s para 15s (Forward Delay)", "Coloca todas as portas em Blocking temporariamente", "Desativa os timers STP até a topologia estabilizar"], 
+        answer: "Força o flush acelerado da tabela MAC — reduzindo o tempo de aging de 300s para 15s (Forward Delay)", 
+        explanation: "Quando o Root Bridge recebe um TCN, envia BPDUs com a flag TC ativa para toda a rede. Ao receber esse BPDU, todos os switches reduzem o MAC aging de 300s para o Forward Delay (15s). Isso força a releitura rápida da topologia, evitando que tráfego seja enviado para portas antigas por 5 minutos." 
+      },
+
+      { 
+        question: "Qual é a principal limitação do STP 802.1D em relação à diferenciação por VLAN?", 
+        options: ["O 802.1D não suporta nenhuma VLAN", "O 802.1D opera com uma única instância STP para toda a rede, sem diferenciação nativa por VLAN", "O 802.1D limita o número de VLANs a 64", "O 802.1D requer configuração manual de Root Bridge para cada VLAN"], 
+        answer: "O 802.1D opera com uma única instância STP para toda a rede, sem diferenciação nativa por VLAN", 
+        explanation: "O STP 802.1D clássico roda uma única eleição e topologia para toda a rede — sem diferenciação por VLAN. Isso impede balanceamento de tráfego entre VLANs. O PVST+ da Cisco resolveu isso com uma instância por VLAN, permitindo Root Bridges diferentes e otimização de caminhos por VLAN." 
+      },
+
+      { 
+        question: "Qual é a afirmação correta sobre o comportamento de convergência do STP segundo o documento 03?", 
+        options: ["O comportamento do STP é aleatório e depende da ordem de boot dos switches", "O comportamento do STP é totalmente determinado pelo posicionamento do Root Bridge e pelas decisões de custo na topologia", "O STP converge mais rápido em switches com maior número de portas", "A convergência depende exclusivamente dos timers configurados nos switches não-root"], 
+        answer: "O comportamento do STP é totalmente determinado pelo posicionamento do Root Bridge e pelas decisões de custo na topologia", 
+        explanation: "Essa é a premissa central do documento 03: o STP é determinístico. Quem é o Root define o fluxo do tráfego, o custo define os caminhos e os critérios de desempate definem os detalhes. Dado o mesmo cenário, o STP sempre chegará à mesma topologia — o que permite análise e previsão manual." 
+      },
+
+      { 
+        question: "Por que o documento 03 é classificado como 'guia de referência consolidado' e não como documento de introdução?", 
+        options: ["Porque contém comandos CLI avançados", "Porque assume que os documentos 01 e 02 já foram estudados e organiza o conhecimento em tabelas e fluxos de consulta rápida", "Porque é voltado exclusivamente para o exame CCNP", "Porque apresenta conceitos que não existem nos documentos anteriores"], 
+        answer: "Porque assume que os documentos 01 e 02 já foram estudados e organiza o conhecimento em tabelas e fluxos de consulta rápida", 
+        explanation: "O documento 03 é explicitamente uma consolidação — não repete explicações detalhadas dos documentos anteriores, mas organiza todo o conhecimento em formato de referência rápida: tabelas de estados, fluxos de convergência, critérios de desempate e visão da evolução do protocolo." 
+      },
+
+      { 
+        question: "Qual é o próximo passo natural após dominar o STP 802.1D clássico, segundo o documento?", 
+        options: ["Implementar VTP para gerenciar VLANs", "Avançar para a engenharia de decisão do STP — calcular manualmente Root Ports, Designated Ports e resolver topologias completas", "Configurar PortFast em todas as portas de acesso", "Migrar imediatamente para RSTP sem estudar o 802.1D em profundidade"], 
+        answer: "Avançar para a engenharia de decisão do STP — calcular manualmente Root Ports, Designated Ports e resolver topologias completas", 
+        explanation: "O documento 03 aponta explicitamente para o próximo passo: sair da teoria descritiva ('o que é o STP') e entrar na engenharia de decisão ('como o STP toma decisões — e como o engenheiro controla essas decisões'). Isso inclui calcular manualmente Root Ports, Designated Ports, aplicar critérios de desempate e resolver topologias." 
+      },
+
+      { 
+        question: "Qual é a relação entre o Hello Time e o Max Age na detecção de falhas do STP?", 
+        options: ["São timers independentes sem relação entre si", "O Max Age é calculado como 10 vezes o Hello Time — se o switch não receber BPDUs por 20s (10 × 2s), declara falha", "O Hello Time define quando o Max Age é reiniciado após cada BPDU recebido", "O Max Age substitui o Hello Time em caso de falha do Root Bridge"], 
+        answer: "O Max Age é calculado como 10 vezes o Hello Time — se o switch não receber BPDUs por 20s (10 × 2s), declara falha", 
+        explanation: "Os valores padrão são: Hello Time = 2s, Max Age = 20s. O relacionamento é: Max Age = 10 × Hello Time. Cada BPDU recebido reinicia o contador do Max Age. Se nenhum BPDU chegar por 20 segundos (equivalente a 10 Hello Times perdidos), o switch declara falha e inicia a reconvergência." 
+      },
+
+      { 
+        question: "Qual das três limitações do STP 802.1D listadas no documento impacta diretamente a qualidade de voz e vídeo em redes corporativas?", 
+        options: ["Ausência de diferenciação nativa por VLAN", "Dependência exclusiva de timers sem mecanismos ativos de reconvergência — convergência lenta de até 50 segundos", "Incapacidade de operar com switches de 10 Gbps", "Limite máximo de 64 switches por topologia STP"], 
+        answer: "Dependência exclusiva de timers sem mecanismos ativos de reconvergência — convergência lenta de até 50 segundos", 
+        explanation: "O STP 802.1D depende exclusivamente de timers passivos (Max Age, Forward Delay) sem nenhum mecanismo ativo de negociação. Os 50 segundos de convergência causam queda direta de chamadas VoIP e videoconferência. O RSTP resolve isso com mecanismo Proposal/Agreement que não depende de timers para convergir." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

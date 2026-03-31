@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual campo do cabeçalho IPv4 impede que pacotes circulem infinitamente na rede, mas que está ausente no frame Ethernet?", 
+        options: ["Checksum", "TTL", "Sequence Number", "Protocol ID"], 
+        answer: "TTL", 
+        explanation: "O campo TTL (Time to Live) do IPv4 é decrementado a cada roteador. Ao chegar a zero, o pacote é descartado. O frame Ethernet não possui esse campo, tornando-o incapaz de se auto-destruir em loops." },
+
+      { 
+        question: "Qual é o tamanho total válido de um frame Ethernet II (sem contar Preamble/SFD)?", 
+        options: ["32 a 1024 bytes", "46 a 1500 bytes", "64 a 1518 bytes", "128 a 9000 bytes"], 
+        answer: "64 a 1518 bytes", 
+        explanation: "O frame Ethernet II tem comprimento total entre 64 e 1518 bytes. O mínimo de 64 bytes evita colisões em half-duplex; o máximo de 1518 é o MTU padrão (sem jumbo frames)." },
+
+      { 
+        question: "O que o switch faz quando recebe um frame com Destination MAC desconhecido em sua tabela CAM?", 
+        options: ["Descarta o frame", "Envia apenas para a porta padrão", "Realiza flooding para todas as portas exceto a de origem", "Solicita ARP para descobrir a porta"], answer: "Realiza flooding para todas as portas exceto a de origem", 
+        explanation: "Esse comportamento é chamado de Unknown Unicast Flooding. O switch replica o frame por todas as portas ativas exceto a de origem, pois não sabe para qual porta encaminhar." },
+
+      { 
+        question: "Qual campo do frame Ethernet identifica o protocolo de Camada 3 encapsulado?", 
+        options: ["FCS", "Preamble", "Type", "Source MAC"], 
+        answer: "Type", 
+        explanation: "O campo Type (2 bytes) indica o protocolo de Camada 3 contido no payload. Exemplos: 0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6." },
+
+      { 
+        question: "Qual dos fenômenos a seguir é causado diretamente pela ausência de TTL no frame Ethernet em uma topologia com loop?", options: ["Roteamento assimétrico", "Fragmentação de pacotes", "Broadcast Storm", "VLAN mismatch"], 
+        answer: "Broadcast Storm", 
+        explanation: "Sem TTL, frames de broadcast como ARP Request se replicam infinitamente pelos switches em loop, consumindo 100% da banda e CPU — o chamado Broadcast Storm." },
+
+      { 
+        question: "Em um loop de Camada 2, o que acontece com a tabela CAM do switch?", 
+        options: ["É apagada automaticamente", "Fica estável mas com entradas duplicadas", "Oscila constantemente — fenômeno chamado MAC Flapping", "Cresce até o limite e para de aprender"], 
+        answer: "Oscila constantemente — fenômeno chamado MAC Flapping", 
+        explanation: "No loop, o mesmo endereço MAC chega ao switch por portas diferentes em milissegundos. O switch fica atualizando continuamente a tabela CAM, causando instabilidade total chamada MAC Flapping." },
+
+      { 
+        question: "Qual é a função do campo FCS no frame Ethernet?", 
+        options: ["Sincronizar o clock do receptor", "Identificar o início do frame", "Verificar integridade via CRC para detectar erros de transmissão", "Indicar o protocolo de Camada 3"], 
+        answer: "Verificar integridade via CRC para detectar erros de transmissão", 
+        explanation: "O FCS (Frame Check Sequence) de 4 bytes usa CRC (Cyclic Redundancy Check) para que o receptor verifique se o frame chegou íntegro. Frames com FCS inválido são descartados." },
+
+      { 
+        question: "Em um cenário de Broadcast Storm, qual é o impacto imediato no plano de controle dos switches?", 
+        options: ["Os switches reiniciam automaticamente", "A CPU dos switches é saturada processando cópias infinitas de frames BUM", "As VLANs são removidas da tabela de encaminhamento", "Os links físicos entram em modo half-duplex"], 
+        answer: "A CPU dos switches é saturada processando cópias infinitas de frames BUM", 
+        explanation: "BUM = Broadcast, Unknown Unicast e Multicast. O reprocessamento contínuo desses frames satura a CPU do plano de controle, impedindo até o gerenciamento remoto via SSH/Telnet." },
+
+      { 
+        question: "Qual é o endereço MAC de destino de um frame de broadcast?", 
+        options: ["00:00:00:00:00:00", "01:00:5E:00:00:01", "FF:FF:FF:FF:FF:FF", "01:80:C2:00:00:00"], 
+        answer: "FF:FF:FF:FF:FF:FF", 
+        explanation: "O endereço FF:FF:FF:FF:FF:FF é o broadcast de Camada 2. Todo switch encaminha esse frame para todas as portas ativas exceto a de origem — comportamento que alimenta o loop." },
+
+      { 
+        question: "Quais são os três efeitos críticos de um loop de Camada 2 sem STP?", 
+        options: ["Roteamento incorreto, fragmentação e timeout de ARP", "Broadcast Storm, MAC Flapping e entrega múltipla de frames", "Perda de VLAN, falha de STP e reset de switch", "Loop de roteamento, black hole e split-horizon"], 
+        answer: "Broadcast Storm, MAC Flapping e entrega múltipla de frames", 
+        explanation: "Os três fenômenos são: Broadcast Storm (replicação infinita de frames), MAC Flapping (instabilidade da tabela CAM) e Multiple Frame Delivery (destino recebe cópias duplicadas do mesmo frame)." }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

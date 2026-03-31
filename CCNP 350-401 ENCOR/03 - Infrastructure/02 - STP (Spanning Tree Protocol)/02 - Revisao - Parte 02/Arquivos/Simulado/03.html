@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Switch L2 vs L3 e Tabela CAM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Switch L2 vs L3 e Tabela CAM </h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a principal diferença operacional entre um Switch Layer 2 e um Switch Layer 3?", 
+        options: ["Switch L2 usa fibra; Switch L3 usa cobre", "Switch L2 encaminha frames com base em MAC; Switch L3 encaminha pacotes com base em IP e possui controle de loop via TTL", "Switch L2 é mais rápido que Switch L3 em qualquer cenário", "Switch L3 não suporta VLANs"], 
+        answer: "Switch L2 encaminha frames com base em MAC; Switch L3 encaminha pacotes com base em IP e possui controle de loop via TTL", 
+        explanation: "O Switch L2 opera com MAC e tabela CAM, sem mecanismo de controle de loop nativo. O Switch L3 opera com IP e tabela de roteamento, e usa o campo TTL para limitar loops — decrementa a cada salto e descarta o pacote ao chegar a zero." 
+      },
+
+      { 
+        question: "O que é a tabela CAM e qual seu comportamento quando o endereço MAC de destino é desconhecido?", 
+        options: ["Tabela de roteamento IP — realiza descarte do pacote", "Content Addressable Memory — armazena MAC↔Porta e realiza flooding quando o destino é desconhecido", "Tabela ARP — resolve IP para MAC por broadcast", "Tabela de VLANs — segmenta o tráfego por VLAN"], 
+        answer: "Content Addressable Memory — armazena MAC↔Porta e realiza flooding quando o destino é desconhecido", 
+        explanation: "A tabela CAM (Content Addressable Memory) mapeia MAC Address para porta física. Quando o switch recebe um frame com MAC de destino desconhecido, realiza flooding — replica o frame por todas as portas exceto a de origem. Esse comportamento é a base dos loops L2." 
+      },
+
+      { 
+        question: "Por que o comportamento de flooding do Switch L2 contribui diretamente para a formação de loops?", 
+        options: ["Porque o flooding sobrecarrega a CPU e reinicia o switch", "Porque o frame replicado por flooding pode retornar ao switch original em topologias redundantes, reiniciando o ciclo infinitamente", "Porque o flooding desativa automaticamente as portas redundantes", "Porque o flooding apaga entradas da tabela CAM"], answer: "Porque o frame replicado por flooding pode retornar ao switch original em topologias redundantes, reiniciando o ciclo infinitamente", 
+        explanation: "Em uma topologia com caminhos redundantes, o flooding envia o frame por múltiplos caminhos. Um desses caminhos pode levar o frame de volta ao switch de origem, que o processa novamente e realiza novo flooding — criando o loop infinito que o STP previne." 
+      },
+
+      { 
+        question: "Qual mecanismo do Layer 3 impede que loops sejam tão destrutivos quanto os de Layer 2?", 
+        options: ["Protocolo ARP limita a propagação", "O campo TTL é decrementado a cada roteador e o pacote é descartado ao chegar a zero", "Roteadores não realizam flooding de broadcast", "O protocolo OSPF detecta e elimina loops automaticamente"], 
+        answer: "O campo TTL é decrementado a cada roteador e o pacote é descartado ao chegar a zero", 
+        explanation: "O TTL (Time to Live) do cabeçalho IPv4 é decrementado em 1 a cada roteador (hop). Quando chega a zero, o roteador descarta o pacote e envia um ICMP Time Exceeded para a origem. Isso limita qualquer loop L3 a no máximo 255 saltos — ao contrário do L2 que é infinito." 
+      },
+
+      { 
+        question: "Em qual camada da arquitetura 3-Tier o STP é mais crítico e por quê?", 
+        options: ["Core Layer — porque opera em altíssima velocidade", "Distribution Layer — porque agrega todos os switches", "Access Layer e Distribution Layer — porque há maior uso de Layer 2 e redundância física nessas camadas", "Apenas no Core Layer — porque é o backbone da rede"], 
+        answer: "Access Layer e Distribution Layer — porque há maior uso de Layer 2 e redundância física nessas camadas", 
+        explanation: "A Access Layer conecta dispositivos finais com alto uso de L2 e é o principal ponto de ocorrência de loops. A Distribution Layer agrega switches de acesso e pode operar em L2/L3. O Core Layer normalmente opera em L3, onde loops são naturalmente mitigados pelo TTL." 
+      },
+
+      { 
+        question: "Qual é a consequência direta de um loop Layer 2 em comparação com um loop Layer 3?", 
+        options: ["Loop L2 é limitado pelo TTL; loop L3 é infinito", "Loop L2 é infinito e causa colapso da rede; loop L3 é limitado pelo TTL e controlado", "Ambos causam o mesmo impacto na rede", "Loop L3 causa Broadcast Storm; loop L2 causa apenas latência"], 
+        answer: "Loop L2 é infinito e causa colapso da rede; loop L3 é limitado pelo TTL e controlado", 
+        explanation: "Sem TTL, frames L2 circulam indefinidamente com crescimento exponencial de tráfego, causando Broadcast Storm e colapso total. Loops L3 são limitados — o TTL descrementa a cada salto e o pacote é descartado, tornando o impacto controlado." 
+      },
+
+      { 
+        question: "Como o switch Layer 2 aprende os endereços MAC dos dispositivos conectados?", 
+        options: ["Via protocolo ARP enviado pelo administrador", "Lendo o campo Source MAC de cada frame recebido e gravando na tabela CAM", "Via DHCP quando o dispositivo solicita endereço IP", "Via BPDUs enviados pelo Root Bridge"], 
+        answer: "Lendo o campo Source MAC de cada frame recebido e gravando na tabela CAM", 
+        explanation: "O aprendizado MAC no L2 é dinâmico e passivo: a cada frame recebido, o switch lê o Source MAC e grava na tabela CAM junto com a porta de entrada. Não há protocolo específico para isso — acontece automaticamente no plano de dados." 
+      },
+
+      { 
+        question: "Qual é a principal limitação da Tabela de Roteamento (L3) em relação à Tabela CAM (L2) no contexto de flooding?", 
+        options: ["A Tabela de Roteamento é muito maior e mais lenta", "A Tabela CAM realiza flooding quando o destino é desconhecido; a Tabela de Roteamento toma decisões determinísticas sem flooding", "A Tabela de Roteamento não suporta multicast", "A Tabela CAM é mais segura que a Tabela de Roteamento"], 
+        answer: "A Tabela CAM realiza flooding quando o destino é desconhecido; a Tabela de Roteamento toma decisões determinísticas sem flooding", 
+        explanation: "Quando o destino é desconhecido, o switch L2 realiza flooding para todas as portas — comportamento que alimenta loops. O roteador L3 usa a tabela de roteamento para decisão determinística; se não há rota, descarta o pacote. Não há flooding no L3." 
+      },
+
+      { 
+        question: "Por que o Switch Layer 2 não possui mecanismo nativo de controle de loop?", 
+        options: ["Porque foi projetado para redes pequenas sem redundância", "Porque o Ethernet foi projetado para ser simples e eficiente, sem campo TTL no frame — a prevenção de loop requer um protocolo externo como o STP", "Porque fabricantes removeram o TTL do Ethernet para aumentar a velocidade", "Porque loops L2 não existiam quando o Ethernet foi criado"], 
+        answer: "Porque o Ethernet foi projetado para ser simples e eficiente, sem campo TTL no frame — a prevenção de loop requer um protocolo externo como o STP", explanation: "O Ethernet foi projetado para simplicidade e eficiência dentro de um domínio confiável. O cabeçalho não possui TTL nem hop count. Essa simplicidade o torna vulnerável em topologias redundantes, exigindo um protocolo externo — o STP — para gerenciar os loops."
+      },
+
+      { 
+        question: "Qual dos seguintes sintomas indica diretamente um loop de Camada 2 ativo na rede?", 
+        options: ["Alta latência apenas em links de fibra", "LEDs de todos os switches piscando freneticamente, CPU a 100% e perda de acesso remoto SSH", "Tabela de roteamento com rotas duplicadas", "Switches reiniciando por falha de hardware"], 
+        answer: "LEDs de todos os switches piscando freneticamente, CPU a 100% e perda de acesso remoto SSH", 
+        explanation: "Esses são os sintomas clássicos de Broadcast Storm: LEDs piscando indicam tráfego intenso em todas as portas, CPU a 100% processa frames BUM infinitos e o acesso SSH é perdido porque o plano de controle não tem recursos para processar pacotes de gerência." 
+      },
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

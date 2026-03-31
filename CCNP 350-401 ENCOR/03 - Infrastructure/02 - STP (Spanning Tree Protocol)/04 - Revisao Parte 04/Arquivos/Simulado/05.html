@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Recursos de Proteção: PortFast, BPDU Guard, Root Guard e Loop Guard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Recursos de Proteção: PortFast, BPDU Guard, Root Guard e Loop Guard</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "O que é o PortFast e em qual tipo de porta ele deve ser aplicado?", 
+        options: ["Recurso que acelera BPDUs no Root Bridge — aplicado em uplinks", "Recurso que coloca a porta diretamente em Forwarding ignorando Listening e Learning — aplicado exclusivamente em portas de acesso conectadas a hosts", "Recurso que aumenta a velocidade de convergência em links entre switches", "Recurso que desativa o STP permanentemente na porta configurada"], 
+        answer: "Recurso que coloca a porta diretamente em Forwarding ignorando Listening e Learning — aplicado exclusivamente em portas de acesso conectadas a hosts", explanation: "O PortFast (Edge Port) instrui o switch a colocar a porta diretamente em Forwarding, eliminando os 30s de Listening + Learning. É seguro apenas em portas conectadas a hosts (PCs, servidores, impressoras) — dispositivos que não geram BPDUs. Nunca deve ser aplicado em links entre switches, pois pode criar loops temporários." 
+      },
+
+      { 
+        question: "Por que o PortFast pode causar loop se aplicado incorretamente em um link entre switches?", 
+        options: ["Porque switches com PortFast param de processar BPDUs", "Porque a porta entra em Forwarding imediatamente sem aguardar a eleição STP — se houver um switch conectado, um loop pode se formar antes do STP convergir", "Porque o PortFast desativa o STP na porta, impedindo o bloqueio", "Porque links entre switches com PortFast têm custo 0, sempre vencendo a eleição"], 
+        answer: "Porque a porta entra em Forwarding imediatamente sem aguardar a eleição STP — se houver um switch conectado, um loop pode se formar antes do STP convergir", explanation: "O PortFast pula os estados de Listening e Learning propositalmente. Em uma porta de acesso (host), isso é seguro — hosts não criam loops. Em um link entre switches, pular esses estados significa que a porta começa a encaminhar antes de processar os BPDUs do vizinho — potencialmente criando um loop antes do STP conseguir bloqueá-lo." 
+      },
+
+      { 
+        question: "O que o BPDU Guard faz e por que deve ser combinado com PortFast?", 
+        options: ["Filtra BPDUs malformados — combinado com PortFast para acelerar convergência", "Desativa (err-disable) a porta ao receber qualquer BPDU inesperado — combinado com PortFast para proteger portas de acesso contra conexão indevida de switches", "Bloqueia BPDUs de switches não autorizados — combinado com PortFast para balancear VLANs", "Garante que apenas o Root Bridge envie BPDUs — combinado com PortFast para reduzir tráfego de controle"], 
+        answer: "Desativa (err-disable) a porta ao receber qualquer BPDU inesperado — combinado com PortFast para proteger portas de acesso contra conexão indevida de switches", 
+        explanation: "Uma porta de acesso com PortFast não deveria receber BPDUs — hosts não os geram. O BPDU Guard monitora isso: se um BPDU chegar (indicando que um switch foi conectado indevidamente por um usuário), a porta é imediatamente colocada em err-disable. Isso impede que um switch não autorizado participe da eleição STP e potencialmente cause problemas." 
+      },
+
+      { 
+        question: "Qual é a função do Root Guard e em qual cenário ele é aplicado?", 
+        options: ["Impede que portas mudem de Root Port para Designated Port durante reconvergência", "Protege o Root Bridge atual impedindo que outro switch seja eleito Root — aplicado em portas onde switches de acesso se conectam à distribuição", "Garante que apenas switches com prioridade 0 possam ser eleitos Root Bridge", "Monitora falhas unidirecionais em links de fibra óptica"], 
+        answer: "Protege o Root Bridge atual impedindo que outro switch seja eleito Root — aplicado em portas onde switches de acesso se conectam à distribuição", 
+        explanation: "O Root Guard protege o Root Bridge intencional. Se um switch conectado a uma porta com Root Guard enviar BPDUs com BID menor que o Root atual (tentando 'roubar' a eleição), a porta entra em estado 'inconsistent' (Blocking). Isso protege o design de rede contra switches não autorizados ou mal configurados que possam alterar a topologia STP indevidamente." 
+      },
+
+      { 
+        question: "O que é o Loop Guard e qual problema específico ele resolve?", 
+        options: ["Detecta e bloqueia loops causados por broadcast storm", "Resolve loops causados por falhas unidirecionais de link — quando BPDUs param de chegar por falha, a porta em Blocking poderia entrar em Forwarding criando loop", "Monitora tráfego multicast para evitar loops em redes IPv6", "Substitui o Max Age para detecção mais rápida de falhas de Root Bridge"], 
+        answer: "Resolve loops causados por falhas unidirecionais de link — quando BPDUs param de chegar por falha, a porta em Blocking poderia entrar em Forwarding criando loop", 
+        explanation: "Sem Loop Guard, se uma porta em Blocking para de receber BPDUs (por falha unidirecional de fibra), ela aguarda o Max Age e transiciona para Forwarding — potencialmente criando loop. Com Loop Guard, a porta vai para estado 'loop-inconsistent' (permanece Blocking) ao invés de Forwarding, impedindo o loop até que os BPDUs retornem." 
+      },
+
+      { 
+        question: "Qual é a diferença entre BPDU Guard e Root Guard em termos de ação e aplicação?", 
+        options: ["São equivalentes — apenas nomes diferentes para o mesmo recurso", "BPDU Guard: desativa porta ao receber QUALQUER BPDU (proteção de portas de acesso com PortFast) / Root Guard: bloqueia porta que recebe BPDU superior ao Root atual (proteção do Root Bridge)", "BPDU Guard: aplicado em uplinks / Root Guard: aplicado em downlinks", "BPDU Guard protege contra loops / Root Guard protege contra broadcast storm"], 
+        answer: "BPDU Guard: desativa porta ao receber QUALQUER BPDU (proteção de portas de acesso com PortFast) / Root Guard: bloqueia porta que recebe BPDU superior ao Root atual (proteção do Root Bridge)", 
+        explanation: "BPDU Guard: aplicado em portas de acesso com PortFast — qualquer BPDU recebido indica switch indevido e a porta vai para err-disable. Root Guard: aplicado em portas de distribuição/acesso — apenas BPDUs superiores ao Root atual (tentativa de nova eleição) colocam a porta em inconsistent. BPDU Guard é mais agressivo; Root Guard é seletivo." 
+      },
+
+      { 
+        question: "O que acontece com uma porta configurada com Root Guard quando ela recebe um BPDU com BID menor que o Root Bridge atual?", 
+        options: ["A porta aceita o novo Root Bridge e inicia reconvergência normalmente", "A porta entra em estado 'root-inconsistent' (Blocking) até que os BPDUs superiores parem de chegar", "A porta é desativada permanentemente (shutdown) pelo administrador", "O switch aumenta sua própria Priority para continuar sendo Root"], 
+        answer: "A porta entra em estado 'root-inconsistent' (Blocking) até que os BPDUs superiores parem de chegar", 
+        explanation: "O Root Guard é não-destrutivo: ao invés de desativar permanentemente (como o BPDU Guard com err-disable), coloca a porta em 'root-inconsistent' — um estado de Blocking temporário. Quando o switch conectado para de enviar BPDUs superiores (ou é reconfigurado), a porta retorna automaticamente ao estado normal sem intervenção do administrador." 
+      },
+
+      { 
+        question: "Por que o PortFast é considerado seguro em portas de acesso mas arriscado em links entre switches?", 
+        options: ["Porque switches têm mais tráfego que hosts e sobrecarregam a porta", "Porque hosts não geram BPDUs — nunca criarão loops; switches geram BPDUs e podem criar loops se a porta entrar em Forwarding antes da convergência STP", "Porque portas de acesso têm velocidade menor e o PortFast funciona apenas em Fast Ethernet", "Porque links entre switches sempre têm EtherChannel configurado incompatível com PortFast"], 
+        answer: "Porque hosts não geram BPDUs — nunca criarão loops; switches geram BPDUs e podem criar loops se a porta entrar em Forwarding antes da convergência STP", explanation: "A segurança do PortFast baseia-se no fato de que hosts (PCs, servidores) não participam do STP — não geram BPDUs e não criam caminhos redundantes. Logo, uma porta de acesso com PortFast nunca contribuirá para um loop. Um switch, ao contrário, gera BPDUs e pode criar paths redundantes — por isso PortFast em link entre switches é proibido." 
+      },
+
+      { 
+        question: "O que é um Edge Port no contexto do STP e qual protocolo o usa nativamente?", 
+        options: ["Porta de uplink com custo configurado manualmente como 0", "Porta conectada a dispositivos finais que entra direto em Forwarding — conceito nativo do RSTP equivalente ao PortFast do STP 802.1D", "Porta de borda entre dois domínios de broadcast diferentes", "Porta com Root Guard configurado para proteger a borda da rede"], 
+        answer: "Porta conectada a dispositivos finais que entra direto em Forwarding — conceito nativo do RSTP equivalente ao PortFast do STP 802.1D", 
+        explanation: "O RSTP (802.1w) incorpora nativamente o conceito de Edge Port — porta conectada a dispositivos finais que entra diretamente em Forwarding sem aguardar estados intermediários. É o equivalente ao PortFast do STP 802.1D, mas padronizado pelo IEEE. Edge Port + BPDU Guard é a combinação de segurança recomendada em ambos os protocolos." 
+      },
+
+      { 
+        question: "Por que o BPDU Guard é considerado 'muito cobrado em prova' segundo o documento 04?", 
+        options: ["Porque é o único recurso de proteção STP disponível em switches de camada 2", "Porque combina dois conceitos críticos de prova — PortFast (convergência rápida) e proteção de topologia (segurança) — e seu comportamento de err-disable é específico e testável", "Porque substitui o Root Guard em todos os cenários modernos", "Porque é o único recurso que funciona tanto com STP 802.1D quanto com RSTP"], 
+        answer: "Porque combina dois conceitos críticos de prova — PortFast (convergência rápida) e proteção de topologia (segurança) — e seu comportamento de err-disable é específico e testável", 
+        explanation: "O BPDU Guard é cobrado porque testa múltiplos conceitos: entender por que PortFast é usado, saber que hosts não geram BPDUs, reconhecer que a chegada de um BPDU indica switch indevido, e conhecer a ação específica (err-disable) e o diagnóstico ('show interfaces status' mostra err-disabled). É um cenário de troubleshooting clássico do CCNP." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

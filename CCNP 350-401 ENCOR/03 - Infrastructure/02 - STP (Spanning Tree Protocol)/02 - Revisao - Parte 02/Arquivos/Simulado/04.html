@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Reconvergência e Fluxo de Boot-Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Reconvergência e Fluxo de Boot-Up</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "No fluxo de reconvergência após falha, qual é a sequência exata que uma porta em Blocking percorre até chegar em Forwarding?", 
+        options: ["Blocking → Forwarding diretamente após Max Age", "Blocking → Listening → Learning → Forwarding, com Max Age antes de sair do Blocking", "Blocking → Learning → Forwarding", "Blocking → Disabled → Listening → Forwarding"], 
+        answer: "Blocking → Listening → Learning → Forwarding, com Max Age antes de sair do Blocking", 
+        explanation: "Após o Max Age expirar sem BPDUs, a porta sai do Blocking e inicia a transição: Listening (15s) → Learning (15s) → Forwarding. O Max Age (20s) é o gatilho que autoriza a transição — sem ele, a porta permanece em Blocking indefinidamente." 
+      },
+
+      { 
+        question: "Em um cenário de reconvergência, SW2 para de receber BPDUs pela sua Root Port porque SW1 falhou. O que SW2 faz imediatamente?", 
+        options: ["Coloca todas as portas em Forwarding imediatamente", "Aguarda o Max Age (20s) expiar antes de declarar o caminho morto e iniciar transição", "Envia um TCN para todos os switches da rede", "Reinicia o processo de eleição do Root Bridge imediatamente"], 
+        answer: "Aguarda o Max Age (20s) expiar antes de declarar o caminho morto e iniciar transição", 
+        explanation: "Esse é o comportamento de falha indireta: SW1 falhou mas o link físico de SW2 ainda está ativo. SW2 para de receber BPDUs mas não detecta link down. Ele aguarda o Max Age (20s) antes de considerar o caminho morto e iniciar a transição da porta alternativa." 
+      },
+
+      { 
+        question: "Durante os 50 segundos de reconvergência do STP 802.1D, o que acontece com os dispositivos que dependiam do caminho que falhou?", 
+        options: ["Eles migram automaticamente para o caminho alternativo via ARP", "Ficam isolados da rede — sem conectividade até a porta alternativa entrar em Forwarding", "Continuam comunicando via cache ARP por até 5 minutos", "São notificados via ICMP para usar rota alternativa"], 
+        answer: "Ficam isolados da rede — sem conectividade até a porta alternativa entrar em Forwarding", 
+        explanation: "Durante os 50s de reconvergência, o switch que perdeu seu caminho principal está efetivamente isolado. Sessões TCP caem, autenticações falham e VoIP é interrompido. Não há mecanismo no STP 802.1D para acelerar esse processo — a solução é o RSTP." 
+      },
+
+      { 
+        question: "Qual é a diferença entre o fluxo de boot-up e o fluxo de reconvergência no STP 802.1D?", 
+        options: ["No boot-up as portas começam em Forwarding; na reconvergência começam em Blocking", "No boot-up todas as portas começam em Blocking e passam pela eleição completa; na reconvergência uma porta em Blocking aguarda o Max Age e então transiciona", "No boot-up o Max Age não é usado; na reconvergência o Forward Delay não é usado", "São processos idênticos — ambos levam exatamente 50 segundos"], 
+        answer: "No boot-up todas as portas começam em Blocking e passam pela eleição completa; na reconvergência uma porta em Blocking aguarda o Max Age e então transiciona", explanation: "No boot-up, o switch não sabe nada — todas as portas vão para Blocking e o processo de eleição é completo. Na reconvergência, o switch já conhece a topologia; apenas a porta alternativa precisa transicionar após o Max Age expirar sem BPDUs." 
+      },
+
+      { 
+        question: "Qual é a motivação técnica direta que levou o IEEE a desenvolver o RSTP (802.1w)?", 
+        options: ["O STP 802.1D não suportava VLANs múltiplas", "O STP 802.1D não funcionava em links de 1 Gbps", "O tempo de convergência de até 50 segundos do STP 802.1D é inaceitável para aplicações modernas como VoIP e 802.1X", "O STP 802.1D não tinha suporte a IPv6"], 
+        answer: "O tempo de convergência de até 50 segundos do STP 802.1D é inaceitável para aplicações modernas como VoIP e 802.1X", 
+        explanation: "Os 50 segundos de convergência causam quedas de chamadas VoIP, falhas de autenticação 802.1X e timeout de sessões SSH. O RSTP (IEEE 802.1w) usa negociação ponto a ponto (Proposal/Agreement) para convergir em menos de 1 segundo, tornando-o o padrão para redes modernas." 
+      },
+
+      { 
+        question: "No fluxo de boot-up, após a eleição do Root Bridge, quais portas transitam para Listening → Learning → Forwarding e quais permanecem em Blocking?", 
+        options: ["Todas as portas transitam para Forwarding; nenhuma fica em Blocking", "Portas eleitas como Root Port ou Designated Port transitam para Forwarding; portas Non-Designated permanecem em Blocking", "Apenas as portas do Root Bridge transitam; demais permanecem em Blocking", "Portas de uplink transitam; portas de acesso permanecem em Blocking"], 
+        answer: "Portas eleitas como Root Port ou Designated Port transitam para Forwarding; portas Non-Designated permanecem em Blocking", 
+        explanation: "Após a eleição, cada porta recebe seu papel. Root Ports e Designated Ports precisam encaminhar tráfego — transitam por Listening → Learning → Forwarding. Portas Non-Designated (Alternate) permanecem em Blocking para quebrar o loop lógico." 
+      },
+
+      { 
+        question: "Por que aplicações de transferência de arquivo toleram melhor a reconvergência do STP do que aplicações VoIP?", 
+        options: ["Porque transferências de arquivo usam Layer 3 e não são afetadas pelo STP", "Porque protocolos de transferência têm mecanismos de retransmissão — o download reinicia; VoIP não tolera interrupção pois a chamada cai", "Porque VoIP usa portas bloqueadas pelo STP", "Porque transferências de arquivo usam caminhos redundantes automaticamente"], 
+        answer: "Porque protocolos de transferência têm mecanismos de retransmissão — o download reinicia; VoIP não tolera interrupção pois a chamada cai", 
+        explanation: "TCP tem controle de retransmissão — uma transferência interrompida pode reiniciar. VoIP e videoconferência são em tempo real, sem buffer suficiente para absorver 50 segundos de interrupção. A chamada simplesmente cai, sem possibilidade de retransmissão retroativa." 
+      },
+
+      { 
+        question: "O que é uma 'falha indireta' no contexto do STP e por que ela resulta no pior tempo de convergência?", 
+        options: ["Falha indireta é quando o Root Bridge falha, forçando nova eleição completa", "Falha indireta é quando um switch intermediário falha sem derrubar o link físico — o switch afetado precisa aguardar o Max Age (20s) antes de reagir", "Falha indireta ocorre apenas em links de fibra unidirecional", "Falha indireta é causada por configuração incorreta de VLAN nativa"], 
+        answer: "Falha indireta é quando um switch intermediário falha sem derrubar o link físico — o switch afetado precisa aguardar o Max Age (20s) antes de reagir", explanation: "Na falha indireta, o link físico do switch afetado ainda está ativo, então não há detecção imediata. O switch só percebe o problema quando para de receber BPDUs e o Max Age (20s) expira. Somado ao Listening (15s) e Learning (15s), resulta nos 50s do pior cenário." 
+      },
+
+      { 
+        question: "Qual é o comportamento de um switch recém-ligado em relação ao papel de Root Bridge antes de receber qualquer BPDU?", 
+        options: ["Aguarda passivamente até receber BPDUs do Root atual antes de enviar qualquer mensagem", "Anuncia a si mesmo como Root Bridge nos BPDUs que envia, com seu próprio BID no campo Root ID", "Verifica a tabela CAM para identificar o Root Bridge existente", "Coloca todas as portas em Forwarding e aguarda confirmação"], 
+        answer: "Anuncia a si mesmo como Root Bridge nos BPDUs que envia, com seu próprio BID no campo Root ID", 
+        explanation: "Ao inicializar sem nenhuma informação de topologia, todo switch é 'egoísta': coloca seu próprio BID tanto no campo Root ID quanto no Sender Bridge ID dos BPDUs. Quando recebe BPDUs com BID menor, se rende e passa a propagar o BID do vizinho superior." 
+      },
+
+      { 
+        question: "Qual é o ponto que gera mais confusão entre candidatos CCNP sobre o estado Blocking durante o boot-up?", 
+        options: ["Portas em Blocking não participam da eleição STP", "Durante o boot, todas as portas enviam BPDUs se anunciando como Root — o que é normal e esperado, não um erro", "Portas em Blocking durante o boot entram diretamente em Forwarding após 20s", "O estado Blocking durante o boot é diferente do Blocking durante operação normal"], 
+        answer: "Durante o boot, todas as portas enviam BPDUs se anunciando como Root — o que é normal e esperado, não um erro", 
+        explanation: "Candidatos frequentemente interpretam o comportamento de 'todo switch se anuncia como Root' como anômalo. É o funcionamento correto: sem informação prévia, cada switch propaga seu próprio BID como Root. A eleição converge naturalmente quando BPDUs melhores chegam e os switches 'se rendem'." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

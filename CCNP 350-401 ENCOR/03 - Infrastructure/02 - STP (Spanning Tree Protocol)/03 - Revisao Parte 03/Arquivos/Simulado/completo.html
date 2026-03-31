@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol Completo 03</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol Completo 03</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre STP - Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "O STP foi padronizado como IEEE 802.1D. Qual versão posterior resolveu o problema da convergência lenta mantendo os mesmos fundamentos de eleição?", options: ["PVST+ (Cisco proprietário)", "MSTP (IEEE 802.1s)", "RSTP (IEEE 802.1w)", "VTP (Cisco proprietário)"], 
+        answer: "RSTP (IEEE 802.1w)", 
+        explanation: "O RSTP (IEEE 802.1w) é a evolução direta do 802.1D. Mantém os mesmos conceitos de eleição, papéis de porta e BPDUs, mas usa mecanismo de Proposal/Agreement para convergir em menos de 1 segundo — eliminando os 50s do STP clássico." 
+      },
+
+      { 
+        question: "Por que é fundamental estudar o STP 802.1D mesmo sabendo que o RSTP é mais moderno e rápido?", 
+        options: ["Porque o RSTP não é suportado por switches Cisco", "Porque o RSTP é uma evolução direta do 802.1D — sem entender o clássico, não se entende o design do RSTP nem se faz troubleshooting em ambientes mistos", "Porque o 802.1D ainda é obrigatório em redes IPv6", "Porque o RSTP não suporta múltiplas VLANs"], 
+        answer: "Porque o RSTP é uma evolução direta do 802.1D — sem entender o clássico, não se entende o design do RSTP nem se faz troubleshooting em ambientes mistos", explanation: "O RSTP foi projetado para resolver as limitações específicas do 802.1D. Ambientes de produção ainda possuem switches legados operando com STP clássico. Sem entender a base, é impossível diagnosticar comportamentos em topologias mistas ou compreender por que o RSTP funciona como funciona." 
+      },
+
+      { 
+        question: "Qual versão do STP opera com uma instância por VLAN, oferecendo mais controle mas com maior consumo de CPU?", 
+        options: ["IEEE 802.1D", "RSTP (802.1w)", "PVST+ (Cisco proprietário)", "MSTP (802.1s)"], 
+        answer: "PVST+ (Cisco proprietário)", 
+        explanation: "O PVST+ (Per-VLAN Spanning Tree Plus) é uma implementação proprietária da Cisco que roda uma instância STP separada para cada VLAN. Isso permite balanceamento de tráfego entre VLANs, mas aumenta o consumo de CPU proporcional ao número de VLANs ativas." 
+      },
+
+      { 
+        question: "Qual a interpretação prática de um BPDU recebido por um switch de seu vizinho?", 
+        options: ["'Você deve bloquear esta porta imediatamente'", "'Eu sou o switch X, acredito que o Root é Y, e meu custo acumulado até ele é Z'", "'O Root Bridge mudou — inicie nova eleição'", "'Este link está com falha — ignore os BPDUs'"], 
+        answer: "'Eu sou o switch X, acredito que o Root é Y, e meu custo acumulado até ele é Z'", 
+        explanation: "Essa é a interpretação prática do BPDU: o switch remetente anuncia sua identidade (Sender Bridge ID), quem ele acredita ser o Root Bridge (Root ID) e o custo acumulado até esse Root (Root Path Cost). Com essas informações, o switch receptor decide seus papéis de porta." 
+      },
+
+      { 
+        question: "Qual é o campo mais importante de um BPDU segundo o documento, e por quê?", 
+        options: ["Port ID — porque identifica a porta de saída para desempate", "Root ID — porque identifica o Root Bridge que o remetente reconhece como líder da topologia", "Timers — porque controlam toda a convergência", "Root Path Cost — porque determina o melhor caminho"], 
+        answer: "Root ID — porque identifica o Root Bridge que o remetente reconhece como líder da topologia", 
+        explanation: "O Root ID é o campo mais importante do BPDU porque é por meio dele que os switches concordam sobre quem é o líder da topologia. Ao comparar Root IDs recebidos com seu próprio BID, cada switch decide se se rende ao líder atual ou propaga um BID melhor." 
+      },
+
+      { 
+        question: "Quem é o responsável por GERAR BPDUs originais em uma topologia STP convergida?", 
+        options: ["Todos os switches geram e enviam BPDUs próprios a cada 2 segundos", "Apenas o Root Bridge gera BPDUs originais; os demais switches apenas propagam", "Apenas os switches com Root Port geram BPDUs", "O switch com maior número de portas ativas gera os BPDUs"], 
+        answer: "Apenas o Root Bridge gera BPDUs originais; os demais switches apenas propagam", 
+        explanation: "Após a convergência, apenas o Root Bridge origina BPDUs (Hello BPDUs a cada 2s). Os switches não-root propagam esses BPDUs atualizando o campo Root Path Cost. Essa distinção é crítica: se os BPDUs pararem de chegar, o switch aguarda o Max Age (20s) antes de declarar falha." 
+      },
+
+      { 
+        question: "Qual protocolo STP foi desenvolvido para ambientes com grande número de VLANs, agrupando-as em instâncias para escalar?", 
+        options: ["PVST+", "RSTP (802.1w)", "MSTP (802.1s)", "STP 802.1D"], 
+        answer: "MSTP (802.1s)", 
+        explanation: "O MSTP (Multiple Spanning Tree Protocol, IEEE 802.1s) agrupa múltiplas VLANs em instâncias STP, reduzindo drasticamente o número de processos em execução. É a solução para redes com centenas de VLANs onde rodar uma instância por VLAN (PVST+) seria inviável." 
+      },
+
+      { 
+        question: "Qual campo do BPDU é utilizado como critério de desempate e identifica a porta específica de onde o BPDU foi enviado?", 
+        options: ["Root ID", "Sender Bridge ID", "Root Path Cost", "Port ID"], 
+        answer: "Port ID", 
+        explanation: "O Port ID (composto por Port Priority + Port Number) identifica a porta exata do switch remetente que originou o BPDU. Ele é usado como quarto e último critério de desempate na eleição da Root Port, quando Root Path Cost, Sender BID e Port Priority são iguais." 
+      },
+
+      { 
+        question: "O que acontece quando um switch para de receber BPDUs pelo caminho que considera ser o melhor até o Root Bridge?", 
+        options: ["Coloca a porta em Forwarding imediatamente para assumir o caminho", "Aguarda o Max Age (20s) expirar antes de declarar falha e iniciar transição", "Envia um ICMP para o Root Bridge verificando conectividade", "Reinicia todas as portas para Blocking e inicia nova eleição completa"], 
+        answer: "Aguarda o Max Age (20s) expirar antes de declarar falha e iniciar transição", 
+        explanation: "O Max Age (20s) é o tempo de segurança antes de o switch declarar que o caminho para o Root falhou. Ele aguarda para evitar reações precipitadas a perdas temporárias de BPDU. Após o Max Age, inicia a transição da porta alternativa: Listening (15s) → Learning (15s) → Forwarding." 
+      },
+
+      { 
+        question: "Qual a sequência lógica de operação do STP desde o boot até a topologia convergida?", 
+        options: ["Bloqueio de portas → Eleição do Root → Cálculo de custo → Troca de BPDUs", "Troca de BPDUs → Eleição do Root Bridge → Cálculo do melhor caminho → Bloqueio dos caminhos redundantes", "Eleição do Root → Troca de BPDUs → Bloqueio → Cálculo de custo", "Cálculo de custo → Bloqueio → Eleição do Root → Troca de BPDUs"], 
+        answer: "Troca de BPDUs → Eleição do Root Bridge → Cálculo do melhor caminho → Bloqueio dos caminhos redundantes", 
+        explanation: "Essa é a sequência exata e dependente: 1) Switches trocam BPDUs, 2) Elegem o Root Bridge pelo menor BID, 3) Calculam o menor custo acumulado até o Root (Root Path Cost), 4) Bloqueiam as portas redundantes. Cada etapa depende da anterior — sem Root eleito, não há referência para calcular custos." 
+      },
+
+      { 
+        question: "Qual é a composição completa do Bridge ID (BID) no STP moderno com Extended System ID?", 
+        options: ["Apenas Priority + MAC Address (64 bits)", "Priority (4 bits) + VLAN ID (12 bits) + MAC Address (48 bits)", "Priority (8 bits) + MAC Address (48 bits) + Port ID (8 bits)", "VLAN ID (16 bits) + MAC Address (48 bits)"], 
+        answer: "Priority (4 bits) + VLAN ID (12 bits) + MAC Address (48 bits)", 
+        explanation: "O BID moderno tem 64 bits totais: 4 bits de Priority (múltiplos de 4096), 12 bits de Extended System ID (VLAN ID somado à Priority) e 48 bits de MAC Address. Essa estrutura garante unicidade por switch e por VLAN simultaneamente." 
+      },
+
+      { 
+        question: "Um switch com Priority padrão operando na VLAN 1 tem MAC 0000.0000.ABCD. Qual é o seu Bridge ID completo?", 
+        options: ["32768 : 0000.0000.ABCD", "32769 : 0000.0000.ABCD", "4096 : 0000.0000.ABCD", "1 : 0000.0000.ABCD"], 
+        answer: "32769 : 0000.0000.ABCD", 
+        explanation: "O cálculo do BID com Extended System ID: Priority padrão (32768) + VLAN ID (1) = 32769. BID final: 32769 : 0000.0000.ABCD. Esse é o valor exibido no 'show spanning-tree' — a Priority já inclui o VLAN ID somado." 
+      },
+
+      { 
+        question: "Quais são os valores válidos de Bridge Priority no STP? Por que eles seguem esse padrão?", 
+        options: ["Qualquer valor entre 0 e 65535", "Apenas múltiplos de 4096, porque os 4 bits de Priority permitem apenas 16 valores distintos", "Apenas valores pares entre 0 e 32768", "Qualquer valor múltiplo de 100"], 
+        answer: "Apenas múltiplos de 4096, porque os 4 bits de Priority permitem apenas 16 valores distintos", 
+        explanation: "Os 4 bits do campo Priority comportam 16 combinações (0 a 15), cada uma representando um múltiplo de 4096. Valores válidos: 0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768 (padrão), 36864... até 61440. Tentar configurar um valor fora dessa escala gera erro na CLI." 
+      },
+
+      { 
+        question: "Por que o MAC Address está presente no Bridge ID se a Priority já pode ser configurada manualmente?", 
+        options: ["Para identificar o fabricante do switch na eleição", "Para garantir unicidade absoluta — dois switches com a mesma Priority configurada nunca empatarão definitivamente pois MACs são globalmente únicos", "Para calcular o custo do caminho até o Root", "Para identificar a VLAN nativa do trunk"], 
+        answer: "Para garantir unicidade absoluta — dois switches com a mesma Priority configurada nunca empatarão definitivamente pois MACs são globalmente únicos", explanation: "O MAC é o desempate final da eleição. Se dois switches têm a mesma Priority, o menor MAC vence. Como endereços MAC são globalmente únicos (OUI + identificador), é matematicamente impossível haver empate absoluto na eleição do Root Bridge." 
+      },
+
+      { 
+        question: "O administrador quer garantir que SW-CORE seja sempre o Root Bridge primário. Qual priority deve configurar?", 
+        options: ["32768 — valor padrão", "65535 — valor máximo", "4096 — valor suficientemente baixo para vencer qualquer switch com prioridade padrão", "0 — mas apenas se nenhum outro switch tiver prioridade configurada"], 
+        answer: "4096 — valor suficientemente baixo para vencer qualquer switch com prioridade padrão", 
+        explanation: "Qualquer switch com Priority padrão (32768) será derrotado por um switch com 4096, pois o menor BID vence. A convenção de boas práticas é: Root primário com 4096, Root secundário com 8192. O comando é: 'spanning-tree vlan X priority 4096'." 
+      },
+
+      { 
+        question: "O que é o Extended System ID no contexto do Bridge ID?", 
+        options: ["Um campo opcional para identificar o nome do switch", "Os 12 bits do BID que incorporam o VLAN ID à Priority, permitindo que o BID seja único por VLAN", "Um campo de segurança para autenticar BPDUs", "O número de série do switch usado como desempate"], 
+        answer: "Os 12 bits do BID que incorporam o VLAN ID à Priority, permitindo que o BID seja único por VLAN", 
+        explanation: "O Extended System ID (12 bits) foi introduzido para suportar PVST+. Ele incorpora o VLAN ID à Priority, tornando o BID único por instância STP. Por isso a Priority 'real' que aparece no 'show spanning-tree' não é exatamente 32768, mas sim 32768 + VLAN ID." 
+      },
+
+      { 
+        question: "No comando 'show spanning-tree', em qual condição o Root ID e o Bridge ID exibidos serão idênticos?", 
+        options: ["Quando o STP está desabilitado na VLAN", "Quando o switch é o próprio Root Bridge da topologia", "Quando todas as portas estão em Blocking", "Quando o switch não recebeu nenhum BPDU ainda"], 
+        answer: "Quando o switch é o próprio Root Bridge da topologia", 
+        explanation: "Se Root ID = Bridge ID no 'show spanning-tree', o switch reconhece a si mesmo como Root Bridge. Nesse caso, ele não propaga o BID de nenhum vizinho — propaga o seu próprio como Root ID. Todas as suas portas ativas são Designated Ports em Forwarding." 
+      },
+
+      { 
+        question: "Um switch tem Priority configurada como 28672 e opera na VLAN 10. Qual o valor numérico que aparece como Priority no 'show spanning-tree'?", 
+        options: ["28672", "28682", "10", "32768"], 
+        answer: "28682", 
+        explanation: "Com Extended System ID ativo: Priority real = Priority configurada + VLAN ID = 28672 + 10 = 28682. Esse é o valor exibido no 'show spanning-tree vlan 10'. Sempre somar o VLAN ID à Priority base para obter o BID efetivo." 
+      },
+
+      { 
+        question: "Por que a Priority tem precedência sobre o MAC Address na eleição do Root Bridge?", 
+        options: ["Porque o MAC Address pode ser duplicado em switches antigos", "Porque a Priority é configurável pelo administrador, permitindo controle intencional da eleição — o MAC é apenas o desempate final não controlável", "Porque o MAC Address é processado mais lentamente pelos switches", "Porque a Priority foi definida assim pelo RFC e não há justificativa técnica"], 
+        answer: "Porque a Priority é configurável pelo administrador, permitindo controle intencional da eleição — o MAC é apenas o desempate final não controlável", explanation: "A Priority (configurável em múltiplos de 4096) é o mecanismo pelo qual o administrador controla quem será o Root Bridge. Como o MAC é fixo e determinado pelo fabricante, usá-lo como critério primário tornaria a eleição imprevisível. A Priority garante que o engenheiro — e não o acaso — decida o Root." 
+      },
+
+      { 
+        question: "Qual é o risco de não configurar manualmente a Priority do Root Bridge em um ambiente de produção?", 
+        options: ["O STP não funciona sem Priority configurada manualmente", "O switch com o menor MAC Address vence — que pode ser o mais antigo ou menos capaz, criando gargalo na rede", "Todos os switches ficam com Priority igual e nenhum Root é eleito", "O PVST+ é ativado automaticamente para compensar"], 
+        answer: "O switch com o menor MAC Address vence — que pode ser o mais antigo ou menos capaz, criando gargalo na rede", 
+        explanation: "Sem configuração manual, a eleição usa Priority padrão (32768 para todos) e desempata pelo menor MAC. MACs menores tendem a ser de equipamentos mais antigos — um switch de 10/100Mbps pode ser eleito Root, forçando todo o tráfego da rede por um dispositivo de baixa capacidade." 
+      },
+
+      { 
+        question: "Qual é a regra fundamental da eleição do Root Bridge no STP 802.1D?", 
+        options: ["O switch com maior número de portas ativas é eleito Root", "O switch com o menor Bridge ID (BID) é eleito Root Bridge", "O switch com o maior uptime desde o boot é eleito Root", "O switch com mais VLANs configuradas é eleito Root"], 
+        answer: "O switch com o menor Bridge ID (BID) é eleito Root Bridge", 
+        explanation: "A eleição do Root Bridge é determinística: o switch com o menor BID (Priority + VLAN ID + MAC) vence. Menor valor numérico = maior prioridade. Essa regra é aplicada por todos os switches ao comparar BPDUs recebidos com seu próprio BID." 
+      },
+
+      { 
+        question: "No Root Bridge, qual é o papel atribuído a TODAS as suas portas ativas?", 
+        options: ["Root Port — porque é a referência central da topologia", "Non-Designated — para evitar loops no próprio Root", "Designated Port — porque seu custo até si mesmo é zero, sendo sempre o melhor caminho", "Alternate Port — como backup para os demais switches"], 
+        answer: "Designated Port — porque seu custo até si mesmo é zero, sendo sempre o melhor caminho", 
+        explanation: "O Root Bridge tem custo zero até si mesmo. Em qualquer segmento conectado ao Root, nenhum outro switch terá custo menor para chegar ao Root. Portanto, todas as portas do Root Bridge são eleitas Designated Ports e ficam em estado Forwarding." 
+      },
+
+      { 
+        question: "Quantas Root Ports existem em um switch não-root em uma topologia STP?", 
+        options: ["Uma por VLAN ativa", "Uma por segmento de rede conectado", "Exatamente uma — a porta de menor custo acumulado até o Root Bridge", "Duas — uma primária e uma de backup"], 
+        answer: "Exatamente uma — a porta de menor custo acumulado até o Root Bridge", 
+        explanation: "Cada switch não-root elege exatamente uma Root Port — a interface com o menor Root Path Cost até o Root Bridge. Se houver empate, os critérios de desempate (Sender BID, Port Priority, Port Number) resolvem. Ter mais de uma Root Port quebraria a topologia em árvore." 
+      },
+
+      { 
+        question: "O que define uma Designated Port em um segmento de rede?", 
+        options: ["É a porta com maior velocidade de link no segmento", "É a porta que oferece o menor custo acumulado até o Root Bridge naquele segmento — uma por segmento", "É sempre a porta do switch com mais VLANs configuradas", "É a porta em estado Blocking que aguarda para assumir"], 
+        answer: "É a porta que oferece o menor custo acumulado até o Root Bridge naquele segmento — uma por segmento", 
+        explanation: "Em cada segmento de rede (link entre dois switches), apenas uma porta é eleita Designated Port — aquela cujo switch tem menor Root Path Cost até o Root Bridge. A Designated Port fica em Forwarding e é responsável pelo encaminhamento naquele segmento." 
+      },
+
+      { 
+        question: "O que acontece com uma porta que não é eleita nem Root Port nem Designated Port?", 
+        options: ["Ela é desativada administrativamente pelo STP", "Ela é colocada em estado Blocking como Non-Designated Port — não encaminha dados mas continua recebendo BPDUs", "Ela assume o papel de Backup Port e fica em Learning", "Ela é promovida a Root Port do switch vizinho"], 
+        answer: "Ela é colocada em estado Blocking como Non-Designated Port — não encaminha dados mas continua recebendo BPDUs", 
+        explanation: "Toda porta que perde a eleição de RP e DP torna-se Non-Designated e vai para Blocking. Ela não encaminha frames de dados nem aprende MACs, mas monitora BPDUs ativamente. Isso quebra o loop lógico mantendo o cabo fisicamente conectado — pronto para assumir se o caminho principal falhar." 
+      },
+
+      { 
+        question: "Por que a eleição do Root Bridge é considerada o passo mais crítico de todo o processo STP?", 
+        options: ["Porque o Root Bridge processa todo o tráfego da rede", "Porque o posicionamento do Root define o fluxo de tráfego de toda a topologia — Root mal posicionado = rede ineficiente", "Porque o Root Bridge é o único que pode configurar VLANs", "Porque sem Root Bridge os switches não conseguem aprender MACs"], 
+        answer: "Porque o posicionamento do Root define o fluxo de tráfego de toda a topologia — Root mal posicionado = rede ineficiente", 
+        explanation: "O Root Bridge é a referência central do STP. Todos os caminhos são calculados em relação a ele. Se um switch de baixa capacidade for eleito Root (por ter menor MAC), todo o tráfego convergirá por ele, criando gargalo. O administrador deve garantir que o switch mais capaz (core) seja o Root." 
+      },
+
+      { 
+        question: "Qual é a diferença entre Root Path Cost e Path Cost no STP?", 
+        options: ["São sinônimos — ambos representam o custo de uma interface", "Path Cost é o custo local de uma interface; Root Path Cost é o custo acumulado de todos os links desde o switch atual até o Root Bridge", "Root Path Cost é usado apenas no Root Bridge; Path Cost é usado nos demais", "Path Cost é configurado pelo administrador; Root Path Cost é calculado automaticamente pelo hardware"], 
+        answer: "Path Cost é o custo local de uma interface; Root Path Cost é o custo acumulado de todos os links desde o switch atual até o Root Bridge", 
+        explanation: "Path Cost é o 'pedágio' de uma única estrada (interface). Root Path Cost é o total de pedágios pagos desde o switch local até o Root Bridge, somando todos os Path Costs do caminho. É o Root Path Cost que determina a Root Port — sempre o menor valor acumulado." 
+      },
+
+      { 
+        question: "Em uma topologia triangular com SW1 (Root), SW2 e SW3, qual switch NÃO possui Root Port?", 
+        options: ["SW2", "SW3", "SW1 — o próprio Root Bridge", "Todos os switches possuem Root Port"], 
+        answer: "SW1 — o próprio Root Bridge", 
+        explanation: "O Root Bridge não possui Root Port porque a Root Port é definida como 'a porta de menor custo até o Root Bridge'. O Root Bridge já É o Root Bridge — seu custo até si mesmo é zero e não faz sentido ter uma porta apontando para si. Apenas switches não-root possuem Root Port." 
+      },
+
+      { 
+        question: "Como o STP garante que haja exatamente uma Designated Port por segmento?", 
+        options: ["O Root Bridge centraliza e distribui os papéis de porta", "Os switches do segmento comparam seus Root Path Costs via BPDUs; o de menor custo vence — em empate, os critérios de desempate resolvem", "As portas negociam diretamente via protocolo de eleição ponto a ponto", "O administrador deve configurar manualmente a Designated Port de cada segmento"], 
+        answer: "Os switches do segmento comparam seus Root Path Costs via BPDUs; o de menor custo vence — em empate, os critérios de desempate resolvem", 
+        explanation: "Em cada segmento, os dois switches trocam BPDUs e comparam Root Path Costs. O switch com menor custo para chegar ao Root elege sua porta naquele segmento como Designated Port. Se os custos forem iguais, o menor Sender Bridge ID desempata — garantindo sempre uma única DP por segmento." 
+      },
+
+      { 
+        question: "O que é uma 'STP Instance' e por que ela é a base para PVST+ e MSTP?", 
+        options: ["É o processo de reinicialização do STP após uma falha", "É uma execução lógica independente do STP para uma VLAN ou grupo de VLANs — permite topologias diferentes por VLAN", "É o intervalo de tempo entre eleições de Root Bridge", "É o nome dado ao processo de convergência no RSTP"], 
+        answer: "É uma execução lógica independente do STP para uma VLAN ou grupo de VLANs — permite topologias diferentes por VLAN", 
+        explanation: "Uma STP Instance é uma eleição e topologia STP independente. O PVST+ roda uma instância por VLAN — permitindo Root Bridges diferentes por VLAN e balanceamento de carga. O MSTP agrupa múltiplas VLANs em instâncias compartilhadas para escalar. O STP 802.1D clássico tem apenas uma instância para toda a rede." 
+      },
+
+      { 
+        question: "Qual é a ordem correta dos 4 critérios de desempate do STP na eleição da Root Port?", 
+        options: ["BID → Port Priority → Port Number → Root Path Cost", "Root Path Cost → Sender Bridge ID → Sender Port Priority → Sender Port Number", "Port Number → Port Priority → Root Path Cost → BID", "Sender Bridge ID → Root Path Cost → Port Priority → Port Number"], 
+        answer: "Root Path Cost → Sender Bridge ID → Sender Port Priority → Sender Port Number", 
+        explanation: "Os critérios são aplicados em ordem crescente de especificidade: 1) Menor Root Path Cost (custo acumulado total), 2) Menor Sender Bridge ID (BID do vizinho), 3) Menor Sender Port Priority (prioridade da porta do vizinho, padrão 128), 4) Menor Sender Port Number (número físico da porta do vizinho)." 
+      },
+
+      { 
+        question: "Em qual situação prática o quarto critério de desempate (Sender Port Number) é mais comumente aplicado?", 
+        options: ["Quando dois switches têm o mesmo MAC Address", "Quando dois links paralelos conectam os mesmos dois switches — mesmo custo, mesmo Sender BID, mesma Port Priority", "Quando o Root Bridge tem múltiplas VLANs configuradas", "Quando há mais de 10 switches na topologia"], 
+        answer: "Quando dois links paralelos conectam os mesmos dois switches — mesmo custo, mesmo Sender BID, mesma Port Priority", 
+        explanation: "Dois links paralelos entre SW-A e SW-B terão: mesmo Root Path Cost (mesma velocidade), mesmo Sender Bridge ID (mesmo switch vizinho) e mesma Port Priority (padrão 128). O único diferenciador possível é o número físico da porta — a porta de menor número vence." 
+      },
+
+      { 
+        question: "O que é o Sender Bridge ID como critério de desempate e de qual switch ele vem?", 
+        options: ["É o BID do switch local que está escolhendo a Root Port", "É o BID do switch vizinho que enviou o BPDU — o switch com menor BID terá sua porta preferida como caminho", "É o BID do Root Bridge propagado no BPDU", "É calculado somando os BIDs dos dois switches do segmento"], 
+        answer: "É o BID do switch vizinho que enviou o BPDU — o switch com menor BID terá sua porta preferida como caminho", 
+        explanation: "O Sender Bridge ID é o campo 'Bridge ID' do BPDU — identifica quem enviou a mensagem. Quando dois caminhos têm o mesmo Root Path Cost, o switch prefere o caminho que passa pelo vizinho com menor BID. Isso significa que o 'vizinho mais prioritário' é preferido como próximo salto." 
+      },
+
+      { 
+        question: "Qual é o valor padrão da Port Priority e em que múltiplos ela pode ser configurada?", 
+        options: ["64, múltiplos de 16", "128, múltiplos de 16", "100, múltiplos de 10", "256, múltiplos de 64"], 
+        answer: "128, múltiplos de 16", 
+        explanation: "A Port Priority tem valor padrão de 128 e pode ser configurada em múltiplos de 16 (0, 16, 32, 48... 240). Menor valor = maior prioridade. O Port ID completo é Port Priority + Port Number, formando o identificador único da porta usado nos critérios de desempate." 
+      },
+
+      { 
+        question: "Um switch recebe BPDUs por duas portas com o mesmo Root Path Cost e o mesmo Sender Bridge ID. Qual é o próximo critério de desempate?", 
+        options: ["Menor MAC Address do switch local", "Menor Sender Port Priority — a prioridade da porta do switch vizinho que originou o BPDU", "Maior velocidade do link físico", "Menor IP de gerência do switch vizinho"], 
+        answer: "Menor Sender Port Priority — a prioridade da porta do switch vizinho que originou o BPDU", 
+        explanation: "Após empate em Root Path Cost e Sender Bridge ID, o terceiro critério é a Sender Port Priority — o campo de prioridade da porta do switch vizinho que enviou o BPDU. Menor valor vence. O administrador pode manipular esse valor para forçar preferência por um link específico." 
+      },
+
+      { 
+        question: "Por que os critérios de desempate são sempre baseados em informações do switch VIZINHO (Sender) e não do switch local?", 
+        options: ["Por limitação técnica do protocolo — o switch local não conhece seus próprios dados", "Porque o switch local está avaliando qual CAMINHO (via qual vizinho) é melhor para chegar ao Root, não qual porta local é melhor", "Porque os BPDUs não carregam informações do switch local", "Porque o switch local usa apenas o Root Path Cost para todas as decisões"], 
+        answer: "Porque o switch local está avaliando qual CAMINHO (via qual vizinho) é melhor para chegar ao Root, não qual porta local é melhor", 
+        explanation: "Os critérios de desempate respondem à pergunta: 'por qual vizinho devo passar para chegar ao Root?' O switch avalia os BPDUs recebidos — cada um representa um caminho via um vizinho específico. Por isso os critérios são Sender BID, Sender Port Priority e Sender Port Number — todos identificando o melhor vizinho/caminho." 
+      },
+
+      { 
+        question: "Como o administrador pode forçar que um link específico seja preferido como Root Port, quando dois links têm o mesmo custo?", 
+        options: ["Aumentando a velocidade do link preferido", "Reduzindo a Port Priority da porta do switch vizinho no link preferido (menor valor = maior preferência)", "Configurando IP fixo no link preferido", "Desativando o link não preferido temporariamente"], 
+        answer: "Reduzindo a Port Priority da porta do switch vizinho no link preferido (menor valor = maior preferência)", 
+        explanation: "O terceiro critério de desempate é a Sender Port Priority. Ao reduzir a Port Priority da porta no switch vizinho que serve o link preferido, o administrador garante que o switch local prefira esse caminho. Exemplo: 'interface Gi0/1 → spanning-tree port-priority 64' (menor que o padrão 128)." 
+      },
+
+      { 
+        question: "Em um cenário de desempate pelo Sender Port Number, qual porta vence — a de menor ou maior número?", 
+        options: ["Maior número — porque representa a porta mais recente e de maior capacidade", "Menor número — o STP sempre prefere o menor valor em todos os critérios de desempate", "Depende da velocidade do link associado à porta", "O número da porta não é usado diretamente — apenas a prioridade importa"], 
+        answer: "Menor número — o STP sempre prefere o menor valor em todos os critérios de desempate", 
+        explanation: "Em todos os 4 critérios de desempate do STP, a lógica é consistente: menor valor = maior preferência. No Sender Port Number, a porta Gi0/1 (número 1) vence sobre Gi0/2 (número 2) em igualdade de demais critérios. Por isso em laboratório, o link conectado à porta de menor número é tipicamente eleito." 
+      },
+
+      { 
+        question: "O que diferencia o Root Path Cost do Path Cost de uma interface no contexto dos critérios de desempate?", 
+        options: ["São idênticos — Root Path Cost é apenas outro nome para Path Cost", "Path Cost é o custo local da interface; Root Path Cost é o custo total acumulado propagado no BPDU — é ele que o switch compara para eleger a Root Port", "Root Path Cost é configurado manualmente; Path Cost é calculado automaticamente", "Path Cost considera latência; Root Path Cost considera apenas largura de banda"], 
+        answer: "Path Cost é o custo local da interface; Root Path Cost é o custo total acumulado propagado no BPDU — é ele que o switch compara para eleger a Root Port", explanation: "Ao receber um BPDU, o switch soma o Root Path Cost contido no BPDU ao Path Cost da interface por onde chegou. O resultado é o Root Path Cost total para chegar ao Root via aquele caminho. O primeiro critério de desempate compara esses totais — o menor vence." 
+      },
+
+      { 
+        question: "Por que a sequência de desempate termina sempre com o Port Number e nunca resulta em empate absoluto?", 
+        options: ["Porque o administrador deve configurar Port Numbers únicos manualmente", "Porque números de porta física são únicos dentro de um switch — dois BPDUs não podem chegar pela mesma porta física simultaneamente", "Porque o MAC Address é usado como quinto critério caso o Port Number empate", "Porque switches modernos têm hardware que resolve empates automaticamente"], 
+        answer: "Porque números de porta física são únicos dentro de um switch — dois BPDUs não podem chegar pela mesma porta física simultaneamente", 
+        explanation: "O Port Number identifica a porta física do switch vizinho. Como cada porta tem um número único no switch, é matematicamente impossível que dois BPDUs diferentes tenham o mesmo Sender Port Number do mesmo switch. Isso garante que o quarto critério sempre resolve o empate definitivamente." 
+      },
+
+      { 
+        question: "Qual é a única limitação estrutural do STP 802.1D que motivou diretamente o desenvolvimento do RSTP (802.1w)?", 
+        options: ["Falta de suporte a IPv6", "Convergência lenta de até 50 segundos, inaceitável para VoIP, 802.1X e aplicações em tempo real", "Incapacidade de operar com múltiplas VLANs", "Dependência de endereços IP para eleger o Root Bridge"], 
+        answer: "Convergência lenta de até 50 segundos, inaceitável para VoIP, 802.1X e aplicações em tempo real", 
+        explanation: "O STP 802.1D converge em até 50s (Max Age 20s + Listening 15s + Learning 15s). Esse tempo causa queda de chamadas VoIP, falha de autenticação 802.1X e timeout de sessões SSH. O RSTP usa Proposal/Agreement ponto a ponto para convergir em menos de 1 segundo — resolvendo exatamente esse problema." 
+      },
+
+      { 
+        question: "Qual das seguintes afirmações sobre o estado Blocking é INCORRETA?", 
+        options: ["A porta em Blocking recebe BPDUs", "A porta em Blocking não encaminha tráfego de dados", "A porta em Blocking não aprende endereços MAC", "A porta em Blocking não participa do STP e é equivalente ao estado Disabled"], 
+        answer: "A porta em Blocking não participa do STP e é equivalente ao estado Disabled", 
+        explanation: "Essa afirmação é incorreta. A porta em Blocking PARTICIPA ativamente do STP — ela recebe e processa BPDUs, monitorando a topologia. A diferença em relação ao Disabled é exatamente essa: Disabled não faz nada, Blocking monitora. Uma porta em Blocking está pronta para assumir se o caminho ativo falhar." 
+      },
+
+      { 
+        question: "Qual cenário de convergência resulta em apenas 30 segundos (e não 50)?", 
+        options: ["Boot-up de um switch com 24 portas", "Falha indireta onde o switch aguarda o Max Age", "Designated Port subindo diretamente — sem necessidade de aguardar o Max Age", "Qualquer falha em switches com PVST+ ativado"], 
+        answer: "Designated Port subindo diretamente — sem necessidade de aguardar o Max Age", 
+        explanation: "Quando uma porta sobe como Designated Port em um link que acabou de ser conectado (link up direto), não há BPDU antigo para expirar — o Max Age não é necessário. A convergência é: Listening (15s) + Learning (15s) = 30 segundos." 
+      },
+
+      { 
+        question: "O TCN (Topology Change Notification) dispara qual ação em todos os switches da rede?", 
+        options: ["Reinicia a eleição do Root Bridge em toda a topologia", "Força o flush acelerado da tabela MAC — reduzindo o tempo de aging de 300s para 15s (Forward Delay)", "Coloca todas as portas em Blocking temporariamente", "Desativa os timers STP até a topologia estabilizar"], 
+        answer: "Força o flush acelerado da tabela MAC — reduzindo o tempo de aging de 300s para 15s (Forward Delay)", 
+        explanation: "Quando o Root Bridge recebe um TCN, envia BPDUs com a flag TC ativa para toda a rede. Ao receber esse BPDU, todos os switches reduzem o MAC aging de 300s para o Forward Delay (15s). Isso força a releitura rápida da topologia, evitando que tráfego seja enviado para portas antigas por 5 minutos." 
+      },
+
+      { 
+        question: "Qual é a principal limitação do STP 802.1D em relação à diferenciação por VLAN?", 
+        options: ["O 802.1D não suporta nenhuma VLAN", "O 802.1D opera com uma única instância STP para toda a rede, sem diferenciação nativa por VLAN", "O 802.1D limita o número de VLANs a 64", "O 802.1D requer configuração manual de Root Bridge para cada VLAN"], 
+        answer: "O 802.1D opera com uma única instância STP para toda a rede, sem diferenciação nativa por VLAN", 
+        explanation: "O STP 802.1D clássico roda uma única eleição e topologia para toda a rede — sem diferenciação por VLAN. Isso impede balanceamento de tráfego entre VLANs. O PVST+ da Cisco resolveu isso com uma instância por VLAN, permitindo Root Bridges diferentes e otimização de caminhos por VLAN." 
+      },
+
+      { 
+        question: "Qual é a afirmação correta sobre o comportamento de convergência do STP segundo o documento 03?", 
+        options: ["O comportamento do STP é aleatório e depende da ordem de boot dos switches", "O comportamento do STP é totalmente determinado pelo posicionamento do Root Bridge e pelas decisões de custo na topologia", "O STP converge mais rápido em switches com maior número de portas", "A convergência depende exclusivamente dos timers configurados nos switches não-root"], 
+        answer: "O comportamento do STP é totalmente determinado pelo posicionamento do Root Bridge e pelas decisões de custo na topologia", 
+        explanation: "Essa é a premissa central do documento 03: o STP é determinístico. Quem é o Root define o fluxo do tráfego, o custo define os caminhos e os critérios de desempate definem os detalhes. Dado o mesmo cenário, o STP sempre chegará à mesma topologia — o que permite análise e previsão manual." 
+      },
+
+      { 
+        question: "Por que o documento 03 é classificado como 'guia de referência consolidado' e não como documento de introdução?", 
+        options: ["Porque contém comandos CLI avançados", "Porque assume que os documentos 01 e 02 já foram estudados e organiza o conhecimento em tabelas e fluxos de consulta rápida", "Porque é voltado exclusivamente para o exame CCNP", "Porque apresenta conceitos que não existem nos documentos anteriores"], 
+        answer: "Porque assume que os documentos 01 e 02 já foram estudados e organiza o conhecimento em tabelas e fluxos de consulta rápida", 
+        explanation: "O documento 03 é explicitamente uma consolidação — não repete explicações detalhadas dos documentos anteriores, mas organiza todo o conhecimento em formato de referência rápida: tabelas de estados, fluxos de convergência, critérios de desempate e visão da evolução do protocolo." 
+      },
+
+      { 
+        question: "Qual é o próximo passo natural após dominar o STP 802.1D clássico, segundo o documento?", 
+        options: ["Implementar VTP para gerenciar VLANs", "Avançar para a engenharia de decisão do STP — calcular manualmente Root Ports, Designated Ports e resolver topologias completas", "Configurar PortFast em todas as portas de acesso", "Migrar imediatamente para RSTP sem estudar o 802.1D em profundidade"], 
+        answer: "Avançar para a engenharia de decisão do STP — calcular manualmente Root Ports, Designated Ports e resolver topologias completas", 
+        explanation: "O documento 03 aponta explicitamente para o próximo passo: sair da teoria descritiva ('o que é o STP') e entrar na engenharia de decisão ('como o STP toma decisões — e como o engenheiro controla essas decisões'). Isso inclui calcular manualmente Root Ports, Designated Ports, aplicar critérios de desempate e resolver topologias." 
+      },
+
+      {
+         question: "Qual é a relação entre o Hello Time e o Max Age na detecção de falhas do STP?", 
+         options: ["São timers independentes sem relação entre si", "O Max Age é calculado como 10 vezes o Hello Time — se o switch não receber BPDUs por 20s (10 × 2s), declara falha", "O Hello Time define quando o Max Age é reiniciado após cada BPDU recebido", "O Max Age substitui o Hello Time em caso de falha do Root Bridge"], answer: "O Max Age é calculado como 10 vezes o Hello Time — se o switch não receber BPDUs por 20s (10 × 2s), declara falha", 
+         explanation: "Os valores padrão são: Hello Time = 2s, Max Age = 20s. O relacionamento é: Max Age = 10 × Hello Time. Cada BPDU recebido reinicia o contador do Max Age. Se nenhum BPDU chegar por 20 segundos (equivalente a 10 Hello Times perdidos), o switch declara falha e inicia a reconvergência." 
+      },
+
+      { 
+        question: "Qual das três limitações do STP 802.1D listadas no documento impacta diretamente a qualidade de voz e vídeo em redes corporativas?", 
+        options: ["Ausência de diferenciação nativa por VLAN", "Dependência exclusiva de timers sem mecanismos ativos de reconvergência — convergência lenta de até 50 segundos", "Incapacidade de operar com switches de 10 Gbps", "Limite máximo de 64 switches por topologia STP"], 
+        answer: "Dependência exclusiva de timers sem mecanismos ativos de reconvergência — convergência lenta de até 50 segundos", 
+        explanation: "O STP 802.1D depende exclusivamente de timers passivos (Max Age, Forward Delay) sem nenhum mecanismo ativo de negociação. Os 50 segundos de convergência causam queda direta de chamadas VoIP e videoconferência. O RSTP resolve isso com mecanismo Proposal/Agreement que não depende de timers para convergir." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

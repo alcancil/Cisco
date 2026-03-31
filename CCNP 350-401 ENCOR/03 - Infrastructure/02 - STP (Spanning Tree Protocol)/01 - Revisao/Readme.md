@@ -80,6 +80,7 @@
   - [Tabela de Sintomas de Falha no STP](#tabela-de-sintomas-de-falha-no-stp)
   - [Consolidação do Conhecimento](#consolidação-do-conhecimento)
   - [Próxima Etapa: Laboratórios](#próxima-etapa-laboratórios)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento)
 
 ---
 
@@ -861,3 +862,20 @@ Na próxima etapa, esses conceitos serão aplicados em cenários práticos e lab
 - Implementação no EVE-NG
 
 O objetivo será transformar conhecimento em habilidade prática.
+
+---
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
+
+- **Simulados temáticos (10 questões / 10 min cada):**
+  1 - [Frame & Loop](Arquivos/Simulado/01.html)
+  2 - [BPDU & Eleição](Arquivos/Simulado/02.html)
+  3 - [Port Roles](Arquivos/Simulado/03.html)
+  4 - [Timers](Arquivos/Simulado/04.html)
+  5 - [TCN & Falhas](Arquivos/Simulado/05.html)
+
+- **Simulado completo STP:** [50 questões — 75 minutos](Arquivos/Simulado/completo.html)
+
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](Arquivos/Simulado/dashboard.html)

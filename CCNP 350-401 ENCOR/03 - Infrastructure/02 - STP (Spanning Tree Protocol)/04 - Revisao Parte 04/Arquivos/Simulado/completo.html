@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol Completo 04</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol Completo 04</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre STP - Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Por que o Root Bridge deve estar sempre posicionado no core ou na camada de distribuição da rede, nunca no acesso?", 
+        options: ["Porque switches de acesso não suportam BPDUs", "Porque o Root Bridge é o ponto central lógico — Root mal posicionado força tráfego por caminhos ineficientes e subutiliza links de alta capacidade", "Porque o STP não funciona em switches de acesso", "Porque switches de acesso não possuem uplinks suficientes"], 
+        answer: "Porque o Root Bridge é o ponto central lógico — Root mal posicionado força tráfego por caminhos ineficientes e subutiliza links de alta capacidade", explanation: "Todo tráfego converge em direção ao Root Bridge. Se um switch de acesso (baixa capacidade, muitos hosts) for eleito Root, o tráfego será forçado por caminhos subótimos, links de alta capacidade do core ficam subutilizados e a latência aumenta desnecessariamente. O Root deve sempre estar onde o tráfego naturalmente deveria convergir." 
+      },
+
+      { 
+        question: "Em uma topologia triangular onde todos os switches têm a mesma Priority, qual critério determina o Root Bridge?", 
+        options: ["O switch ligado primeiro vence a eleição", "O switch com maior número de portas ativas", "O switch com o menor MAC Address, usado como desempate final", "O switch com mais VLANs configuradas"], 
+        answer: "O switch com o menor MAC Address, usado como desempate final", 
+        explanation: "Com prioridade igual em todos os switches, o critério de desempate final é o MAC Address. O menor valor hexadecimal vence a eleição. Esse é o comportamento padrão — e o motivo pelo qual a eleição não pode ser deixada ao acaso em produção, pois o menor MAC pode ser de um switch antigo e de baixa capacidade." 
+      },
+
+      { 
+        question: "Qual é a consequência prática de não definir manualmente o Root Bridge primário em uma rede corporativa?", 
+        options: ["O STP entra em loop e a rede colapsa", "O switch com menor MAC é eleito — que pode ser o mais antigo ou menos capaz, criando gargalo e caminhos ineficientes", "Todos os switches ficam em estado Blocking", "O PVST+ é ativado automaticamente para compensar"], 
+        answer: "O switch com menor MAC é eleito — que pode ser o mais antigo ou menos capaz, criando gargalo e caminhos ineficientes", 
+        explanation: "Sem configuração manual de Priority, a eleição usa o menor MAC como desempate. MACs menores tendem a ser de equipamentos mais antigos. Um switch de 100Mbps pode ser eleito Root, forçando todo o tráfego da rede por um dispositivo de baixa capacidade e criando um gargalo crítico." 
+      },
+
+      { 
+        question: "Qual é a estratégia correta de configuração de Root Bridge em redes de produção?", 
+        options: ["Deixar a eleição automática para o STP decidir o melhor switch", "Definir um Root Bridge primário com Priority baixa e um Root Bridge secundário com Priority ligeiramente maior como backup", "Configurar prioridade 0 em todos os switches do core", "Definir o Root apenas quando ocorrer falha na rede"], 
+        answer: "Definir um Root Bridge primário com Priority baixa e um Root Bridge secundário com Priority ligeiramente maior como backup", 
+        explanation: "A estratégia correta é: Root primário com Priority 4096, Root secundário com Priority 8192. Se o primário falhar, o secundário assume com comportamento previsível e determinístico. Sem secundário configurado, qualquer switch pode ser eleito Root na falha — comportamento imprevisível." 
+      },
+
+      { 
+        question: "Qual é a relação entre o posicionamento do Root Bridge e o fluxo de tráfego na topologia STP?", 
+        options: ["O Root Bridge não influencia o fluxo — apenas bloqueia portas", "Todo tráfego converge em direção ao Root Bridge — sua posição define os caminhos de encaminhamento de toda a rede", "O Root Bridge influencia apenas o tráfego de broadcast", "O fluxo é determinado pelos switches de acesso, não pelo Root"], 
+        answer: "Todo tráfego converge em direção ao Root Bridge — sua posição define os caminhos de encaminhamento de toda a rede", 
+        explanation: "O Root Bridge é o ponto de referência central do STP. Todos os caminhos são calculados a partir dele. Isso significa que a posição física do Root Bridge determina diretamente quais links serão usados, quais serão bloqueados e como o tráfego fluirá — tornando seu posicionamento a decisão de design mais crítica do STP." 
+      },
+
+      { 
+        question: "Quais são os três problemas causados por um Root Bridge mal posicionado?", 
+        options: ["Broadcast Storm, MAC Flapping e loops infinitos", "Tráfego por caminhos ineficientes, subutilização de links de alta capacidade e aumento desnecessário de latência", "Falha de convergência, perda de BPDUs e timeout de Max Age", "Instabilidade de VLAN, perda de trunk e conflito de Port ID"], 
+        answer: "Tráfego por caminhos ineficientes, subutilização de links de alta capacidade e aumento desnecessário de latência", 
+        explanation: "Com Root mal posicionado: 1) Tráfego faz caminhos mais longos que o necessário, 2) Links de alta capacidade do core podem ser bloqueados enquanto links lentos de acesso ficam ativos, 3) A latência aumenta porque os dados percorrem mais saltos. Nenhum desses problemas é visível imediatamente — eles degradam a rede silenciosamente." 
+      },
+
+      { 
+        question: "Por que a eleição do Root Bridge não pode ser deixada ao acaso em ambientes de produção?", 
+        options: ["Porque o STP pode entrar em loop sem Root definido manualmente", "Porque a eleição automática usa o menor MAC como desempate, tornando o resultado imprevisível e possivelmente ineficiente", "Porque switches sem Priority configurada não participam da eleição", "Porque o Root Bridge automático não suporta múltiplas VLANs"], 
+        answer: "Porque a eleição automática usa o menor MAC como desempate, tornando o resultado imprevisível e possivelmente ineficiente", 
+        explanation: "A eleição automática é determinística mas não garante eficiência. O menor MAC pode pertencer a um switch de acesso de 10 anos atrás, com pouca memória e portas de 100Mbps. Em produção, o administrador deve garantir que o switch mais capaz (core ou distribuição) seja o Root, usando Priority configurada manualmente." 
+      },
+
+      { 
+        question: "Qual comando Cisco configura um switch como Root Bridge primário para a VLAN 10?", 
+        options: ["spanning-tree vlan 10 root enable", "spanning-tree vlan 10 priority 4096", "spanning-tree vlan 10 root-bridge primary", "bridge 10 priority lowest"], answer: "spanning-tree vlan 10 priority 4096", 
+        explanation: "O comando correto é 'spanning-tree vlan 10 priority 4096'. O valor 4096 garante que esse switch tenha BID menor que qualquer switch com prioridade padrão (32768). O Root secundário deve usar 'spanning-tree vlan 10 priority 8192'. Ambos são múltiplos de 4096 — valores inválidos geram erro na CLI." 
+      },
+
+      { 
+        question: "O que acontece com a topologia STP quando o Root Bridge primário falha e existe um Root secundário configurado?", 
+        options: ["A rede entra em Broadcast Storm até o primário voltar", "Todos os switches ficam em Blocking aguardando o primário retornar", "O Root secundário assume automaticamente — a reconvergência é previsível e determinística", "O switch com menor MAC assume independente da Priority configurada"], 
+        answer: "O Root secundário assume automaticamente — a reconvergência é previsível e determinística", 
+        explanation: "Com Root secundário configurado (Priority 8192), quando o primário falha e o Max Age expira, a nova eleição tem resultado determinístico: o secundário tem o segundo menor BID e vence. Sem Root secundário, qualquer switch pode ser eleito, tornando a reconvergência imprevisível e potencialmente ineficiente." 
+      },
+
+      { 
+        question: "Qual é a regra de design fundamental sobre onde o Root Bridge deve ser posicionado em uma arquitetura 3-Tier?", 
+        options: ["Sempre no Access Layer — mais próximo dos usuários finais", "Sempre no Core ou Distribution Layer — onde o tráfego naturalmente deveria convergir e onde estão os switches de maior capacidade", "Sempre em um switch dedicado isolado da topologia principal", "Pode ser em qualquer camada desde que tenha Priority configurada"], 
+        answer: "Sempre no Core ou Distribution Layer — onde o tráfego naturalmente deveria convergir e onde estão os switches de maior capacidade", 
+        explanation: "A regra de design do STP alinha o Root Bridge com a arquitetura física da rede: Core e Distribution têm os switches mais rápidos, mais memória, links de maior capacidade e são o ponto natural de convergência do tráfego. Posicionar o Root nessas camadas garante que os caminhos STP espelhem o design físico intencional da rede." 
+      },
+
+      { 
+        question: "Qual é a ideia principal do balanceamento de VLANs com STP usando PVST+?", 
+        options: ["Desabilitar STP em VLANs de menor tráfego", "Configurar Root Bridges diferentes por VLAN — ex: SW1 como Root da VLAN 10 e SW2 como Root da VLAN 20", "Usar EtherChannel para eliminar a necessidade de balanceamento", "Configurar todos os switches com a mesma prioridade por VLAN"], 
+        answer: "Configurar Root Bridges diferentes por VLAN — ex: SW1 como Root da VLAN 10 e SW2 como Root da VLAN 20", 
+        explanation: "O PVST+ (Per-VLAN STP) roda uma instância STP por VLAN. Isso permite ter Root Bridges diferentes para cada VLAN. SW1 pode ser Root da VLAN 10 (tráfego de usuários) e SW2 Root da VLAN 20 (tráfego de servidores), distribuindo carga pelos links e evitando gargalos." 
+      },
+
+      { 
+        question: "Quais são os três benefícios do balanceamento de VLANs com Root Bridges diferentes?", 
+        options: ["Convergência mais rápida, menos BPDUs e redução de MAC Flapping", "Melhor uso dos links, redução de gargalos e balanceamento de tráfego", "Eliminação de loops, redução de broadcast e aumento de segurança", "Menor consumo de CPU, mais VLANs suportadas e convergência automática"], 
+        answer: "Melhor uso dos links, redução de gargalos e balanceamento de tráfego", 
+        explanation: "Com Root Bridges diferentes por VLAN, links que seriam bloqueados pelo STP para uma VLAN ficam ativos para outra. Isso resulta em: uso eficiente de todos os links físicos, eliminação de gargalos em switches sobrecarregados e distribuição de tráfego entre os caminhos disponíveis." 
+      },
+
+      { 
+        question: "Em um cenário de balanceamento com SW_A como Root da VLAN 10 e SW_B como Root da VLAN 20, o que acontece se SW_A falhar?", 
+        options: ["A VLAN 10 para de funcionar até SW_A retornar", "SW_B assume o papel de Root Bridge para ambas as VLANs automaticamente, perdendo temporariamente o balanceamento mas mantendo conectividade", "SW_C é eleito Root para a VLAN 10 automaticamente", "O STP desativa a VLAN 10 até nova eleição manual"], 
+        answer: "SW_B assume o papel de Root Bridge para ambas as VLANs automaticamente, perdendo temporariamente o balanceamento mas mantendo conectividade", 
+        explanation: "Se SW_A (Root da VLAN 10 e backup da VLAN 20) cair, SW_B (Root da VLAN 20 e backup da VLAN 10) assume como Root de ambas as VLANs. O balanceamento de carga é temporariamente perdido, mas toda a conectividade é mantida. Os caminhos anteriores da VLAN 10 ficam inativos e todo tráfego converge para SW_B." 
+      },
+
+      { 
+        question: "Por que o balanceamento de VLANs com STP é considerado muito cobrado em prova e muito usado em produção?", 
+        options: ["Porque elimina completamente a necessidade de switches redundantes", "Porque resolve dois problemas simultaneamente: usa todos os links físicos (sem desperdício) e mantém redundância completa via Root secundário", "Porque é a única forma de suportar mais de 100 VLANs em uma rede", "Porque permite convergência sub-segundo sem necessidade de RSTP"], 
+        answer: "Porque resolve dois problemas simultaneamente: usa todos os links físicos (sem desperdício) e mantém redundância completa via Root secundário", 
+        explanation: "Em redes com links redundantes, o STP normalmente bloqueia metade dos links. Com balanceamento por VLAN, esses links bloqueados para uma VLAN ficam ativos para outra. O resultado é: 100% dos links físicos em uso simultâneo + redundância total via failover automático para o Root secundário." 
+      },
+
+      { 
+        question: "Qual recurso Cisco torna o balanceamento de VLANs com Root Bridges diferentes possível?", 
+        options: ["MSTP (802.1s) — que agrupa VLANs em instâncias", "PVST+ (Per-VLAN Spanning Tree Plus) — que roda uma instância STP independente por VLAN", "RSTP (802.1w) — que usa Proposal/Agreement por VLAN", "VTP — que sincroniza VLANs entre switches"], 
+        answer: "PVST+ (Per-VLAN Spanning Tree Plus) — que roda uma instância STP independente por VLAN", 
+        explanation: "O PVST+ é a implementação proprietária da Cisco que executa uma instância STP separada por VLAN. Cada VLAN tem sua própria eleição de Root Bridge, seus próprios papéis de porta e sua própria topologia lógica. Isso é o que permite Root Bridges diferentes por VLAN e o consequente balanceamento de tráfego." 
+      },
+
+      { 
+        question: "Se SW_B falhar em um cenário onde SW_A é Root da VLAN 10 e SW_B é Root da VLAN 20, qual é o comportamento esperado?", 
+        options: ["A VLAN 20 fica inoperante permanentemente", "SW_A assume como Root de ambas as VLANs, mantendo conectividade total mas perdendo o balanceamento temporariamente", "Todos os switches entram em nova eleição completa para ambas as VLANs simultaneamente", "O balanceamento continua normalmente via caminhos alternativos"], 
+        answer: "SW_A assume como Root de ambas as VLANs, mantendo conectividade total mas perdendo o balanceamento temporariamente", 
+        explanation: "Se SW_B (Root da VLAN 20 e backup da VLAN 10) cair, SW_A (Root da VLAN 10 e backup da VLAN 20) assume como Root de ambas. Todo tráfego converge para SW_A pelos caminhos da VLAN 10. Os caminhos anteriores da VLAN 20 ficam inativos. Conectividade total é mantida, balanceamento é temporariamente suspenso." 
+      },
+
+      { 
+        question: "Qual é a diferença fundamental entre PVST+ e MSTP no contexto do balanceamento de VLANs?", 
+        options: ["PVST+ não suporta balanceamento; MSTP suporta", "PVST+ roda uma instância por VLAN (alta granularidade, mais CPU); MSTP agrupa múltiplas VLANs por instância (mais escalável)", "MSTP é proprietário da Cisco; PVST+ é padrão IEEE", "São equivalentes — apenas nomes diferentes para o mesmo protocolo"], 
+        answer: "PVST+ roda uma instância por VLAN (alta granularidade, mais CPU); MSTP agrupa múltiplas VLANs por instância (mais escalável)", 
+        explanation: "PVST+: máxima granularidade (Root diferente por VLAN) com custo de CPU proporcional ao número de VLANs. MSTP (IEEE 802.1s): agrupa VLANs em instâncias compartilhadas, reduzindo drasticamente o número de processos. Em redes com centenas de VLANs, o MSTP é obrigatório para escalabilidade." 
+      },
+
+      { 
+        question: "Em um balanceamento de VLANs, como a prioridade deve ser configurada em SW_A para ser Root primário da VLAN 10 e Root secundário da VLAN 20?", 
+        options: ["VLAN 10: priority 4096 / VLAN 20: priority 4096 (mesma em ambas)", "VLAN 10: priority 4096 (primário) / VLAN 20: priority 8192 (secundário)", "VLAN 10: priority 32768 / VLAN 20: priority 0", "VLAN 10: priority 0 / VLAN 20: priority 65535"], 
+        answer: "VLAN 10: priority 4096 (primário) / VLAN 20: priority 8192 (secundário)", 
+        explanation: "A configuração correta em SW_A: 'spanning-tree vlan 10 priority 4096' (Root primário — menor BID) e 'spanning-tree vlan 20 priority 8192' (Root secundário — segundo menor BID). Em SW_B faz-se o inverso: VLAN 20 com 4096 e VLAN 10 com 8192." 
+      },
+
+      { 
+        question: "O que significa dizer que o balanceamento de VLANs com STP tem 'comportamento determinístico'?", 
+        options: ["O STP escolhe aleatoriamente qual VLAN usa cada link", "Em qualquer cenário de falha, é possível prever exatamente qual Root assumirá e quais caminhos serão usados — sem surpresas", "O balanceamento funciona apenas quando todos os links têm a mesma velocidade", "O comportamento é determinístico apenas em switches Cisco modelo Catalyst"], 
+        answer: "Em qualquer cenário de falha, é possível prever exatamente qual Root assumirá e quais caminhos serão usados — sem surpresas", 
+        explanation: "Com Priority configurada explicitamente para cada VLAN em cada switch, o administrador conhece exatamente o comportamento em qualquer cenário de falha: sabe qual switch assume cada VLAN, quais caminhos ficam ativos e quais são bloqueados. Isso é comportamento determinístico — essencial para planejamento de capacidade e troubleshooting." 
+      },
+
+      { 
+        question: "Por que o balanceamento de VLANs com PVST+ aumenta o consumo de CPU nos switches?", 
+        options: ["Porque o PVST+ gera mais tráfego de dados que o STP padrão", "Porque cada VLAN roda uma instância STP independente — com eleição, BPDUs e cálculo de topologia próprios — multiplicando o trabalho do plano de controle", "Porque o PVST+ usa criptografia nos BPDUs para segurança", "Porque switches com PVST+ precisam manter tabelas CAM separadas por VLAN"], 
+        answer: "Porque cada VLAN roda uma instância STP independente — com eleição, BPDUs e cálculo de topologia próprios — multiplicando o trabalho do plano de controle", explanation: "No PVST+, cada VLAN tem sua própria instância STP completa: eleição de Root Bridge, troca de BPDUs, cálculo de Root Path Cost e definição de papéis de porta. Uma rede com 100 VLANs roda 100 instâncias STP simultaneamente. Isso multiplica proporcionalmente o uso de CPU, memória e banda de controle." 
+      },
+
+      { 
+        question: "Qual é a pergunta que um switch faz a si mesmo para eleger sua Root Port?", 
+        options: ["'Qual porta tem o maior link speed?'", "'Qual é o caminho mais barato (menor custo acumulado) até o Root Bridge?'", "'Qual porta está conectada diretamente ao Root Bridge?'", "'Qual porta tem o menor número de interface?'"], 
+        answer: "'Qual é o caminho mais barato (menor custo acumulado) até o Root Bridge?'", 
+        explanation: "A Root Port é sempre a porta com menor Root Path Cost até o Root Bridge. O switch acumula os custos de cada link no caminho e compara os totais. A porta que oferece o menor custo total (mais barato chegar ao Root via ela) é eleita Root Port. É exatamente essa 'pergunta' que o switch resolve ao processar BPDUs." 
+      },
+
+      { 
+        question: "Um switch recebe BPDU com Root Path Cost 4 pela Gi0/1 e Root Path Cost 8 pela Gi0/2. Ambos os links são 1Gbps (custo 4). Qual é a Root Port e qual o Root Path Cost resultante?", 
+        options: ["Gi0/2 com Root Path Cost 12", "Gi0/1 com Root Path Cost 8", "Gi0/1 com Root Path Cost 4", "Gi0/2 com Root Path Cost 8"], 
+        answer: "Gi0/1 com Root Path Cost 8", 
+        explanation: "O switch soma o Root Path Cost recebido no BPDU ao custo da interface local. Via Gi0/1: 4 (BPDU) + 4 (link local) = 8. Via Gi0/2: 8 (BPDU) + 4 (link local) = 12. Menor total = 8 via Gi0/1. Root Port = Gi0/1 com Root Path Cost acumulado de 8." 
+      },
+
+      { 
+        question: "Qual é a diferença entre custo da porta (Port Cost) e Root Path Cost no processo de eleição?", 
+        options: ["São sinônimos — ambos representam o mesmo valor", "Port Cost é o custo local de uma única interface; Root Path Cost é a soma acumulada de todos os custos desde o switch atual até o Root Bridge", "Root Path Cost é configurado manualmente; Port Cost é calculado automaticamente", "Port Cost é usado apenas no Root Bridge; Root Path Cost nos demais switches"], 
+        answer: "Port Cost é o custo local de uma única interface; Root Path Cost é a soma acumulada de todos os custos desde o switch atual até o Root Bridge", 
+        explanation: "Port Cost (ou Link Cost) é o 'pedágio' de uma única estrada: Gigabit = 4, Fast Ethernet = 19. Root Path Cost é o total de pedágios pagos desde o switch atual até o Root Bridge, somando os Port Costs de todos os links no caminho. É o Root Path Cost que determina a Root Port — sempre o menor acumulado." 
+      },
+
+      { 
+        question: "Qual é a regra principal para eleger a Designated Port em um segmento de rede?", 
+        options: ["A porta do switch com maior número de VLANs configuradas", "A porta do switch com menor Root Path Cost até o Root Bridge naquele segmento — 'o switch mais próximo do Root vence o segmento'", "A porta com maior velocidade de link no segmento", "A porta do switch eleito mais recentemente como Root Bridge"], 
+        answer: "A porta do switch com menor Root Path Cost até o Root Bridge naquele segmento — 'o switch mais próximo do Root vence o segmento'", 
+        explanation: "Para cada segmento (link entre dois switches), o STP elege uma única Designated Port. Os dois switches do segmento comparam seus Root Path Costs. O switch com menor custo acumulado até o Root 'ganha' o segmento — sua porta naquele link é eleita Designated Port e fica em Forwarding." 
+      },
+
+      { 
+        question: "Por que o Root Bridge não possui Root Port, mas possui Designated Ports em todas as suas interfaces?", 
+        options: ["Porque o Root Bridge tem prioridade zero e não precisa de Root Port", "Porque Root Port é a porta de menor custo até o Root — e o Root Bridge é o próprio Root, com custo zero até si mesmo; logo, todas as suas portas vencem qualquer segmento como DP", "Porque o Root Bridge desabilita suas Root Ports para evitar loops", "Porque o Root Bridge opera apenas em Layer 3 e não usa Root Ports"], 
+        answer: "Porque Root Port é a porta de menor custo até o Root — e o Root Bridge é o próprio Root, com custo zero até si mesmo; logo, todas as suas portas vencem qualquer segmento como DP", 
+        explanation: "O Root Bridge tem Root Path Cost = 0. Em qualquer segmento conectado ao Root, o switch vizinho tem Root Path Cost ≥ custo do link. Portanto, o Root Bridge sempre tem o menor custo em todos os seus segmentos, elegendo todas as suas portas ativas como Designated Ports em estado Forwarding." 
+      },
+
+      { 
+        question: "Qual é o custo STP de um link de 1 Gbps e de um link de 100 Mbps no padrão 802.1D (short/16-bit)?", 
+        options: ["1Gbps = 1, 100Mbps = 10", "1Gbps = 4, 100Mbps = 19", "1Gbps = 10, 100Mbps = 100", "1Gbps = 2, 100Mbps = 4"], 
+        answer: "1Gbps = 4, 100Mbps = 19", 
+        explanation: "Tabela de custos 802.1D short (16-bit): 10Mbps = 100, 100Mbps = 19, 1Gbps = 4, 10Gbps = 2. Link mais rápido = menor custo = caminho preferido. Essa relação inversa (velocidade ↑ = custo ↓) garante que o STP prefira sempre os links de maior capacidade." 
+      },
+
+      { 
+        question: "Em uma topologia onde SW2 tem dois caminhos para o Root com o mesmo custo acumulado, qual é o segundo critério de desempate para a Root Port?", 
+        options: ["Menor MAC Address do switch local", "Menor Sender Bridge ID — o BID do switch vizinho que enviou o BPDU", "Maior velocidade do link físico", "Menor número da interface local"], 
+        answer: "Menor Sender Bridge ID — o BID do switch vizinho que enviou o BPDU", 
+        explanation: "Quando há empate no Root Path Cost, o segundo critério é o Sender Bridge ID — o BID do switch vizinho que originou o BPDU recebido. O caminho via o vizinho com menor BID é preferido. Importante: é o BID do VIZINHO, não do switch local que está escolhendo a Root Port." 
+      },
+
+      { 
+        question: "O que acontece com uma porta que perde a eleição tanto de Root Port quanto de Designated Port?", 
+        options: ["Ela é automaticamente desabilitada pelo administrador", "Ela vai para estado Blocking como Non-Designated Port — não encaminha dados mas continua monitorando BPDUs", "Ela entra em estado Learning permanente", "Ela assume papel de Backup Port e fica em Forwarding"], 
+        answer: "Ela vai para estado Blocking como Non-Designated Port — não encaminha dados mas continua monitorando BPDUs", 
+        explanation: "Toda porta que não for eleita RP nem DP torna-se Non-Designated e vai para Blocking. Ela não encaminha frames de dados nem aprende MACs, mas processa BPDUs ativamente. É exatamente essa porta que quebra o loop lógico — o cabo físico permanece conectado, mas o caminho circular é eliminado logicamente." 
+      },
+
+      { 
+        question: "Por que o cálculo do Root Path Cost é sempre uma soma acumulada e não apenas o custo do link local?", 
+        options: ["Porque o STP precisa incluir o custo de todos os switches no caminho", "Porque o custo representa a distância total até o Root — cada switch soma o custo do seu link ao custo acumulado recebido no BPDU, construindo o total progressivamente", "Porque links de alta velocidade têm custo variável dependendo do tráfego", "Porque o Root Bridge define o custo total e os switches apenas propagam"], 
+        answer: "Porque o custo representa a distância total até o Root — cada switch soma o custo do seu link ao custo acumulado recebido no BPDU, construindo o total progressivamente", 
+        explanation: "Ao receber um BPDU, o switch lê o Root Path Cost do vizinho (custo acumulado do vizinho até o Root) e soma o custo da interface por onde o BPDU chegou. O resultado é o Root Path Cost total via esse caminho. Esse processo progressivo garante que o custo reflita todo o caminho — não apenas o último salto." 
+      },
+
+      { 
+        question: "Em um segmento entre SW2 e SW3 onde ambos têm o mesmo Root Path Cost, qual critério resolve quem é a Designated Port?", 
+        options: ["A porta com maior velocidade de link físico", "O menor Bridge ID entre SW2 e SW3 — o switch com menor BID elege sua porta como DP", "A porta com menor número de interface no segmento", "O switch que foi ligado primeiro elege sua porta como DP"], 
+        answer: "O menor Bridge ID entre SW2 e SW3 — o switch com menor BID elege sua porta como DP", 
+        explanation: "Para Designated Port, os critérios de desempate são idênticos à Root Port: 1) Menor Root Path Cost, 2) Menor Bridge ID. Com custo igual, o switch com menor BID (Priority + VLAN + MAC) elege sua porta no segmento como Designated Port. O switch perdedor coloca sua porta em Blocking." 
+      },
+
+      { 
+        question: "Qual é a sequência correta do algoritmo mental para resolver qualquer topologia STP?", 
+        options: ["Root Port → Designated Port → Root Bridge → Blocking", "Root Bridge → Root Path Cost → Root Port → Designated Port → Blocking → Desempate se necessário", "Blocking → Root Port → Root Bridge → Designated Port", "Desempate → Root Bridge → Root Port → Blocking → Designated Port"], 
+        answer: "Root Bridge → Root Path Cost → Root Port → Designated Port → Blocking → Desempate se necessário", 
+        explanation: "O algoritmo mental do STP segue 6 passos obrigatórios e dependentes: 1) Identificar o Root Bridge (menor BID), 2) Calcular Root Path Cost para todos os switches, 3) Eleger Root Port em cada switch não-root (menor custo), 4) Eleger Designated Port em cada segmento (mais próximo do Root), 5) Definir restantes como Blocking, 6) Aplicar critérios de desempate se houver empate." 
+      },
+
+      { 
+        question: "Por que cada etapa do algoritmo STP depende obrigatoriamente da anterior?", 
+        options: ["Por limitação técnica do protocolo — os switches processam em ordem fixa", "Porque sem Root Bridge eleito não há referência de custo; sem custo calculado não há critério para Root Port; sem Root Port definida não há critério para Designated Port", "Porque os switches aguardam confirmação de cada etapa antes de prosseguir", "Porque a ordem foi definida arbitrariamente pelo IEEE 802.1D"], 
+        answer: "Porque sem Root Bridge eleito não há referência de custo; sem custo calculado não há critério para Root Port; sem Root Port definida não há critério para Designated Port", 
+        explanation: "A dependência é lógica e fundamental: o Root Bridge é o ponto de referência — sem ele, não há como calcular custo. O Root Path Cost determina a Root Port — sem ele, não há como eleger a RP. A Root Port define o papel do switch no segmento — sem ela, não há como definir a Designated Port. Pular etapas resulta em conclusões erradas." 
+      },
+
+      { 
+        question: "Qual é a regra de quantidade para Root Ports e Designated Ports no STP?", 
+        options: ["Root Port: 1 por topologia / Designated Port: ilimitadas", "Root Port: 1 por switch não-root / Designated Port: 1 por segmento de rede", "Root Port: 1 por VLAN / Designated Port: 1 por switch", "Root Port: ilimitadas por switch / Designated Port: 1 por topologia"], 
+        answer: "Root Port: 1 por switch não-root / Designated Port: 1 por segmento de rede", 
+        explanation: "Regras absolutas do STP: cada switch não-root tem exatamente 1 Root Port (a porta de menor custo até o Root). Cada segmento de rede (link entre dois switches) tem exatamente 1 Designated Port (a porta do switch mais próximo do Root naquele segmento). Essas regras de quantidade garantem a topologia em árvore sem loops." 
+      },
+
+      { 
+        question: "No passo 5 do algoritmo mental (definir portas bloqueadas), qual é a pergunta que o engenheiro deve fazer para cada porta?", 
+        options: ["'Esta porta tem custo menor que 19?'", "'Esta porta é Root Port ou Designated Port?' — se não for nenhuma das duas, vai para Blocking", "'Esta porta está conectada a um host ou a outro switch?'", "'Esta porta tem Priority menor que 128?'"], 
+        answer: "'Esta porta é Root Port ou Designated Port?' — se não for nenhuma das duas, vai para Blocking", 
+        explanation: "O passo 5 é simples e definitivo: toda porta que não ganhou o papel de Root Port (melhor caminho até o Root no switch) nem Designated Port (melhor caminho no segmento) é automaticamente Non-Designated e vai para Blocking. Não existe outro papel — ou a porta encaminha (RP/DP) ou bloqueia." 
+      },
+
+      { 
+        question: "Em qual situação o passo 6 (critérios de desempate) é necessário na resolução de uma topologia?", 
+        options: ["Sempre — o passo 6 é executado em todas as topologias", "Apenas quando dois switches têm o mesmo MAC Address", "Quando dois ou mais caminhos resultam em Root Path Cost idêntico para um switch ou segmento", "Apenas em topologias com mais de 10 switches"], 
+        answer: "Quando dois ou mais caminhos resultam em Root Path Cost idêntico para um switch ou segmento", 
+        explanation: "Os critérios de desempate são aplicados apenas quando há empate: quando dois caminhos para o Root têm o mesmo custo acumulado (Root Path Cost igual), o STP não pode usar o critério principal. Aplica-se então na ordem: Sender Bridge ID → Sender Port Priority → Sender Port Number, até que o empate seja resolvido." 
+      },
+
+      { 
+        question: "Qual é o resultado final de uma topologia STP corretamente convergida segundo o algoritmo mental?", 
+        options: ["Todos os links físicos em estado Forwarding simultaneamente", "Topologia sem loops com apenas um caminho ativo por destino — portas em RP/DP em Forwarding, Non-Designated em Blocking", "Todas as portas em estado Learning aguardando convergência completa", "Root Bridge com todas as portas em Blocking e demais switches em Forwarding"], 
+        answer: "Topologia sem loops com apenas um caminho ativo por destino — portas em RP/DP em Forwarding, Non-Designated em Blocking", 
+        explanation: "O resultado final do STP é uma topologia lógica em árvore: sem loops, com exatamente um caminho ativo entre qualquer par de switches. Root Ports e Designated Ports ficam em Forwarding (encaminham dados). Non-Designated ficam em Blocking (monitoram BPDUs, prontas para assumir em falha). Os cabos redundantes permanecem fisicamente conectados." 
+      },
+
+      { 
+        question: "Como o engenheiro deve calcular o Root Path Cost para um switch com dois caminhos até o Root?", 
+        options: ["Usar apenas o custo do link diretamente conectado ao Root", "Calcular o custo total de cada caminho (somando todos os link costs no percurso) e comparar os totais — o menor é o Root Path Cost usado", "Usar a média dos dois caminhos como Root Path Cost", "Usar o maior custo para garantir segurança na eleição"], 
+        answer: "Calcular o custo total de cada caminho (somando todos os link costs no percurso) e comparar os totais — o menor é o Root Path Cost usado", 
+        explanation: "Para cada caminho possível até o Root, soma-se o custo de cada link no percurso. Exemplo: Caminho A via dois links de 1Gbps = 4+4=8. Caminho B via três links de 1Gbps = 4+4+4=12. O switch usa o caminho A (custo 8) como Root Path Cost — a porta de entrada do Caminho A é eleita Root Port." 
+      },
+
+      { 
+        question: "Por que o documento 04 é descrito como o ponto onde o conhecimento 'deixa de ser teórico e passa a ser operacional e estratégico'?", 
+        options: ["Porque inclui comandos CLI de configuração avançada", "Porque ensina a prever e calcular manualmente o comportamento do STP antes de qualquer configuração — transformando teoria em capacidade de análise e design", "Porque cobre apenas cenários de falha e troubleshooting", "Porque é o último documento antes dos laboratórios práticos com equipamentos reais"], 
+        answer: "Porque ensina a prever e calcular manualmente o comportamento do STP antes de qualquer configuração — transformando teoria em capacidade de análise e design",
+        explanation: "Os documentos 01-03 explicaram o que o STP é e como funciona. O documento 04 ensina como pensar como o protocolo pensa — calcular Root Ports, Designated Ports, aplicar critérios de desempate e prever a topologia resultante. Essa capacidade analítica é o que diferencia um administrador que configura o STP de um engenheiro que projeta e domina o STP." 
+      },
+
+      { 
+        question: "Em uma topologia triangular com três switches e links de mesma velocidade, quantas portas ficarão em Blocking após a convergência?", 
+        options: ["Nenhuma — todas as portas ficam em Forwarding", "Uma — exatamente a Non-Designated Port que quebra o loop", "Duas — uma em cada switch não-root", "Três — uma por switch"], 
+        answer: "Uma — exatamente a Non-Designated Port que quebra o loop", 
+        explanation: "Em uma topologia triangular: Root Bridge tem 2 DPs (Forwarding). SW2 tem 1 RP + 1 DP (ambas Forwarding). SW3 tem 1 RP (Forwarding) + 1 porta no segmento SW2-SW3 que perde a eleição de DP (Blocking). Total: 5 portas em Forwarding, 1 em Blocking. Exatamente a quantidade mínima para eliminar o loop sem remover redundância." 
+      },
+
+      { 
+        question: "Como o algoritmo mental do STP garante que a topologia resultante seja sempre uma árvore (sem loops)?", 
+        options: ["Desativando fisicamente links redundantes após a convergência", "Garantindo que exista exatamente 1 Root Port por switch e 1 Designated Port por segmento — matematicamente impossível formar loop nessa estrutura", "Usando TTL nos BPDUs para limitar a propagação", "Através de verificação periódica de loops a cada Hello Time"], 
+        answer: "Garantindo que exista exatamente 1 Root Port por switch e 1 Designated Port por segmento — matematicamente impossível formar loop nessa estrutura", explanation: "A estrutura de árvore é garantida pelas regras de quantidade: 1 RP por switch cria um único caminho de cada switch até o Root (sem loops). 1 DP por segmento garante que cada link de interconexão tem exatamente um lado ativo. Toda porta que violaria essas regras vai para Blocking — tornando matematicamente impossível a existência de loop na topologia convergida." 
+      },
+
+      { 
+        question: "O que é o PortFast e em qual tipo de porta ele deve ser aplicado?", 
+        options: ["Recurso que acelera BPDUs no Root Bridge — aplicado em uplinks", "Recurso que coloca a porta diretamente em Forwarding ignorando Listening e Learning — aplicado exclusivamente em portas de acesso conectadas a hosts", "Recurso que aumenta a velocidade de convergência em links entre switches", "Recurso que desativa o STP permanentemente na porta configurada"], 
+        answer: "Recurso que coloca a porta diretamente em Forwarding ignorando Listening e Learning — aplicado exclusivamente em portas de acesso conectadas a hosts", explanation: "O PortFast (Edge Port) instrui o switch a colocar a porta diretamente em Forwarding, eliminando os 30s de Listening + Learning. É seguro apenas em portas conectadas a hosts (PCs, servidores, impressoras) — dispositivos que não geram BPDUs. Nunca deve ser aplicado em links entre switches, pois pode criar loops temporários." 
+      },
+
+      { 
+        question: "Por que o PortFast pode causar loop se aplicado incorretamente em um link entre switches?", 
+        options: ["Porque switches com PortFast param de processar BPDUs", "Porque a porta entra em Forwarding imediatamente sem aguardar a eleição STP — se houver um switch conectado, um loop pode se formar antes do STP convergir", "Porque o PortFast desativa o STP na porta, impedindo o bloqueio", "Porque links entre switches com PortFast têm custo 0, sempre vencendo a eleição"], 
+        answer: "Porque a porta entra em Forwarding imediatamente sem aguardar a eleição STP — se houver um switch conectado, um loop pode se formar antes do STP convergir", explanation: "O PortFast pula os estados de Listening e Learning propositalmente. Em uma porta de acesso (host), isso é seguro — hosts não criam loops. Em um link entre switches, pular esses estados significa que a porta começa a encaminhar antes de processar os BPDUs do vizinho — potencialmente criando um loop antes do STP conseguir bloqueá-lo." 
+      },
+
+      { 
+        question: "O que o BPDU Guard faz e por que deve ser combinado com PortFast?", 
+        options: ["Filtra BPDUs malformados — combinado com PortFast para acelerar convergência", "Desativa (err-disable) a porta ao receber qualquer BPDU inesperado — combinado com PortFast para proteger portas de acesso contra conexão indevida de switches", "Bloqueia BPDUs de switches não autorizados — combinado com PortFast para balancear VLANs", "Garante que apenas o Root Bridge envie BPDUs — combinado com PortFast para reduzir tráfego de controle"], 
+        answer: "Desativa (err-disable) a porta ao receber qualquer BPDU inesperado — combinado com PortFast para proteger portas de acesso contra conexão indevida de switches", 
+        explanation: "Uma porta de acesso com PortFast não deveria receber BPDUs — hosts não os geram. O BPDU Guard monitora isso: se um BPDU chegar (indicando que um switch foi conectado indevidamente por um usuário), a porta é imediatamente colocada em err-disable. Isso impede que um switch não autorizado participe da eleição STP e potencialmente cause problemas." 
+      },
+
+      { 
+        question: "Qual é a função do Root Guard e em qual cenário ele é aplicado?", 
+        options: ["Impede que portas mudem de Root Port para Designated Port durante reconvergência", "Protege o Root Bridge atual impedindo que outro switch seja eleito Root — aplicado em portas onde switches de acesso se conectam à distribuição", "Garante que apenas switches com prioridade 0 possam ser eleitos Root Bridge", "Monitora falhas unidirecionais em links de fibra óptica"], 
+        answer: "Protege o Root Bridge atual impedindo que outro switch seja eleito Root — aplicado em portas onde switches de acesso se conectam à distribuição", 
+        explanation: "O Root Guard protege o Root Bridge intencional. Se um switch conectado a uma porta com Root Guard enviar BPDUs com BID menor que o Root atual (tentando 'roubar' a eleição), a porta entra em estado 'inconsistent' (Blocking). Isso protege o design de rede contra switches não autorizados ou mal configurados que possam alterar a topologia STP indevidamente." 
+      },
+
+      { 
+        question: "O que é o Loop Guard e qual problema específico ele resolve?", 
+        options: ["Detecta e bloqueia loops causados por broadcast storm", "Resolve loops causados por falhas unidirecionais de link — quando BPDUs param de chegar por falha, a porta em Blocking poderia entrar em Forwarding criando loop", "Monitora tráfego multicast para evitar loops em redes IPv6", "Substitui o Max Age para detecção mais rápida de falhas de Root Bridge"], 
+        answer: "Resolve loops causados por falhas unidirecionais de link — quando BPDUs param de chegar por falha, a porta em Blocking poderia entrar em Forwarding criando loop", 
+        explanation: "Sem Loop Guard, se uma porta em Blocking para de receber BPDUs (por falha unidirecional de fibra), ela aguarda o Max Age e transiciona para Forwarding — potencialmente criando loop. Com Loop Guard, a porta vai para estado 'loop-inconsistent' (permanece Blocking) ao invés de Forwarding, impedindo o loop até que os BPDUs retornem." 
+      },
+
+      { 
+        question: "Qual é a diferença entre BPDU Guard e Root Guard em termos de ação e aplicação?", 
+        options: ["São equivalentes — apenas nomes diferentes para o mesmo recurso", "BPDU Guard: desativa porta ao receber QUALQUER BPDU (proteção de portas de acesso com PortFast) / Root Guard: bloqueia porta que recebe BPDU superior ao Root atual (proteção do Root Bridge)", "BPDU Guard: aplicado em uplinks / Root Guard: aplicado em downlinks", "BPDU Guard protege contra loops / Root Guard protege contra broadcast storm"], 
+        answer: "BPDU Guard: desativa porta ao receber QUALQUER BPDU (proteção de portas de acesso com PortFast) / Root Guard: bloqueia porta que recebe BPDU superior ao Root atual (proteção do Root Bridge)", 
+        explanation: "BPDU Guard: aplicado em portas de acesso com PortFast — qualquer BPDU recebido indica switch indevido e a porta vai para err-disable. Root Guard: aplicado em portas de distribuição/acesso — apenas BPDUs superiores ao Root atual (tentativa de nova eleição) colocam a porta em inconsistent. BPDU Guard é mais agressivo; Root Guard é seletivo." 
+      },
+
+      { 
+        question: "O que acontece com uma porta configurada com Root Guard quando ela recebe um BPDU com BID menor que o Root Bridge atual?", 
+        options: ["A porta aceita o novo Root Bridge e inicia reconvergência normalmente", "A porta entra em estado 'root-inconsistent' (Blocking) até que os BPDUs superiores parem de chegar", "A porta é desativada permanentemente (shutdown) pelo administrador", "O switch aumenta sua própria Priority para continuar sendo Root"], 
+        answer: "A porta entra em estado 'root-inconsistent' (Blocking) até que os BPDUs superiores parem de chegar", 
+        explanation: "O Root Guard é não-destrutivo: ao invés de desativar permanentemente (como o BPDU Guard com err-disable), coloca a porta em 'root-inconsistent' — um estado de Blocking temporário. Quando o switch conectado para de enviar BPDUs superiores (ou é reconfigurado), a porta retorna automaticamente ao estado normal sem intervenção do administrador." 
+      },
+
+      { 
+        question: "Por que o PortFast é considerado seguro em portas de acesso mas arriscado em links entre switches?", 
+        options: ["Porque switches têm mais tráfego que hosts e sobrecarregam a porta", "Porque hosts não geram BPDUs — nunca criarão loops; switches geram BPDUs e podem criar loops se a porta entrar em Forwarding antes da convergência STP", "Porque portas de acesso têm velocidade menor e o PortFast funciona apenas em Fast Ethernet", "Porque links entre switches sempre têm EtherChannel configurado incompatível com PortFast"], 
+        answer: "Porque hosts não geram BPDUs — nunca criarão loops; switches geram BPDUs e podem criar loops se a porta entrar em Forwarding antes da convergência STP", explanation: "A segurança do PortFast baseia-se no fato de que hosts (PCs, servidores) não participam do STP — não geram BPDUs e não criam caminhos redundantes. Logo, uma porta de acesso com PortFast nunca contribuirá para um loop. Um switch, ao contrário, gera BPDUs e pode criar paths redundantes — por isso PortFast em link entre switches é proibido." 
+      },
+
+      { 
+        question: "O que é um Edge Port no contexto do STP e qual protocolo o usa nativamente?", 
+        options: ["Porta de uplink com custo configurado manualmente como 0", "Porta conectada a dispositivos finais que entra direto em Forwarding — conceito nativo do RSTP equivalente ao PortFast do STP 802.1D", "Porta de borda entre dois domínios de broadcast diferentes", "Porta com Root Guard configurado para proteger a borda da rede"], 
+        answer: "Porta conectada a dispositivos finais que entra direto em Forwarding — conceito nativo do RSTP equivalente ao PortFast do STP 802.1D", 
+        explanation: "O RSTP (802.1w) incorpora nativamente o conceito de Edge Port — porta conectada a dispositivos finais que entra diretamente em Forwarding sem aguardar estados intermediários. É o equivalente ao PortFast do STP 802.1D, mas padronizado pelo IEEE. Edge Port + BPDU Guard é a combinação de segurança recomendada em ambos os protocolos." 
+      },
+
+      { 
+        question: "Por que o BPDU Guard é considerado 'muito cobrado em prova' segundo o documento 04?", 
+        options: ["Porque é o único recurso de proteção STP disponível em switches de camada 2", "Porque combina dois conceitos críticos de prova — PortFast (convergência rápida) e proteção de topologia (segurança) — e seu comportamento de err-disable é específico e testável", "Porque substitui o Root Guard em todos os cenários modernos", "Porque é o único recurso que funciona tanto com STP 802.1D quanto com RSTP"], 
+        answer: "Porque combina dois conceitos críticos de prova — PortFast (convergência rápida) e proteção de topologia (segurança) — e seu comportamento de err-disable é específico e testável", 
+        explanation: "O BPDU Guard é cobrado porque testa múltiplos conceitos: entender por que PortFast é usado, saber que hosts não geram BPDUs, reconhecer que a chegada de um BPDU indica switch indevido, e conhecer a ação específica (err-disable) e o diagnóstico ('show interfaces status' mostra err-disabled). É um cenário de troubleshooting clássico do CCNP." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

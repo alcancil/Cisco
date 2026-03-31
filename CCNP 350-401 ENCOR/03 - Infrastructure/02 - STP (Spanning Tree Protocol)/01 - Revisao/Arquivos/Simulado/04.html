@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é o valor padrão do Hello Time no STP 802.1D e qual sua função?", 
+        options: ["1s — tempo máximo sem BPDU antes de declarar falha", "2s — intervalo de envio de BPDUs pelo Root Bridge", "15s — tempo nos estados intermediários", "20s — tempo de expiração do BPDU antigo"], 
+        answer: "2s — intervalo de envio de BPDUs pelo Root Bridge", 
+        explanation: "O Hello Time de 2 segundos é o 'batimento cardíaco' do STP. O Root Bridge envia BPDUs a cada 2s; os switches não-root repassam esses BPDUs. Se um switch parar de receber BPDUs, inicia a contagem do Max Age." 
+      },
+
+      { 
+        question: "Qual timer define por quanto tempo um switch aguarda sem receber BPDUs antes de declarar que o Root caiu?", 
+        options: ["Hello Time", "Forward Delay", "Max Age", "Hold Time"], 
+        answer: "Max Age", 
+        explanation: "O Max Age (padrão 20s) é o tempo máximo que um switch mantém informações de BPDU sem renovação. Após esse período sem BPDUs, o switch declara falha e inicia o processo de reeleição." 
+      },
+
+      { 
+        question: "No pior cenário do STP 802.1D, qual é o tempo total de reconvergência após uma falha indireta?", 
+        options: ["15 segundos", "30 segundos", "50 segundos", "65 segundos"], 
+        answer: "50 segundos", 
+        explanation: "O pior cenário soma: Max Age (20s) + Listening (15s) + Learning (15s) = 50 segundos. Em falha direta (link down detectado imediatamente), os 20s de Max Age podem ser suprimidos, reduzindo para 30s." 
+      },
+
+      { 
+        question: "Qual é a função do Forward Delay no STP?", 
+        options: ["Definir o intervalo entre BPDUs", "Determinar o tempo máximo sem BPDU", "Definir o tempo que a porta permanece em cada estado intermediário (Listening e Learning)", "Calcular o custo do caminho até o Root"], 
+        answer: "Definir o tempo que a porta permanece em cada estado intermediário (Listening e Learning)", 
+        explanation: "O Forward Delay (padrão 15s) é o tempo que a porta fica em Listening e depois mais 15s em Learning antes de entrar em Forwarding. Ele existe para evitar loops temporários durante a convergência." 
+      },
+
+      { 
+        question: "Por que os timers STP devem ser configurados APENAS no Root Bridge?", 
+        options: ["Porque apenas o Root Bridge possui interface de gerência", "Porque o Root Bridge distribui os timers via BPDUs e toda a rede os segue automaticamente", "Porque switches não-root não possuem suporte a timers", "Porque timers em switches não-root causam loops"], 
+        answer: "Porque o Root Bridge distribui os timers via BPDUs e toda a rede os segue automaticamente", 
+        explanation: "Os timers Hello Time, Max Age e Forward Delay são campos do BPDU enviado pelo Root Bridge. Todos os switches da rede aprendem e obedecem esses valores via BPDU. Configurar timers em switches não-root não tem efeito enquanto o Root atual estiver ativo." 
+      },
+
+      { 
+        question: "Qual é a diferença entre uma falha direta e uma falha indireta no contexto do STP?", 
+        options: ["Falha direta afeta o Root; falha indireta afeta switches não-root", "Falha direta é detectada imediatamente via link down; falha indireta requer aguardar o Max Age expirar", "Falha direta ocorre em fibra; falha indireta em cobre", "Não há diferença prática entre elas"], 
+        answer: "Falha direta é detectada imediatamente via link down; falha indireta requer aguardar o Max Age expirar", 
+        explanation: "Em falha direta, o switch detecta link down instantaneamente e inicia a transição. Em falha indireta (switch intermediário falha sem derrubar o link físico), o switch aguarda o Max Age (20s) sem receber BPDUs para declarar falha — daí o total de 50s." 
+      },
+
+      { 
+        question: "Qual é o tempo total de convergência STP no cenário de falha direta (link físico detectado como down)?", 
+        options: ["20 segundos", "30 segundos", "50 segundos", "15 segundos"], 
+        answer: "30 segundos", 
+        explanation: "Em falha direta, o switch detecta imediatamente que o link caiu e ignora o Max Age. A convergência é: Listening (15s) + Learning (15s) = 30 segundos. Ainda assim, 30s é muito lento para ambientes modernos, o que motivou o RSTP." 
+      },
+
+      { 
+        question: "Em qual estado da linha do tempo STP (802.1D) o switch popula a tabela CAM enquanto ainda não encaminha dados?", 
+        options: ["0s–20s: Max Age", "20s–35s: Listening", "35s–50s: Learning", "Acima de 50s: Forwarding"], 
+        answer: "35s–50s: Learning", 
+        explanation: "Na linha do tempo de falha indireta: 0-20s (Max Age, switch congelado), 20-35s (Listening, ouve BPDUs mas não aprende MAC), 35-50s (Learning, popula CAM sem encaminhar), 50s+ (Forwarding, operação normal)." 
+      },
+
+      { 
+        question: "Qual alternativa ao STP 802.1D foi criada para resolver o problema da convergência lenta de 50 segundos?", 
+        options: ["MSTP (802.1s)", "PVST+", "RSTP (802.1w)", "VTP"], 
+        answer: "RSTP (802.1w)", 
+        explanation: "O Rapid Spanning Tree Protocol (RSTP, IEEE 802.1w) foi criado especificamente para resolver a lentidão do 802.1D. O RSTP usa um mecanismo de negociação ponto a ponto e converge em menos de 1 segundo em topologias bem projetadas." 
+      },
+
+      { 
+        question: "Qual recurso Cisco permite que portas de acesso (conectadas a hosts) entrem diretamente em Forwarding, ignorando os estados Listening e Learning?", 
+        options: ["UDLD", "PortFast", "Loop Guard", "BPDU Guard"], 
+        answer: "PortFast", 
+        explanation: "O PortFast instrui o switch a colocar a porta diretamente em Forwarding, ignorando os 30s de estados intermediários. É seguro apenas em portas de acesso conectadas a hosts, nunca em uplinks entre switches. Deve ser combinado com BPDU Guard para segurança." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

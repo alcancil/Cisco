@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Eleição do Root Bridge e Papéis de Porta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Eleição do Root Bridge e Papéis de Porta </h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a regra fundamental da eleição do Root Bridge no STP 802.1D?", 
+        options: ["O switch com maior número de portas ativas é eleito Root", "O switch com o menor Bridge ID (BID) é eleito Root Bridge", "O switch com o maior uptime desde o boot é eleito Root", "O switch com mais VLANs configuradas é eleito Root"], 
+        answer: "O switch com o menor Bridge ID (BID) é eleito Root Bridge", 
+        explanation: "A eleição do Root Bridge é determinística: o switch com o menor BID (Priority + VLAN ID + MAC) vence. Menor valor numérico = maior prioridade. Essa regra é aplicada por todos os switches ao comparar BPDUs recebidos com seu próprio BID." 
+      },
+
+      { 
+        question: "No Root Bridge, qual é o papel atribuído a TODAS as suas portas ativas?", 
+        options: ["Root Port — porque é a referência central da topologia", "Non-Designated — para evitar loops no próprio Root", "Designated Port — porque seu custo até si mesmo é zero, sendo sempre o melhor caminho", "Alternate Port — como backup para os demais switches"], 
+        answer: "Designated Port — porque seu custo até si mesmo é zero, sendo sempre o melhor caminho", 
+        explanation: "O Root Bridge tem custo zero até si mesmo. Em qualquer segmento conectado ao Root, nenhum outro switch terá custo menor para chegar ao Root. Portanto, todas as portas do Root Bridge são eleitas Designated Ports e ficam em estado Forwarding." 
+      },
+
+      { 
+        question: "Quantas Root Ports existem em um switch não-root em uma topologia STP?", 
+        options: ["Uma por VLAN ativa", "Uma por segmento de rede conectado", "Exatamente uma — a porta de menor custo acumulado até o Root Bridge", "Duas — uma primária e uma de backup"], 
+        answer: "Exatamente uma — a porta de menor custo acumulado até o Root Bridge", 
+        explanation: "Cada switch não-root elege exatamente uma Root Port — a interface com o menor Root Path Cost até o Root Bridge. Se houver empate, os critérios de desempate (Sender BID, Port Priority, Port Number) resolvem. Ter mais de uma Root Port quebraria a topologia em árvore." 
+      },
+
+      { 
+        question: "O que define uma Designated Port em um segmento de rede?", 
+        options: ["É a porta com maior velocidade de link no segmento", "É a porta que oferece o menor custo acumulado até o Root Bridge naquele segmento — uma por segmento", "É sempre a porta do switch com mais VLANs configuradas", "É a porta em estado Blocking que aguarda para assumir"], 
+        answer: "É a porta que oferece o menor custo acumulado até o Root Bridge naquele segmento — uma por segmento", 
+        explanation: "Em cada segmento de rede (link entre dois switches), apenas uma porta é eleita Designated Port — aquela cujo switch tem menor Root Path Cost até o Root Bridge. A Designated Port fica em Forwarding e é responsável pelo encaminhamento naquele segmento." 
+      },
+
+      { 
+        question: "O que acontece com uma porta que não é eleita nem Root Port nem Designated Port?", 
+        options: ["Ela é desativada administrativamente pelo STP", "Ela é colocada em estado Blocking como Non-Designated Port — não encaminha dados mas continua recebendo BPDUs", "Ela assume o papel de Backup Port e fica em Learning", "Ela é promovida a Root Port do switch vizinho"], 
+        answer: "Ela é colocada em estado Blocking como Non-Designated Port — não encaminha dados mas continua recebendo BPDUs", 
+        explanation: "Toda porta que perde a eleição de RP e DP torna-se Non-Designated e vai para Blocking. Ela não encaminha frames de dados nem aprende MACs, mas monitora BPDUs ativamente. Isso quebra o loop lógico mantendo o cabo fisicamente conectado — pronto para assumir se o caminho principal falhar." 
+      },
+
+      { 
+        question: "Por que a eleição do Root Bridge é considerada o passo mais crítico de todo o processo STP?", 
+        options: ["Porque o Root Bridge processa todo o tráfego da rede", "Porque o posicionamento do Root define o fluxo de tráfego de toda a topologia — Root mal posicionado = rede ineficiente", "Porque o Root Bridge é o único que pode configurar VLANs", "Porque sem Root Bridge os switches não conseguem aprender MACs"], 
+        answer: "Porque o posicionamento do Root define o fluxo de tráfego de toda a topologia — Root mal posicionado = rede ineficiente", 
+        explanation: "O Root Bridge é a referência central do STP. Todos os caminhos são calculados em relação a ele. Se um switch de baixa capacidade for eleito Root (por ter menor MAC), todo o tráfego convergirá por ele, criando gargalo. O administrador deve garantir que o switch mais capaz (core) seja o Root." 
+      },
+
+      { 
+        question: "Qual é a diferença entre Root Path Cost e Path Cost no STP?", 
+        options: ["São sinônimos — ambos representam o custo de uma interface", "Path Cost é o custo local de uma interface; Root Path Cost é o custo acumulado de todos os links desde o switch atual até o Root Bridge", "Root Path Cost é usado apenas no Root Bridge; Path Cost é usado nos demais", "Path Cost é configurado pelo administrador; Root Path Cost é calculado automaticamente pelo hardware"], 
+        answer: "Path Cost é o custo local de uma interface; Root Path Cost é o custo acumulado de todos os links desde o switch atual até o Root Bridge", 
+        explanation: "Path Cost é o 'pedágio' de uma única estrada (interface). Root Path Cost é o total de pedágios pagos desde o switch local até o Root Bridge, somando todos os Path Costs do caminho. É o Root Path Cost que determina a Root Port — sempre o menor valor acumulado." 
+      },
+
+      { 
+        question: "Em uma topologia triangular com SW1 (Root), SW2 e SW3, qual switch NÃO possui Root Port?", 
+        options: ["SW2", "SW3", "SW1 — o próprio Root Bridge", "Todos os switches possuem Root Port"], 
+        answer: "SW1 — o próprio Root Bridge", 
+        explanation: "O Root Bridge não possui Root Port porque a Root Port é definida como 'a porta de menor custo até o Root Bridge'. O Root Bridge já É o Root Bridge — seu custo até si mesmo é zero e não faz sentido ter uma porta apontando para si. Apenas switches não-root possuem Root Port." 
+      },
+
+      { 
+        question: "Como o STP garante que haja exatamente uma Designated Port por segmento?", 
+        options: ["O Root Bridge centraliza e distribui os papéis de porta", "Os switches do segmento comparam seus Root Path Costs via BPDUs; o de menor custo vence — em empate, os critérios de desempate resolvem", "As portas negociam diretamente via protocolo de eleição ponto a ponto", "O administrador deve configurar manualmente a Designated Port de cada segmento"], 
+        answer: "Os switches do segmento comparam seus Root Path Costs via BPDUs; o de menor custo vence — em empate, os critérios de desempate resolvem", 
+        explanation: "Em cada segmento, os dois switches trocam BPDUs e comparam Root Path Costs. O switch com menor custo para chegar ao Root elege sua porta naquele segmento como Designated Port. Se os custos forem iguais, o menor Sender Bridge ID desempata — garantindo sempre uma única DP por segmento." 
+      },
+
+      { 
+        question: "O que é uma 'STP Instance' e por que ela é a base para PVST+ e MSTP?", 
+        options: ["É o processo de reinicialização do STP após uma falha", "É uma execução lógica independente do STP para uma VLAN ou grupo de VLANs — permite topologias diferentes por VLAN", "É o intervalo de tempo entre eleições de Root Bridge", "É o nome dado ao processo de convergência no RSTP"], 
+        answer: "É uma execução lógica independente do STP para uma VLAN ou grupo de VLANs — permite topologias diferentes por VLAN", 
+        explanation: "Uma STP Instance é uma eleição e topologia STP independente. O PVST+ roda uma instância por VLAN — permitindo Root Bridges diferentes por VLAN e balanceamento de carga. O MSTP agrupa múltiplas VLANs em instâncias compartilhadas para escalar. O STP 802.1D clássico tem apenas uma instância para toda a rede." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

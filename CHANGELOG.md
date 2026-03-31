@@ -2,6 +2,36 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [1.4.0] - 2026-03-31
+
+### Added
+
+- Implementação de simulados interativos para os módulos de STP (Partes 01, 02, 03 e 04)
+- Criação de estrutura dedicada para exercícios e avaliação prática:
+  - Diretório `Arquivos/` em cada módulo
+  - Separação entre conteúdo teórico e prática
+- Sistema de simulado com:
+  - Timer por tentativa
+  - Barra de progresso
+  - Feedback visual (acerto/erro)
+  - Explicação detalhada por questão
+- Persistência de resultados utilizando `localStorage`
+- Identificação do usuário para rastreamento de desempenho
+- Dashboard de estatísticas com:
+  - Total de simulados realizados
+  - Total de questões respondidas
+  - Percentual geral de acerto
+  - Tempo médio por tentativa
+  - Gráficos de desempenho (Chart.js)
+  - Histórico detalhado de tentativas
+
+### Changed
+
+- Evolução do projeto de conteúdo estático para plataforma interativa de estudo
+- Melhoria da experiência de aprendizado com feedback imediato e métricas de performance
+
 ## [1.3.0] - 2026-03-28
 
 ### Added

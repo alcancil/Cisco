@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre STP - Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+      question: "Qual BPDU especial um switch envia em direção ao Root Bridge quando detecta uma mudança de topologia?", 
+      options: ["TC Flag BPDU", "TCA BPDU", "TCN BPDU", "Hello BPDU"], 
+      answer: "TCN BPDU", 
+      explanation: "O TCN (Topology Change Notification) é enviado pelo switch que detectou a mudança pela sua Root Port em direção ao Root Bridge. O vizinho responde com TCA (Topology Change Acknowledgment) e repassa o TCN para cima." 
+    },
+
+    { 
+      question: "Qual ação o Root Bridge executa ao receber um TCN de um switch da rede?", 
+      options: ["Reinicia todos os timers STP", "Envia BPDUs com a flag TC marcada para toda a rede", "Coloca todas as portas em Blocking", "Solicita reeleição imediata"], answer: "Envia BPDUs com a flag TC marcada para toda a rede", 
+      explanation: "Ao receber o TCN, o Root Bridge confirma com TCA e começa a enviar BPDUs com a flag TC (Topology Change) ativa para toda a topologia. Isso instrui todos os switches a acelerarem a expiração da tabela MAC." 
+    },
+
+    { 
+      question: "Qual é o efeito prático da flag TC nos switches que a recebem?", 
+      options: ["Aumentam o Hello Time para 10 segundos", "Reduzem o tempo de expiração da tabela MAC de 300s para o valor do Forward Delay (15s)", "Colocam todas as portas em Learning", "Reenviam seus próprios TCNs"], 
+      answer: "Reduzem o tempo de expiração da tabela MAC de 300s para o valor do Forward Delay (15s)", 
+      explanation: "O tempo padrão de envelhecimento da tabela MAC é 300s (5 minutos). Ao receber TC, os switches reduzem esse timer para 15s (Forward Delay), forçando a releitura rápida da topologia e evitando o envio de tráfego para portas antigas." 
+    },
+
+    { 
+      question: "Por que a redução do MAC aging para 15s após um TCN é necessária?", 
+      options: ["Para liberar memória nos switches", "Para evitar que tráfego seja enviado para portas antigas após a mudança de topologia", "Para acelerar a eleição do novo Root Bridge", "Para sincronizar os timers de todos os switches"], 
+      answer: "Para evitar que tráfego seja enviado para portas antigas após a mudança de topologia", 
+      explanation: "Sem o TCN, as entradas antigas da tabela MAC expirariam em 300s. Durante esse tempo, o switch enviaria tráfego para portas que já não são mais os caminhos corretos após a reconvergência, criando um 'black hole' de tráfego." 
+    },
+
+    { 
+      question: "Qual é o principal risco de um Root Bridge mal posicionado na topologia (switch lento no núcleo)?", 
+      options: ["Loops de Camada 2 imediatos", "Todo o tráfego da rede passa pelo switch lento, criando gargalo (bottleneck)", "Instabilidade nos timers STP", "Perda da tabela VLAN"], 
+      answer: "Todo o tráfego da rede passa pelo switch lento, criando gargalo (bottleneck)", 
+      explanation: "Como toda a árvore STP tem o Root Bridge como referência central, um switch de 10/100 Mbps eleito Root faz com que todos os caminhos convergam para ele. O resultado é latência elevada em toda a infraestrutura." 
+    },
+
+    { 
+      question: "O que é MAC Flapping e em qual cenário problemático ele ocorre?", 
+      options: ["Oscilação de links físicos por defeito de cabo", "Associação constante do mesmo MAC a múltiplas portas, causada por loop de Camada 2", "Expiração prematura da tabela CAM por Max Age baixo", "Conflito de Bridge ID entre dois switches"], 
+      answer: "Associação constante do mesmo MAC a múltiplas portas, causada por loop de Camada 2", 
+      explanation: "Em um loop, o mesmo frame chega ao switch por portas diferentes em frações de segundo. O switch atualiza a entrada do MAC origem continuamente, causando instabilidade total na tabela CAM — o MAC Flapping. É um sintoma claro de Broadcast Storm." 
+    },
+
+    { 
+      question: "Qual falha ocorre quando um cabo de fibra ótica permite tráfego em apenas uma direção, e como o switch afetado reage?", 
+      options: ["PVID Inconsistency — a porta entra em estado Broken", "Unidirectional Link Failure — o switch para de receber BPDUs e pode colocar a porta em Forwarding criando loop", "Hello Timeout — o switch aumenta o intervalo de envio de BPDUs", "MAC Flapping — a tabela CAM é apagada"], 
+      answer: "Unidirectional Link Failure — o switch para de receber BPDUs e pode colocar a porta em Forwarding criando loop", 
+      explanation: "Em uma falha unidirecional (link fantasma), o Switch B para de receber BPDUs do Switch A. Após o Max Age, ele assume que o caminho está livre e coloca a porta em Forwarding, criando um loop físico. Soluções: UDLD e Loop Guard." 
+    },
+
+    { 
+      question: "O que causa o estado 'Broken' (BKN) em uma porta STP e como verificá-lo?", 
+      options: ["Falha física no cabo — verificar com 'show interfaces'", "Configuração de VLANs nativas diferentes em um trunk (PVID Inconsistent) — verificar com 'show spanning-tree inconsistentports'", "Root Bridge inadequado — verificar com 'show spanning-tree vlan'", "Loop de Camada 2 ativo — verificar com 'show mac address-table'"], 
+      answer: "Configuração de VLANs nativas diferentes em um trunk (PVID Inconsistent) — verificar com 'show spanning-tree inconsistentports'", 
+      explanation: "Quando dois switches têm VLANs nativas diferentes no trunk, o STP detecta essa inconsistência (PVID Inconsistent) e coloca a porta em estado Broken para evitar vazamento de tráfego entre VLANs. Diagnóstico: 'show spanning-tree inconsistentports'." 
+    },
+
+    { 
+      question: "Em um cenário de Broadcast Storm ativo, por que o acesso remoto SSH ao switch é perdido?", 
+      options: ["O SSH é desabilitado automaticamente pelo STP", "A CPU do switch está a 100% processando frames BUM, sem recursos para processar pacotes de gerência", "O endereço IP do switch é apagado da tabela ARP", "O link de gerência é colocado em Blocking pelo STP"], 
+      answer: "A CPU do switch está a 100% processando frames BUM, sem recursos para processar pacotes de gerência", 
+      explanation: "Durante uma Broadcast Storm, os switches ficam processando milhares de cópias de frames por segundo. A CPU do plano de controle satura completamente, inviabilizando qualquer comunicação de gerência. A solução geralmente exige acesso físico via console." 
+    },
+
+    { 
+      question: "Qual é a sequência correta do mecanismo TCN após a detecção de falha de link?", 
+      options: ["Root envia TC → Switch detecta falha → TCN sobe → TCA confirma", "Switch detecta falha → envia TCN via Root Port → vizinho responde TCA → Root envia flag TC para toda a rede", "Switch detecta falha → Root reinicia STP → todos entram em Blocking", "TCN é enviado por flooding → Root confirma → tabela MAC é apagada"], 
+      answer: "Switch detecta falha → envia TCN via Root Port → vizinho responde TCA → Root envia flag TC para toda a rede", 
+      explanation: "Sequência TCN: 1) Switch detecta link down/up para Forwarding, 2) Envia TCN pela Root Port, 3) Vizinho confirma com TCA e repassa TCN para cima, 4) Root recebe TCN e passa a enviar BPDUs com flag TC, 5) Todos os switches reduzem MAC aging para 15s." 
+    },
+
+    { 
+        question: "Para qual endereço MAC multicast o switch envia os BPDUs do STP?", 
+        options: ["FF:FF:FF:FF:FF:FF", "01:00:5E:00:00:01", "01:80:C2:00:00:00", "33:33:00:00:00:01"], 
+        answer: "01:80:C2:00:00:00", 
+        explanation: "Os BPDUs do STP são enviados para o endereço multicast reservado 01:80:C2:00:00:00. Esse endereço é definido pelo IEEE e não é encaminhado por switches — fica restrito ao segmento local." 
+      },
+
+      { 
+        question: "Qual é o critério principal para eleger o Root Bridge no STP 802.1D?", 
+        options: ["Maior número de portas ativas", "Menor endereço IP de gerência", "Menor Bridge ID (BID)", "Maior uptime desde o boot"], 
+        answer: "Menor Bridge ID (BID)", 
+        explanation: "O Root Bridge é o switch com o menor Bridge ID. O BID é composto por Prioridade + VLAN ID + MAC Address. Menor valor numérico vence a eleição." 
+      },
+
+      { 
+        question: "Qual é o valor padrão da Bridge Priority no STP Cisco (PVST+)?", 
+        options: ["4096", "16384", "32768", "65535"], 
+        answer: "32768", 
+        explanation: "A prioridade padrão é 32768. No PVST+ da Cisco, o BID final é calculado como Prioridade (32768) + VLAN ID. A prioridade só pode ser alterada em múltiplos de 4096." 
+      },
+
+      { 
+        question: "Um switch com prioridade padrão está operando na VLAN 20 com MAC 0011.2233.4455. Qual é o seu Bridge ID?", 
+        options: ["32768 : 0011.2233.4455", "32788 : 0011.2233.4455", "20 : 0011.2233.4455", "32748 : 0011.2233.4455"], 
+        answer: "32788 : 0011.2233.4455", 
+        explanation: "No PVST+, o BID = Prioridade + VLAN ID + MAC. Cálculo: 32768 + 20 = 32788. BID final: 32788 : 0011.2233.4455. Esse é o valor que aparece no campo Bridge ID do BPDU." 
+      },
+
+      { 
+        question: "Qual campo do BPDU representa a identidade do switch que está enviando a mensagem?", 
+        options: ["Root ID", "Port ID", "Sender Bridge ID", "Root Path Cost"], 
+        answer: "Sender Bridge ID", 
+        explanation: "O campo Sender Bridge ID (também chamado de Bridge ID no BPDU) identifica o switch remetente. Já o Root ID informa quem o remetente acredita ser o líder atual da topologia." 
+      },
+
+      { 
+        question: "Ao inicializar, como cada switch se comporta antes de conhecer a topologia?", 
+        options: ["Aguarda passivamente por BPDUs do Root", "Anuncia a si mesmo como Root Bridge", "Coloca todas as portas em Blocking", "Elege automaticamente a porta com menor custo"], 
+        answer: "Anuncia a si mesmo como Root Bridge", 
+        explanation: "Ao dar boot, todo switch é 'egoísta': envia BPDUs colocando seu próprio BID tanto no campo Root ID quanto no Sender Bridge ID. Conforme recebe BPDUs melhores de vizinhos, ele se rende e propaga o BID superior." 
+      },
+
+      { 
+        question: "Em qual situação o Root ID e o Bridge ID exibidos no 'show spanning-tree' são idênticos?", 
+        options: ["Quando o switch está em estado de Blocking", "Quando o switch é o próprio Root Bridge", "Quando o STP está desabilitado na VLAN", "Quando há apenas um switch na rede"], 
+        answer: "Quando o switch é o próprio Root Bridge", 
+        explanation: "Se Root ID = Bridge ID no 'show spanning-tree', significa que o switch acredita ser o Root Bridge. Nesse caso, todas as suas portas ativas são Designated Ports em estado Forwarding." 
+      },
+
+      { 
+        question: "Qual é o intervalo padrão de envio de BPDUs pelo Root Bridge?", 
+        options: ["1 segundo", "2 segundos", "5 segundos", "10 segundos"], 
+        answer: "2 segundos", 
+        explanation: "O Hello Time padrão é 2 segundos. O Root Bridge envia BPDUs a cada 2s; os switches não-root repassam esses BPDUs para seus segmentos. Esse intervalo é o 'batimento cardíaco' do STP." 
+      },
+
+      { 
+        question: "Por que o endereço MAC é incluído no Bridge ID?", 
+        options: ["Para identificar o fabricante do switch", "Para garantir unicidade absoluta, servindo como desempate final", "Para calcular o custo do caminho", "Para identificar a VLAN nativa do trunk"], 
+        answer: "Para garantir unicidade absoluta, servindo como desempate final", 
+        explanation: "Como o MAC é globalmente único, ele garante que dois switches com a mesma prioridade configurada nunca empatem definitivamente na eleição. O menor MAC vence o desempate." 
+      },
+
+      { 
+        question: "Qual das seguintes ações força manualmente um switch a se tornar Root Bridge primário?", 
+        options: ["Desabilitar o STP nos demais switches", "Configurar 'spanning-tree vlan X priority 0' ou usar 'spanning-tree vlan X root primary'", "Atribuir o maior endereço MAC ao switch", "Configurar prioridade 65535 no switch desejado"], 
+        answer: "Configurar 'spanning-tree vlan X priority 0' ou usar 'spanning-tree vlan X root primary'", 
+        explanation: "O comando 'spanning-tree vlan X priority 0' define a menor prioridade possível, garantindo a eleição. O atalho 'root primary' configura automaticamente 24576 (ou menor que o Root atual). Nunca dependa do MAC padrão para eleger o Root em produção." 
+      },
+
+      { 
+        question: "Qual papel de porta STP representa o melhor caminho de um switch não-root até o Root Bridge?", 
+        options: ["Designated Port", "Alternate Port", "Root Port", "Blocked Port"], 
+        answer: "Root Port", 
+        explanation: "A Root Port (RP) é eleita em cada switch não-root e representa o caminho de menor custo acumulado até o Root Bridge. Cada switch não-root tem exatamente uma Root Port." 
+      },
+
+      { 
+        question: "O que caracteriza uma Designated Port (DP) no STP?", 
+        options: ["Porta com maior custo no segmento", "Porta responsável por encaminhar tráfego em direção ao Root em cada segmento", "Porta bloqueada para prevenir loops", "Porta exclusiva do Root Bridge"], 
+        answer: "Porta responsável por encaminhar tráfego em direção ao Root em cada segmento", 
+        explanation: "A Designated Port é a porta com o menor custo para alcançar o Root Bridge em cada segmento de rede. No Root Bridge, todas as portas são automaticamente Designated Ports, pois o custo dele até si mesmo é zero." 
+      },
+
+      { 
+        question: "Qual é o estado inicial de uma porta quando o STP bloqueia um caminho redundante para evitar loop?", 
+        options: ["Listening", "Learning", "Forwarding", "Blocking"], 
+        answer: "Blocking", 
+        explanation: "Uma porta Non-Designated (Alternate Port) é colocada no estado Blocking. Ela não encaminha frames de dados nem aprende MACs, mas continua recebendo BPDUs para monitorar a topologia." 
+      },
+
+      { 
+        question: "Em qual estado de porta o switch aprende endereços MAC mas ainda NÃO encaminha frames de dados?", 
+        options: ["Blocking", "Listening", "Learning", "Forwarding"], 
+        answer: "Learning", 
+        explanation: "No estado Learning, a porta já popula a tabela CAM lendo os Source MACs dos frames recebidos, mas não encaminha dados. Isso reduz o flooding quando a porta entrar em Forwarding." 
+      },
+
+      { 
+        question: "Qual estado de porta no STP 802.1D participa da eleição STP mas não aprende MAC nem encaminha dados?", 
+        options: ["Blocking", "Listening", "Learning", "Disabled"], 
+        answer: "Listening", 
+        explanation: "No estado Listening, a porta processa BPDUs e participa da eleição (definindo seu papel), mas não aprende MACs e não encaminha dados. Dura 15 segundos (Forward Delay)." 
+      },
+
+      { 
+        question: "No STP 802.1D, qual é a sequência correta de estados que uma porta percorre ao subir do bloqueio até o encaminhamento?", 
+        options: ["Blocking → Forwarding → Learning", "Blocking → Listening → Learning → Forwarding", "Listening → Blocking → Learning → Forwarding", "Disabled → Learning → Forwarding"], 
+        answer: "Blocking → Listening → Learning → Forwarding", 
+        explanation: "Essa é a jornada completa: Blocking (aguarda BPDUs), Listening (participa da eleição, 15s), Learning (aprende MACs, 15s), Forwarding (encaminha dados). Total de transição: até 50 segundos." 
+      },
+
+      { 
+        question: "Qual é o critério de desempate utilizado quando dois switches possuem o mesmo Root Path Cost na eleição da Root Port?", 
+        options: ["Menor IP de gerência", "Menor Sender Bridge ID do vizinho", "Maior número de portas ativas", "Maior velocidade do link"], 
+        answer: "Menor Sender Bridge ID do vizinho", 
+        explanation: "Os 4 critérios de desempate em ordem são: 1) Menor Root Path Cost, 2) Menor Sender Bridge ID, 3) Menor Sender Port Priority, 4) Menor Sender Port Number. O BID do vizinho é o segundo critério." 
+      },
+
+      { 
+        question: "Uma porta que não é Root Port nem Designated Port recebe qual papel e estado no STP 802.1D?", 
+        options: ["Alternate Port em estado Forwarding", "Non-Designated Port em estado Blocking", "Backup Port em estado Learning", "Passive Port em estado Disabled"], answer: "Non-Designated Port em estado Blocking", 
+        explanation: "Qualquer porta que perca a eleição de RP e DP torna-se Non-Designated (também chamada Alternate no RSTP) e é colocada em Blocking. Ela é o 'disjuntor' que quebra o loop lógico."
+      },
+
+      { 
+        question: "Qual é o custo STP padrão (802.1D short/16-bit) de um link de 1 Gbps?", 
+        options: ["1", "2", "4", "19"], 
+        answer: "4", 
+        explanation: "Tabela de custos 802.1D: 10Mbps=100, 100Mbps=19, 1Gbps=4, 10Gbps=2. Quanto maior a banda, menor o custo. Um switch prefere o caminho com menor custo acumulado (Root Path Cost) para eleger sua Root Port." 
+      },
+
+      { 
+        question: "Por que links acima de 10 Gbps exigem o método de custo Long (32-bit) no STP?", 
+        options: ["Porque o endereço MAC não cabe em 16 bits", "Porque no método 16-bit tanto 10Gbps quanto 100Gbps têm custo 1, impossibilitando diferenciação", "Porque o 802.1D não suporta velocidades acima de 10Gbps", "Porque o Forward Delay precisa ser recalculado"], 
+        answer: "Porque no método 16-bit tanto 10Gbps quanto 100Gbps têm custo 1, impossibilitando diferenciação", 
+        explanation: "No padrão 16-bit (Short), o custo mínimo é 1 e links de 10Gbps, 40Gbps e 100Gbps todos resultam em custo 1. O método Long (32-bit) resolve isso com granularidade suficiente para diferenciar velocidades modernas." 
+
+      },
+
+      { 
+        question: "Qual é o valor padrão do Hello Time no STP 802.1D e qual sua função?", 
+        options: ["1s — tempo máximo sem BPDU antes de declarar falha", "2s — intervalo de envio de BPDUs pelo Root Bridge", "15s — tempo nos estados intermediários", "20s — tempo de expiração do BPDU antigo"], 
+        answer: "2s — intervalo de envio de BPDUs pelo Root Bridge", 
+        explanation: "O Hello Time de 2 segundos é o 'batimento cardíaco' do STP. O Root Bridge envia BPDUs a cada 2s; os switches não-root repassam esses BPDUs. Se um switch parar de receber BPDUs, inicia a contagem do Max Age." 
+      },
+
+      { 
+        question: "Qual timer define por quanto tempo um switch aguarda sem receber BPDUs antes de declarar que o Root caiu?", 
+        options: ["Hello Time", "Forward Delay", "Max Age", "Hold Time"], 
+        answer: "Max Age", 
+        explanation: "O Max Age (padrão 20s) é o tempo máximo que um switch mantém informações de BPDU sem renovação. Após esse período sem BPDUs, o switch declara falha e inicia o processo de reeleição." 
+      },
+
+      { 
+        question: "No pior cenário do STP 802.1D, qual é o tempo total de reconvergência após uma falha indireta?", 
+        options: ["15 segundos", "30 segundos", "50 segundos", "65 segundos"], 
+        answer: "50 segundos", 
+        explanation: "O pior cenário soma: Max Age (20s) + Listening (15s) + Learning (15s) = 50 segundos. Em falha direta (link down detectado imediatamente), os 20s de Max Age podem ser suprimidos, reduzindo para 30s." 
+      },
+
+      { 
+        question: "Qual é a função do Forward Delay no STP?", 
+        options: ["Definir o intervalo entre BPDUs", "Determinar o tempo máximo sem BPDU", "Definir o tempo que a porta permanece em cada estado intermediário (Listening e Learning)", "Calcular o custo do caminho até o Root"], 
+        answer: "Definir o tempo que a porta permanece em cada estado intermediário (Listening e Learning)", 
+        explanation: "O Forward Delay (padrão 15s) é o tempo que a porta fica em Listening e depois mais 15s em Learning antes de entrar em Forwarding. Ele existe para evitar loops temporários durante a convergência." 
+      },
+
+      { 
+        question: "Por que os timers STP devem ser configurados APENAS no Root Bridge?", 
+        options: ["Porque apenas o Root Bridge possui interface de gerência", "Porque o Root Bridge distribui os timers via BPDUs e toda a rede os segue automaticamente", "Porque switches não-root não possuem suporte a timers", "Porque timers em switches não-root causam loops"], 
+        answer: "Porque o Root Bridge distribui os timers via BPDUs e toda a rede os segue automaticamente", 
+        explanation: "Os timers Hello Time, Max Age e Forward Delay são campos do BPDU enviado pelo Root Bridge. Todos os switches da rede aprendem e obedecem esses valores via BPDU. Configurar timers em switches não-root não tem efeito enquanto o Root atual estiver ativo." 
+      },
+
+      { 
+        question: "Qual é a diferença entre uma falha direta e uma falha indireta no contexto do STP?", 
+        options: ["Falha direta afeta o Root; falha indireta afeta switches não-root", "Falha direta é detectada imediatamente via link down; falha indireta requer aguardar o Max Age expirar", "Falha direta ocorre em fibra; falha indireta em cobre", "Não há diferença prática entre elas"], 
+        answer: "Falha direta é detectada imediatamente via link down; falha indireta requer aguardar o Max Age expirar", 
+        explanation: "Em falha direta, o switch detecta link down instantaneamente e inicia a transição. Em falha indireta (switch intermediário falha sem derrubar o link físico), o switch aguarda o Max Age (20s) sem receber BPDUs para declarar falha — daí o total de 50s." 
+      },
+
+      { 
+        question: "Qual é o tempo total de convergência STP no cenário de falha direta (link físico detectado como down)?", 
+        options: ["20 segundos", "30 segundos", "50 segundos", "15 segundos"], 
+        answer: "30 segundos", 
+        explanation: "Em falha direta, o switch detecta imediatamente que o link caiu e ignora o Max Age. A convergência é: Listening (15s) + Learning (15s) = 30 segundos. Ainda assim, 30s é muito lento para ambientes modernos, o que motivou o RSTP." 
+      },
+
+      { 
+        question: "Em qual estado da linha do tempo STP (802.1D) o switch popula a tabela CAM enquanto ainda não encaminha dados?", 
+        options: ["0s–20s: Max Age", "20s–35s: Listening", "35s–50s: Learning", "Acima de 50s: Forwarding"], 
+        answer: "35s–50s: Learning", 
+        explanation: "Na linha do tempo de falha indireta: 0-20s (Max Age, switch congelado), 20-35s (Listening, ouve BPDUs mas não aprende MAC), 35-50s (Learning, popula CAM sem encaminhar), 50s+ (Forwarding, operação normal)." 
+      },
+
+      { 
+        question: "Qual alternativa ao STP 802.1D foi criada para resolver o problema da convergência lenta de 50 segundos?", 
+        options: ["MSTP (802.1s)", "PVST+", "RSTP (802.1w)", "VTP"], 
+        answer: "RSTP (802.1w)", 
+        explanation: "O Rapid Spanning Tree Protocol (RSTP, IEEE 802.1w) foi criado especificamente para resolver a lentidão do 802.1D. O RSTP usa um mecanismo de negociação ponto a ponto e converge em menos de 1 segundo em topologias bem projetadas." 
+      },
+
+      { 
+        question: "Qual recurso Cisco permite que portas de acesso (conectadas a hosts) entrem diretamente em Forwarding, ignorando os estados Listening e Learning?", 
+        options: ["UDLD", "PortFast", "Loop Guard", "BPDU Guard"], 
+        answer: "PortFast", 
+        explanation: "O PortFast instrui o switch a colocar a porta diretamente em Forwarding, ignorando os 30s de estados intermediários. É seguro apenas em portas de acesso conectadas a hosts, nunca em uplinks entre switches. Deve ser combinado com BPDU Guard para segurança." 
+      },
+
+      { 
+      question: "Qual BPDU especial um switch envia em direção ao Root Bridge quando detecta uma mudança de topologia?", 
+      options: ["TC Flag BPDU", "TCA BPDU", "TCN BPDU", "Hello BPDU"], 
+      answer: "TCN BPDU", 
+      explanation: "O TCN (Topology Change Notification) é enviado pelo switch que detectou a mudança pela sua Root Port em direção ao Root Bridge. O vizinho responde com TCA (Topology Change Acknowledgment) e repassa o TCN para cima." 
+    },
+
+    { 
+      question: "Qual ação o Root Bridge executa ao receber um TCN de um switch da rede?", 
+      options: ["Reinicia todos os timers STP", "Envia BPDUs com a flag TC marcada para toda a rede", "Coloca todas as portas em Blocking", "Solicita reeleição imediata"], answer: "Envia BPDUs com a flag TC marcada para toda a rede", 
+      explanation: "Ao receber o TCN, o Root Bridge confirma com TCA e começa a enviar BPDUs com a flag TC (Topology Change) ativa para toda a topologia. Isso instrui todos os switches a acelerarem a expiração da tabela MAC." 
+    },
+
+    { 
+      question: "Qual é o efeito prático da flag TC nos switches que a recebem?", 
+      options: ["Aumentam o Hello Time para 10 segundos", "Reduzem o tempo de expiração da tabela MAC de 300s para o valor do Forward Delay (15s)", "Colocam todas as portas em Learning", "Reenviam seus próprios TCNs"], 
+      answer: "Reduzem o tempo de expiração da tabela MAC de 300s para o valor do Forward Delay (15s)", 
+      explanation: "O tempo padrão de envelhecimento da tabela MAC é 300s (5 minutos). Ao receber TC, os switches reduzem esse timer para 15s (Forward Delay), forçando a releitura rápida da topologia e evitando o envio de tráfego para portas antigas." 
+    },
+
+    { 
+      question: "Por que a redução do MAC aging para 15s após um TCN é necessária?", 
+      options: ["Para liberar memória nos switches", "Para evitar que tráfego seja enviado para portas antigas após a mudança de topologia", "Para acelerar a eleição do novo Root Bridge", "Para sincronizar os timers de todos os switches"], 
+      answer: "Para evitar que tráfego seja enviado para portas antigas após a mudança de topologia", 
+      explanation: "Sem o TCN, as entradas antigas da tabela MAC expirariam em 300s. Durante esse tempo, o switch enviaria tráfego para portas que já não são mais os caminhos corretos após a reconvergência, criando um 'black hole' de tráfego." 
+    },
+
+    { 
+      question: "Qual é o principal risco de um Root Bridge mal posicionado na topologia (switch lento no núcleo)?", 
+      options: ["Loops de Camada 2 imediatos", "Todo o tráfego da rede passa pelo switch lento, criando gargalo (bottleneck)", "Instabilidade nos timers STP", "Perda da tabela VLAN"], 
+      answer: "Todo o tráfego da rede passa pelo switch lento, criando gargalo (bottleneck)", 
+      explanation: "Como toda a árvore STP tem o Root Bridge como referência central, um switch de 10/100 Mbps eleito Root faz com que todos os caminhos convergam para ele. O resultado é latência elevada em toda a infraestrutura." 
+    },
+
+    { 
+      question: "O que é MAC Flapping e em qual cenário problemático ele ocorre?", 
+      options: ["Oscilação de links físicos por defeito de cabo", "Associação constante do mesmo MAC a múltiplas portas, causada por loop de Camada 2", "Expiração prematura da tabela CAM por Max Age baixo", "Conflito de Bridge ID entre dois switches"], 
+      answer: "Associação constante do mesmo MAC a múltiplas portas, causada por loop de Camada 2", 
+      explanation: "Em um loop, o mesmo frame chega ao switch por portas diferentes em frações de segundo. O switch atualiza a entrada do MAC origem continuamente, causando instabilidade total na tabela CAM — o MAC Flapping. É um sintoma claro de Broadcast Storm." 
+    },
+
+    { 
+      question: "Qual falha ocorre quando um cabo de fibra ótica permite tráfego em apenas uma direção, e como o switch afetado reage?", 
+      options: ["PVID Inconsistency — a porta entra em estado Broken", "Unidirectional Link Failure — o switch para de receber BPDUs e pode colocar a porta em Forwarding criando loop", "Hello Timeout — o switch aumenta o intervalo de envio de BPDUs", "MAC Flapping — a tabela CAM é apagada"], 
+      answer: "Unidirectional Link Failure — o switch para de receber BPDUs e pode colocar a porta em Forwarding criando loop", 
+      explanation: "Em uma falha unidirecional (link fantasma), o Switch B para de receber BPDUs do Switch A. Após o Max Age, ele assume que o caminho está livre e coloca a porta em Forwarding, criando um loop físico. Soluções: UDLD e Loop Guard." 
+    },
+
+    { 
+      question: "O que causa o estado 'Broken' (BKN) em uma porta STP e como verificá-lo?", 
+      options: ["Falha física no cabo — verificar com 'show interfaces'", "Configuração de VLANs nativas diferentes em um trunk (PVID Inconsistent) — verificar com 'show spanning-tree inconsistentports'", "Root Bridge inadequado — verificar com 'show spanning-tree vlan'", "Loop de Camada 2 ativo — verificar com 'show mac address-table'"], 
+      answer: "Configuração de VLANs nativas diferentes em um trunk (PVID Inconsistent) — verificar com 'show spanning-tree inconsistentports'", 
+      explanation: "Quando dois switches têm VLANs nativas diferentes no trunk, o STP detecta essa inconsistência (PVID Inconsistent) e coloca a porta em estado Broken para evitar vazamento de tráfego entre VLANs. Diagnóstico: 'show spanning-tree inconsistentports'." 
+    },
+
+    { 
+      question: "Em um cenário de Broadcast Storm ativo, por que o acesso remoto SSH ao switch é perdido?", 
+      options: ["O SSH é desabilitado automaticamente pelo STP", "A CPU do switch está a 100% processando frames BUM, sem recursos para processar pacotes de gerência", "O endereço IP do switch é apagado da tabela ARP", "O link de gerência é colocado em Blocking pelo STP"], 
+      answer: "A CPU do switch está a 100% processando frames BUM, sem recursos para processar pacotes de gerência", 
+      explanation: "Durante uma Broadcast Storm, os switches ficam processando milhares de cópias de frames por segundo. A CPU do plano de controle satura completamente, inviabilizando qualquer comunicação de gerência. A solução geralmente exige acesso físico via console." 
+    },
+
+    { 
+      question: "Qual é a sequência correta do mecanismo TCN após a detecção de falha de link?", 
+      options: ["Root envia TC → Switch detecta falha → TCN sobe → TCA confirma", "Switch detecta falha → envia TCN via Root Port → vizinho responde TCA → Root envia flag TC para toda a rede", "Switch detecta falha → Root reinicia STP → todos entram em Blocking", "TCN é enviado por flooding → Root confirma → tabela MAC é apagada"], 
+      answer: "Switch detecta falha → envia TCN via Root Port → vizinho responde TCA → Root envia flag TC para toda a rede", 
+      explanation: "Sequência TCN: 1) Switch detecta link down/up para Forwarding, 2) Envia TCN pela Root Port, 3) Vizinho confirma com TCA e repassa TCN para cima, 4) Root recebe TCN e passa a enviar BPDUs com flag TC, 5) Todos os switches reduzem MAC aging para 15s." 
+    }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

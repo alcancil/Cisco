@@ -33,6 +33,7 @@
     - [🧠 O Próximo Passo (Antes de Evoluir)](#-o-próximo-passo-antes-de-evoluir)
     - [🎯 O que vem a seguir](#-o-que-vem-a-seguir)
     - [🧭 Direcionamento para o Estudo](#-direcionamento-para-o-estudo)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento)
 
 ---
 
@@ -424,7 +425,7 @@ No próximo documento, vamos sair da teoria descritiva e entrar na **engenharia 
 
 👉 Esse próximo passo é essencial para:
 
-- Fixar o conteúdo para o exame 
+- Fixar o conteúdo para o exame
 - Desenvolver raciocínio lógico para troubleshooting
 - Preparar o terreno para os laboratórios práticos
 
@@ -434,4 +435,21 @@ No próximo documento, vamos sair da teoria descritiva e entrar na **engenharia 
 
 - Você já entende o funcionamento do STP  
 - Agora é hora de **pensar como o protocolo pensa**
-  
+
+---
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
+
+- **Simulados temáticos (10 questões / 10 min cada):**
+  1 - [Evolução do STP e BPDU](Arquivos/Simulado/01.html)
+  2 - [Bridge ID: Estrutura e Cálculo](Arquivos/Simulado/02.html)
+  3 - [Eleição do Root Bridge e Papéis de Porta](Arquivos/Simulado/03.html)
+  4 - [Critérios de Desempate (Tie-Breakers)](Arquivos/Simulado/04.html)
+  5 - [Consolidação: Estados, Convergência e Evolução](Arquivos/Simulado/05.html)
+
+- **Simulado completo STP:** [50 questões — 75 minutos](Arquivos/Simulado/completo.html)
+
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](Arquivos/Simulado/dashboard.html)
+ 

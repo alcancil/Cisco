@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Timers: Hello Time, Max Age e Forward Delay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Timers: Hello Time, Max Age e Forward Delay</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a composição completa do Bridge ID (BID) no STP moderno com Extended System ID?", 
+        options: ["Apenas Priority + MAC Address (64 bits)", "Priority (4 bits) + VLAN ID (12 bits) + MAC Address (48 bits)", "Priority (8 bits) + MAC Address (48 bits) + Port ID (8 bits)", "VLAN ID (16 bits) + MAC Address (48 bits)"], 
+        answer: "Priority (4 bits) + VLAN ID (12 bits) + MAC Address (48 bits)", 
+        explanation: "O BID moderno tem 64 bits totais: 4 bits de Priority (múltiplos de 4096), 12 bits de Extended System ID (VLAN ID somado à Priority) e 48 bits de MAC Address. Essa estrutura garante unicidade por switch e por VLAN simultaneamente." 
+      },
+
+      { 
+        question: "Um switch com Priority padrão operando na VLAN 1 tem MAC 0000.0000.ABCD. Qual é o seu Bridge ID completo?", 
+        options: ["32768 : 0000.0000.ABCD", "32769 : 0000.0000.ABCD", "4096 : 0000.0000.ABCD", "1 : 0000.0000.ABCD"], 
+        answer: "32769 : 0000.0000.ABCD", 
+        explanation: "O cálculo do BID com Extended System ID: Priority padrão (32768) + VLAN ID (1) = 32769. BID final: 32769 : 0000.0000.ABCD. Esse é o valor exibido no 'show spanning-tree' — a Priority já inclui o VLAN ID somado." 
+      },
+
+      { 
+        question: "Quais são os valores válidos de Bridge Priority no STP? Por que eles seguem esse padrão?", 
+        options: ["Qualquer valor entre 0 e 65535", "Apenas múltiplos de 4096, porque os 4 bits de Priority permitem apenas 16 valores distintos", "Apenas valores pares entre 0 e 32768", "Qualquer valor múltiplo de 100"], 
+        answer: "Apenas múltiplos de 4096, porque os 4 bits de Priority permitem apenas 16 valores distintos", 
+        explanation: "Os 4 bits do campo Priority comportam 16 combinações (0 a 15), cada uma representando um múltiplo de 4096. Valores válidos: 0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768 (padrão), 36864... até 61440. Tentar configurar um valor fora dessa escala gera erro na CLI." 
+      },
+
+      { 
+        question: "Por que o MAC Address está presente no Bridge ID se a Priority já pode ser configurada manualmente?", 
+        options: ["Para identificar o fabricante do switch na eleição", "Para garantir unicidade absoluta — dois switches com a mesma Priority configurada nunca empatarão definitivamente pois MACs são globalmente únicos", "Para calcular o custo do caminho até o Root", "Para identificar a VLAN nativa do trunk"], 
+        answer: "Para garantir unicidade absoluta — dois switches com a mesma Priority configurada nunca empatarão definitivamente pois MACs são globalmente únicos", explanation: "O MAC é o desempate final da eleição. Se dois switches têm a mesma Priority, o menor MAC vence. Como endereços MAC são globalmente únicos (OUI + identificador), é matematicamente impossível haver empate absoluto na eleição do Root Bridge." 
+      },
+
+      { 
+        question: "O administrador quer garantir que SW-CORE seja sempre o Root Bridge primário. Qual priority deve configurar?", 
+        options: ["32768 — valor padrão", "65535 — valor máximo", "4096 — valor suficientemente baixo para vencer qualquer switch com prioridade padrão", "0 — mas apenas se nenhum outro switch tiver prioridade configurada"], 
+        answer: "4096 — valor suficientemente baixo para vencer qualquer switch com prioridade padrão", 
+        explanation: "Qualquer switch com Priority padrão (32768) será derrotado por um switch com 4096, pois o menor BID vence. A convenção de boas práticas é: Root primário com 4096, Root secundário com 8192. O comando é: 'spanning-tree vlan X priority 4096'." 
+      },
+
+      { 
+        question: "O que é o Extended System ID no contexto do Bridge ID?", 
+        options: ["Um campo opcional para identificar o nome do switch", "Os 12 bits do BID que incorporam o VLAN ID à Priority, permitindo que o BID seja único por VLAN", "Um campo de segurança para autenticar BPDUs", "O número de série do switch usado como desempate"], 
+        answer: "Os 12 bits do BID que incorporam o VLAN ID à Priority, permitindo que o BID seja único por VLAN", 
+        explanation: "O Extended System ID (12 bits) foi introduzido para suportar PVST+. Ele incorpora o VLAN ID à Priority, tornando o BID único por instância STP. Por isso a Priority 'real' que aparece no 'show spanning-tree' não é exatamente 32768, mas sim 32768 + VLAN ID." 
+      },
+
+      { 
+        question: "No comando 'show spanning-tree', em qual condição o Root ID e o Bridge ID exibidos serão idênticos?", 
+        options: ["Quando o STP está desabilitado na VLAN", "Quando o switch é o próprio Root Bridge da topologia", "Quando todas as portas estão em Blocking", "Quando o switch não recebeu nenhum BPDU ainda"], 
+        answer: "Quando o switch é o próprio Root Bridge da topologia", 
+        explanation: "Se Root ID = Bridge ID no 'show spanning-tree', o switch reconhece a si mesmo como Root Bridge. Nesse caso, ele não propaga o BID de nenhum vizinho — propaga o seu próprio como Root ID. Todas as suas portas ativas são Designated Ports em Forwarding." 
+      },
+
+      { 
+        question: "Um switch tem Priority configurada como 28672 e opera na VLAN 10. Qual o valor numérico que aparece como Priority no 'show spanning-tree'?", 
+        options: ["28672", "28682", "10", "32768"], 
+        answer: "28682", 
+        explanation: "Com Extended System ID ativo: Priority real = Priority configurada + VLAN ID = 28672 + 10 = 28682. Esse é o valor exibido no 'show spanning-tree vlan 10'. Sempre somar o VLAN ID à Priority base para obter o BID efetivo." 
+      },
+
+      { 
+        question: "Por que a Priority tem precedência sobre o MAC Address na eleição do Root Bridge?", 
+        options: ["Porque o MAC Address pode ser duplicado em switches antigos", "Porque a Priority é configurável pelo administrador, permitindo controle intencional da eleição — o MAC é apenas o desempate final não controlável", "Porque o MAC Address é processado mais lentamente pelos switches", "Porque a Priority foi definida assim pelo RFC e não há justificativa técnica"], 
+        answer: "Porque a Priority é configurável pelo administrador, permitindo controle intencional da eleição — o MAC é apenas o desempate final não controlável", explanation: "A Priority (configurável em múltiplos de 4096) é o mecanismo pelo qual o administrador controla quem será o Root Bridge. Como o MAC é fixo e determinado pelo fabricante, usá-lo como critério primário tornaria a eleição imprevisível. A Priority garante que o engenheiro — e não o acaso — decida o Root." 
+      },
+
+      { 
+        question: "Qual é o risco de não configurar manualmente a Priority do Root Bridge em um ambiente de produção?", 
+        options: ["O STP não funciona sem Priority configurada manualmente", "O switch com o menor MAC Address vence — que pode ser o mais antigo ou menos capaz, criando gargalo na rede", "Todos os switches ficam com Priority igual e nenhum Root é eleito", "O PVST+ é ativado automaticamente para compensar"], 
+        answer: "O switch com o menor MAC Address vence — que pode ser o mais antigo ou menos capaz, criando gargalo na rede", 
+        explanation: "Sem configuração manual, a eleição usa Priority padrão (32768 para todos) e desempata pelo menor MAC. MACs menores tendem a ser de equipamentos mais antigos — um switch de 10/100Mbps pode ser eleito Root, forçando todo o tráfego da rede por um dispositivo de baixa capacidade." 
+      }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

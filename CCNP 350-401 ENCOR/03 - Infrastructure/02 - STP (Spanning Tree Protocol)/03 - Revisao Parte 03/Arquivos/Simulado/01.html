@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Evolução do STP e BPDU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Evolução do STP e BPDU</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "O STP foi padronizado como IEEE 802.1D. Qual versão posterior resolveu o problema da convergência lenta mantendo os mesmos fundamentos de eleição?", options: ["PVST+ (Cisco proprietário)", "MSTP (IEEE 802.1s)", "RSTP (IEEE 802.1w)", "VTP (Cisco proprietário)"], 
+        answer: "RSTP (IEEE 802.1w)",
+         explanation: "O RSTP (IEEE 802.1w) é a evolução direta do 802.1D. Mantém os mesmos conceitos de eleição, papéis de porta e BPDUs, mas usa mecanismo de Proposal/Agreement para convergir em menos de 1 segundo — eliminando os 50s do STP clássico." 
+      },
+
+      { 
+        question: "Por que é fundamental estudar o STP 802.1D mesmo sabendo que o RSTP é mais moderno e rápido?", 
+        options: ["Porque o RSTP não é suportado por switches Cisco", "Porque o RSTP é uma evolução direta do 802.1D — sem entender o clássico, não se entende o design do RSTP nem se faz troubleshooting em ambientes mistos", "Porque o 802.1D ainda é obrigatório em redes IPv6", "Porque o RSTP não suporta múltiplas VLANs"], 
+        answer: "Porque o RSTP é uma evolução direta do 802.1D — sem entender o clássico, não se entende o design do RSTP nem se faz troubleshooting em ambientes mistos", explanation: "O RSTP foi projetado para resolver as limitações específicas do 802.1D. Ambientes de produção ainda possuem switches legados operando com STP clássico. Sem entender a base, é impossível diagnosticar comportamentos em topologias mistas ou compreender por que o RSTP funciona como funciona." 
+      },
+
+      { 
+        question: "Qual versão do STP opera com uma instância por VLAN, oferecendo mais controle mas com maior consumo de CPU?", 
+        options: ["IEEE 802.1D", "RSTP (802.1w)", "PVST+ (Cisco proprietário)", "MSTP (802.1s)"], 
+        answer: "PVST+ (Cisco proprietário)", 
+        explanation: "O PVST+ (Per-VLAN Spanning Tree Plus) é uma implementação proprietária da Cisco que roda uma instância STP separada para cada VLAN. Isso permite balanceamento de tráfego entre VLANs, mas aumenta o consumo de CPU proporcional ao número de VLANs ativas." 
+      },
+
+      { 
+        question: "Qual a interpretação prática de um BPDU recebido por um switch de seu vizinho?", 
+        options: ["'Você deve bloquear esta porta imediatamente'", "'Eu sou o switch X, acredito que o Root é Y, e meu custo acumulado até ele é Z'", "'O Root Bridge mudou — inicie nova eleição'", "'Este link está com falha — ignore os BPDUs'"], 
+        answer: "'Eu sou o switch X, acredito que o Root é Y, e meu custo acumulado até ele é Z'", 
+        explanation: "Essa é a interpretação prática do BPDU: o switch remetente anuncia sua identidade (Sender Bridge ID), quem ele acredita ser o Root Bridge (Root ID) e o custo acumulado até esse Root (Root Path Cost). Com essas informações, o switch receptor decide seus papéis de porta." 
+      },
+
+      { 
+        question: "Qual é o campo mais importante de um BPDU segundo o documento, e por quê?", 
+        options: ["Port ID — porque identifica a porta de saída para desempate", "Root ID — porque identifica o Root Bridge que o remetente reconhece como líder da topologia", "Timers — porque controlam toda a convergência", "Root Path Cost — porque determina o melhor caminho"], 
+        answer: "Root ID — porque identifica o Root Bridge que o remetente reconhece como líder da topologia", 
+        explanation: "O Root ID é o campo mais importante do BPDU porque é por meio dele que os switches concordam sobre quem é o líder da topologia. Ao comparar Root IDs recebidos com seu próprio BID, cada switch decide se se rende ao líder atual ou propaga um BID melhor." 
+      },
+
+      { 
+        question: "Quem é o responsável por GERAR BPDUs originais em uma topologia STP convergida?", 
+        options: ["Todos os switches geram e enviam BPDUs próprios a cada 2 segundos", "Apenas o Root Bridge gera BPDUs originais; os demais switches apenas propagam", "Apenas os switches com Root Port geram BPDUs", "O switch com maior número de portas ativas gera os BPDUs"], 
+        answer: "Apenas o Root Bridge gera BPDUs originais; os demais switches apenas propagam", 
+        explanation: "Após a convergência, apenas o Root Bridge origina BPDUs (Hello BPDUs a cada 2s). Os switches não-root propagam esses BPDUs atualizando o campo Root Path Cost. Essa distinção é crítica: se os BPDUs pararem de chegar, o switch aguarda o Max Age (20s) antes de declarar falha." 
+      },
+
+      { 
+        question: "Qual protocolo STP foi desenvolvido para ambientes com grande número de VLANs, agrupando-as em instâncias para escalar?", 
+        options: ["PVST+", "RSTP (802.1w)", "MSTP (802.1s)", "STP 802.1D"], 
+        answer: "MSTP (802.1s)", 
+        explanation: "O MSTP (Multiple Spanning Tree Protocol, IEEE 802.1s) agrupa múltiplas VLANs em instâncias STP, reduzindo drasticamente o número de processos em execução. É a solução para redes com centenas de VLANs onde rodar uma instância por VLAN (PVST+) seria inviável." 
+      },
+
+      { 
+        question: "Qual campo do BPDU é utilizado como critério de desempate e identifica a porta específica de onde o BPDU foi enviado?", 
+        options: ["Root ID", "Sender Bridge ID", "Root Path Cost", "Port ID"], 
+        answer: "Port ID", 
+        explanation: "O Port ID (composto por Port Priority + Port Number) identifica a porta exata do switch remetente que originou o BPDU. Ele é usado como quarto e último critério de desempate na eleição da Root Port, quando Root Path Cost, Sender BID e Port Priority são iguais." 
+      },
+
+      { 
+        question: "O que acontece quando um switch para de receber BPDUs pelo caminho que considera ser o melhor até o Root Bridge?", 
+        options: ["Coloca a porta em Forwarding imediatamente para assumir o caminho", "Aguarda o Max Age (20s) expirar antes de declarar falha e iniciar transição", "Envia um ICMP para o Root Bridge verificando conectividade", "Reinicia todas as portas para Blocking e inicia nova eleição completa"], 
+        answer: "Aguarda o Max Age (20s) expirar antes de declarar falha e iniciar transição", 
+        explanation: "O Max Age (20s) é o tempo de segurança antes de o switch declarar que o caminho para o Root falhou. Ele aguarda para evitar reações precipitadas a perdas temporárias de BPDU. Após o Max Age, inicia a transição da porta alternativa: Listening (15s) → Learning (15s) → Forwarding." 
+      },
+
+      { 
+        question: "Qual a sequência lógica de operação do STP desde o boot até a topologia convergida?", 
+        options: ["Bloqueio de portas → Eleição do Root → Cálculo de custo → Troca de BPDUs", "Troca de BPDUs → Eleição do Root Bridge → Cálculo do melhor caminho → Bloqueio dos caminhos redundantes", "Eleição do Root → Troca de BPDUs → Bloqueio → Cálculo de custo", "Cálculo de custo → Bloqueio → Eleição do Root → Troca de BPDUs"], 
+        answer: "Troca de BPDUs → Eleição do Root Bridge → Cálculo do melhor caminho → Bloqueio dos caminhos redundantes", 
+        explanation: "Essa é a sequência exata e dependente: 1) Switches trocam BPDUs, 2) Elegem o Root Bridge pelo menor BID, 3) Calculam o menor custo acumulado até o Root (Root Path Cost), 4) Bloqueiam as portas redundantes. Cada etapa depende da anterior — sem Root eleito, não há referência para calcular custos." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

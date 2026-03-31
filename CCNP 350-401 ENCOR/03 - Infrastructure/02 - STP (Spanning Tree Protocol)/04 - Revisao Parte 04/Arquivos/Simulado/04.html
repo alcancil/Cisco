@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Algoritmo Mental e Resolução de Topologias</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Algoritmo Mental e Resolução de Topologias</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a sequência correta do algoritmo mental para resolver qualquer topologia STP?", 
+        options: ["Root Port → Designated Port → Root Bridge → Blocking", "Root Bridge → Root Path Cost → Root Port → Designated Port → Blocking → Desempate se necessário", "Blocking → Root Port → Root Bridge → Designated Port", "Desempate → Root Bridge → Root Port → Blocking → Designated Port"], 
+        answer: "Root Bridge → Root Path Cost → Root Port → Designated Port → Blocking → Desempate se necessário", 
+        explanation: "O algoritmo mental do STP segue 6 passos obrigatórios e dependentes: 1) Identificar o Root Bridge (menor BID), 2) Calcular Root Path Cost para todos os switches, 3) Eleger Root Port em cada switch não-root (menor custo), 4) Eleger Designated Port em cada segmento (mais próximo do Root), 5) Definir restantes como Blocking, 6) Aplicar critérios de desempate se houver empate." 
+      },
+
+      { 
+        question: "Por que cada etapa do algoritmo STP depende obrigatoriamente da anterior?", 
+        options: ["Por limitação técnica do protocolo — os switches processam em ordem fixa", "Porque sem Root Bridge eleito não há referência de custo; sem custo calculado não há critério para Root Port; sem Root Port definida não há critério para Designated Port", "Porque os switches aguardam confirmação de cada etapa antes de prosseguir", "Porque a ordem foi definida arbitrariamente pelo IEEE 802.1D"], 
+        answer: "Porque sem Root Bridge eleito não há referência de custo; sem custo calculado não há critério para Root Port; sem Root Port definida não há critério para Designated Port", 
+        explanation: "A dependência é lógica e fundamental: o Root Bridge é o ponto de referência — sem ele, não há como calcular custo. O Root Path Cost determina a Root Port — sem ele, não há como eleger a RP. A Root Port define o papel do switch no segmento — sem ela, não há como definir a Designated Port. Pular etapas resulta em conclusões erradas." 
+      },
+
+      { 
+        question: "Qual é a regra de quantidade para Root Ports e Designated Ports no STP?", 
+        options: ["Root Port: 1 por topologia / Designated Port: ilimitadas", "Root Port: 1 por switch não-root / Designated Port: 1 por segmento de rede", "Root Port: 1 por VLAN / Designated Port: 1 por switch", "Root Port: ilimitadas por switch / Designated Port: 1 por topologia"], 
+        answer: "Root Port: 1 por switch não-root / Designated Port: 1 por segmento de rede", 
+        explanation: "Regras absolutas do STP: cada switch não-root tem exatamente 1 Root Port (a porta de menor custo até o Root). Cada segmento de rede (link entre dois switches) tem exatamente 1 Designated Port (a porta do switch mais próximo do Root naquele segmento). Essas regras de quantidade garantem a topologia em árvore sem loops." 
+      },
+
+      { 
+        question: "No passo 5 do algoritmo mental (definir portas bloqueadas), qual é a pergunta que o engenheiro deve fazer para cada porta?", 
+        options: ["'Esta porta tem custo menor que 19?'", "'Esta porta é Root Port ou Designated Port?' — se não for nenhuma das duas, vai para Blocking", "'Esta porta está conectada a um host ou a outro switch?'", "'Esta porta tem Priority menor que 128?'"], 
+        answer: "'Esta porta é Root Port ou Designated Port?' — se não for nenhuma das duas, vai para Blocking", 
+        explanation: "O passo 5 é simples e definitivo: toda porta que não ganhou o papel de Root Port (melhor caminho até o Root no switch) nem Designated Port (melhor caminho no segmento) é automaticamente Non-Designated e vai para Blocking. Não existe outro papel — ou a porta encaminha (RP/DP) ou bloqueia." 
+      },
+
+      { 
+        question: "Em qual situação o passo 6 (critérios de desempate) é necessário na resolução de uma topologia?", 
+        options: ["Sempre — o passo 6 é executado em todas as topologias", "Apenas quando dois switches têm o mesmo MAC Address", "Quando dois ou mais caminhos resultam em Root Path Cost idêntico para um switch ou segmento", "Apenas em topologias com mais de 10 switches"], 
+        answer: "Quando dois ou mais caminhos resultam em Root Path Cost idêntico para um switch ou segmento", 
+        explanation: "Os critérios de desempate são aplicados apenas quando há empate: quando dois caminhos para o Root têm o mesmo custo acumulado (Root Path Cost igual), o STP não pode usar o critério principal. Aplica-se então na ordem: Sender Bridge ID → Sender Port Priority → Sender Port Number, até que o empate seja resolvido." 
+      },
+
+      { 
+        question: "Qual é o resultado final de uma topologia STP corretamente convergida segundo o algoritmo mental?", 
+        options: ["Todos os links físicos em estado Forwarding simultaneamente", "Topologia sem loops com apenas um caminho ativo por destino — portas em RP/DP em Forwarding, Non-Designated em Blocking", "Todas as portas em estado Learning aguardando convergência completa", "Root Bridge com todas as portas em Blocking e demais switches em Forwarding"], 
+        answer: "Topologia sem loops com apenas um caminho ativo por destino — portas em RP/DP em Forwarding, Non-Designated em Blocking", 
+        explanation: "O resultado final do STP é uma topologia lógica em árvore: sem loops, com exatamente um caminho ativo entre qualquer par de switches. Root Ports e Designated Ports ficam em Forwarding (encaminham dados). Non-Designated ficam em Blocking (monitoram BPDUs, prontas para assumir em falha). Os cabos redundantes permanecem fisicamente conectados." 
+      },
+
+      { 
+        question: "Como o engenheiro deve calcular o Root Path Cost para um switch com dois caminhos até o Root?", 
+        options: ["Usar apenas o custo do link diretamente conectado ao Root", "Calcular o custo total de cada caminho (somando todos os link costs no percurso) e comparar os totais — o menor é o Root Path Cost usado", "Usar a média dos dois caminhos como Root Path Cost", "Usar o maior custo para garantir segurança na eleição"], 
+        answer: "Calcular o custo total de cada caminho (somando todos os link costs no percurso) e comparar os totais — o menor é o Root Path Cost usado", 
+        explanation: "Para cada caminho possível até o Root, soma-se o custo de cada link no percurso. Exemplo: Caminho A via dois links de 1Gbps = 4+4=8. Caminho B via três links de 1Gbps = 4+4+4=12. O switch usa o caminho A (custo 8) como Root Path Cost — a porta de entrada do Caminho A é eleita Root Port." 
+      },
+
+      { 
+        question: "Por que o documento 04 é descrito como o ponto onde o conhecimento 'deixa de ser teórico e passa a ser operacional e estratégico'?", 
+        options: ["Porque inclui comandos CLI de configuração avançada", "Porque ensina a prever e calcular manualmente o comportamento do STP antes de qualquer configuração — transformando teoria em capacidade de análise e design", "Porque cobre apenas cenários de falha e troubleshooting", "Porque é o último documento antes dos laboratórios práticos com equipamentos reais"], 
+        answer: "Porque ensina a prever e calcular manualmente o comportamento do STP antes de qualquer configuração — transformando teoria em capacidade de análise e design", explanation: "Os documentos 01-03 explicaram o que o STP é e como funciona. O documento 04 ensina como pensar como o protocolo pensa — calcular Root Ports, Designated Ports, aplicar critérios de desempate e prever a topologia resultante. Essa capacidade analítica é o que diferencia um administrador que configura o STP de um engenheiro que projeta e domina o STP." 
+      },
+
+      { 
+        question: "Em uma topologia triangular com três switches e links de mesma velocidade, quantas portas ficarão em Blocking após a convergência?", 
+        options: ["Nenhuma — todas as portas ficam em Forwarding", "Uma — exatamente a Non-Designated Port que quebra o loop", "Duas — uma em cada switch não-root", "Três — uma por switch"], 
+        answer: "Uma — exatamente a Non-Designated Port que quebra o loop", 
+        explanation: "Em uma topologia triangular: Root Bridge tem 2 DPs (Forwarding). SW2 tem 1 RP + 1 DP (ambas Forwarding). SW3 tem 1 RP (Forwarding) + 1 porta no segmento SW2-SW3 que perde a eleição de DP (Blocking). Total: 5 portas em Forwarding, 1 em Blocking. Exatamente a quantidade mínima para eliminar o loop sem remover redundância." 
+      },
+
+      { 
+        question: "Como o algoritmo mental do STP garante que a topologia resultante seja sempre uma árvore (sem loops)?", 
+        options: ["Desativando fisicamente links redundantes após a convergência", "Garantindo que exista exatamente 1 Root Port por switch e 1 Designated Port por segmento — matematicamente impossível formar loop nessa estrutura", "Usando TTL nos BPDUs para limitar a propagação", "Através de verificação periódica de loops a cada Hello Time"], 
+        answer: "Garantindo que exista exatamente 1 Root Port por switch e 1 Designated Port por segmento — matematicamente impossível formar loop nessa estrutura", explanation: "A estrutura de árvore é garantida pelas regras de quantidade: 1 RP por switch cria um único caminho de cada switch até o Root (sem loops). 1 DP por segmento garante que cada link de interconexão tem exatamente um lado ativo. Toda porta que violaria essas regras vai para Blocking — tornando matematicamente impossível a existência de loop na topologia convergida." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
