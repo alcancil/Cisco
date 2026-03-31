@@ -869,6 +869,9 @@ O objetivo será transformar conhecimento em habilidade prática.
 
 Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
 
+👉 **Acesse todos os simulados aqui:**  
+🔗 [Abrir Simulados STP - Parte 01](Arquivos/Simulado/)  
+  
 - **Simulados temáticos (10 questões / 10 min cada):**
   1 - [Frame & Loop](Arquivos/Simulado/01.html)
   2 - [BPDU & Eleição](Arquivos/Simulado/02.html)
