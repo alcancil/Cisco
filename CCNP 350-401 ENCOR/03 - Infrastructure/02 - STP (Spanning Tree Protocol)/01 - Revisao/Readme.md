@@ -870,7 +870,7 @@ O objetivo será transformar conhecimento em habilidade prática.
 Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
 
 👉 **Acesse todos os simulados aqui:**  
-🔗 [Abrir Simulados STP - Parte 01](Arquivos/Simulado/)  
+🔗 [Abrir Simulados STP - Parte 01](Arquivos/Simulado/index.html)  
   
 - **Simulados temáticos (10 questões / 10 min cada):**
   1 - [Frame & Loop](Arquivos/Simulado/01.html)
