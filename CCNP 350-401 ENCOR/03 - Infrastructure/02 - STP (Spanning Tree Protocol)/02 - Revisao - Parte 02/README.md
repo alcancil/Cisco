@@ -522,7 +522,7 @@ Antes de partir para o laboratório, valide sua compreensão teórica com os sim
 🔗 [Abrir Simulados STP - Parte 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte-02/Arquivos/Simulado/)
   
 - **Simulados temáticos (10 questões / 10 min cada):**  
-  1 - [Port States: Os 5 Estados](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado/01.html)  
+  1 - [Port States: Os 5 Estados](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte-02/Arquivos/Simulado/01.html)  
   2 - [Timers: Hello Time, Max Age e Forward Delay](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado/Simulado/02.html)  
   3 - [Switch L2 vs L3 e Tabela CAM](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado//03.html)
   4 - [Reconvergência e Fluxo de Boot-Up](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado//04.html)
