@@ -447,7 +447,7 @@ Antes de partir para o laboratório, valide sua compreensão teórica com os sim
   2 - [Bridge ID: Estrutura e Cálculo](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/02.html)  
   3 - [Eleição do Root Bridge e Papéis de Porta](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/03.html)  
   4 - [Critérios de Desempate (Tie-Breakers)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/04.html)  
-  5 - [Consolidação: Estados, Convergência e Evolução](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/05.html)  
+  5 - [Consolidação: Estados, Convergência e Evolução](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/05.html)  
   
 - **Simulado completo STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/03%20-%20Revisao03/Arquivos/Simulado/completo.html)  
   
