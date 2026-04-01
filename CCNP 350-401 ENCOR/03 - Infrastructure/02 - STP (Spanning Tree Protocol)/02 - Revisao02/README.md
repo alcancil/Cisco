@@ -519,16 +519,16 @@ Spanning Tree Protocol (STP) – Engenharia e Funcionamento Interno
 Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
 
 👉 **Acesse todos os simulados aqui:**  
-🔗 [Abrir Simulados STP - Parte 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado/)  
+🔗 [Abrir Simulados STP - Parte 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado/)  
   
 - **Simulados temáticos (10 questões / 10 min cada):**  
-  1 - [Port States: Os 5 Estados](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado/01.html)  
-  2 - [Timers: Hello Time, Max Age e Forward Delay](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado/Simulado/02.html)  
-  3 - [Switch L2 vs L3 e Tabela CAM](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado//03.html)
-  4 - [Reconvergência e Fluxo de Boot-Up](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado//04.html)
-  5 - [Topologia 3-Tier, Decisão de Encaminhamento e Visão Geral](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado//05.html)
+  1 - [Port States: Os 5 Estados](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado/01.html)  
+  2 - [Timers: Hello Time, Max Age e Forward Delay](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado/Simulado/02.html)  
+  3 - [Switch L2 vs L3 e Tabela CAM](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado//03.html)
+  4 - [Reconvergência e Fluxo de Boot-Up](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado//04.html)
+  5 - [Topologia 3-Tier, Decisão de Encaminhamento e Visão Geral](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado//05.html)
 
-- **Simulado completo STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado/completo.html)
+- **Simulado completo STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado/completo.html)
 
-- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte02/Arquivos/Simulado/dashboard.html)
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao02/Arquivos/Simulado/dashboard.html)
 
