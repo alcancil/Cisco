@@ -519,7 +519,7 @@ Spanning Tree Protocol (STP) – Engenharia e Funcionamento Interno
 Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
 
 👉 **Acesse todos os simulados aqui:**  
-🔗 [Abrir Simulados STP - Parte 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao-Parte-02/Arquivos/Simulado/)
+🔗 [Abrir Simulados STP - Parte 02](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado/)  
   
 - **Simulados temáticos (10 questões / 10 min cada):**  
   1 - [Port States: Os 5 Estados](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao%20-%20Parte%2002/Arquivos/Simulado/01.html)  
