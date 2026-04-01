@@ -191,7 +191,7 @@ Este projeto está em constante evolução.
 - Dashboard:
   - Painel de desempenho consolidado
 
-📘 Parte 04 – Revisão - [Simulado Parte 04](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/02%20-%20Revisao04/Arquivos/Simulado/)
+📘 Parte 04 – Revisão - [Simulado Parte 04](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/04%20-%20Revisao04/Arquivos/Simulado/)
 
 ---
 
