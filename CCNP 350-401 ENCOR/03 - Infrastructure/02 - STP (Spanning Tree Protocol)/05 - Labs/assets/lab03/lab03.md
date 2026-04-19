@@ -394,4 +394,6 @@ Estamos analisando o SW5 para decidir o estado final da porta dele. Para decidir
 | SW6        | Fa0/4     | **BLK**       | ---             |
 | SW6        | Fa0/3     | RP            | ---             |
 
+![TOPOLOGIA COMPLETA](06.png)
+
 </details>
