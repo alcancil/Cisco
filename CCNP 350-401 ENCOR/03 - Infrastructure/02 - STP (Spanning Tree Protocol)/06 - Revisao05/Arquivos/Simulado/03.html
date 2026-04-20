@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Estados, Timers e Troubleshooting 02</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Estados, Timers e Troubleshooting 02</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+{
+    question: "Um switch recebe uma BPDU de configuração com a flag 'Topology Change' (TC) definida. O que ele faz imediatamente?",
+    options: ["Entra em modo de bloqueio em todas as portas", "Limpa sua tabela MAC (CAM Table)", "Envia uma BPDU TCN para o Root Bridge", "Envia uma BPDU de configuração com a flag TC para seus vizinhos"],
+    answer: "Envia uma BPDU de configuração com a flag TC para seus vizinhos",
+    explanation: "Quando um switch recebe uma BPDU com a flag TC, ele sabe que a topologia mudou e deve encaminhar essa informação para os seus vizinhos para garantir que todos fiquem cientes da alteração."
+  },
+  {
+    question: "Durante o processo de convergência do STP clássico, qual o tempo padrão para a transição do estado de 'Listening' para 'Learning'?",
+    options: ["10 segundos", "15 segundos", "20 segundos", "2 segundos"],
+    answer: "15 segundos",
+    explanation: "O tempo padrão do STP clássico para o estado de 'Listening' é 15 segundos (Forward Delay). O mesmo tempo é aplicado ao estado de 'Learning'."
+  },
+  {
+    question: "Em um cenário de troubleshooting, você executa o comando 'show spanning-tree vlan X'. Qual comando exibe informações detalhadas sobre as BPDUs recebidas e enviadas por interface?",
+    options: ["show spanning-tree counters", "show spanning-tree interface X detail", "show spanning-tree summary", "show spanning-tree blockedports"],
+    answer: "show spanning-tree interface X detail",
+    explanation: "O comando 'show spanning-tree interface X detail' exibe contadores detalhados de BPDUs, incluindo quantos foram recebidos e enviados, o que é fundamental para o troubleshooting de comunicação STP."
+  },
+  {
+    question: "O STP clássico (802.1D) define o timer 'Max Age'. Qual é o valor padrão desse timer?",
+    options: ["15 segundos", "20 segundos", "30 segundos", "10 segundos"],
+    answer: "20 segundos",
+    explanation: "O valor padrão do timer 'Max Age' no STP clássico é 20 segundos. Este é o tempo máximo que um switch espera sem receber BPDUs do Root Bridge antes de considerar a topologia inválida."
+  },
+  {
+    question: "Quando uma porta STP está no estado de 'Learning', qual tipo de tráfego ela processa?",
+    options: ["Apenas BPDUs de configuração", "Apenas tráfego de dados de broadcast", "BPDUs e quadros de dados (para aprender MACs), mas não encaminha dados", "Todos os tipos de tráfego (dados e BPDUs)"],
+    answer: "BPDUs e quadros de dados (para aprender MACs), mas não encaminha dados",
+    explanation: "No estado de 'Learning', a porta processa BPDUs e 'escuta' quadros de dados para preencher a tabela MAC, mas ela **não encaminha** quadros de dados para o destino final."
+  },
+  {
+    question: "Você suspeita que uma interface está 'flappando' (ligando e desligando) e causando instabilidade no STP. Qual recurso da Cisco pode ser usado para detectar e mitigar esse problema automaticamente?",
+    options: ["BPDU Guard", "Root Guard", "PortFast", "Loop Guard"],
+    answer: "Loop Guard",
+    explanation: "O Loop Guard é projetado para evitar loops causados por falhas unidirecionais de link. Se uma porta deixa de receber BPDUs, o Loop Guard a coloca em um estado 'loop-inconsistent' em vez de fazê-la passar diretamente para o estado de encaminhamento."
+  },
+  {
+    question: "No PVST+, como é calculado o Bridge ID (BID) de um switch para uma VLAN específica?",
+    options: ["MAC Address + Prioridade (32768)", "Prioridade (4 bits) + Extensão do Sistema (VLAN ID, 12 bits) + MAC Address (48 bits)", "Prioridade (32768) + Endereço IP do switch", "Endereço MAC do switch + Índice da interface"],
+    answer: "Prioridade (4 bits) + Extensão do Sistema (VLAN ID, 12 bits) + MAC Address (48 bits)",
+    explanation: "No PVST+, o Bridge ID é composto pela prioridade do bridge (4 bits), a extensão do sistema (VLAN ID, 12 bits) e o endereço MAC do switch (48 bits). Isso permite que o BID seja único para cada VLAN."
+  },
+  {
+    question: "Você deseja forçar uma convergência mais rápida do STP clássico. Qual método é considerado uma **má prática** de rede e não deve ser usado?",
+    options: ["Habilitar PortFast em portas de acesso", "Reduzir os timers de Forward Delay e Max Age manualmente", "Implementar RSTP em toda a rede", "Configurar VLANs separadas para tráfego de dados"],
+    answer: "Reduzir os timers de Forward Delay e Max Age manualmente",
+    explanation: "Reduzir os timers manuamente é uma má prática, pois pode levar a instabilidades na rede e falhas na convergência, já que o STP clássico depende desses tempos para funcionar corretamente."
+  },
+  {
+    question: "Na saída do comando 'show spanning-tree', o que indica o estado da porta 'BLK' (Blocking)?",
+    options: ["A porta é a Root Port", "A porta é a Designated Port", "A porta é uma Alternate Port e está descartando dados", "A porta está em modo de erro (failure)"],
+    answer: "A porta é uma Alternate Port e está descartando dados",
+    explanation: "O estado 'BLK' (Blocking) indica que a porta está no modo de bloqueio, descartando quadros de dados para evitar loops, mas ainda processando BPDUs."
+  },
+    {
+      question: "No contexto de troubleshooting, qual comando exibe o motivo exato pelo qual uma porta está no estado 'Blocking'?",
+      options: ["show spanning-tree counters", "show spanning-tree summary blockedports", "show spanning-tree detail", "show spanning-tree interface X counters"],
+      answer: "show spanning-tree detail",
+      explanation: "O comando 'show spanning-tree detail' fornece informações detalhadas sobre cada interface, incluindo o motivo pelo qual ela está bloqueada (por exemplo, se é uma porta Alternate ou se foi bloqueada por um recurso de segurança)."
+    }  
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
