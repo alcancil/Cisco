@@ -4,6 +4,20 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.0] - 2026-04-10
+
+### Added
+
+- Implementação do Simulado 05 (Parte 05): Arquitetura de Decisão e Diferenças de Protocolo.
+- Adição de 10 novas questões focadas em glossário técnico (Root Port, Designated Port, Alternate Port).
+- Seção comparativa detalhada entre STP (802.1D) e PVST+ (Cisco).
+
+## [1.4.2] - 2026-04-10
+
+### Changed
+
+- Ajuste das questões dos simulados
+
 ## [1.4.1] - 2026-03-31
 
 ### Added
