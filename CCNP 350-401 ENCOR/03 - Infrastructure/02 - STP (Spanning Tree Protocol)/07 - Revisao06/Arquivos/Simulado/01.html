@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Convergência, Falhas e BPDUs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP — Convergência, Falhas e BPDUs</h1>
+      <p class="mb-6 text-slate-600">10 questões baseadas no Lab 07 (STP 802.1D). Cenários reais: eleição de Root Bridge, convergência, desempate por Port ID, propagação de BPDUs e comportamento de portas bloqueadas. Você terá 10 minutos.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // --- ETAPA 1: Root Bridge ---
+      {
+        question: "No Lab 07, o SW02 foi eleito Root Bridge. Qual foi o critério decisivo, dado que todos os switches estavam com prioridade padrão?",
+        options: [
+          "O SW02 tinha a maior prioridade configurada",
+          "O SW02 tinha o menor endereço MAC (aabb.cc00.1000)",
+          "O SW02 foi configurado manualmente como root",
+          "O SW02 tinha o maior número de portas ativas"
+        ],
+        answer: "O SW02 tinha o menor endereço MAC (aabb.cc00.1000)",
+        explanation: "Com todos os switches usando a prioridade padrão (32768), o Bridge ID fica empatado na parte de prioridade. O desempate é feito pelo menor MAC Address. No lab, SW01=aabb.cc00.7000, SW02=aabb.cc00.1000 e SW03=aabb.cc00.2000 — portanto SW02 vence."
+      },
+      {
+        question: "No output do 'show spanning-tree vlan 1' do SW02, aparece a linha 'This bridge is the root'. O que essa mensagem indica?",
+        options: [
+          "Que o SW02 está em modo de failover",
+          "Que o SW02 reconhece a si mesmo como Root Bridge — Root ID e Bridge ID são idênticos",
+          "Que o SW02 tem a maior prioridade numérica",
+          "Que o SW02 está em estado de Listening"
+        ],
+        answer: "Que o SW02 reconhece a si mesmo como Root Bridge — Root ID e Bridge ID são idênticos",
+        explanation: "Quando o Root ID e o Bridge ID do switch são iguais, o switch sabe que ele próprio é a Root Bridge e exibe 'This bridge is the root'. Isso é confirmado no lab: ambos os campos mostram Priority 32769 e Address aabb.cc00.1000."
+      },
+      // --- ETAPA 1: Wireshark + Root Bridge ---
+      {
+        question: "Na captura Wireshark do enlace SW01 <-> SW02, o Root Path Cost capturado era 0. O que esse valor prova?",
+        options: [
+          "Que o link entre SW01 e SW02 está com falha",
+          "Que o BPDU foi originado pelo próprio SW01",
+          "Que o BPDU foi originado pela Root Bridge (SW02), pois ela não tem custo acumulado para chegar a si mesma",
+          "Que a prioridade do switch está zerada"
+        ],
+        answer: "Que o BPDU foi originado pela Root Bridge (SW02), pois ela não tem custo acumulado para chegar a si mesma",
+        explanation: "O Root Path Cost representa o custo acumulado até o Root Bridge. Como a Root Bridge É a origem, ela envia BPDUs com Root Path Cost = 0. A igualdade entre Root Bridge ID e Bridge ID no BPDU confirma que o remetente é ele mesmo o root."
+      },
+      // --- ETAPA 2: Convergência ---
+      {
+        question: "No Lab 07, ao derrubar a interface Et0/1 do SW01 (sua Root Port), qual mensagem apareceu PRIMEIRO no debug spanning-tree events?",
+        options: [
+          "STP: VLAN0001 Et0/2 -> learning",
+          "STP: VLAN0001 new root port Et0/2, cost 200",
+          "STP: VLAN0001 Et0/2 -> forwarding",
+          "%LINK-5-CHANGED: Interface Ethernet0/1, changed state to administratively down"
+        ],
+        answer: "STP: VLAN0001 new root port Et0/2, cost 200",
+        explanation: "O STP reage imediatamente à perda do caminho: a primeira mensagem de STP é a eleição da nova Root Port (Et0/2 com custo 200). Logo depois vêm as transições de estado: Listening → Learning → Forwarding. O custo 200 reflete que agora o caminho até a root passa por um switch intermediário."
+      },
+      {
+        question: "Durante a convergência no Lab 07, por qual sequência de estados a Et0/2 do SW01 passou antes de encaminhar tráfego?",
+        options: [
+          "Blocking → Forwarding",
+          "Listening → Forwarding",
+          "Listening → Learning → Forwarding",
+          "Learning → Listening → Forwarding"
+        ],
+        answer: "Listening → Learning → Forwarding",
+        explanation: "Essa é a sequência clássica do STP 802.1D para uma porta que sai do estado Alternate. No Listening a porta processa BPDUs mas não encaminha tráfego. No Learning ela começa a popular a tabela MAC. Só no Forwarding o tráfego de dados flui. O debug do lab confirma exatamente essa ordem com timestamps."
+      },
+      {
+        question: "Por que o SW01 enviou um TCN (Topology Change Notification) logo após a queda da Et0/1?",
+        options: [
+          "Para informar ao Root Bridge que a eleição deve ser reiniciada",
+          "Para avisar os outros switches sobre a mudança na topologia, permitindo que atualizem suas tabelas MAC com aging acelerado",
+          "Para bloquear todas as portas da rede temporariamente",
+          "Para solicitar um novo endereço IP ao servidor DHCP"
+        ],
+        answer: "Para avisar os outros switches sobre a mudança na topologia, permitindo que atualizem suas tabelas MAC com aging acelerado",
+        explanation: "O TCN é o mecanismo pelo qual o STP sinaliza uma mudança topológica. Ao recebê-lo, os outros switches reduzem o tempo de aging da tabela MAC para 15s (Forward Delay), descartando entradas possivelmente obsoletas e evitando encaminhamento incorreto de frames."
+      },
+      // --- ETAPA 3: Desempate Port ID ---
+      {
+        question: "No Lab 07, o SW03 estava conectado ao SW02 por dois links paralelos. Qual foi o critério FINAL que definiu qual porta do SW03 virou Root Port?",
+        options: [
+          "O menor Port ID configurado no próprio SW03",
+          "O menor Sender Port ID do SW02 (switch remetente do BPDU)",
+          "O maior Root Path Cost acumulado",
+          "A porta com menor número de interface no SW03"
+        ],
+        answer: "O menor Sender Port ID do SW02 (switch remetente do BPDU)",
+        explanation: "Com dois links paralelos para o mesmo switch (SW02), Root Bridge ID, Root Path Cost e Sender Bridge ID estão todos empatados. O critério final é o Sender Port ID — ou seja, o Port ID da porta do SW02 que enviou o BPDU. A porta do SW02 com menor Port ID (128.1, Et0/0) vence, e o link conectado a ela no SW03 vira Root Port."
+      },
+      {
+        question: "Um erro comum em prova e troubleshooting: ao tentar forçar um caminho no SW03 usando dois links para a Root Bridge, em qual switch a configuração de port-priority deve ser feita?",
+        options: [
+          "No SW03, pois ele é quem elege a Root Port",
+          "No SW02, pois o critério decisivo é o Sender Port ID — o Port ID do switch que ENVIA o BPDU",
+          "Em ambos os switches simultaneamente",
+          "No Root Bridge original, independente da topologia"
+        ],
+        answer: "No SW02, pois o critério decisivo é o Sender Port ID — o Port ID do switch que ENVIA o BPDU",
+        explanation: "Esse é um dos insights mais importantes do lab: o SW03 não usa o próprio Port ID para desempate — ele usa o Port ID do SW02 (remetente). Portanto, o comando 'spanning-tree port-priority' deve ser configurado no SW02 para influenciar a decisão do SW03. Alterar no SW03 não tem efeito nesse cenário."
+      },
+      // --- ETAPA 4: Propagação e Root Path Cost ---
+      {
+        question: "No Lab 07, um SW04 foi adicionado conectado ao SW03. Qual era o Root Path Cost nas BPDUs capturadas no enlace SW03 → SW04?",
+        options: [
+          "0 — pois o SW04 está próximo da root",
+          "100 — custo de um enlace de 10 Mbps",
+          "200 — custo acumulado de dois enlaces de 10 Mbps (SW02→SW03 + SW03→SW04)",
+          "400 — custo dobrado por redundância"
+        ],
+        answer: "200 — custo acumulado de dois enlaces de 10 Mbps (SW02→SW03 + SW03→SW04)",
+        explanation: "Cada enlace de 10 Mbps tem custo 100 no padrão IEEE 802.1D. O SW03 recebe o BPDU do SW02 com RPC=0, soma 100 (custo do enlace de entrada) e reenvia com RPC=100. O SW04 recebe esse BPDU com RPC=100, e ao capturar no Wireshark vemos exatamente 200. Isso prova a propagação distribuída do custo."
+      },
+      // --- ETAPA 5: Porta em Blocking ---
+      {
+        question: "No Lab 07, a porta em estado Blocking (Alternate) do SW03 não encaminhava tráfego de usuário, porém o Wireshark mostrou atividade no enlace. O que estava sendo recebido nessa porta?",
+        options: [
+          "Frames ARP dos hosts conectados",
+          "BPDUs do switch vizinho — o Plano de Controle permanece ativo mesmo com o Plano de Dados bloqueado",
+          "Frames ICMP do teste de ping",
+          "Nenhum tráfego — a porta estava completamente desligada"
+        ],
+        answer: "BPDUs do switch vizinho — o Plano de Controle permanece ativo mesmo com o Plano de Dados bloqueado",
+        explanation: "Uma porta em Blocking NÃO está 'morta'. O Plano de Dados (encaminhamento de tráfego de usuário) está bloqueado, mas o Plano de Controle (STP) segue ativo: a porta continua recebendo BPDUs para monitorar a topologia. Isso é essencial para que ela possa assumir rapidamente como Root Port em caso de falha no caminho principal."
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "lab07-stp";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

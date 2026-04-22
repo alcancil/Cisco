@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Lab 07: Timers, Custos, Comandos e Design de Rede</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP — Lab 07: Timers, Custos, Comandos e Design de Rede</h1>
+      <p class="mb-6 text-slate-600">10 questões baseadas no Lab 07 (STP 802.1D). Foco em: timers padrão, custos IEEE por velocidade de link, filtros Wireshark, comandos CLI, Bridge ID com sys-id-ext, impacto em produção e controle da topologia. Você terá 10 minutos.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // --- Timers STP ---
+      {
+        question: "No Lab 07, a topologia mostra Hello Time = 2s, Max Age = 20s e Forward Delay = 15s. Qual timer define o intervalo com que o Root Bridge envia BPDUs para a rede?",
+        options: [
+          "Max Age (20s)",
+          "Forward Delay (15s)",
+          "Hello Time (2s)",
+          "Aging Time (300s)"
+        ],
+        answer: "Hello Time (2s)",
+        explanation: "O Hello Time define o intervalo de envio de BPDUs pelo Root Bridge. O valor padrão é 2 segundos. Isso garante que os switches vizinhos detectem rapidamente a ausência de BPDUs (após Max Age = 20s) caso o Root Bridge falhe."
+      },
+      {
+        question: "O Max Age padrão do STP 802.1D é 20 segundos. O que acontece quando um switch não-root deixa de receber BPDUs pelo tempo equivalente ao Max Age?",
+        options: [
+          "A porta passa imediatamente para o estado Forwarding",
+          "O switch considera o BPDU expirado e inicia o processo de recálculo da topologia",
+          "O switch desativa todas as portas e aguarda um novo Root Bridge",
+          "O switch envia um TCN e reinicia o processo de eleição do Root Bridge"
+        ],
+        answer: "O switch considera o BPDU expirado e inicia o processo de recálculo da topologia",
+        explanation: "O Max Age (padrão 20s) é o tempo de validade de um BPDU. Se um switch não-root não receber nenhum BPDU durante esse período, ele entende que perdeu o contato com o Root Bridge e começa a recalcular a topologia — iniciando as transições de estado nas portas."
+      },
+      // --- Custos IEEE por velocidade ---
+      {
+        question: "No Lab 07, as interfaces operam a 10 Mbps e o custo por enlace é 100. Em um ambiente de produção com interfaces GigabitEthernet (1 Gbps), qual seria o custo padrão IEEE 802.1D por enlace?",
+        options: [
+          "100",
+          "19",
+          "4",
+          "1"
+        ],
+        answer: "4",
+        explanation: "O custo IEEE 802.1D (short mode) segue a relação inversa com a velocidade: 10 Mbps = 100, 100 Mbps = 19, 1 Gbps = 4. Por isso, o Root Path Cost acumulado em um lab com interfaces Ethernet (10 Mbps) é muito maior do que em redes de produção com GigabitEthernet."
+      },
+      {
+        question: "No lab, o SW03 está a 1 hop do Root Bridge usando interfaces de 10 Mbps. Se os links fossem trocados por FastEthernet (100 Mbps), qual seria o Root Path Cost do SW03 em direção ao Root Bridge?",
+        options: [
+          "100",
+          "19",
+          "4",
+          "38"
+        ],
+        answer: "19",
+        explanation: "O custo IEEE para uma interface FastEthernet (100 Mbps) é 19. Como o SW03 está a exatamente 1 hop do Root Bridge, seu Root Path Cost seria 19 — o custo do único enlace entre eles. Em comparação, no lab com Ethernet (10 Mbps) esse custo era 100."
+      },
+      // --- Filtros Wireshark ---
+      {
+        question: "No Lab 07, qual filtro Wireshark deve ser aplicado para visualizar exclusivamente os BPDUs que carregam a flag de Topology Change Notification (TCN)?",
+        options: [
+          "stp",
+          "eth.dst == 01:80:c2:00:00:00",
+          "stp.flags.tc == 1",
+          "stp.root.hw == aabb.cc00.1000"
+        ],
+        answer: "stp.flags.tc == 1",
+        explanation: "O filtro 'stp.flags.tc == 1' isola especificamente os BPDUs com a flag Topology Change ativa. Esse filtro é essencial para identificar eventos de mudança topológica durante troubleshooting — por exemplo, ao simular a queda de um link como na Etapa 2 do lab."
+      },
+      {
+        question: "No Lab 07, para isolar no Wireshark apenas os BPDUs originados pela Root Bridge (SW02, MAC aabb.cc00.1000), qual filtro deve ser usado?",
+        options: [
+          "stp.flags.tc == 1",
+          "stp",
+          "eth.dst == 01:80:c2:00:00:00",
+          "stp.root.hw == aa:bb:cc:00:10:00"
+        ],
+        answer: "stp.root.hw == aa:bb:cc:00:10:00",
+        explanation: "O filtro 'stp.root.hw == aa:bb:cc:00:10:00' filtra apenas BPDUs cujo campo Root Bridge ID corresponde ao MAC do SW02. Isso permite verificar se o switch correto está atuando como root e se os BPDUs estão sendo propagados corretamente pela topologia."
+      },
+      // --- Bridge ID e sys-id-ext ---
+      {
+        question: "No Lab 07, o output do 'show spanning-tree' exibe 'Priority 32769 (priority 32768 sys-id-ext 1)'. Por que a prioridade efetiva é 32769 e não 32768?",
+        options: [
+          "Porque o switch adicionou automaticamente 1 ao valor configurado",
+          "Porque o sys-id-ext soma o VLAN ID (1) ao valor base da prioridade (32768), resultando em 32769",
+          "Porque o Bridge ID foi alterado manualmente pelo administrador",
+          "Porque o switch está em modo de failover e incrementa a prioridade"
+        ],
+        answer: "Porque o sys-id-ext soma o VLAN ID (1) ao valor base da prioridade (32768), resultando em 32769",
+        explanation: "No PVST+ da Cisco, o Bridge ID incorpora o sys-id-ext (System ID Extension), que corresponde ao VLAN ID. Para a VLAN 1, o sys-id-ext é 1, portanto: 32768 (prioridade base) + 1 (VLAN ID) = 32769. Isso garante que cada VLAN tenha um Bridge ID único."
+      },
+      // --- Comandos CLI ---
+      {
+        question: "No Lab 07, qual comando foi usado para acompanhar em tempo real as transições de estado das portas durante a simulação de falha na Etapa 2?",
+        options: [
+          "show spanning-tree detail",
+          "show spanning-tree vlan 1",
+          "debug spanning-tree events",
+          "show spanning-tree summary"
+        ],
+        answer: "debug spanning-tree events",
+        explanation: "O 'debug spanning-tree events' exibe em tempo real as mensagens de transição de estado do STP — como 'new root port', 'Et0/2 -> listening', 'Et0/2 -> learning', 'Et0/2 -> forwarding'. Foi exatamente esse output que permitiu correlacionar a teoria de convergência com o comportamento real do protocolo no lab."
+      },
+      // --- Design de rede / Impacto em produção ---
+      {
+        question: "O Lab 07 alerta que deixar a eleição do Root Bridge baseada apenas no menor MAC Address é um erro de design. Qual switch DEVERIA ser o Root Bridge em uma rede corporativa bem projetada?",
+        options: [
+          "O switch de acesso mais próximo dos usuários finais",
+          "O switch com o maior número de portas disponíveis",
+          "O switch de Core ou Distribuição, com maior capacidade e melhor posicionamento na topologia",
+          "O switch com a prioridade padrão mais alta (32768)"
+        ],
+        answer: "O switch de Core ou Distribuição, com maior capacidade e melhor posicionamento na topologia",
+        explanation: "Em redes corporativas, o Root Bridge deve ser um switch de Core ou Distribuição — mais robusto e centralizado. Eleger um switch de acesso como root (o que pode ocorrer automaticamente pelo menor MAC) força o tráfego a seguir caminhos subótimos, aumentando latência e instabilidade. O correto é definir manualmente a prioridade para garantir o controle da topologia."
+      },
+      // --- Controle da topologia (seção final do lab) ---
+      {
+        question: "Ao final do Lab 07, é mostrado que é possível forçar um switch a ser o Root Bridge usando o comando 'spanning-tree vlan 1 priority 4096'. Por que o valor 4096 garante a vitória sobre os outros switches com prioridade padrão?",
+        options: [
+          "Porque 4096 é o valor máximo permitido pelo protocolo",
+          "Porque 4096 é menor que 32768 (prioridade padrão) — e no STP, menor Bridge ID vence",
+          "Porque 4096 é o único valor que desativa a eleição automática",
+          "Porque prioridades acima de 4096 são ignoradas pelo protocolo"
+        ],
+        answer: "Porque 4096 é menor que 32768 (prioridade padrão) — e no STP, menor Bridge ID vence",
+        explanation: "O Bridge ID é comparado do menor para o maior — quem tem o menor BID vence a eleição. Como a prioridade padrão é 32768, configurar 4096 garante que esse switch tenha o menor Bridge ID e seja eleito Root Bridge. As prioridades no STP devem ser múltiplos de 4096 (0, 4096, 8192, 12288... 61440)."
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "lab07-stp-02";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

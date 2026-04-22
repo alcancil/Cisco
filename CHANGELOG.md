@@ -4,6 +4,18 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.1] - 2026-04-22
+
+### Added
+
+- Implementação da Revisão 06 (Parte 07)
+- Expansão incremental do banco de questões
+
+### Changed
+
+- Continuidade da progressão teórica após a seção de laboratórios (Parte 06)
+- Refinamento da clareza técnica nas explicações
+
 ## [1.5.0] - 2026-04-10
 
 ### Added

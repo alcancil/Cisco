@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Modelo Mental, Portas e Análise de Topologia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP — Modelo Mental, Portas e Análise de Topologia</h1>
+      <p class="mb-6 text-slate-600">10 questões baseadas no Lab 07 (STP 802.1D). Foco em: modelo mental das 3 decisões, papéis de porta, MAC multicast STP, custo acumulado, comportamento do Root Bridge, Forward Delay e análise de topologia. Você terá 10 minutos.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // --- Modelo Mental: 3 decisões do STP ---
+      {
+        question: "O Lab 07 apresenta o STP como um processo de 3 decisões em sequência. Qual é a ordem correta dessas decisões?",
+        options: [
+          "Quem encaminha em cada segmento → Qual o melhor caminho → Quem é o Root Bridge",
+          "Quem é o Root Bridge → Qual o melhor caminho até a Root → Quem encaminha em cada segmento",
+          "Qual o menor custo → Quem é o Root Bridge → Quem bloqueia a porta",
+          "Quem tem o menor MAC → Quem tem o menor custo → Quem tem o maior Port ID"
+        ],
+        answer: "Quem é o Root Bridge → Qual o melhor caminho até a Root → Quem encaminha em cada segmento",
+        explanation: "O modelo mental do STP segue uma hierarquia determinística: 1) Elege o Root Bridge (menor Bridge ID), 2) Cada switch não-root determina sua Root Port (menor Root Path Cost até a root), 3) Em cada segmento, define quem é a Designated Port (melhor BPDU). Entender essa ordem permite prever o comportamento do STP sem decorar regras isoladas."
+      },
+      {
+        question: "A 'regra de ouro' do STP citada no Lab 07 é: 'O STP sempre escolhe o melhor BPDU'. O que torna um BPDU 'melhor' que outro?",
+        options: [
+          "O BPDU mais recente no tempo (menor timestamp) é sempre o melhor",
+          "O BPDU com o maior Root Path Cost é o preferido por garantir redundância",
+          "O BPDU com menor Root Bridge ID, menor Root Path Cost, menor Sender Bridge ID e menor Sender Port ID — nessa ordem",
+          "O BPDU recebido pela porta com maior velocidade de link é automaticamente o melhor"
+        ],
+        answer: "O BPDU com menor Root Bridge ID, menor Root Path Cost, menor Sender Bridge ID e menor Sender Port ID — nessa ordem",
+        explanation: "A comparação de BPDUs segue sempre 4 critérios em ordem de prioridade: 1º Root Bridge ID, 2º Root Path Cost, 3º Sender Bridge ID, 4º Sender Port ID. O BPDU 'melhor' é aquele com o menor valor no primeiro critério que os diferencia. Se um switch receber dois BPDUs, ele aplica esses critérios em cascata para decidir qual caminho seguir."
+      },
+      // --- MAC Multicast STP ---
+      {
+        question: "No Lab 07, os BPDUs são enviados para um endereço MAC específico. Qual é esse endereço de destino e por que ele é importante?",
+        options: [
+          "FF:FF:FF:FF:FF:FF — broadcast para garantir que todos os dispositivos recebam",
+          "01:80:C2:00:00:00 — endereço multicast reservado pelo IEEE para o STP, recebido por todos os switches mas não repassado por roteadores",
+          "00:00:00:00:00:01 — endereço unicast do Root Bridge",
+          "01:00:5E:00:00:01 — endereço multicast padrão de protocolos de roteamento"
+        ],
+        answer: "01:80:C2:00:00:00 — endereço multicast reservado pelo IEEE para o STP, recebido por todos os switches mas não repassado por roteadores",
+        explanation: "O endereço 01:80:C2:00:00:00 é o MAC multicast reservado pelo IEEE para o STP. Todos os switches processam frames destinados a esse endereço. Por ser um endereço de Layer 2 multicast, roteadores não repassam esses frames — o STP é confinado ao domínio de broadcast. No Wireshark, o filtro 'eth.dst == 01:80:c2:00:00:00' captura exatamente esses frames."
+      },
+      // --- Papéis de porta: Root Bridge sempre Designated ---
+      {
+        question: "No Lab 07, o SW02 é o Root Bridge. Ao verificar seu 'show spanning-tree vlan 1', todas as suas portas aparecem como 'Desg FWD'. Por que o Root Bridge NUNCA tem uma Root Port ou Alternate Port?",
+        options: [
+          "Porque o Root Bridge desativa automaticamente as portas redundantes",
+          "Porque o Root Bridge é o ponto de referência da topologia — todos os caminhos convergem para ele, então ele próprio não precisa de um caminho 'de volta' até si mesmo",
+          "Porque o Root Bridge usa um protocolo diferente nas suas portas",
+          "Porque o Root Bridge só opera em modo half-duplex"
+        ],
+        answer: "Porque o Root Bridge é o ponto de referência da topologia — todos os caminhos convergem para ele, então ele próprio não precisa de um caminho 'de volta' até si mesmo",
+        explanation: "Root Port é definida como 'a porta com o melhor caminho até o Root Bridge'. Como o Root Bridge É o Root Bridge, ele não precisa de um caminho para chegar a si mesmo — logo, nunca tem Root Port. Todas as suas portas são Designated (responsáveis por encaminhar tráfego nos seus respectivos segmentos), sempre em estado Forwarding."
+      },
+      // --- Alternate Port: função e comportamento ---
+      {
+        question: "No Lab 07, o SW01 possui a porta Et0/2 no estado Alternate (BLK). Qual é a função precisa de uma Alternate Port dentro da topologia STP?",
+        options: [
+          "Encaminhar tráfego como backup quando a Root Port está sobrecarregada",
+          "Ser o caminho alternativo pré-calculado até o Root Bridge, mantido em Blocking para evitar loop e pronto para assumir se a Root Port falhar",
+          "Substituir a Designated Port de um segmento em caso de falha",
+          "Enviar BPDUs apenas quando a Root Bridge solicita uma atualização de topologia"
+        ],
+        answer: "Ser o caminho alternativo pré-calculado até o Root Bridge, mantido em Blocking para evitar loop e pronto para assumir se a Root Port falhar",
+        explanation: "A Alternate Port representa o segundo melhor caminho até o Root Bridge. Ela fica em Blocking (não encaminha dados) para evitar loops, mas seu Plano de Controle permanece ativo recebendo BPDUs. Isso significa que ela tem informações atualizadas da topologia e pode assumir rapidamente como Root Port se o caminho principal falhar — como demonstrado na Etapa 2 do lab."
+      },
+      // --- Custo acumulado: como o SW03 processa o BPDU ---
+      {
+        question: "O Lab 07 mostra que o SW03 recebe um BPDU do SW02 com Root Path Cost = 0 e o reenvia para o SW04 com Root Path Cost = 100. Qual é o mecanismo exato dessa operação?",
+        options: [
+          "O SW03 substitui o Root Path Cost pelo número de hops até o Root Bridge",
+          "O SW03 soma o custo do enlace de entrada (a interface pela qual recebeu o BPDU) ao Root Path Cost recebido, e reenvia o resultado nas suas portas Designated",
+          "O SW03 calcula a média entre o custo recebido e o custo de todas as suas interfaces",
+          "O SW03 mantém o Root Path Cost original e adiciona apenas uma flag indicando a distância"
+        ],
+        answer: "O SW03 soma o custo do enlace de entrada (a interface pela qual recebeu o BPDU) ao Root Path Cost recebido, e reenvia o resultado nas suas portas Designated",
+        explanation: "Esse é o mecanismo central da propagação do Root Path Cost: ao receber um BPDU pela sua Root Port, o switch soma o custo daquela interface ao valor de Root Path Cost contido no BPDU. No lab, SW03 recebe RPC=0 do SW02 pelo enlace de 10 Mbps (custo 100), soma 100, e reenvia RPC=100. O SW04 repete o processo e reenvia com RPC=200. Isso constrói a 'distância lógica' distribuída de cada switch até o root."
+      },
+      // --- Forward Delay somado ---
+      {
+        question: "O Forward Delay padrão é 15 segundos. Isso se aplica a cada estado intermediário do STP. Qual é o tempo total mínimo para uma porta sair do estado Blocking e chegar ao estado Forwarding no STP 802.1D?",
+        options: [
+          "15 segundos — apenas o estado Listening",
+          "20 segundos — Max Age completo",
+          "30 segundos — 15s em Listening + 15s em Learning",
+          "50 segundos — Max Age + Forward Delay + Forward Delay"
+        ],
+        answer: "30 segundos — 15s em Listening + 15s em Learning",
+        explanation: "Uma porta em Blocking que precisa passar para Forwarding obrigatoriamente passa pelos estados Listening (15s = 1x Forward Delay) e Learning (15s = 1x Forward Delay). O total mínimo é 30 segundos. Esse é o tempo de convergência do STP clássico em condições normais — e o principal motivo pelo qual o RSTP foi criado, reduzindo esse tempo para menos de 1 segundo em muitos cenários."
+      },
+      // --- Impacto de portas bloqueadas em excesso ---
+      {
+        question: "O Lab 07 alerta que um excesso de portas em estado Blocking pode ser problemático. Em ambientes reais, qual técnica é citada para aproveitar melhor os links redundantes que estariam bloqueados?",
+        options: [
+          "Desativar o STP em todos os switches de acesso",
+          "Usar o protocolo LLDP para mapear os links redundantes",
+          "Balanceamento por VLAN usando PVST+, onde cada VLAN pode ter uma topologia STP diferente",
+          "Configurar todos os links redundantes como trunks 802.1Q"
+        ],
+        answer: "Balanceamento por VLAN usando PVST+, onde cada VLAN pode ter uma topologia STP diferente",
+        explanation: "O PVST+ (Per-VLAN Spanning Tree Plus) permite que cada VLAN tenha sua própria instância STP, com um Root Bridge diferente. Isso possibilita o balanceamento de carga Layer 2: um link pode estar bloqueado para a VLAN 10 mas ativo para a VLAN 20. Dessa forma, os links redundantes são aproveitados em vez de ficarem completamente inativos."
+      },
+      // --- Como alterar custo de interface ---
+      {
+        question: "No final do Lab 07, é apresentado o comando para alterar o custo de uma interface e influenciar o caminho STP. Qual é a sintaxe correta para aumentar o custo de uma interface no SW01 para a VLAN 1?",
+        options: [
+          "SW01(config)# spanning-tree vlan 1 priority 4096",
+          "SW01(config-if)# spanning-tree vlan 1 cost 200",
+          "SW01(config)# spanning-tree cost 200 vlan 1",
+          "SW01(config-if)# spanning-tree port-priority 64"
+        ],
+        answer: "SW01(config-if)# spanning-tree vlan 1 cost 200",
+        explanation: "O comando 'spanning-tree vlan 1 cost 200' é configurado no modo de interface (config-if) e altera o custo local dessa porta para o cálculo do Root Path Cost na VLAN 1. Aumentar o custo faz com que o STP prefira outros caminhos — útil para forçar o tráfego a evitar um link específico. Diferente do 'priority', que altera a eleição da Root Bridge, o 'cost' altera apenas a preferência de caminho."
+      },
+      // --- show spanning-tree: leitura do output ---
+      {
+        question: "Analisando o output do Lab 07, o SW01 exibe 'Et0/2 → Altn BLK 100 128.3 P2p'. O que o valor '128.3' representa nessa linha?",
+        options: [
+          "O Root Path Cost acumulado dessa porta até o Root Bridge",
+          "O Port ID da porta: prioridade de porta (128) + número da interface (3), usado como critério de desempate",
+          "O número de BPDUs recebidos nessa interface desde o último reset",
+          "A velocidade negociada do link em Mbps dividida por um fator de escala"
+        ],
+        answer: "O Port ID da porta: prioridade de porta (128) + número da interface (3), usado como critério de desempate",
+        explanation: "A coluna 'Prio.Nbr' no output do 'show spanning-tree' exibe o Port ID no formato Prioridade.Número. O valor 128 é a prioridade de porta padrão e o número 3 é o índice da interface (Et0/2 = porta 3 no sistema). Esse Port ID (Sender Port ID) é exatamente o critério final de desempate analisado na Etapa 3 do lab — quando dois links paralelos têm os três primeiros critérios empatados."
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "lab07-stp-03";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Cenários, Interpretação e Consolidação</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP — Cenários, Interpretação e Consolidação</h1>
+      <p class="mb-6 text-slate-600">10 questões baseadas no Lab 07 (STP 802.1D). Foco em: interpretação de cenários reais, estado Listening vs Learning, topologia lógica vs física, impacto de falhas em produção, Aging Time, diferença entre comandos CLI e consolidação dos conceitos. Você terá 10 minutos.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // --- Listening vs Learning: diferença precisa ---
+      {
+        question: "O cenário descreve os estados Listening e Learning. Qual é a diferença fundamental entre eles?",
+        options: [
+          "Listening encaminha dados de broadcast; Learning bloqueia tudo",
+          "Listening processa BPDUs mas NÃO aprende MACs; Learning processa BPDUs E aprende MACs — ambos NÃO encaminham dados de usuário",
+          "Listening e Learning são equivalentes — a diferença está apenas na duração de cada um",
+          "Listening é exclusivo do Root Bridge; Learning ocorre apenas nos switches não-root"
+        ],
+        answer: "Listening processa BPDUs mas NÃO aprende MACs; Learning processa BPDUs E aprende MACs — ambos NÃO encaminham dados de usuário",
+        explanation: "Essa é uma distinção crítica: no estado Listening, a porta processa BPDUs para determinar a topologia, mas a tabela MAC não é populada. No Learning, além de processar BPDUs, a porta passa a 'escutar' quadros de dados para aprender endereços MAC — mas ainda não encaminha esses quadros ao destino. Somente no Forwarding o tráfego de usuário flui normalmente."
+      },
+      // --- Topologia lógica vs física ---
+      {
+        question: "O STP cria uma 'topologia lógica em árvore' sobre a infraestrutura física. O que isso significa na prática?",
+        options: [
+          "O STP remove fisicamente os cabos redundantes da rede",
+          "O STP mantém todos os cabos físicos conectados, mas bloqueia logicamente as portas que criariam loops — criando um subconjunto ativo livre de loops sobre a topologia física redundante",
+          "O STP cria VLANs virtuais para isolar os loops de camada 2",
+          "O STP substitui o endereçamento MAC por endereços lógicos próprios"
+        ],
+        answer: "O STP mantém todos os cabos físicos conectados, mas bloqueia logicamente as portas que criariam loops — criando um subconjunto ativo livre de loops sobre a topologia física redundante",
+        explanation: "Essa é a essência do STP: os links físicos redundantes permanecem conectados (garantindo failover), mas o protocolo cria uma topologia lógica em forma de árvore ao colocar determinadas portas em Blocking. A topologia física tem loops; a topologia lógica ativa não tem. Quando um link falha, o STP reconstrói a árvore lógica aproveitando os links que estavam bloqueados."
+      },
+      // --- Bridge ID: composição básica ---
+      {
+        question: "O Bridge ID (BID) é o identificador único de cada switch no STP. De quais dois componentes ele é formado?",
+        options: [
+          "Endereço IP de gerência + número de série do equipamento",
+          "Prioridade do bridge (configurável) + Endereço MAC do switch",
+          "VLAN ID + Custo do link mais barato disponível",
+          "Hello Time + Forward Delay configurados no switch"
+        ],
+        answer: "Prioridade do bridge (configurável) + Endereço MAC do switch",
+        explanation: "O Bridge ID é formado por: Prioridade (2 bytes — padrão 32768, múltiplos de 4096) + MAC Address do switch (6 bytes). A comparação começa sempre pela prioridade: menor prioridade = melhor BID. Em caso de empate na prioridade, o desempate é feito pelo menor MAC Address — exatamente o que ocorreu no Lab 07, onde o SW02 (MAC aabb.cc00.1000) venceu sobre SW01 (aabb.cc00.7000) e SW03 (aabb.cc00.2000)."
+      },
+      // --- Impacto real de convergência em produção ---
+      {
+        question: "O cenário menciona que durante a convergência do STP 802.1D (30 a 50 segundos), aplicações críticas são afetadas. Quais tipos de serviço são mais prejudicados e por quê?",
+        options: [
+          "Apenas serviços HTTP, pois eles dependem de conexões persistentes de longa duração",
+          "Serviços sensíveis a latência e perda como VoIP e SSH, pois seus timers de sessão são menores que o tempo de convergência do STP",
+          "Apenas backups noturnos, pois competem com o tráfego de BPDUs durante a convergência",
+          "Somente aplicações que usam IPv6, pois o STP 802.1D não suporta esse protocolo"
+        ],
+        answer: "Serviços sensíveis a latência e perda como VoIP e SSH, pois seus timers de sessão são menores que o tempo de convergência do STP",
+        explanation: "O Lab 07 cita explicitamente VoIP e SSH como exemplos de serviços críticos afetados pela convergência do STP clássico. VoIP tolera no máximo 150ms de latência antes de degradar a qualidade; SSH e outras sessões TCP têm timers de keepalive que, se excedidos durante os 30-50s de convergência, encerram a sessão. Esse é o argumento central para migrar para RSTP em ambientes corporativos."
+      },
+      // --- Aging Time no output ---
+      {
+        question: "No output do 'show spanning-tree vlan 1' do cenário, aparece 'Aging Time 300 sec'. O que esse parâmetro controla e qual sua relação com o STP?",
+        options: [
+          "O tempo máximo que uma BPDU fica válida antes de ser descartada pelo switch",
+          "O tempo que o switch aguarda antes de iniciar uma nova eleição de Root Bridge",
+          "O tempo de expiração das entradas da tabela MAC — quando uma entrada não é renovada nesse período, é removida",
+          "O intervalo entre envios de BPDUs de configuração pelo Root Bridge"
+        ],
+        answer: "O tempo de expiração das entradas da tabela MAC — quando uma entrada não é renovada nesse período, é removida",
+        explanation: "O Aging Time (padrão 300s) controla por quanto tempo uma entrada permanece na tabela MAC sem ser renovada. Sua relação com o STP é importante: ao receber um TCN (Topology Change Notification), o switch reduz temporariamente o Aging Time para o valor do Forward Delay (15s), acelerando a expiração de entradas MAC possivelmente obsoletas — evitando que frames sejam encaminhados por um caminho que já não é mais o correto após a mudança de topologia."
+      },
+      // --- Cenário de leitura: o que mudou no SW01 após failover ---
+      {
+        question: "Antes do shutdown da Et0/1 no Lab 07, o SW01 tinha custo até a root = 100. Após o failover, o debug exibiu 'new root port Et0/2, cost 200'. Por que o custo dobrou?",
+        options: [
+          "Porque o STP penaliza automaticamente portas que sofreram falha anterior",
+          "Porque a Et0/2 agora é o único caminho, e ele passa por um switch intermediário — acumulando o custo de dois enlaces de 10 Mbps (100 + 100 = 200)",
+          "Porque o custo foi alterado manualmente durante o processo de convergência",
+          "Porque a Et0/2 opera em half-duplex, e o STP dobra o custo nesse modo"
+        ],
+        answer: "Porque a Et0/2 agora é o único caminho, e ele passa por um switch intermediário — acumulando o custo de dois enlaces de 10 Mbps (100 + 100 = 200)",
+        explanation: "Antes do shutdown, o SW01 chegava ao Root Bridge (SW02) diretamente via Et0/1: custo = 100 (1 enlace de 10 Mbps). Após o failover, o caminho passa a ser Et0/2 → switch intermediário → SW02: dois enlaces de 10 Mbps = custo 100 + 100 = 200. O Root Path Cost é sempre acumulado ao longo de todo o caminho até o Root Bridge — e cada enlace adicional soma seu custo ao total."
+      },
+      // --- Por que STP existe: o problema dos loops L2 ---
+      {
+        question: "O cenário define o STP como um protocolo que evita loops em redes com caminhos redundantes. O que aconteceria concretamente em uma rede sem STP com dois switches interconectados por dois cabos paralelos?",
+        options: [
+          "Os switches negociariam automaticamente qual cabo usar, desativando o outro",
+          "Os frames de broadcast seriam replicados indefinidamente entre os dois switches, consumindo toda a largura de banda e causando colapso da rede (broadcast storm)",
+          "O protocolo ARP desativaria automaticamente as interfaces redundantes para evitar conflitos",
+          "Os switches entrariam em modo de failover e apenas um dos links ficaria ativo por vez"
+        ],
+        answer: "Os frames de broadcast seriam replicados indefinidamente entre os dois switches, consumindo toda a largura de banda e causando colapso da rede (broadcast storm)",
+        explanation: "Sem STP, um frame de broadcast enviado por qualquer host seria replicado por ambos os links entre os switches, gerando cópias que voltariam ao switch original e seriam reenviadas novamente — infinitamente. Em segundos, o tráfego de broadcast consumiria 100% da largura de banda (broadcast storm), derrubando a rede. O STP resolve isso bloqueando uma das portas e mantendo apenas um caminho lógico ativo."
+      },
+      // --- Diferença show vs show detail na prática ---
+      {
+        question: "O cenário usa dois comandos diferentes: 'show spanning-tree' e 'show spanning-tree detail'. Qual informação está disponível no 'detail' mas NÃO no comando simples?",
+        options: [
+          "O estado atual das portas (FWD, BLK, Root, Desg)",
+          "O endereço MAC e a prioridade do Root Bridge",
+          "Eventos de mudança de topologia (TCN) e o Bridge ID detalhado com todos os campos separados",
+          "O custo acumulado (Root Path Cost) de cada interface"
+        ],
+        answer: "Eventos de mudança de topologia (TCN) e o Bridge ID detalhado com todos os campos separados",
+        explanation: "O 'show spanning-tree' exibe o resumo operacional: Root Bridge, Bridge ID, estado e papel de cada porta, custos e timers. O 'show spanning-tree detail' adiciona informações como: contagem de mudanças de topologia (TCN), tempo desde a última mudança, e o Bridge ID com todos os campos desmembrados. O cenário lista ambos no Guia de Comandos — o 'detail' é especialmente útil para identificar instabilidades recorrentes na topologia."
+      },
+      // --- Cenário: o que acontece se o Root Bridge sair completamente ---
+      {
+        question: "No cenário, a Etapa 2 simula apenas a queda de um link do Root Bridge. O que aconteceria se o próprio Root Bridge (SW02) fosse completamente desligado?",
+        options: [
+          "Todos os switches entrariam em modo de erro e a rede pararia até que o SW02 voltasse",
+          "Os switches detectariam a ausência de BPDUs após o Max Age (20s) e iniciariam uma nova eleição de Root Bridge, onde o switch com o menor Bridge ID venceria",
+          "O switch com o maior número de portas assumiria automaticamente como Root Bridge",
+          "Os switches manteriam a topologia atual indefinidamente, aguardando o retorno do Root Bridge"
+        ],
+        answer: "Os switches detectariam a ausência de BPDUs após o Max Age (20s) e iniciariam uma nova eleição de Root Bridge, onde o switch com o menor Bridge ID venceria",
+        explanation: "Quando o Root Bridge falha completamente, os switches deixam de receber BPDUs. Após o Max Age (20s sem BPDUs), cada switch considera que a topologia expirou e inicia uma nova eleição: cada switch anuncia a si mesmo como Root Bridge. A eleição segue as mesmas regras — menor Bridge ID vence. No cenário do lab, com SW02 desligado, a nova eleição seria entre SW01 (aabb.cc00.7000) e SW03 (aabb.cc00.2000) — e o SW03 venceria por ter o menor MAC."
+      },
+      // --- Consolidação: qual camada e qual padrão ---
+      {
+        question: "O STP (802.1D) opera em qual camada do modelo OSI e qual é o seu mecanismo fundamental para evitar loops?",
+        options: [
+          "Camada 3 (Rede) — usando métricas de roteamento para bloquear caminhos redundantes",
+          "Camada 2 (Enlace) — bloqueando seletivamente portas de switches para criar uma topologia lógica livre de loops sobre a infraestrutura física redundante",
+          "Camada 1 (Física) — desativando portas físicas em excesso por sinal elétrico",
+          "Camada 4 (Transporte) — usando números de sequência para detectar e descartar frames duplicados"
+        ],
+        answer: "Camada 2 (Enlace) — bloqueando seletivamente portas de switches para criar uma topologia lógica livre de loops sobre a infraestrutura física redundante",
+        explanation: "O STP é um protocolo de Camada 2 (IEEE 802.1D), que opera com endereços MAC e frames Ethernet. Seu mecanismo é bloquear seletivamente portas de switches, mantendo os cabos físicos conectados mas criando uma topologia lógica em forma de árvore sem loops. Isso é fundamental: a redundância física é mantida para failover, mas apenas um caminho lógico fica ativo por vez em cada segmento — controlado pelo estado das portas (Forwarding ou Blocking)."
+      },
+      {
+        question: "O cenário descreve os estados Listening e Learning. Qual é a diferença fundamental entre eles?",
+        options: [
+          "Listening encaminha dados de broadcast; Learning bloqueia tudo",
+          "Listening processa BPDUs mas NÃO aprende MACs; Learning processa BPDUs E aprende MACs — ambos NÃO encaminham dados de usuário",
+          "Listening e Learning são equivalentes — a diferença está apenas na duração de cada um",
+          "Listening é exclusivo do Root Bridge; Learning ocorre apenas nos switches não-root"
+        ],
+        answer: "Listening processa BPDUs mas NÃO aprende MACs; Learning processa BPDUs E aprende MACs — ambos NÃO encaminham dados de usuário",
+        explanation: "Essa é uma distinção crítica: no estado Listening, a porta processa BPDUs para determinar a topologia, mas a tabela MAC não é populada. No Learning, além de processar BPDUs, a porta passa a 'escutar' quadros de dados para aprender endereços MAC — mas ainda não encaminha esses quadros ao destino. Somente no Forwarding o tráfego de usuário flui normalmente."
+      },
+      // --- Topologia lógica vs física ---
+      {
+        question: "O STP cria uma 'topologia lógica em árvore' sobre a infraestrutura física. O que isso significa na prática?",
+        options: [
+          "O STP remove fisicamente os cabos redundantes da rede",
+          "O STP mantém todos os cabos físicos conectados, mas bloqueia logicamente as portas que criariam loops — criando um subconjunto ativo livre de loops sobre a topologia física redundante",
+          "O STP cria VLANs virtuais para isolar os loops de camada 2",
+          "O STP substitui o endereçamento MAC por endereços lógicos próprios"
+        ],
+        answer: "O STP mantém todos os cabos físicos conectados, mas bloqueia logicamente as portas que criariam loops — criando um subconjunto ativo livre de loops sobre a topologia física redundante",
+        explanation: "Essa é a essência do STP: os links físicos redundantes permanecem conectados (garantindo failover), mas o protocolo cria uma topologia lógica em forma de árvore ao colocar determinadas portas em Blocking. A topologia física tem loops; a topologia lógica ativa não tem. Quando um link falha, o STP reconstrói a árvore lógica aproveitando os links que estavam bloqueados."
+      },
+      // --- Bridge ID: composição básica ---
+      {
+        question: "O Bridge ID (BID) é o identificador único de cada switch no STP. De quais dois componentes ele é formado?",
+        options: [
+          "Endereço IP de gerência + número de série do equipamento",
+          "Prioridade do bridge (configurável) + Endereço MAC do switch",
+          "VLAN ID + Custo do link mais barato disponível",
+          "Hello Time + Forward Delay configurados no switch"
+        ],
+        answer: "Prioridade do bridge (configurável) + Endereço MAC do switch",
+        explanation: "O Bridge ID é formado por: Prioridade (2 bytes — padrão 32768, múltiplos de 4096) + MAC Address do switch (6 bytes). A comparação começa sempre pela prioridade: menor prioridade = melhor BID. Em caso de empate na prioridade, o desempate é feito pelo menor MAC Address — exatamente o que ocorreu no Lab 07, onde o SW02 (MAC aabb.cc00.1000) venceu sobre SW01 (aabb.cc00.7000) e SW03 (aabb.cc00.2000)."
+      },
+      // --- Impacto real de convergência em produção ---
+      {
+        question: "O cenário menciona que durante a convergência do STP 802.1D (30 a 50 segundos), aplicações críticas são afetadas. Quais tipos de serviço são mais prejudicados e por quê?",
+        options: [
+          "Apenas serviços HTTP, pois eles dependem de conexões persistentes de longa duração",
+          "Serviços sensíveis a latência e perda como VoIP e SSH, pois seus timers de sessão são menores que o tempo de convergência do STP",
+          "Apenas backups noturnos, pois competem com o tráfego de BPDUs durante a convergência",
+          "Somente aplicações que usam IPv6, pois o STP 802.1D não suporta esse protocolo"
+        ],
+        answer: "Serviços sensíveis a latência e perda como VoIP e SSH, pois seus timers de sessão são menores que o tempo de convergência do STP",
+        explanation: "O Lab 07 cita explicitamente VoIP e SSH como exemplos de serviços críticos afetados pela convergência do STP clássico. VoIP tolera no máximo 150ms de latência antes de degradar a qualidade; SSH e outras sessões TCP têm timers de keepalive que, se excedidos durante os 30-50s de convergência, encerram a sessão. Esse é o argumento central para migrar para RSTP em ambientes corporativos."
+      },
+      // --- Aging Time no output ---
+      {
+        question: "No output do 'show spanning-tree vlan 1' do cenário, aparece 'Aging Time 300 sec'. O que esse parâmetro controla e qual sua relação com o STP?",
+        options: [
+          "O tempo máximo que uma BPDU fica válida antes de ser descartada pelo switch",
+          "O tempo que o switch aguarda antes de iniciar uma nova eleição de Root Bridge",
+          "O tempo de expiração das entradas da tabela MAC — quando uma entrada não é renovada nesse período, é removida",
+          "O intervalo entre envios de BPDUs de configuração pelo Root Bridge"
+        ],
+        answer: "O tempo de expiração das entradas da tabela MAC — quando uma entrada não é renovada nesse período, é removida",
+        explanation: "O Aging Time (padrão 300s) controla por quanto tempo uma entrada permanece na tabela MAC sem ser renovada. Sua relação com o STP é importante: ao receber um TCN (Topology Change Notification), o switch reduz temporariamente o Aging Time para o valor do Forward Delay (15s), acelerando a expiração de entradas MAC possivelmente obsoletas — evitando que frames sejam encaminhados por um caminho que já não é mais o correto após a mudança de topologia."
+      },
+      // --- Cenário de leitura: o que mudou no SW01 após failover ---
+      {
+        question: "Antes do shutdown da Et0/1 no Lab 07, o SW01 tinha custo até a root = 100. Após o failover, o debug exibiu 'new root port Et0/2, cost 200'. Por que o custo dobrou?",
+        options: [
+          "Porque o STP penaliza automaticamente portas que sofreram falha anterior",
+          "Porque a Et0/2 agora é o único caminho, e ele passa por um switch intermediário — acumulando o custo de dois enlaces de 10 Mbps (100 + 100 = 200)",
+          "Porque o custo foi alterado manualmente durante o processo de convergência",
+          "Porque a Et0/2 opera em half-duplex, e o STP dobra o custo nesse modo"
+        ],
+        answer: "Porque a Et0/2 agora é o único caminho, e ele passa por um switch intermediário — acumulando o custo de dois enlaces de 10 Mbps (100 + 100 = 200)",
+        explanation: "Antes do shutdown, o SW01 chegava ao Root Bridge (SW02) diretamente via Et0/1: custo = 100 (1 enlace de 10 Mbps). Após o failover, o caminho passa a ser Et0/2 → switch intermediário → SW02: dois enlaces de 10 Mbps = custo 100 + 100 = 200. O Root Path Cost é sempre acumulado ao longo de todo o caminho até o Root Bridge — e cada enlace adicional soma seu custo ao total."
+      },
+      // --- Por que STP existe: o problema dos loops L2 ---
+      {
+        question: "O cenário define o STP como um protocolo que evita loops em redes com caminhos redundantes. O que aconteceria concretamente em uma rede sem STP com dois switches interconectados por dois cabos paralelos?",
+        options: [
+          "Os switches negociariam automaticamente qual cabo usar, desativando o outro",
+          "Os frames de broadcast seriam replicados indefinidamente entre os dois switches, consumindo toda a largura de banda e causando colapso da rede (broadcast storm)",
+          "O protocolo ARP desativaria automaticamente as interfaces redundantes para evitar conflitos",
+          "Os switches entrariam em modo de failover e apenas um dos links ficaria ativo por vez"
+        ],
+        answer: "Os frames de broadcast seriam replicados indefinidamente entre os dois switches, consumindo toda a largura de banda e causando colapso da rede (broadcast storm)",
+        explanation: "Sem STP, um frame de broadcast enviado por qualquer host seria replicado por ambos os links entre os switches, gerando cópias que voltariam ao switch original e seriam reenviadas novamente — infinitamente. Em segundos, o tráfego de broadcast consumiria 100% da largura de banda (broadcast storm), derrubando a rede. O STP resolve isso bloqueando uma das portas e mantendo apenas um caminho lógico ativo."
+      },
+      // --- Diferença show vs show detail na prática ---
+      {
+        question: "O cenário usa dois comandos diferentes: 'show spanning-tree' e 'show spanning-tree detail'. Qual informação está disponível no 'detail' mas NÃO no comando simples?",
+        options: [
+          "O estado atual das portas (FWD, BLK, Root, Desg)",
+          "O endereço MAC e a prioridade do Root Bridge",
+          "Eventos de mudança de topologia (TCN) e o Bridge ID detalhado com todos os campos separados",
+          "O custo acumulado (Root Path Cost) de cada interface"
+        ],
+        answer: "Eventos de mudança de topologia (TCN) e o Bridge ID detalhado com todos os campos separados",
+        explanation: "O 'show spanning-tree' exibe o resumo operacional: Root Bridge, Bridge ID, estado e papel de cada porta, custos e timers. O 'show spanning-tree detail' adiciona informações como: contagem de mudanças de topologia (TCN), tempo desde a última mudança, e o Bridge ID com todos os campos desmembrados. O cenário lista ambos no Guia de Comandos — o 'detail' é especialmente útil para identificar instabilidades recorrentes na topologia."
+      },
+      // --- Cenário: o que acontece se o Root Bridge sair completamente ---
+      {
+        question: "No cenário, a Etapa 2 simula apenas a queda de um link do Root Bridge. O que aconteceria se o próprio Root Bridge (SW02) fosse completamente desligado?",
+        options: [
+          "Todos os switches entrariam em modo de erro e a rede pararia até que o SW02 voltasse",
+          "Os switches detectariam a ausência de BPDUs após o Max Age (20s) e iniciariam uma nova eleição de Root Bridge, onde o switch com o menor Bridge ID venceria",
+          "O switch com o maior número de portas assumiria automaticamente como Root Bridge",
+          "Os switches manteriam a topologia atual indefinidamente, aguardando o retorno do Root Bridge"
+        ],
+        answer: "Os switches detectariam a ausência de BPDUs após o Max Age (20s) e iniciariam uma nova eleição de Root Bridge, onde o switch com o menor Bridge ID venceria",
+        explanation: "Quando o Root Bridge falha completamente, os switches deixam de receber BPDUs. Após o Max Age (20s sem BPDUs), cada switch considera que a topologia expirou e inicia uma nova eleição: cada switch anuncia a si mesmo como Root Bridge. A eleição segue as mesmas regras — menor Bridge ID vence. No cenário do lab, com SW02 desligado, a nova eleição seria entre SW01 (aabb.cc00.7000) e SW03 (aabb.cc00.2000) — e o SW03 venceria por ter o menor MAC."
+      },
+      // --- Consolidação: qual camada e qual padrão ---
+      {
+        question: "O STP (802.1D) opera em qual camada do modelo OSI e qual é o seu mecanismo fundamental para evitar loops?",
+        options: [
+          "Camada 3 (Rede) — usando métricas de roteamento para bloquear caminhos redundantes",
+          "Camada 2 (Enlace) — bloqueando seletivamente portas de switches para criar uma topologia lógica livre de loops sobre a infraestrutura física redundante",
+          "Camada 1 (Física) — desativando portas físicas em excesso por sinal elétrico",
+          "Camada 4 (Transporte) — usando números de sequência para detectar e descartar frames duplicados"
+        ],
+        answer: "Camada 2 (Enlace) — bloqueando seletivamente portas de switches para criar uma topologia lógica livre de loops sobre a infraestrutura física redundante",
+        explanation: "O STP é um protocolo de Camada 2 (IEEE 802.1D), que opera com endereços MAC e frames Ethernet. Seu mecanismo é bloquear seletivamente portas de switches, mantendo os cabos físicos conectados mas criando uma topologia lógica em forma de árvore sem loops. Isso é fundamental: a redundância física é mantida para failover, mas apenas um caminho lógico fica ativo por vez em cada segmento — controlado pelo estado das portas (Forwarding ou Blocking)."
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "lab07-stp-04";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
