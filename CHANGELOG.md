@@ -4,6 +4,19 @@ Todos os marcos notáveis deste projeto serão documentados neste arquivo. O for
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.2] - 2026-04-23
+
+### Added
+
+- Implementação da Revisão 08 (Parte 08)
+- Seção "Toolbox do Engenheiro" com comandos CLI e filtros Wireshark para STP
+- Cheat Sheet operacional focado em diagnóstico e troubleshooting (nível CCNP)
+
+### Changed
+
+- Melhoria na abordagem prática do plano de controle do STP
+- Integração entre teoria e análise de pacotes (CLI + Wireshark)
+
 ## [1.5.1] - 2026-04-22
 
 ### Added
