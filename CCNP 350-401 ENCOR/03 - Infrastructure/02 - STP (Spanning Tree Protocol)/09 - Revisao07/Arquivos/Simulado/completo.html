@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol Completo 06</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol Completo 04</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre STP - Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+    {
+        question: "Qual é o principal fator que diferencia uma falha direta de uma falha indireta no STP?",
+        options: [
+        "O tipo de cabo utilizado",
+        "A presença de VLANs na topologia",
+        "A forma como o switch detecta a falha (física ou ausência de BPDU)",
+        "O valor do Bridge ID"
+        ],
+        answer: "A forma como o switch detecta a falha (física ou ausência de BPDU)",
+        explanation: "Falhas diretas são detectadas pela camada física (link down), enquanto falhas indiretas são percebidas pela ausência de BPDUs."
+      },
+      {
+        question: "Em uma falha indireta, por que o switch aguarda o tempo de Max Age antes de agir?",
+        options: [
+        "Para recalcular o endereço MAC",
+        "Para evitar loops causados por decisões precipitadas",
+        "Para sincronizar com o DHCP",
+        "Para atualizar a tabela ARP"
+        ],
+        answer: "Para evitar loops causados por decisões precipitadas",
+        explanation: "O STP é conservador e espera o Max Age para garantir que o silêncio de BPDUs não seja temporário, evitando loops."
+      },
+      {
+        question: "Qual é a sequência correta dos estados de uma porta durante a reconvergência do STP?",
+        options: [
+        "Blocking → Forwarding → Learning → Listening",
+        "Listening → Learning → Forwarding",
+        "Learning → Listening → Blocking",
+        "Forwarding → Listening → Learning"
+        ],
+        answer: "Listening → Learning → Forwarding",
+        explanation: "Após a expiração do Max Age (se necessário), a porta passa por Listening (15s), Learning (15s) e então Forwarding."
+      },
+      {
+        question: "Qual é o tempo total típico de convergência em uma falha indireta no STP clássico?",
+        options: [
+        "30 segundos",
+        "15 segundos",
+        "50 segundos",
+        "20 segundos"
+        ],
+        answer: "50 segundos",
+        explanation: "Falha indireta: 20s (Max Age) + 15s (Listening) + 15s (Learning) = 50 segundos."
+      },
+      {
+        question: "Por que uma porta em estado Blocking ainda é importante para a topologia STP?",
+        options: [
+        "Porque encaminha dados redundantes",
+        "Porque envia tráfego multicast",
+        "Porque continua recebendo BPDUs e pode assumir rapidamente",
+        "Porque mantém o DHCP ativo"
+        ],
+        answer: "Porque continua recebendo BPDUs e pode assumir rapidamente",
+        explanation: "Mesmo bloqueada no plano de dados, a porta participa do plano de controle, monitorando a topologia."
+      },
+      {
+        question: "Qual é a função principal do Root Bridge na propagação de BPDUs?",
+        options: [
+        "Receber BPDUs e descartá-los",
+        "Gerar BPDUs originais para toda a rede",
+        "Apenas retransmitir BPDUs",
+        "Bloquear todas as portas redundantes"
+        ],
+        answer: "Gerar BPDUs originais para toda a rede",
+        explanation: "Somente o Root Bridge gera BPDUs originais, que são propagados downstream pelos demais switches."
+      },
+      {
+        question: "O que acontece quando um switch recebe um BPDU inferior enquanto ainda recebe um BPDU superior?",
+        options: [
+        "Ele entra em modo Blocking",
+        "Ele reinicia o processo de eleição",
+        "Ele descarta o BPDU inferior imediatamente",
+        "Ele aguarda o Max Age"
+        ],
+        answer: "Ele descarta o BPDU inferior imediatamente",
+        explanation: "A comparação de BPDUs é imediata. Um BPDU inferior é descartado sem necessidade de aguardar timers."
+      },
+      {
+        question: "No caso de empate total entre critérios de eleição, qual elemento é utilizado como último desempate?",
+        options: [
+        "Endereço IP",
+        "Port-ID do switch vizinho",
+        "VLAN ID",
+        "Hostname do switch"
+        ],
+        answer: "Port-ID do switch vizinho",
+        explanation: "O Port-ID do vizinho (prioridade + número da porta) é o último critério de desempate no STP."
+      },
+      {
+        question: "Qual é o comportamento de uma porta no estado Learning?",
+        options: [
+        "Encaminha dados e aprende MAC",
+        "Não encaminha dados, mas aprende MAC",
+        "Encaminha dados, mas não aprende MAC",
+        "Não encaminha nem aprende MAC"
+        ],
+        answer: "Não encaminha dados, mas aprende MAC",
+        explanation: "No estado Learning, a porta popula a tabela CAM, mas ainda não encaminha tráfego de usuários."
+      },
+      {
+        question: "Qual cenário resulta em impacto zero no tráfego de rede?",
+        options: [
+        "Queda da Root Port",
+        "Falha indireta",
+        "Queda de link redundante em estado Blocking",
+        "Falha do Root Bridge"
+        ],
+        answer: "Queda de link redundante em estado Blocking",
+        explanation: "Como o link já não era utilizado para tráfego, sua queda não afeta o funcionamento da rede."
+      },
+      {
+        question: "Durante uma falha indireta, qual evento realmente dispara o início da reconvergência?",
+        options: [
+        "Queda física da interface",
+        "Recebimento de um novo BPDU superior",
+        "Expiração do timer Max Age",
+        "Atualização da tabela ARP"
+        ],
+        answer: "Expiração do timer Max Age",
+        explanation: "Na falha indireta não há perda física. O switch inicia a reconvergência apenas quando o BPDU expira (Max Age)."
+      },
+      {
+        question: "Por que o STP clássico (802.1D) é considerado lento em ambientes modernos?",
+        options: [
+        "Porque não suporta VLAN",
+        "Porque utiliza endereços MAC dinâmicos",
+        "Porque depende de timers fixos para convergência",
+        "Porque não utiliza BPDUs"
+        ],
+        answer: "Porque depende de timers fixos para convergência",
+        explanation: "O uso de timers como Max Age, Listening e Learning torna a convergência lenta e previsível."
+      },
+      {
+        question: "Qual é o impacto direto de uma Topology Change Notification (TCN)?",
+        options: [
+        "Reinicialização dos switches",
+        "Limpeza da tabela CAM mais rapidamente",
+        "Mudança do Root Bridge",
+        "Alteração do endereço IP"
+        ],
+        answer: "Limpeza da tabela CAM mais rapidamente",
+        explanation: "O TCN informa a rede sobre mudança na topologia, fazendo com que as entradas MAC expirem mais rápido."
+      },
+      {
+        question: "Em qual estado uma porta STP começa a processar BPDUs, mas ainda não toma decisões finais?",
+        options: [
+        "Forwarding",
+        "Blocking",
+        "Listening",
+        "Disabled"
+        ],
+        answer: "Listening",
+        explanation: "No estado Listening, a porta analisa BPDUs para determinar seu papel na topologia."
+      },
+      {
+        question: "Qual é a principal função do estado Blocking em termos de prevenção de loops?",
+        options: [
+        "Encaminhar apenas tráfego multicast",
+        "Bloquear tráfego de dados enquanto mantém o controle STP",
+        "Desativar completamente a interface",
+        "Enviar apenas BPDUs"
+        ],
+        answer: "Bloquear tráfego de dados enquanto mantém o controle STP",
+        explanation: "A porta em Blocking não encaminha dados, evitando loops, mas continua participando do STP."
+      },
+      {
+        question: "Quando uma porta muda de Blocking para Forwarding diretamente (sem passar por Listening/Learning), isso indica:",
+        options: [
+        "Erro de configuração",
+        "Uso de PortFast",
+        "Falha crítica de rede",
+        "Loop detectado"
+        ],
+        answer: "Uso de PortFast",
+        explanation: "PortFast permite que portas acessem rapidamente o estado Forwarding, ignorando os estados intermediários."
+      },
+      {
+        question: "Qual é a relação entre Root Path Cost e a escolha do melhor caminho?",
+        options: [
+        "Maior custo sempre vence",
+        "Menor custo representa o caminho mais eficiente",
+        "Custo não influencia no STP",
+        "Custo define apenas VLANs"
+        ],
+        answer: "Menor custo representa o caminho mais eficiente",
+        explanation: "O STP seleciona caminhos com menor Root Path Cost para otimizar o tráfego até o Root Bridge."
+      },
+      {
+        question: "O que caracteriza uma rede STP estável e convergida?",
+        options: [
+        "Todas as portas em Blocking",
+        "Ausência de BPDUs",
+        "Papéis e estados definidos sem mudanças frequentes",
+        "Todas as portas com mesmo custo"
+         ],
+        answer: "Papéis e estados definidos sem mudanças frequentes",
+        explanation: "Uma rede estável possui uma topologia definida, sem mudanças constantes ou TCNs frequentes."
+      },
+      {
+        question: "Qual é o papel das portas Alternate no STP?",
+        options: [
+        "Encaminhar tráfego principal",
+        "Servir como backup em caso de falha",
+        "Gerar BPDUs",
+        "Definir o Root Bridge"
+        ],
+        answer: "Servir como backup em caso de falha",
+        explanation: "Portas Alternate ficam em estado Blocking, prontas para assumir caso o caminho principal falhe."
+      },
+      {
+        question: "Por que loops em camada 2 são mais perigosos que loops em camada 3?",
+        options: [
+        "Porque não usam IP",
+        "Porque não possuem mecanismo TTL para limitar a propagação",
+        "Porque utilizam VLANs",
+        "Porque usam MAC dinâmico"
+        ],
+        answer: "Porque não possuem mecanismo TTL para limitar a propagação",
+        explanation: "Sem TTL, frames podem circular indefinidamente, causando broadcast storms e colapso da rede."
+      },
+      {
+        question: "Um switch continua com a interface em estado 'up', mas para de receber BPDUs. Qual tipo de falha ele está enfrentando?",
+        options: [
+        "Falha física",
+        "Falha direta",
+        "Falha indireta",
+        "Falha de VLAN"
+        ],
+        answer: "Falha indireta",
+        explanation: "Na falha indireta o link permanece ativo, mas o switch deixa de receber BPDUs superiores."
+      },
+      {
+        question: "Qual é a primeira ação de um switch ao detectar uma falha direta em sua Root Port?",
+        options: [
+        "Aguardar o Max Age",
+        "Eleger imediatamente uma nova Root Port",
+        "Reiniciar o STP",
+        "Desabilitar todas as interfaces"
+        ],
+        answer: "Eleger imediatamente uma nova Root Port",
+        explanation: "Em falhas diretas, o switch não espera o Max Age e busca imediatamente um caminho alternativo."
+      },
+      {
+        question: "Por que o STP utiliza estados intermediários antes de liberar uma porta para Forwarding?",
+        options: [
+        "Para reduzir o consumo de CPU",
+        "Para garantir que não haverá loops na topologia",
+        "Para atualizar endereços IP",
+        "Para sincronizar VLANs"
+        ],
+        answer: "Para garantir que não haverá loops na topologia",
+        explanation: "Os estados Listening e Learning evitam loops antes de permitir o tráfego de dados."
+      },
+      {
+        question: "O que acontece com a tabela CAM durante o estado Learning?",
+        options: [
+        "É apagada completamente",
+        "Não sofre alterações",
+        "Começa a ser populada com endereços MAC",
+        "É sincronizada com o DHCP"
+        ],
+        answer: "Começa a ser populada com endereços MAC",
+        explanation: "No estado Learning, o switch aprende MACs, mas ainda não encaminha tráfego."
+      },
+      {
+        question: "Se um switch acredita ser o Root Bridge após perder sua Root Port, qual comportamento ele apresenta?",
+        options: [
+        "Entra em estado Blocking",
+        "Para de enviar BPDUs",
+        "Passa a gerar BPDUs como Root",
+        "Reinicia automaticamente"
+        ],
+        answer: "Passa a gerar BPDUs como Root",
+        explanation: "Sem Root Port, o switch assume ser a raiz e começa a gerar BPDUs com seu próprio BID."
+      },
+      {
+        question: "Em um 'duelo de BPDUs', qual critério define o vencedor?",
+        options: [
+        "O switch com maior CPU",
+        "O BPDU com melhor (menor) informação de Root",
+        "O switch com mais portas",
+        "O primeiro BPDU recebido"
+        ],
+        answer: "O BPDU com melhor (menor) informação de Root",
+        explanation: "O STP sempre escolhe o BPDU superior baseado em Root ID, custo e outros critérios."
+      },
+      {
+        question: "Qual é o efeito de múltiplas falhas sequenciais em uma topologia STP?",
+        options: [
+        "Redução do tempo de convergência",
+        "Aumento da complexidade e possíveis novos caminhos",
+        "Desativação automática do STP",
+        "Conversão para RSTP"
+        ],
+        answer: "Aumento da complexidade e possíveis novos caminhos",
+        explanation: "Falhas sequenciais exigem novas decisões e podem alterar completamente a topologia."
+      },
+      {
+        question: "Se todos os caminhos principais falham, qual é o comportamento esperado das portas bloqueadas?",
+        options: [
+        "Permanecem bloqueadas",
+        "São desativadas",
+        "São promovidas para tentar restabelecer conectividade",
+        "Entram em modo erro"
+        ],
+        answer: "São promovidas para tentar restabelecer conectividade",
+        explanation: "Portas bloqueadas atuam como backup e são ativadas para restaurar a conectividade."
+      },
+      {
+        question: "Qual é a principal consequência de uma falha em um switch intermediário (não-root)?",
+        options: [
+        "Mudança automática de VLAN",
+        "Perda total da rede",
+        "Reconfiguração dos caminhos e possível reconvergência",
+        "Desativação do Root Bridge"
+        ],
+        answer: "Reconfiguração dos caminhos e possível reconvergência",
+        explanation: "A rede tenta encontrar novos caminhos para manter conectividade, iniciando reconvergência."
+      },
+      {
+        question: "Por que o STP mantém portas bloqueadas mesmo em uma rede estável?",
+        options: [
+        "Para economizar energia",
+        "Para reduzir latência",
+        "Para manter caminhos redundantes prontos para falhas",
+        "Para evitar uso de VLANs"
+        ],
+        answer: "Para manter caminhos redundantes prontos para falhas",
+        explanation: "Portas bloqueadas funcionam como backup imediato para garantir alta disponibilidade."
+      },
+      {
+        question: "Qual é a direção natural do fluxo de BPDUs em uma topologia STP estável?",
+        options: [
+        "Dos switches não-root para o Root",
+        "Bidirecional em todas as portas",
+        "Do Root Bridge para os switches não-root",
+        "Apenas entre portas bloqueadas"
+        ],
+        answer: "Do Root Bridge para os switches não-root",
+        explanation: "O fluxo é downstream: o Root gera BPDUs e os switches propagam pelas Designated Ports."
+      },
+      {
+        question: "Por que BPDUs não são enviados por uma Root Port?",
+        options: [
+        "Porque a porta está desativada",
+        "Porque ela apenas recebe a melhor informação do Root",
+        "Porque ela está sempre em Blocking",
+        "Porque não suporta VLAN"
+        ],
+        answer: "Porque ela apenas recebe a melhor informação do Root",
+        explanation: "A Root Port é o caminho de entrada da melhor informação, não de propagação."
+      },
+      {
+        question: "Quando um switch recebe um BPDU em uma Designated Port, o que ele faz antes de reenviá-lo?",
+        options: [
+        "Descarta automaticamente",
+        "Atualiza o Root Path Cost somando seu custo local",
+        "Altera o endereço MAC",
+        "Reseta o timer Max Age"
+        ],
+        answer: "Atualiza o Root Path Cost somando seu custo local",
+        explanation: "Cada switch incrementa o custo antes de propagar o BPDU."
+      },
+      {
+        question: "Qual situação faz uma porta permanecer indefinidamente em estado Blocking?",
+        options: [
+        "Receber tráfego excessivo",
+        "Continuar recebendo BPDUs válidos",
+        "Perder conectividade física",
+        "Estar configurada com PortFast"
+        ],
+        answer: "Continuar recebendo BPDUs válidos",
+        explanation: "Enquanto houver BPDUs válidos, não há motivo para mudar de estado."
+      },
+      {
+        question: "O que impede que uma porta em Listening encaminhe tráfego de usuário?",
+        options: [
+        "Falta de endereço IP",
+        "Ausência de tabela ARP",
+        "Processo de decisão ainda não concluído",
+        "Configuração de VLAN incorreta"
+        ],
+        answer: "Processo de decisão ainda não concluído",
+        explanation: "No Listening, a porta ainda está avaliando a topologia antes de liberar o tráfego."
+      },
+      {
+        question: "Qual é o comportamento de um switch ao receber apenas BPDUs inferiores?",
+        options: [
+        "Aceita e recalcula a topologia",
+        "Ignora e mantém sua visão atual",
+        "Reinicia o STP",
+        "Desativa a interface"
+        ],
+        answer: "Ignora e mantém sua visão atual",
+        explanation: "BPDUs inferiores não substituem informações superiores já conhecidas."
+      },
+      {
+        question: "Qual é o impacto de um link redundante ativo ser promovido após uma falha?",
+        options: [
+        "Aumento imediato de loops",
+        "Substituição do caminho principal após convergência",
+        "Queda total da rede",
+        "Mudança de VLAN automática"
+        ],
+        answer: "Substituição do caminho principal após convergência",
+        explanation: "O link redundante assume após passar pelos estados de transição."
+      },
+      {
+        question: "Por que o estado Forwarding só é alcançado após os estados intermediários?",
+        options: [
+        "Para atualizar o endereço IP",
+        "Para garantir consistência da topologia e evitar loops",
+        "Para sincronizar com DNS",
+        "Para reduzir o uso de CPU"
+        ],
+        answer: "Para garantir consistência da topologia e evitar loops",
+        explanation: "Os estados intermediários garantem que a rede está segura antes de liberar tráfego."
+      },
+      {
+        question: "O que acontece se um switch deixa de receber BPDUs, mas ainda possui caminhos redundantes?",
+        options: [
+        "Ele desativa todas as portas",
+        "Ele inicia reconvergência após o Max Age",
+        "Ele ignora o problema",
+        "Ele muda de VLAN"
+        ],
+        answer: "Ele inicia reconvergência após o Max Age",
+        explanation: "Sem BPDUs, o switch assume falha indireta e aguarda o timer antes de agir."
+      },
+      {
+        question: "Qual é o principal papel do STP em uma rede com múltiplos caminhos físicos?",
+        options: [
+        "Aumentar a velocidade de transmissão",
+        "Distribuir IPs automaticamente",
+        "Eliminar loops mantendo redundância controlada",
+        "Gerenciar VLANs"
+        ],
+        answer: "Eliminar loops mantendo redundância controlada",
+        explanation: "O STP bloqueia caminhos redundantes para evitar loops, mantendo-os como backup."
+      },
+      {
+      question: "O que indica o fato de uma porta permanecer muito tempo em estado Blocking sem mudanças?",
+      options: [
+      "Erro de configuração",
+      "Instabilidade na rede",
+      "Topologia estável com redundância controlada",
+      "Falha no Root Bridge"
+      ],
+      answer: "Topologia estável com redundância controlada",
+      explanation: "Portas em Blocking em uma rede estável indicam que o STP está prevenindo loops corretamente."
+    },
+    {
+      question: "Qual é a principal consequência de um atraso na recepção de BPDUs em uma rede STP?",
+      options: [
+      "Mudança imediata de Root Bridge",
+      "Possível início do timer Max Age",
+      "Reinicialização da interface",
+      "Alteração da VLAN"
+      ],
+      answer: "Possível início do timer Max Age",
+      explanation: "Se os BPDUs param de chegar, o switch pode iniciar o processo de expiração (Max Age)."
+    },
+    {
+      question: "Em qual situação um switch NÃO precisa recalcular a topologia?",
+      options: [
+      "Queda de Root Port",
+      "Falha indireta",
+      "Queda de link redundante já bloqueado",
+      "Perda de BPDU"
+      ],
+      answer: "Queda de link redundante já bloqueado",
+      explanation: "Como o link já não era usado, não há impacto na topologia ativa."
+    },
+    {
+      question: "O que acontece com o tráfego de dados durante o estado Listening?",
+      options: [
+      "É encaminhado normalmente",
+      "É descartado",
+      "É armazenado temporariamente",
+      "É redirecionado"
+      ],
+      answer: "É descartado",
+      explanation: "No estado Listening, a porta não encaminha tráfego de dados para evitar loops."
+    },
+    {
+      question: "Qual comportamento indica que a rede entrou em processo de reconvergência?",
+      options: [
+      "Todas as portas em Forwarding",
+      "Mudança nos estados das portas",
+      "Ausência total de BPDUs",
+      "Estabilidade da tabela CAM"
+      ],
+      answer: "Mudança nos estados das portas",
+      explanation: "Transições de estados indicam que o STP está recalculando a topologia."
+    },
+    {
+      question: "Qual é o efeito de uma falha simultânea em múltiplos links críticos?",
+      options: [
+      "Redução do tempo de convergência",
+      "Possível isolamento de partes da rede",
+      "Aumento da velocidade",
+      "Eliminação do STP"
+      ],
+      answer: "Possível isolamento de partes da rede",
+      explanation: "Múltiplas falhas podem impedir que switches encontrem caminhos alternativos."
+    },
+    {
+      question: "Por que o STP evita mudanças rápidas e constantes na topologia?",
+      options: [
+      "Para economizar energia",
+      "Para evitar instabilidade e loops",
+      "Para reduzir o uso de VLANs",
+      "Para melhorar o DHCP"
+      ],
+      answer: "Para evitar instabilidade e loops",
+      explanation: "O STP é conservador para garantir estabilidade da rede."
+    },
+    {
+      question: "Qual é o papel do tempo de Forward Delay no STP?",
+      options: [
+      "Controlar o envio de BPDUs",
+      "Definir o tempo de estados intermediários",
+      "Determinar o Root Bridge",
+      "Configurar VLANs"
+      ],
+      answer: "Definir o tempo de estados intermediários",
+      explanation: "Forward Delay define o tempo em Listening e Learning (15s cada)."
+    },
+    {
+      question: "Se uma porta entra rapidamente em Forwarding sem passar pelos estados intermediários, o que isso pode indicar?",
+      options: [
+      "Falha indireta",
+      "Uso de PortFast",
+      "Erro de hardware",
+      "Loop na rede"
+      ],
+      answer: "Uso de PortFast",
+      explanation: "PortFast permite que a porta pule os estados intermediários."
+    },
+    {
+      question: "Qual característica do STP garante que apenas um caminho ativo exista entre dois pontos?",
+      options: [
+      "Uso de VLANs",
+      "Bloqueio de caminhos redundantes",
+      "Endereçamento IP",
+      "Uso de DHCP"
+      ],
+      answer: "Bloqueio de caminhos redundantes",
+      explanation: "O STP bloqueia caminhos extras para evitar loops, mantendo apenas um ativo."
+    }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

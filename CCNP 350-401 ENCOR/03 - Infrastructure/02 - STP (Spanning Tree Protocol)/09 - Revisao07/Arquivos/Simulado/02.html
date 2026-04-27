@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Análise de Cenários e Comportamento da Topologia (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Análise de Cenários e Comportamento da Topologia (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+  question: "Durante uma falha indireta, qual evento realmente dispara o início da reconvergência?",
+  options: [
+    "Queda física da interface",
+    "Recebimento de um novo BPDU superior",
+    "Expiração do timer Max Age",
+    "Atualização da tabela ARP"
+  ],
+  answer: "Expiração do timer Max Age",
+  explanation: "Na falha indireta não há perda física. O switch inicia a reconvergência apenas quando o BPDU expira (Max Age)."
+},
+{
+  question: "Por que o STP clássico (802.1D) é considerado lento em ambientes modernos?",
+  options: [
+    "Porque não suporta VLAN",
+    "Porque utiliza endereços MAC dinâmicos",
+    "Porque depende de timers fixos para convergência",
+    "Porque não utiliza BPDUs"
+  ],
+  answer: "Porque depende de timers fixos para convergência",
+  explanation: "O uso de timers como Max Age, Listening e Learning torna a convergência lenta e previsível."
+},
+{
+  question: "Qual é o impacto direto de uma Topology Change Notification (TCN)?",
+  options: [
+    "Reinicialização dos switches",
+    "Limpeza da tabela CAM mais rapidamente",
+    "Mudança do Root Bridge",
+    "Alteração do endereço IP"
+  ],
+  answer: "Limpeza da tabela CAM mais rapidamente",
+  explanation: "O TCN informa a rede sobre mudança na topologia, fazendo com que as entradas MAC expirem mais rápido."
+},
+{
+  question: "Em qual estado uma porta STP começa a processar BPDUs, mas ainda não toma decisões finais?",
+  options: [
+    "Forwarding",
+    "Blocking",
+    "Listening",
+    "Disabled"
+  ],
+  answer: "Listening",
+  explanation: "No estado Listening, a porta analisa BPDUs para determinar seu papel na topologia."
+},
+{
+  question: "Qual é a principal função do estado Blocking em termos de prevenção de loops?",
+  options: [
+    "Encaminhar apenas tráfego multicast",
+    "Bloquear tráfego de dados enquanto mantém o controle STP",
+    "Desativar completamente a interface",
+    "Enviar apenas BPDUs"
+  ],
+  answer: "Bloquear tráfego de dados enquanto mantém o controle STP",
+  explanation: "A porta em Blocking não encaminha dados, evitando loops, mas continua participando do STP."
+},
+{
+  question: "Quando uma porta muda de Blocking para Forwarding diretamente (sem passar por Listening/Learning), isso indica:",
+  options: [
+    "Erro de configuração",
+    "Uso de PortFast",
+    "Falha crítica de rede",
+    "Loop detectado"
+  ],
+  answer: "Uso de PortFast",
+  explanation: "PortFast permite que portas acessem rapidamente o estado Forwarding, ignorando os estados intermediários."
+},
+{
+  question: "Qual é a relação entre Root Path Cost e a escolha do melhor caminho?",
+  options: [
+    "Maior custo sempre vence",
+    "Menor custo representa o caminho mais eficiente",
+    "Custo não influencia no STP",
+    "Custo define apenas VLANs"
+  ],
+  answer: "Menor custo representa o caminho mais eficiente",
+  explanation: "O STP seleciona caminhos com menor Root Path Cost para otimizar o tráfego até o Root Bridge."
+},
+{
+  question: "O que caracteriza uma rede STP estável e convergida?",
+  options: [
+    "Todas as portas em Blocking",
+    "Ausência de BPDUs",
+    "Papéis e estados definidos sem mudanças frequentes",
+    "Todas as portas com mesmo custo"
+  ],
+  answer: "Papéis e estados definidos sem mudanças frequentes",
+  explanation: "Uma rede estável possui uma topologia definida, sem mudanças constantes ou TCNs frequentes."
+},
+{
+  question: "Qual é o papel das portas Alternate no STP?",
+  options: [
+    "Encaminhar tráfego principal",
+    "Servir como backup em caso de falha",
+    "Gerar BPDUs",
+    "Definir o Root Bridge"
+  ],
+  answer: "Servir como backup em caso de falha",
+  explanation: "Portas Alternate ficam em estado Blocking, prontas para assumir caso o caminho principal falhe."
+},
+{
+  question: "Por que loops em camada 2 são mais perigosos que loops em camada 3?",
+  options: [
+    "Porque não usam IP",
+    "Porque não possuem mecanismo TTL para limitar a propagação",
+    "Porque utilizam VLANs",
+    "Porque usam MAC dinâmico"
+  ],
+  answer: "Porque não possuem mecanismo TTL para limitar a propagação",
+  explanation: "Sem TTL, frames podem circular indefinidamente, causando broadcast storms e colapso da rede."
+}
+
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

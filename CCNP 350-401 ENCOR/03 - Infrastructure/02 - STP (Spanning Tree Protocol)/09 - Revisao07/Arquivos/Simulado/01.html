@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Convergência, Falhas e Reconvergência (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Convergência, Falhas e Reconvergência (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Qual é o principal fator que diferencia uma falha direta de uma falha indireta no STP?",
+        options: [
+        "O tipo de cabo utilizado",
+        "A presença de VLANs na topologia",
+        "A forma como o switch detecta a falha (física ou ausência de BPDU)",
+        "O valor do Bridge ID"
+        ],
+        answer: "A forma como o switch detecta a falha (física ou ausência de BPDU)",
+        explanation: "Falhas diretas são detectadas pela camada física (link down), enquanto falhas indiretas são percebidas pela ausência de BPDUs."
+      },
+      {
+        question: "Em uma falha indireta, por que o switch aguarda o tempo de Max Age antes de agir?",
+        options: [
+        "Para recalcular o endereço MAC",
+        "Para evitar loops causados por decisões precipitadas",
+        "Para sincronizar com o DHCP",
+        "Para atualizar a tabela ARP"
+        ],
+        answer: "Para evitar loops causados por decisões precipitadas",
+        explanation: "O STP é conservador e espera o Max Age para garantir que o silêncio de BPDUs não seja temporário, evitando loops."
+      },
+      {
+        question: "Qual é a sequência correta dos estados de uma porta durante a reconvergência do STP?",
+        options: [
+        "Blocking → Forwarding → Learning → Listening",
+        "Listening → Learning → Forwarding",
+        "Learning → Listening → Blocking",
+        "Forwarding → Listening → Learning"
+        ],
+        answer: "Listening → Learning → Forwarding",
+        explanation: "Após a expiração do Max Age (se necessário), a porta passa por Listening (15s), Learning (15s) e então Forwarding."
+      },
+      {
+        question: "Qual é o tempo total típico de convergência em uma falha indireta no STP clássico?",
+        options: [
+        "30 segundos",
+        "15 segundos",
+        "50 segundos",
+        "20 segundos"
+        ],
+        answer: "50 segundos",
+        explanation: "Falha indireta: 20s (Max Age) + 15s (Listening) + 15s (Learning) = 50 segundos."
+      },
+      {
+        question: "Por que uma porta em estado Blocking ainda é importante para a topologia STP?",
+        options: [
+        "Porque encaminha dados redundantes",
+        "Porque envia tráfego multicast",
+        "Porque continua recebendo BPDUs e pode assumir rapidamente",
+        "Porque mantém o DHCP ativo"
+        ],
+        answer: "Porque continua recebendo BPDUs e pode assumir rapidamente",
+        explanation: "Mesmo bloqueada no plano de dados, a porta participa do plano de controle, monitorando a topologia."
+      },
+      {
+        question: "Qual é a função principal do Root Bridge na propagação de BPDUs?",
+        options: [
+        "Receber BPDUs e descartá-los",
+        "Gerar BPDUs originais para toda a rede",
+        "Apenas retransmitir BPDUs",
+        "Bloquear todas as portas redundantes"
+        ],
+        answer: "Gerar BPDUs originais para toda a rede",
+        explanation: "Somente o Root Bridge gera BPDUs originais, que são propagados downstream pelos demais switches."
+      },
+      {
+        question: "O que acontece quando um switch recebe um BPDU inferior enquanto ainda recebe um BPDU superior?",
+        options: [
+        "Ele entra em modo Blocking",
+        "Ele reinicia o processo de eleição",
+        "Ele descarta o BPDU inferior imediatamente",
+        "Ele aguarda o Max Age"
+        ],
+        answer: "Ele descarta o BPDU inferior imediatamente",
+        explanation: "A comparação de BPDUs é imediata. Um BPDU inferior é descartado sem necessidade de aguardar timers."
+      },
+      {
+        question: "No caso de empate total entre critérios de eleição, qual elemento é utilizado como último desempate?",
+        options: [
+        "Endereço IP",
+        "Port-ID do switch vizinho",
+        "VLAN ID",
+        "Hostname do switch"
+        ],
+        answer: "Port-ID do switch vizinho",
+        explanation: "O Port-ID do vizinho (prioridade + número da porta) é o último critério de desempate no STP."
+      },
+      {
+        question: "Qual é o comportamento de uma porta no estado Learning?",
+        options: [
+        "Encaminha dados e aprende MAC",
+        "Não encaminha dados, mas aprende MAC",
+        "Encaminha dados, mas não aprende MAC",
+        "Não encaminha nem aprende MAC"
+        ],
+        answer: "Não encaminha dados, mas aprende MAC",
+        explanation: "No estado Learning, a porta popula a tabela CAM, mas ainda não encaminha tráfego de usuários."
+      },
+      {
+        question: "Qual cenário resulta em impacto zero no tráfego de rede?",
+        options: [
+        "Queda da Root Port",
+        "Falha indireta",
+        "Queda de link redundante em estado Blocking",
+        "Falha do Root Bridge"
+        ],
+        answer: "Queda de link redundante em estado Blocking",
+        explanation: "Como o link já não era utilizado para tráfego, sua queda não afeta o funcionamento da rede."
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

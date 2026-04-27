@@ -2,7 +2,18 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+## [1.5.3] - 2026-04-24
+
+### Added
+
+- Implementação da Revisão 07 (Parte 09)
+- Novo conjunto de simulados focados em análise de cenários e comportamento do STP
+- Expansão do banco de questões com foco em interpretação e tomada de decisão (nível CCNP)
+
+### Changed
+
+- Refinamento da progressão didática entre teoria, análise e validação prática
+- Melhoria na coerência entre README e simulados gerados
 
 ## [1.5.2] - 2026-04-23
 
