@@ -929,13 +929,13 @@ Mais do que entender comandos, este material demonstra a capacidade de atuar de 
 Antes de partir para o laboratório, valide sua compreensão teórica com os simulados:
 
 - **Simulados temáticos (10 questões / 10 min cada):**  
-  1 - [Convergência, Falhas e BPDUs](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/01.html)  
-  2 - [Timers, Custos, Comandos e Design de Rede](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/02.html)  
-  3 - [ Modelo Mental, Portas e Análise de Topologia](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/03.html)  
-  4 - [Cenários, Interpretação e Consolidação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/04.html)  
-  5 - [Convergência, Falhas e BPDUs](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/01.html)  
+  1 - [Convergência, Falhas e BPDUs](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/01.html)  
+  2 - [Timers, Custos, Comandos e Design de Rede](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/02.html)  
+  3 - [ Modelo Mental, Portas e Análise de Topologia](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/03.html)  
+  4 - [Cenários, Interpretação e Consolidação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/04.html)  
+  5 - [Convergência, Falhas e BPDUs](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/01.html)  
   
-- **Simulado completo STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/completo.html)  
+- **Simulado completo STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/completo.html)  
   
-- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao06/Arquivos/Simulado/dashboard.html)
+- **Seu desempenho consolidado:** [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/07%20-%20Revisao07/Arquivos/Simulado/dashboard.html)
   
