@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Loop Guard, UDLD, Ataques e Hardening (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Loop Guard, UDLD, Ataques e Hardening (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+    {
+      "question": "Qual é o Aging Time padrão de uma entrada na tabela MAC e para quanto ele é reduzido quando o TC Bit está ativo?",
+      "options": [
+        "300 segundos → 30 segundos",
+        "300 segundos → 15 segundos",
+        "150 segundos → 15 segundos",
+        "600 segundos → 30 segundos"
+      ],
+      "answer": "300 segundos → 15 segundos",
+      "explanation": "O Aging Time padrão é 300 segundos (5 minutos). Quando o Root Bridge ativa o TC Bit nos BPDUs, todos os switches reduzem esse tempo para 15 segundos — valor igual ao Forward Delay — forçando a reaprendizagem acelerada dos endereços MAC."
+    },
+    {
+      "question": "Por que um flush total imediato da tabela MAC seria problemático como solução para o blackhole após uma mudança de topologia?",
+      "options": [
+        "Porque causaria a reeleição do Root Bridge",
+        "Porque desativaria o PortFast em todas as portas",
+        "Porque causaria uma tempestade de Unknown Unicast Flooding simultânea em toda a rede, sobrecarregando os trunks",
+        "Porque impediria o envio de novos TCNs"
+      ],
+      "answer": "Porque causaria uma tempestade de Unknown Unicast Flooding simultânea em toda a rede, sobrecarregando os trunks",
+      "explanation": "Se todos os switches limparem a tabela MAC ao mesmo tempo, nenhum deles saberia o destino dos frames — e todos fariam flooding para todas as portas simultaneamente. A redução gradual do Aging Time para 15s é um meio-termo calculado para evitar essa sobrecarga."
+    },
+    {
+      "question": "O TCA (Topology Change Acknowledgment) tem qual função no fluxo do TCN?",
+      "options": [
+        "Ordenar a limpeza da tabela MAC em todos os switches",
+        "Confirmar o recebimento do TCN ao switch que o enviou, hop-a-hop",
+        "Anunciar um novo Root Bridge para a rede",
+        "Reduzir o Aging Time nos switches de acesso"
+      ],
+      "answer": "Confirmar o recebimento do TCN ao switch que o enviou, hop-a-hop",
+      "explanation": "O TCA é enviado de volta ao switch remetente como confirmação de recebimento do TCN. O processo é hop-a-hop: cada switch intermediário confirma o recebimento e replica o TCN para cima, em direção ao Root Bridge."
+    },
+    {
+      "question": "Qual software de ataque é citado no documento como capaz de enviar BPDUs com prioridade 0 para sequestrar o papel de Root Bridge?",
+      "options": [
+        "Wireshark",
+        "Metasploit",
+        "Yersinia",
+        "Nmap"
+      ],
+      "answer": "Yersinia",
+      "explanation": "O Yersinia é uma ferramenta de ataque em camada 2 que pode enviar BPDUs com prioridade 0 — o menor valor possível — garantindo vitória na eleição do Root Bridge e redirecionando todo o tráfego da rede pelo dispositivo do atacante."
+    },
+    {
+      "question": "Qual é o impacto imediato de um ataque Rogue Root Bridge bem-sucedido na rede?",
+      "options": [
+        "Todas as portas dos switches entram em err-disable",
+        "Todo o tráfego da rede é redirecionado pelo dispositivo do atacante, que executa um ataque Man-in-the-Middle",
+        "O Aging Time da tabela MAC é zerado em todos os switches",
+        "Os trunks são desativados automaticamente pelo STP"
+      ],
+      "answer": "Todo o tráfego da rede é redirecionado pelo dispositivo do atacante, que executa um ataque Man-in-the-Middle",
+      "explanation": "Com o atacante como Root Bridge, o STP recalcula todos os caminhos da topologia usando o atacante como ponto central. Todo o tráfego passa pelo dispositivo malicioso, que pode capturar credenciais, modificar dados e se mover lateralmente na rede."
+    },
+    {
+      "question": "Em qual camada da hierarquia de switches o Root Guard deve ser aplicado e por quê?",
+      "options": [
+        "Apenas nas portas de acesso conectadas a hosts finais, para bloquear BPDUs de usuários",
+        "Nas portas de distribuição e acesso que nunca deveriam receber BPDUs superiores ao do Root legítimo",
+        "Globalmente em todos os switches, incluindo o próprio Root Bridge",
+        "Apenas no Root Bridge, para proteger sua posição na topologia"
+      ],
+      "answer": "Nas portas de distribuição e acesso que nunca deveriam receber BPDUs superiores ao do Root legítimo",
+      "explanation": "O Root Guard é aplicado nas portas que deveriam apenas receber BPDUs do Root legítimo — tipicamente os uplinks de distribuição para o core. Se um BPDU superior chegar por essas portas, a proteção bloqueia o caminho, impedindo a eleição de um Root Bridge não autorizado."
+    },
+    {
+      "question": "Por que o PortFast suprime a geração de TCNs em portas de acesso?",
+      "options": [
+        "Porque desativa o STP completamente nessas portas",
+        "Porque portas PortFast vão direto para Forwarding e não transitam pelos estados Listening e Learning, não havendo transição de estado para reportar",
+        "Porque o PortFast bloqueia o envio de qualquer BPDU na porta",
+        "Porque o PortFast remove a porta do domínio STP"
+      ],
+      "answer": "Porque portas PortFast vão direto para Forwarding e não transitam pelos estados Listening e Learning, não havendo transição de estado para reportar",
+      "explanation": "Sem PortFast, cada vez que um host liga ou desliga, a porta transita entre estados STP, gerando um TCN — o que dispara a limpeza das tabelas MAC em toda a rede desnecessariamente. Com PortFast, essa transição não ocorre e o TCN não é gerado."
+    },
+    {
+      "question": "Por que Loop Guard e Root Guard são mutuamente exclusivos na mesma porta?",
+      "options": [
+        "Porque ambos utilizam o mesmo timer interno do STP",
+        "Porque Root Guard protege contra BPDUs superiores chegando, enquanto Loop Guard protege contra BPDUs parando de chegar — os dois objetivos conflitam na mesma interface",
+        "Porque o IOS Cisco não permite configurar dois guards simultaneamente em nenhuma porta",
+        "Porque Loop Guard só funciona em portas de acesso e Root Guard só em uplinks"
+      ],
+      "answer": "Porque Root Guard protege contra BPDUs superiores chegando, enquanto Loop Guard protege contra BPDUs parando de chegar — os dois objetivos conflitam na mesma interface",
+      "explanation": "São mecanismos com lógicas opostas: Root Guard reage à presença de BPDUs superiores; Loop Guard reage à ausência de BPDUs. Configurar ambos na mesma porta gera conflito e o switch desativa o Loop Guard automaticamente quando o Root Guard está ativo naquela interface."
+    },
+    {
+      "question": "Qual comando permite verificar se o Loop Guard ou o Root Guard estão atuando em alguma porta do switch?",
+      "options": [
+        "show spanning-tree detail",
+        "show interfaces status err-disabled",
+        "show spanning-tree inconsistentports",
+        "show udld neighbors"
+      ],
+      "answer": "show spanning-tree inconsistentports",
+      "explanation": "O comando show spanning-tree inconsistentports lista todas as portas em estado inconsistente — tanto loop-inconsistent (Loop Guard atuando) quanto root-inconsistent (Root Guard atuando). É o ponto de partida para diagnosticar bloqueios causados por esses mecanismos."
+    },
+    {
+      "question": "Por que o errdisable recovery não compromete a segurança oferecida pelo BPDU Guard ou pelo UDLD?",
+      "options": [
+        "Porque ele desativa permanentemente a proteção após o primeiro recovery bem-sucedido",
+        "Porque ele apenas reativa a porta após o intervalo configurado — se a violação persistir, a porta volta para err-disable imediatamente",
+        "Porque o recovery só funciona durante a janela de manutenção do switch",
+        "Porque o recovery substitui o BPDU Guard por Root Guard automaticamente"
+      ],
+      "answer": "Porque ele apenas reativa a porta após o intervalo configurado — se a violação persistir, a porta volta para err-disable imediatamente",
+      "explanation": "O errdisable recovery torna a operação sustentável sem abrir mão da proteção. A porta ainda vai para err-disable ao detectar a violação. Quando o switch tenta reativá-la, se a causa ainda estiver presente — um BPDU chegando ou um link unidirecional — ela volta para err-disable imediatamente."
+    }
+
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Comandos Avançados, Output CLI e Defesa em Profundidade (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Comandos Avançados, Output CLI e Defesa em Profundidade (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+    {
+      "question": "Qual é o intervalo padrão do errdisable recovery quando nenhum valor é configurado manualmente?",
+      "options": [
+        "60 segundos",
+        "120 segundos",
+        "300 segundos",
+        "600 segundos"
+      ],
+      "answer": "300 segundos",
+      "explanation": "O intervalo padrão do errdisable recovery é 300 segundos (5 minutos). Após esse tempo, o switch tenta reativar a porta automaticamente. O comando 'errdisable recovery interval [segundos]' permite ajustar esse valor para cenários que exigem recuperação mais rápida — como o exemplo do documento, que usa 60 segundos."
+    },
+    {
+      "question": "Qual comando mostra quais causas de err-disable estão habilitadas para detecção no switch, sem mostrar o estado das portas?",
+      "options": [
+        "show errdisable recovery",
+        "show interfaces status err-disabled",
+        "show errdisable detect",
+        "show spanning-tree inconsistentports"
+      ],
+      "answer": "show errdisable detect",
+      "explanation": "O 'show errdisable detect' lista quais causas de err-disable estão ativas para detecção no switch — ou seja, quais violações o switch está monitorando. Já o 'show errdisable recovery' mostra o estado de recovery configurado e quais portas estão em processo de recuperação."
+    },
+    {
+      "question": "Qual comando exibe especificamente quais portas estão em err-disable, o motivo de cada uma e o tempo restante até a tentativa de recovery?",
+      "options": [
+        "show errdisable detect",
+        "show errdisable recovery",
+        "show spanning-tree detail",
+        "show interfaces status err-disabled"
+      ],
+      "answer": "show errdisable recovery",
+      "explanation": "O 'show errdisable recovery' exibe as causas de err-disable com recovery ativado, o intervalo configurado e o tempo restante até a próxima tentativa de reativação de cada porta. É o comando de referência para acompanhar o estado de recovery em andamento."
+    },
+    {
+      "question": "Qual é a diferença entre 'spanning-tree portfast bpduguard default' e 'spanning-tree bpduguard enable' aplicado em uma interface?",
+      "options": [
+        "Não há diferença — ambos produzem o mesmo resultado na mesma porta",
+        "O comando global ativa o BPDU Guard em todas as portas com PortFast automaticamente; o comando de interface ativa apenas naquela porta específica, independentemente do PortFast",
+        "O comando global ativa o BPDU Guard apenas em uplinks; o de interface ativa apenas em portas de acesso",
+        "O comando de interface tem prioridade sobre o global e desativa o BPDU Guard na porta"
+      ],
+      "answer": "O comando global ativa o BPDU Guard em todas as portas com PortFast automaticamente; o comando de interface ativa apenas naquela porta específica, independentemente do PortFast",
+      "explanation": "O 'spanning-tree portfast bpduguard default' é um atalho global: ativa o BPDU Guard em todas as portas que já têm PortFast configurado. O 'spanning-tree bpduguard enable' em uma interface é granular — ativa o BPDU Guard naquela porta específica mesmo sem PortFast, o que pode ser útil em cenários de proteção pontual."
+    },
+    {
+      "question": "O comando 'spanning-tree guard root' e o comando 'spanning-tree bpduguard enable' são aplicados em interfaces diferentes por razões diferentes. Qual é a distinção correta?",
+      "options": [
+        "Ambos são aplicados nas mesmas portas de acesso e têm a mesma função",
+        "'spanning-tree guard root' protege uplinks de distribuição contra Root Bridge não autorizado; 'spanning-tree bpduguard enable' protege portas de acesso de hosts finais contra qualquer BPDU",
+        "'spanning-tree guard root' desliga a porta em err-disable; 'spanning-tree bpduguard enable' move para root-inconsistent",
+        "'spanning-tree bpduguard enable' é aplicado em uplinks; 'spanning-tree guard root' em portas de hosts"
+      ],
+      "answer": "'spanning-tree guard root' protege uplinks de distribuição contra Root Bridge não autorizado; 'spanning-tree bpduguard enable' protege portas de acesso de hosts finais contra qualquer BPDU",
+      "explanation": "Root Guard ('spanning-tree guard root') é aplicado em portas que não deveriam jamais receber BPDUs superiores — tipicamente uplinks de distribuição para core. BPDU Guard ('spanning-tree bpduguard enable') é aplicado em portas de hosts, onde qualquer BPDU é suspeito. Mesma ameaça (Rogue Root), pontos de aplicação e reações diferentes."
+    },
+    {
+      "question": "No output do 'show spanning-tree detail', o que uma porta identificada como 'Altn Blocking' indica sobre o estado da topologia?",
+      "options": [
+        "A porta está com falha física e será removida do domínio STP",
+        "A porta está em err-disable por ação do BPDU Guard",
+        "A porta está saudável e funcionando como esperado — bloqueada para evitar loop, mas monitorando BPDUs e pronta para assumir se necessário",
+        "A porta detectou um BPDU superior e ativou o Root Guard"
+      ],
+      "answer": "A porta está saudável e funcionando como esperado — bloqueada para evitar loop, mas monitorando BPDUs e pronta para assumir se necessário",
+      "explanation": "O estado 'Altn Blocking' indica uma Alternate Port — a porta redundante que o STP mantém bloqueada para evitar loops. É um estado completamente saudável e esperado em topologias com redundância. A porta continua recebendo BPDUs e pode transicionar para Root Port se o caminho principal falhar."
+    },
+    {
+      "question": "Por que o documento alerta para usar 'clear mac address-table dynamic' com cautela em produção?",
+      "options": [
+        "Porque o comando reinicia o processo de eleição do Root Bridge",
+        "Porque o comando apaga todas as entradas MAC imediatamente, causando Unknown Unicast Flooding momentâneo em toda a rede até a tabela ser repopulada",
+        "Porque o comando desativa permanentemente o aprendizado de MAC na interface",
+        "Porque o comando coloca todas as portas em estado Listening temporariamente"
+      ],
+      "answer": "Porque o comando apaga todas as entradas MAC imediatamente, causando Unknown Unicast Flooding momentâneo em toda a rede até a tabela ser repopulada",
+      "explanation": "O 'clear mac address-table dynamic' limpa toda a tabela MAC instantaneamente. Sem endereços aprendidos, o switch faz flooding de todos os frames para todas as portas até reaprender os destinos. Em redes com alto volume de tráfego, esse flooding momentâneo pode sobrecarregar os links e causar impacto perceptível nos usuários."
+    },
+    {
+      "question": "Qual é o conceito de 'defesa em profundidade' aplicado às proteções STP, conforme descrito no documento?",
+      "options": [
+        "Aplicar apenas o mecanismo mais forte em cada porta, evitando redundância de configuração",
+        "Usar múltiplas camadas de proteção complementares — cada mecanismo cobrindo um vetor de ataque específico que os outros não cobrem",
+        "Configurar o mesmo mecanismo em todas as portas da rede, independentemente da função de cada uma",
+        "Desativar o STP e substituí-lo por rotas estáticas para eliminar os vetores de ataque L2"
+      ],
+      "answer": "Usar múltiplas camadas de proteção complementares — cada mecanismo cobrindo um vetor de ataque específico que os outros não cobrem",
+      "explanation": "O documento descreve defesa em profundidade como a aplicação combinada de mecanismos que cobrem vetores diferentes: switchport mode access (DTP), BPDU Guard (borda), Root Guard (hierarquia), PortFast (TCN), Loop Guard (falha lógica) e UDLD (falha física). Nenhum mecanismo sozinho cobre todos os cenários — a combinação é que garante a proteção completa."
+    },
+    {
+      "question": "O que uma Root ID Priority inesperadamente baixa no output do 'show spanning-tree detail' deve levar o administrador a investigar imediatamente?",
+      "options": [
+        "Se o PortFast está ativo nas portas de acesso daquele switch",
+        "Se o switch com aquela prioridade é realmente o Root Bridge legítimo e autorizado — pois uma prioridade muito baixa pode indicar um Rogue Root Bridge ativo na rede",
+        "Se o errdisable recovery está configurado para aquela VLAN",
+        "Se o Loop Guard está ativo nos uplinks daquele switch"
+      ],
+      "answer": "Se o switch com aquela prioridade é realmente o Root Bridge legítimo e autorizado — pois uma prioridade muito baixa pode indicar um Rogue Root Bridge ativo na rede",
+      "explanation": "Uma prioridade inesperadamente baixa no Root ID — como 4096 ou até 0 — pode indicar que um atacante assumiu o papel de Root Bridge via Rogue Root Bridge. O administrador deve comparar o endereço MAC e a prioridade do Root ID com o switch que deveria ser o Root Bridge legítimo na topologia documentada."
+    },
+    {
+      "question": "Qual comando exibe o estado detalhado do STP em uma interface específica, incluindo custo, prioridade de porta e papel atual na topologia?",
+      "options": [
+        "show spanning-tree detail",
+        "show spanning-tree summary",
+        "show spanning-tree interface GigabitEthernet0/1 detail",
+        "show interfaces GigabitEthernet0/1 status"
+      ],
+      "answer": "show spanning-tree interface GigabitEthernet0/1 detail",
+      "explanation": "O 'show spanning-tree interface [interface] detail' é o comando granular para inspecionar o estado STP de uma porta específica: papel (Root, Designated, Alternate), estado (Forwarding, Blocking), custo, prioridade e número de TCNs gerados por aquela interface. Essencial para troubleshooting cirúrgico quando o 'show spanning-tree detail' já identificou a porta de interesse."
+    }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

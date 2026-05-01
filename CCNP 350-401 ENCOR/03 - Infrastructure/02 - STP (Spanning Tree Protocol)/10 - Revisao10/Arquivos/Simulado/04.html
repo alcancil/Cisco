@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Cenários, Analogias e Decisões de Projeto (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Cenários, Analogias e Decisões de Projeto (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+    {
+      "question": "A analogia do edifício usada no documento para explicar o problema do TCN descreve qual situação exata de rede?",
+      "options": [
+        "Um atacante interceptando tráfego entre VLANs diferentes",
+        "Entregadores usando o endereço antigo de um morador que mudou de apartamento — representando switches enviando dados por caminhos que não existem mais",
+        "Um switch secundário tentando assumir o papel de Root Bridge",
+        "A saturação de trunks causada por Unknown Unicast Flooding"
+      ],
+      "answer": "Entregadores usando o endereço antigo de um morador que mudou de apartamento — representando switches enviando dados por caminhos que não existem mais",
+      "explanation": "A analogia descreve exatamente o problema da tabela MAC desatualizada: após uma mudança de topologia, os switches continuam enviando frames pelo caminho antigo — registrado na tabela MAC — mesmo que esse caminho já não exista. Os dados chegam na 'porta errada', formando um blackhole."
+    },
+    {
+      "question": "A analogia do semáforo que decide ficar verde para todos ao perder comunicação com a central descreve o comportamento de qual mecanismo e em qual cenário?",
+      "options": [
+        "BPDU Guard — ao receber um BPDU inesperado em porta de acesso",
+        "Root Guard — ao detectar um BPDU superior vindo de porta não autorizada",
+        "STP sem Loop Guard — ao promover uma porta para Forwarding quando BPDUs param de chegar por falha unidirecional",
+        "errdisable recovery — ao reativar uma porta após o intervalo configurado"
+      ],
+      "answer": "STP sem Loop Guard — ao promover uma porta para Forwarding quando BPDUs param de chegar por falha unidirecional",
+      "explanation": "O semáforo representa o STP sem Loop Guard: ao perder o sinal de controle (BPDUs), ele assume que o caminho está livre e abre o tráfego (Forwarding) — sem saber que os outros elementos da topologia continuam operando normalmente. O resultado é um loop L2 silencioso."
+    },
+    {
+      "question": "Por que o impacto de um Rogue Root Bridge bem-sucedido é descrito como 'confidencialidade zero'?",
+      "options": [
+        "Porque o atacante desativa a criptografia nos switches comprometidos",
+        "Porque senhas, dados financeiros e conversas internas passam pelo dispositivo do atacante, que pode ver, registrar e modificar tudo",
+        "Porque o BPDU Guard é desativado automaticamente quando o Root Bridge muda",
+        "Porque todas as VLANs são fundidas em uma única após a reeleição do Root Bridge"
+      ],
+      "answer": "Porque senhas, dados financeiros e conversas internas passam pelo dispositivo do atacante, que pode ver, registrar e modificar tudo",
+      "explanation": "Com o atacante como Root Bridge, o STP recalcula a topologia usando-o como ponto central obrigatório de tráfego. Todo frame da rede — incluindo credenciais, dados financeiros e comunicações internas — transita pelo dispositivo malicioso, que executa um Man-in-the-Middle completo."
+    },
+    {
+      "question": "Link flapping é citado como um dos vetores do ataque TCN Flood. O que é link flapping nesse contexto?",
+      "options": [
+        "Um switch alternando continuamente entre os modos access e trunk",
+        "A oscilação contínua do estado de um link entre up e down, gerando TCNs em alta frequência",
+        "A negociação incorreta de velocidade entre duas portas gigabit",
+        "O processo de um switch alternando sua Root Port a cada convergência"
+      ],
+      "answer": "A oscilação contínua do estado de um link entre up e down, gerando TCNs em alta frequência",
+      "explanation": "Cada transição de estado de uma porta — de Forwarding para Down ou o contrário — dispara um TCN. Um link que oscila repetidamente (flapping) gera uma enxurrada de TCNs que forçam os switches a limpar as tabelas MAC continuamente, resultando em Unknown Unicast Flooding e degradação da rede."
+    },
+    {
+      "question": "Qual é a lógica por trás do BPDU Guard ser aplicado exclusivamente em portas com PortFast?",
+      "options": [
+        "Porque PortFast aumenta a velocidade de detecção de BPDUs maliciosos",
+        "Porque portas com PortFast são conectadas a hosts finais, que nunca deveriam enviar BPDUs — qualquer BPDU recebido indica dispositivo não autorizado",
+        "Porque o BPDU Guard só funciona tecnicamente em portas que estão em estado Forwarding",
+        "Porque PortFast desativa o Root Guard, exigindo o BPDU Guard como substituto"
+      ],
+      "answer": "Porque portas com PortFast são conectadas a hosts finais, que nunca deveriam enviar BPDUs — qualquer BPDU recebido indica dispositivo não autorizado",
+      "explanation": "Hosts finais — computadores, impressoras, telefones IP — nunca geram BPDUs. Se um BPDU chega em uma porta PortFast, só pode significar uma coisa: um switch ou dispositivo não autorizado foi conectado ali. O BPDU Guard reage desligando a porta imediatamente (err-disable), sem questionamentos."
+    },
+    {
+      "question": "Qual é a diferença de recuperação entre uma porta bloqueada pelo Root Guard e uma porta desligada pelo BPDU Guard?",
+      "options": [
+        "Ambas requerem intervenção manual com shutdown/no shutdown",
+        "Root Guard requer intervenção manual; BPDU Guard se recupera automaticamente",
+        "Root Guard recupera automaticamente quando os BPDUs superiores param de chegar; BPDU Guard coloca em err-disable e requer intervenção manual ou errdisable recovery",
+        "Ambas se recuperam automaticamente após o intervalo de Max Age"
+      ],
+      "answer": "Root Guard recupera automaticamente quando os BPDUs superiores param de chegar; BPDU Guard coloca em err-disable e requer intervenção manual ou errdisable recovery",
+      "explanation": "Root Guard move a porta para root-inconsistent — um estado de bloqueio que se desfaz automaticamente quando o dispositivo vizinho para de enviar BPDUs superiores. BPDU Guard é mais severo: coloca a porta em err-disable, que só sai com intervenção manual (shutdown/no shutdown) ou com errdisable recovery configurado."
+    },
+    {
+      "question": "Por que o UDLD não deve ser aplicado em hubs ou meios compartilhados?",
+      "options": [
+        "Porque hubs não suportam a camada 2 e descartam os pacotes UDLD",
+        "Porque o UDLD opera em links ponto a ponto e depende de identificar um único vizinho — em meios compartilhados, múltiplos dispositivos respondem, tornando a detecção de assimetria impossível",
+        "Porque hubs geram BPDUs que conflitam com as mensagens UDLD",
+        "Porque o UDLD só funciona em interfaces que operam em modo trunk"
+      ],
+      "answer": "Porque o UDLD opera em links ponto a ponto e depende de identificar um único vizinho — em meios compartilhados, múltiplos dispositivos respondem, tornando a detecção de assimetria impossível",
+      "explanation": "O mecanismo do UDLD funciona pela troca de mensagens entre exatamente dois switches — cada um confirmando que está recebendo do outro. Em um meio compartilhado como um hub, múltiplos dispositivos podem responder às mensagens UDLD, tornando impossível determinar se o link é realmente unidirecional."
+    },
+    {
+      "question": "Qual comando reseta especificamente portas que foram colocadas em err-disable pelo UDLD, sem precisar entrar em cada interface manualmente?",
+      "options": [
+        "clear mac address-table dynamic",
+        "spanning-tree loopguard default",
+        "udld reset",
+        "errdisable recovery cause udld"
+      ],
+      "answer": "udld reset",
+      "explanation": "O comando 'udld reset' é específico para reativar em massa todas as portas colocadas em err-disable pelo UDLD, sem precisar executar shutdown/no shutdown em cada interface individualmente. É o comando de recuperação rápida para falhas de UDLD corrigidas — como uma fibra trocada ou reconectada."
+    },
+    {
+      "question": "Qual comando verifica o estado detalhado do UDLD em uma interface específica, incluindo se ela está recebendo respostas do vizinho?",
+      "options": [
+        "show spanning-tree interface GigabitEthernet0/1 detail",
+        "show interfaces GigabitEthernet0/1 status",
+        "show udld interface GigabitEthernet0/1",
+        "show errdisable recovery"
+      ],
+      "answer": "show udld interface GigabitEthernet0/1",
+      "explanation": "O comando 'show udld interface [interface]' exibe o estado detalhado do UDLD naquela porta específica: se o modo é Normal ou Aggressive, se o vizinho está sendo detectado, se a porta está em estado undetermined ou err-disable, e o identificador do vizinho nas duas direções."
+    },
+    {
+      "question": "Por que a recomendação de produção é usar Loop Guard e UDLD Aggressive juntos nos links entre switches, e não apenas um dos dois?",
+      "options": [
+        "Porque um desativa o outro se configurados separadamente, exigindo uso simultâneo",
+        "Porque Loop Guard cobre falhas lógicas no fluxo de BPDUs e UDLD cobre falhas físicas no cabo — juntos eliminam praticamente toda a superfície de ataque de links unidirecionais",
+        "Porque o UDLD Aggressive só funciona quando o Loop Guard está ativo na mesma porta",
+        "Porque a Cisco exige os dois configurados simultaneamente para suporte técnico em contratos enterprise"
+      ],
+      "answer": "Porque Loop Guard cobre falhas lógicas no fluxo de BPDUs e UDLD cobre falhas físicas no cabo — juntos eliminam praticamente toda a superfície de ataque de links unidirecionais",
+      "explanation": "Cada mecanismo cobre um plano diferente: Loop Guard age quando os BPDUs param de chegar logicamente (problema de topologia STP); UDLD age quando o cabo fisicamente perde a capacidade de transmitir ou receber em uma direção. Há cenários que um detecta e o outro não — por isso a recomendação é usar os dois juntos nos uplinks entre switches."
+    }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

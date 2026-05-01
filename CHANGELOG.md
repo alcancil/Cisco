@@ -2,6 +2,18 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.4] - 2026-04-27
+
+### Added
+
+- Implementação da Revisão 10 (Parte 10)
+- Expansão do banco de simulados com foco em análise de cenários STP
+
+### Changed
+
+- Padronização da nomenclatura das revisões para manter consistência sequencial
+- Continuidade da progressão didática voltada ao nível CCNP
+
 ## [1.5.3] - 2026-04-24
 
 ### Added

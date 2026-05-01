@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Spanning Three Protocol Completo 08</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Spanning Three Protocol Completo 07</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre STP - Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual é o principal problema que o mecanismo de TCN resolve após uma mudança de topologia no STP?",
+    options: [
+      "A eleição de um novo Root Bridge",
+      "A tabela MAC desatualizada que aponta para caminhos que não existem mais",
+      "A sobrecarga de BPDUs na rede",
+      "A negociação de trunks entre switches"
+    ],
+    answer: "A tabela MAC desatualizada que aponta para caminhos que não existem mais",
+    explanation: "Após uma mudança de topologia, os switches mantêm entradas MAC antigas por até 300s. O TCN força a redução do Aging Time para 15s, acelerando a reaprendizagem dos novos caminhos e evitando blackholes."
+  },
+  {
+    question: "Por qual porta um switch envia o BPDU de TCN após detectar uma mudança de topologia?",
+    options: [
+      "Por todas as portas em estado Forwarding",
+      "Pela Designated Port",
+      "Exclusivamente pela Root Port, em direção ao Root Bridge",
+      "Pela porta com maior custo de caminho"
+    ],
+    answer: "Exclusivamente pela Root Port, em direção ao Root Bridge",
+    explanation: "O TCN sobe a hierarquia hop-a-hop pela Root Port de cada switch até chegar ao Root Bridge. Ele não é enviado para toda a rede — apenas sobe pelo caminho até o Root."
+  },
+  {
+    question: "O que o Root Bridge faz ao receber um TCN?",
+    options: [
+      "Encerra todas as portas em Blocking imediatamente",
+      "Envia BPDUs com o TC Bit ativo para toda a rede, ordenando a redução do Aging Time",
+      "Reinicia o processo de eleição de Root Bridge",
+      "Envia um TCA apenas para o switch que gerou o TCN"
+    ],
+    answer: "Envia BPDUs com o TC Bit ativo para toda a rede, ordenando a redução do Aging Time",
+    explanation: "O Root Bridge ativa o TC Bit nos BPDUs de configuração e os propaga para toda a rede. Todos os switches que recebem esse sinal reduzem o Aging Time de 300s para 15s (Forward Delay)."
+  },
+  {
+    question: "Por que o TCN Flood é classificado como um ataque de DoS na camada 2?",
+    options: [
+      "Porque forja o endereço MAC do Root Bridge",
+      "Porque satura o tráfego ICMP da rede",
+      "Porque força os switches a limparem as tabelas MAC continuamente, gerando Unknown Unicast Flooding em todos os trunks",
+      "Porque bloqueia todas as portas em estado Forwarding"
+    ],
+    answer: "Porque força os switches a limparem as tabelas MAC continuamente, gerando Unknown Unicast Flooding em todos os trunks",
+    explanation: "Com TCNs falsos constantes, os switches nunca conseguem manter a tabela MAC populada. Sem saber o destino dos frames, fazem flooding para todas as portas — saturando os trunks e degradando toda a rede."
+  },
+  {
+    question: "Um atacante conecta um dispositivo em uma porta de acesso e negocia automaticamente um trunk, passando a receber tráfego de todas as VLANs. Qual ataque é esse e qual mecanismo o previne?",
+    options: [
+      "Rogue Root Bridge — prevenido com Root Guard",
+      "TCN Flood — prevenido com PortFast",
+      "DTP Attack — prevenido com switchport mode access",
+      "BPDU Spoofing — prevenido com BPDU Guard"
+    ],
+    answer: "DTP Attack — prevenido com switchport mode access",
+    explanation: "O DTP Attack explora o modo dynamic do switch para negociar um trunk não autorizado. O comando switchport mode access desativa o DTP na porta, impedindo qualquer negociação de trunk."
+  },
+  {
+    question: "Qual é a diferença de comportamento entre BPDU Guard e Root Guard ao detectar uma violação?",
+    options: [
+      "Ambos colocam a porta em err-disable permanentemente",
+      "BPDU Guard coloca a porta em err-disable; Root Guard a move para root-inconsistent, bloqueando sem desligar",
+      "Root Guard desliga a porta; BPDU Guard apenas registra um log",
+      "Ambos bloqueiam a porta e aguardam recuperação automática"
+    ],
+    answer: "BPDU Guard coloca a porta em err-disable; Root Guard a move para root-inconsistent, bloqueando sem desligar",
+    explanation: "BPDU Guard é mais agressivo — desliga a porta imediatamente (err-disable). Root Guard bloqueia a porta no estado root-inconsistent mas ela se recupera automaticamente quando os BPDUs superiores param de chegar."
+  },
+  {
+    question: "O que acontece com uma porta protegida pelo Loop Guard quando os BPDUs param de chegar?",
+    options: [
+      "A porta transiciona para Forwarding normalmente, como faria sem o Loop Guard",
+      "A porta é colocada em err-disable e precisa de intervenção manual",
+      "A porta vai para o estado loop-inconsistent, permanecendo bloqueada até os BPDUs voltarem",
+      "A porta reinicia o processo de eleição de Root Port"
+    ],
+    answer: "A porta vai para o estado loop-inconsistent, permanecendo bloqueada até os BPDUs voltarem",
+    explanation: "O Loop Guard impede que o STP promova a porta para Forwarding na ausência de BPDUs — o que poderia causar um loop. A porta vai para loop-inconsistent e se recupera automaticamente quando os BPDUs voltam, sem intervenção manual."
+  },
+  {
+    question: "Qual é a principal diferença entre Loop Guard e UDLD na proteção contra links unidirecionais?",
+    options: [
+      "Loop Guard atua na camada física do cabo; UDLD atua na lógica do STP",
+      "Loop Guard monitora o fluxo de BPDUs (lógica do STP); UDLD detecta falhas físicas de bidirecionalidade no cabo",
+      "Ambos atuam na camada física e são redundantes entre si",
+      "UDLD é exclusivo para portas de acesso; Loop Guard para uplinks"
+    ],
+    answer: "Loop Guard monitora o fluxo de BPDUs (lógica do STP); UDLD detecta falhas físicas de bidirecionalidade no cabo",
+    explanation: "Loop Guard age no plano lógico: monitora se os BPDUs continuam chegando. UDLD age no plano físico: verifica se o cabo consegue transmitir e receber nas duas direções. Os dois juntos cobrem cenários que um só não cobre."
+  },
+  {
+    question: "Em qual modo o UDLD Aggressive difere do UDLD Normal ao detectar ausência de resposta do vizinho?",
+    options: [
+      "UDLD Aggressive apenas registra o evento no syslog, enquanto o Normal desliga a porta",
+      "UDLD Aggressive envia 8 mensagens de retentativa e, sem resposta, coloca a porta em err-disable",
+      "UDLD Aggressive reinicia o switch automaticamente",
+      "Não há diferença de comportamento entre os dois modos"
+    ],
+    answer: "UDLD Aggressive envia 8 mensagens de retentativa e, sem resposta, coloca a porta em err-disable",
+    explanation: "No modo Normal, o UDLD apenas registra o alerta e marca a porta como undetermined. No modo Aggressive, ele tenta reestabelecer a comunicação com 8 mensagens em 1 segundo e, sem resposta, coloca a porta em err-disable — proteção mais adequada para backbones críticos."
+  },
+  {
+    question: "O que o errdisable recovery faz e qual é sua relação com as proteções STP?",
+    options: [
+      "Desativa permanentemente todas as proteções STP após um intervalo de tempo",
+      "Tenta reativar automaticamente portas em err-disable após um intervalo configurado, sem eliminar a proteção",
+      "Reinicia o processo de eleição do Root Bridge ao detectar uma porta em err-disable",
+      "Converte uma porta em err-disable para o estado loop-inconsistent"
+    ],
+    answer: "Tenta reativar automaticamente portas em err-disable após um intervalo configurado, sem eliminar a proteção",
+    explanation: "O errdisable recovery não remove a proteção — ele torna a operação sustentável. A porta ainda vai para err-disable ao detectar a violação, mas o switch tenta reativá-la automaticamente após o intervalo configurado. Se a violação persistir, ela volta para err-disable imediatamente."
+  },
+{
+      "question": "Qual é o Aging Time padrão de uma entrada na tabela MAC e para quanto ele é reduzido quando o TC Bit está ativo?",
+      "options": [
+        "300 segundos → 30 segundos",
+        "300 segundos → 15 segundos",
+        "150 segundos → 15 segundos",
+        "600 segundos → 30 segundos"
+      ],
+      "answer": "300 segundos → 15 segundos",
+      "explanation": "O Aging Time padrão é 300 segundos (5 minutos). Quando o Root Bridge ativa o TC Bit nos BPDUs, todos os switches reduzem esse tempo para 15 segundos — valor igual ao Forward Delay — forçando a reaprendizagem acelerada dos endereços MAC."
+    },
+    {
+      "question": "Por que um flush total imediato da tabela MAC seria problemático como solução para o blackhole após uma mudança de topologia?",
+      "options": [
+        "Porque causaria a reeleição do Root Bridge",
+        "Porque desativaria o PortFast em todas as portas",
+        "Porque causaria uma tempestade de Unknown Unicast Flooding simultânea em toda a rede, sobrecarregando os trunks",
+        "Porque impediria o envio de novos TCNs"
+      ],
+      "answer": "Porque causaria uma tempestade de Unknown Unicast Flooding simultânea em toda a rede, sobrecarregando os trunks",
+      "explanation": "Se todos os switches limparem a tabela MAC ao mesmo tempo, nenhum deles saberia o destino dos frames — e todos fariam flooding para todas as portas simultaneamente. A redução gradual do Aging Time para 15s é um meio-termo calculado para evitar essa sobrecarga."
+    },
+    {
+      "question": "O TCA (Topology Change Acknowledgment) tem qual função no fluxo do TCN?",
+      "options": [
+        "Ordenar a limpeza da tabela MAC em todos os switches",
+        "Confirmar o recebimento do TCN ao switch que o enviou, hop-a-hop",
+        "Anunciar um novo Root Bridge para a rede",
+        "Reduzir o Aging Time nos switches de acesso"
+      ],
+      "answer": "Confirmar o recebimento do TCN ao switch que o enviou, hop-a-hop",
+      "explanation": "O TCA é enviado de volta ao switch remetente como confirmação de recebimento do TCN. O processo é hop-a-hop: cada switch intermediário confirma o recebimento e replica o TCN para cima, em direção ao Root Bridge."
+    },
+    {
+      "question": "Qual software de ataque é citado no documento como capaz de enviar BPDUs com prioridade 0 para sequestrar o papel de Root Bridge?",
+      "options": [
+        "Wireshark",
+        "Metasploit",
+        "Yersinia",
+        "Nmap"
+      ],
+      "answer": "Yersinia",
+      "explanation": "O Yersinia é uma ferramenta de ataque em camada 2 que pode enviar BPDUs com prioridade 0 — o menor valor possível — garantindo vitória na eleição do Root Bridge e redirecionando todo o tráfego da rede pelo dispositivo do atacante."
+    },
+    {
+      "question": "Qual é o impacto imediato de um ataque Rogue Root Bridge bem-sucedido na rede?",
+      "options": [
+        "Todas as portas dos switches entram em err-disable",
+        "Todo o tráfego da rede é redirecionado pelo dispositivo do atacante, que executa um ataque Man-in-the-Middle",
+        "O Aging Time da tabela MAC é zerado em todos os switches",
+        "Os trunks são desativados automaticamente pelo STP"
+      ],
+      "answer": "Todo o tráfego da rede é redirecionado pelo dispositivo do atacante, que executa um ataque Man-in-the-Middle",
+      "explanation": "Com o atacante como Root Bridge, o STP recalcula todos os caminhos da topologia usando o atacante como ponto central. Todo o tráfego passa pelo dispositivo malicioso, que pode capturar credenciais, modificar dados e se mover lateralmente na rede."
+    },
+    {
+      "question": "Em qual camada da hierarquia de switches o Root Guard deve ser aplicado e por quê?",
+      "options": [
+        "Apenas nas portas de acesso conectadas a hosts finais, para bloquear BPDUs de usuários",
+        "Nas portas de distribuição e acesso que nunca deveriam receber BPDUs superiores ao do Root legítimo",
+        "Globalmente em todos os switches, incluindo o próprio Root Bridge",
+        "Apenas no Root Bridge, para proteger sua posição na topologia"
+      ],
+      "answer": "Nas portas de distribuição e acesso que nunca deveriam receber BPDUs superiores ao do Root legítimo",
+      "explanation": "O Root Guard é aplicado nas portas que deveriam apenas receber BPDUs do Root legítimo — tipicamente os uplinks de distribuição para o core. Se um BPDU superior chegar por essas portas, a proteção bloqueia o caminho, impedindo a eleição de um Root Bridge não autorizado."
+    },
+    {
+      "question": "Por que o PortFast suprime a geração de TCNs em portas de acesso?",
+      "options": [
+        "Porque desativa o STP completamente nessas portas",
+        "Porque portas PortFast vão direto para Forwarding e não transitam pelos estados Listening e Learning, não havendo transição de estado para reportar",
+        "Porque o PortFast bloqueia o envio de qualquer BPDU na porta",
+        "Porque o PortFast remove a porta do domínio STP"
+      ],
+      "answer": "Porque portas PortFast vão direto para Forwarding e não transitam pelos estados Listening e Learning, não havendo transição de estado para reportar",
+      "explanation": "Sem PortFast, cada vez que um host liga ou desliga, a porta transita entre estados STP, gerando um TCN — o que dispara a limpeza das tabelas MAC em toda a rede desnecessariamente. Com PortFast, essa transição não ocorre e o TCN não é gerado."
+    },
+    {
+      "question": "Por que Loop Guard e Root Guard são mutuamente exclusivos na mesma porta?",
+      "options": [
+        "Porque ambos utilizam o mesmo timer interno do STP",
+        "Porque Root Guard protege contra BPDUs superiores chegando, enquanto Loop Guard protege contra BPDUs parando de chegar — os dois objetivos conflitam na mesma interface",
+        "Porque o IOS Cisco não permite configurar dois guards simultaneamente em nenhuma porta",
+        "Porque Loop Guard só funciona em portas de acesso e Root Guard só em uplinks"
+      ],
+      "answer": "Porque Root Guard protege contra BPDUs superiores chegando, enquanto Loop Guard protege contra BPDUs parando de chegar — os dois objetivos conflitam na mesma interface",
+      "explanation": "São mecanismos com lógicas opostas: Root Guard reage à presença de BPDUs superiores; Loop Guard reage à ausência de BPDUs. Configurar ambos na mesma porta gera conflito e o switch desativa o Loop Guard automaticamente quando o Root Guard está ativo naquela interface."
+    },
+    {
+      "question": "Qual comando permite verificar se o Loop Guard ou o Root Guard estão atuando em alguma porta do switch?",
+      "options": [
+        "show spanning-tree detail",
+        "show interfaces status err-disabled",
+        "show spanning-tree inconsistentports",
+        "show udld neighbors"
+      ],
+      "answer": "show spanning-tree inconsistentports",
+      "explanation": "O comando show spanning-tree inconsistentports lista todas as portas em estado inconsistente — tanto loop-inconsistent (Loop Guard atuando) quanto root-inconsistent (Root Guard atuando). É o ponto de partida para diagnosticar bloqueios causados por esses mecanismos."
+    },
+    {
+      "question": "Por que o errdisable recovery não compromete a segurança oferecida pelo BPDU Guard ou pelo UDLD?",
+      "options": [
+        "Porque ele desativa permanentemente a proteção após o primeiro recovery bem-sucedido",
+        "Porque ele apenas reativa a porta após o intervalo configurado — se a violação persistir, a porta volta para err-disable imediatamente",
+        "Porque o recovery só funciona durante a janela de manutenção do switch",
+        "Porque o recovery substitui o BPDU Guard por Root Guard automaticamente"
+      ],
+      "answer": "Porque ele apenas reativa a porta após o intervalo configurado — se a violação persistir, a porta volta para err-disable imediatamente",
+      "explanation": "O errdisable recovery torna a operação sustentável sem abrir mão da proteção. A porta ainda vai para err-disable ao detectar a violação. Quando o switch tenta reativá-la, se a causa ainda estiver presente — um BPDU chegando ou um link unidirecional — ela volta para err-disable imediatamente."
+    },
+    {
+      "question": "No output do 'show spanning-tree detail', qual campo indica com precisão qual switch ou porta está gerando TCNs excessivos na rede?",
+      "options": [
+        "Bridge ID Priority",
+        "Root ID Address",
+        "Number of topology changes ... from [porta]",
+        "Aging Time"
+      ],
+      "answer": "Number of topology changes ... from [porta]",
+      "explanation": "O campo 'Number of topology changes ... last change occurred ... from [porta]' é chamado de 'linha de ouro' do troubleshooting STP. Ele indica quantas mudanças ocorreram e exatamente qual porta as originou. Executando o comando duas vezes com 30 segundos de intervalo e comparando esse campo, é possível identificar a origem de instabilidade com precisão."
+    },
+    {
+      "question": "O que o campo 'Bridge ID Priority 32769' no output do 'show spanning-tree detail' indica sobre a configuração do switch local?",
+      "options": [
+        "O switch foi configurado manualmente com prioridade 32769",
+        "O switch usa a prioridade padrão 32768 somada ao sys-id-ext da VLAN 1, sem ajuste manual",
+        "O switch está operando como Root Bridge da topologia",
+        "O switch tem prioridade mais alta que o Root Bridge atual"
+      ],
+      "answer": "O switch usa a prioridade padrão 32768 somada ao sys-id-ext da VLAN 1, sem ajuste manual",
+      "explanation": "A prioridade 32769 = 32768 (padrão) + 1 (sys-id-ext da VLAN 1). Esse valor indica que nenhum ajuste manual de prioridade foi feito no switch. Em redes onde o Root Bridge deve ser determinístico, essa prioridade precisa ser configurada explicitamente para um valor menor."
+    },
+    {
+      "question": "Qual comando permite identificar rapidamente qual porta em um switch está originando mudanças de topologia, filtrando apenas as linhas relevantes do output?",
+      "options": [
+        "show spanning-tree summary",
+        "show spanning-tree detail | include from|occur|change",
+        "show interfaces status err-disabled",
+        "show errdisable detect"
+      ],
+      "answer": "show spanning-tree detail | include from|occur|change",
+      "explanation": "O pipe '| include from|occur|change' filtra o output extenso do 'show spanning-tree detail' exibindo apenas as linhas que contêm informações sobre mudanças de topologia e suas origens — essencial para troubleshooting rápido em ambientes com muitas VLANs."
+    },
+    {
+      "question": "Por que o comando 'switchport mode access' é considerado a recomendação mais básica e mais ignorada de hardening STP?",
+      "options": [
+        "Porque ele desativa o STP na porta, acelerando a convergência",
+        "Porque ele impede que a porta negocie trunk via DTP, eliminando o vetor de entrada do DTP Attack",
+        "Porque ele ativa o BPDU Guard automaticamente em todas as portas de acesso",
+        "Porque ele configura a porta para enviar TCNs apenas ao Root Bridge"
+      ],
+      "answer": "Porque ele impede que a porta negocie trunk via DTP, eliminando o vetor de entrada do DTP Attack",
+      "explanation": "Portas em modo dynamic (padrão em muitos switches) aceitam negociação de trunk via DTP. O comando 'switchport mode access' desativa completamente o DTP na porta, impedindo que um dispositivo malicioso forme um trunk e acesse o tráfego de múltiplas VLANs. Deve ser política padrão, não exceção."
+    },
+    {
+      "question": "O que são BackboneFast e UplinkFast e qual sua relação com redes modernas?",
+      "options": [
+        "São protocolos substitutos do STP, obrigatórios em redes com RSTP",
+        "São extensões proprietárias Cisco para o 802.1D que aceleram convergência em cenários específicos — incorporadas nativamente ao RSTP e ao MSTP, dispensando configuração separada",
+        "São recursos de balanceamento de carga entre uplinks redundantes no 802.1D",
+        "São mecanismos de proteção contra Rogue Root Bridge equivalentes ao Root Guard"
+      ],
+      "answer": "São extensões proprietárias Cisco para o 802.1D que aceleram convergência em cenários específicos — incorporadas nativamente ao RSTP e ao MSTP, dispensando configuração separada",
+      "explanation": "BackboneFast e UplinkFast foram criados para contornar limitações do 802.1D clássico. Em redes modernas com RSTP (802.1w) ou MSTP (802.1s), os mecanismos equivalentes já fazem parte do protocolo e não precisam ser ativados manualmente."
+    },
+    {
+      "question": "Qual é o impacto prático do VSS e StackWise na dependência do STP em redes corporativas?",
+      "options": [
+        "Aumentam a complexidade do STP ao adicionar mais switches no domínio",
+        "Eliminam completamente o STP da rede, substituindo-o por roteamento L3",
+        "Unificam múltiplos switches físicos em um único plano lógico, eliminando topologias redundantes L2 e reduzindo o STP a um protocolo de borda",
+        "Substituem o Root Guard e o BPDU Guard por mecanismos proprietários"
+      ],
+      "answer": "Unificam múltiplos switches físicos em um único plano lógico, eliminando topologias redundantes L2 e reduzindo o STP a um protocolo de borda",
+      "explanation": "Com VSS ou StackWise, dois switches físicos operam como um único switch lógico. Links que antes eram redundantes L2 (e precisariam do STP para não criar loops) tornam-se links de um único dispositivo lógico — o STP perde a função de core e passa a operar apenas na borda da rede."
+    },
+    {
+      "question": "Por que o RSTP (802.1w) é considerado o mínimo aceitável para qualquer rede nova em relação ao STP clássico (802.1D)?",
+      "options": [
+        "Porque o RSTP elimina completamente o uso de BPDUs na rede",
+        "Porque o RSTP reduz o tempo de convergência de 30–50 segundos para menos de 2 segundos",
+        "Porque o RSTP não requer configuração de Root Bridge",
+        "Porque o RSTP substitui a tabela MAC por uma tabela de roteamento L3"
+      ],
+      "answer": "Porque o RSTP reduz o tempo de convergência de 30–50 segundos para menos de 2 segundos",
+      "explanation": "O 802.1D clássico pode levar de 30 a 50 segundos para convergir após uma falha — inaceitável em redes modernas. O RSTP (802.1w) usa mecanismos como proposal/agreement e edge ports para convergir em menos de 2 segundos. O TCN continua existindo no RSTP, mas o processo é muito mais eficiente."
+    },
+    {
+      "question": "Por que configurar errdisable recovery com cause psecure-violation pode ser arriscado em ambientes de segurança crítica?",
+      "options": [
+        "Porque o recovery automático desativa permanentemente o Port Security na porta",
+        "Porque uma violação de Port Security indica acesso não autorizado — recuperar automaticamente poderia permitir que o dispositivo malicioso reconecte sem intervenção humana",
+        "Porque o psecure-violation não é suportado pelo errdisable recovery em nenhuma versão do IOS",
+        "Porque o recovery automático de psecure-violation reseta a tabela MAC do switch inteiro"
+      ],
+      "answer": "Porque uma violação de Port Security indica acesso não autorizado — recuperar automaticamente poderia permitir que o dispositivo malicioso reconecte sem intervenção humana",
+      "explanation": "O errdisable recovery é configurável por causa justamente para permitir critérios diferentes. Para bpduguard, um hub temporário pode justificar recovery automático. Para psecure-violation, a violação indica uma tentativa de acesso não autorizado — a intervenção manual garante que um administrador avalie o incidente antes de reativar a porta."
+    },
+    {
+      "question": "Um administrador percebe que o número de topology changes em um switch de distribuição aumenta continuamente. Qual é o procedimento correto de troubleshooting descrito no documento?",
+      "options": [
+        "Executar 'clear mac address-table dynamic' imediatamente para estabilizar a rede",
+        "Reiniciar o switch de distribuição para forçar a reeleição do Root Bridge",
+        "Executar 'show spanning-tree detail' duas vezes com 30 segundos de intervalo, comparar o campo 'from' e investigar o dispositivo conectado à porta que aparece repetidamente",
+        "Ativar o BPDU Guard globalmente em todas as portas para bloquear os TCNs"
+      ],
+      "answer": "Executar 'show spanning-tree detail' duas vezes com 30 segundos de intervalo, comparar o campo 'from' e investigar o dispositivo conectado à porta que aparece repetidamente",
+      "explanation": "O campo 'from [porta]' no output do 'show spanning-tree detail' identifica a origem dos TCNs. Executando o comando duas vezes e comparando esse campo, a porta que aparece repetidamente é a origem da instabilidade. O dispositivo conectado a ela — um hub, switch não gerenciável ou host com STP ativo — é o alvo da investigação."
+    },
+    {
+      "question": "Qual é a forma correta de reativar manualmente uma porta que está em err-disable, sem configurar o errdisable recovery automático?",
+      "options": [
+        "Executar 'udld reset' na interface",
+        "Executar 'no spanning-tree bpduguard enable' e aguardar 30 segundos",
+        "Executar 'shutdown' seguido de 'no shutdown' na interface, após corrigir a causa da violação",
+        "Executar 'clear mac address-table dynamic' e aguardar o STP reconvergir"
+      ],
+      "answer": "Executar 'shutdown' seguido de 'no shutdown' na interface, após corrigir a causa da violação",
+      "explanation": "Uma porta em err-disable permanece desligada indefinidamente até intervenção manual. O procedimento correto é primeiro corrigir a causa — remover o dispositivo não autorizado, corrigir o cabo — e então executar 'shutdown' seguido de 'no shutdown' na interface para reativá-la. Sem corrigir a causa primeiro, ela voltará para err-disable imediatamente."
+    },
+    {
+      "question": "A analogia do edifício usada no documento para explicar o problema do TCN descreve qual situação exata de rede?",
+      "options": [
+        "Um atacante interceptando tráfego entre VLANs diferentes",
+        "Entregadores usando o endereço antigo de um morador que mudou de apartamento — representando switches enviando dados por caminhos que não existem mais",
+        "Um switch secundário tentando assumir o papel de Root Bridge",
+        "A saturação de trunks causada por Unknown Unicast Flooding"
+      ],
+      "answer": "Entregadores usando o endereço antigo de um morador que mudou de apartamento — representando switches enviando dados por caminhos que não existem mais",
+      "explanation": "A analogia descreve exatamente o problema da tabela MAC desatualizada: após uma mudança de topologia, os switches continuam enviando frames pelo caminho antigo — registrado na tabela MAC — mesmo que esse caminho já não exista. Os dados chegam na 'porta errada', formando um blackhole."
+    },
+    {
+      "question": "A analogia do semáforo que decide ficar verde para todos ao perder comunicação com a central descreve o comportamento de qual mecanismo e em qual cenário?",
+      "options": [
+        "BPDU Guard — ao receber um BPDU inesperado em porta de acesso",
+        "Root Guard — ao detectar um BPDU superior vindo de porta não autorizada",
+        "STP sem Loop Guard — ao promover uma porta para Forwarding quando BPDUs param de chegar por falha unidirecional",
+        "errdisable recovery — ao reativar uma porta após o intervalo configurado"
+      ],
+      "answer": "STP sem Loop Guard — ao promover uma porta para Forwarding quando BPDUs param de chegar por falha unidirecional",
+      "explanation": "O semáforo representa o STP sem Loop Guard: ao perder o sinal de controle (BPDUs), ele assume que o caminho está livre e abre o tráfego (Forwarding) — sem saber que os outros elementos da topologia continuam operando normalmente. O resultado é um loop L2 silencioso."
+    },
+    {
+      "question": "Por que o impacto de um Rogue Root Bridge bem-sucedido é descrito como 'confidencialidade zero'?",
+      "options": [
+        "Porque o atacante desativa a criptografia nos switches comprometidos",
+        "Porque senhas, dados financeiros e conversas internas passam pelo dispositivo do atacante, que pode ver, registrar e modificar tudo",
+        "Porque o BPDU Guard é desativado automaticamente quando o Root Bridge muda",
+        "Porque todas as VLANs são fundidas em uma única após a reeleição do Root Bridge"
+      ],
+      "answer": "Porque senhas, dados financeiros e conversas internas passam pelo dispositivo do atacante, que pode ver, registrar e modificar tudo",
+      "explanation": "Com o atacante como Root Bridge, o STP recalcula a topologia usando-o como ponto central obrigatório de tráfego. Todo frame da rede — incluindo credenciais, dados financeiros e comunicações internas — transita pelo dispositivo malicioso, que executa um Man-in-the-Middle completo."
+    },
+    {
+      "question": "Link flapping é citado como um dos vetores do ataque TCN Flood. O que é link flapping nesse contexto?",
+      "options": [
+        "Um switch alternando continuamente entre os modos access e trunk",
+        "A oscilação contínua do estado de um link entre up e down, gerando TCNs em alta frequência",
+        "A negociação incorreta de velocidade entre duas portas gigabit",
+        "O processo de um switch alternando sua Root Port a cada convergência"
+      ],
+      "answer": "A oscilação contínua do estado de um link entre up e down, gerando TCNs em alta frequência",
+      "explanation": "Cada transição de estado de uma porta — de Forwarding para Down ou o contrário — dispara um TCN. Um link que oscila repetidamente (flapping) gera uma enxurrada de TCNs que forçam os switches a limpar as tabelas MAC continuamente, resultando em Unknown Unicast Flooding e degradação da rede."
+    },
+    {
+      "question": "Qual é a lógica por trás do BPDU Guard ser aplicado exclusivamente em portas com PortFast?",
+      "options": [
+        "Porque PortFast aumenta a velocidade de detecção de BPDUs maliciosos",
+        "Porque portas com PortFast são conectadas a hosts finais, que nunca deveriam enviar BPDUs — qualquer BPDU recebido indica dispositivo não autorizado",
+        "Porque o BPDU Guard só funciona tecnicamente em portas que estão em estado Forwarding",
+        "Porque PortFast desativa o Root Guard, exigindo o BPDU Guard como substituto"
+      ],
+      "answer": "Porque portas com PortFast são conectadas a hosts finais, que nunca deveriam enviar BPDUs — qualquer BPDU recebido indica dispositivo não autorizado",
+      "explanation": "Hosts finais — computadores, impressoras, telefones IP — nunca geram BPDUs. Se um BPDU chega em uma porta PortFast, só pode significar uma coisa: um switch ou dispositivo não autorizado foi conectado ali. O BPDU Guard reage desligando a porta imediatamente (err-disable), sem questionamentos."
+    },
+    {
+      "question": "Qual é a diferença de recuperação entre uma porta bloqueada pelo Root Guard e uma porta desligada pelo BPDU Guard?",
+      "options": [
+        "Ambas requerem intervenção manual com shutdown/no shutdown",
+        "Root Guard requer intervenção manual; BPDU Guard se recupera automaticamente",
+        "Root Guard recupera automaticamente quando os BPDUs superiores param de chegar; BPDU Guard coloca em err-disable e requer intervenção manual ou errdisable recovery",
+        "Ambas se recuperam automaticamente após o intervalo de Max Age"
+      ],
+      "answer": "Root Guard recupera automaticamente quando os BPDUs superiores param de chegar; BPDU Guard coloca em err-disable e requer intervenção manual ou errdisable recovery",
+      "explanation": "Root Guard move a porta para root-inconsistent — um estado de bloqueio que se desfaz automaticamente quando o dispositivo vizinho para de enviar BPDUs superiores. BPDU Guard é mais severo: coloca a porta em err-disable, que só sai com intervenção manual (shutdown/no shutdown) ou com errdisable recovery configurado."
+    },
+    {
+      "question": "Por que o UDLD não deve ser aplicado em hubs ou meios compartilhados?",
+      "options": [
+        "Porque hubs não suportam a camada 2 e descartam os pacotes UDLD",
+        "Porque o UDLD opera em links ponto a ponto e depende de identificar um único vizinho — em meios compartilhados, múltiplos dispositivos respondem, tornando a detecção de assimetria impossível",
+        "Porque hubs geram BPDUs que conflitam com as mensagens UDLD",
+        "Porque o UDLD só funciona em interfaces que operam em modo trunk"
+      ],
+      "answer": "Porque o UDLD opera em links ponto a ponto e depende de identificar um único vizinho — em meios compartilhados, múltiplos dispositivos respondem, tornando a detecção de assimetria impossível",
+      "explanation": "O mecanismo do UDLD funciona pela troca de mensagens entre exatamente dois switches — cada um confirmando que está recebendo do outro. Em um meio compartilhado como um hub, múltiplos dispositivos podem responder às mensagens UDLD, tornando impossível determinar se o link é realmente unidirecional."
+    },
+    {
+      "question": "Qual comando reseta especificamente portas que foram colocadas em err-disable pelo UDLD, sem precisar entrar em cada interface manualmente?",
+      "options": [
+        "clear mac address-table dynamic",
+        "spanning-tree loopguard default",
+        "udld reset",
+        "errdisable recovery cause udld"
+      ],
+      "answer": "udld reset",
+      "explanation": "O comando 'udld reset' é específico para reativar em massa todas as portas colocadas em err-disable pelo UDLD, sem precisar executar shutdown/no shutdown em cada interface individualmente. É o comando de recuperação rápida para falhas de UDLD corrigidas — como uma fibra trocada ou reconectada."
+    },
+    {
+      "question": "Qual comando verifica o estado detalhado do UDLD em uma interface específica, incluindo se ela está recebendo respostas do vizinho?",
+      "options": [
+        "show spanning-tree interface GigabitEthernet0/1 detail",
+        "show interfaces GigabitEthernet0/1 status",
+        "show udld interface GigabitEthernet0/1",
+        "show errdisable recovery"
+      ],
+      "answer": "show udld interface GigabitEthernet0/1",
+      "explanation": "O comando 'show udld interface [interface]' exibe o estado detalhado do UDLD naquela porta específica: se o modo é Normal ou Aggressive, se o vizinho está sendo detectado, se a porta está em estado undetermined ou err-disable, e o identificador do vizinho nas duas direções."
+    },
+    {
+      "question": "Por que a recomendação de produção é usar Loop Guard e UDLD Aggressive juntos nos links entre switches, e não apenas um dos dois?",
+      "options": [
+        "Porque um desativa o outro se configurados separadamente, exigindo uso simultâneo",
+        "Porque Loop Guard cobre falhas lógicas no fluxo de BPDUs e UDLD cobre falhas físicas no cabo — juntos eliminam praticamente toda a superfície de ataque de links unidirecionais",
+        "Porque o UDLD Aggressive só funciona quando o Loop Guard está ativo na mesma porta",
+        "Porque a Cisco exige os dois configurados simultaneamente para suporte técnico em contratos enterprise"
+      ],
+      "answer": "Porque Loop Guard cobre falhas lógicas no fluxo de BPDUs e UDLD cobre falhas físicas no cabo — juntos eliminam praticamente toda a superfície de ataque de links unidirecionais",
+      "explanation": "Cada mecanismo cobre um plano diferente: Loop Guard age quando os BPDUs param de chegar logicamente (problema de topologia STP); UDLD age quando o cabo fisicamente perde a capacidade de transmitir ou receber em uma direção. Há cenários que um detecta e o outro não — por isso a recomendação é usar os dois juntos nos uplinks entre switches."
+    },
+    {
+      "question": "Qual é o intervalo padrão do errdisable recovery quando nenhum valor é configurado manualmente?",
+      "options": [
+        "60 segundos",
+        "120 segundos",
+        "300 segundos",
+        "600 segundos"
+      ],
+      "answer": "300 segundos",
+      "explanation": "O intervalo padrão do errdisable recovery é 300 segundos (5 minutos). Após esse tempo, o switch tenta reativar a porta automaticamente. O comando 'errdisable recovery interval [segundos]' permite ajustar esse valor para cenários que exigem recuperação mais rápida — como o exemplo do documento, que usa 60 segundos."
+    },
+    {
+      "question": "Qual comando mostra quais causas de err-disable estão habilitadas para detecção no switch, sem mostrar o estado das portas?",
+      "options": [
+        "show errdisable recovery",
+        "show interfaces status err-disabled",
+        "show errdisable detect",
+        "show spanning-tree inconsistentports"
+      ],
+      "answer": "show errdisable detect",
+      "explanation": "O 'show errdisable detect' lista quais causas de err-disable estão ativas para detecção no switch — ou seja, quais violações o switch está monitorando. Já o 'show errdisable recovery' mostra o estado de recovery configurado e quais portas estão em processo de recuperação."
+    },
+    {
+      "question": "Qual comando exibe especificamente quais portas estão em err-disable, o motivo de cada uma e o tempo restante até a tentativa de recovery?",
+      "options": [
+        "show errdisable detect",
+        "show errdisable recovery",
+        "show spanning-tree detail",
+        "show interfaces status err-disabled"
+      ],
+      "answer": "show errdisable recovery",
+      "explanation": "O 'show errdisable recovery' exibe as causas de err-disable com recovery ativado, o intervalo configurado e o tempo restante até a próxima tentativa de reativação de cada porta. É o comando de referência para acompanhar o estado de recovery em andamento."
+    },
+    {
+      "question": "Qual é a diferença entre 'spanning-tree portfast bpduguard default' e 'spanning-tree bpduguard enable' aplicado em uma interface?",
+      "options": [
+        "Não há diferença — ambos produzem o mesmo resultado na mesma porta",
+        "O comando global ativa o BPDU Guard em todas as portas com PortFast automaticamente; o comando de interface ativa apenas naquela porta específica, independentemente do PortFast",
+        "O comando global ativa o BPDU Guard apenas em uplinks; o de interface ativa apenas em portas de acesso",
+        "O comando de interface tem prioridade sobre o global e desativa o BPDU Guard na porta"
+      ],
+      "answer": "O comando global ativa o BPDU Guard em todas as portas com PortFast automaticamente; o comando de interface ativa apenas naquela porta específica, independentemente do PortFast",
+      "explanation": "O 'spanning-tree portfast bpduguard default' é um atalho global: ativa o BPDU Guard em todas as portas que já têm PortFast configurado. O 'spanning-tree bpduguard enable' em uma interface é granular — ativa o BPDU Guard naquela porta específica mesmo sem PortFast, o que pode ser útil em cenários de proteção pontual."
+    },
+    {
+      "question": "O comando 'spanning-tree guard root' e o comando 'spanning-tree bpduguard enable' são aplicados em interfaces diferentes por razões diferentes. Qual é a distinção correta?",
+      "options": [
+        "Ambos são aplicados nas mesmas portas de acesso e têm a mesma função",
+        "'spanning-tree guard root' protege uplinks de distribuição contra Root Bridge não autorizado; 'spanning-tree bpduguard enable' protege portas de acesso de hosts finais contra qualquer BPDU",
+        "'spanning-tree guard root' desliga a porta em err-disable; 'spanning-tree bpduguard enable' move para root-inconsistent",
+        "'spanning-tree bpduguard enable' é aplicado em uplinks; 'spanning-tree guard root' em portas de hosts"
+      ],
+      "answer": "'spanning-tree guard root' protege uplinks de distribuição contra Root Bridge não autorizado; 'spanning-tree bpduguard enable' protege portas de acesso de hosts finais contra qualquer BPDU",
+      "explanation": "Root Guard ('spanning-tree guard root') é aplicado em portas que não deveriam jamais receber BPDUs superiores — tipicamente uplinks de distribuição para core. BPDU Guard ('spanning-tree bpduguard enable') é aplicado em portas de hosts, onde qualquer BPDU é suspeito. Mesma ameaça (Rogue Root), pontos de aplicação e reações diferentes."
+    },
+    {
+      "question": "No output do 'show spanning-tree detail', o que uma porta identificada como 'Altn Blocking' indica sobre o estado da topologia?",
+      "options": [
+        "A porta está com falha física e será removida do domínio STP",
+        "A porta está em err-disable por ação do BPDU Guard",
+        "A porta está saudável e funcionando como esperado — bloqueada para evitar loop, mas monitorando BPDUs e pronta para assumir se necessário",
+        "A porta detectou um BPDU superior e ativou o Root Guard"
+      ],
+      "answer": "A porta está saudável e funcionando como esperado — bloqueada para evitar loop, mas monitorando BPDUs e pronta para assumir se necessário",
+      "explanation": "O estado 'Altn Blocking' indica uma Alternate Port — a porta redundante que o STP mantém bloqueada para evitar loops. É um estado completamente saudável e esperado em topologias com redundância. A porta continua recebendo BPDUs e pode transicionar para Root Port se o caminho principal falhar."
+    },
+    {
+      "question": "Por que o documento alerta para usar 'clear mac address-table dynamic' com cautela em produção?",
+      "options": [
+        "Porque o comando reinicia o processo de eleição do Root Bridge",
+        "Porque o comando apaga todas as entradas MAC imediatamente, causando Unknown Unicast Flooding momentâneo em toda a rede até a tabela ser repopulada",
+        "Porque o comando desativa permanentemente o aprendizado de MAC na interface",
+        "Porque o comando coloca todas as portas em estado Listening temporariamente"
+      ],
+      "answer": "Porque o comando apaga todas as entradas MAC imediatamente, causando Unknown Unicast Flooding momentâneo em toda a rede até a tabela ser repopulada",
+      "explanation": "O 'clear mac address-table dynamic' limpa toda a tabela MAC instantaneamente. Sem endereços aprendidos, o switch faz flooding de todos os frames para todas as portas até reaprender os destinos. Em redes com alto volume de tráfego, esse flooding momentâneo pode sobrecarregar os links e causar impacto perceptível nos usuários."
+    },
+    {
+      "question": "Qual é o conceito de 'defesa em profundidade' aplicado às proteções STP, conforme descrito no documento?",
+      "options": [
+        "Aplicar apenas o mecanismo mais forte em cada porta, evitando redundância de configuração",
+        "Usar múltiplas camadas de proteção complementares — cada mecanismo cobrindo um vetor de ataque específico que os outros não cobrem",
+        "Configurar o mesmo mecanismo em todas as portas da rede, independentemente da função de cada uma",
+        "Desativar o STP e substituí-lo por rotas estáticas para eliminar os vetores de ataque L2"
+      ],
+      "answer": "Usar múltiplas camadas de proteção complementares — cada mecanismo cobrindo um vetor de ataque específico que os outros não cobrem",
+      "explanation": "O documento descreve defesa em profundidade como a aplicação combinada de mecanismos que cobrem vetores diferentes: switchport mode access (DTP), BPDU Guard (borda), Root Guard (hierarquia), PortFast (TCN), Loop Guard (falha lógica) e UDLD (falha física). Nenhum mecanismo sozinho cobre todos os cenários — a combinação é que garante a proteção completa."
+    },
+    {
+      "question": "O que uma Root ID Priority inesperadamente baixa no output do 'show spanning-tree detail' deve levar o administrador a investigar imediatamente?",
+      "options": [
+        "Se o PortFast está ativo nas portas de acesso daquele switch",
+        "Se o switch com aquela prioridade é realmente o Root Bridge legítimo e autorizado — pois uma prioridade muito baixa pode indicar um Rogue Root Bridge ativo na rede",
+        "Se o errdisable recovery está configurado para aquela VLAN",
+        "Se o Loop Guard está ativo nos uplinks daquele switch"
+      ],
+      "answer": "Se o switch com aquela prioridade é realmente o Root Bridge legítimo e autorizado — pois uma prioridade muito baixa pode indicar um Rogue Root Bridge ativo na rede",
+      "explanation": "Uma prioridade inesperadamente baixa no Root ID — como 4096 ou até 0 — pode indicar que um atacante assumiu o papel de Root Bridge via Rogue Root Bridge. O administrador deve comparar o endereço MAC e a prioridade do Root ID com o switch que deveria ser o Root Bridge legítimo na topologia documentada."
+    },
+    {
+      "question": "Qual comando exibe o estado detalhado do STP em uma interface específica, incluindo custo, prioridade de porta e papel atual na topologia?",
+      "options": [
+        "show spanning-tree detail",
+        "show spanning-tree summary",
+        "show spanning-tree interface GigabitEthernet0/1 detail",
+        "show interfaces GigabitEthernet0/1 status"
+      ],
+      "answer": "show spanning-tree interface GigabitEthernet0/1 detail",
+      "explanation": "O 'show spanning-tree interface [interface] detail' é o comando granular para inspecionar o estado STP de uma porta específica: papel (Root, Designated, Alternate), estado (Forwarding, Blocking), custo, prioridade e número de TCNs gerados por aquela interface. Essencial para troubleshooting cirúrgico quando o 'show spanning-tree detail' já identificou a porta de interesse."
+    }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Comandos, Troubleshooting e Boas Práticas (802.1D)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Comandos, Troubleshooting e Boas Práticas (802.1D)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+    {
+      "question": "No output do 'show spanning-tree detail', qual campo indica com precisão qual switch ou porta está gerando TCNs excessivos na rede?",
+      "options": [
+        "Bridge ID Priority",
+        "Root ID Address",
+        "Number of topology changes ... from [porta]",
+        "Aging Time"
+      ],
+      "answer": "Number of topology changes ... from [porta]",
+      "explanation": "O campo 'Number of topology changes ... last change occurred ... from [porta]' é chamado de 'linha de ouro' do troubleshooting STP. Ele indica quantas mudanças ocorreram e exatamente qual porta as originou. Executando o comando duas vezes com 30 segundos de intervalo e comparando esse campo, é possível identificar a origem de instabilidade com precisão."
+    },
+    {
+      "question": "O que o campo 'Bridge ID Priority 32769' no output do 'show spanning-tree detail' indica sobre a configuração do switch local?",
+      "options": [
+        "O switch foi configurado manualmente com prioridade 32769",
+        "O switch usa a prioridade padrão 32768 somada ao sys-id-ext da VLAN 1, sem ajuste manual",
+        "O switch está operando como Root Bridge da topologia",
+        "O switch tem prioridade mais alta que o Root Bridge atual"
+      ],
+      "answer": "O switch usa a prioridade padrão 32768 somada ao sys-id-ext da VLAN 1, sem ajuste manual",
+      "explanation": "A prioridade 32769 = 32768 (padrão) + 1 (sys-id-ext da VLAN 1). Esse valor indica que nenhum ajuste manual de prioridade foi feito no switch. Em redes onde o Root Bridge deve ser determinístico, essa prioridade precisa ser configurada explicitamente para um valor menor."
+    },
+    {
+      "question": "Qual comando permite identificar rapidamente qual porta em um switch está originando mudanças de topologia, filtrando apenas as linhas relevantes do output?",
+      "options": [
+        "show spanning-tree summary",
+        "show spanning-tree detail | include from|occur|change",
+        "show interfaces status err-disabled",
+        "show errdisable detect"
+      ],
+      "answer": "show spanning-tree detail | include from|occur|change",
+      "explanation": "O pipe '| include from|occur|change' filtra o output extenso do 'show spanning-tree detail' exibindo apenas as linhas que contêm informações sobre mudanças de topologia e suas origens — essencial para troubleshooting rápido em ambientes com muitas VLANs."
+    },
+    {
+      "question": "Por que o comando 'switchport mode access' é considerado a recomendação mais básica e mais ignorada de hardening STP?",
+      "options": [
+        "Porque ele desativa o STP na porta, acelerando a convergência",
+        "Porque ele impede que a porta negocie trunk via DTP, eliminando o vetor de entrada do DTP Attack",
+        "Porque ele ativa o BPDU Guard automaticamente em todas as portas de acesso",
+        "Porque ele configura a porta para enviar TCNs apenas ao Root Bridge"
+      ],
+      "answer": "Porque ele impede que a porta negocie trunk via DTP, eliminando o vetor de entrada do DTP Attack",
+      "explanation": "Portas em modo dynamic (padrão em muitos switches) aceitam negociação de trunk via DTP. O comando 'switchport mode access' desativa completamente o DTP na porta, impedindo que um dispositivo malicioso forme um trunk e acesse o tráfego de múltiplas VLANs. Deve ser política padrão, não exceção."
+    },
+    {
+      "question": "O que são BackboneFast e UplinkFast e qual sua relação com redes modernas?",
+      "options": [
+        "São protocolos substitutos do STP, obrigatórios em redes com RSTP",
+        "São extensões proprietárias Cisco para o 802.1D que aceleram convergência em cenários específicos — incorporadas nativamente ao RSTP e ao MSTP, dispensando configuração separada",
+        "São recursos de balanceamento de carga entre uplinks redundantes no 802.1D",
+        "São mecanismos de proteção contra Rogue Root Bridge equivalentes ao Root Guard"
+      ],
+      "answer": "São extensões proprietárias Cisco para o 802.1D que aceleram convergência em cenários específicos — incorporadas nativamente ao RSTP e ao MSTP, dispensando configuração separada",
+      "explanation": "BackboneFast e UplinkFast foram criados para contornar limitações do 802.1D clássico. Em redes modernas com RSTP (802.1w) ou MSTP (802.1s), os mecanismos equivalentes já fazem parte do protocolo e não precisam ser ativados manualmente."
+    },
+    {
+      "question": "Qual é o impacto prático do VSS e StackWise na dependência do STP em redes corporativas?",
+      "options": [
+        "Aumentam a complexidade do STP ao adicionar mais switches no domínio",
+        "Eliminam completamente o STP da rede, substituindo-o por roteamento L3",
+        "Unificam múltiplos switches físicos em um único plano lógico, eliminando topologias redundantes L2 e reduzindo o STP a um protocolo de borda",
+        "Substituem o Root Guard e o BPDU Guard por mecanismos proprietários"
+      ],
+      "answer": "Unificam múltiplos switches físicos em um único plano lógico, eliminando topologias redundantes L2 e reduzindo o STP a um protocolo de borda",
+      "explanation": "Com VSS ou StackWise, dois switches físicos operam como um único switch lógico. Links que antes eram redundantes L2 (e precisariam do STP para não criar loops) tornam-se links de um único dispositivo lógico — o STP perde a função de core e passa a operar apenas na borda da rede."
+    },
+    {
+      "question": "Por que o RSTP (802.1w) é considerado o mínimo aceitável para qualquer rede nova em relação ao STP clássico (802.1D)?",
+      "options": [
+        "Porque o RSTP elimina completamente o uso de BPDUs na rede",
+        "Porque o RSTP reduz o tempo de convergência de 30–50 segundos para menos de 2 segundos",
+        "Porque o RSTP não requer configuração de Root Bridge",
+        "Porque o RSTP substitui a tabela MAC por uma tabela de roteamento L3"
+      ],
+      "answer": "Porque o RSTP reduz o tempo de convergência de 30–50 segundos para menos de 2 segundos",
+      "explanation": "O 802.1D clássico pode levar de 30 a 50 segundos para convergir após uma falha — inaceitável em redes modernas. O RSTP (802.1w) usa mecanismos como proposal/agreement e edge ports para convergir em menos de 2 segundos. O TCN continua existindo no RSTP, mas o processo é muito mais eficiente."
+    },
+    {
+      "question": "Por que configurar errdisable recovery com cause psecure-violation pode ser arriscado em ambientes de segurança crítica?",
+      "options": [
+        "Porque o recovery automático desativa permanentemente o Port Security na porta",
+        "Porque uma violação de Port Security indica acesso não autorizado — recuperar automaticamente poderia permitir que o dispositivo malicioso reconecte sem intervenção humana",
+        "Porque o psecure-violation não é suportado pelo errdisable recovery em nenhuma versão do IOS",
+        "Porque o recovery automático de psecure-violation reseta a tabela MAC do switch inteiro"
+      ],
+      "answer": "Porque uma violação de Port Security indica acesso não autorizado — recuperar automaticamente poderia permitir que o dispositivo malicioso reconecte sem intervenção humana",
+      "explanation": "O errdisable recovery é configurável por causa justamente para permitir critérios diferentes. Para bpduguard, um hub temporário pode justificar recovery automático. Para psecure-violation, a violação indica uma tentativa de acesso não autorizado — a intervenção manual garante que um administrador avalie o incidente antes de reativar a porta."
+    },
+    {
+      "question": "Um administrador percebe que o número de topology changes em um switch de distribuição aumenta continuamente. Qual é o procedimento correto de troubleshooting descrito no documento?",
+      "options": [
+        "Executar 'clear mac address-table dynamic' imediatamente para estabilizar a rede",
+        "Reiniciar o switch de distribuição para forçar a reeleição do Root Bridge",
+        "Executar 'show spanning-tree detail' duas vezes com 30 segundos de intervalo, comparar o campo 'from' e investigar o dispositivo conectado à porta que aparece repetidamente",
+        "Ativar o BPDU Guard globalmente em todas as portas para bloquear os TCNs"
+      ],
+      "answer": "Executar 'show spanning-tree detail' duas vezes com 30 segundos de intervalo, comparar o campo 'from' e investigar o dispositivo conectado à porta que aparece repetidamente",
+      "explanation": "O campo 'from [porta]' no output do 'show spanning-tree detail' identifica a origem dos TCNs. Executando o comando duas vezes e comparando esse campo, a porta que aparece repetidamente é a origem da instabilidade. O dispositivo conectado a ela — um hub, switch não gerenciável ou host com STP ativo — é o alvo da investigação."
+    },
+    {
+      "question": "Qual é a forma correta de reativar manualmente uma porta que está em err-disable, sem configurar o errdisable recovery automático?",
+      "options": [
+        "Executar 'udld reset' na interface",
+        "Executar 'no spanning-tree bpduguard enable' e aguardar 30 segundos",
+        "Executar 'shutdown' seguido de 'no shutdown' na interface, após corrigir a causa da violação",
+        "Executar 'clear mac address-table dynamic' e aguardar o STP reconvergir"
+      ],
+      "answer": "Executar 'shutdown' seguido de 'no shutdown' na interface, após corrigir a causa da violação",
+      "explanation": "Uma porta em err-disable permanece desligada indefinidamente até intervenção manual. O procedimento correto é primeiro corrigir a causa — remover o dispositivo não autorizado, corrigir o cabo — e então executar 'shutdown' seguido de 'no shutdown' na interface para reativá-la. Sem corrigir a causa primeiro, ela voltará para err-disable imediatamente."
+    }  
+
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
