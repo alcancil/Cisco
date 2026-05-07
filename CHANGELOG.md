@@ -2,6 +2,30 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.6.0] - 2026-05-01
+
+### Added
+
+- Implementação da Revisão 11 com laboratório prático de proteção STP
+- Simulação de ataque STP utilizando Kali Linux e Yersinia
+- Análise de BPDUs com Wireshark
+- Aplicação prática de PortFast e BPDU Guard
+- Inclusão de automação inicial com scripts Python para backup e restore de configurações
+- Disponibilização de arquivos `.cfg` para replicação dos laboratórios
+
+### Changed
+
+- Refinamento da abordagem didática com foco em comportamento e troubleshooting
+- Separação progressiva entre laboratórios fundamentais e avançados
+- Melhoria na estrutura de documentação e reprodutibilidade dos cenários
+- Ajuste do escopo do Lab 01 para manter alinhamento entre objetivo e implementação
+
+### Impact
+
+- Aproxima o projeto de cenários reais encontrados em ambientes corporativos
+- Fortalece o repositório como material de estudo e portfólio técnico
+- Cria base para evolução futura em automação e troubleshooting avançado
+
 ## [1.5.4] - 2026-04-27
 
 ### Added
