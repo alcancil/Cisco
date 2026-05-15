@@ -2,6 +2,32 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.0] - 2026-05-14
+
+### Added
+
+- Implementação da Revisão 12 com foco em BPDU Filter e err-disable recovery
+- Simulação prática de loops de camada 2 em ambiente STP
+- Demonstração do comportamento do BPDU Filter em modo global e por interface
+- Análise operacional do ciclo automático de recovery (`errdisable recovery`)
+- Simulação de falhas e instabilidade operacional em cenários redundantes
+- Captura e análise de BPDUs utilizando Wireshark
+- Geração de BPDUs maliciosos utilizando Scapy em Python
+
+### Changed
+
+- Evolução da abordagem prática para cenários avançados de troubleshooting STP
+- Ampliação da análise operacional com foco em comportamento de produção
+- Refinamento da progressão didática entre proteção, falha e recuperação automática
+- Expansão da integração entre segurança, troubleshooting e análise de protocolos
+
+### Impact
+
+- Aproxima o laboratório de cenários reais encontrados em redes corporativas
+- Fortalece o repositório como material técnico avançado para CCNP Enterprise
+- Expande o projeto como portfólio voltado para troubleshooting e operação de redes
+- Cria base para futuras integrações com automação e monitoramento
+
 ## [1.6.0] - 2026-05-01
 
 ### Added
