@@ -2,6 +2,35 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.0] - 2026-05-20
+
+### Added
+
+- Implementação da Revisão 13 com foco em UDLD e links unidirecionais
+- Demonstração prática dos modos UDLD normal e UDLD aggressive
+- Simulação de falhas unidirecionais utilizando ACLs em EtherChannel
+- Análise operacional de err-disable causado por UDLD aggressive
+- Validação do comportamento do UDLD em links agregados
+- Captura e análise de quadros UDLD utilizando Wireshark
+- Simulação de recuperação manual e automática de interfaces UDLD
+- Inclusão de troubleshooting avançado para links redundantes e unidirecionais
+
+### Changed
+
+- Evolução dos laboratórios para cenários avançados de proteção em camada 2
+- Expansão da abordagem operacional com foco em falhas físicas e comportamento de produção
+- Refinamento da progressão didática entre STP, EtherChannel e proteção de enlaces
+- Maior integração entre troubleshooting, redundância e análise de protocolos
+
+### Impact
+
+- Aproxima os laboratórios de cenários reais encontrados em ambientes corporativos
+- Fortalece o repositório como material avançado para preparação CCNP Enterprise
+- Expande o projeto como portfólio técnico voltado para troubleshooting operacional
+- Cria base para futuras integrações com monitoramento e automação de redes
+
+---
+
 ## [1.7.0] - 2026-05-14
 
 ### Added
