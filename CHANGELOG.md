@@ -2,6 +2,39 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.9.0] - 2026-05-23
+
+### Added
+
+- Implementação da Revisão 14 com foco em EtherChannel, UplinkFast e BackboneFast
+- Demonstração do impacto do EtherChannel no custo lógico do STP (Port-Channel como interface única)
+- Configuração e validação de EtherChannel com LACP (modo active/passive)
+- Análise do comportamento do STP antes e após a criação do bundle
+- Demonstração da resiliência interna do EtherChannel ante falha de link físico individual
+- Configuração e validação do UplinkFast em switch de acesso com uplink redundante
+- Demonstração de convergência local imediata em falha direta de uplink
+- Análise dos efeitos colaterais do UplinkFast (elevação de prioridade e custo)
+- Configuração e validação do BackboneFast em todos os switches da topologia
+- Simulação de falha indireta no backbone e medição de convergência acelerada (~30s vs ~50s)
+- Validação do BackboneFast via contador de transições (show spanning-tree backbonefast)
+- Nota técnica sobre limitações de RLQ em ambientes virtuais (EVE-NG/IOL)
+
+### Changed
+
+- Evolução dos laboratórios para otimizações proprietárias Cisco do STP clássico
+- Expansão da progressão didática: EtherChannel como base → UplinkFast → BackboneFast
+- Integração de checklist de conclusão por laboratório para autoavaliação do aprendizado
+- Refinamento da abordagem comparativa com tabela técnica unificada (tipo de falha × mecanismo × tempo)
+
+### Impact
+
+- Completa a cobertura do STP 802.1D clássico com todos os seus mecanismos de otimização
+- Cria a ponte conceitual direta para o próximo módulo: PVST+, RSTP e MSTP
+- Fortalece o repositório como referência técnica completa de Camada 2 para CCNP Enterprise
+- Consolida o portfólio com laboratório de nível sênior cobrindo falhas diretas, indiretas e agregação de links
+
+---
+
 ## [1.8.0] - 2026-05-20
 
 ### Added
