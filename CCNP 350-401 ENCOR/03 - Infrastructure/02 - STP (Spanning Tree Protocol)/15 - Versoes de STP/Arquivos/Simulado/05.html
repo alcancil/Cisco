@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado – Troubleshooting, Comandos CLI e Cenários de Produção (STP Multi‑VLAN)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado – Troubleshooting, Comandos CLI e Cenários de Produção</h1>
+      <p class="mb-6 text-slate-600">10 questões sobre diagnóstico de problemas STP em ambientes multi‑VLAN, comandos CLI essenciais e cenários reais de produção. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        "question": "Um administrador percebe que todo o tráfego da rede está passando por um único uplink, apesar de haver dois uplinks redundantes configurados. Qual é a causa mais provável e o respectivo comando de verificação?",
+        "options": [
+          "Erro de hardware no uplink secundário; verifique com 'show interfaces status'.",
+          "Todas as VLANs estão com o mesmo Root Bridge (ex.: SW1), forçando o bloqueio do segundo uplink. Verifique com 'show spanning-tree vlan 10' e 'show spanning-tree vlan 20'.",
+          "O protocolo EtherChannel está desativado; use 'show etherchannel summary'.",
+          "O BPDU Guard bloqueou o segundo uplink; use 'show errdisable recovery'."
+        ],
+        "answer": "Todas as VLANs estão com o mesmo Root Bridge (ex.: SW1), forçando o bloqueio do segundo uplink. Verifique com 'show spanning-tree vlan 10' e 'show spanning-tree vlan 20'.",
+        "explanation": "A ausência de balanceamento (load balancing) geralmente ocorre porque todas as VLANs possuem o mesmo Root Bridge. O STP bloqueia o mesmo link para todas. Para diagnosticar, use 'show spanning-tree vlan [vlan]' em cada VLAN e confira se o Root Bridge é o mesmo. A solução é distribuir os roots (ex.: VLAN 10 com root SW1, VLAN 20 com root SW2)."
+      },
+      {
+        "question": "Qual comando exibe o número total de instâncias STP ativas em um switch que opera com PVST+?",
+        "options": [
+          "show spanning-tree vlan 1",
+          "show spanning-tree summary",
+          "show spanning-tree detail | include VLAN",
+          "show interfaces trunk"
+        ],
+        "answer": "show spanning-tree summary",
+        "explanation": "O 'show spanning-tree summary' mostra, entre outras informações, o número total de instâncias STP em execução no switch. Em PVST+, cada VLAN ativa representa uma instância. Esse comando é essencial para avaliar o impacto de escalabilidade antes de uma migração para MSTP."
+      },
+      {
+        "question": "Um switch de distribuição (não planejado como Root Bridge) tornou-se o root de várias VLANs, causando caminhos subótimos. Qual comando deve ser usado para forçá‑lo a nunca ser root nessas VLANs?",
+        "options": [
+          "spanning-tree vlan 10-20 root secondary",
+          "spanning-tree vlan 10-20 priority 61440 (valor alto)",
+          "no spanning-tree vlan 10-20",
+          "spanning-tree guard root"
+        ],
+        "answer": "spanning-tree vlan 10-20 priority 61440 (valor alto)",
+        "explanation": "Para evitar que um switch se torne root, sua prioridade deve ser alta (pior). O comando 'spanning-tree vlan [vlan] priority [valor]' com valores altos (ex.: 61440) torna o switch menos preferível. O 'root secondary' configura prioridade 28672, que ainda pode torná‑lo root se o root primário falhar, mas não resolve um root inesperado. Prioridades altas garantem que ele nunca vença uma eleição."
+      },
+      {
+        "question": "No diagnóstico de um problema de 'Root Bridge inesperado', o administrador precisa identificar rapidamente qual switch está se anunciando como root. Qual comando fornece essa informação para todas as VLANs de uma só vez?",
+        "options": [
+          "show spanning-tree root",
+          "show spanning-tree vlan 1",
+          "show spanning-tree detail | include Root|Bridge",
+          "show processes cpu sorted"
+        ],
+        "answer": "show spanning-tree root",
+        "explanation": "O comando 'show spanning-tree root' exibe, para cada VLAN, o Root Bridge ID (prioridade + MAC) e a porta local que leva até ele. É o comando mais rápido para mapear os roots por VLAN e identificar se algum switch não autorizado está assumindo esse papel."
+      },
+      {
+        "question": "Um engenheiro suspeita que uma interface específica está com problemas de STP (ex.: flapping, TCN excessivo). Qual comando fornece o estado STP detalhado daquela porta, incluindo papel, estado, custo e contagem de mudanças de topologia?",
+        "options": [
+          "show interfaces GigabitEthernet0/1",
+          "show spanning-tree interface GigabitEthernet0/1 detail",
+          "show spanning-tree vlan 1 interface GigabitEthernet0/1",
+          "show errdisable interface GigabitEthernet0/1"
+        ],
+        "answer": "show spanning-tree interface GigabitEthernet0/1 detail",
+        "explanation": "O 'show spanning-tree interface [interface] detail' é o comando granular para inspecionar o estado STP de uma porta específica: papel (Root, Designated, Alternate), estado (Forwarding, Blocking), custo, prioridade e número de TCNs gerados por aquela interface. Essencial para troubleshooting cirúrgico."
+      },
+      {
+        "question": "Em uma rede com PVST+, o administrador nota alto consumo de CPU nos switches de distribuição e uma grande quantidade de BPDUs sendo processadas. O comando 'show spanning-tree summary' revela 350 instâncias STP ativas. Qual é a ação recomendada para resolver o problema de escalabilidade sem perder o balanceamento de carga?",
+        "options": [
+          "Desativar o STP nas VLANs menos críticas.",
+          "Migrar para MSTP, agrupando múltiplas VLANs em poucas instâncias STP (MSTI), mantendo o balanceamento com instâncias diferentes.",
+          "Aumentar o intervalo de Hello Time globalmente para reduzir BPDUs.",
+          "Substituir todos os switches por modelos com maior capacidade de CPU."
+        ],
+        "answer": "Migrar para MSTP, agrupando múltiplas VLANs em poucas instâncias STP (MSTI), mantendo o balanceamento com instâncias diferentes.",
+        "explanation": "O MSTP (802.1s) foi projetado exatamente para resolver o excesso de instâncias do PVST+. Ele permite mapear várias VLANs para uma mesma instância, reduzindo drasticamente o número de instâncias e BPDUs, sem perder a capacidade de balanceamento de carga (instâncias diferentes podem ter Roots diferentes)."
+      },
+      {
+        "question": "Um switch de acesso está enviando TCNs (Topology Change Notifications) repetidamente. O administrador quer identificar qual porta está originando esses TCNs. Qual comando e qual campo devem ser analisados?",
+        "options": [
+          "show spanning-tree detail – analisar o campo 'Number of topology changes ... from [porta]'.",
+          "show interfaces trunk – verificar a porta com maior número de erros.",
+          "show spanning-tree summary – contar as instâncias ativas.",
+          "show logging – procurar mensagens 'TCN received'."
+        ],
+        "answer": "show spanning-tree detail – analisar o campo 'Number of topology changes ... from [porta]'.",
+        "explanation": "O 'show spanning-tree detail' exibe, para cada porta, o campo 'Number of topology changes ... from [porta]'. Executando o comando duas vezes com um intervalo, a porta cujo contador aumenta é a origem dos TCNs. Isso permite investigar o dispositivo conectado (hub, switch não gerenciável, host com STP ativo)."
+      },
+      {
+        "question": "Um administrador deseja verificar se o balanceamento de carga Layer 2 está funcionando conforme o projeto: VLAN 10 deve usar uplink SW1→SW3, e VLAN 20 deve usar uplink SW2→SW3. Quais comandos ele deve executar no switch de acesso SW3 para confirmar?",
+        "options": [
+          "show vlan brief e show interfaces trunk",
+          "show spanning-tree vlan 10 e show spanning-tree vlan 20, verificando a Root Port de cada VLAN",
+          "show spanning-tree summary e show etherchannel summary",
+          "show mac address-table e show cdp neighbors"
+        ],
+        "answer": "show spanning-tree vlan 10 e show spanning-tree vlan 20, verificando a Root Port de cada VLAN",
+        "explanation": "Para validar qual uplink cada VLAN está usando, o comando 'show spanning-tree vlan [vlan]' exibe a Root Port (porta de saída para o Root Bridge). Se VLAN 10 tem Root Port no uplink esquerdo (SW1) e VLAN 20 no uplink direito (SW2), o balanceamento está correto."
+      },
+      {
+        "question": "Durante uma auditoria, você encontra um switch com a configuração 'spanning-tree vlan 1 priority 4096' e outro com 'spanning-tree vlan 1 priority 8192'. Ambos estão em VLAN 1. Qual switch será o Root Bridge e por quê?",
+        "options": [
+          "O switch com prioridade 8192, pois número maior vence.",
+          "O switch com prioridade 4096, pois o menor valor numérico de prioridade tem precedência na eleição do Root Bridge.",
+          "Será decidido pelo endereço MAC, já que as prioridades são diferentes.",
+          "O switch com prioridade 4096, desde que tenha o maior endereço MAC; caso contrário, o outro vence."
+        ],
+        "answer": "O switch com prioridade 4096, pois o menor valor numérico de prioridade tem precedência na eleição do Root Bridge.",
+        "explanation": "A eleição do Root Bridge compara primeiro a prioridade (menor número vence). 4096 é menor que 8192, portanto o switch com prioridade 4096 será o Root Bridge, independentemente do endereço MAC. O MAC só é usado como critério de desempate se as prioridades forem iguais."
+      },
+      {
+        "question": "Um switch está configurado com 'spanning-tree vlan 10 root primary' e outro com 'spanning-tree vlan 20 root primary'. Porém, após a ativação, o tráfego da VLAN 10 continua usando o uplink errado (via SW2). Qual é a provável causa?",
+        "options": [
+          "Root primary não funciona em VLANs com IDs ímpares.",
+          "O comando 'root primary' define prioridade 4096, mas se outro switch já tiver prioridade 0 ou 4096 com MAC menor, ele ainda pode vencer. Verifique se há um switch com prioridade igual ou menor.",
+          "O PVST+ não suporta root primário por VLAN; é necessário usar MSTP.",
+          "O problema está no trunk; use 'show interfaces trunk' para verificar se a VLAN 10 está permitida."
+        ],
+        "answer": "O comando 'root primary' define prioridade 4096, mas se outro switch já tiver prioridade 0 ou 4096 com MAC menor, ele ainda pode vencer. Verifique se há um switch com prioridade igual ou menor.",
+        "explanation": "O 'spanning-tree vlan [vlan] root primary' ajusta a prioridade para 4096. Se outro switch já tiver prioridade 4096 (por configuração manual ou por já ser root) e tiver um endereço MAC menor, ele manterá o papel de root. A solução é definir uma prioridade ainda mais baixa (ex.: 0) ou identificar o switch concorrente."
+      }
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+    const SIMULADO_ID = "troubleshooting-cli-producao";
+    const SIMULADO_TITULO = document.title || "Simulado – Troubleshooting, Comandos CLI e Cenários de Produção";
+    let startTime = null;
+    let currentUserName = "";
+
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+    }
+
+    function saveResult(record) {
+      try {
+        const raw = localStorage.getItem("simulados");
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.push(record);
+        localStorage.setItem("simulados", JSON.stringify(arr));
+      } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById("user-name");
+      const nameVal = (nameInput?.value || "").trim();
+      if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+      currentUserName = nameVal;
+      startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const endTime = Date.now();
+      const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+      const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+      };
+      saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

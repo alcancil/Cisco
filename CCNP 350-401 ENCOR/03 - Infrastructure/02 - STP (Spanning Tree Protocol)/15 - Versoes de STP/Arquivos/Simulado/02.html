@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – Root Bridge por VLAN e Load Balancing Layer 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – Root Bridge por VLAN e Load Balancing Layer 2</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Root Bridge por VLAN e Load Balancing Layer 2. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Em uma rede PVST+, o que determina qual switch será eleito Root Bridge para uma VLAN específica?",
+        options: [
+          "O switch com maior número de portas ativas vence a eleição",
+          "O switch com menor Bridge ID — composto por prioridade configurada mais o endereço MAC — vence a eleição por VLAN",
+          "O switch conectado ao maior número de VLANs é automaticamente eleito Root Bridge",
+          "O switch com maior largura de banda total agregada nas interfaces vence a eleição"
+        ],
+        answer: "O switch com menor Bridge ID — composto por prioridade configurada mais o endereço MAC — vence a eleição por VLAN",
+        explanation: "No PVST+, cada VLAN realiza uma eleição independente. O vencedor é o switch com menor Bridge ID naquela instância. O Bridge ID é formado pela prioridade (configurável em múltiplos de 4096) somada ao ID da VLAN e ao endereço MAC. O administrador manipula a prioridade para controlar qual switch vence em cada VLAN."
+      },
+      {
+        question: "Um administrador quer que SW1 seja Root Bridge para VLAN 10 e SW2 seja Root Bridge para VLAN 20. Qual par de comandos atinge esse objetivo de forma determinística?",
+        options: [
+          "SW1: spanning-tree vlan 10 priority 0 / SW2: spanning-tree vlan 20 priority 0",
+          "SW1: spanning-tree vlan 10 root primary / SW2: spanning-tree vlan 20 root primary",
+          "SW1: spanning-tree vlan 10 bridge-id lowest / SW2: spanning-tree vlan 20 bridge-id lowest",
+          "SW1: spanning-tree vlan 10 cost 1 / SW2: spanning-tree vlan 20 cost 1"
+        ],
+        answer: "SW1: spanning-tree vlan 10 root primary / SW2: spanning-tree vlan 20 root primary",
+        explanation: "O comando 'spanning-tree vlan X root primary' configura automaticamente a prioridade do switch para um valor menor que o atual Root Bridge daquela VLAN, garantindo que ele vença a eleição. É o método recomendado pela Cisco por ser determinístico e se adaptar dinamicamente caso outro switch tente assumir o papel de Root."
+      },
+      {
+        question: "Por que configurar o Root Bridge secundário é uma prática importante em ambientes de produção?",
+        options: [
+          "Porque o Root Bridge secundário assume automaticamente quando o primário falha, evitando que um switch aleatório vença a eleição",
+          "Porque o Root Bridge secundário bloqueia todas as portas redundantes enquanto o primário estiver ativo",
+          "Porque o Root Bridge secundário é obrigatório para que o PVST+ funcione corretamente",
+          "Porque sem um secundário configurado, o STP desativa o balanceamento de carga entre VLANs"
+        ],
+        answer: "Porque o Root Bridge secundário assume automaticamente quando o primário falha, evitando que um switch aleatório vença a eleição",
+        explanation: "Sem um Root Bridge secundário configurado, qualquer switch com prioridade padrão (32768) pode vencer a eleição se o Root primário cair. O switch secundário, configurado com 'spanning-tree vlan X root secondary', tem prioridade 28672 — menor que o padrão — garantindo que ele assuma o controle de forma ordenada e previsível."
+      },
+      {
+        question: "Qual é o efeito prático de ter SW1 como Root Bridge da VLAN 10 e SW2 como Root Bridge da VLAN 20 em uma topologia triangular com SW3 de acesso?",
+        options: [
+          "O tráfego da VLAN 10 e da VLAN 20 continua usando o mesmo uplink, pois o SW3 só pode ter uma Root Port",
+          "O tráfego da VLAN 10 usa o uplink em direção ao SW1, e o tráfego da VLAN 20 usa o uplink em direção ao SW2, distribuindo a carga entre os dois links físicos",
+          "Todos os links ficam ativos simultaneamente para todas as VLANs, eliminando qualquer porta bloqueada",
+          "O SW3 elege um Root Bridge único para todas as VLANs com base no menor custo de caminho total"
+        ],
+        answer: "O tráfego da VLAN 10 usa o uplink em direção ao SW1, e o tráfego da VLAN 20 usa o uplink em direção ao SW2, distribuindo a carga entre os dois links físicos",
+        explanation: "Com Roots diferentes por VLAN, o SW3 elege Root Ports diferentes para cada instância STP. Para VLAN 10, a Root Port aponta para SW1 — usando o uplink esquerdo. Para VLAN 20, a Root Port aponta para SW2 — usando o uplink direito. Os dois links físicos ficam ativos simultaneamente, cada um transportando tráfego de VLANs diferentes."
+      },
+      {
+        question: "O balanceamento de carga Layer 2 com PVST+ é classificado como estático ou dinâmico? Por quê?",
+        options: [
+          "Dinâmico — o STP redistribui frames entre os links em tempo real conforme a carga de cada interface",
+          "Estático — o balanceamento é determinado pela configuração do Root Bridge por VLAN e não muda dinamicamente com base no volume de tráfego",
+          "Dinâmico — o STP usa LACP para equilibrar automaticamente a carga entre os uplinks",
+          "Estático apenas durante a convergência; após a estabilização, torna-se dinâmico"
+        ],
+        answer: "Estático — o balanceamento é determinado pela configuração do Root Bridge por VLAN e não muda dinamicamente com base no volume de tráfego",
+        explanation: "O load balancing no STP é estático por natureza. O administrador define qual switch é Root de cada VLAN e, consequentemente, qual caminho cada VLAN usará. Essa decisão não muda em resposta ao volume de tráfego — se a VLAN 10 estiver congestionada e a VLAN 20 ociosa, o STP não redistribui automaticamente. Por isso, o planejamento inicial do balanceamento é fundamental."
+      },
+      {
+        question: "Em uma topologia com 4 VLANs (10, 20, 30, 40) e dois switches de distribuição (SW1 e SW2), qual estratégia de distribuição de Root Bridges maximiza o uso dos links redundantes?",
+        options: [
+          "Configurar SW1 como Root primário para todas as 4 VLANs e SW2 como secundário para todas",
+          "Configurar SW1 como Root primário para VLANs 10 e 30, e SW2 como Root primário para VLANs 20 e 40",
+          "Configurar o Root Bridge aleatoriamente por VLAN para evitar previsibilidade",
+          "Não configurar Root Bridge em nenhum switch e deixar a eleição ser decidida pelo menor MAC Address"
+        ],
+        answer: "Configurar SW1 como Root primário para VLANs 10 e 30, e SW2 como Root primário para VLANs 20 e 40",
+        explanation: "Distribuir as VLANs igualmente entre os dois switches de distribuição garante que cada uplink físico transporte tráfego de 50% das VLANs. SW1 atrai o tráfego das VLANs 10 e 30 pelo uplink esquerdo; SW2 atrai as VLANs 20 e 40 pelo uplink direito. Isso maximiza a utilização da redundância física disponível."
+      },
+      {
+        question: "Qual é a diferença entre os comandos 'spanning-tree vlan 10 root primary' e 'spanning-tree vlan 10 priority 4096'?",
+        options: [
+          "Não há diferença — ambos configuram a prioridade exatamente para 4096 em todos os casos",
+          "'root primary' ajusta automaticamente a prioridade para um valor menor que o Root atual da VLAN; 'priority 4096' define um valor fixo independentemente do estado atual da eleição",
+          "'priority 4096' é mais seguro porque impede qualquer outro switch de assumir o Root Bridge",
+          "'root primary' só funciona no modo RSTP; 'priority 4096' funciona tanto em STP quanto em RSTP"
+        ],
+        answer: "'root primary' ajusta automaticamente a prioridade para um valor menor que o Root atual da VLAN; 'priority 4096' define um valor fixo independentemente do estado atual da eleição",
+        explanation: "O 'root primary' é inteligente: o switch verifica a prioridade do Root Bridge atual na VLAN e configura a própria prioridade para um valor 4096 menor — garantindo a vitória na eleição. Já o 'priority 4096' define um valor fixo de 4096 sem verificar a situação atual. Se já existir outro switch com prioridade 0 ou 4096 com MAC menor, o comando manual pode não resultar na vitória da eleição."
+      },
+      {
+        question: "Um administrador observa que todas as VLANs estão usando o mesmo uplink, mesmo tendo configurado Root Bridges diferentes em SW1 e SW2. Qual é a causa mais provável?",
+        options: [
+          "O STP não suporta múltiplos Root Bridges simultaneamente na mesma rede física",
+          "O trunk entre SW1 e SW3 ou SW2 e SW3 não está transportando as VLANs corretas — verificar com 'show interfaces trunk'",
+          "O PVST+ está desabilitado e a rede está operando em modo CST",
+          "A tabela MAC está corrompida e precisa ser limpa manualmente em todos os switches"
+        ],
+        answer: "O trunk entre SW1 e SW3 ou SW2 e SW3 não está transportando as VLANs corretas — verificar com 'show interfaces trunk'",
+        explanation: "Se o trunk não estiver transportando as VLANs configuradas, o SW3 não receberá BPDUs das instâncias STP daquelas VLANs pelo link correspondente. Sem BPDUs, ele não pode eleger Root Ports diferentes por VLAN e o balanceamento não acontece. O comando 'show interfaces trunk' mostra quais VLANs estão permitidas e ativas em cada trunk — ponto de partida obrigatório nesse troubleshooting."
+      },
+      {
+        question: "Por que a prioridade STP deve ser configurada em múltiplos de 4096?",
+        options: [
+          "Porque o IOS Cisco arredonda automaticamente qualquer valor para o múltiplo de 4096 mais próximo",
+          "Porque os 4 bits de prioridade do Bridge ID são reservados para o campo de prioridade, e os 12 bits restantes são usados para o ID da VLAN — resultando em incrementos mínimos de 4096",
+          "Porque múltiplos de 4096 garantem compatibilidade com switches de outros fabricantes",
+          "Porque valores que não sejam múltiplos de 4096 causam loops na topologia STP"
+        ],
+        answer: "Porque os 4 bits de prioridade do Bridge ID são reservados para o campo de prioridade, e os 12 bits restantes são usados para o ID da VLAN — resultando em incrementos mínimos de 4096",
+        explanation: "O Bridge ID tem 8 bytes (64 bits). Os primeiros 4 bits são a prioridade configurável, e os 12 bits seguintes são o Extended System ID que carrega o número da VLAN. Como os 4 bits de prioridade representam valores de 0 a 15 multiplicados por 4096, o menor incremento possível é 4096. Valores inválidos são rejeitados pelo IOS."
+      },
+      {
+        question: "Um switch de acesso SW3 está conectado a SW1 via Gi0/0 e a SW2 via Gi0/1. Para VLAN 10, SW1 é o Root Bridge. Para VLAN 20, SW2 é o Root Bridge. Qual é o estado esperado das portas do SW3 para cada VLAN?",
+        options: [
+          "VLAN 10: Gi0/0 Root FWD, Gi0/1 Altn BLK — VLAN 20: Gi0/1 Root FWD, Gi0/0 Altn BLK",
+          "VLAN 10: Gi0/0 Root FWD, Gi0/1 Desg FWD — VLAN 20: Gi0/1 Root FWD, Gi0/0 Desg FWD",
+          "Ambas as VLANs: Gi0/0 Root FWD, Gi0/1 Altn BLK — o balanceamento só ocorre nos switches de distribuição",
+          "VLAN 10: Gi0/1 Root FWD, Gi0/0 Altn BLK — VLAN 20: Gi0/0 Root FWD, Gi0/1 Altn BLK"
+        ],
+        answer: "VLAN 10: Gi0/0 Root FWD, Gi0/1 Altn BLK — VLAN 20: Gi0/1 Root FWD, Gi0/0 Altn BLK",
+        explanation: "Para VLAN 10, SW3 elege Gi0/0 como Root Port (caminho para SW1, o Root da VLAN 10) e Gi0/1 fica em Alternate Blocking. Para VLAN 20, SW3 elege Gi0/1 como Root Port (caminho para SW2, o Root da VLAN 20) e Gi0/0 fica em Alternate Blocking. Isso é exatamente o balanceamento esperado — cada VLAN tem sua Root Port apontando para seu respectivo Root Bridge."
+      }
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste02";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

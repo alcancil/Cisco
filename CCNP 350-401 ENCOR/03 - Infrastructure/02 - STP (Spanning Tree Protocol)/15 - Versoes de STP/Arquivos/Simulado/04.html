@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado – Limitações do PVST+, Escalabilidade e Transição para MSTP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado – Limitações do PVST+, Escalabilidade e Transição para MSTP</h1>
+      <p class="mb-6 text-slate-600">10 questões sobre os problemas de escalabilidade do PVST+ em redes com muitas VLANs e como o MSTP (802.1s) resolve esses desafios. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        "question": "Qual é a principal limitação do PVST+ em ambientes com muitas VLANs (ex.: 500 VLANs)?",
+        "options": [
+          "O PVST+ não suporta mais que 64 VLANs por switch.",
+          "Cada VLAN mantém sua própria instância STP, resultando em centenas de BPDUs, maior uso de CPU e memória, além de processamento elevado.",
+          "O PVST+ não consegue realizar balanceamento de carga quando há mais de 100 VLANs.",
+          "O protocolo passa a bloquear todas as portas em cenários com mais de 256 VLANs."
+        ],
+        "answer": "Cada VLAN mantém sua própria instância STP, resultando em centenas de BPDUs, maior uso de CPU e memória, além de processamento elevado.",
+        "explanation": "O PVST+ foi criado para oferecer uma instância STP por VLAN, o que é excelente para balanceamento. Porém, em redes com centenas de VLANs, o custo operacional aumenta: muitas BPDUs, múltiplas eleições, consumo alto de CPU e memória, e convergência mais pesada. Essa é a principal razão para migrar para MSTP."
+      },
+      {
+        "question": "Como o MSTP (Multiple Spanning Tree Protocol) resolve o problema de escalabilidade do PVST+?",
+        "options": [
+          "Elimina completamente o STP, substituindo-o por roteamento dinâmico L3.",
+          "Agrupa múltiplas VLANs dentro da mesma instância STP, reduzindo drasticamente o número de instâncias e BPDUs.",
+          "Cria uma única instância STP para todas as VLANs, voltando ao modelo CST, mas com convergência mais rápida.",
+          "Substitui o uso de BPDUs por mensagens LACP, eliminando o overhead do STP."
+        ],
+        "answer": "Agrupa múltiplas VLANs dentro da mesma instância STP, reduzindo drasticamente o número de instâncias e BPDUs.",
+        "explanation": "O MSTP (802.1s) introduz o conceito de ‘regiões’ e ‘instâncias MSTI’. O administrador pode mapear várias VLANs para uma mesma instância STP, mantendo o balanceamento de carga (com instâncias diferentes) mas sem a explosão de instâncias do PVST+. Isso reduz o processamento, a quantidade de BPDUs e o consumo de recursos."
+      },
+      {
+        "question": "Em uma rede com 200 VLANs, quantas instâncias STP o PVST+ executaria? E quantas o MSTP poderia executar (com um design típico)?",
+        "options": [
+          "PVST+: 1 instância; MSTP: 1 instância (CST) – ambos são iguais.",
+          "PVST+: 200 instâncias (uma por VLAN); MSTP: normalmente até 64 instâncias, mas na prática o administrador pode mapear grupos de VLANs para poucas instâncias (ex.: 4 ou 5).",
+          "PVST+: 200 instâncias; MSTP: exatamente 200 instâncias também, mas com menor consumo de CPU.",
+          "PVST+: 1 instância por switch; MSTP: 1 instância por região, independente do número de VLANs."
+        ],
+        "answer": "PVST+: 200 instâncias (uma por VLAN); MSTP: normalmente até 64 instâncias, mas na prática o administrador pode mapear grupos de VLANs para poucas instâncias (ex.: 4 ou 5).",
+        "explanation": "O PVST+ cria uma instância STP independente para cada VLAN, portanto 200 VLANs = 200 instâncias. O MSTP suporta até 64 instâncias (MSTI), mas é possível mapear dezenas ou centenas de VLANs para uma única instância. Um design típico usa poucas instâncias (ex.: para diferentes caminhos ativos), reduzindo drasticamente o overhead."
+      },
+      {
+        "question": "Além do maior consumo de CPU e memória, qual outro problema prático o excesso de instâncias STP no PVST+ pode causar em trunks?",
+        "options": [
+          "O trunk passa a operar em half-duplex devido ao número excessivo de BPDUs.",
+          "Cada VLAN envia sua própria BPDU periodicamente, aumentando a largura de banda ocupada por controle (BPDUs) no trunk, especialmente em topologias com muitos switches.",
+          "O PVST+ desabilita automaticamente o trunk quando detecta mais de 100 BPDUs por segundo.",
+          "Não há impacto em trunks; apenas o switch local sofre com CPU alta."
+        ],
+        "answer": "Cada VLAN envia sua própria BPDU periodicamente, aumentando a largura de banda ocupada por controle (BPDUs) no trunk, especialmente em topologias com muitos switches.",
+        "explanation": "Com PVST+, cada VLAN ativa emite BPDUs periódicas (a cada 2 segundos, por padrão) em todos os trunks. Em redes com centenas de VLANs e dezenas de switches, o tráfego de BPDUs se torna significativo, consumindo largura de banda e processamento nos switches. O MSTP, ao reduzir o número de instâncias, reduz proporcionalmente o número de BPDUs."
+      },
+      {
+        "question": "O que acontece com o tempo de convergência do STP quando o PVST+ é usado com um número muito grande de VLANs?",
+        "options": [
+          "O tempo de convergência permanece o mesmo (30–50 segundos) independente do número de VLANs.",
+          "Cada instância STP converge individualmente, e em caso de falha generalizada (ex.: perda de um switch core), todas as instâncias precisam recalcular sua árvore, podendo prolongar o tempo total de estabilização da rede.",
+          "O PVST+ acelera a convergência à medida que o número de VLANs aumenta, pois mais BPDUs ajudam na sincronização.",
+          "O PVST+ desativa a convergência automática quando há mais de 128 VLANs, exigindo intervenção manual."
+        ],
+        "answer": "Cada instância STP converge individualmente, e em caso de falha generalizada (ex.: perda de um switch core), todas as instâncias precisam recalcular sua árvore, podendo prolongar o tempo total de estabilização da rede.",
+        "explanation": "Embora cada instância PVST+ convenja em cerca de 30–50 segundos, uma falha estrutural pode afetar todas as instâncias simultaneamente. A sobrecarga de processamento para recalcular centenas de árvores pode tornar o tempo de estabilização percebido maior do que o teórico. O MSTP reduz esse efeito porque recalcula apenas poucas instâncias."
+      },
+      {
+        "question": "O padrão IEEE que define o MSTP é o 802.1s. Qual característica do MSTP o torna mais eficiente que o PVST+ em redes de grande escala?",
+        "options": [
+          "O MSTP utiliza um algoritmo de eleição de Root Bridge mais rápido (menos de 1 segundo).",
+          "O MSTP permite que o administrador mapeie VLANs para instâncias STP, agrupando-as e reduzindo o número total de instâncias, sem perder a capacidade de balanceamento de carga (diferentes instâncias podem ter Roots diferentes).",
+          "O MSTP não envia BPDUs; usa um mecanismo de votação distribuída mais leve.",
+          "O MSTP elimina completamente a necessidade de prioridades, usando apenas endereços MAC."
+        ],
+        "answer": "O MSTP permite que o administrador mapeie VLANs para instâncias STP, agrupando-as e reduzindo o número total de instâncias, sem perder a capacidade de balanceamento de carga (diferentes instâncias podem ter Roots diferentes).",
+        "explanation": "O grande diferencial do MSTP é o mapeamento flexível de VLANs para instâncias (MSTI). Isso mantém o balanceamento (instâncias diferentes com caminhos diferentes) mas sem a proliferação de instâncias. O administrador decide quantas instâncias usar (até 64) e quais VLANs vão para cada uma."
+      },
+      {
+        "question": "Em um switch que opera com PVST+, o comando 'show spanning-tree summary' mostra o número total de instâncias STP. Em um ambiente com 150 VLANs ativas, qual seria aproximadamente o número de instâncias?",
+        "options": [
+          "1 instância (CST).",
+          "150 instâncias (uma por VLAN ativa).",
+          "150 instâncias, mas apenas se todas as VLANs estiverem em trunks; caso contrário, apenas 1.",
+          "O número de instâncias é igual ao número de interfaces físicas, independente das VLANs."
+        ],
+        "answer": "150 instâncias (uma por VLAN ativa).",
+        "explanation": "O PVST+ cria uma instância STP para cada VLAN ativa no switch (ou seja, VLANs configuradas e com pelo menos uma porta ativa). Cada instância tem sua própria eleição de Root Bridge, suas portas Designated/Root/Alternate, e suas próprias BPDUs. O comando 'show spanning-tree summary' confirma esse número."
+      },
+      {
+        "question": "Qual é a relação entre o MSTP e o PVST+ em termos de interoperabilidade?",
+        "options": [
+          "MSTP e PVST+ são totalmente incompatíveis; é necessário desabilitar um ou outro na rede.",
+          "Switches Cisco com MSTP podem interoperar com PVST+ usando o recurso ‘PVST Simulation’, que traduz BPDUs entre os protocolos, mas isso pode aumentar a carga de CPU.",
+          "MSTP é uma evolução proprietária da Cisco e não interoperável com equipamentos de outros fabricantes.",
+          "MSTP é idêntico ao PVST+; apenas o nome muda."
+        ],
+        "answer": "Switches Cisco com MSTP podem interoperar com PVST+ usando o recurso ‘PVST Simulation’, que traduz BPDUs entre os protocolos, mas isso pode aumentar a carga de CPU.",
+        "explanation": "O MSTP é um padrão IEEE (802.1s) e, em geral, espera-se que toda a rede seja MSTP. Porém, switches Cisco oferecem mecanismos de compatibilidade com PVST+ (ex.: ‘spanning-tree mst simulate pvst’). Isso permite migrações graduais, mas o custo é o aumento de processamento devido à tradução de BPDUs."
+      },
+      {
+        "question": "Na tabela comparativa do documento (README.md), qual tecnologia é apontada como tendo escalabilidade ‘Excelente’ e balanceamento ‘✅’ (sim), sendo a recomendação para redes muito grandes?",
+        "options": [
+          "CST",
+          "PVST",
+          "PVST+",
+          "MSTP"
+        ],
+        "answer": "MSTP",
+        "explanation": "A tabela do README classifica o MSTP com escalabilidade ‘Excelente’ e balanceamento ‘✅’. O PVST e PVST+ têm escalabilidade ‘Média’. O CST tem escalabilidade ‘Alta’ mas não oferece balanceamento. Para redes corporativas muito grandes (com muitas VLANs), o MSTP é a solução indicada."
+      },
+      {
+        "question": "Um administrador deseja migrar de PVST+ para MSTP sem causar loops ou perda de conectividade. Qual é o procedimento correto (segundo as boas práticas)?",
+        "options": [
+          "Desligar todos os switches simultaneamente, configurar MSTP e religar tudo.",
+          "Configurar MSTP em toda a rede no mesmo momento (janela de manutenção), garantindo que todas as configurações de região (nome, revisão, mapeamento VLAN-instância) sejam idênticas em todos os switches, caso contrário, diferentes regiões MSTP não compartilham instâncias.",
+          "Migrar um switch por vez, primeiro desabilitando STP nele, depois configurando MSTP e religando, sem preocupação com regiões.",
+          "Não é possível migrar de PVST+ para MSTP; é necessário trocar os switches fisicamente."
+        ],
+        "answer": "Configurar MSTP em toda a rede no mesmo momento (janela de manutenção), garantindo que todas as configurações de região (nome, revisão, mapeamento VLAN-instância) sejam idênticas em todos os switches, caso contrário, diferentes regiões MSTP não compartilham instâncias.",
+        "explanation": "O MSTP exige que todos os switches de uma mesma região tenham a mesma configuração de nome, revisão e mapeamento VLAN-instância para que possam compartilhar instâncias MSTI. A migração geralmente exige uma janela de manutenção planejada para reconfigurar toda a infraestrutura, garantindo consistência e evitando loops."
+      }
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+    const SIMULADO_ID = "pvstplus-escalabilidade-mstp";
+    const SIMULADO_TITULO = document.title || "Simulado – Limitações do PVST+, Escalabilidade e Transição para MSTP";
+    let startTime = null;
+    let currentUserName = "";
+
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+    }
+
+    function saveResult(record) {
+      try {
+        const raw = localStorage.getItem("simulados");
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.push(record);
+        localStorage.setItem("simulados", JSON.stringify(arr));
+      } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById("user-name");
+      const nameVal = (nameInput?.value || "").trim();
+      if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+      currentUserName = nameVal;
+      startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const endTime = Date.now();
+      const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+      const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+      };
+      saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

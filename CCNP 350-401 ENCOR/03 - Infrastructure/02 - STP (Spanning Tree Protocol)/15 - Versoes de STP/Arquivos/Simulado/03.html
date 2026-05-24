@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado – Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado – Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade</h1>
+      <p class="mb-6 text-slate-600">10 questões sobre como o PVST+ transporta múltiplas instâncias STP em trunks 802.1Q e como garante interoperabilidade com equipamentos IEEE. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        "question": "Qual era a principal limitação do PVST original em relação aos trunks?",
+        "options": [
+          "Ele não suportava mais que 64 VLANs por trunk.",
+          "Ele foi criado antes do padrão 802.1Q e utilizava ISL (Cisco proprietário).",
+          "Ele não conseguia transportar BPDUs em trunks, apenas em links de acesso.",
+          "Ele precisava que todas as VLANs tivessem o mesmo Root Bridge."
+        ],
+        "answer": "Ele foi criado antes do padrão 802.1Q e utilizava ISL (Cisco proprietário).",
+        "explanation": "O PVST original surgiu antes da padronização do 802.1Q, por isso usava exclusivamente o encapsulamento ISL (Cisco proprietário) para trunks. Com a popularização do padrão IEEE, tornou-se necessário evoluir para o PVST+."
+      },
+      {
+        "question": "O que o PVST+ adiciona em relação ao PVST original?",
+        "options": [
+          "Elimina a necessidade de BPDUs, usando mensagens LACP no lugar.",
+          "Compatibilidade com trunks IEEE 802.1Q e interoperabilidade com STP padrão IEEE (802.1D).",
+          "Cria uma única instância STP para todas as VLANs, simplificando o trunk.",
+          "Permite que o STP seja desabilitado em VLANs específicas dentro do trunk."
+        ],
+        "answer": "Compatibilidade com trunks IEEE 802.1Q e interoperabilidade com STP padrão IEEE (802.1D).",
+        "explanation": "O PVST+ foi desenvolvido para operar sobre trunks 802.1Q, encapsulando BPDUs com a tag da VLAN correspondente. Além disso, ele é interoperável com switches que executam apenas o STP padrão IEEE (802.1D)."
+      },
+      {
+        "question": "Como o PVST+ identifica a qual VLAN pertence uma BPDU enviada por um trunk 802.1Q?",
+        "options": [
+          "Todas as BPDUs são enviadas sem tag, e o switch infere a VLAN pelo endereço MAC de destino.",
+          "Cada BPDU é encapsulada com a tag 802.1Q correspondente à VLAN, permitindo que o switch associe a BPDU à instância STP correta.",
+          "As BPDUs são enviadas apenas pela VLAN nativa, e uma tabela interna mapeia as portas às VLANs.",
+          "O PVST+ não usa tags; ele envia uma BPDU separada por VLAN, mas todas sem tag, confiando no campo VLAN ID do cabeçalho Ethernet."
+        ],
+        "answer": "Cada BPDU é encapsulada com a tag 802.1Q correspondente à VLAN, permitindo que o switch associe a BPDU à instância STP correta.",
+        "explanation": "O PVST+ aproveita o campo tag 802.1Q no frame Ethernet para identificar a VLAN da BPDU. Assim, múltiplas instâncias STP (uma por VLAN) podem trafegar no mesmo trunk fisicamente, cada uma com sua tag própria."
+      },
+      {
+        "question": "Em um trunk 802.1Q configurado com PVST+, como as BPDUs da VLAN nativa são tratadas?",
+        "options": [
+          "Não são enviadas BPDUs na VLAN nativa, pois ela não participa do STP.",
+          "As BPDUs da VLAN nativa são enviadas sem tag (untagged) e são interpretadas como STP clássico (802.1D).",
+          "As BPDUs da VLAN nativa são enviadas com tag 0 (prioridade apenas), o que causa incompatibilidade com switches IEEE.",
+          "O PVST+ não suporta VLAN nativa; todas as VLANs devem ser explícitas no trunk."
+        ],
+        "answer": "As BPDUs da VLAN nativa são enviadas sem tag (untagged) e são interpretadas como STP clássico (802.1D).",
+        "explanation": "No trunk 802.1Q, o tráfego da VLAN nativa trafega sem tag. O PVST+ envia as BPDUs da VLAN nativa também sem tag, o que garante compatibilidade com switches que executam apenas o STP IEEE 802.1D (Common Spanning Tree)."
+      },
+      {
+        "question": "Qual é o papel da VLAN nativa no contexto do PVST+ e interoperabilidade?",
+        "options": [
+          "A VLAN nativa é usada exclusivamente para tráfego de gerenciamento e não participa do STP.",
+          "Ela permite que switches Cisco e switches de outros fabricantes (que rodam apenas CST) interoperem, pois as BPDUs da VLAN nativa são enviadas sem tag e compreendidas como STP clássico.",
+          "A VLAN nativa deve ser a mesma que a VLAN do Root Bridge; caso contrário, o PVST+ falha.",
+          "Ela é usada para transportar BPDUs de todas as VLANs em modo agregado, evitando múltiplas tags."
+        ],
+        "answer": "Ela permite que switches Cisco e switches de outros fabricantes (que rodam apenas CST) interoperem, pois as BPDUs da VLAN nativa são enviadas sem tag e compreendidas como STP clássico.",
+        "explanation": "A VLAN nativa é o canal de comunicação do CST (Common Spanning Tree) no trunk. O PVST+ envia BPDUs sem tag para a VLAN nativa, o que é exatamente o que um switch IEEE espera. Isso garante que um switch Cisco com PVST+ possa se conectar a um switch de outro fabricante rodando apenas STP 802.1D."
+      },
+      {
+        "question": "Sobre a interoperabilidade entre PVST+ e STP padrão IEEE (802.1D), é correto afirmar:",
+        "options": [
+          "Não é possível interligar um switch Cisco PVST+ a um switch IEEE, pois os protocolos são incompatíveis.",
+          "O PVST+ é totalmente compatível porque envia BPDUs da VLAN nativa sem tag, permitindo que o switch IEEE participe da CST (Common Spanning Tree) naquela VLAN.",
+          "Para interoperar, é necessário desabilitar o PVST+ no switch Cisco e configurar CST manualmente.",
+          "A interoperabilidade só é possível se ambos os switches usarem o mesmo Root Bridge e as mesmas prioridades de porta."
+        ],
+        "answer": "O PVST+ é totalmente compatível porque envia BPDUs da VLAN nativa sem tag, permitindo que o switch IEEE participe da CST (Common Spanning Tree) naquela VLAN.",
+        "explanation": "O switch IEEE (não Cisco) executa apenas CST – uma única instância STP (normalmente na VLAN 1 ou na VLAN nativa). O PVST+ envia BPDUs sem tag nessa mesma VLAN, de modo que o switch IEEE enxerga a topologia normalmente. As demais VLANs do trunk (com tag) são ignoradas pelo switch IEEE, mas isso não quebra a conectividade."
+      },
+      {
+        "question": "Por que o PVST+ é considerado a evolução natural do PVST para redes corporativas modernas?",
+        "options": [
+          "Porque elimina completamente o STP, substituindo por roteamento L3.",
+          "Porque mantém o balanceamento de carga por VLAN (uma instância por VLAN) e adiciona suporte ao padrão 802.1Q, amplamente utilizado.",
+          "Porque reduz o número de instâncias STP, agrupando VLANs, ao contrário do PVST original.",
+          "Porque utiliza o protocolo ISL, que é mais eficiente que o 802.1Q."
+        ],
+        "answer": "Porque mantém o balanceamento de carga por VLAN (uma instância por VLAN) e adiciona suporte ao padrão 802.1Q, amplamente utilizado.",
+        "explanation": "O PVST original já oferecia o benefício de uma instância por VLAN, mas dependia de ISL. Com o PVST+, esse mesmo benefício é estendido para o padrão 802.1Q, que é universal, garantindo balanceamento e compatibilidade com equipamentos de qualquer fornecedor (desde que a VLAN nativa seja configurada corretamente)."
+      },
+      {
+        "question": "No trunk 802.1Q entre um switch Cisco com PVST+ e um switch de outro fabricante que roda apenas CST, o que acontece com as BPDUs das VLANs não-nativas (ex.: VLAN 10, 20, 30)?",
+        "options": [
+          "Elas são convertidas pelo switch Cisco em BPDUs sem tag e enviadas para a VLAN nativa.",
+          "Elas são descartadas pelo switch do outro fabricante, pois ele não entende BPDUs com tag 802.1Q. No entanto, a conectividade L2 para essas VLANs ainda funciona, pois o CST cuida do loop na VLAN nativa e o switch externo simplesmente não participa das instâncias específicas.",
+          "Elas são encapsuladas em ISL para serem compreendidas pelo outro switch, mesmo que ele não suporte ISL.",
+          "O PVST+ não permite trunks com switches de outros fabricantes; é necessário usar modo 'spanning-tree mode mst' para interoperar."
+        ],
+        "answer": "Elas são descartadas pelo switch do outro fabricante, pois ele não entende BPDUs com tag 802.1Q. No entanto, a conectividade L2 para essas VLANs ainda funciona, pois o CST cuida do loop na VLAN nativa e o switch externo simplesmente não participa das instâncias específicas.",
+        "explanation": "Switches de outros fabricantes geralmente ignoram BPDUs com tag, pois seu STP implementa apenas CST. A consequência prática é que o switch Cisco continua rodando PVST+ internamente, e o switch externo contribui apenas com a CST na VLAN nativa. O loop físico é evitado pela CST, e as demais VLANs não sofrem problemas de loop, pois seguem a mesma árvore da VLAN nativa (embora sem balanceamento)."
+      },
+      {
+        "question": "Como o PVST+ garante que as BPDUs de diferentes VLANs não se misturem no mesmo trunk 802.1Q?",
+        "options": [
+          "Utiliza um mecanismo de temporização para intercalar as BPDUs de cada VLAN.",
+          "Cada BPDU é enviada com um MAC address de destino diferente por VLAN.",
+          "Cada BPDU recebe a tag 802.1Q da respectiva VLAN, o que a mantém isolada logicamente dentro do trunk.",
+          "As BPDUs são enviadas apenas pela VLAN nativa, e um campo opcional no payload identifica a VLAN de origem."
+        ],
+        "answer": "Cada BPDU recebe a tag 802.1Q da respectiva VLAN, o que a mantém isolada logicamente dentro do trunk.",
+        "explanation": "O trunk 802.1Q insere uma tag de 4 bytes no frame Ethernet, contendo o VID (VLAN ID). O PVST+ encapsula a BPDU com essa tag, de modo que cada instância STP trafega em um canal lógico separado dentro do mesmo enlace físico. O switch de destino interpreta a tag e processa a BPDU na instância correta."
+      },
+      {
+        "question": "Um ambiente de rede possui switches Cisco com PVST+ e um switch não‑Cisco que suporta apenas 802.1D (CST). Qual configuração mínima é necessária no trunk para que a interoperabilidade funcione corretamente?",
+        "options": [
+          "Configurar o mesmo Root Bridge manualmente em ambos os switches para todas as VLANs.",
+          "Definir a mesma VLAN nativa em ambos os lados do trunk e garantir que o switch Cisco envie BPDUs sem tag para aquela VLAN.",
+          "Desabilitar o STP no switch Cisco do lado do trunk e confiar no switch não‑Cisco.",
+          "Converter o switch Cisco para o modo 'spanning-tree mode mst' e mapear todas as VLANs para a instância 0."
+        ],
+        "answer": "Definir a mesma VLAN nativa em ambos os lados do trunk e garantir que o switch Cisco envie BPDUs sem tag para aquela VLAN.",
+        "explanation": "A interoperabilidade PVST+ ↔ 802.1D depende da VLAN nativa: as BPDUs do CST (enviadas sem tag) devem trafegar na mesma VLAN nativa configurada em ambos os switches. O switch Cisco continuará rodando suas instâncias PVST+ para as demais VLANs, mas o switch não‑Cisco só participará da CST na VLAN nativa, o que é suficiente para evitar loops."
+      }
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+    const SIMULADO_ID = "trunks-8021q-pvstplus";
+    const SIMULADO_TITULO = document.title || "Simulado – Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade";
+    let startTime = null;
+    let currentUserName = "";
+
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+    }
+
+    function saveResult(record) {
+      try {
+        const raw = localStorage.getItem("simulados");
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.push(record);
+        localStorage.setItem("simulados", JSON.stringify(arr));
+      } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById("user-name");
+      const nameVal = (nameInput?.value || "").trim();
+      if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+      currentUserName = nameVal;
+      startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const endTime = Date.now();
+      const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+      const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+      };
+      saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

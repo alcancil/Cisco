@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado completo CST/PVST/PVST+</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado completo CST/PVST/PVST+</h1>
+      <p class="mb-6 text-slate-600">50 questões sobre CST, PVST, PVST+, balanceamento Layer 2, trunks 802.1Q, escalabilidade e transição para MSTP. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+        <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+        <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+      </div>
+      <button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // ==================== 01.html – Conceitos e Diferenças Fundamentais ====================
+      {
+        "question": "Qual é a principal limitação do CST (Common Spanning Tree) em redes com múltiplas VLANs?",
+        "options": [
+          "Ele cria uma instância STP separada para cada VLAN, sobrecarregando a CPU",
+          "Todas as VLANs compartilham a mesma árvore lógica, os mesmos caminhos e o mesmo Root Bridge, desperdiçando redundância",
+          "Ele é incompatível com trunks 802.1Q e exige ISL em todos os links",
+          "Ele não suporta mais de 10 switches na mesma topologia"
+        ],
+        "answer": "Todas as VLANs compartilham a mesma árvore lógica, os mesmos caminhos e o mesmo Root Bridge, desperdiçando redundância",
+        "explanation": "No CST, uma única instância STP governa toda a rede. Independente de quantas VLANs existam, todas usam o mesmo Root Bridge, os mesmos links ativos e os mesmos links bloqueados. Isso desperdiça a redundância física disponível."
+      },
+      {
+        "question": "O que fundamentalmente diferencia o PVST do CST?",
+        "options": [
+          "O PVST usa o protocolo ISL para trunk, enquanto o CST usa 802.1Q",
+          "O PVST cria uma instância STP independente para cada VLAN, permitindo Root Bridges e caminhos diferentes por VLAN",
+          "O PVST é um padrão IEEE, enquanto o CST é proprietário Cisco",
+          "O PVST elimina completamente a necessidade de portas bloqueadas na rede"
+        ],
+        "answer": "O PVST cria uma instância STP independente para cada VLAN, permitindo Root Bridges e caminhos diferentes por VLAN",
+        "explanation": "O PVST (Per-VLAN Spanning Tree) é a solução Cisco para o problema do CST. Cada VLAN possui sua própria instância STP, com Root Bridge, portas bloqueadas e caminhos independentes. Isso transforma redundância física em capacidade útil."
+      },
+      {
+        "question": "Qual é a diferença técnica central entre PVST e PVST+?",
+        "options": [
+          "O PVST+ elimina as instâncias STP por VLAN, usando apenas uma árvore global",
+          "O PVST foi criado para operar sobre trunks ISL (Cisco proprietário); o PVST+ foi criado para operar sobre trunks IEEE 802.1Q",
+          "O PVST+ usa RSTP como base, enquanto o PVST usa STP clássico 802.1D",
+          "Não há diferença técnica — PVST e PVST+ são nomes diferentes para o mesmo protocolo"
+        ],
+        "answer": "O PVST foi criado para operar sobre trunks ISL (Cisco proprietário); o PVST+ foi criado para operar sobre trunks IEEE 802.1Q",
+        "explanation": "O PVST original usava ISL como protocolo de trunk, o que o tornava incompatível com equipamentos não-Cisco. O PVST+ foi criado para operar sobre trunks IEEE 802.1Q, adicionando compatibilidade e interoperabilidade com switches de outros fabricantes."
+      },
+      {
+        "question": "Como o PVST+ transporta múltiplas instâncias STP simultaneamente através de um trunk 802.1Q?",
+        "options": [
+          "Ele agrega todos os BPDUs em um único frame especial antes de enviar pelo trunk",
+          "Ele envia BPDUs separados por VLAN, identificados pela tag 802.1Q correspondente a cada instância",
+          "Ele usa um canal de controle dedicado fora das VLANs de dados para transportar os BPDUs",
+          "Ele converte todas as instâncias em uma única antes de atravessar o trunk"
+        ],
+        "answer": "Ele envia BPDUs separados por VLAN, identificados pela tag 802.1Q correspondente a cada instância",
+        "explanation": "O PVST+ encapsula os BPDUs de cada instância STP com a tag 802.1Q da VLAN correspondente. O trunk transporta múltiplos BPDUs simultaneamente, um para cada VLAN ativa, mantendo a independência entre as instâncias."
+      },
+      {
+        "question": "Em uma topologia com SW1 (Distribuição) e SW2 (Distribuição) conectados ao SW3 (Acesso), como o administrador implementa load balancing Layer 2 usando PVST+?",
+        "options": [
+          "Configurando o mesmo Root Bridge para todas as VLANs em ambos os switches de distribuição",
+          "Definindo SW1 como Root para VLAN 10 e SW2 como Root para VLAN 20, fazendo cada VLAN usar um uplink diferente",
+          "Aumentando o custo STP em todas as portas para forçar distribuição de tráfego",
+          "Habilitando EtherChannel entre SW3 e ambos os switches de distribuição simultaneamente"
+        ],
+        "answer": "Definindo SW1 como Root para VLAN 10 e SW2 como Root para VLAN 20, fazendo cada VLAN usar um uplink diferente",
+        "explanation": "O load balancing Layer 2 com PVST+ ocorre pela manipulação estratégica do Root Bridge por VLAN. Com SW1 como Root da VLAN 10, o tráfego dessa VLAN usa o uplink esquerdo. Com SW2 como Root da VLAN 20, o tráfego usa o uplink direito. Os dois links redundantes passam a transportar tráfego simultaneamente."
+      },
+      {
+        "question": "Por que o load balancing no STP é fundamentalmente diferente do load balancing em protocolos Layer 3 como OSPF com ECMP?",
+        "options": [
+          "O STP distribui frames dinamicamente entre múltiplos caminhos ativos por decisão de cada switch",
+          "O STP realiza balanceamento por sessão TCP, enquanto o OSPF faz por pacote",
+          "No STP, o balanceamento ocorre pela manipulação estratégica do Root Bridge por VLAN — não pela distribuição dinâmica de frames entre caminhos simultâneos",
+          "O STP e o OSPF usam mecanismos idênticos de balanceamento, apenas em camadas diferentes"
+        ],
+        "answer": "No STP, o balanceamento ocorre pela manipulação estratégica do Root Bridge por VLAN — não pela distribuição dinâmica de frames entre caminhos simultâneos",
+        "explanation": "Em Layer 3, protocolos como OSPF com ECMP distribuem pacotes dinamicamente entre múltiplos caminhos ativos. No STP, apenas um caminho fica ativo por instância — o balanceamento é obtido fazendo VLANs diferentes usarem caminhos diferentes, via manipulação do Root Bridge."
+      },
+      {
+        "question": "Qual comando configura o switch para se tornar o Root Bridge primário da VLAN 10 de forma automática?",
+        "options": [
+          "spanning-tree vlan 10 priority 0",
+          "spanning-tree vlan 10 root primary",
+          "spanning-tree vlan 10 bridge-id primary",
+          "spanning-tree vlan 10 root-bridge enable"
+        ],
+        "answer": "spanning-tree vlan 10 root primary",
+        "explanation": "O comando 'spanning-tree vlan 10 root primary' configura automaticamente a prioridade do switch para um valor menor que o atual Root Bridge da VLAN 10, garantindo que ele se torne a raiz. O equivalente manual seria configurar a prioridade para 4096 com 'spanning-tree vlan 10 priority 4096'."
+      },
+      {
+        "question": "Em um ambiente com 500 VLANs usando PVST+, qual problema operacional pode surgir e qual protocolo resolve isso?",
+        "options": [
+          "Incompatibilidade com trunks 802.1Q — resolvido pelo PVST original com ISL",
+          "Ausência de Root Bridge — resolvido pelo CST com uma única instância global",
+          "Alto consumo de CPU e memória por centenas de instâncias STP simultâneas — resolvido pelo MSTP que agrupa múltiplas VLANs em poucas instâncias",
+          "Impossibilidade de load balancing com mais de 10 VLANs — resolvido pelo Rapid-PVST+"
+        ],
+        "answer": "Alto consumo de CPU e memória por centenas de instâncias STP simultâneas — resolvido pelo MSTP que agrupa múltiplas VLANs em poucas instâncias",
+        "explanation": "O PVST+ cria uma instância STP independente por VLAN. Em ambientes com centenas de VLANs, isso significa centenas de processos STP simultâneos, aumentando o consumo de CPU, memória e o volume de BPDUs. O MSTP (Multiple Spanning Tree Protocol) resolve isso agrupando múltiplas VLANs em um número reduzido de instâncias."
+      },
+      {
+        "question": "Um switch não gerenciado é conectado acidentalmente à rede com prioridade padrão 32768. Em uma rede PVST+ com Root Bridges configurados manualmente em 4096, qual é o risco e como identificar o problema?",
+        "options": [
+          "Nenhum risco — a prioridade 32768 é sempre maior que 4096, então o Root Bridge configurado permanece",
+          "O switch não gerenciado pode se tornar Root Bridge se seu MAC for menor que o do Root atual com prioridade 32768, causando tráfego por caminhos incorretos — identificado com show spanning-tree vlan X",
+          "O switch não gerenciado causará um broadcast storm imediato ao ser conectado",
+          "O risco só existe se o switch não gerenciado tiver prioridade 0 configurada"
+        ],
+        "answer": "O switch não gerenciado pode se tornar Root Bridge se seu MAC for menor que o do Root atual com prioridade 32768, causando tráfego por caminhos incorretos — identificado com show spanning-tree vlan X",
+        "explanation": "Se o Root Bridge atual tiver prioridade 32768 (padrão) e o novo switch também tiver 32768, o desempate é pelo menor MAC Address. Se o novo switch tiver MAC menor, ele vira Root Bridge, alterando todos os caminhos STP. Por isso, Root Bridges de produção devem sempre ter prioridades explicitamente configuradas (4096 ou 8192). O comando 'show spanning-tree vlan X' revela imediatamente quem é o Root Bridge atual."
+      },
+      {
+        "question": "Qual tabela comparativa representa corretamente as características de CST, PVST e PVST+?",
+        "options": [
+          "CST: 1 instância, sem balanceamento, compatibilidade IEEE — PVST: 1 instância por VLAN, com balanceamento, Cisco (ISL) — PVST+: 1 instância por VLAN, com balanceamento, Cisco + IEEE (802.1Q)",
+          "CST: 1 instância por VLAN, com balanceamento — PVST: 1 instância global, sem balanceamento — PVST+: múltiplas VLANs por instância, máxima escalabilidade",
+          "CST: compatível apenas com Cisco — PVST: padrão IEEE — PVST+: padrão Cisco e IEEE",
+          "Todos os três protocolos criam 1 instância por VLAN, diferindo apenas na velocidade de convergência"
+        ],
+        "answer": "CST: 1 instância, sem balanceamento, compatibilidade IEEE — PVST: 1 instância por VLAN, com balanceamento, Cisco (ISL) — PVST+: 1 instância por VLAN, com balanceamento, Cisco + IEEE (802.1Q)",
+        "explanation": "O CST é o STP padrão IEEE com uma única instância para toda a rede — simples mas sem balanceamento. O PVST é a solução Cisco proprietária com ISL que introduz instâncias por VLAN. O PVST+ evoluiu o PVST para operar sobre 802.1Q, mantendo instâncias por VLAN e adicionando interoperabilidade com equipamentos IEEE."
+      },
+
+      // ==================== 02.html – Root Bridge por VLAN e Load Balancing ====================
+      {
+        "question": "Em uma rede PVST+, o que determina qual switch será eleito Root Bridge para uma VLAN específica?",
+        "options": [
+          "O switch com maior número de portas ativas vence a eleição",
+          "O switch com menor Bridge ID — composto por prioridade configurada mais o endereço MAC — vence a eleição por VLAN",
+          "O switch conectado ao maior número de VLANs é automaticamente eleito Root Bridge",
+          "O switch com maior largura de banda total agregada nas interfaces vence a eleição"
+        ],
+        "answer": "O switch com menor Bridge ID — composto por prioridade configurada mais o endereço MAC — vence a eleição por VLAN",
+        "explanation": "No PVST+, cada VLAN realiza uma eleição independente. O vencedor é o switch com menor Bridge ID naquela instância. O Bridge ID é formado pela prioridade (configurável em múltiplos de 4096) somada ao ID da VLAN e ao endereço MAC. O administrador manipula a prioridade para controlar qual switch vence em cada VLAN."
+      },
+      {
+        "question": "Um administrador quer que SW1 seja Root Bridge para VLAN 10 e SW2 seja Root Bridge para VLAN 20. Qual par de comandos atinge esse objetivo de forma determinística?",
+        "options": [
+          "SW1: spanning-tree vlan 10 priority 0 / SW2: spanning-tree vlan 20 priority 0",
+          "SW1: spanning-tree vlan 10 root primary / SW2: spanning-tree vlan 20 root primary",
+          "SW1: spanning-tree vlan 10 bridge-id lowest / SW2: spanning-tree vlan 20 bridge-id lowest",
+          "SW1: spanning-tree vlan 10 cost 1 / SW2: spanning-tree vlan 20 cost 1"
+        ],
+        "answer": "SW1: spanning-tree vlan 10 root primary / SW2: spanning-tree vlan 20 root primary",
+        "explanation": "O comando 'spanning-tree vlan X root primary' configura automaticamente a prioridade do switch para um valor menor que o atual Root Bridge daquela VLAN, garantindo que ele vença a eleição. É o método recomendado pela Cisco por ser determinístico e se adaptar dinamicamente caso outro switch tente assumir o papel de Root."
+      },
+      {
+        "question": "Por que configurar o Root Bridge secundário é uma prática importante em ambientes de produção?",
+        "options": [
+          "Porque o Root Bridge secundário assume automaticamente quando o primário falha, evitando que um switch aleatório vença a eleição",
+          "Porque o Root Bridge secundário bloqueia todas as portas redundantes enquanto o primário estiver ativo",
+          "Porque o Root Bridge secundário é obrigatório para que o PVST+ funcione corretamente",
+          "Porque sem um secundário configurado, o STP desativa o balanceamento de carga entre VLANs"
+        ],
+        "answer": "Porque o Root Bridge secundário assume automaticamente quando o primário falha, evitando que um switch aleatório vença a eleição",
+        "explanation": "Sem um Root Bridge secundário configurado, qualquer switch com prioridade padrão (32768) pode vencer a eleição se o Root primário cair. O switch secundário, configurado com 'spanning-tree vlan X root secondary', tem prioridade 28672 — menor que o padrão — garantindo que ele assuma o controle de forma ordenada e previsível."
+      },
+      {
+        "question": "Qual é o efeito prático de ter SW1 como Root Bridge da VLAN 10 e SW2 como Root Bridge da VLAN 20 em uma topologia triangular com SW3 de acesso?",
+        "options": [
+          "O tráfego da VLAN 10 e da VLAN 20 continua usando o mesmo uplink, pois o SW3 só pode ter uma Root Port",
+          "O tráfego da VLAN 10 usa o uplink em direção ao SW1, e o tráfego da VLAN 20 usa o uplink em direção ao SW2, distribuindo a carga entre os dois links físicos",
+          "Todos os links ficam ativos simultaneamente para todas as VLANs, eliminando qualquer porta bloqueada",
+          "O SW3 elege um Root Bridge único para todas as VLANs com base no menor custo de caminho total"
+        ],
+        "answer": "O tráfego da VLAN 10 usa o uplink em direção ao SW1, e o tráfego da VLAN 20 usa o uplink em direção ao SW2, distribuindo a carga entre os dois links físicos",
+        "explanation": "Com Roots diferentes por VLAN, o SW3 elege Root Ports diferentes para cada instância STP. Para VLAN 10, a Root Port aponta para SW1 — usando o uplink esquerdo. Para VLAN 20, a Root Port aponta para SW2 — usando o uplink direito. Os dois links físicos ficam ativos simultaneamente, cada um transportando tráfego de VLANs diferentes."
+      },
+      {
+        "question": "O balanceamento de carga Layer 2 com PVST+ é classificado como estático ou dinâmico? Por quê?",
+        "options": [
+          "Dinâmico — o STP redistribui frames entre os links em tempo real conforme a carga de cada interface",
+          "Estático — o balanceamento é determinado pela configuração do Root Bridge por VLAN e não muda dinamicamente com base no volume de tráfego",
+          "Dinâmico — o STP usa LACP para equilibrar automaticamente a carga entre os uplinks",
+          "Estático apenas durante a convergência; após a estabilização, torna-se dinâmico"
+        ],
+        "answer": "Estático — o balanceamento é determinado pela configuração do Root Bridge por VLAN e não muda dinamicamente com base no volume de tráfego",
+        "explanation": "O load balancing no STP é estático por natureza. O administrador define qual switch é Root de cada VLAN e, consequentemente, qual caminho cada VLAN usará. Essa decisão não muda em resposta ao volume de tráfego — se a VLAN 10 estiver congestionada e a VLAN 20 ociosa, o STP não redistribui automaticamente. Por isso, o planejamento inicial do balanceamento é fundamental."
+      },
+      {
+        "question": "Em uma topologia com 4 VLANs (10, 20, 30, 40) e dois switches de distribuição (SW1 e SW2), qual estratégia de distribuição de Root Bridges maximiza o uso dos links redundantes?",
+        "options": [
+          "Configurar SW1 como Root primário para todas as 4 VLANs e SW2 como secundário para todas",
+          "Configurar SW1 como Root primário para VLANs 10 e 30, e SW2 como Root primário para VLANs 20 e 40",
+          "Configurar o Root Bridge aleatoriamente por VLAN para evitar previsibilidade",
+          "Não configurar Root Bridge em nenhum switch e deixar a eleição ser decidida pelo menor MAC Address"
+        ],
+        "answer": "Configurar SW1 como Root primário para VLANs 10 e 30, e SW2 como Root primário para VLANs 20 e 40",
+        "explanation": "Distribuir as VLANs igualmente entre os dois switches de distribuição garante que cada uplink físico transporte tráfego de 50% das VLANs. SW1 atrai o tráfego das VLANs 10 e 30 pelo uplink esquerdo; SW2 atrai as VLANs 20 e 40 pelo uplink direito. Isso maximiza a utilização da redundância física disponível."
+      },
+      {
+        "question": "Qual é a diferença entre os comandos 'spanning-tree vlan 10 root primary' e 'spanning-tree vlan 10 priority 4096'?",
+        "options": [
+          "Não há diferença — ambos configuram a prioridade exatamente para 4096 em todos os casos",
+          "'root primary' ajusta automaticamente a prioridade para um valor menor que o Root atual da VLAN; 'priority 4096' define um valor fixo independentemente do estado atual da eleição",
+          "'priority 4096' é mais seguro porque impede qualquer outro switch de assumir o Root Bridge",
+          "'root primary' só funciona no modo RSTP; 'priority 4096' funciona tanto em STP quanto em RSTP"
+        ],
+        "answer": "'root primary' ajusta automaticamente a prioridade para um valor menor que o Root atual da VLAN; 'priority 4096' define um valor fixo independentemente do estado atual da eleição",
+        "explanation": "O 'root primary' é inteligente: o switch verifica a prioridade do Root Bridge atual na VLAN e configura a própria prioridade para um valor 4096 menor — garantindo a vitória na eleição. Já o 'priority 4096' define um valor fixo de 4096 sem verificar a situação atual. Se já existir outro switch com prioridade 0 ou 4096 com MAC menor, o comando manual pode não resultar na vitória da eleição."
+      },
+      {
+        "question": "Um administrador observa que todas as VLANs estão usando o mesmo uplink, mesmo tendo configurado Root Bridges diferentes em SW1 e SW2. Qual é a causa mais provável?",
+        "options": [
+          "O STP não suporta múltiplos Root Bridges simultaneamente na mesma rede física",
+          "O trunk entre SW1 e SW3 ou SW2 e SW3 não está transportando as VLANs corretas — verificar com 'show interfaces trunk'",
+          "O PVST+ está desabilitado e a rede está operando em modo CST",
+          "A tabela MAC está corrompida e precisa ser limpa manualmente em todos os switches"
+        ],
+        "answer": "O trunk entre SW1 e SW3 ou SW2 e SW3 não está transportando as VLANs corretas — verificar com 'show interfaces trunk'",
+        "explanation": "Se o trunk não estiver transportando as VLANs configuradas, o SW3 não receberá BPDUs das instâncias STP daquelas VLANs pelo link correspondente. Sem BPDUs, ele não pode eleger Root Ports diferentes por VLAN e o balanceamento não acontece. O comando 'show interfaces trunk' mostra quais VLANs estão permitidas e ativas em cada trunk — ponto de partida obrigatório nesse troubleshooting."
+      },
+      {
+        "question": "Por que a prioridade STP deve ser configurada em múltiplos de 4096?",
+        "options": [
+          "Porque o IOS Cisco arredonda automaticamente qualquer valor para o múltiplo de 4096 mais próximo",
+          "Porque os 4 bits de prioridade do Bridge ID são reservados para o campo de prioridade, e os 12 bits restantes são usados para o ID da VLAN — resultando em incrementos mínimos de 4096",
+          "Porque múltiplos de 4096 garantem compatibilidade com switches de outros fabricantes",
+          "Porque valores que não sejam múltiplos de 4096 causam loops na topologia STP"
+        ],
+        "answer": "Porque os 4 bits de prioridade do Bridge ID são reservados para o campo de prioridade, e os 12 bits restantes são usados para o ID da VLAN — resultando em incrementos mínimos de 4096",
+        "explanation": "O Bridge ID tem 8 bytes (64 bits). Os primeiros 4 bits são a prioridade configurável, e os 12 bits seguintes são o Extended System ID que carrega o número da VLAN. Como os 4 bits de prioridade representam valores de 0 a 15 multiplicados por 4096, o menor incremento possível é 4096. Valores inválidos são rejeitados pelo IOS."
+      },
+      {
+        "question": "Um switch de acesso SW3 está conectado a SW1 via Gi0/0 e a SW2 via Gi0/1. Para VLAN 10, SW1 é o Root Bridge. Para VLAN 20, SW2 é o Root Bridge. Qual é o estado esperado das portas do SW3 para cada VLAN?",
+        "options": [
+          "VLAN 10: Gi0/0 Root FWD, Gi0/1 Altn BLK — VLAN 20: Gi0/1 Root FWD, Gi0/0 Altn BLK",
+          "VLAN 10: Gi0/0 Root FWD, Gi0/1 Desg FWD — VLAN 20: Gi0/1 Root FWD, Gi0/0 Desg FWD",
+          "Ambas as VLANs: Gi0/0 Root FWD, Gi0/1 Altn BLK — o balanceamento só ocorre nos switches de distribuição",
+          "VLAN 10: Gi0/1 Root FWD, Gi0/0 Altn BLK — VLAN 20: Gi0/0 Root FWD, Gi0/1 Altn BLK"
+        ],
+        "answer": "VLAN 10: Gi0/0 Root FWD, Gi0/1 Altn BLK — VLAN 20: Gi0/1 Root FWD, Gi0/0 Altn BLK",
+        "explanation": "Para VLAN 10, SW3 elege Gi0/0 como Root Port (caminho para SW1, o Root da VLAN 10) e Gi0/1 fica em Alternate Blocking. Para VLAN 20, SW3 elege Gi0/1 como Root Port (caminho para SW2, o Root da VLAN 20) e Gi0/0 fica em Alternate Blocking. Isso é exatamente o balanceamento esperado — cada VLAN tem sua Root Port apontando para seu respectivo Root Bridge."
+      },
+
+      // ==================== 03.html – Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade ====================
+      {
+        "question": "Qual era a principal limitação do PVST original em relação aos trunks?",
+        "options": [
+          "Ele não suportava mais que 64 VLANs por trunk.",
+          "Ele foi criado antes do padrão 802.1Q e utilizava ISL (Cisco proprietário).",
+          "Ele não conseguia transportar BPDUs em trunks, apenas em links de acesso.",
+          "Ele precisava que todas as VLANs tivessem o mesmo Root Bridge."
+        ],
+        "answer": "Ele foi criado antes do padrão 802.1Q e utilizava ISL (Cisco proprietário).",
+        "explanation": "O PVST original surgiu antes da padronização do 802.1Q, por isso usava exclusivamente o encapsulamento ISL (Cisco proprietário) para trunks. Com a popularização do padrão IEEE, tornou-se necessário evoluir para o PVST+."
+      },
+      {
+        "question": "O que o PVST+ adiciona em relação ao PVST original?",
+        "options": [
+          "Elimina a necessidade de BPDUs, usando mensagens LACP no lugar.",
+          "Compatibilidade com trunks IEEE 802.1Q e interoperabilidade com STP padrão IEEE (802.1D).",
+          "Cria uma única instância STP para todas as VLANs, simplificando o trunk.",
+          "Permite que o STP seja desabilitado em VLANs específicas dentro do trunk."
+        ],
+        "answer": "Compatibilidade com trunks IEEE 802.1Q e interoperabilidade com STP padrão IEEE (802.1D).",
+        "explanation": "O PVST+ foi desenvolvido para operar sobre trunks 802.1Q, encapsulando BPDUs com a tag da VLAN correspondente. Além disso, ele é interoperável com switches que executam apenas o STP padrão IEEE (802.1D)."
+      },
+      {
+        "question": "Como o PVST+ identifica a qual VLAN pertence uma BPDU enviada por um trunk 802.1Q?",
+        "options": [
+          "Todas as BPDUs são enviadas sem tag, e o switch infere a VLAN pelo endereço MAC de destino.",
+          "Cada BPDU é encapsulada com a tag 802.1Q correspondente à VLAN, permitindo que o switch associe a BPDU à instância STP correta.",
+          "As BPDUs são enviadas apenas pela VLAN nativa, e uma tabela interna mapeia as portas às VLANs.",
+          "O PVST+ não usa tags; ele envia uma BPDU separada por VLAN, mas todas sem tag, confiando no campo VLAN ID do cabeçalho Ethernet."
+        ],
+        "answer": "Cada BPDU é encapsulada com a tag 802.1Q correspondente à VLAN, permitindo que o switch associe a BPDU à instância STP correta.",
+        "explanation": "O PVST+ aproveita o campo tag 802.1Q no frame Ethernet para identificar a VLAN da BPDU. Assim, múltiplas instâncias STP (uma por VLAN) podem trafegar no mesmo trunk fisicamente, cada uma com sua tag própria."
+      },
+      {
+        "question": "Em um trunk 802.1Q configurado com PVST+, como as BPDUs da VLAN nativa são tratadas?",
+        "options": [
+          "Não são enviadas BPDUs na VLAN nativa, pois ela não participa do STP.",
+          "As BPDUs da VLAN nativa são enviadas sem tag (untagged) e são interpretadas como STP clássico (802.1D).",
+          "As BPDUs da VLAN nativa são enviadas com tag 0 (prioridade apenas), o que causa incompatibilidade com switches IEEE.",
+          "O PVST+ não suporta VLAN nativa; todas as VLANs devem ser explícitas no trunk."
+        ],
+        "answer": "As BPDUs da VLAN nativa são enviadas sem tag (untagged) e são interpretadas como STP clássico (802.1D).",
+        "explanation": "No trunk 802.1Q, o tráfego da VLAN nativa trafega sem tag. O PVST+ envia as BPDUs da VLAN nativa também sem tag, o que garante compatibilidade com switches que executam apenas o STP IEEE 802.1D (Common Spanning Tree)."
+      },
+      {
+        "question": "Qual é o papel da VLAN nativa no contexto do PVST+ e interoperabilidade?",
+        "options": [
+          "A VLAN nativa é usada exclusivamente para tráfego de gerenciamento e não participa do STP.",
+          "Ela permite que switches Cisco e switches de outros fabricantes (que rodam apenas CST) interoperem, pois as BPDUs da VLAN nativa são enviadas sem tag e compreendidas como STP clássico.",
+          "A VLAN nativa deve ser a mesma que a VLAN do Root Bridge; caso contrário, o PVST+ falha.",
+          "Ela é usada para transportar BPDUs de todas as VLANs em modo agregado, evitando múltiplas tags."
+        ],
+        "answer": "Ela permite que switches Cisco e switches de outros fabricantes (que rodam apenas CST) interoperem, pois as BPDUs da VLAN nativa são enviadas sem tag e compreendidas como STP clássico.",
+        "explanation": "A VLAN nativa é o canal de comunicação do CST (Common Spanning Tree) no trunk. O PVST+ envia BPDUs sem tag para a VLAN nativa, o que é exatamente o que um switch IEEE espera. Isso garante que um switch Cisco com PVST+ possa se conectar a um switch de outro fabricante rodando apenas STP 802.1D."
+      },
+      {
+        "question": "Sobre a interoperabilidade entre PVST+ e STP padrão IEEE (802.1D), é correto afirmar:",
+        "options": [
+          "Não é possível interligar um switch Cisco PVST+ a um switch IEEE, pois os protocolos são incompatíveis.",
+          "O PVST+ é totalmente compatível porque envia BPDUs da VLAN nativa sem tag, permitindo que o switch IEEE participe da CST (Common Spanning Tree) naquela VLAN.",
+          "Para interoperar, é necessário desabilitar o PVST+ no switch Cisco e configurar CST manualmente.",
+          "A interoperabilidade só é possível se ambos os switches usarem o mesmo Root Bridge e as mesmas prioridades de porta."
+        ],
+        "answer": "O PVST+ é totalmente compatível porque envia BPDUs da VLAN nativa sem tag, permitindo que o switch IEEE participe da CST (Common Spanning Tree) naquela VLAN.",
+        "explanation": "O switch IEEE (não Cisco) executa apenas CST – uma única instância STP (normalmente na VLAN 1 ou na VLAN nativa). O PVST+ envia BPDUs sem tag nessa mesma VLAN, de modo que o switch IEEE enxerga a topologia normalmente. As demais VLANs do trunk (com tag) são ignoradas pelo switch IEEE, mas isso não quebra a conectividade."
+      },
+      {
+        "question": "Por que o PVST+ é considerado a evolução natural do PVST para redes corporativas modernas?",
+        "options": [
+          "Porque elimina completamente o STP, substituindo por roteamento L3.",
+          "Porque mantém o balanceamento de carga por VLAN (uma instância por VLAN) e adiciona suporte ao padrão 802.1Q, amplamente utilizado.",
+          "Porque reduz o número de instâncias STP, agrupando VLANs, ao contrário do PVST original.",
+          "Porque utiliza o protocolo ISL, que é mais eficiente que o 802.1Q."
+        ],
+        "answer": "Porque mantém o balanceamento de carga por VLAN (uma instância por VLAN) e adiciona suporte ao padrão 802.1Q, amplamente utilizado.",
+        "explanation": "O PVST original já oferecia o benefício de uma instância por VLAN, mas dependia de ISL. Com o PVST+, esse mesmo benefício é estendido para o padrão 802.1Q, que é universal, garantindo balanceamento e compatibilidade com equipamentos de qualquer fornecedor (desde que a VLAN nativa seja configurada corretamente)."
+      },
+      {
+        "question": "No trunk 802.1Q entre um switch Cisco com PVST+ e um switch de outro fabricante que roda apenas CST, o que acontece com as BPDUs das VLANs não-nativas (ex.: VLAN 10, 20, 30)?",
+        "options": [
+          "Elas são convertidas pelo switch Cisco em BPDUs sem tag e enviadas para a VLAN nativa.",
+          "Elas são descartadas pelo switch do outro fabricante, pois ele não entende BPDUs com tag 802.1Q. No entanto, a conectividade L2 para essas VLANs ainda funciona, pois o CST cuida do loop na VLAN nativa e o switch externo simplesmente não participa das instâncias específicas.",
+          "Elas são encapsuladas em ISL para serem compreendidas pelo outro switch, mesmo que ele não suporte ISL.",
+          "O PVST+ não permite trunks com switches de outros fabricantes; é necessário usar modo 'spanning-tree mode mst' para interoperar."
+        ],
+        "answer": "Elas são descartadas pelo switch do outro fabricante, pois ele não entende BPDUs com tag 802.1Q. No entanto, a conectividade L2 para essas VLANs ainda funciona, pois o CST cuida do loop na VLAN nativa e o switch externo simplesmente não participa das instâncias específicas.",
+        "explanation": "Switches de outros fabricantes geralmente ignoram BPDUs com tag, pois seu STP implementa apenas CST. A consequência prática é que o switch Cisco continua rodando PVST+ internamente, e o switch externo contribui apenas com a CST na VLAN nativa. O loop físico é evitado pela CST, e as demais VLANs não sofrem problemas de loop, pois seguem a mesma árvore da VLAN nativa (embora sem balanceamento)."
+      },
+      {
+        "question": "Como o PVST+ garante que as BPDUs de diferentes VLANs não se misturem no mesmo trunk 802.1Q?",
+        "options": [
+          "Utiliza um mecanismo de temporização para intercalar as BPDUs de cada VLAN.",
+          "Cada BPDU é enviada com um MAC address de destino diferente por VLAN.",
+          "Cada BPDU recebe a tag 802.1Q da respectiva VLAN, o que a mantém isolada logicamente dentro do trunk.",
+          "As BPDUs são enviadas apenas pela VLAN nativa, e um campo opcional no payload identifica a VLAN de origem."
+        ],
+        "answer": "Cada BPDU recebe a tag 802.1Q da respectiva VLAN, o que a mantém isolada logicamente dentro do trunk.",
+        "explanation": "O trunk 802.1Q insere uma tag de 4 bytes no frame Ethernet, contendo o VID (VLAN ID). O PVST+ encapsula a BPDU com essa tag, de modo que cada instância STP trafega em um canal lógico separado dentro do mesmo enlace físico. O switch de destino interpreta a tag e processa a BPDU na instância correta."
+      },
+      {
+        "question": "Um ambiente de rede possui switches Cisco com PVST+ e um switch não‑Cisco que suporta apenas 802.1D (CST). Qual configuração mínima é necessária no trunk para que a interoperabilidade funcione corretamente?",
+        "options": [
+          "Configurar o mesmo Root Bridge manualmente em ambos os switches para todas as VLANs.",
+          "Definir a mesma VLAN nativa em ambos os lados do trunk e garantir que o switch Cisco envie BPDUs sem tag para aquela VLAN.",
+          "Desabilitar o STP no switch Cisco do lado do trunk e confiar no switch não‑Cisco.",
+          "Converter o switch Cisco para o modo 'spanning-tree mode mst' e mapear todas as VLANs para a instância 0."
+        ],
+        "answer": "Definir a mesma VLAN nativa em ambos os lados do trunk e garantir que o switch Cisco envie BPDUs sem tag para aquela VLAN.",
+        "explanation": "A interoperabilidade PVST+ ↔ 802.1D depende da VLAN nativa: as BPDUs do CST (enviadas sem tag) devem trafegar na mesma VLAN nativa configurada em ambos os switches. O switch Cisco continuará rodando suas instâncias PVST+ para as demais VLANs, mas o switch não‑Cisco só participará da CST na VLAN nativa, o que é suficiente para evitar loops."
+      },
+
+      // ==================== 04.html – Limitações do PVST+, Escalabilidade e Transição para MSTP ====================
+      {
+        "question": "Qual é a principal limitação do PVST+ em ambientes com muitas VLANs (ex.: 500 VLANs)?",
+        "options": [
+          "O PVST+ não suporta mais que 64 VLANs por switch.",
+          "Cada VLAN mantém sua própria instância STP, resultando em centenas de BPDUs, maior uso de CPU e memória, além de processamento elevado.",
+          "O PVST+ não consegue realizar balanceamento de carga quando há mais de 100 VLANs.",
+          "O protocolo passa a bloquear todas as portas em cenários com mais de 256 VLANs."
+        ],
+        "answer": "Cada VLAN mantém sua própria instância STP, resultando em centenas de BPDUs, maior uso de CPU e memória, além de processamento elevado.",
+        "explanation": "O PVST+ foi criado para oferecer uma instância STP por VLAN, o que é excelente para balanceamento. Porém, em redes com centenas de VLANs, o custo operacional aumenta: muitas BPDUs, múltiplas eleições, consumo alto de CPU e memória, e convergência mais pesada. Essa é a principal razão para migrar para MSTP."
+      },
+      {
+        "question": "Como o MSTP (Multiple Spanning Tree Protocol) resolve o problema de escalabilidade do PVST+?",
+        "options": [
+          "Elimina completamente o STP, substituindo-o por roteamento dinâmico L3.",
+          "Agrupa múltiplas VLANs dentro da mesma instância STP, reduzindo drasticamente o número de instâncias e BPDUs.",
+          "Cria uma única instância STP para todas as VLANs, voltando ao modelo CST, mas com convergência mais rápida.",
+          "Substitui o uso de BPDUs por mensagens LACP, eliminando o overhead do STP."
+        ],
+        "answer": "Agrupa múltiplas VLANs dentro da mesma instância STP, reduzindo drasticamente o número de instâncias e BPDUs.",
+        "explanation": "O MSTP (802.1s) introduz o conceito de ‘regiões’ e ‘instâncias MSTI’. O administrador pode mapear várias VLANs para uma mesma instância STP, mantendo o balanceamento de carga (com instâncias diferentes) mas sem a explosão de instâncias do PVST+. Isso reduz o processamento, a quantidade de BPDUs e o consumo de recursos."
+      },
+      {
+        "question": "Em uma rede com 200 VLANs, quantas instâncias STP o PVST+ executaria? E quantas o MSTP poderia executar (com um design típico)?",
+        "options": [
+          "PVST+: 1 instância; MSTP: 1 instância (CST) – ambos são iguais.",
+          "PVST+: 200 instâncias (uma por VLAN); MSTP: normalmente até 64 instâncias, mas na prática o administrador pode mapear grupos de VLANs para poucas instâncias (ex.: 4 ou 5).",
+          "PVST+: 200 instâncias; MSTP: exatamente 200 instâncias também, mas com menor consumo de CPU.",
+          "PVST+: 1 instância por switch; MSTP: 1 instância por região, independente do número de VLANs."
+        ],
+        "answer": "PVST+: 200 instâncias (uma por VLAN); MSTP: normalmente até 64 instâncias, mas na prática o administrador pode mapear grupos de VLANs para poucas instâncias (ex.: 4 ou 5).",
+        "explanation": "O PVST+ cria uma instância STP independente para cada VLAN, portanto 200 VLANs = 200 instâncias. O MSTP suporta até 64 instâncias (MSTI), mas é possível mapear dezenas ou centenas de VLANs para uma única instância. Um design típico usa poucas instâncias (ex.: para diferentes caminhos ativos), reduzindo drasticamente o overhead."
+      },
+      {
+        "question": "Além do maior consumo de CPU e memória, qual outro problema prático o excesso de instâncias STP no PVST+ pode causar em trunks?",
+        "options": [
+          "O trunk passa a operar em half-duplex devido ao número excessivo de BPDUs.",
+          "Cada VLAN envia sua própria BPDU periodicamente, aumentando a largura de banda ocupada por controle (BPDUs) no trunk, especialmente em topologias com muitos switches.",
+          "O PVST+ desabilita automaticamente o trunk quando detecta mais de 100 BPDUs por segundo.",
+          "Não há impacto em trunks; apenas o switch local sofre com CPU alta."
+        ],
+        "answer": "Cada VLAN envia sua própria BPDU periodicamente, aumentando a largura de banda ocupada por controle (BPDUs) no trunk, especialmente em topologias com muitos switches.",
+        "explanation": "Com PVST+, cada VLAN ativa emite BPDUs periódicas (a cada 2 segundos, por padrão) em todos os trunks. Em redes com centenas de VLANs e dezenas de switches, o tráfego de BPDUs se torna significativo, consumindo largura de banda e processamento nos switches. O MSTP, ao reduzir o número de instâncias, reduz proporcionalmente o número de BPDUs."
+      },
+      {
+        "question": "O que acontece com o tempo de convergência do STP quando o PVST+ é usado com um número muito grande de VLANs?",
+        "options": [
+          "O tempo de convergência permanece o mesmo (30–50 segundos) independente do número de VLANs.",
+          "Cada instância STP converge individualmente, e em caso de falha generalizada (ex.: perda de um switch core), todas as instâncias precisam recalcular sua árvore, podendo prolongar o tempo total de estabilização da rede.",
+          "O PVST+ acelera a convergência à medida que o número de VLANs aumenta, pois mais BPDUs ajudam na sincronização.",
+          "O PVST+ desativa a convergência automática quando há mais de 128 VLANs, exigindo intervenção manual."
+        ],
+        "answer": "Cada instância STP converge individualmente, e em caso de falha generalizada (ex.: perda de um switch core), todas as instâncias precisam recalcular sua árvore, podendo prolongar o tempo total de estabilização da rede.",
+        "explanation": "Embora cada instância PVST+ convenja em cerca de 30–50 segundos, uma falha estrutural pode afetar todas as instâncias simultaneamente. A sobrecarga de processamento para recalcular centenas de árvores pode tornar o tempo de estabilização percebido maior do que o teórico. O MSTP reduz esse efeito porque recalcula apenas poucas instâncias."
+      },
+      {
+        "question": "O padrão IEEE que define o MSTP é o 802.1s. Qual característica do MSTP o torna mais eficiente que o PVST+ em redes de grande escala?",
+        "options": [
+          "O MSTP utiliza um algoritmo de eleição de Root Bridge mais rápido (menos de 1 segundo).",
+          "O MSTP permite que o administrador mapeie VLANs para instâncias STP, agrupando-as e reduzindo o número total de instâncias, sem perder a capacidade de balanceamento de carga (diferentes instâncias podem ter Roots diferentes).",
+          "O MSTP não envia BPDUs; usa um mecanismo de votação distribuída mais leve.",
+          "O MSTP elimina completamente a necessidade de prioridades, usando apenas endereços MAC."
+        ],
+        "answer": "O MSTP permite que o administrador mapeie VLANs para instâncias STP, agrupando-as e reduzindo o número total de instâncias, sem perder a capacidade de balanceamento de carga (diferentes instâncias podem ter Roots diferentes).",
+        "explanation": "O grande diferencial do MSTP é o mapeamento flexível de VLANs para instâncias (MSTI). Isso mantém o balanceamento (instâncias diferentes com caminhos diferentes) mas sem a proliferação de instâncias. O administrador decide quantas instâncias usar (até 64) e quais VLANs vão para cada uma."
+      },
+      {
+        "question": "Em um switch que opera com PVST+, o comando 'show spanning-tree summary' mostra o número total de instâncias STP. Em um ambiente com 150 VLANs ativas, qual seria aproximadamente o número de instâncias?",
+        "options": [
+          "1 instância (CST).",
+          "150 instâncias (uma por VLAN ativa).",
+          "150 instâncias, mas apenas se todas as VLANs estiverem em trunks; caso contrário, apenas 1.",
+          "O número de instâncias é igual ao número de interfaces físicas, independente das VLANs."
+        ],
+        "answer": "150 instâncias (uma por VLAN ativa).",
+        "explanation": "O PVST+ cria uma instância STP para cada VLAN ativa no switch (ou seja, VLANs configuradas e com pelo menos uma porta ativa). Cada instância tem sua própria eleição de Root Bridge, suas portas Designated/Root/Alternate, e suas próprias BPDUs. O comando 'show spanning-tree summary' confirma esse número."
+      },
+      {
+        "question": "Qual é a relação entre o MSTP e o PVST+ em termos de interoperabilidade?",
+        "options": [
+          "MSTP e PVST+ são totalmente incompatíveis; é necessário desabilitar um ou outro na rede.",
+          "Switches Cisco com MSTP podem interoperar com PVST+ usando o recurso ‘PVST Simulation’, que traduz BPDUs entre os protocolos, mas isso pode aumentar a carga de CPU.",
+          "MSTP é uma evolução proprietária da Cisco e não interoperável com equipamentos de outros fabricantes.",
+          "MSTP é idêntico ao PVST+; apenas o nome muda."
+        ],
+        "answer": "Switches Cisco com MSTP podem interoperar com PVST+ usando o recurso ‘PVST Simulation’, que traduz BPDUs entre os protocolos, mas isso pode aumentar a carga de CPU.",
+        "explanation": "O MSTP é um padrão IEEE (802.1s) e, em geral, espera-se que toda a rede seja MSTP. Porém, switches Cisco oferecem mecanismos de compatibilidade com PVST+ (ex.: ‘spanning-tree mst simulate pvst’). Isso permite migrações graduais, mas o custo é o aumento de processamento devido à tradução de BPDUs."
+      },
+      {
+        "question": "Na tabela comparativa do documento (README.md), qual tecnologia é apontada como tendo escalabilidade ‘Excelente’ e balanceamento ‘✅’ (sim), sendo a recomendação para redes muito grandes?",
+        "options": [
+          "CST",
+          "PVST",
+          "PVST+",
+          "MSTP"
+        ],
+        "answer": "MSTP",
+        "explanation": "A tabela do README classifica o MSTP com escalabilidade ‘Excelente’ e balanceamento ‘✅’. O PVST e PVST+ têm escalabilidade ‘Média’. O CST tem escalabilidade ‘Alta’ mas não oferece balanceamento. Para redes corporativas muito grandes (com muitas VLANs), o MSTP é a solução indicada."
+      },
+      {
+        "question": "Um administrador deseja migrar de PVST+ para MSTP sem causar loops ou perda de conectividade. Qual é o procedimento correto (segundo as boas práticas)?",
+        "options": [
+          "Desligar todos os switches simultaneamente, configurar MSTP e religar tudo.",
+          "Configurar MSTP em toda a rede no mesmo momento (janela de manutenção), garantindo que todas as configurações de região (nome, revisão, mapeamento VLAN-instância) sejam idênticas em todos os switches, caso contrário, diferentes regiões MSTP não compartilham instâncias.",
+          "Migrar um switch por vez, primeiro desabilitando STP nele, depois configurando MSTP e religando, sem preocupação com regiões.",
+          "Não é possível migrar de PVST+ para MSTP; é necessário trocar os switches fisicamente."
+        ],
+        "answer": "Configurar MSTP em toda a rede no mesmo momento (janela de manutenção), garantindo que todas as configurações de região (nome, revisão, mapeamento VLAN-instância) sejam idênticas em todos os switches, caso contrário, diferentes regiões MSTP não compartilham instâncias.",
+        "explanation": "O MSTP exige que todos os switches de uma mesma região tenham a mesma configuração de nome, revisão e mapeamento VLAN-instância para que possam compartilhar instâncias MSTI. A migração geralmente exige uma janela de manutenção planejada para reconfigurar toda a infraestrutura, garantindo consistência e evitando loops."
+      },
+
+      // ==================== 05.html – Troubleshooting, Comandos CLI e Cenários de Produção ====================
+      {
+        "question": "Um administrador percebe que todo o tráfego da rede está passando por um único uplink, apesar de haver dois uplinks redundantes configurados. Qual é a causa mais provável e o respectivo comando de verificação?",
+        "options": [
+          "Erro de hardware no uplink secundário; verifique com 'show interfaces status'.",
+          "Todas as VLANs estão com o mesmo Root Bridge (ex.: SW1), forçando o bloqueio do segundo uplink. Verifique com 'show spanning-tree vlan 10' e 'show spanning-tree vlan 20'.",
+          "O protocolo EtherChannel está desativado; use 'show etherchannel summary'.",
+          "O BPDU Guard bloqueou o segundo uplink; use 'show errdisable recovery'."
+        ],
+        "answer": "Todas as VLANs estão com o mesmo Root Bridge (ex.: SW1), forçando o bloqueio do segundo uplink. Verifique com 'show spanning-tree vlan 10' e 'show spanning-tree vlan 20'.",
+        "explanation": "A ausência de balanceamento (load balancing) geralmente ocorre porque todas as VLANs possuem o mesmo Root Bridge. O STP bloqueia o mesmo link para todas. Para diagnosticar, use 'show spanning-tree vlan [vlan]' em cada VLAN e confira se o Root Bridge é o mesmo. A solução é distribuir os roots (ex.: VLAN 10 com root SW1, VLAN 20 com root SW2)."
+      },
+      {
+        "question": "Qual comando exibe o número total de instâncias STP ativas em um switch que opera com PVST+?",
+        "options": [
+          "show spanning-tree vlan 1",
+          "show spanning-tree summary",
+          "show spanning-tree detail | include VLAN",
+          "show interfaces trunk"
+        ],
+        "answer": "show spanning-tree summary",
+        "explanation": "O 'show spanning-tree summary' mostra, entre outras informações, o número total de instâncias STP em execução no switch. Em PVST+, cada VLAN ativa representa uma instância. Esse comando é essencial para avaliar o impacto de escalabilidade antes de uma migração para MSTP."
+      },
+      {
+        "question": "Um switch de distribuição (não planejado como Root Bridge) tornou-se o root de várias VLANs, causando caminhos subótimos. Qual comando deve ser usado para forçá‑lo a nunca ser root nessas VLANs?",
+        "options": [
+          "spanning-tree vlan 10-20 root secondary",
+          "spanning-tree vlan 10-20 priority 61440 (valor alto)",
+          "no spanning-tree vlan 10-20",
+          "spanning-tree guard root"
+        ],
+        "answer": "spanning-tree vlan 10-20 priority 61440 (valor alto)",
+        "explanation": "Para evitar que um switch se torne root, sua prioridade deve ser alta (pior). O comando 'spanning-tree vlan [vlan] priority [valor]' com valores altos (ex.: 61440) torna o switch menos preferível. O 'root secondary' configura prioridade 28672, que ainda pode torná‑lo root se o root primário falhar, mas não resolve um root inesperado. Prioridades altas garantem que ele nunca vença uma eleição."
+      },
+      {
+        "question": "No diagnóstico de um problema de 'Root Bridge inesperado', o administrador precisa identificar rapidamente qual switch está se anunciando como root. Qual comando fornece essa informação para todas as VLANs de uma só vez?",
+        "options": [
+          "show spanning-tree root",
+          "show spanning-tree vlan 1",
+          "show spanning-tree detail | include Root|Bridge",
+          "show processes cpu sorted"
+        ],
+        "answer": "show spanning-tree root",
+        "explanation": "O comando 'show spanning-tree root' exibe, para cada VLAN, o Root Bridge ID (prioridade + MAC) e a porta local que leva até ele. É o comando mais rápido para mapear os roots por VLAN e identificar se algum switch não autorizado está assumindo esse papel."
+      },
+      {
+        "question": "Um engenheiro suspeita que uma interface específica está com problemas de STP (ex.: flapping, TCN excessivo). Qual comando fornece o estado STP detalhado daquela porta, incluindo papel, estado, custo e contagem de mudanças de topologia?",
+        "options": [
+          "show interfaces GigabitEthernet0/1",
+          "show spanning-tree interface GigabitEthernet0/1 detail",
+          "show spanning-tree vlan 1 interface GigabitEthernet0/1",
+          "show errdisable interface GigabitEthernet0/1"
+        ],
+        "answer": "show spanning-tree interface GigabitEthernet0/1 detail",
+        "explanation": "O 'show spanning-tree interface [interface] detail' é o comando granular para inspecionar o estado STP de uma porta específica: papel (Root, Designated, Alternate), estado (Forwarding, Blocking), custo, prioridade e número de TCNs gerados por aquela interface. Essencial para troubleshooting cirúrgico."
+      },
+      {
+        "question": "Em uma rede com PVST+, o administrador nota alto consumo de CPU nos switches de distribuição e uma grande quantidade de BPDUs sendo processadas. O comando 'show spanning-tree summary' revela 350 instâncias STP ativas. Qual é a ação recomendada para resolver o problema de escalabilidade sem perder o balanceamento de carga?",
+        "options": [
+          "Desativar o STP nas VLANs menos críticas.",
+          "Migrar para MSTP, agrupando múltiplas VLANs em poucas instâncias STP (MSTI), mantendo o balanceamento com instâncias diferentes.",
+          "Aumentar o intervalo de Hello Time globalmente para reduzir BPDUs.",
+          "Substituir todos os switches por modelos com maior capacidade de CPU."
+        ],
+        "answer": "Migrar para MSTP, agrupando múltiplas VLANs em poucas instâncias STP (MSTI), mantendo o balanceamento com instâncias diferentes.",
+        "explanation": "O MSTP (802.1s) foi projetado exatamente para resolver o excesso de instâncias do PVST+. Ele permite mapear várias VLANs para uma mesma instância, reduzindo drasticamente o número de instâncias e BPDUs, sem perder a capacidade de balanceamento de carga (instâncias diferentes podem ter Roots diferentes)."
+      },
+      {
+        "question": "Um switch de acesso está enviando TCNs (Topology Change Notifications) repetidamente. O administrador quer identificar qual porta está originando esses TCNs. Qual comando e qual campo devem ser analisados?",
+        "options": [
+          "show spanning-tree detail – analisar o campo 'Number of topology changes ... from [porta]'.",
+          "show interfaces trunk – verificar a porta com maior número de erros.",
+          "show spanning-tree summary – contar as instâncias ativas.",
+          "show logging – procurar mensagens 'TCN received'."
+        ],
+        "answer": "show spanning-tree detail – analisar o campo 'Number of topology changes ... from [porta]'.",
+        "explanation": "O 'show spanning-tree detail' exibe, para cada porta, o campo 'Number of topology changes ... from [porta]'. Executando o comando duas vezes com um intervalo, a porta cujo contador aumenta é a origem dos TCNs. Isso permite investigar o dispositivo conectado (hub, switch não gerenciável, host com STP ativo)."
+      },
+      {
+        "question": "Um administrador deseja verificar se o balanceamento de carga Layer 2 está funcionando conforme o projeto: VLAN 10 deve usar uplink SW1→SW3, e VLAN 20 deve usar uplink SW2→SW3. Quais comandos ele deve executar no switch de acesso SW3 para confirmar?",
+        "options": [
+          "show vlan brief e show interfaces trunk",
+          "show spanning-tree vlan 10 e show spanning-tree vlan 20, verificando a Root Port de cada VLAN",
+          "show spanning-tree summary e show etherchannel summary",
+          "show mac address-table e show cdp neighbors"
+        ],
+        "answer": "show spanning-tree vlan 10 e show spanning-tree vlan 20, verificando a Root Port de cada VLAN",
+        "explanation": "Para validar qual uplink cada VLAN está usando, o comando 'show spanning-tree vlan [vlan]' exibe a Root Port (porta de saída para o Root Bridge). Se VLAN 10 tem Root Port no uplink esquerdo (SW1) e VLAN 20 no uplink direito (SW2), o balanceamento está correto."
+      },
+      {
+        "question": "Durante uma auditoria, você encontra um switch com a configuração 'spanning-tree vlan 1 priority 4096' e outro com 'spanning-tree vlan 1 priority 8192'. Ambos estão em VLAN 1. Qual switch será o Root Bridge e por quê?",
+        "options": [
+          "O switch com prioridade 8192, pois número maior vence.",
+          "O switch com prioridade 4096, pois o menor valor numérico de prioridade tem precedência na eleição do Root Bridge.",
+          "Será decidido pelo endereço MAC, já que as prioridades são diferentes.",
+          "O switch com prioridade 4096, desde que tenha o maior endereço MAC; caso contrário, o outro vence."
+        ],
+        "answer": "O switch com prioridade 4096, pois o menor valor numérico de prioridade tem precedência na eleição do Root Bridge.",
+        "explanation": "A eleição do Root Bridge compara primeiro a prioridade (menor número vence). 4096 é menor que 8192, portanto o switch com prioridade 4096 será o Root Bridge, independentemente do endereço MAC. O MAC só é usado como critério de desempate se as prioridades forem iguais."
+      },
+      {
+        "question": "Um switch está configurado com 'spanning-tree vlan 10 root primary' e outro com 'spanning-tree vlan 20 root primary'. Porém, após a ativação, o tráfego da VLAN 10 continua usando o uplink errado (via SW2). Qual é a provável causa?",
+        "options": [
+          "Root primary não funciona em VLANs com IDs ímpares.",
+          "O comando 'root primary' define prioridade 4096, mas se outro switch já tiver prioridade 0 ou 4096 com MAC menor, ele ainda pode vencer. Verifique se há um switch com prioridade igual ou menor.",
+          "O PVST+ não suporta root primário por VLAN; é necessário usar MSTP.",
+          "O problema está no trunk; use 'show interfaces trunk' para verificar se a VLAN 10 está permitida."
+        ],
+        "answer": "O comando 'root primary' define prioridade 4096, mas se outro switch já tiver prioridade 0 ou 4096 com MAC menor, ele ainda pode vencer. Verifique se há um switch com prioridade igual ou menor.",
+        "explanation": "O 'spanning-tree vlan [vlan] root primary' ajusta a prioridade para 4096. Se outro switch já tiver prioridade 4096 (por configuração manual ou por já ser root) e tiver um endereço MAC menor, ele manterá o papel de root. A solução é definir uma prioridade ainda mais baixa (ex.: 0) ou identificar o switch concorrente."
+      }
+    ];
+
+    // Randomiza ordem das questões (mantém a variedade)
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+    const SIMULADO_ID = "completo-cst-pvst-pvstplus";
+    const SIMULADO_TITULO = document.title || "Simulado completo CST/PVST/PVST+";
+    let startTime = null;
+    let currentUserName = "";
+
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+    }
+
+    function saveResult(record) {
+      try {
+        const raw = localStorage.getItem("simulados");
+        const arr = raw ? JSON.parse(raw) : [];
+        arr.push(record);
+        localStorage.setItem("simulados", JSON.stringify(arr));
+      } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById("user-name");
+      const nameVal = (nameInput?.value || "").trim();
+      if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+      currentUserName = nameVal;
+      startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const endTime = Date.now();
+      const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+      const resultRecord = {
+        id: String(Date.now()),
+        simuladoId: SIMULADO_ID,
+        simuladoTitle: SIMULADO_TITULO,
+        name: currentUserName,
+        score: score,
+        total: quizData.length,
+        percent: quizData.length ? (score / quizData.length) * 100 : 0,
+        timeSeconds: timeSpentSeconds,
+        timeFormatted: formatSeconds(timeSpentSeconds),
+        date: new Date().toISOString()
+      };
+      saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+      scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

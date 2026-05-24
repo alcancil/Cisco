@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP – CST, PVST e PVST+ — Conceitos e Diferenças Fundamentais</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP – CST, PVST e PVST+ — Conceitos e Diferenças Fundamentais</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Tree Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Qual é a principal limitação do CST (Common Spanning Tree) em redes com múltiplas VLANs?",
+        options: [
+          "Ele cria uma instância STP separada para cada VLAN, sobrecarregando a CPU",
+          "Todas as VLANs compartilham a mesma árvore lógica, os mesmos caminhos e o mesmo Root Bridge, desperdiçando redundância",
+          "Ele é incompatível com trunks 802.1Q e exige ISL em todos os links",
+          "Ele não suporta mais de 10 switches na mesma topologia"
+        ],
+        answer: "Todas as VLANs compartilham a mesma árvore lógica, os mesmos caminhos e o mesmo Root Bridge, desperdiçando redundância",
+        explanation: "No CST, uma única árvore STP governa toda a rede. Independente de quantas VLANs existam, todas usam o mesmo Root Bridge, os mesmos links ativos e os mesmos links bloqueados. Isso desperdiça a redundância física disponível."
+      },
+      {
+        question: "O que fundamentalmente diferencia o PVST do CST?",
+        options: [
+          "O PVST usa o protocolo ISL para trunk, enquanto o CST usa 802.1Q",
+          "O PVST cria uma instância STP independente para cada VLAN, permitindo Root Bridges e caminhos diferentes por VLAN",
+          "O PVST é um padrão IEEE, enquanto o CST é proprietário Cisco",
+          "O PVST elimina completamente a necessidade de portas bloqueadas na rede"
+        ],
+        answer: "O PVST cria uma instância STP independente para cada VLAN, permitindo Root Bridges e caminhos diferentes por VLAN",
+        explanation: "O PVST (Per-VLAN Spanning Tree) é a solução Cisco para o problema do CST. Cada VLAN possui sua própria instância STP, com Root Bridge, portas bloqueadas e caminhos independentes. Isso transforma redundância física em capacidade útil."
+      },
+      {
+        question: "Qual é a diferença técnica central entre PVST e PVST+?",
+        options: [
+          "O PVST+ elimina as instâncias STP por VLAN, usando apenas uma árvore global",
+          "O PVST foi criado para operar sobre trunks ISL (Cisco proprietário); o PVST+ foi criado para operar sobre trunks IEEE 802.1Q",
+          "O PVST+ usa RSTP como base, enquanto o PVST usa STP clássico 802.1D",
+          "Não há diferença técnica — PVST e PVST+ são nomes diferentes para o mesmo protocolo"
+        ],
+        answer: "O PVST foi criado para operar sobre trunks ISL (Cisco proprietário); o PVST+ foi criado para operar sobre trunks IEEE 802.1Q",
+        explanation: "O PVST original usava ISL como protocolo de trunk, o que o tornava incompatível com equipamentos não-Cisco. O PVST+ foi criado para operar sobre trunks IEEE 802.1Q, adicionando compatibilidade e interoperabilidade com switches de outros fabricantes."
+      },
+      {
+        question: "Como o PVST+ transporta múltiplas instâncias STP simultaneamente através de um trunk 802.1Q?",
+        options: [
+          "Ele agrega todos os BPDUs em um único frame especial antes de enviar pelo trunk",
+          "Ele envia BPDUs separados por VLAN, identificados pela tag 802.1Q correspondente a cada instância",
+          "Ele usa um canal de controle dedicado fora das VLANs de dados para transportar os BPDUs",
+          "Ele converte todas as instâncias em uma única antes de atravessar o trunk"
+        ],
+        answer: "Ele envia BPDUs separados por VLAN, identificados pela tag 802.1Q correspondente a cada instância",
+        explanation: "O PVST+ encapsula os BPDUs de cada instância STP com a tag 802.1Q da VLAN correspondente. O trunk transporta múltiplos BPDUs simultaneamente, um para cada VLAN ativa, mantendo a independência entre as instâncias."
+      },
+      {
+        question: "Em uma topologia com SW1 (Distribuição) e SW2 (Distribuição) conectados ao SW3 (Acesso), como o administrador implementa load balancing Layer 2 usando PVST+?",
+        options: [
+          "Configurando o mesmo Root Bridge para todas as VLANs em ambos os switches de distribuição",
+          "Definindo SW1 como Root para VLAN 10 e SW2 como Root para VLAN 20, fazendo cada VLAN usar um uplink diferente",
+          "Aumentando o custo STP em todas as portas para forçar distribuição de tráfego",
+          "Habilitando EtherChannel entre SW3 e ambos os switches de distribuição simultaneamente"
+        ],
+        answer: "Definindo SW1 como Root para VLAN 10 e SW2 como Root para VLAN 20, fazendo cada VLAN usar um uplink diferente",
+        explanation: "O load balancing Layer 2 com PVST+ ocorre pela manipulação estratégica do Root Bridge por VLAN. Com SW1 como Root da VLAN 10, o tráfego dessa VLAN usa o uplink esquerdo. Com SW2 como Root da VLAN 20, o tráfego usa o uplink direito. Os dois links redundantes passam a transportar tráfego simultaneamente."
+      },
+      {
+        question: "Por que o load balancing no STP é fundamentalmente diferente do load balancing em protocolos Layer 3 como OSPF com ECMP?",
+        options: [
+          "O STP distribui frames dinamicamente entre múltiplos caminhos ativos por decisão de cada switch",
+          "O STP realiza balanceamento por sessão TCP, enquanto o OSPF faz por pacote",
+          "No STP, o balanceamento ocorre pela manipulação estratégica do Root Bridge por VLAN — não pela distribuição dinâmica de frames entre caminhos simultâneos",
+          "O STP e o OSPF usam mecanismos idênticos de balanceamento, apenas em camadas diferentes"
+        ],
+        answer: "No STP, o balanceamento ocorre pela manipulação estratégica do Root Bridge por VLAN — não pela distribuição dinâmica de frames entre caminhos simultâneos",
+        explanation: "Em Layer 3, protocolos como OSPF com ECMP distribuem pacotes dinamicamente entre múltiplos caminhos ativos. No STP, apenas um caminho fica ativo por instância — o balanceamento é obtido fazendo VLANs diferentes usarem caminhos diferentes, via manipulação do Root Bridge."
+      },
+      {
+        question: "Qual comando configura o switch para se tornar o Root Bridge primário da VLAN 10 de forma automática?",
+        options: [
+          "spanning-tree vlan 10 priority 0",
+          "spanning-tree vlan 10 root primary",
+          "spanning-tree vlan 10 bridge-id primary",
+          "spanning-tree vlan 10 root-bridge enable"
+        ],
+        answer: "spanning-tree vlan 10 root primary",
+        explanation: "O comando 'spanning-tree vlan 10 root primary' configura automaticamente a prioridade do switch para um valor menor que o atual Root Bridge da VLAN 10, garantindo que ele se torne a raiz. O equivalente manual seria configurar a prioridade para 4096 com 'spanning-tree vlan 10 priority 4096'."
+      },
+      {
+        question: "Em um ambiente com 500 VLANs usando PVST+, qual problema operacional pode surgir e qual protocolo resolve isso?",
+        options: [
+          "Incompatibilidade com trunks 802.1Q — resolvido pelo PVST original com ISL",
+          "Ausência de Root Bridge — resolvido pelo CST com uma única instância global",
+          "Alto consumo de CPU e memória por centenas de instâncias STP simultâneas — resolvido pelo MSTP que agrupa múltiplas VLANs em poucas instâncias",
+          "Impossibilidade de load balancing com mais de 10 VLANs — resolvido pelo Rapid-PVST+"
+        ],
+        answer: "Alto consumo de CPU e memória por centenas de instâncias STP simultâneas — resolvido pelo MSTP que agrupa múltiplas VLANs em poucas instâncias",
+        explanation: "O PVST+ cria uma instância STP independente por VLAN. Em ambientes com centenas de VLANs, isso significa centenas de processos STP simultâneos, aumentando o consumo de CPU, memória e o volume de BPDUs. O MSTP (Multiple Spanning Tree Protocol) resolve isso agrupando múltiplas VLANs em um número reduzido de instâncias."
+      },
+      {
+        question: "Um switch não gerenciado é conectado acidentalmente à rede com prioridade padrão 32768. Em uma rede PVST+ com Root Bridges configurados manualmente em 4096, qual é o risco e como identificar o problema?",
+        options: [
+          "Nenhum risco — a prioridade 32768 é sempre maior que 4096, então o Root Bridge configurado permanece",
+          "O switch não gerenciado pode se tornar Root Bridge se seu MAC for menor que o do Root atual com prioridade 32768, causando tráfego por caminhos incorretos — identificado com show spanning-tree vlan X",
+          "O switch não gerenciado causará um broadcast storm imediato ao ser conectado",
+          "O risco só existe se o switch não gerenciado tiver prioridade 0 configurada"
+        ],
+        answer: "O switch não gerenciado pode se tornar Root Bridge se seu MAC for menor que o do Root atual com prioridade 32768, causando tráfego por caminhos incorretos — identificado com show spanning-tree vlan X",
+        explanation: "Se o Root Bridge atual tiver prioridade 32768 (padrão) e o novo switch também tiver 32768, o desempate é pelo menor MAC Address. Se o novo switch tiver MAC menor, ele vira Root Bridge, alterando todos os caminhos STP. Por isso, Root Bridges de produção devem sempre ter prioridades explicitamente configuradas (4096 ou 8192). O comando 'show spanning-tree vlan X' revela imediatamente quem é o Root Bridge atual."
+      },
+      {
+        question: "Qual tabela comparativa representa corretamente as características de CST, PVST e PVST+?",
+        options: [
+          "CST: 1 instância, sem balanceamento, compatibilidade IEEE — PVST: 1 instância por VLAN, com balanceamento, Cisco (ISL) — PVST+: 1 instância por VLAN, com balanceamento, Cisco + IEEE (802.1Q)",
+          "CST: 1 instância por VLAN, com balanceamento — PVST: 1 instância global, sem balanceamento — PVST+: múltiplas VLANs por instância, máxima escalabilidade",
+          "CST: compatível apenas com Cisco — PVST: padrão IEEE — PVST+: padrão Cisco e IEEE",
+          "Todos os três protocolos criam 1 instância por VLAN, diferindo apenas na velocidade de convergência"
+        ],
+        answer: "CST: 1 instância, sem balanceamento, compatibilidade IEEE — PVST: 1 instância por VLAN, com balanceamento, Cisco (ISL) — PVST+: 1 instância por VLAN, com balanceamento, Cisco + IEEE (802.1Q)",
+        explanation: "O CST é o STP padrão IEEE com uma única instância para toda a rede — simples mas sem balanceamento. O PVST é a solução Cisco proprietária com ISL que introduz instâncias por VLAN. O PVST+ evoluiu o PVST para operar sobre 802.1Q, mantendo instâncias por VLAN e adicionando interoperabilidade com equipamentos IEEE."
+      }
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -2,6 +2,42 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.10.0] - 2026-05-24
+
+### Added
+
+- Implementação da Revisão 15 com foco em STP Multi-VLAN: CST, PVST e PVST+
+- Explicação conceitual do problema do CST em redes com múltiplas VLANs (uma única árvore para todas)
+- Introdução do PVST (Per-VLAN Spanning Tree) como solução Cisco para balanceamento Layer 2
+- Evolução para PVST+ com compatibilidade a trunks IEEE 802.1Q e interoperabilidade com STP padrão
+- Demonstração do balanceamento de carga estático via manipulação de Root Bridge por VLAN
+- Exemplos práticos de comandos: `root primary`, `root secondary`, `priority`, `show spanning-tree vlan`
+- Análise das limitações de escalabilidade do PVST+ em redes com muitas VLANs (alto consumo de CPU/memória e tráfego de BPDUs)
+- Introdução ao MSTP (802.1s) como solução para agrupamento de VLANs em poucas instâncias STP
+- Cinco simulados temáticos de 10 questões cada, cobrindo:
+  - Conceitos e diferenças fundamentais (CST, PVST, PVST+)
+  - Root Bridge por VLAN e Load Balancing Layer 2
+  - Trunks 802.1Q, BPDUs por VLAN e interoperabilidade
+  - Limitações do PVST+, escalabilidade e transição para MSTP
+  - Troubleshooting, comandos CLI e cenários de produção
+- Simulado completo de 50 questões (75 minutos) integrando todos os temas do módulo
+- Painel de estatísticas para acompanhamento de desempenho nos simulados
+
+### Changed
+
+- Expansão da progressão didática: do STP clássico (Arquivos 13 e 14) para o STP multi-VLAN (Arquivo 15)
+- Refinamento da abordagem comparativa entre CST, PVST, PVST+ e MSTP (tabela de características)
+- Integração de conceitos de produção: root planejado, secundário, interoperabilidade com switches IEEE
+- Aprimoramento dos materiais de revisão com simulados progressivos e dashboard de resultados
+
+### Impact
+
+- Fecha o ciclo de estudos do STP em ambientes multi-VLAN antes de avançar para RSTP e MSTP prático
+- Prepara o aluno para cenários reais de balanceamento de carga Layer 2 e troubleshooting de instâncias STP
+- Consolida o repositório como referência completa para certificações CCNP ENCOR (tópico 3.2 – Spanning Tree Protocol)
+- Oferece ferramenta de autoavaliação robusta para o engenheiro validar seu conhecimento teórico antes dos laboratórios
+- Cria base sólida para os próximos laboratórios de PVST+ e MSTP em ambientes controlados
+
 ## [1.9.0] - 2026-05-23
 
 ### Added
