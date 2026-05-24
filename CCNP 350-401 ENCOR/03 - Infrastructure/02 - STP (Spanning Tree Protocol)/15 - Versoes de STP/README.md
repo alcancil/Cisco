@@ -553,14 +553,13 @@ Esse problema levará diretamente ao próximo protocolo:
 Antes de partir para os laboratórios de PVST+, valide sua compreensão teórica com os simulados:
 
 - Simulados temáticos (10 questões / 10 min cada):
-  1 - [CST, PVST e PVST+ — Conceitos e Diferenças Fundamentais](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/01.html)  
-  2 - [Root Bridge por VLAN e Load Balancing Layer 2](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/02.html)  
-  3 - [Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/03.html)  
-  4 - [Limitações do PVST+, Escalabilidade e Transição para MSTP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/04.html)  
-  5 - [Troubleshooting, Comandos CLI e Cenários de Produção](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/05.html)  
-- Simulado completo CST/PVST/PVST+: [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/completo.html)  
-- Seu desempenho consolidado: [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versos%20de%20STP/Arquivos/Simulado/dashboard.html)  
-
+  1 - [CST, PVST e PVST+ — Conceitos e Diferenças Fundamentais](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/01.html)  
+  2 - [Root Bridge por VLAN e Load Balancing Layer 2](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/02.html)
+  3 - [Trunks 802.1Q, BPDUs por VLAN e Interoperabilidade](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/03.html)  
+  4 - [Limitações do PVST+, Escalabilidade e Transição para MSTP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/04.html)  
+  5 - [Troubleshooting, Comandos CLI e Cenários de Produção](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/05.html)  
+- Simulado completo CST/PVST/PVST+: [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/completo.html)  
+- Seu desempenho consolidado: [📊 Painel de Estatísticas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/15%20-%20Versoes%20de%20STP/Arquivos/Simulado/dashboard.html)
 Nos próximos laboratórios você irá:
   
 - criar múltiplas VLANs,
