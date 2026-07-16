@@ -2,6 +2,31 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.11.0] - 2026-07-16
+
+### Added
+
+- Implementação do Laboratório de STP Load Balancing com PVST+ (Revisão 16) integrando infraestrutura física/simulada e automação de redes.
+- Arquitetura de laboratório prático com topologia de 3 switches (Core, Distribuição e Acesso) validando cenários de balanceamento de carga Layer 2.
+- Desenvolvimento de scripts de automação em Python utilizando `Netmiko` para coleta e análise de topologia e telemetria do Spanning Tree.
+- Scripts com `Scapy` e `tshark` para captura, análise e decodificação de BPDUs PVST+ diretamente do tráfego do barramento físico/virtual.
+- Criação de plano de migração futura para tecnologias de convergência rápida e alta escala (RSTP e MSTP).
+- Documentação técnica detalhada do design do laboratório.
+
+### Changed
+
+- Ajuste e validação das tabelas de endereçamento IP e mapeamento de VLANs de infraestrutura (VLANs 10, 20, 30, 40, 50, 60, 70, 80, 90 e 100).
+- Refinamento das configurações de Trunking 802.1Q e endurecimento de segurança com desabilitação de DTP (`switchport nonegotiate`).
+- Correção de inconsistências de nomenclatura de VLANs e caminhos de backup de sistema no roteiro do laboratório.
+
+### Impact
+
+- Avança o repositório para o domínio prático e de automação de redes (NetDevOps) do bloco de Spanning Tree.
+- Conecta a teoria de múltiplas instâncias STP com a validação programática usando análise de pacotes em tempo real.
+- Garante conformidade com as exigências de automação e validação de topologia previstas no exame CCNP ENCOR 350-401.
+
+---
+
 ## [1.10.0] - 2026-05-24
 
 ### Added

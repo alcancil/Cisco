@@ -1,0 +1,34 @@
+# requirements.yaml
+# Dependências do SRV01 para o laboratório
+
+system_packages:
+  apt:
+    - sudo
+    - net-tools
+    - python3
+    - python3-pip
+    - python3-venv
+    - python3-dev
+    - build-essential
+    - git
+    - curl
+    - vim
+    - tcpdump
+    - wireshark
+    - tshark
+    - iperf3
+    - bmon
+    - iftop
+    - task-gnome-desktop   # opcional (para interface gráfica)
+
+python_packages:
+  pip:
+    - netmiko
+    - ntc-templates
+    - textfsm
+    - matplotlib
+    - numpy
+    - pyyaml
+    - jinja2
+    - pandas
+    - requests

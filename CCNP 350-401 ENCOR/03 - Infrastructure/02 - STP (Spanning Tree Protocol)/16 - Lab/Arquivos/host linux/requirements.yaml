@@ -1,0 +1,31 @@
+# requirements.yaml
+# Dependências do host Linux para o laboratório
+
+system_packages:
+  apt:
+    - sudo
+    - net-tools
+    - python3
+    - python3-pip
+    - python3-dev
+    - build-essential
+    - python3-venv
+    - git
+    - curl
+    - vim
+    - tcpdump
+    - wireshark
+    - tshark
+    - iperf3
+    - bmon
+    - iftop
+    - task-gnome-desktop   # opcional (se você quiser GUI)
+
+python_packages:
+  pip:
+    - netmiko
+    - ntc-templates
+    - textfsm
+    - matplotlib
+    - numpy
+    - pandas
