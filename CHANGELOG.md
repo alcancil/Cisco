@@ -2,6 +2,18 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.12.1] - 2026-07-30
+
+### Changed
+
+- Correção de inconsistência de maiúsculas/minúsculas nos links do GitHub Pages do Laboratório 17 (`Lab` vs `lab`), causando falha de carregamento dos artefatos HTML interativos (`stp_vlan1_antes.html`, `stp_vlan1_depois.html`) em ambiente de hospedagem case-sensitive.
+
+### Impact
+
+- Restaura o acesso público às visualizações interativas da árvore STP (VLAN 1, antes/depois) referenciadas no README do Laboratório 17.
+
+---
+
 ## [1.12.0] - 2026-07-30
 
 ### Added

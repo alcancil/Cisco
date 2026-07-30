@@ -2756,7 +2756,7 @@ Os gráficos abaixo foram gerados pelo script `gerar_arvore_stp.py`, com os dado
 
 Neste estado, o Root Bridge caiu em um switch de Distribuição por consequência do critério de desempate padrão (menor endereço MAC), sem nenhuma intenção de projeto por trás — como já discutimos na reflexão anterior.
 
-**[🔗 Abrir versão interativa (HTML)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/17%20-%20lab/Arquivos/stp_vlan1_antes.html)** — passe o mouse em cada switch para ver Root Path Cost, Root Port e Blocking Ports; passe o mouse nos links para confirmar qual porta física está de cada lado.
+**[🔗 Abrir versão interativa (HTML)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/17%20-%20Lab/Arquivos/stp_vlan1_antes.html)** — passe o mouse em cada switch para ver Root Path Cost, Root Port e Blocking Ports; passe o mouse nos links para confirmar qual porta física está de cada lado.
 
 ### Depois — Root Bridge = SW_CORE01
 
@@ -2764,7 +2764,7 @@ Neste estado, o Root Bridge caiu em um switch de Distribuição por consequênci
 
 Após aplicar `spanning-tree vlan 1 root primary` no SW_CORE01, a árvore reconvergiu (~21s observados via Wireshark, dentro da janela teórica de até 50s do 802.1D). O Root agora ocupa o switch de Core, alinhado à hierarquia de projeto — ainda que, como discutido, isso tenha aumentado o custo agregado da árvore (40 → 56), já que a prioridade de projeto aqui não é minimizar custo total, e sim tirar a concentração de tráfego de um switch de Distribution.
 
-**[🔗 Abrir versão interativa (HTML)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/17%20-%20lab/Arquivos/stp_vlan1_depois.html)** — passe o mouse em cada switch para ver Root Path Cost, Root Port e Blocking Ports; passe o mouse nos links para confirmar qual porta física está de cada lado.
+**[🔗 Abrir versão interativa (HTML)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/17%20-%20Lab/Arquivos/stp_vlan1_depois.html)** — passe o mouse em cada switch para ver Root Path Cost, Root Port e Blocking Ports; passe o mouse nos links para confirmar qual porta física está de cada lado.
 
 ---
 
