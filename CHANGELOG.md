@@ -2,6 +2,35 @@
 
 Todos os marcos notáveis deste projeto serão documentados neste arquivo. O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.12.0] - 2026-07-30
+
+### Added
+
+- Conclusão da análise manual do PVST+ (Revisão 17), validando o algoritmo de eleição do STP nas 8 caixas da topologia (Core, Distribuição e Acesso) para a VLAN 1.
+- Estrutura de perguntas fixas por switch (Root Bridge, Root Path Cost, Root Port, Designated Ports, Blocking Ports), aplicada de forma consistente em todas as 8 análises.
+- Tabela comparativa consolidando os resultados da VLAN 1 nas 8 caixas, mantida como snapshot incremental a cada switch analisado.
+- Captura de convergência do STP via Wireshark (filtros `stp`, `stp.flags.tc`, `stp.root.hw`), documentando o comportamento real do protocolo durante a reeleição do Root Bridge.
+- Instrumentação via `debug spanning-tree events` e `service timestamps debug datetime msec` para correlacionar transições de porta (Blocking → Listening → Learning → Forwarding) com os BPDUs capturados.
+- Correção do posicionamento do Root Bridge da VLAN 1 (`spanning-tree vlan 1 root primary`), migrando-o de um switch de Distribuição para o switch de Core, com validação completa pós-mudança nas 8 caixas.
+- Script Python (`gerar_arvore_stp.py`) para geração gráfica da árvore STP, com arquitetura em duas camadas (dados STP separados da renderização), usando `networkx` para modelagem do grafo, `matplotlib` para saída estática (PNG) e `Plotly` para visualização interativa (HTML).
+- Geração comparativa "antes/depois" da árvore STP da VLAN 1, evidenciando visualmente o efeito da correção do Root Bridge sobre os papéis de porta (Root/Designated/Blocking) em toda a topologia.
+- Reflexão técnica sobre riscos operacionais de reeleição indesejada de Root Bridge (substituição de equipamento em produção), incluindo mitigações via Root Guard e BPDU Guard.
+
+### Changed
+
+- Refinamento da tabela de custos de enlace (Short Path Cost), corrigindo a atribuição histórica ao IEEE 802.1D original em favor das implementações revisadas adotadas por padrão pela Cisco.
+- Padronização de nomenclatura de pastas e caminhos de mídia do laboratório (`Imagens/`, `Arquivos/`) para consistência em ambiente de hospedagem case-sensitive (GitHub Pages).
+- Correção de inconsistências pontuais de digitação e formatação identificadas ao longo da revisão técnica do laboratório (blocos de código, legendas de captura, tabela de estados de porta).
+
+### Impact
+
+- Encerra o ciclo de validação manual do PVST+ com evidência real de CLI e captura de pacotes, estabelecendo a baseline metodológica (perguntas fixas, tabela comparativa, script de visualização) que será reaproveitada nos laboratórios de RSTP e MSTP.
+- Demonstra na prática, com dados reais, o impacto de um Root Bridge mal posicionado — base quantitativa (400 decisões manuais projetadas para 10 VLANs) que justifica a transição para automação via Netmiko, TextFSM e NTC-templates no próximo laboratório.
+- Entrega o primeiro artefato de visualização gráfica do repositório com arquitetura reutilizável (camada de dados desacoplada da renderização), pronta para consumir dados de coleta automatizada sem necessidade de reescrita.
+- Reforça a cobertura do domínio 3.2 (Spanning Tree Protocol) do exame CCNP ENCOR 350-401 com profundidade prática de troubleshooting e mitigação de segurança em Camada 2.
+
+---
+
 ## [1.11.0] - 2026-07-16
 
 ### Added
