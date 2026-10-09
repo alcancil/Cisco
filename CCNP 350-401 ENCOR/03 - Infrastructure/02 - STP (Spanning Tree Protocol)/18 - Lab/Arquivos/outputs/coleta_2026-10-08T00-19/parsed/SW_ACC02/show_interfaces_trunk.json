@@ -1,0 +1,18 @@
+[
+  {
+    "PORT": "Gi0/2",
+    "MODE": "on",
+    "ENCAPSULATION": "802.1q",
+    "STATUS": "trunking",
+    "NATIVE_VLAN": "1",
+    "VLANS_ALLOWED": ""
+  },
+  {
+    "PORT": "Gi0/2",
+    "MODE": "",
+    "ENCAPSULATION": "",
+    "STATUS": "",
+    "NATIVE_VLAN": "",
+    "VLANS_ALLOWED": "1,10,20,30,40,50,60,70,80,90,100"
+  }
+]

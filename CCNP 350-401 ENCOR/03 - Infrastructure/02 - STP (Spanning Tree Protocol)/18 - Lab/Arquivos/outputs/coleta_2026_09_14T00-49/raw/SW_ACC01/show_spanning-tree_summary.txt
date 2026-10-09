@@ -1,0 +1,29 @@
+Switch is in pvst mode
+Root bridge for: none
+Extended system ID                      is enabled
+Portfast Default                        is disabled
+Portfast Edge BPDU Guard Default        is disabled
+Portfast Edge BPDU Filter Default       is disabled
+Loopguard Default                       is disabled
+PVST Simulation Default                 is enabled but inactive in pvst mode
+Bridge Assurance                        is enabled but inactive in pvst mode
+EtherChannel misconfig guard            is enabled
+Configured Pathcost method used is short
+UplinkFast                              is disabled
+BackboneFast                            is disabled
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     0         0        0         14         14
+VLAN0010                     0         0        0          2          2
+VLAN0020                     0         0        0          2          2
+VLAN0030                     0         0        0          1          1
+VLAN0040                     0         0        0          1          1
+VLAN0050                     0         0        0          1          1
+VLAN0060                     0         0        0          1          1
+VLAN0070                     0         0        0          1          1
+VLAN0080                     0         0        0          1          1
+VLAN0090                     0         0        0          1          1
+VLAN0100                     0         0        0          1          1
+---------------------- -------- --------- -------- ---------- ----------
+11 vlans                     0         0        0         26         26

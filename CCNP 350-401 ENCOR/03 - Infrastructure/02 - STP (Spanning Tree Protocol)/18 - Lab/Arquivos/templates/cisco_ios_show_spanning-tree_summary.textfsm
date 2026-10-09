@@ -1,0 +1,17 @@
+Value VLAN (\S+)
+Value BLOCKING (\d+)
+Value LISTENING (\d+)
+Value LEARNING (\d+)
+Value FORWARDING (\d+)
+Value STP_ACTIVE (\d+)
+
+Start
+  ^Name\s+Blocking\s+Listening\s+Learning\s+Forwarding\s+STP\s+Active\s*$$ -> Tabela
+  ^.*$$
+
+Tabela
+  ^-+\s+-+\s+-+\s+-+\s+-+\s+-+\s*$$
+  ^${VLAN}\s+${BLOCKING}\s+${LISTENING}\s+${LEARNING}\s+${FORWARDING}\s+${STP_ACTIVE}\s*$$ -> Record
+  ^\d+\s+vlans?\s+ -> End
+  ^\s*$$
+  ^.*$$ -> End

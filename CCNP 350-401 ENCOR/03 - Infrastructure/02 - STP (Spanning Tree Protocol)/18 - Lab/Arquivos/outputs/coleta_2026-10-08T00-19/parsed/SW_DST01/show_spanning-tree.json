@@ -1,0 +1,762 @@
+[
+  {
+    "vlan_id": "1",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi1/0",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "5",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi1/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "6",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi2/0",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "9",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi2/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "10",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi2/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "11",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi2/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "12",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi3/0",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "13",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi3/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "14",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi3/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "15",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "1",
+    "interface": "Gi3/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "16",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "10",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi1/2",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "20",
+    "interface": "Gi1/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "30",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi1/2",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "40",
+    "interface": "Gi1/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "50",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi1/2",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "60",
+    "interface": "Gi1/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "70",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi1/2",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "80",
+    "interface": "Gi1/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi1/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "90",
+    "interface": "Gi1/3",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi0/0",
+    "role": "Root",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "1",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi0/1",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "2",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi0/2",
+    "role": "Desg",
+    "status": "FWD",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "3",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi0/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "4",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi1/2",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "7",
+    "type": "P2p "
+  },
+  {
+    "vlan_id": "100",
+    "interface": "Gi1/3",
+    "role": "Altn",
+    "status": "BLK",
+    "cost": "4",
+    "port_priority": "128",
+    "port_id": "8",
+    "type": "P2p "
+  }
+]

@@ -54,12 +54,12 @@ No Domínio 01, foram concluídos os 3 itens de QoS (18, 19, 20).
 
 A organização segue rigorosamente os domínios oficiais. Todos os tópicos seguem o blueprint oficial disponível em: [Cisco Exam Topics](https://learningnetwork.cisco.com/s/encor-exam-topics).
 
-- [**01-architecture**](./01-architecture/): Design de rede, WLAN, SD-WAN, SD-Access e QoS.
-- [**02-virtualization**](./02-virtualization/): Tecnologias de virtualização de dispositivos e caminhos (VRF, GRE, IPsec).
-- [**03-infrastructure**](./03-infrastructure/): Layer 2 (STP, EtherChannel), Layer 3 (OSPF, EIGRP, BGP) e serviços IP.
-- [**04-network-assurance**](./04-network-assurance/): Diagnóstico, SNMP, Syslog, NetFlow e SPAN/RSPAN.
-- [**05-security**](./05-security/): Segurança de infraestrutura, controle de acesso e VPNs.
-- [**06-automation**](./06-automation/): Python, JSON, APIs (DNA Center, vManage) e ferramentas de automação.
+- [**01-architecture**](./Blueprint/encor_v12.md): Design de rede, WLAN, SD-WAN, SD-Access e QoS.
+- [**02-virtualization**](./Blueprint/encor_v12.md): Tecnologias de virtualização de dispositivos e caminhos (VRF, GRE, IPsec).
+- [**03-infrastructure**](./Blueprint/encor_v12.md): Layer 2 (STP, EtherChannel), Layer 3 (OSPF, EIGRP, BGP) e serviços IP.
+- [**04-network-assurance**](./Blueprint/encor_v12.md): Diagnóstico, SNMP, Syslog, NetFlow e SPAN/RSPAN.
+- [**05-security**](./Blueprint/encor_v12.md): Segurança de infraestrutura, controle de acesso e VPNs.
+- [**06-automation**](./Blueprint/encor_v12.md): Python, JSON, APIs (DNA Center, vManage) e ferramentas de automação.
 
 ---
 

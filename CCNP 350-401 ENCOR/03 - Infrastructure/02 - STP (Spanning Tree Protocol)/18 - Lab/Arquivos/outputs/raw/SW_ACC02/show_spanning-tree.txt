@@ -1,0 +1,223 @@
+
+VLAN0001
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    24577
+             Address     5000.000a.0000
+             Cost        8
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/0               Desg FWD 4         128.1    P2p 
+Gi0/1               Desg FWD 4         128.2    P2p 
+Gi0/2               Root FWD 4         128.3    P2p 
+Gi0/3               Desg FWD 4         128.4    P2p 
+Gi1/2               Desg FWD 4         128.7    P2p 
+Gi1/3               Desg FWD 4         128.8    P2p 
+Gi2/0               Desg FWD 4         128.9    P2p 
+Gi2/1               Desg FWD 4         128.10   P2p 
+Gi2/2               Desg FWD 4         128.11   P2p 
+Gi2/3               Desg FWD 4         128.12   P2p 
+Gi3/0               Desg FWD 4         128.13   P2p 
+Gi3/1               Desg FWD 4         128.14   P2p 
+Gi3/2               Desg FWD 4         128.15   P2p 
+Gi3/3               Desg FWD 4         128.16   P2p 
+
+
+
+VLAN0010
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32778
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0020
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32788
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32788  (priority 32768 sys-id-ext 20)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0030
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32798
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32798  (priority 32768 sys-id-ext 30)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+Gi1/0               Desg FWD 4         128.5    P2p 
+
+
+
+VLAN0040
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32808
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32808  (priority 32768 sys-id-ext 40)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+Gi1/1               Desg FWD 4         128.6    P2p 
+
+
+
+VLAN0050
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32818
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32818  (priority 32768 sys-id-ext 50)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0060
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32828
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32828  (priority 32768 sys-id-ext 60)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0070
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32838
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32838  (priority 32768 sys-id-ext 70)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0080
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32848
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32848  (priority 32768 sys-id-ext 80)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0090
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32858
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32858  (priority 32768 sys-id-ext 90)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+
+
+
+VLAN0100
+  Spanning tree enabled protocol ieee
+  Root ID    Priority    32868
+             Address     5000.0003.0000
+             Cost        4
+             Port        3 (GigabitEthernet0/2)
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32868  (priority 32768 sys-id-ext 100)
+             Address     5000.0007.0000
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/2               Root FWD 4         128.3    P2p 
+

@@ -1,0 +1,11 @@
+[
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "mgmt_address": "10.0.10.103",
+    "platform": "Cisco ",
+    "neighbor_interface": "GigabitEthernet0/2",
+    "local_interface": "GigabitEthernet0/2",
+    "neighbor_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]",
+    "capabilities": "Switch IGMP"
+  }
+]

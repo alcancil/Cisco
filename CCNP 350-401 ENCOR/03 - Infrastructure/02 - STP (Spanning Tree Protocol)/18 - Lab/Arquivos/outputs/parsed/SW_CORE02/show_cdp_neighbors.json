@@ -1,0 +1,30 @@
+[
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "local_interface": "Gig 0/3",
+    "capabilities": "S I",
+    "platform": "Gig",
+    "neighbor_interface": "0/3"
+  },
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "local_interface": "Gig 0/0",
+    "capabilities": "S I",
+    "platform": "Gig",
+    "neighbor_interface": "0/0"
+  },
+  {
+    "neighbor_name": "SW_CORE01.cisco.com",
+    "local_interface": "Gig 1/1",
+    "capabilities": "R S I",
+    "platform": "Gig",
+    "neighbor_interface": "1/1"
+  },
+  {
+    "neighbor_name": "SW_CORE01.cisco.com",
+    "local_interface": "Gig 1/0",
+    "capabilities": "R S I",
+    "platform": "Gig",
+    "neighbor_interface": "1/0"
+  }
+]

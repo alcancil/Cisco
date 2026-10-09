@@ -1,0 +1,82 @@
+-------------------------
+Device ID: SW_DST01.cisco.com
+Entry address(es): 
+  IP address: 10.0.10.102
+Platform: Cisco ,  Capabilities: Switch IGMP 
+Interface: GigabitEthernet0/3,  Port ID (outgoing port): GigabitEthernet0/3
+Holdtime : 142 sec
+
+Version :
+Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Wed 22-Mar-17 08:38 by mmen
+
+advertisement version: 2
+VTP Management Domain: ''
+Native VLAN: 1
+Duplex: full
+Management address(es): 
+  IP address: 10.0.10.102
+
+-------------------------
+Device ID: SW_DST01.cisco.com
+Entry address(es): 
+  IP address: 10.0.10.102
+Platform: Cisco ,  Capabilities: Switch IGMP 
+Interface: GigabitEthernet0/0,  Port ID (outgoing port): GigabitEthernet0/0
+Holdtime : 172 sec
+
+Version :
+Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Wed 22-Mar-17 08:38 by mmen
+
+advertisement version: 2
+VTP Management Domain: ''
+Native VLAN: 1
+Duplex: full
+Management address(es): 
+  IP address: 10.0.10.102
+
+-------------------------
+Device ID: SW_CORE02.cisco.com
+Entry address(es): 
+  IP address: 10.0.10.101
+Platform: Cisco ,  Capabilities: Router Switch IGMP 
+Interface: GigabitEthernet1/1,  Port ID (outgoing port): GigabitEthernet1/1
+Holdtime : 176 sec
+
+Version :
+Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Wed 22-Mar-17 08:38 by mmen
+
+advertisement version: 2
+VTP Management Domain: ''
+Native VLAN: 1
+Duplex: full
+Management address(es): 
+  IP address: 10.0.10.101
+
+-------------------------
+Device ID: SW_CORE02.cisco.com
+Entry address(es): 
+  IP address: 10.0.10.101
+Platform: Cisco ,  Capabilities: Router Switch IGMP 
+Interface: GigabitEthernet1/0,  Port ID (outgoing port): GigabitEthernet1/0
+Holdtime : 165 sec
+
+Version :
+Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Wed 22-Mar-17 08:38 by mmen
+
+advertisement version: 2
+VTP Management Domain: ''
+Native VLAN: 1
+Duplex: full
+Management address(es): 
+  IP address: 10.0.10.101
+
+
+Total cdp entries displayed : 4

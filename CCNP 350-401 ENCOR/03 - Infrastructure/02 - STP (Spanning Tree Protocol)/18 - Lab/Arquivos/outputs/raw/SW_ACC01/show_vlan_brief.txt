@@ -1,0 +1,18 @@
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi0/0, Gi0/2, Gi0/3, Gi1/2, Gi1/3, Gi2/0, Gi2/1, Gi2/2, Gi2/3, Gi3/0, Gi3/1, Gi3/2, Gi3/3
+10   USERS                            active    Gi1/0
+20   VOICE                            active    Gi1/1
+30   DATA                             active    
+40   MANAGEMENT                       active    
+50   MKT                              active    
+60   FINANCEIRO                       active    
+70   RH                               active    
+80   PROD                             active    
+90   SERVER01                         active    
+100  SERVERS02                        active    
+1002 fddi-default                     act/unsup 
+1003 token-ring-default               act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trnet-default                    act/unsup 

@@ -1,0 +1,112 @@
+[
+  {
+    "vlan_id": "VLAN0001",
+    "priority": "24577",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0010",
+    "priority": "24586",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0020",
+    "priority": "24596",
+    "root_id": "5000.000b.0000",
+    "root_cost": "12",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0030",
+    "priority": "24606",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0040",
+    "priority": "24616",
+    "root_id": "5000.000b.0000",
+    "root_cost": "12",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0050",
+    "priority": "24626",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0060",
+    "priority": "24636",
+    "root_id": "5000.000b.0000",
+    "root_cost": "12",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0070",
+    "priority": "24646",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0080",
+    "priority": "24656",
+    "root_id": "5000.000b.0000",
+    "root_cost": "12",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0090",
+    "priority": "24666",
+    "root_id": "5000.000a.0000",
+    "root_cost": "8",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  },
+  {
+    "vlan_id": "VLAN0100",
+    "priority": "24676",
+    "root_id": "5000.000b.0000",
+    "root_cost": "12",
+    "hello_time": "2",
+    "max_age": "20",
+    "fwd_dly": "15",
+    "root_port": "Gi0/2"
+  }
+]

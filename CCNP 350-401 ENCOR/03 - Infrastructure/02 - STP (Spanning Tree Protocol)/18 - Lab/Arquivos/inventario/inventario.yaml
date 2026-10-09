@@ -1,0 +1,49 @@
+devices:
+
+  - hostname: SW_CORE01
+    role: core
+    site: LAB_STP
+    host: 10.0.10.100
+    platform: cisco_ios
+
+  - hostname: SW_CORE02
+    role: core
+    site: LAB_STP
+    host: 10.0.10.101
+    platform: cisco_ios
+
+  - hostname: SW_DST01
+    role: distribution
+    site: LAB_STP
+    host: 10.0.10.102
+    platform: cisco_ios
+
+  - hostname: SW_DST02
+    role: distribution
+    site: LAB_STP
+    host: 10.0.10.103
+    platform: cisco_ios
+
+  - hostname: SW_ACC01
+    role: access
+    site: LAB_STP
+    host: 10.0.10.104
+    platform: cisco_ios
+
+  - hostname: SW_ACC02
+    role: access
+    site: LAB_STP
+    host: 10.0.10.105
+    platform: cisco_ios
+
+  - hostname: SW_ACC03
+    role: access
+    site: LAB_STP
+    host: 10.0.10.106
+    platform: cisco_ios
+
+  - hostname: SW_ACC04
+    role: access
+    site: LAB_STP
+    host: 10.0.10.107
+    platform: cisco_ios

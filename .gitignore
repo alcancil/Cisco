@@ -1,0 +1,20 @@
+# Credenciais -- NUNCA versionar
+.env
+**/.env
+
+# Ambientes virtuais Python
+venv/
+.venv/
+env/
+
+# Cache e bytecode Python
+__pycache__/
+*.pyc
+
+# Saidas geradas pelos scripts (nao sao fonte, sao resultado de execucao)
+arquivos/outputs/raw/
+arquivos/outputs/parsed/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db

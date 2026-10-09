@@ -1,0 +1,110 @@
+[
+  {
+    "vlan_id": "1",
+    "vlan_name": "default",
+    "status": "active",
+    "interfaces": [
+      "Gi0/0",
+      "Gi0/2",
+      "Gi0/3",
+      "Gi1/2",
+      "Gi1/3",
+      "Gi2/0",
+      "Gi2/1",
+      "Gi2/2",
+      "Gi2/3",
+      "Gi3/0",
+      "Gi3/1",
+      "Gi3/2",
+      "Gi3/3"
+    ]
+  },
+  {
+    "vlan_id": "10",
+    "vlan_name": "USERS",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "20",
+    "vlan_name": "VOICE",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "30",
+    "vlan_name": "DATA",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "40",
+    "vlan_name": "MANAGEMENT",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "50",
+    "vlan_name": "MKT",
+    "status": "active",
+    "interfaces": [
+      "Gi1/0"
+    ]
+  },
+  {
+    "vlan_id": "60",
+    "vlan_name": "FINANCEIRO",
+    "status": "active",
+    "interfaces": [
+      "Gi1/1"
+    ]
+  },
+  {
+    "vlan_id": "70",
+    "vlan_name": "RH",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "80",
+    "vlan_name": "PROD",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "90",
+    "vlan_name": "SERVER01",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "100",
+    "vlan_name": "SERVERS02",
+    "status": "active",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "1002",
+    "vlan_name": "fddi-default",
+    "status": "act/unsup",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "1003",
+    "vlan_name": "token-ring-default",
+    "status": "act/unsup",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "1004",
+    "vlan_name": "fddinet-default",
+    "status": "act/unsup",
+    "interfaces": []
+  },
+  {
+    "vlan_id": "1005",
+    "vlan_name": "trnet-default",
+    "status": "act/unsup",
+    "interfaces": []
+  }
+]

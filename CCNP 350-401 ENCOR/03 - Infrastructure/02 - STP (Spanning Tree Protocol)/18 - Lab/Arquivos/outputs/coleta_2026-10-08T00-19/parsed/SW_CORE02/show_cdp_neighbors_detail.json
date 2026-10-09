@@ -1,0 +1,38 @@
+[
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "mgmt_address": "10.0.10.103",
+    "platform": "Cisco ",
+    "neighbor_interface": "GigabitEthernet0/3",
+    "local_interface": "GigabitEthernet0/3",
+    "neighbor_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]",
+    "capabilities": "Switch IGMP"
+  },
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "mgmt_address": "10.0.10.103",
+    "platform": "Cisco ",
+    "neighbor_interface": "GigabitEthernet0/0",
+    "local_interface": "GigabitEthernet0/0",
+    "neighbor_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]",
+    "capabilities": "Switch IGMP"
+  },
+  {
+    "neighbor_name": "SW_CORE01.cisco.com",
+    "mgmt_address": "10.0.10.100",
+    "platform": "Cisco ",
+    "neighbor_interface": "GigabitEthernet1/1",
+    "local_interface": "GigabitEthernet1/1",
+    "neighbor_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]",
+    "capabilities": "Router Switch IGMP"
+  },
+  {
+    "neighbor_name": "SW_CORE01.cisco.com",
+    "mgmt_address": "10.0.10.100",
+    "platform": "Cisco ",
+    "neighbor_interface": "GigabitEthernet1/0",
+    "local_interface": "GigabitEthernet1/0",
+    "neighbor_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Experimental Version 15.2(20170321:233949) [mmen 101]",
+    "capabilities": "Router Switch IGMP"
+  }
+]

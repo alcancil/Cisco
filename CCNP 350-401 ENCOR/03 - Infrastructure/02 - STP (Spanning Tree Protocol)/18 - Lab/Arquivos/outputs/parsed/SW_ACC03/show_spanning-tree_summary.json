@@ -1,0 +1,90 @@
+[
+  {
+    "VLAN": "VLAN0001",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "14",
+    "STP_ACTIVE": "14"
+  },
+  {
+    "VLAN": "VLAN0010",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0020",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0030",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0040",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0050",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "2",
+    "STP_ACTIVE": "2"
+  },
+  {
+    "VLAN": "VLAN0060",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "2",
+    "STP_ACTIVE": "2"
+  },
+  {
+    "VLAN": "VLAN0070",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0080",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0090",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  },
+  {
+    "VLAN": "VLAN0100",
+    "BLOCKING": "0",
+    "LISTENING": "0",
+    "LEARNING": "0",
+    "FORWARDING": "1",
+    "STP_ACTIVE": "1"
+  }
+]

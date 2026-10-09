@@ -1,0 +1,9 @@
+[
+  {
+    "neighbor_name": "SW_DST02.cisco.com",
+    "local_interface": "Gig 0/1",
+    "capabilities": "S I",
+    "platform": "Gig",
+    "neighbor_interface": "0/1"
+  }
+]

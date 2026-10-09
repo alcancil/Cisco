@@ -1,0 +1,21 @@
+Value PORT (\S+)
+Value MODE (\S+)
+Value ENCAPSULATION (\S+)
+Value STATUS (\S+)
+Value NATIVE_VLAN (\d+)
+Value VLANS_ALLOWED (\S.*)
+
+Start
+  ^Port\s+Mode\s+Encapsulation\s+Status\s+Native\s+vlan\s*$$ -> Modo
+  ^Port\s+Vlans\s+allowed\s+on\s+trunk\s*$$ -> VlansPermitidas
+  ^.*$$
+
+Modo
+  ^${PORT}\s+${MODE}\s+${ENCAPSULATION}\s+${STATUS}\s+${NATIVE_VLAN}\s*$$ -> Record
+  ^\s*$$ -> Start
+  ^.*$$ -> Start
+
+VlansPermitidas
+  ^${PORT}\s+${VLANS_ALLOWED}\s*$$ -> Record
+  ^\s*$$ -> Start
+  ^.*$$ -> Start
