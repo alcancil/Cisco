@@ -57,7 +57,7 @@ Para dominar a operação do RSTP e não se confundir com a transição do model
 
 O protocolo Spanning Tree clássico (802.1D) sofre de um grave gargalo operacional: a lentidão extrema para convergir após uma mudança de topologia. Devido à sua dependência estrita de temporizadores passivos e sequenciais, como os estados de *Listening* (15s) e *Learning* (15s) somados ao *Max Age* (20s), a rede demora tipicamente entre **30 a 50 segundos** para restabelecer o tráfego. Durante todo esse intervalo, as portas permanecem inaptas a encaminhar pacotes, gerando interrupções inaceitáveis para ambientes modernos.  
 
-*(Para relembrar o cálculo detalhado desses temporizadores e o comportamento clássico, consulte a [Revisão 01](../01%20-%20Revisao/README.md))*.
+*Para relembrar o cálculo detalhado desses temporizadores e o comportamento clássico, consulte a [Revisão 01](https://github.com/alcancil/Cisco/tree/main/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/01%20-%20Revisao)*.
 
 ### Por que essa tecnologia surgiu? (O contexto do RSTP)
 
@@ -301,18 +301,18 @@ Os simulados foram planejados para reforçar os conceitos estudados, testar seu 
 
 👉 **Acesse os simulados de STP — Parte 01**
 
-🔗 [Abrir Simulados STP — Parte 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/)  
+🔗 [Abrir Simulados STP — Parte 01](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/)  
 
 **Simulados temáticos:**  
 
-1. [Frame Ethernet e Loops de Camada 2](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/01.html)
-2. [BPDU, Bridge ID e Eleição do Root Bridge]((https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/02.html))
-3. [Port Roles e Port States](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/03.html)
-4. [Timers e Convergência](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/04.html)
-5. [TCN, Mudanças de Topologia e Falhas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/05.html)
+1. [Frame Ethernet e Loops de Camada 2](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/01.html)
+2. [BPDU, Bridge ID e Eleição do Root Bridge](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/02.html)
+3. [Port Roles e Port States](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/03.html)
+4. [Timers e Convergência](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/04.html)
+5. [TCN, Mudanças de Topologia e Falhas](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/05.html)
 
-**Simulado completo de STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/completo.html)
+**Simulado completo de STP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/completo.html)
 
-**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20Revisao/Arquivos/Simulado/dashboard.html)
+**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/20%20-%20RSTP/Arquivos/Simulado/dashboard.html)
 
 **Próxima etapa:** avançar na evolução do Spanning Tree, comparando o STP/PVST+ com o Rapid Spanning Tree Protocol (RSTP), com foco nas diferenças de funcionamento, nos mecanismos de convergência e no comportamento das portas.  
