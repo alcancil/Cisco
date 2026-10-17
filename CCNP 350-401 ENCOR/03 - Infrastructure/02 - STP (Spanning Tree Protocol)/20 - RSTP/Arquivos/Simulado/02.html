@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - BPDU, Bridge ID e Eleição do Root Bridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - BPDU, Bridge ID e Eleição do Root Bridge</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - Spanning Three Protocol Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+            {
+        question: "Qual é a principal finalidade das BPDUs no funcionamento do Spanning Tree Protocol?",
+        options: [
+          "Transportar dados das aplicações entre hosts da mesma VLAN",
+          "Trocar informações de controle para que os switches calculem e mantenham uma topologia lógica sem loops",
+          "Distribuir endereços IP automaticamente aos dispositivos conectados",
+          "Descobrir endereços MAC desconhecidos por meio de consultas ARP"
+        ],
+        answer: "Trocar informações de controle para que os switches calculem e mantenham uma topologia lógica sem loops",
+        explanation: "As BPDUs (Bridge Protocol Data Units) transportam informações de controle do STP, incluindo dados sobre a Bridge ID, o Root Bridge, custos de caminho e outros parâmetros. Os switches usam essas informações para determinar a topologia lógica e evitar loops de Camada 2."
+      },
+
+      {
+        question: "Quais componentes formam a Bridge ID utilizada na eleição do Root Bridge?",
+        options: [
+          "Endereço IPv4, prioridade OSPF e número da interface",
+          "Prioridade da bridge, extensão do System ID e endereço MAC",
+          "Endereço MAC de destino, VLAN nativa e custo do link",
+          "Número da VLAN, endereço IP de gerenciamento e temporizadores STP"
+        ],
+        answer: "Prioridade da bridge, extensão do System ID e endereço MAC",
+        explanation: "A Bridge ID combina a prioridade da bridge, a extensão do System ID — utilizada para identificar a VLAN em implementações como PVST+ — e o endereço MAC. A comparação dessas informações permite determinar qual bridge possui a Bridge ID mais baixa."
+      },
+
+      {
+        question: "Dois switches possuem a mesma prioridade STP configurada. Qual critério determina qual deles será eleito Root Bridge?",
+        options: [
+          "O switch com maior número de portas ativas",
+          "O switch com menor endereço MAC, considerando a comparação da Bridge ID",
+          "O switch com maior largura de banda total",
+          "O switch que foi ligado primeiro"
+        ],
+        answer: "O switch com menor endereço MAC, considerando a comparação da Bridge ID",
+        explanation: "A eleição utiliza a Bridge ID mais baixa. Quando a prioridade e a extensão do System ID são iguais, o endereço MAC desempata a comparação. O tempo de inicialização, a quantidade de portas e a largura de banda total não determinam diretamente o vencedor."
+      },
+
+      {
+        question: "Em uma VLAN PVST+, dois switches apresentam as seguintes Bridge IDs: SW1 = prioridade efetiva 24576, MAC 00:11:11:11:11:11; SW2 = prioridade efetiva 28672, MAC 00:00:00:00:00:01. Qual switch vence a eleição?",
+        options: [
+          "SW1, porque sua prioridade efetiva é menor",
+          "SW2, porque seu endereço MAC é menor",
+          "SW2, porque endereços MAC sempre têm precedência sobre a prioridade",
+          "Nenhum: a eleição depende do custo de caminho até o roteador"
+        ],
+        answer: "SW1, porque sua prioridade efetiva é menor",
+        explanation: "A comparação da Bridge ID ocorre pelo valor numérico completo, começando pela prioridade efetiva, que inclui a extensão do System ID. Como 24576 é menor que 28672, SW1 vence antes que os endereços MAC precisem ser comparados."
+      },
+
+      {
+        question: "Qual é o comportamento esperado de um switch que recebe uma BPDU anunciando um Root Bridge superior ao que ele próprio conhecia?",
+        options: [
+          "Ignora a BPDU porque somente o switch raiz pode transmitir BPDUs",
+          "Analisa as informações recebidas e pode atualizar sua visão da topologia e a seleção da Root Port",
+          "Reinicia imediatamente todas as interfaces da VLAN",
+          "Altera automaticamente o endereço MAC para igualar o da bridge anunciada"
+        ],
+        answer: "Analisa as informações recebidas e pode atualizar sua visão da topologia e a seleção da Root Port",
+        explanation: "O switch compara as informações da BPDU recebida com as informações conhecidas. Se a BPDU representar um caminho superior para o Root Bridge, o switch pode atualizar suas informações STP e recalcular a seleção de portas. O resultado depende também dos demais dados relevantes, incluindo o custo do caminho."
+      },
+
+      {
+        question: "Em condições normais de STP, qual afirmação descreve corretamente a geração de BPDUs pelo Root Bridge?",
+        options: [
+          "O Root Bridge origina as BPDUs de configuração periódicas, que são propagadas pelos switches não raiz",
+          "Somente os switches de acesso originam BPDUs, enquanto o Root Bridge apenas as recebe",
+          "O Root Bridge envia BPDUs exclusivamente quando um host transmite um broadcast",
+          "O Root Bridge não participa da troca de BPDUs depois de ser eleito"
+        ],
+        answer: "O Root Bridge origina as BPDUs de configuração periódicas, que são propagadas pelos switches não raiz",
+        explanation: "No STP clássico (802.1D), o Root Bridge origina BPDUs de configuração periódicas. Os switches não raiz recebem essas informações e propagam informações atualizadas por suas portas designadas. O comportamento de geração e transmissão difere no RSTP, que será estudado na próxima etapa."
+      },
+
+      {
+        question: "Por que depender exclusivamente da eleição automática do Root Bridge pode ser inadequado em uma rede corporativa?",
+        options: [
+          "Porque o STP sempre escolhe o switch com maior capacidade de processamento",
+          "Porque o switch eleito pode não ser o equipamento planejado para ocupar a raiz da topologia",
+          "Porque a eleição automática desativa todas as VLANs não utilizadas",
+          "Porque o endereço MAC é alterado sempre que uma interface cai"
+        ],
+        answer: "Porque o switch eleito pode não ser o equipamento planejado para ocupar a raiz da topologia",
+        explanation: "Se as prioridades não forem planejadas, um switch não desejado pode vencer a eleição por possuir uma Bridge ID inferior. Isso pode levar a caminhos subótimos e distribuição de tráfego diferente da planejada. Em redes corporativas, é comum definir explicitamente a raiz primária e a secundária por VLAN ou instância, conforme a arquitetura."
+      },
+
+      {
+        question: "Qual é a função da extensão do System ID na Bridge ID de uma implementação PVST+?",
+        options: [
+          "Identificar a VLAN associada à instância STP correspondente",
+          "Representar o custo acumulado de todos os links até o Root Bridge",
+          "Indicar quantos switches existem no domínio STP",
+          "Substituir o endereço MAC na eleição do Root Bridge"
+        ],
+        answer: "Identificar a VLAN associada à instância STP correspondente",
+        explanation: "No PVST+, a extensão do System ID permite incorporar o identificador da VLAN à Bridge ID. Assim, a eleição pode produzir Root Bridges diferentes para VLANs diferentes. A prioridade configurável é representada em conjunto com essa extensão, e não deve ser interpretada isoladamente do valor efetivo."
+      },
+
+      {
+        question: "Um administrador reduz a prioridade STP de um switch que deseja tornar Root Bridge. Qual é o efeito esperado?",
+        options: [
+          "Aumenta a Bridge ID e reduz a possibilidade de vencer a eleição",
+          "Reduz a Bridge ID e aumenta a possibilidade de vencer a eleição",
+          "Altera diretamente o custo de todos os links conectados",
+          "Transforma automaticamente todas as portas do switch em Root Ports"
+        ],
+        answer: "Reduz a Bridge ID e aumenta a possibilidade de vencer a eleição",
+        explanation: "A eleição favorece a Bridge ID numericamente mais baixa. Reduzir a prioridade efetiva torna o switch mais competitivo na eleição, desde que a configuração seja aplicada à VLAN ou instância correta e que nenhum outro switch apresente uma Bridge ID inferior."
+      },
+
+      {
+        question: "Após uma mudança na topologia, um switch recebe BPDUs que indicam uma nova bridge raiz. Qual é a interpretação correta desse evento?",
+        options: [
+          "A eleição de Root Bridge ocorre apenas durante a inicialização e não pode mudar",
+          "O STP pode recalcular a topologia e eleger outro Root Bridge se as informações recebidas indicarem uma Bridge ID superior em preferência",
+          "O endereço MAC do Root Bridge anterior é copiado para o novo switch raiz",
+          "A mudança só pode ocorrer se todos os switches forem reiniciados manualmente"
+        ],
+        answer: "O STP pode recalcular a topologia e eleger outro Root Bridge se as informações recebidas indicarem uma Bridge ID superior em preferência",
+        explanation: "A eleição não é necessariamente permanente. Se um switch passa a anunciar uma Bridge ID inferior à do Root Bridge conhecido, os switches podem atualizar suas informações e recalcular a topologia. Em ambiente operacional, esse evento deve ser investigado para distinguir uma mudança planejada de uma alteração inesperada ou potencialmente prejudicial."
+      },
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - TCN, Mudanças de Topologia e Falhas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - TCN, Mudanças de Topologia e Falhas</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre STP - TCN, Mudanças de Topologia e Falhas. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "No Spanning Tree clássico (802.1D), qual é o papel exato do quadro TCN (Topology Change Notification)?", 
+        options: ["Avisar diretamente todos os hosts finais sobre a mudança de endereço IP", "Ser propagado upstream de switch em switch em direção ao Root Bridge para alertá-lo sobre uma mudança de topologia", "Forçar o reinício imediato de todas as interfaces Trunk da rede", "Substituir o Root Bridge em caso de falha catastrófica"], 
+        answer: "Ser propagado upstream de switch em switch em direção ao Root Bridge para alertá-lo sobre uma mudança de topologia", 
+        explanation: "No 802.1D, quando um switch detecta uma falha ou mudança, ele envia quadros TCN em direção ao Root Bridge. O Root Bridge recebe, confirma com TCA e depois propaga o aviso (TC) para toda a rede." 
+      },
+
+      { 
+        question: "Como o RSTP (802.1w) otimizou o processo de aviso de mudança de topologia em comparação ao 802.1D clássico?", 
+        options: ["Mantendo o envio de TCNs por 50 segundos em todas as portas", "Eliminando o quadro TCN puro e gerando diretamente flags de Topology Change (TC) propagadas ativamente entre os switches", "Aumentando o tempo de espera do temporizador Max Age", "Exigindo que o administrador configure manualmente o Topology Change em cada porta"], 
+        answer: "Eliminando o quadro Tcn puro e gerando diretamente flags de Topology Change (TC) propagadas ativamente entre os switches", 
+        explanation: "O RSTP eliminou o TCN BPDU. Qualquer alteração relevante de topologia gera BPDUs com a flag TC ativa, tornando a notificação imediata e distribuída sem precisar aguardar o Root Bridge centralizar o processo." 
+      },
+
+      { 
+        question: "Qual é o efeito imediato e prático de um evento de Topology Change (TC) na tabela CAM (MAC address table) dos switches no RSTP?", 
+        options: ["A tabela CAM inteira é apagada em todas as portas da rede de forma síncrona", "As entradas da tabela CAM associadas às portas afetadas sofrem flush (limpeza imediata), reduzindo o envelhecimento padrão de 300 segundos para evitar pacotes mortos", "O switch desativa o aprendizado de MAC por 15 segundos", "O switch duplica todas as entradas MAC para garantir redundância"], 
+        answer: "As entradas da tabela CAM associadas às portas afetadas sofrem flush (limpeza imediata), reduzindo o envelhecimento padrão de 300 segundos para evitar pacotes mortos", 
+        explanation: "O TC do RSTP força o flush rápido das entradas CAM nas portas afetadas, permitindo que os switches comecem a aprender novos caminhos imediatamente, redirecionando o tráfego para as portas Alternate que assumiram o lugar." 
+      },
+
+      { 
+        question: "No STP clássico (802.1D), o que acontecia com o tempo de envelhecimento (aging timer) da tabela CAM quando ocorria uma mudança de topologia?", 
+        options: ["O aging caía temporariamente de 300 segundos para o valor do Forward Delay (15 segundos) para expirar rapidamente entradas baseadas na topologia antiga", "O aging subia para 600 segundos para reter o máximo de dados possível", "O aging era desativado permanentemente", "O aging passava a ser controlado pelo Hello Time de 2 segundos"], 
+        answer: "O aging caía temporariamente de 300 segundos para o valor do Forward Delay (15 segundos) para expirar rapidamente entradas baseadas na topologia antiga", 
+        explanation: "Para compensar a lentidão do 802.1D, o switch encolhia o aging time da CAM para 15 segundos durante o período de transição, forçando o re-aprendizado rápido dos MACs." 
+      },
+
+      { 
+        question: "No RSTP, qual evento específico é considerado uma mudança de topologia (Topology Change) legítima que dispara o processo de TC?", 
+        options: ["Apenas quando o Root Bridge é desligado manualmente", "Quando uma porta não-edge transita ativamente para o estado Forwarding ou quando uma porta ativa cai inesperadamente", "Sempre que um computador é conectado a uma Edge Port", "Quando o tráfego de broadcast atinge 50% da banda"], 
+        answer: "Quando uma porta não-edge transita ativamente para o estado Forwarding ou quando uma porta ativa cai inesperadamente", 
+        explanation: "O RSTP considera mudança de topologia qualquer alteração estrutural relevante (como uma porta de switch que sobe para Forwarding ou cai), garantindo que a rede limpe os caches desatualizados." 
+      },
+
+      { 
+        question: "Por que a queda de um link em uma porta de borda (Edge Port) configurada com RSTP NÃO dispara um evento de Topology Change (TC)?", 
+        options: ["Porque as Edge Ports não processam BPDUs de forma alguma", "Porque dispositivos finais (PCs/servidores) conectados a portas de borda não alteram a topologia de encaminhamento entre switches, tornando o flush da CAM desnecessário", "Porque o switch ignora falhas em portas de acesso por padrão", "Porque o temporizador Max Age protege a porta de borda"], 
+        answer: "Porque dispositivos finais (PCs/servidores) conectados a portas de borda não alteram a topologia de encaminhamento entre switches, tornando o flush da CAM desnecessário", 
+        explanation: "Como as Edge Ports conectam hosts e não outros switches, a conexão ou queda de um computador não afeta a árvore lógica de encaminhamento de Camada 2 entre os switches, evitando o desperdício de limpar tabelas CAM desnecessariamente." 
+      },
+
+      { 
+        question: "Como a detecção agressiva de falhas do RSTP (perda de 3 BPDUs consecutivos) interage com a recuperação de links redundantes?", 
+        options: ["A falha é detectada em ~6 segundos, permitindo que uma porta Alternate assuma imediatamente o papel de Root Port e inicie a transição rápida", "A rede inteira é desligada por segurança", "O switch aguarda exatamente 50 segundos para recalcular a rota", "As portas Alternate são convertidas em Designated Ports permanentemente"], 
+        answer: "A falha é detectada em ~6 segundos, permitindo que uma porta Alternate assuma imediatamente o papel de Root Port e inicie a transição rápida", 
+        explanation: "A combinação da detecção rápida de perda de vizinhos com o papel de Alternate Port é o que garante a altíssima disponibilidade do RSTP, permitindo failovers quase instantâneos." 
+      },
+
+      { 
+        question: "O que diferencia o tratamento de falhas em links ponto-a-ponto versus links compartilhados (shared/half-duplex) no RSTP?", 
+        options: ["Links ponto-a-ponto usam handshake ativo e falhas são tratadas em segundos; links compartilhados recorrem ao comportamento tradicional e temporizadores passivos", "Links compartilhados convertem-se automaticamente em fibra ótica de 10Gbps", "Não há nenhuma diferença operacional entre os dois tipos de links", "Links ponto-a-ponto exigem configuração manual de failover"], 
+        answer: "Links ponto-a-ponto usam handshake ativo e falhas são tratadas em segundos; links compartilhados recorrem ao comportamento tradicional e temporizadores passivos", 
+        explanation: "Em ambientes compartilhados (hubs), o RSTP não pode aplicar o Proposal/Agreement com segurança, recuando para o modelo de temporizadores herdado do 802.1D para evitar colisão e loops." 
+      },
+
+      { 
+        question: "Qual bit do campo Flags no BPDU Versão 2 (RSTP) é acionado para indicar aos switches vizinhos que ocorreu uma alteração de topologia?", 
+        options: ["O bit de Proposal", "O bit de Agreement", "O bit de Topology Change (TC)", "O bit de Port Role"], 
+        answer: "O bit de Topology Change (TC)", 
+        explanation: "O byte de flags do RSTP utiliza bits dedicados. O bit 0 é o Topology Change (TC), usado para sinalizar o evento e ordenar o flush imediato das tabelas MAC na rede." 
+      },
+
+      { 
+        question: "Qual é o principal impacto nos negócios evitado pela melhoria no tratamento de Topology Changes e convergência rápida do RSTP?", 
+        options: ["Aumento no consumo de energia elétrica dos switches de core", "Interrupções prolongadas (downtime de 30-50s) que derrubavam sessões de VoIP, chamadas de vídeo e transações financeiras após uma falha física", "Necessidade de comprar licenças de software adicionais da Cisco", "Lentidão na inicialização do sistema operacional dos servidores"], 
+        answer: "Interrupções prolongadas (downtime de 30-50s) que derrubavam sessões de VoIP, chamadas de vídeo e transações financeiras após uma falha física", 
+        explanation: "O ganho de negócio do RSTP reside na eliminação dos longos períodos de inatividade. Com falhas resolvidas em 1 a 2 segundos e limpeza rápida de CAM, aplicações em tempo real sobrevivem a quedas de links sem perda crítica de sessão." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

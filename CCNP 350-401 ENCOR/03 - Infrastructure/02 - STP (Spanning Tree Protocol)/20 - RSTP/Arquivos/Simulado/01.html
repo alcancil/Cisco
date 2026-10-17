@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de RSTP - Frame Ethernet e Loops de Camada 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de RSTP - Frame Ethernet e Loops de Camada 2</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Spanning Three Protocol. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+            {
+        question: "Por que o campo FCS não impede que um frame Ethernet continue circulando em um loop de Camada 2?",
+        options: [
+          "Porque o FCS é utilizado apenas por roteadores",
+          "Porque o FCS detecta erros de transmissão, mas não limita a quantidade de vezes que um frame pode ser encaminhado",
+          "Porque o FCS é removido quando o frame atravessa um switch",
+          "Porque o FCS identifica a VLAN e bloqueia frames duplicados"
+        ],
+        answer: "Porque o FCS detecta erros de transmissão, mas não limita a quantidade de vezes que um frame pode ser encaminhado",
+        explanation: "O FCS utiliza CRC para detectar corrupção do frame durante a transmissão. Ele não funciona como contador de saltos e não impede a replicação de frames válidos em uma topologia com loop."
+      },
+
+      {
+        question: "Qual é a principal consequência da existência de caminhos redundantes de Camada 2 quando não há um mecanismo adequado de prevenção de loops?",
+        options: [
+          "Os switches convertem automaticamente os links redundantes em interfaces roteadas",
+          "Os frames passam a utilizar o endereço MAC do roteador como destino",
+          "Os frames podem ser replicados continuamente pelos caminhos redundantes",
+          "O protocolo ARP desativa as interfaces que formam o loop"
+        ],
+        answer: "Os frames podem ser replicados continuamente pelos caminhos redundantes",
+        explanation: "A redundância física aumenta a disponibilidade, mas, sem controle de loops, os switches podem encaminhar e replicar frames continuamente. Isso pode provocar tempestades de broadcast, instabilidade da tabela MAC e degradação dos serviços."
+      },
+
+      {
+        question: "Por que um frame de broadcast recebido por um switch é relevante para a formação de uma Broadcast Storm?",
+        options: [
+          "Porque o switch encaminha o broadcast para todas as portas elegíveis da mesma VLAN, exceto a porta de entrada",
+          "Porque o switch encaminha o broadcast somente para a porta com menor custo STP",
+          "Porque o switch converte o broadcast em um pacote IPv4 unicast",
+          "Porque o switch descarta o broadcast quando não encontra o destino na tabela MAC"
+        ],
+        answer: "Porque o switch encaminha o broadcast para todas as portas elegíveis da mesma VLAN, exceto a porta de entrada",
+        explanation: "O flooding de broadcast é um comportamento normal dos switches Ethernet. Em uma topologia com loop, as cópias podem retornar por outros caminhos e ser propagadas novamente, provocando uma Broadcast Storm. O encaminhamento ocorre dentro do domínio de broadcast da VLAN."
+      },
+
+      {
+        question: "Em uma rede com loop de Camada 2, por que o mesmo endereço MAC de origem pode aparecer associado a portas diferentes na tabela MAC de um switch?",
+        options: [
+          "Porque o switch aprende os endereços MAC de destino em vez dos de origem",
+          "Porque o switch recebe frames originados pelo mesmo dispositivo por caminhos diferentes",
+          "Porque o endereço MAC muda automaticamente a cada transmissão",
+          "Porque o protocolo DHCP atualiza a tabela MAC em intervalos curtos"
+        ],
+        answer: "Porque o switch recebe frames originados pelo mesmo dispositivo por caminhos diferentes",
+        explanation: "Os switches aprendem os endereços MAC de origem dos frames recebidos. Quando um loop faz o mesmo frame circular por caminhos diferentes, o switch pode aprender o mesmo MAC de origem em portas distintas, causando MAC Flapping."
+      },
+
+      {
+        question: "Qual é a diferença entre a função do endereço MAC de destino e a do campo Type em um frame Ethernet II?",
+        options: [
+          "O MAC de destino identifica o protocolo encapsulado, enquanto Type identifica o switch de destino",
+          "O MAC de destino auxilia no encaminhamento de Camada 2, enquanto Type identifica o protocolo encapsulado no payload",
+          "Ambos identificam exclusivamente o endereço IPv4 do destinatário",
+          "Type verifica a integridade do frame, enquanto o MAC de destino sincroniza o receptor"
+        ],
+        answer: "O MAC de destino auxilia no encaminhamento de Camada 2, enquanto Type identifica o protocolo encapsulado no payload",
+        explanation: "O endereço MAC de destino é utilizado no encaminhamento Ethernet. O campo Type, com 2 bytes no Ethernet II, identifica o protocolo encapsulado, como IPv4 (0x0800), ARP (0x0806) ou IPv6 (0x86DD)."
+      },
+
+      {
+        question: "Qual afirmação descreve corretamente a relação entre o payload Ethernet e o tamanho mínimo do frame Ethernet II convencional?",
+        options: [
+          "O payload possui sempre 1500 bytes, independentemente dos dados transmitidos",
+          "O payload pode ter de 46 a 1500 bytes; dados menores que o mínimo exigido são complementados com padding quando necessário",
+          "O payload possui de 4 a 64 bytes, incluindo obrigatoriamente o FCS",
+          "O payload pode ser omitido sempre que o frame utiliza um endereço MAC unicast"
+        ],
+        answer: "O payload pode ter de 46 a 1500 bytes; dados menores que o mínimo exigido são complementados com padding quando necessário",
+        explanation: "No Ethernet II convencional sem tag VLAN, o payload tem de 46 a 1500 bytes. Quando os dados da camada superior não atingem o mínimo, pode ser necessário adicionar padding. O frame, do MAC de destino até o FCS, tem entre 64 e 1518 bytes."
+      },
+
+      {
+        question: "Por que uma Broadcast Storm pode afetar dispositivos que não participam diretamente da conexão física que originou o loop?",
+        options: [
+          "Porque o STP propaga automaticamente o loop para todas as redes roteadas",
+          "Porque os frames inundados podem consumir largura de banda e recursos dos switches em todo o domínio de Camada 2 afetado",
+          "Porque todos os switches da rede passam a utilizar o mesmo endereço MAC",
+          "Porque o FCS desativa as interfaces de todos os switches conectados"
+        ],
+        answer: "Porque os frames inundados podem consumir largura de banda e recursos dos switches em todo o domínio de Camada 2 afetado",
+        explanation: "Uma tempestade pode propagar-se pelo domínio de broadcast e consumir largura de banda dos links, além de recursos de processamento dos equipamentos. Assim, dispositivos sem conexão direta com o ponto inicial do loop também podem sofrer perda de conectividade e degradação de desempenho."
+      },
+
+      {
+        question: "Qual é a função do preâmbulo e do SFD no frame Ethernet?",
+        options: [
+          "Identificar o endereço MAC de destino e o protocolo encapsulado",
+          "Detectar loops e determinar qual switch será o Root Bridge",
+          "Auxiliar na sincronização do receptor e indicar o início do frame",
+          "Verificar a integridade do payload por meio de CRC"
+        ],
+        answer: "Auxiliar na sincronização do receptor e indicar o início do frame",
+        explanation: "O preâmbulo contém 7 bytes utilizados para sincronização física, e o SFD (Start Frame Delimiter) contém 1 byte que indica o início do frame. Esses campos precedem o MAC de destino e não fazem parte da contagem convencional de 64 a 1518 bytes do frame Ethernet."
+      },
+
+      {
+        question: "Uma equipe identifica MAC Flapping e grande volume de broadcasts em uma VLAN. Qual interpretação técnica é mais adequada durante a investigação?",
+        options: [
+          "Os sintomas confirmam que o servidor DHCP está distribuindo endereços duplicados",
+          "Os sintomas são compatíveis com um loop de Camada 2 e justificam investigar a topologia, os links redundantes e o estado do STP",
+          "Os sintomas demonstram que o campo FCS está ausente em todos os frames",
+          "Os sintomas comprovam que o problema está exclusivamente na camada física"
+        ],
+        answer: "Os sintomas são compatíveis com um loop de Camada 2 e justificam investigar a topologia, os links redundantes e o estado do STP",
+        explanation: "MAC Flapping e volume anormal de broadcasts são indicadores que podem estar associados a loops de Camada 2. Eles não provam isoladamente a causa, portanto a investigação deve incluir a tabela MAC, os logs, as interfaces envolvidas e a topologia STP."
+      },
+
+      {
+        question: "Qual é a principal razão pela qual a prevenção de loops de Camada 2 é importante para a continuidade dos negócios?",
+        options: [
+          "Ela elimina a necessidade de endereçamento IP e de roteamento",
+          "Ela garante que todos os links Ethernet operem sempre na velocidade máxima",
+          "Ela reduz o risco de tempestades de broadcast, instabilidade de encaminhamento e interrupção dos serviços dependentes da rede",
+          "Ela impede qualquer tipo de falha física nos switches e cabos"
+        ],
+        answer: "Ela reduz o risco de tempestades de broadcast, instabilidade de encaminhamento e interrupção dos serviços dependentes da rede",
+        explanation: "Loops não controlados podem degradar ou interromper serviços como autenticação, telefonia IP, aplicações corporativas e gerenciamento de infraestrutura. Mecanismos adequados de prevenção e proteção ajudam a preservar a disponibilidade da rede, embora não eliminem todas as causas possíveis de indisponibilidade."
+      },
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

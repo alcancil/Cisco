@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - Rapid Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - Rapid Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre RSTP - Rapid Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+        {
+        question: "Por que o campo FCS não impede que um frame Ethernet continue circulando em um loop de Camada 2?",
+        options: [
+          "Porque o FCS é utilizado apenas por roteadores",
+          "Porque o FCS detecta erros de transmissão, mas não limita a quantidade de vezes que um frame pode ser encaminhado",
+          "Porque o FCS é removido quando o frame atravessa um switch",
+          "Porque o FCS identifica a VLAN e bloqueia frames duplicados"
+        ],
+        answer: "Porque o FCS detecta erros de transmissão, mas não limita a quantidade de vezes que um frame pode ser encaminhado",
+        explanation: "O FCS utiliza CRC para detectar corrupção do frame durante a transmissão. Ele não funciona como contador de saltos e não impede a replicação de frames válidos em uma topologia com loop."
+      },
+
+      {
+        question: "Qual é a principal consequência da existência de caminhos redundantes de Camada 2 quando não há um mecanismo adequado de prevenção de loops?",
+        options: [
+          "Os switches convertem automaticamente os links redundantes em interfaces roteadas",
+          "Os frames passam a utilizar o endereço MAC do roteador como destino",
+          "Os frames podem ser replicados continuamente pelos caminhos redundantes",
+          "O protocolo ARP desativa as interfaces que formam o loop"
+        ],
+        answer: "Os frames podem ser replicados continuamente pelos caminhos redundantes",
+        explanation: "A redundância física aumenta a disponibilidade, mas, sem controle de loops, os switches podem encaminhar e replicar frames continuamente. Isso pode provocar tempestades de broadcast, instabilidade da tabela MAC e degradação dos serviços."
+      },
+
+      {
+        question: "Por que um frame de broadcast recebido por um switch é relevante para a formação de uma Broadcast Storm?",
+        options: [
+          "Porque o switch encaminha o broadcast para todas as portas elegíveis da mesma VLAN, exceto a porta de entrada",
+          "Porque o switch encaminha o broadcast somente para a porta com menor custo STP",
+          "Porque o switch converte o broadcast em um pacote IPv4 unicast",
+          "Porque o switch descarta o broadcast quando não encontra o destino na tabela MAC"
+        ],
+        answer: "Porque o switch encaminha o broadcast para todas as portas elegíveis da mesma VLAN, exceto a porta de entrada",
+        explanation: "O flooding de broadcast é um comportamento normal dos switches Ethernet. Em uma topologia com loop, as cópias podem retornar por outros caminhos e ser propagadas novamente, provocando uma Broadcast Storm. O encaminhamento ocorre dentro do domínio de broadcast da VLAN."
+      },
+
+      {
+        question: "Em uma rede com loop de Camada 2, por que o mesmo endereço MAC de origem pode aparecer associado a portas diferentes na tabela MAC de um switch?",
+        options: [
+          "Porque o switch aprende os endereços MAC de destino em vez dos de origem",
+          "Porque o switch recebe frames originados pelo mesmo dispositivo por caminhos diferentes",
+          "Porque o endereço MAC muda automaticamente a cada transmissão",
+          "Porque o protocolo DHCP atualiza a tabela MAC em intervalos curtos"
+        ],
+        answer: "Porque o switch recebe frames originados pelo mesmo dispositivo por caminhos diferentes",
+        explanation: "Os switches aprendem os endereços MAC de origem dos frames recebidos. Quando um loop faz o mesmo frame circular por caminhos diferentes, o switch pode aprender o mesmo MAC de origem em portas distintas, causando MAC Flapping."
+      },
+
+      {
+        question: "Qual é a diferença entre a função do endereço MAC de destino e a do campo Type em um frame Ethernet II?",
+        options: [
+          "O MAC de destino identifica o protocolo encapsulado, enquanto Type identifica o switch de destino",
+          "O MAC de destino auxilia no encaminhamento de Camada 2, enquanto Type identifica o protocolo encapsulado no payload",
+          "Ambos identificam exclusivamente o endereço IPv4 do destinatário",
+          "Type verifica a integridade do frame, enquanto o MAC de destino sincroniza o receptor"
+        ],
+        answer: "O MAC de destino auxilia no encaminhamento de Camada 2, enquanto Type identifica o protocolo encapsulado no payload",
+        explanation: "O endereço MAC de destino é utilizado no encaminhamento Ethernet. O campo Type, com 2 bytes no Ethernet II, identifica o protocolo encapsulado, como IPv4 (0x0800), ARP (0x0806) ou IPv6 (0x86DD)."
+      },
+
+      {
+        question: "Qual afirmação descreve corretamente a relação entre o payload Ethernet e o tamanho mínimo do frame Ethernet II convencional?",
+        options: [
+          "O payload possui sempre 1500 bytes, independentemente dos dados transmitidos",
+          "O payload pode ter de 46 a 1500 bytes; dados menores que o mínimo exigido são complementados com padding quando necessário",
+          "O payload possui de 4 a 64 bytes, incluindo obrigatoriamente o FCS",
+          "O payload pode ser omitido sempre que o frame utiliza um endereço MAC unicast"
+        ],
+        answer: "O payload pode ter de 46 a 1500 bytes; dados menores que o mínimo exigido são complementados com padding quando necessário",
+        explanation: "No Ethernet II convencional sem tag VLAN, o payload tem de 46 a 1500 bytes. Quando os dados da camada superior não atingem o mínimo, pode ser necessário adicionar padding. O frame, do MAC de destino até o FCS, tem entre 64 e 1518 bytes."
+      },
+
+      {
+        question: "Por que uma Broadcast Storm pode afetar dispositivos que não participam diretamente da conexão física que originou o loop?",
+        options: [
+          "Porque o STP propaga automaticamente o loop para todas as redes roteadas",
+          "Porque os frames inundados podem consumir largura de banda e recursos dos switches em todo o domínio de Camada 2 afetado",
+          "Porque todos os switches da rede passam a utilizar o mesmo endereço MAC",
+          "Porque o FCS desativa as interfaces de todos os switches conectados"
+        ],
+        answer: "Porque os frames inundados podem consumir largura de banda e recursos dos switches em todo o domínio de Camada 2 afetado",
+        explanation: "Uma tempestade pode propagar-se pelo domínio de broadcast e consumir largura de banda dos links, além de recursos de processamento dos equipamentos. Assim, dispositivos sem conexão direta com o ponto inicial do loop também podem sofrer perda de conectividade e degradação de desempenho."
+      },
+
+      {
+        question: "Qual é a função do preâmbulo e do SFD no frame Ethernet?",
+        options: [
+          "Identificar o endereço MAC de destino e o protocolo encapsulado",
+          "Detectar loops e determinar qual switch será o Root Bridge",
+          "Auxiliar na sincronização do receptor e indicar o início do frame",
+          "Verificar a integridade do payload por meio de CRC"
+        ],
+        answer: "Auxiliar na sincronização do receptor e indicar o início do frame",
+        explanation: "O preâmbulo contém 7 bytes utilizados para sincronização física, e o SFD (Start Frame Delimiter) contém 1 byte que indica o início do frame. Esses campos precedem o MAC de destino e não fazem parte da contagem convencional de 64 a 1518 bytes do frame Ethernet."
+      },
+
+      {
+        question: "Uma equipe identifica MAC Flapping e grande volume de broadcasts em uma VLAN. Qual interpretação técnica é mais adequada durante a investigação?",
+        options: [
+          "Os sintomas confirmam que o servidor DHCP está distribuindo endereços duplicados",
+          "Os sintomas são compatíveis com um loop de Camada 2 e justificam investigar a topologia, os links redundantes e o estado do STP",
+          "Os sintomas demonstram que o campo FCS está ausente em todos os frames",
+          "Os sintomas comprovam que o problema está exclusivamente na camada física"
+        ],
+        answer: "Os sintomas são compatíveis com um loop de Camada 2 e justificam investigar a topologia, os links redundantes e o estado do STP",
+        explanation: "MAC Flapping e volume anormal de broadcasts são indicadores que podem estar associados a loops de Camada 2. Eles não provam isoladamente a causa, portanto a investigação deve incluir a tabela MAC, os logs, as interfaces envolvidas e a topologia STP."
+      },
+
+      {
+        question: "Qual é a principal razão pela qual a prevenção de loops de Camada 2 é importante para a continuidade dos negócios?",
+        options: [
+          "Ela elimina a necessidade de endereçamento IP e de roteamento",
+          "Ela garante que todos os links Ethernet operem sempre na velocidade máxima",
+          "Ela reduz o risco de tempestades de broadcast, instabilidade de encaminhamento e interrupção dos serviços dependentes da rede",
+          "Ela impede qualquer tipo de falha física nos switches e cabos"
+        ],
+        answer: "Ela reduz o risco de tempestades de broadcast, instabilidade de encaminhamento e interrupção dos serviços dependentes da rede",
+        explanation: "Loops não controlados podem degradar ou interromper serviços como autenticação, telefonia IP, aplicações corporativas e gerenciamento de infraestrutura. Mecanismos adequados de prevenção e proteção ajudam a preservar a disponibilidade da rede, embora não eliminem todas as causas possíveis de indisponibilidade."
+      },
+
+          {
+        question: "Qual é a principal finalidade das BPDUs no funcionamento do Spanning Tree Protocol?",
+        options: [
+          "Transportar dados das aplicações entre hosts da mesma VLAN",
+          "Trocar informações de controle para que os switches calculem e mantenham uma topologia lógica sem loops",
+          "Distribuir endereços IP automaticamente aos dispositivos conectados",
+          "Descobrir endereços MAC desconhecidos por meio de consultas ARP"
+        ],
+        answer: "Trocar informações de controle para que os switches calculem e mantenham uma topologia lógica sem loops",
+        explanation: "As BPDUs (Bridge Protocol Data Units) transportam informações de controle do STP, incluindo dados sobre a Bridge ID, o Root Bridge, custos de caminho e outros parâmetros. Os switches usam essas informações para determinar a topologia lógica e evitar loops de Camada 2."
+      },
+
+      {
+        question: "Quais componentes formam a Bridge ID utilizada na eleição do Root Bridge?",
+        options: [
+          "Endereço IPv4, prioridade OSPF e número da interface",
+          "Prioridade da bridge, extensão do System ID e endereço MAC",
+          "Endereço MAC de destino, VLAN nativa e custo do link",
+          "Número da VLAN, endereço IP de gerenciamento e temporizadores STP"
+        ],
+        answer: "Prioridade da bridge, extensão do System ID e endereço MAC",
+        explanation: "A Bridge ID combina a prioridade da bridge, a extensão do System ID — utilizada para identificar a VLAN em implementações como PVST+ — e o endereço MAC. A comparação dessas informações permite determinar qual bridge possui a Bridge ID mais baixa."
+      },
+
+      {
+        question: "Dois switches possuem a mesma prioridade STP configurada. Qual critério determina qual deles será eleito Root Bridge?",
+        options: [
+          "O switch com maior número de portas ativas",
+          "O switch com menor endereço MAC, considerando a comparação da Bridge ID",
+          "O switch com maior largura de banda total",
+          "O switch que foi ligado primeiro"
+        ],
+        answer: "O switch com menor endereço MAC, considerando a comparação da Bridge ID",
+        explanation: "A eleição utiliza a Bridge ID mais baixa. Quando a prioridade e a extensão do System ID são iguais, o endereço MAC desempata a comparação. O tempo de inicialização, a quantidade de portas e a largura de banda total não determinam diretamente o vencedor."
+      },
+
+      {
+        question: "Em uma VLAN PVST+, dois switches apresentam as seguintes Bridge IDs: SW1 = prioridade efetiva 24576, MAC 00:11:11:11:11:11; SW2 = prioridade efetiva 28672, MAC 00:00:00:00:00:01. Qual switch vence a eleição?",
+        options: [
+          "SW1, porque sua prioridade efetiva é menor",
+          "SW2, porque seu endereço MAC é menor",
+          "SW2, porque endereços MAC sempre têm precedência sobre a prioridade",
+          "Nenhum: a eleição depende do custo de caminho até o roteador"
+        ],
+        answer: "SW1, porque sua prioridade efetiva é menor",
+        explanation: "A comparação da Bridge ID ocorre pelo valor numérico completo, começando pela prioridade efetiva, que inclui a extensão do System ID. Como 24576 é menor que 28672, SW1 vence antes que os endereços MAC precisem ser comparados."
+      },
+
+      {
+        question: "Qual é o comportamento esperado de um switch que recebe uma BPDU anunciando um Root Bridge superior ao que ele próprio conhecia?",
+        options: [
+          "Ignora a BPDU porque somente o switch raiz pode transmitir BPDUs",
+          "Analisa as informações recebidas e pode atualizar sua visão da topologia e a seleção da Root Port",
+          "Reinicia imediatamente todas as interfaces da VLAN",
+          "Altera automaticamente o endereço MAC para igualar o da bridge anunciada"
+        ],
+        answer: "Analisa as informações recebidas e pode atualizar sua visão da topologia e a seleção da Root Port",
+        explanation: "O switch compara as informações da BPDU recebida com as informações conhecidas. Se a BPDU representar um caminho superior para o Root Bridge, o switch pode atualizar suas informações STP e recalcular a seleção de portas. O resultado depende também dos demais dados relevantes, incluindo o custo do caminho."
+      },
+
+      {
+        question: "Em condições normais de STP, qual afirmação descreve corretamente a geração de BPDUs pelo Root Bridge?",
+        options: [
+          "O Root Bridge origina as BPDUs de configuração periódicas, que são propagadas pelos switches não raiz",
+          "Somente os switches de acesso originam BPDUs, enquanto o Root Bridge apenas as recebe",
+          "O Root Bridge envia BPDUs exclusivamente quando um host transmite um broadcast",
+          "O Root Bridge não participa da troca de BPDUs depois de ser eleito"
+        ],
+        answer: "O Root Bridge origina as BPDUs de configuração periódicas, que são propagadas pelos switches não raiz",
+        explanation: "No STP clássico (802.1D), o Root Bridge origina BPDUs de configuração periódicas. Os switches não raiz recebem essas informações e propagam informações atualizadas por suas portas designadas. O comportamento de geração e transmissão difere no RSTP, que será estudado na próxima etapa."
+      },
+
+      {
+        question: "Por que depender exclusivamente da eleição automática do Root Bridge pode ser inadequado em uma rede corporativa?",
+        options: [
+          "Porque o STP sempre escolhe o switch com maior capacidade de processamento",
+          "Porque o switch eleito pode não ser o equipamento planejado para ocupar a raiz da topologia",
+          "Porque a eleição automática desativa todas as VLANs não utilizadas",
+          "Porque o endereço MAC é alterado sempre que uma interface cai"
+        ],
+        answer: "Porque o switch eleito pode não ser o equipamento planejado para ocupar a raiz da topologia",
+        explanation: "Se as prioridades não forem planejadas, um switch não desejado pode vencer a eleição por possuir uma Bridge ID inferior. Isso pode levar a caminhos subótimos e distribuição de tráfego diferente da planejada. Em redes corporativas, é comum definir explicitamente a raiz primária e a secundária por VLAN ou instância, conforme a arquitetura."
+      },
+
+      {
+        question: "Qual é a função da extensão do System ID na Bridge ID de uma implementação PVST+?",
+        options: [
+          "Identificar a VLAN associada à instância STP correspondente",
+          "Representar o custo acumulado de todos os links até o Root Bridge",
+          "Indicar quantos switches existem no domínio STP",
+          "Substituir o endereço MAC na eleição do Root Bridge"
+        ],
+        answer: "Identificar a VLAN associada à instância STP correspondente",
+        explanation: "No PVST+, a extensão do System ID permite incorporar o identificador da VLAN à Bridge ID. Assim, a eleição pode produzir Root Bridges diferentes para VLANs diferentes. A prioridade configurável é representada em conjunto com essa extensão, e não deve ser interpretada isoladamente do valor efetivo."
+      },
+
+      {
+        question: "Um administrador reduz a prioridade STP de um switch que deseja tornar Root Bridge. Qual é o efeito esperado?",
+        options: [
+          "Aumenta a Bridge ID e reduz a possibilidade de vencer a eleição",
+          "Reduz a Bridge ID e aumenta a possibilidade de vencer a eleição",
+          "Altera diretamente o custo de todos os links conectados",
+          "Transforma automaticamente todas as portas do switch em Root Ports"
+        ],
+        answer: "Reduz a Bridge ID e aumenta a possibilidade de vencer a eleição",
+        explanation: "A eleição favorece a Bridge ID numericamente mais baixa. Reduzir a prioridade efetiva torna o switch mais competitivo na eleição, desde que a configuração seja aplicada à VLAN ou instância correta e que nenhum outro switch apresente uma Bridge ID inferior."
+      },
+
+      {
+        question: "Após uma mudança na topologia, um switch recebe BPDUs que indicam uma nova bridge raiz. Qual é a interpretação correta desse evento?",
+        options: [
+          "A eleição de Root Bridge ocorre apenas durante a inicialização e não pode mudar",
+          "O STP pode recalcular a topologia e eleger outro Root Bridge se as informações recebidas indicarem uma Bridge ID superior em preferência",
+          "O endereço MAC do Root Bridge anterior é copiado para o novo switch raiz",
+          "A mudança só pode ocorrer se todos os switches forem reiniciados manualmente"
+        ],
+        answer: "O STP pode recalcular a topologia e eleger outro Root Bridge se as informações recebidas indicarem uma Bridge ID superior em preferência",
+        explanation: "A eleição não é necessariamente permanente. Se um switch passa a anunciar uma Bridge ID inferior à do Root Bridge conhecido, os switches podem atualizar suas informações e recalcular a topologia. Em ambiente operacional, esse evento deve ser investigado para distinguir uma mudança planejada de uma alteração inesperada ou potencialmente prejudicial."
+      },
+
+      { 
+        question: "No RSTP (802.1w), qual é a principal diferença no comportamento dos estados de porta em comparação ao 802.1D?", 
+        options: ["O RSTP possui 5 estados assim como o 802.1D", "O RSTP unifica Disabled, Blocking e Listening em um único estado chamado Discarding", "O RSTP remove o estado de Learning", "O RSTP cria 3 novos estados de encaminhamento ativo"], 
+        answer: "O RSTP unifica Disabled, Blocking e Listening em um único estado chamado Discarding", 
+        explanation: "O RSTP redesenhou a lógica de estados unificando os estados passivos/iniciais em apenas um estado chamado Discarding, reduzindo o modelo total para 3 estados (Discarding, Learning, Forwarding)." 
+      },
+
+      { 
+        question: "Quais são os dois novos papéis de porta introduzidos pelo RSTP (802.1w) que não existiam no 802.1D clássico?", 
+        options: ["Root Port e Designated Port", "Disabled e Blocking", "Alternate Port e Backup Port", "Edge Port e Shared Port"], 
+        answer: "Alternate Port e Backup Port", 
+        explanation: "O RSTP expandiu os papéis de porta de 3 para 5, adicionando a Alternate Port (caminho alternativo recebendo BPDUs de outro switch) e a Backup Port (caminho redundante em links compartilhados recebendo BPDUs do próprio switch)." 
+      },
+
+      { 
+        question: "Qual é a função de uma Alternate Port no RSTP?", 
+        options: ["Atuar como porta de acesso para computadores", "Fornecer um caminho alternativo para o Root Bridge, recebendo BPDUs superiores de outro switch e ficando pronta para assumir imediatamente se a Root Port cair", "Substituir o Root Bridge em caso de falha física do cabo principal", "Encaminhar tráfego de broadcast de forma prioritária"], 
+        answer: "Fornecer um caminho alternativo para o Root Bridge, recebendo BPDUs superiores de outro switch e ficando pronta para assumir imediatamente se a Root Port cair", 
+        explanation: "A Alternate Port substitui o conceito de porta bloqueada do 802.1D. Como ela já escuta BPDUs válidos do vizinho, ela pode assumir a função de Root Port instantaneamente sem passar por temporizadores de espera se a porta principal falhar." 
+      },
+
+      { 
+        question: "O que caracteriza uma Backup Port no ambiente do RSTP?", 
+        options: ["Uma porta conectada diretamente a um servidor corporativo", "Um caminho de backup exclusivo para redes wireless", "Uma porta que recebe BPDUs superiores vindos do próprio switch em um segmento compartilhado (half-duplex)", "A porta principal de gerenciamento do switch"], 
+        answer: "Uma porta que recebe BPDUs superiores vindos do próprio switch em um segmento compartilhado (half-duplex)", 
+        explanation: "A Backup Port é um papel exclusivo de segmentos compartilhados (como hubs). Ela atua como cópia de segurança de uma Designated Port porque recebe BPDUs gerados pelo próprio switch na mesma colisão de segmento." 
+      },
+
+      { 
+        question: "Qual é o papel de uma Edge Port no RSTP e com qual recurso clássico ela se equipara conceitualmente?", 
+        options: ["Conectar switches de core e equipara-se ao Root Guard", "Conectar dispositivos finais (PCs, servidores) e equipara-se conceitualmente ao PortFast", "Conectar links de longa distância e equipara-se ao BPDU Guard", "Servir de backup para o Root Bridge e equipara-se ao Loop Guard"], 
+        answer: "Conectar dispositivos finais (PCs, servidores) e equipara-se conceitualmente ao PortFast", 
+        explanation: "A Edge Port é configurada em portas de acesso conectadas a hosts finais. Como não há switches do outro lado, ela transita imediatamente para o estado de Forwarding, evitando o atraso de convergência, sendo o equivalente nativo do PortFast do 802.1D." 
+      },
+
+      { 
+        question: "Como o RSTP lida com a detecção de falhas em links ponto-a-ponto, substituindo a antiga espera do temporizador Max Age?", 
+        options: ["Aguardando exatamente 20 segundos de silêncio", "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos), permitindo ação imediata", "Enviando pacotes ICMP de teste a cada milissegundo", "Exigindo intervenção manual do administrador"], 
+        answer: "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos), permitindo ação imediata", 
+        explanation: "Como os BPDUs são emitidos ativamente de forma constante por ambas as pontas no RSTP, a perda de 3 BPDUs consecutivos (Hello Time de 2s x 3 = 6s) declara a falha imediata do vizinho, sem precisar esperar o Max Age." 
+      },
+
+      { 
+        question: "O que acontece com os temporizadores Max Age (20s) e Forward Delay (15s) quando uma rede opera puramente em RSTP (802.1w)?", 
+        options: ["Eles passam a ser configurados com o dobro do tempo para garantir segurança", "Eles deixam de ser a engrenagem principal da convergência e atuam puramente como mecanismo de fallback para compatibilidade com switches legados", "Eles são eliminados permanentemente do código do sistema operacional", "Eles controlam rigidamente o tempo de handshake do Proposal/Agreement"], 
+        answer: "Eles deixam de ser a engrenagem principal da convergência e atuam puramente como mecanismo de mecanismo de fallback para compatibilidade com switches legados", 
+        explanation: "No RSTP puro, a convergência é impulsionada pelo handshake ativo Proposal/Agreement. Os timers antigos perdem a função principal de contagem regressiva e servem apenas de retaguarda se a porta encontrar um switch 802.1D antigo." 
+      },
+
+      { 
+        question: "Qual é o comportamento do RSTP ao detectar uma mudança de topologia (Topology Change), substituindo o antigo processo de quadros TCN?", 
+        options: ["O switch envia flags TC ativas e força a limpeza imediata (flush) das entradas da tabela CAM nas portas afetadas", "A rede inteira reinicia o processo de eleição do Root Bridge do zero", "As portas Alternate passam automaticamente para o estado Discarding por 50 segundos", "O switch bloqueia todas as interfaces Trunk por segurança"], 
+        answer: "O switch envia flags TC ativas e força a limpeza imediata (flush) das entradas da tabela CAM nas portas afetadas", 
+        explanation: "O RSTP simplificou o processo eliminando o TCN BPDU puro. Qualquer alteração relevante gera avisos com a flag TC ativa, forçando o flush imediato da tabela CAM para evitar encaminhamento para caminhos mortos." 
+      },
+
+      { 
+        question: "Por que o RSTP adota o método de custos Long (32-bit) em detrimento do padrão curto de 16 bits?", 
+        options: ["Para economizar memória RAM no processamento do switch", "Para permitir granularidade adequada em links de alta velocidade (1G, 10G, 40G, 100G), onde o método antigo atribuía o valor mínimo 1 a todas as velocidades", "Para tornar compatível o STP com protocolos de Camada 3 como o OSPF", "Para padronizar os endereços MAC estendidos"], 
+        answer: "Para permitir granularidade adequada em links de alta velocidade (1G, 10G, 40G, 100G), onde o método antigo atribuía o valor mínimo 1 a todas as velocidades", 
+        explanation: "No padrão antigo de 16 bits, links de 10Gbps ou superiores batiam no limite mínimo (custo 1), impossibilitando o STP de diferenciar a métrica. O método Long expande os valores (ex: 1Gbps = 20.000, 10Gbps = 2.000)." 
+      },
+
+      { 
+        question: "Como o RSTP garante a retrocompatibilidade ao se conectar a um switch antigo que ainda executa o STP clássico (802.1D)?", 
+        options: ["A porta moderna detecta BPDUs da versão 0 e degrada o seu comportamento para falar o protocolo legado apenas naquela interface específica", "A rede inteira faz downgrade automático para o modo 802.1D", "O switch moderno rejeita a conexão e coloca a interface em estado de err-disable", "O mecanismo de Proposal/Agreement é forçado em ambos os lados independentemente"], 
+        answer: "A porta moderna detecta BPDUs da versão 0 e degrada o seu comportamento para falar o protocolo legado apenas naquela interface específica", 
+        explanation: "O RSTP possui inteligência de porta a porta. Se uma interface RSTP começa a receber BPDUs v0 de um switch legado, ela assume o comportamento clássico de temporizadores naquela ligação específica, preservando o resto da rede em alta velocidade." 
+      },
+
+      { 
+        question: "Qual é a principal diferença na função dos temporizadores Max Age e Forward Delay entre o STP clássico (802.1D) e o RSTP (802.1w)?", 
+        options: ["No RSTP eles foram completamente eliminados do código", "No RSTP eles deixam de ser a engrenagem principal da convergência e atuam como mecanismo de fallback para compatibilidade com switches legados", "No RSTP os tempos são dobrados para maior estabilidade", "No RSTP eles passam a controlar o intervalo de envio de BPDUs de Keepalive"], 
+        answer: "No RSTP eles deixam de ser a engrenagem principal da convergência e atuam como mecanismo de fallback para compatibilidade com switches legados", 
+        explanation: "No RSTP puro, a convergência é impulsionada pelo handshake Proposal/Agreement. Os temporizadores antigos perdem o papel ativo de contagem regressiva e servem apenas de retaguarda para lidar com switches 802.1D legados." 
+      },
+
+      { 
+        question: "Como o mecanismo de Proposal/Agreement atinge convergência em milissegundos em links ponto-a-ponto no RSTP?", 
+        options: ["Através de um diálogo ativo onde uma porta envia uma proposta, o vizinho sincroniza suas portas (Discarding) e responde imediatamente com um acordo (Agreement)", "Através da diminuição forçada do Hello Time para 0.1 segundos", "Através da eliminação total da necessidade de sincronização entre switches", "Através do uso de endereços IP estáticos em cada interface Trunk"], 
+        answer: "Através de um diálogo ativo onde uma porta envia uma proposta, o vizinho sincroniza suas portas (Discarding) e responde imediatamente com um acordo (Agreement)", 
+        explanation: "O Proposal/Agreement substitui a espera passiva por uma negociação ativa em cascata. O switch vizinho coloca suas portas não-edge em Sync (Discarding) e devolve o Agreement, permitindo transição instantânea para Forwarding." 
+      },
+
+      { 
+        question: "O que caracteriza um segmento de rede classificado como 'Shared Link' no contexto dos temporizadores e da convergência do RSTP?", 
+        options: ["Um link Full-Duplex conectado diretamente entre dois switches modernos", "Um link Half-Duplex operando via hubs, onde o RSTP recua para o comportamento clássico de temporizadores para evitar loops", "Uma interface de acesso conectada diretamente a um computador final", "Um enlace de fibra ótica de 100 Gbps com redundância ativa"], 
+        answer: "Um link Half-Duplex operando via hubs, onde o RSTP recua para o comportamento clássico de temporizadores para evitar loops", 
+        explanation: "Em links compartilhados (half-duplex/hubs), o handshake Proposal/Agreement não pode ser aplicado com segurança devido a colisões. Nesses segmentos, o RSTP comporta-se de forma semelhante ao 802.1D." 
+      },
+
+      { 
+        question: "Qual é o comportamento padrão de uma Edge Port no RSTP em termos de temporizadores e tempo de transição?", 
+        options: ["Ela aguarda 50 segundos passando por Listening e Learning", "Ela transita imediatamente para o estado Forwarding, sem passar por temporizadores de bloqueio e sem disparar alterações de topologia", "Ela permanece travada em estado Discarding até receber um BPDU de confirmação", "Ela utiliza um Forward Delay fixo de 15 segundos"], 
+        answer: "Ela transita imediatamente para o estado Forwarding, sem passar por temporizadores de bloqueio e sem disparar alterações de topologia", 
+        explanation: "Edge Ports conectam-se a hosts finais (PCs, servidores). Como não há risco de loop por não haver outros switches na ponta, elas abrem instantaneamente, funcionando de forma equivalente ao PortFast." 
+      },
+
+      { 
+        question: "Como o RSTP detecta a falha de um vizinho de forma agressiva, sem depender da expiração do temporizador Max Age?", 
+        options: ["Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos considerando o Hello Time padrão de 2 segundos)", "Através de picos de consumo de CPU superiores a 90%", "Através do envio de pacotes de broadcast de sondagem a cada 1 segundo", "Através da queda automática do protocolo LLDP"], 
+        answer: "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos considerando o Hello Time padrão de 2 segundos)", 
+        explanation: "Como as Designated Ports do RSTP enviam BPDUs ativamente a cada Hello (2s), a falta de recebimento de 3 BPDUs seguidos indica perda de conectividade com o vizinho em cerca de 6 segundos." 
+      },
+
+      { 
+        question: "O que ocorre durante o processo de sincronização (Sync) quando um switch recebe uma Proposal do seu vizinho no RSTP?", 
+        options: ["Todas as suas portas entram em estado Forwarding para acelerar o tráfego", "O switch coloca temporariamente as suas próprias portas não-edge em estado Discarding para garantir que nenhum loop temporário seja criado", "O switch reinicia o seu endereço MAC base", "O switch ignora a proposta se o Hello Time for inferior a 2 segundos"], 
+        answer: "O switch coloca temporariamente as suas próprias portas não-edge em estado Discarding para garantir que nenhum loop temporário seja criado", 
+        explanation: "O processo de Sync é uma salvaguarda crítica: o switch bloqueia (Discarding) suas outras portas para isolar a rede e assegurar que a nova árvore lógica suba sem loops." 
+      },
+
+      { 
+        question: "No RSTP, como é tratada uma mudança de topologia (Topology Change) e qual o impacto imediato na tabela CAM dos switches vizinhos?", 
+        options: ["O switch gera avisos com a flag TC ativa e força o flush imediato (limpeza) das entradas da tabela CAM nas portas afetadas", "O switch envia quadros TCN lentos que demoram 50 segundos para serem processados", "A tabela CAM é preservada intacta para evitar reprocessamento da CPU", "O switch aguarda o temporizador Max Age expirar antes de limpar os endereços MAC"], 
+        answer: "O switch gera avisos com a flag TC ativa e força o flush imediato (limpeza) das entradas da tabela CAM nas portas afetadas", 
+        explanation: "Diferente do 802.1D que usava TCNs lentos, o RSTP propaga a flag TC diretamente nos BPDUs e limpa imediatamente o cache CAM nas portas afetadas para redirecionar o tráfego sem atrasos." 
+      },
+
+      { 
+        question: "Por que a convergência do RSTP em topologias complexas com múltiplos switches é descrita como 'em cascata'?", 
+        options: ["Porque os switches enviam BPDUs apenas uma vez por dia em horários programados", "Porque cada par de switches adjacentes realiza o seu próprio handshake Proposal/Agreement de forma independente e sequencial ao longo do caminho", "Porque o tráfego de dados é fisicamente direcionado em formato de cachoeira de cabos", "Porque os temporizadores acumulam 15 segundos extras por cada hop adicional"], 
+        answer: "Porque cada par de switches adjacentes realiza o seu próprio handshake Proposal/Agreement de forma independente e sequencial ao longo do caminho", 
+        explanation: "A convergência rápida não acontece de uma só vez na rede inteira; ela propaga-se hop-by-hop à medida que cada switch vizinho valida e aceita o acordo de forma síncrona." 
+      },
+
+      { 
+        question: "O que acontece se uma Edge Port (porta de acesso) começar a receber BPDUs de repente?", 
+        options: ["Ela é imediatamente colocada em estado de err-disable por violação de segurança", "Ela perde o status de Edge Port e passa a seguir o processo normal de transição e negociação do Spanning Tree", "Ela converte-se automaticamente em um Root Bridge alternativo", "Ela ignora os BPDUs e continua encaminhando dados normalmente"], 
+        answer: "Ela perde o status de Edge Port e passa a seguir o processo normal de transição e negociação do Spanning Tree", 
+        explanation: "Se uma porta de borda recebe um BPDU, significa que um switch (e não um host final) foi conectado a ela. Para evitar loops, ela perde o privilégio de Edge e integra-se à árvore STP." 
+      },
+
+      { 
+        question: "Em condições ideais de laboratório com links ponto-a-ponto dedicados, qual é o tempo médio tipicamente observado para a convergência do RSTP?", 
+        options: ["Entre 30 e 50 segundos", "Exatamente 15 segundos fixos", "Entre 1 a 2 segundos (podendo alcançar sub-segundo)", "Exatamente 20 minutos"], 
+        answer: "Entre 1 a 2 segundos (podendo alcançar sub-segundo)", 
+        explanation: "Enquanto o 802.1D levava até 50 segundos devido aos timers estáticos, o RSTP reduz drasticamente a reconvergência para 1 a 2 segundos em links point-to-point diretos." 
+      },
+
+      { 
+        question: "No Spanning Tree clássico (802.1D), qual é o papel exato do quadro TCN (Topology Change Notification)?", 
+        options: ["Avisar diretamente todos os hosts finais sobre a mudança de endereço IP", "Ser propagado upstream de switch em switch em direção ao Root Bridge para alertá-lo sobre uma mudança de topologia", "Forçar o reinício imediato de todas as interfaces Trunk da rede", "Substituir o Root Bridge em caso de falha catastrófica"], 
+        answer: "Ser propagado upstream de switch em switch em direção ao Root Bridge para alertá-lo sobre uma mudança de topologia", 
+        explanation: "No 802.1D, quando um switch detecta uma falha ou mudança, ele envia quadros TCN em direção ao Root Bridge. O Root Bridge recebe, confirma com TCA e depois propaga o aviso (TC) para toda a rede." 
+      },
+
+      { 
+        question: "Como o RSTP (802.1w) otimizou o processo de aviso de mudança de topologia em comparação ao 802.1D clássico?", 
+        options: ["Mantendo o envio de TCNs por 50 segundos em todas as portas", "Eliminando o quadro TCN puro e gerando diretamente flags de Topology Change (TC) propagadas ativamente entre os switches", "Aumentando o tempo de espera do temporizador Max Age", "Exigindo que o administrador configure manualmente o Topology Change em cada porta"], 
+        answer: "Eliminando o quadro Tcn puro e gerando diretamente flags de Topology Change (TC) propagadas ativamente entre os switches", 
+        explanation: "O RSTP eliminou o TCN BPDU. Qualquer alteração relevante de topologia gera BPDUs com a flag TC ativa, tornando a notificação imediata e distribuída sem precisar aguardar o Root Bridge centralizar o processo." 
+      },
+
+      { 
+        question: "Qual é o efeito imediato e prático de um evento de Topology Change (TC) na tabela CAM (MAC address table) dos switches no RSTP?", 
+        options: ["A tabela CAM inteira é apagada em todas as portas da rede de forma síncrona", "As entradas da tabela CAM associadas às portas afetadas sofrem flush (limpeza imediata), reduzindo o envelhecimento padrão de 300 segundos para evitar pacotes mortos", "O switch desativa o aprendizado de MAC por 15 segundos", "O switch duplica todas as entradas MAC para garantir redundância"], 
+        answer: "As entradas da tabela CAM associadas às portas afetadas sofrem flush (limpeza imediata), reduzindo o envelhecimento padrão de 300 segundos para evitar pacotes mortos", 
+        explanation: "O TC do RSTP força o flush rápido das entradas CAM nas portas afetadas, permitindo que os switches comecem a aprender novos caminhos imediatamente, redirecionando o tráfego para as portas Alternate que assumiram o lugar." 
+      },
+
+      { 
+        question: "No STP clássico (802.1D), o que acontecia com o tempo de envelhecimento (aging timer) da tabela CAM quando ocorria uma mudança de topologia?", 
+        options: ["O aging caía temporariamente de 300 segundos para o valor do Forward Delay (15 segundos) para expirar rapidamente entradas baseadas na topologia antiga", "O aging subia para 600 segundos para reter o máximo de dados possível", "O aging era desativado permanentemente", "O aging passava a ser controlado pelo Hello Time de 2 segundos"], 
+        answer: "O aging caía temporariamente de 300 segundos para o valor do Forward Delay (15 segundos) para expirar rapidamente entradas baseadas na topologia antiga", 
+        explanation: "Para compensar a lentidão do 802.1D, o switch encolhia o aging time da CAM para 15 segundos durante o período de transição, forçando o re-aprendizado rápido dos MACs." 
+      },
+
+      { 
+        question: "No RSTP, qual evento específico é considerado uma mudança de topologia (Topology Change) legítima que dispara o processo de TC?", 
+        options: ["Apenas quando o Root Bridge é desligado manualmente", "Quando uma porta não-edge transita ativamente para o estado Forwarding ou quando uma porta ativa cai inesperadamente", "Sempre que um computador é conectado a uma Edge Port", "Quando o tráfego de broadcast atinge 50% da banda"], 
+        answer: "Quando uma porta não-edge transita ativamente para o estado Forwarding ou quando uma porta ativa cai inesperadamente", 
+        explanation: "O RSTP considera mudança de topologia qualquer alteração estrutural relevante (como uma porta de switch que sobe para Forwarding ou cai), garantindo que a rede limpe os caches desatualizados." 
+      },
+
+      { 
+        question: "Por que a queda de um link em uma porta de borda (Edge Port) configurada com RSTP NÃO dispara um evento de Topology Change (TC)?", 
+        options: ["Porque as Edge Ports não processam BPDUs de forma alguma", "Porque dispositivos finais (PCs/servidores) conectados a portas de borda não alteram a topologia de encaminhamento entre switches, tornando o flush da CAM desnecessário", "Porque o switch ignora falhas em portas de acesso por padrão", "Porque o temporizador Max Age protege a porta de borda"], 
+        answer: "Porque dispositivos finais (PCs/servidores) conectados a portas de borda não alteram a topologia de encaminhamento entre switches, tornando o flush da CAM desnecessário", 
+        explanation: "Como as Edge Ports conectam hosts e não outros switches, a conexão ou queda de um computador não afeta a árvore lógica de encaminhamento de Camada 2 entre os switches, evitando o desperdício de limpar tabelas CAM desnecessariamente." 
+      },
+
+      { 
+        question: "Como a detecção agressiva de falhas do RSTP (perda de 3 BPDUs consecutivos) interage com a recuperação de links redundantes?", 
+        options: ["A falha é detectada em ~6 segundos, permitindo que uma porta Alternate assuma imediatamente o papel de Root Port e inicie a transição rápida", "A rede inteira é desligada por segurança", "O switch aguarda exatamente 50 segundos para recalcular a rota", "As portas Alternate são convertidas em Designated Ports permanentemente"], 
+        answer: "A falha é detectada em ~6 segundos, permitindo que uma porta Alternate assuma imediatamente o papel de Root Port e inicie a transição rápida", 
+        explanation: "A combinação da detecção rápida de perda de vizinhos com o papel de Alternate Port é o que garante a altíssima disponibilidade do RSTP, permitindo failovers quase instantâneos." 
+      },
+
+      { 
+        question: "O que diferencia o tratamento de falhas em links ponto-a-ponto versus links compartilhados (shared/half-duplex) no RSTP?", 
+        options: ["Links ponto-a-ponto usam handshake ativo e falhas são tratadas em segundos; links compartilhados recorrem ao comportamento tradicional e temporizadores passivos", "Links compartilhados convertem-se automaticamente em fibra ótica de 10Gbps", "Não há nenhuma diferença operacional entre os dois tipos de links", "Links ponto-a-ponto exigem configuração manual de failover"], 
+        answer: "Links ponto-a-ponto usam handshake ativo e falhas são tratadas em segundos; links compartilhados recorrem ao comportamento tradicional e temporizadores passivos", 
+        explanation: "Em ambientes compartilhados (hubs), o RSTP não pode aplicar o Proposal/Agreement com segurança, recuando para o modelo de temporizadores herdado do 802.1D para evitar colisão e loops." 
+      },
+
+      { 
+        question: "Qual bit do campo Flags no BPDU Versão 2 (RSTP) é acionado para indicar aos switches vizinhos que ocorreu uma alteração de topologia?", 
+        options: ["O bit de Proposal", "O bit de Agreement", "O bit de Topology Change (TC)", "O bit de Port Role"], 
+        answer: "O bit de Topology Change (TC)", 
+        explanation: "O byte de flags do RSTP utiliza bits dedicados. O bit 0 é o Topology Change (TC), usado para sinalizar o evento e ordenar o flush imediato das tabelas MAC na rede." 
+      },
+
+      { 
+        question: "Qual é o principal impacto nos negócios evitado pela melhoria no tratamento de Topology Changes e convergência rápida do RSTP?", 
+        options: ["Aumento no consumo de energia elétrica dos switches de core", "Interrupções prolongadas (downtime de 30-50s) que derrubavam sessões de VoIP, chamadas de vídeo e transações financeiras após uma falha física", "Necessidade de comprar licenças de software adicionais da Cisco", "Lentidão na inicialização do sistema operacional dos servidores"], 
+        answer: "Interrupções prolongadas (downtime de 30-50s) que derrubavam sessões de VoIP, chamadas de vídeo e transações financeiras após uma falha física", 
+        explanation: "O ganho de negócio do RSTP reside na eliminação dos longos períodos de inatividade. Com falhas resolvidas em 1 a 2 segundos e limpeza rápida de CAM, aplicações em tempo real sobrevivem a quedas de links sem perda crítica de sessão." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

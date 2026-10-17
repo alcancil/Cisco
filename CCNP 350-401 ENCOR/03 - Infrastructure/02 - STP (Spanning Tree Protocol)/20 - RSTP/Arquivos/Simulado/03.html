@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - Port Roles e Port States</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - Port Roles e Port States</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Port Roles e Port States. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "No RSTP (802.1w), qual é a principal diferença no comportamento dos estados de porta em comparação ao 802.1D?", 
+        options: ["O RSTP possui 5 estados assim como o 802.1D", "O RSTP unifica Disabled, Blocking e Listening em um único estado chamado Discarding", "O RSTP remove o estado de Learning", "O RSTP cria 3 novos estados de encaminhamento ativo"], 
+        answer: "O RSTP unifica Disabled, Blocking e Listening em um único estado chamado Discarding", 
+        explanation: "O RSTP redesenhou a lógica de estados unificando os estados passivos/iniciais em apenas um estado chamado Discarding, reduzindo o modelo total para 3 estados (Discarding, Learning, Forwarding)." 
+      },
+
+      { 
+        question: "Quais são os dois novos papéis de porta introduzidos pelo RSTP (802.1w) que não existiam no 802.1D clássico?", 
+        options: ["Root Port e Designated Port", "Disabled e Blocking", "Alternate Port e Backup Port", "Edge Port e Shared Port"], 
+        answer: "Alternate Port e Backup Port", 
+        explanation: "O RSTP expandiu os papéis de porta de 3 para 5, adicionando a Alternate Port (caminho alternativo recebendo BPDUs de outro switch) e a Backup Port (caminho redundante em links compartilhados recebendo BPDUs do próprio switch)." 
+      },
+
+      { 
+        question: "Qual é a função de uma Alternate Port no RSTP?", 
+        options: ["Atuar como porta de acesso para computadores", "Fornecer um caminho alternativo para o Root Bridge, recebendo BPDUs superiores de outro switch e ficando pronta para assumir imediatamente se a Root Port cair", "Substituir o Root Bridge em caso de falha física do cabo principal", "Encaminhar tráfego de broadcast de forma prioritária"], 
+        answer: "Fornecer um caminho alternativo para o Root Bridge, recebendo BPDUs superiores de outro switch e ficando pronta para assumir imediatamente se a Root Port cair", 
+        explanation: "A Alternate Port substitui o conceito de porta bloqueada do 802.1D. Como ela já escuta BPDUs válidos do vizinho, ela pode assumir a função de Root Port instantaneamente sem passar por temporizadores de espera se a porta principal falhar." 
+      },
+
+      { 
+        question: "O que caracteriza uma Backup Port no ambiente do RSTP?", 
+        options: ["Uma porta conectada diretamente a um servidor corporativo", "Um caminho de backup exclusivo para redes wireless", "Uma porta que recebe BPDUs superiores vindos do próprio switch em um segmento compartilhado (half-duplex)", "A porta principal de gerenciamento do switch"], 
+        answer: "Uma porta que recebe BPDUs superiores vindos do próprio switch em um segmento compartilhado (half-duplex)", 
+        explanation: "A Backup Port é um papel exclusivo de segmentos compartilhados (como hubs). Ela atua como cópia de segurança de uma Designated Port porque recebe BPDUs gerados pelo próprio switch na mesma colisão de segmento." 
+      },
+
+      { 
+        question: "Qual é o papel de uma Edge Port no RSTP e com qual recurso clássico ela se equipara conceitualmente?", 
+        options: ["Conectar switches de core e equipara-se ao Root Guard", "Conectar dispositivos finais (PCs, servidores) e equipara-se conceitualmente ao PortFast", "Conectar links de longa distância e equipara-se ao BPDU Guard", "Servir de backup para o Root Bridge e equipara-se ao Loop Guard"], 
+        answer: "Conectar dispositivos finais (PCs, servidores) e equipara-se conceitualmente ao PortFast", 
+        explanation: "A Edge Port é configurada em portas de acesso conectadas a hosts finais. Como não há switches do outro lado, ela transita imediatamente para o estado de Forwarding, evitando o atraso de convergência, sendo o equivalente nativo do PortFast do 802.1D." 
+      },
+
+      { 
+        question: "Como o RSTP lida com a detecção de falhas em links ponto-a-ponto, substituindo a antiga espera do temporizador Max Age?", 
+        options: ["Aguardando exatamente 20 segundos de silêncio", "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos), permitindo ação imediata", "Enviando pacotes ICMP de teste a cada milissegundo", "Exigindo intervenção manual do administrador"], 
+        answer: "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos), permitindo ação imediata", 
+        explanation: "Como os BPDUs são emitidos ativamente de forma constante por ambas as pontas no RSTP, a perda de 3 BPDUs consecutivos (Hello Time de 2s x 3 = 6s) declara a falha imediata do vizinho, sem precisar esperar o Max Age." 
+      },
+
+      { 
+        question: "O que acontece com os temporizadores Max Age (20s) e Forward Delay (15s) quando uma rede opera puramente em RSTP (802.1w)?", 
+        options: ["Eles passam a ser configurados com o dobro do tempo para garantir segurança", "Eles deixam de ser a engrenagem principal da convergência e atuam puramente como mecanismo de fallback para compatibilidade com switches legados", "Eles são eliminados permanentemente do código do sistema operacional", "Eles controlam rigidamente o tempo de handshake do Proposal/Agreement"], 
+        answer: "Eles deixam de ser a engrenagem principal da convergência e atuam puramente como mecanismo de mecanismo de fallback para compatibilidade com switches legados", 
+        explanation: "No RSTP puro, a convergência é impulsionada pelo handshake ativo Proposal/Agreement. Os timers antigos perdem a função principal de contagem regressiva e servem apenas de retaguarda se a porta encontrar um switch 802.1D antigo." 
+      },
+
+      { 
+        question: "Qual é o comportamento do RSTP ao detectar uma mudança de topologia (Topology Change), substituindo o antigo processo de quadros TCN?", 
+        options: ["O switch envia flags TC ativas e força a limpeza imediata (flush) das entradas da tabela CAM nas portas afetadas", "A rede inteira reinicia o processo de eleição do Root Bridge do zero", "As portas Alternate passam automaticamente para o estado Discarding por 50 segundos", "O switch bloqueia todas as interfaces Trunk por segurança"], 
+        answer: "O switch envia flags TC ativas e força a limpeza imediata (flush) das entradas da tabela CAM nas portas afetadas", 
+        explanation: "O RSTP simplificou o processo eliminando o TCN BPDU puro. Qualquer alteração relevante gera avisos com a flag TC ativa, forçando o flush imediato da tabela CAM para evitar encaminhamento para caminhos mortos." 
+      },
+
+      { 
+        question: "Por que o RSTP adota o método de custos Long (32-bit) em detrimento do padrão curto de 16 bits?", 
+        options: ["Para economizar memória RAM no processamento do switch", "Para permitir granularidade adequada em links de alta velocidade (1G, 10G, 40G, 100G), onde o método antigo atribuía o valor mínimo 1 a todas as velocidades", "Para tornar compatível o STP com protocolos de Camada 3 como o OSPF", "Para padronizar os endereços MAC estendidos"], 
+        answer: "Para permitir granularidade adequada em links de alta velocidade (1G, 10G, 40G, 100G), onde o método antigo atribuía o valor mínimo 1 a todas as velocidades", 
+        explanation: "No padrão antigo de 16 bits, links de 10Gbps ou superiores batiam no limite mínimo (custo 1), impossibilitando o STP de diferenciar a métrica. O método Long expande os valores (ex: 1Gbps = 20.000, 10Gbps = 2.000)." 
+      },
+
+      { 
+        question: "Como o RSTP garante a retrocompatibilidade ao se conectar a um switch antigo que ainda executa o STP clássico (802.1D)?", 
+        options: ["A porta moderna detecta BPDUs da versão 0 e degrada o seu comportamento para falar o protocolo legado apenas naquela interface específica", "A rede inteira faz downgrade automático para o modo 802.1D", "O switch moderno rejeita a conexão e coloca a interface em estado de err-disable", "O mecanismo de Proposal/Agreement é forçado em ambos os lados independentemente"], 
+        answer: "A porta moderna detecta BPDUs da versão 0 e degrada o seu comportamento para falar o protocolo legado apenas naquela interface específica", 
+        explanation: "O RSTP possui inteligência de porta a porta. Se uma interface RSTP começa a receber BPDUs v0 de um switch legado, ela assume o comportamento clássico de temporizadores naquela ligação específica, preservando o resto da rede em alta velocidade." 
+      }  
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

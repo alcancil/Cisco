@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado STP - Timers e Convergência</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado STP - Timers e Convergência</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Timers e Convergência. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { 
+        question: "Qual é a principal diferença na função dos temporizadores Max Age e Forward Delay entre o STP clássico (802.1D) e o RSTP (802.1w)?", 
+        options: ["No RSTP eles foram completamente eliminados do código", "No RSTP eles deixam de ser a engrenagem principal da convergência e atuam como mecanismo de fallback para compatibilidade com switches legados", "No RSTP os tempos são dobrados para maior estabilidade", "No RSTP eles passam a controlar o intervalo de envio de BPDUs de Keepalive"], 
+        answer: "No RSTP eles deixam de ser a engrenagem principal da convergência e atuam como mecanismo de fallback para compatibilidade com switches legados", 
+        explanation: "No RSTP puro, a convergência é impulsionada pelo handshake Proposal/Agreement. Os temporizadores antigos perdem o papel ativo de contagem regressiva e servem apenas de retaguarda para lidar com switches 802.1D legados." 
+      },
+
+      { 
+        question: "Como o mecanismo de Proposal/Agreement atinge convergência em milissegundos em links ponto-a-ponto no RSTP?", 
+        options: ["Através de um diálogo ativo onde uma porta envia uma proposta, o vizinho sincroniza suas portas (Discarding) e responde imediatamente com um acordo (Agreement)", "Através da diminuição forçada do Hello Time para 0.1 segundos", "Através da eliminação total da necessidade de sincronização entre switches", "Através do uso de endereços IP estáticos em cada interface Trunk"], 
+        answer: "Através de um diálogo ativo onde uma porta envia uma proposta, o vizinho sincroniza suas portas (Discarding) e responde imediatamente com um acordo (Agreement)", 
+        explanation: "O Proposal/Agreement substitui a espera passiva por uma negociação ativa em cascata. O switch vizinho coloca suas portas não-edge em Sync (Discarding) e devolve o Agreement, permitindo transição instantânea para Forwarding." 
+      },
+
+      { 
+        question: "O que caracteriza um segmento de rede classificado como 'Shared Link' no contexto dos temporizadores e da convergência do RSTP?", 
+        options: ["Um link Full-Duplex conectado diretamente entre dois switches modernos", "Um link Half-Duplex operando via hubs, onde o RSTP recua para o comportamento clássico de temporizadores para evitar loops", "Uma interface de acesso conectada diretamente a um computador final", "Um enlace de fibra ótica de 100 Gbps com redundância ativa"], 
+        answer: "Um link Half-Duplex operando via hubs, onde o RSTP recua para o comportamento clássico de temporizadores para evitar loops", 
+        explanation: "Em links compartilhados (half-duplex/hubs), o handshake Proposal/Agreement não pode ser aplicado com segurança devido a colisões. Nesses segmentos, o RSTP comporta-se de forma semelhante ao 802.1D." 
+      },
+
+      { 
+        question: "Qual é o comportamento padrão de uma Edge Port no RSTP em termos de temporizadores e tempo de transição?", 
+        options: ["Ela aguarda 50 segundos passando por Listening e Learning", "Ela transita imediatamente para o estado Forwarding, sem passar por temporizadores de bloqueio e sem disparar alterações de topologia", "Ela permanece travada em estado Discarding até receber um BPDU de confirmação", "Ela utiliza um Forward Delay fixo de 15 segundos"], 
+        answer: "Ela transita imediatamente para o estado Forwarding, sem passar por temporizadores de bloqueio e sem disparar alterações de topologia", 
+        explanation: "Edge Ports conectam-se a hosts finais (PCs, servidores). Como não há risco de loop por não haver outros switches na ponta, elas abrem instantaneamente, funcionando de forma equivalente ao PortFast." 
+      },
+
+      { 
+        question: "Como o RSTP detecta a falha de um vizinho de forma agressiva, sem depender da expiração do temporizador Max Age?", 
+        options: ["Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos considerando o Hello Time padrão de 2 segundos)", "Através de picos de consumo de CPU superiores a 90%", "Através do envio de pacotes de broadcast de sondagem a cada 1 segundo", "Através da queda automática do protocolo LLDP"], 
+        answer: "Através da perda de 3 BPDUs consecutivos (cerca de 6 segundos considerando o Hello Time padrão de 2 segundos)", 
+        explanation: "Como as Designated Ports do RSTP enviam BPDUs ativamente a cada Hello (2s), a falta de recebimento de 3 BPDUs seguidos indica perda de conectividade com o vizinho em cerca de 6 segundos." 
+      },
+
+      { 
+        question: "O que ocorre durante o processo de sincronização (Sync) quando um switch recebe uma Proposal do seu vizinho no RSTP?", 
+        options: ["Todas as suas portas entram em estado Forwarding para acelerar o tráfego", "O switch coloca temporariamente as suas próprias portas não-edge em estado Discarding para garantir que nenhum loop temporário seja criado", "O switch reinicia o seu endereço MAC base", "O switch ignora a proposta se o Hello Time for inferior a 2 segundos"], 
+        answer: "O switch coloca temporariamente as suas próprias portas não-edge em estado Discarding para garantir que nenhum loop temporário seja criado", 
+        explanation: "O processo de Sync é uma salvaguarda crítica: o switch bloqueia (Discarding) suas outras portas para isolar a rede e assegurar que a nova árvore lógica suba sem loops." 
+      },
+
+      { 
+        question: "No RSTP, como é tratada uma mudança de topologia (Topology Change) e qual o impacto imediato na tabela CAM dos switches vizinhos?", 
+        options: ["O switch gera avisos com a flag TC ativa e força o flush imediato (limpeza) das entradas da tabela CAM nas portas afetadas", "O switch envia quadros TCN lentos que demoram 50 segundos para serem processados", "A tabela CAM é preservada intacta para evitar reprocessamento da CPU", "O switch aguarda o temporizador Max Age expirar antes de limpar os endereços MAC"], 
+        answer: "O switch gera avisos com a flag TC ativa e força o flush imediato (limpeza) das entradas da tabela CAM nas portas afetadas", 
+        explanation: "Diferente do 802.1D que usava TCNs lentos, o RSTP propaga a flag TC diretamente nos BPDUs e limpa imediatamente o cache CAM nas portas afetadas para redirecionar o tráfego sem atrasos." 
+      },
+
+      { 
+        question: "Por que a convergência do RSTP em topologias complexas com múltiplos switches é descrita como 'em cascata'?", 
+        options: ["Porque os switches enviam BPDUs apenas uma vez por dia em horários programados", "Porque cada par de switches adjacentes realiza o seu próprio handshake Proposal/Agreement de forma independente e sequencial ao longo do caminho", "Porque o tráfego de dados é fisicamente direcionado em formato de cachoeira de cabos", "Porque os temporizadores acumulam 15 segundos extras por cada hop adicional"], 
+        answer: "Porque cada par de switches adjacentes realiza o seu próprio handshake Proposal/Agreement de forma independente e sequencial ao longo do caminho", 
+        explanation: "A convergência rápida não acontece de uma só vez na rede inteira; ela propaga-se hop-by-hop à medida que cada switch vizinho valida e aceita o acordo de forma síncrona." 
+      },
+
+      { 
+        question: "O que acontece se uma Edge Port (porta de acesso) começar a receber BPDUs de repente?", 
+        options: ["Ela é imediatamente colocada em estado de err-disable por violação de segurança", "Ela perde o status de Edge Port e passa a seguir o processo normal de transição e negociação do Spanning Tree", "Ela converte-se automaticamente em um Root Bridge alternativo", "Ela ignora os BPDUs e continua encaminhando dados normalmente"], 
+        answer: "Ela perde o status de Edge Port e passa a seguir o processo normal de transição e negociação do Spanning Tree", 
+        explanation: "Se uma porta de borda recebe um BPDU, significa que um switch (e não um host final) foi conectado a ela. Para evitar loops, ela perde o privilégio de Edge e integra-se à árvore STP." 
+      },
+
+      { 
+        question: "Em condições ideais de laboratório com links ponto-a-ponto dedicados, qual é o tempo médio tipicamente observado para a convergência do RSTP?", 
+        options: ["Entre 30 e 50 segundos", "Exatamente 15 segundos fixos", "Entre 1 a 2 segundos (podendo alcançar sub-segundo)", "Exatamente 20 minutos"], 
+        answer: "Entre 1 a 2 segundos (podendo alcançar sub-segundo)", 
+        explanation: "Enquanto o 802.1D levava até 50 segundos devido aos timers estáticos, o RSTP reduz drasticamente a reconvergência para 1 a 2 segundos em links point-to-point diretos." 
+      }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
