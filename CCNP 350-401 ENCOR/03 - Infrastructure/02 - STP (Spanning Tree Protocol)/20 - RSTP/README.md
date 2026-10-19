@@ -291,8 +291,6 @@ Em resumo: o RSTP não muda a lógica de prevenção de loops; ele elimina a pri
 
 ---
 
----ARRUMAR DAQUI---
-
 ### 🧪 Pronto para Testar seu Conhecimento?
 
 Antes de avançar para o próximo capítulo, valide sua compreensão dos fundamentos do **Spanning Tree Protocol (STP)**.

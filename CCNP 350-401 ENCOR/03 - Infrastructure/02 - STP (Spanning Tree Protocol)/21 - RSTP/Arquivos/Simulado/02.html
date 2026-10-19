@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - BPDU v2 e Novos Papéis de Porta (Alternate e Backup)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - BPDU v2 e Novos Papéis de Porta (Alternate e Backup)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - BPDU v2 e Novos Papéis de Porta (Alternate e Backup) Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual é a principal diferença entre os papéis de porta 'Alternate' e 'Backup' introduzidos pelo RSTP?",
+    options: [
+      "A Alternate é usada em links Point-to-Point, enquanto a Backup é usada apenas em links de fibra óptica.",
+      "A Alternate fica bloqueada pronta para assumir como Root Port, enquanto a Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port.",
+      "A Alternate substitui a Designated Port em caso de falha, enquanto a Backup substitui a Root Bridge.",
+      "A Alternate recebe BPDUs com a flag Agreement, enquanto a Backup recebe apenas BPDUs com a flag Proposal."
+    ],
+    answer: "A Alternate fica bloqueada pronta para assumir como Root Port, enquanto a Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port.",
+    explanation: "Conforme descrito na introdução da Seção 1, o RSTP introduziu esses dois papéis. A Alternate assume o papel de Root Port caso o link principal caia, e a Backup atua como reserva em links compartilhados para a mesma Designated Port."
+  },
+  {
+    question: "Qual é a versão do BPDU (Bridge Protocol Data Unit) utilizada pelo RSTP (802.1w)?",
+    options: [
+      "Versão 0",
+      "Versão 1",
+      "Versão 2",
+      "Versão 3"
+    ],
+    answer: "Versão 2",
+    explanation: "O RSTP (802.1w) utiliza o BPDU Versão 2. O STP clássico (802.1D) utilizava a Versão 0. Essa mudança de versão é o que permite o transporte dos novos campos de flag e do mecanismo ativo."
+  },
+  {
+    question: "No byte de Flags do BPDU RSTP (Versão 2), quais bits são reservados para indicar o Papel da Porta (Port Role)?",
+    options: [
+      "Bits 0 e 1",
+      "Bits 2 e 3",
+      "Bits 4 e 5",
+      "Bits 6 e 7"
+    ],
+    answer: "Bits 2 e 3",
+    explanation: "De acordo com a Seção 4.2, o byte de Flags é composto por 8 bits, e os Bits 2 e 3 são utilizados especificamente para informar o Papel da Porta que está transmitindo o BPDU."
+  },
+  {
+    question: "Ao analisar um BPDU RSTP no Wireshark, você nota que os bits 3 e 2 (Port Role) estão configurados como '01'. Qual é o papel da porta que enviou esse BPDU?",
+    options: [
+      "Root Port",
+      "Designated Port",
+      "Alternate Port ou Backup Port",
+      "Unknown Port"
+    ],
+    answer: "Alternate Port ou Backup Port",
+    explanation: "Segundo a tabela de valores binários da Seção 4.2: 00 = Unknown, 01 = Alternate ou Backup, 10 = Root Port, e 11 = Designated Port. Portanto, '01' indica uma porta Alternate ou Backup."
+  },
+  {
+    question: "Qual é o valor binário dos bits 3 e 2 (Port Role) que indica que a porta transmissora do BPDU é uma Designated Port?",
+    options: [
+      "00",
+      "01",
+      "10",
+      "11"
+    ],
+    answer: "11",
+    explanation: "Conforme detalhado na Seção 4.2, o valor binário '11' nos bits de Port Role indica que a porta remetente é uma Designated Port. O valor '10' indica Root Port."
+  },
+  {
+    question: "Qual é a principal consequência de se conectar um switch com RSTP (BPDU Versão 2) a um switch muito antigo que roda apenas STP Clássico (BPDU Versão 0)?",
+    options: [
+      "O switch RSTP entra em estado de erro (err-disabled) imediatamente.",
+      "O RSTP precisa manter compatibilidade retroativa, o que pode causar instabilidade ou lentidão na convergência da VLAN.",
+      "O switch antigo é forçado a atualizar seu IOS para a Versão 2 automaticamente.",
+      "O RSTP abandona o mecanismo Proposal/Agreement e converge em milissegundos mesmo com o switch antigo."
+    ],
+    answer: "O RSTP precisa manter compatibilidade retroativa, o que pode causar instabilidade ou lentidão na convergência da VLAN.",
+    explanation: "Conforme a Seção 5 (Limitações), ao encontrar um switch 802.1D, o RSTP precisa manter compatibilidade retroativa. Isso faz com que a rede perca o benefício da convergência rápida na VLAN onde o equipamento legado está inserido."
+  },
+  {
+    question: "Em quais cenários topológicos o papel de porta 'Backup' é tipicamente utilizado no RSTP?",
+    options: [
+      "Em links ponto-a-ponto (Point-to-Point) de alta velocidade entre dois switches.",
+      "Em links compartilhados (Shared Media), como a presença de hubs ou links Half-Duplex.",
+      "Apenas em portas de borda (Edge Ports) conectadas a servidores.",
+      "Em links de fibra óptica que utilizam o protocolo LACP."
+    ],
+    answer: "Em links compartilhados (Shared Media), como a presença de hubs ou links Half-Duplex.",
+    explanation: "Conforme a introdução da Seção 1, a porta Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port. Isso ocorre quando o switch tem duas portas conectadas ao mesmo segmento físico compartilhado."
+  },
+  {
+    question: "No contexto do BPDU RSTP, qual é a função do bit 6 (Agreement) em relação aos novos papéis de porta?",
+    options: [
+      "Indicar que uma porta Alternate deseja se tornar Root Port imediatamente.",
+      "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync) e permite que a Designated Port transite para Forwarding.",
+      "Informar à porta Backup que ela deve assumir o tráfego da Designated Port.",
+      "Solicitar que a Root Bridge altere a prioridade do Bridge ID."
+    ],
+    answer: "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync) e permite que a Designated Port transite para Forwarding.",
+    explanation: "Conforme a Seção 4.2, o Bit 6 (Agreement) é a resposta síncrona à Proposal. Ele confirma que o vizinho concluiu seu Sync (bloqueando as portas não-Edge), permitindo que a Designated Port transmissora abra instantaneamente."
+  },
+  {
+    question: "Qual é o valor do Bit 0 no campo de Flags do BPDU v2 e qual é a sua principal função?",
+    options: [
+      "Bit 0 — TC (Topology Change): Sinaliza mudança de topologia e força o flush imediato da tabela CAM.",
+      "Bit 0 — Proposal: Inicia o processo de handshake com o switch vizinho.",
+      "Bit 0 — Port Role: Define se a porta é Root, Designated ou Alternate.",
+      "Bit 0 — TCA (Topology Change Acknowledgment): Confirma o recebimento de notificações de mudança."
+    ],
+    answer: "Bit 0 — TC (Topology Change): Sinaliza mudança de topologia e força o flush imediato da tabela CAM.",
+    explanation: "De acordo com a Seção 4.2, o Bit 0 é a flag TC (Topology Change). Quando ativa, ela sinaliza que ocorreu uma mudança de topologia e força o flush imediato da tabela CAM para evitar o encaminhamento para caminhos mortos."
+  },
+  {
+    question: "Como uma porta 'Alternate' difere de uma porta 'Backup' em termos de onde ela recebe os BPDUs na topologia?",
+    options: [
+      "A Alternate recebe BPDUs de outro switch (caminho alternativo para a raiz), enquanto a Backup recebe BPDUs do próprio switch local (link redundante para o mesmo segmento).",
+      "A Alternate recebe BPDUs apenas da Root Bridge, enquanto a Backup recebe BPDUs de todas as portas Designated da rede.",
+      "A Alternate recebe BPDUs com a flag Proposal ativada, enquanto a Backup recebe apenas BPDUs periódicos.",
+      "Não há diferença técnica; ambas recebem BPDUs exclusivamente de switches vizinhos de outras marcas."
+    ],
+    answer: "A Alternate recebe BPDUs de outro switch (caminho alternativo para a raiz), enquanto a Backup recebe BPDUs do próprio switch local (link redundante para o mesmo segmento).",
+    explanation: "Essa é a distinção conceitual entre as duas portas que ficam em estado de descarte (Discarding) no RSTP. A Alternate é uma rota alternativa vinda de outro switch, enquanto a Backup é uma redundância local para o mesmo segmento compartilhado."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

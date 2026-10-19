@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - Rapid Spanning Three Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - Rapid Spanning Three Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre RSTP - Rapid Spanning Three Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+        {
+    question: "Qual é a principal diferença no mecanismo de convergência entre o STP Clássico (802.1D) e o RSTP (802.1w)?",
+    options: [
+      "O STP Clássico utiliza o mecanismo ativo de Proposal/Agreement, enquanto o RSTP depende de temporizadores passivos.",
+      "O STP Clássico depende de temporizadores passivos (Max Age, Listening, Learning), enquanto o RSTP utiliza um handshake ativo de Proposal/Agreement.",
+      "O STP Clássico converge em milissegundos, enquanto o RSTP converge em 30 a 50 segundos.",
+      "O STP Clássico não utiliza BPDUs, enquanto o RSTP depende exclusivamente de BPDUs para convergir."
+    ],
+    answer: "O STP Clássico depende de temporizadores passivos (Max Age, Listening, Learning), enquanto o RSTP utiliza um handshake ativo de Proposal/Agreement.",
+    explanation: "O 802.1D aguarda a expiração de temporizadores (30 a 50 segundos) para garantir que não haja loops. O 802.1w introduziu um mecanismo ativo (Proposal/Agreement) que permite a transição quase instantânea para Forwarding."
+  },
+  {
+    question: "No processo de convergência ativa do RSTP, qual é a finalidade do processo de 'Sync' (Sincronização) executado pelo switch vizinho?",
+    options: [
+      "Sincronizar os relógios dos switches para garantir que os timers do STP sejam idênticos.",
+      "Bloquear temporariamente suas portas não-Edge para garantir que não haja loops antes de responder ao Agreement.",
+      "Sincronizar a tabela MAC (CAM) com o switch transmissor da Proposal antes de encaminhar tráfego.",
+      "Enviar um BPDU de Topology Change (TCN) para toda a rede avisando sobre a mudança."
+    ],
+    answer: "Bloquear temporariamente suas portas não-Edge para garantir que não haja loops antes de responder ao Agreement.",
+    explanation: "Ao receber uma Proposal, o switch vizinho inicia o processo de Sync, colocando suas portas Designated não-Edge em estado Discarding. Isso evita loops temporários e permite que ele responda com Agreement de forma segura."
+  },
+  {
+    question: "Durante o handshake do RSTP, qual é a sequência correta de eventos a partir do momento em que um link Point-to-Point sobe?",
+    options: [
+      "Switch A envia Agreement -> Switch B envia Proposal -> Switch A bloqueia portas -> Ambos vão para Forwarding.",
+      "Switch A envia Proposal -> Switch B inicia Sync e bloqueia portas não-Edge -> Switch B responde com Agreement -> Switch A vai para Forwarding instantaneamente.",
+      "Switch A aguarda o Max Age de 20 segundos -> Switch B envia Agreement -> Switch A vai para Learning.",
+      "Switch A e Switch B aguardam o timer de Forward Delay de 15 segundos -> Ambos enviam Proposal -> Vão para Forwarding."
+    ],
+    answer: "Switch A envia Proposal -> Switch B inicia Sync e bloqueia portas não-Edge -> Switch B responde com Agreement -> Switch A vai para Forwarding instantaneamente.",
+    explanation: "A Designated Port envia a Proposal. O vizinho sincroniza (bloqueia portas não-Edge) e responde com Agreement. A Designated Port, ao receber o Agreement, transita imediatamente para Forwarding."
+  },
+  {
+    question: "Se um link no RSTP for classificado como 'Shared' (ex: conexão com um hub), o que acontece com a convergência?",
+    options: [
+      "O RSTP ignora o tipo de link e mantém a convergência em milissegundos via Proposal/Agreement.",
+      "O RSTP recusa-se a ativar a porta e a coloca em estado de erro (err-disabled).",
+      "O RSTP cai para um comportamento similar ao STP clássico (baseado em timers), perdendo seu principal benefício de velocidade.",
+      "O RSTP converte automaticamente o link Shared em Point-to-Point via configuração automática."
+    ],
+    answer: "O RSTP cai para um comportamento similar ao STP clássico (baseado em timers), perdendo seu principal benefício de velocidade.",
+    explanation: "O handshake Proposal/Agreement exige links Point-to-Point (Full-Duplex). Em links Shared, o RSTP não pode garantir a ausência de loops instantaneamente e recorre aos temporizadores tradicionais, como descrito na seção de limitações."
+  },
+  {
+    question: "Qual é o tempo aproximado de convergência de uma topologia que utiliza o STP Clássico (802.1D) devido aos seus temporizadores padrão?",
+    options: [
+      "Milissegundos (menos de 1 segundo)",
+      "De 3 a 5 segundos",
+      "De 10 a 15 segundos",
+      "De 30 a 50 segundos"
+    ],
+    answer: "De 30 a 50 segundos",
+    explanation: "O 802.1D depende do Max Age (20s) em caso de expiração e dos tempos de Listening (15s) e Learning (15s) para transitar com segurança para Forwarding, resultando em 30 a 50 segundos."
+  },
+  {
+    question: "No contexto do fluxo ativo do RSTP, qual é a função da flag 'Proposal' em um BPDU?",
+    options: [
+      "Indicar que a porta transmissora deseja assumir o papel de Root Bridge imediatamente.",
+      "Sinalizar ao switch vizinho que ele deve sincronizar suas portas e responder com um acordo para acelerar a convergência.",
+      "Informar que ocorreu uma mudança na topologia e que a tabela MAC precisa ser limpa.",
+      "Solicitar a elevação da prioridade da porta para Designated Port."
+    ],
+    answer: "Sinalizar ao switch vizinho que ele deve sincronizar suas portas e responder com um acordo para acelerar a convergência.",
+    explanation: "A flag Proposal é usada pela Designated Port para iniciar o handshake ativo, pedindo que o vizinho faça o Sync de suas portas para evitar loops e responda rapidamente."
+  },
+  {
+    question: "Como o STP Clássico (802.1D) garante que um loop não será formado durante a transição de estados de uma porta?",
+    options: [
+      "Enviando BPDUs com a flag Agreement para todos os switches da rede.",
+      "Bloqueando a porta e aguardando os temporizadores de Max Age, Listening e Learning antes de liberar o tráfego.",
+      "Desativando fisicamente as portas redundantes até que a Root Bridge seja eleita.",
+      "Sincronizando a tabela CAM antes de responder ao switch que enviou o BPDU."
+    ],
+    answer: "Bloqueando a porta e aguardando os temporizadores de Max Age, Listening e Learning antes de liberar o tráfego.",
+    explanation: "O 802.1D é um protocolo passivo. Ele garante a ausência de loops não por um handshake, mas por meio de espera temporizada (Listening e Learning) para ter certeza de que a topologia está estável."
+  },
+  {
+    question: "Qual afirmação descreve corretamente o critério de seleção (tie-breakers) entre STP Clássico e RSTP?",
+    options: [
+      "O RSTP alterou os 4 tie-breakers, utilizando o custo do link como primeiro critério.",
+      "O RSTP mantém os mesmos 4 tie-breakers do STP clássico, mas altera a forma como a transição de estados é executada.",
+      "O STP Clássico utiliza o Bridge ID, enquanto o RSTP utiliza apenas o Port ID.",
+      "O STP Clássico utiliza o algoritmo de Dijkstra, enquanto o RSTP utiliza o algoritmo de Bellman-Ford."
+    ],
+    answer: "O RSTP mantém os mesmos 4 tie-breakers do STP clássico, mas altera a forma como a transição de estados é executada.",
+    explanation: "Conforme o README, o RSTP mantém os 4 tie-breakers (Menor Root BID -> Menor Custo -> Menor Sender BID -> Menor Sender Port ID). O que muda é a execução (mecanismo ativo em vez de passivo)."
+  },
+  {
+    question: "Quais são os dois novos papéis de porta introduzidos pelo RSTP que auxiliam na sua capacidade de convergência rápida?",
+    options: [
+      "Root Port e Designated Port",
+      "Listening Port e Learning Port",
+      "Alternate Port e Backup Port",
+      "Forwarding Port e Blocking Port"
+    ],
+    answer: "Alternate Port e Backup Port",
+    explanation: "O RSTP introduziu a Alternate Port (pronta para assumir como Root Port) e a Backup Port (reserva para links compartilhados), o que permite uma transição instantânea em caso de falha do link principal."
+  },
+  {
+    question: "Ao analisar uma captura de pacotes no Wireshark, você observa um BPDU RSTP com as flags Proposal e Agreement desativadas. O que isso indica sobre o estado atual do handshake?",
+    options: [
+      "O handshake ativo foi concluído com sucesso e a rede já está em Forwarding.",
+      "O BPDU é um TCN (Topology Change Notification) e não faz parte do processo de convergência.",
+      "Não há um processo de sincronização (Sync) em andamento naquele exato momento; pode ser um BPDU de estado estável (Heartbeat).",
+      "O switch transmissor está reiniciando e bloqueou todas as suas portas."
+    ],
+    answer: "Não há um processo de sincronização (Sync) em andamento naquele exato momento; pode ser um BPDU de estado estável (Heartbeat).",
+    explanation: "As flags Proposal e Agreement só são ativadas durante o processo de transição (handshake). Uma vez estabilizada a topologia, o RSTP continua enviando BPDUs (Hello Time de 2s) sem essas flags ativas, apenas informando o estado da topologia."
+  },
+  {
+    question: "Qual é a principal diferença entre os papéis de porta 'Alternate' e 'Backup' introduzidos pelo RSTP?",
+    options: [
+      "A Alternate é usada em links Point-to-Point, enquanto a Backup é usada apenas em links de fibra óptica.",
+      "A Alternate fica bloqueada pronta para assumir como Root Port, enquanto a Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port.",
+      "A Alternate substitui a Designated Port em caso de falha, enquanto a Backup substitui a Root Bridge.",
+      "A Alternate recebe BPDUs com a flag Agreement, enquanto a Backup recebe apenas BPDUs com a flag Proposal."
+    ],
+    answer: "A Alternate fica bloqueada pronta para assumir como Root Port, enquanto a Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port.",
+    explanation: "Conforme descrito na introdução da Seção 1, o RSTP introduziu esses dois papéis. A Alternate assume o papel de Root Port caso o link principal caia, e a Backup atua como reserva em links compartilhados para a mesma Designated Port."
+  },
+  {
+    question: "Qual é a versão do BPDU (Bridge Protocol Data Unit) utilizada pelo RSTP (802.1w)?",
+    options: [
+      "Versão 0",
+      "Versão 1",
+      "Versão 2",
+      "Versão 3"
+    ],
+    answer: "Versão 2",
+    explanation: "O RSTP (802.1w) utiliza o BPDU Versão 2. O STP clássico (802.1D) utilizava a Versão 0. Essa mudança de versão é o que permite o transporte dos novos campos de flag e do mecanismo ativo."
+  },
+  {
+    question: "No byte de Flags do BPDU RSTP (Versão 2), quais bits são reservados para indicar o Papel da Porta (Port Role)?",
+    options: [
+      "Bits 0 e 1",
+      "Bits 2 e 3",
+      "Bits 4 e 5",
+      "Bits 6 e 7"
+    ],
+    answer: "Bits 2 e 3",
+    explanation: "De acordo com a Seção 4.2, o byte de Flags é composto por 8 bits, e os Bits 2 e 3 são utilizados especificamente para informar o Papel da Porta que está transmitindo o BPDU."
+  },
+  {
+    question: "Ao analisar um BPDU RSTP no Wireshark, você nota que os bits 3 e 2 (Port Role) estão configurados como '01'. Qual é o papel da porta que enviou esse BPDU?",
+    options: [
+      "Root Port",
+      "Designated Port",
+      "Alternate Port ou Backup Port",
+      "Unknown Port"
+    ],
+    answer: "Alternate Port ou Backup Port",
+    explanation: "Segundo a tabela de valores binários da Seção 4.2: 00 = Unknown, 01 = Alternate ou Backup, 10 = Root Port, e 11 = Designated Port. Portanto, '01' indica uma porta Alternate ou Backup."
+  },
+  {
+    question: "Qual é o valor binário dos bits 3 e 2 (Port Role) que indica que a porta transmissora do BPDU é uma Designated Port?",
+    options: [
+      "00",
+      "01",
+      "10",
+      "11"
+    ],
+    answer: "11",
+    explanation: "Conforme detalhado na Seção 4.2, o valor binário '11' nos bits de Port Role indica que a porta remetente é uma Designated Port. O valor '10' indica Root Port."
+  },
+  {
+    question: "Qual é a principal consequência de se conectar um switch com RSTP (BPDU Versão 2) a um switch muito antigo que roda apenas STP Clássico (BPDU Versão 0)?",
+    options: [
+      "O switch RSTP entra em estado de erro (err-disabled) imediatamente.",
+      "O RSTP precisa manter compatibilidade retroativa, o que pode causar instabilidade ou lentidão na convergência da VLAN.",
+      "O switch antigo é forçado a atualizar seu IOS para a Versão 2 automaticamente.",
+      "O RSTP abandona o mecanismo Proposal/Agreement e converge em milissegundos mesmo com o switch antigo."
+    ],
+    answer: "O RSTP precisa manter compatibilidade retroativa, o que pode causar instabilidade ou lentidão na convergência da VLAN.",
+    explanation: "Conforme a Seção 5 (Limitações), ao encontrar um switch 802.1D, o RSTP precisa manter compatibilidade retroativa. Isso faz com que a rede perca o benefício da convergência rápida na VLAN onde o equipamento legado está inserido."
+  },
+  {
+    question: "Em quais cenários topológicos o papel de porta 'Backup' é tipicamente utilizado no RSTP?",
+    options: [
+      "Em links ponto-a-ponto (Point-to-Point) de alta velocidade entre dois switches.",
+      "Em links compartilhados (Shared Media), como a presença de hubs ou links Half-Duplex.",
+      "Apenas em portas de borda (Edge Ports) conectadas a servidores.",
+      "Em links de fibra óptica que utilizam o protocolo LACP."
+    ],
+    answer: "Em links compartilhados (Shared Media), como a presença de hubs ou links Half-Duplex.",
+    explanation: "Conforme a introdução da Seção 1, a porta Backup é a porta reserva em links compartilhados (Shared) para a mesma Designated Port. Isso ocorre quando o switch tem duas portas conectadas ao mesmo segmento físico compartilhado."
+  },
+  {
+    question: "No contexto do BPDU RSTP, qual é a função do bit 6 (Agreement) em relação aos novos papéis de porta?",
+    options: [
+      "Indicar que uma porta Alternate deseja se tornar Root Port imediatamente.",
+      "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync) e permite que a Designated Port transite para Forwarding.",
+      "Informar à porta Backup que ela deve assumir o tráfego da Designated Port.",
+      "Solicitar que a Root Bridge altere a prioridade do Bridge ID."
+    ],
+    answer: "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync) e permite que a Designated Port transite para Forwarding.",
+    explanation: "Conforme a Seção 4.2, o Bit 6 (Agreement) é a resposta síncrona à Proposal. Ele confirma que o vizinho concluiu seu Sync (bloqueando as portas não-Edge), permitindo que a Designated Port transmissora abra instantaneamente."
+  },
+  {
+    question: "Qual é o valor do Bit 0 no campo de Flags do BPDU v2 e qual é a sua principal função?",
+    options: [
+      "Bit 0 — TC (Topology Change): Sinaliza mudança de topologia e força o flush imediato da tabela CAM.",
+      "Bit 0 — Proposal: Inicia o processo de handshake com o switch vizinho.",
+      "Bit 0 — Port Role: Define se a porta é Root, Designated ou Alternate.",
+      "Bit 0 — TCA (Topology Change Acknowledgment): Confirma o recebimento de notificações de mudança."
+    ],
+    answer: "Bit 0 — TC (Topology Change): Sinaliza mudança de topologia e força o flush imediato da tabela CAM.",
+    explanation: "De acordo com a Seção 4.2, o Bit 0 é a flag TC (Topology Change). Quando ativa, ela sinaliza que ocorreu uma mudança de topologia e força o flush imediato da tabela CAM para evitar o encaminhamento para caminhos mortos."
+  },
+  {
+    question: "Como uma porta 'Alternate' difere de uma porta 'Backup' em termos de onde ela recebe os BPDUs na topologia?",
+    options: [
+      "A Alternate recebe BPDUs de outro switch (caminho alternativo para a raiz), enquanto a Backup recebe BPDUs do próprio switch local (link redundante para o mesmo segmento).",
+      "A Alternate recebe BPDUs apenas da Root Bridge, enquanto a Backup recebe BPDUs de todas as portas Designated da rede.",
+      "A Alternate recebe BPDUs com a flag Proposal ativada, enquanto a Backup recebe apenas BPDUs periódicos.",
+      "Não há diferença técnica; ambas recebem BPDUs exclusivamente de switches vizinhos de outras marcas."
+    ],
+    answer: "A Alternate recebe BPDUs de outro switch (caminho alternativo para a raiz), enquanto a Backup recebe BPDUs do próprio switch local (link redundante para o mesmo segmento).",
+    explanation: "Essa é a distinção conceitual entre as duas portas que ficam em estado de descarte (Discarding) no RSTP. A Alternate é uma rota alternativa vinda de outro switch, enquanto a Backup é uma redundância local para o mesmo segmento compartilhado."
+  },
+  {
+    question: "Qual é o pré-requisito fundamental de Camada 2 para que o mecanismo de handshake (Proposal/Agreement) do RSTP ocorra e permita a convergência em milissegundos?",
+    options: [
+      "O link deve ser classificado como Shared (compartilhado).",
+      "O link deve ser obrigatoriamente um segmento Point-to-Point.",
+      "O link deve estar configurado como Half-Duplex.",
+      "O link deve estar em uma VLAN nativa diferente da VLAN de gerenciamento."
+    ],
+    answer: "O link deve ser obrigatoriamente um segmento Point-to-Point.",
+    explanation: "Conforme a Seção 1.2, o primeiro passo do handshake ativo é que o link suba em um segmento Point-to-Point. Em links Shared, o RSTP não consegue garantir a convergência rápida via handshake."
+  },
+  {
+    question: "No processo de convergência ativa do RSTP, qual é a primeira ação executada por uma Designated Port quando o link Point-to-Point sobe?",
+    options: [
+      "Enviar um BPDU com a flag Agreement ativada.",
+      "Bloquear todas as suas portas não-Edge.",
+      "Enviar um BPDU com a flag Proposal ativada.",
+      "Enviar um TCN (Topology Change Notification) para a Root Bridge."
+    ],
+    answer: "Enviar um BPDU com a flag Proposal ativada.",
+    explanation: "De acordo com a Seção 1.2 (passo 2), a Designated Port inicia o processo enviando um BPDU com a flag Proposal marcada para o switch vizinho."
+  },
+  {
+    question: "O que exatamente o switch vizinho faz ao receber um BPDU com a flag Proposal durante o processo de Sync?",
+    options: [
+      "Bloqueia temporariamente todas as suas portas não-Edge para evitar loops.",
+      "Eleva imediatamente sua prioridade para se tornar a nova Root Bridge.",
+      "Responde com uma Proposal para o switch anterior, criando um loop de negociação.",
+      "Limpa toda a sua tabela MAC (CAM) antes de encaminhar o tráfego."
+    ],
+    answer: "Bloqueia temporariamente todas as suas portas não-Edge para evitar loops.",
+    explanation: "Na Seção 1.2 (passo 3), é explicado que o switch vizinho inicia o processo de Sync, cujo objetivo é bloquear temporariamente as portas não-Edge. Isso é vital para garantir que não haja um loop de Camada 2 enquanto a topologia transita."
+  },
+  {
+    question: "Após concluir o processo de sincronização (Sync), por qual porta o switch vizinho envia a resposta com a flag Agreement ativada?",
+    options: [
+      "Por qualquer Designated Port disponível.",
+      "Por sua Root Port.",
+      "Por uma Alternate Port.",
+      "Por todas as portas da VLAN simultaneamente."
+    ],
+    answer: "Por sua Root Port.",
+    explanation: "Conforme a Seção 1.2 (passo 4), o vizinho responde imediatamente com a flag Agreement marcada, e essa resposta é enviada através de sua Root Port."
+  },
+  {
+    question: "Qual é o tempo aproximado de transição para o estado de Forwarding da Designated Port transmissora após receber o BPDU de Agreement?",
+    options: [
+      "Aguarda o Forward Delay de 15 segundos.",
+      "Aguarda o Max Age de 20 segundos.",
+      "Transita instantaneamente (em milissegundos / 1-2s).",
+      "Aguarda 3x o Hello Time (6 segundos)."
+    ],
+    answer: "Transita instantaneamente (em milissegundos / 1-2s).",
+    explanation: "De acordo com a Seção 1.2 (passo 5), após o recebimento do Agreement, a Designated Port do switch transmissor vai para Forwarding instantaneamente, concluindo a convergência em milissegundos."
+  },
+  {
+    question: "No campo de Flags do BPDU RSTP (Versão 2), qual é o Bit responsável por indicar a flag Proposal?",
+    options: [
+      "Bit 0",
+      "Bit 1",
+      "Bit 6",
+      "Bit 7"
+    ],
+    answer: "Bit 1",
+    explanation: "Conforme a tabela detalhada na Seção 4.2, o Bit 1 é a flag Proposal (Proposta). Ele é utilizado pela Designated Port para iniciar o processo de convergência em links Point-to-Point."
+  },
+  {
+    question: "Qual é a função exata da flag Agreement (Bit 6) no cabeçalho do BPDU RSTP?",
+    options: [
+      "Sinalizar que a porta remetente deseja se tornar a Root Bridge.",
+      "Indicar que a porta remetente está no estado de Learning.",
+      "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync), permitindo que a Designated Port abra instantaneamente.",
+      "Confirmar o recebimento de notificações de mudança de topologia (TCN)."
+    ],
+    answer: "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync), permitindo que a Designated Port abra instantaneamente.",
+    explanation: "A Seção 4.2 explica que o Bit 6 (Agreement) é a resposta síncrona à Proposal recebida. Ele confirma que o vizinho fez o Sync de suas portas e permite que a porta transmissora vá direto para Forwarding."
+  },
+  {
+    question: "Por que o mecanismo de handshake Proposal/Agreement elimina a necessidade de esperar os temporizadores passivos (Listening e Learning) do STP clássico?",
+    options: [
+      "Porque o RSTP não utiliza tabela MAC, apenas tabela ARP.",
+      "Porque a rede é sincronizada proativamente (via Sync), garantindo que não há loops antes de liberar o tráfego.",
+      "Porque os temporizadores são substituídos por pacotes ICMP de verificação de loop.",
+      "Porque o RSTP desativa a eleição de Root Bridge sempre que um link cai."
+    ],
+    answer: "Porque a rede é sincronizada proativamente (via Sync), garantindo que não há loops antes de liberar o tráfego.",
+    explanation: "No STP, os timers existem para garantir (de forma passiva e lenta) que não há loops. No RSTP, o mecanismo Sync bloqueia as portas necessárias imediatamente e o vizinho confirma via Agreement. Como a segurança contra loops é ativa, não há necessidade de esperar 30 a 50 segundos."
+  },
+  {
+    question: "Durante um handshake bem-sucedido, quais são as flags que estarão ativas simultaneamente no BPDU que contém a confirmação final do vizinho?",
+    options: [
+      "Apenas Proposal.",
+      "Apenas Agreement.",
+      "Proposal e Agreement.",
+      "Agreement e TC (Topology Change)."
+    ],
+    answer: "Apenas Agreement.",
+    explanation: "O switch vizinho envia um BPDU com a flag Agreement ativada (Bit 6) para confirmar o Sync. A flag Proposal (Bit 1) foi enviada pelo transmissor inicial. Uma vez que o Agreement é recebido, a transição para Forwarding ocorre."
+  },
+  {
+    question: "Ao capturar o tráfego de um handshake RSTP no Wireshark, como você pode filtrar para ver APENAS os BPDUs que estão iniciando o processo de convergência rápida?",
+    options: [
+      "stp.flags.agreement == 1",
+      "stp.flags.proposal == 1",
+      "stp.flags.tc == 1",
+      "stp.version == 0"
+    ],
+    answer: "stp.flags.proposal == 1",
+    explanation: "Conforme a Seção 4.1, o filtro 'stp.flags.proposal == 1' é o comando utilizado no Wireshark para isolar os BPDUs que possuem a flag Proposal ativa, ou seja, os pacotes que estão iniciando o handshake."
+  },
+  {
+    question: "Para configurar um switch como Root Bridge secundário para a VLAN 20, garantindo que ele seja o backup caso o primário falhe, qual comando deve ser aplicado?",
+    options: [
+      "spanning-tree vlan 20 root primary",
+      "spanning-tree vlan 20 priority 8192",
+      "spanning-tree vlan 20 root secondary",
+      "spanning-tree vlan 20 backup-root"
+    ],
+    answer: "spanning-tree vlan 20 root secondary",
+    explanation: "Conforme a Seção 2.2, o comando 'spanning-tree vlan 20 root secondary' define o switch como Root Bridge secundário para a VLAN 20."
+  },
+  {
+    question: "Quando um administrador precisa configurar manualmente a prioridade do Bridge ID em um switch Cisco, qual é a regra para o valor de prioridade?",
+    options: [
+      "Pode ser qualquer valor entre 0 e 65535.",
+      "Deve ser um múltiplo de 1024.",
+      "Deve ser um múltiplo de 4096.",
+      "Deve ser um valor par entre 4096 e 32768."
+    ],
+    answer: "Deve ser um múltiplo de 4096.",
+    explanation: "A Seção 2.2 especifica que a configuração manual da prioridade deve ser feita em múltiplos de 4096. O exemplo dado é 'spanning-tree vlan 10 priority 4096'."
+  },
+  {
+    question: "Qual comando habilita o comportamento de Edge Port (PortFast) globalmente, por padrão, em todas as portas de acesso do switch?",
+    options: [
+      "spanning-tree portfast all",
+      "spanning-tree edge-port global",
+      "spanning-tree portfast default",
+      "spanning-tree mode portfast"
+    ],
+    answer: "spanning-tree portfast default",
+    explanation: "De acordo com a Seção 2.3, o comando 'spanning-tree portfast default' é utilizado para habilitar Edge Port em todas as portas de acesso por padrão (Global)."
+  },
+  {
+    question: "Ao configurar uma interface específica para conectar um servidor, qual é a sequência correta de comandos no modo de configuração de interface para habilitar o Edge Port?",
+    options: [
+      "switchport mode access -> spanning-tree portfast",
+      "spanning-tree portfast -> switchport mode access",
+      "switchport mode trunk -> spanning-tree portfast",
+      "spanning-tree edge-port enable -> switchport mode access"
+    ],
+    answer: "switchport mode access -> spanning-tree portfast",
+    explanation: "A Seção 2.3 demonstra que, após entrar na interface (ex: gigabitethernet 0/1), deve-se configurar 'switchport mode access' e depois 'spanning-tree portfast' para habilitar o Edge Port naquele host/servidor."
+  },
+  {
+    question: "Por padrão, como o switch Cisco determina o tipo de link (Point-to-Point ou Shared) para o RSTP?",
+    options: [
+      "Ele assume que todos os links são Shared até que o administrador configure manualmente como Point-to-Point.",
+      "Ele considera links Full-Duplex como Point-to-Point e links Half-Duplex como Shared.",
+      "Ele determina o tipo de link exclusivamente com base na velocidade da interface (1Gbps ou 10Gbps).",
+      "Ele utiliza o protocolo CDP/LLDP para perguntar ao vizinho qual é o tipo de link."
+    ],
+    answer: "Ele considera links Full-Duplex como Point-to-Point e links Half-Duplex como Shared.",
+    explanation: "Conforme a Seção 2.4, por padrão, links Full-Duplex são considerados Point-to-Point pelo switch, o que permite o handshake do RSTP."
+  },
+  {
+    question: "Em qual cenário o administrador precisaria usar o comando 'spanning-tree link-type point-to-point' manualmente em uma interface?",
+    options: [
+      "Quando o link for Half-Duplex e ele quiser forçar a convergência rápida.",
+      "Quando a autodetecção falhar em classificar um link Full-Duplex como Point-to-Point.",
+      "Quando o link estiver conectado a um hub (Shared Media).",
+      "Para desabilitar o RSTP naquela interface específica."
+    ],
+    answer: "Quando a autodetecção falhar em classificar um link Full-Duplex como Point-to-Point.",
+    explanation: "A Seção 2.4 afirma que o comando é usado para alterar/forçar manualmente o tipo de link 'caso o autodetect falhe'. Isso garante que o RSTP saiba que pode usar o handshake Proposal/Agreement."
+  },
+  {
+    question: "Qual é o tipo de dispositivo que normalmente deve ser conectado a uma porta configurada como Edge Port (PortFast)?",
+    options: [
+      "Outro switch Cisco para formar uma topologia redundante.",
+      "Um hub para compartilhar a conexão com vários dispositivos.",
+      "Um servidor ou host final (PC, impressora, telefone IP).",
+      "Um roteador para fazer o roteamento entre VLANs."
+    ],
+    answer: "Um servidor ou host final (PC, impressora, telefone IP).",
+    explanation: "Conforme indicado na Seção 2.3, o Edge Port é habilitado em interfaces específicas para 'Servidor / Host'. Ele não deve ser usado para conectar switches, pois isso poderia criar loops sem a proteção do STP."
+  },
+  {
+    question: "Por que os comandos de Root Bridge (root primary e root secondary) são aplicados especificamente por VLAN no modo Rapid-PVST+?",
+    options: [
+      "Porque o Rapid-PVST+ executa uma instância separada do Spanning Tree para cada VLAN, permitindo o balanceamento de carga entre switches.",
+      "Porque o comando só funciona se a VLAN for a 10 ou a 20.",
+      "Porque o Rapid-PVST+ exige que todos os switches da rede tenham a mesma prioridade para todas as VLANs.",
+      "Porque o IOS da Cisco só permite configurar prioridade em VLANs nativas."
+    ],
+    answer: "Porque o Rapid-PVST+ executa uma instância separada do Spanning Tree para cada VLAN, permitindo o balanceamento de carga entre switches.",
+    explanation: "Embora a Seção 2.2 mostre os comandos para VLANs específicas (VLAN 10 e VLAN 20), isso reflete a característica do PVST+ (Per-VLAN Spanning Tree). Cada VLAN tem sua própria topologia, permitindo que um switch seja Root para a VLAN 10 e outro seja Root para a VLAN 20 (balanceamento de carga)."
+  },
+  {
+    question: "No Wireshark, qual filtro é utilizado para visualizar APENAS os BPDUs que pertencem ao RSTP (802.1w), excluindo os BPDUs do STP clássico?",
+    options: [
+      "stp",
+      "stp.version == 0",
+      "stp.version == 2",
+      "stp.flags.proposal == 1"
+    ],
+    answer: "stp.version == 2",
+    explanation: "Conforme a Seção 4.1, o filtro 'stp.version == 2' é utilizado para isolar os BPDUs do RSTP, que utilizam a Versão 2. O STP clássico utiliza a Versão 0."
+  },
+  {
+    question: "Qual comando de filtro no Wireshark deve ser utilizado para identificar rapidamente se um BPDU está sinalizando uma mudança de topologia (Topology Change) na rede?",
+    options: [
+      "stp.flags.agreement == 1",
+      "stp.flags.proposal == 1",
+      "stp.flags.tc == 1",
+      "stp.flags.tca == 1"
+    ],
+    answer: "stp.flags.tc == 1",
+    explanation: "De acordo com a Seção 4.1, o filtro 'stp.flags.tc == 1' é o comando correto para filtrar eventos de Topology Change no RSTP."
+  },
+  {
+    question: "No cabeçalho do BPDU RSTP, qual é a função do Bit 5 no campo de Flags?",
+    options: [
+      "Indicar que a porta remetente está no estado de Learning.",
+      "Indicar que a porta remetente está no estado de Forwarding (encaminhando tráfego ativamente).",
+      "Confirmar o recebimento de uma Proposal.",
+      "Sinalizar que ocorreu uma mudança de topologia."
+    ],
+    answer: "Indicar que a porta remetente está no estado de Forwarding (encaminhando tráfego ativamente).",
+    explanation: "A Seção 4.2 detalha que o Bit 5 é a flag Forwarding (Fwd). Quando ativa, indica que a porta remetente está no estado de Forwarding."
+  },
+  {
+    question: "Ao analisar uma captura no Wireshark, você observa que os bits 3 e 2 (Port Role) de um BPDU RSTP estão configurados como '10'. O que isso indica?",
+    options: [
+      "Que a porta é uma Designated Port.",
+      "Que a porta é uma Root Port.",
+      "Que a porta é uma Alternate ou Backup Port.",
+      "Que a porta está com o papel desconhecido (Unknown)."
+    ],
+    answer: "Que a porta é uma Root Port.",
+    explanation: "Conforme a tabela da Seção 4.2, o valor binário '10' nos bits 2 e 3 indica que a porta transmissora é uma Root Port. O valor '11' indicaria Designated Port."
+  },
+  {
+    question: "Qual comando 'show' é utilizado para verificar detalhes específicos de uma interface, como papéis, estados, temporizadores e tipo de link no RSTP?",
+    options: [
+      "show spanning-tree summary",
+      "show spanning-tree vlan 10",
+      "show spanning-tree interface gigabitethernet 0/1 detail",
+      "show spanning-tree interface gigabitethernet 0/1 counters"
+    ],
+    answer: "show spanning-tree interface gigabitethernet 0/1 detail",
+    explanation: "A Seção 3.1 especifica que o comando 'show spanning-tree interface gigabitethernet 0/1 detail' exibe detalhes de papéis, estados, temporizadores e tipo de link de uma interface específica."
+  },
+  {
+    question: "Qual comando é sugerido na Seção 3.1 para verificar especificamente os contadores de BPDUs enviados/recebidos e o número de transições de topologia em uma interface?",
+    options: [
+      "show spanning-tree interface gigabitethernet 0/1 detail | include BPDU|number of topology",
+      "show spanning-tree interface gigabitethernet 0/1 statistics",
+      "show spanning-tree bpdu counters",
+      "show spanning-tree topology changes"
+    ],
+    answer: "show spanning-tree interface gigabitethernet 0/1 detail | include BPDU|number of topology",
+    explanation: "A Seção 3.1 recomenda o uso do pipe (|) com o include para filtrar a saída do comando detail, exibindo apenas as linhas que contenham 'BPDU' ou 'number of topology'."
+  },
+  {
+    question: "Qual comando de depuração (debug) deve ser utilizado para monitorar em tempo real o envio de BPDUs por um switch Cisco?",
+    options: [
+      "debug spanning-tree events",
+      "debug spanning-tree bpdu receive",
+      "debug spanning-tree bpdu transmit",
+      "debug spanning-tree all"
+    ],
+    answer: "debug spanning-tree bpdu transmit",
+    explanation: "Conforme a Seção 3.2, o comando 'debug spanning-tree bpdu transmit' é utilizado para depurar o envio de BPDUs em tempo real."
+  },
+  {
+    question: "Qual é a recomendação de segurança e boas práticas ao utilizar comandos 'debug' em um ambiente de produção, de acordo com o README?",
+    options: [
+      "Utilizar sempre em produção, pois não há impacto no switch.",
+      "Utilizar apenas em ambiente de laboratório para evitar sobrecarga de CPU em produção.",
+      "Utilizar apenas durante o horário comercial para monitorar os usuários.",
+      "Utilizar em conjunto com o comando 'spanning-tree portfast' para evitar loops."
+    ],
+    answer: "Utilizar apenas em ambiente de laboratório para evitar sobrecarga de CPU em produção.",
+    explanation: "A Seção 3.2 contém um aviso explícito (⚠️ Atenção) recomendando o uso de comandos debug apenas em ambiente de laboratório para evitar sobrecarga de CPU em produção."
+  },
+  {
+    question: "No campo de Flags do BPDU RSTP, qual é a função do Bit 7 (TCA - Topology Change Acknowledgment)?",
+    options: [
+      "Sinalizar que a porta remetente está no estado de Learning.",
+      "Confirmar a mudança de topologia, herdado por motivos de compatibilidade retroativa com o STP clássico (802.1D).",
+      "Indicar que a porta remetente é uma Alternate Port.",
+      "Solicitar a sincronização imediata das portas não-Edge."
+    ],
+    answer: "Confirmar a mudança de topologia, herdado por motivos de compatibilidade retroativa com o STP clássico (802.1D).",
+    explanation: "A Seção 4.2 explica que o Bit 7 (TCA) foi herdado do STP clássico (802.1D) para confirmar o recebimento de notificações de mudança de topologia, mantendo a compatibilidade retroativa."
+  },
+  {
+    question: "Você está analisando uma captura no Wireshark e aplica o filtro 'stp.flags.agreement == 1'. O que você espera encontrar como resultado desse filtro?",
+    options: [
+      "BPDUs que estão iniciando o processo de convergência (Proposal).",
+      "BPDUs que sinalizam uma mudança de topologia.",
+      "BPDUs de resposta que confirmam a sincronização (Sync) das portas, permitindo a transição para Forwarding.",
+      "BPDUs do STP clássico (Versão 0)."
+    ],
+    answer: "BPDUs de resposta que confirmam a sincronização (Sync) das portas, permitindo a transição para Forwarding.",
+    explanation: "Conforme a Seção 4.1, o filtro 'stp.flags.agreement == 1' isola os BPDUs com a flag Agreement ativa. A Seção 4.2 explica que essa flag é a resposta síncrona à Proposal, confirmando que o vizinho concluiu o Sync."
+  },
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

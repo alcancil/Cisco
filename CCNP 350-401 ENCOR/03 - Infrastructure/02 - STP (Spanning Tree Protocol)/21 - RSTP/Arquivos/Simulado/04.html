@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - Configuração Prática: Rapid-PVST+, Edge Ports e Link-Type</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP - Configuração Prática: Rapid-PVST+, Edge Ports e Link-Type</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Configuração Prática: Rapid-PVST+, Edge Ports e Link-Type. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual comando global é utilizado para migrar um switch Cisco do modo STP clássico para o modo Rapid-PVST+?",
+    options: [
+      "spanning-tree mode rapid-pvst",
+      "spanning-tree mode rstp",
+      "spanning-tree rapid-pvst enable",
+      "spanning-tree mode pvst rapid"
+    ],
+    answer: "spanning-tree mode rapid-pvst",
+    explanation: "Conforme a Seção 2.1, o comando exato para alterar o modo global de Spanning Tree para Rapid-PVST+ é 'spanning-tree mode rapid-pvst'."
+  },
+  {
+    question: "Ao configurar um switch como Root Bridge primário para a VLAN 10, qual comando é utilizado e qual é o efeito prático na prioridade do Bridge ID?",
+    options: [
+      "spanning-tree vlan 10 priority 0; a prioridade torna-se 0.",
+      "spanning-tree vlan 10 root primary; a prioridade é definida em 24576 ou menor.",
+      "spanning-tree vlan 10 root secondary; a prioridade é definida em 32768.",
+      "spanning-tree vlan 10 priority 4096; a prioridade torna-se 4096."
+    ],
+    answer: "spanning-tree vlan 10 root primary; a prioridade é definida em 24576 ou menor.",
+    explanation: "A Seção 2.2 explica que o comando 'spanning-tree vlan 10 root primary' define o switch como Root Bridge primário, ajustando sua prioridade para 24576 ou menor."
+  },
+  {
+    question: "Para configurar um switch como Root Bridge secundário para a VLAN 20, garantindo que ele seja o backup caso o primário falhe, qual comando deve ser aplicado?",
+    options: [
+      "spanning-tree vlan 20 root primary",
+      "spanning-tree vlan 20 priority 8192",
+      "spanning-tree vlan 20 root secondary",
+      "spanning-tree vlan 20 backup-root"
+    ],
+    answer: "spanning-tree vlan 20 root secondary",
+    explanation: "Conforme a Seção 2.2, o comando 'spanning-tree vlan 20 root secondary' define o switch como Root Bridge secundário para a VLAN 20."
+  },
+  {
+    question: "Quando um administrador precisa configurar manualmente a prioridade do Bridge ID em um switch Cisco, qual é a regra para o valor de prioridade?",
+    options: [
+      "Pode ser qualquer valor entre 0 e 65535.",
+      "Deve ser um múltiplo de 1024.",
+      "Deve ser um múltiplo de 4096.",
+      "Deve ser um valor par entre 4096 e 32768."
+    ],
+    answer: "Deve ser um múltiplo de 4096.",
+    explanation: "A Seção 2.2 especifica que a configuração manual da prioridade deve ser feita em múltiplos de 4096. O exemplo dado é 'spanning-tree vlan 10 priority 4096'."
+  },
+  {
+    question: "Qual comando habilita o comportamento de Edge Port (PortFast) globalmente, por padrão, em todas as portas de acesso do switch?",
+    options: [
+      "spanning-tree portfast all",
+      "spanning-tree edge-port global",
+      "spanning-tree portfast default",
+      "spanning-tree mode portfast"
+    ],
+    answer: "spanning-tree portfast default",
+    explanation: "De acordo com a Seção 2.3, o comando 'spanning-tree portfast default' é utilizado para habilitar Edge Port em todas as portas de acesso por padrão (Global)."
+  },
+  {
+    question: "Ao configurar uma interface específica para conectar um servidor, qual é a sequência correta de comandos no modo de configuração de interface para habilitar o Edge Port?",
+    options: [
+      "switchport mode access -> spanning-tree portfast",
+      "spanning-tree portfast -> switchport mode access",
+      "switchport mode trunk -> spanning-tree portfast",
+      "spanning-tree edge-port enable -> switchport mode access"
+    ],
+    answer: "switchport mode access -> spanning-tree portfast",
+    explanation: "A Seção 2.3 demonstra que, após entrar na interface (ex: gigabitethernet 0/1), deve-se configurar 'switchport mode access' e depois 'spanning-tree portfast' para habilitar o Edge Port naquele host/servidor."
+  },
+  {
+    question: "Por padrão, como o switch Cisco determina o tipo de link (Point-to-Point ou Shared) para o RSTP?",
+    options: [
+      "Ele assume que todos os links são Shared até que o administrador configure manualmente como Point-to-Point.",
+      "Ele considera links Full-Duplex como Point-to-Point e links Half-Duplex como Shared.",
+      "Ele determina o tipo de link exclusivamente com base na velocidade da interface (1Gbps ou 10Gbps).",
+      "Ele utiliza o protocolo CDP/LLDP para perguntar ao vizinho qual é o tipo de link."
+    ],
+    answer: "Ele considera links Full-Duplex como Point-to-Point e links Half-Duplex como Shared.",
+    explanation: "Conforme a Seção 2.4, por padrão, links Full-Duplex são considerados Point-to-Point pelo switch, o que permite o handshake do RSTP."
+  },
+  {
+    question: "Em qual cenário o administrador precisaria usar o comando 'spanning-tree link-type point-to-point' manualmente em uma interface?",
+    options: [
+      "Quando o link for Half-Duplex e ele quiser forçar a convergência rápida.",
+      "Quando a autodetecção falhar em classificar um link Full-Duplex como Point-to-Point.",
+      "Quando o link estiver conectado a um hub (Shared Media).",
+      "Para desabilitar o RSTP naquela interface específica."
+    ],
+    answer: "Quando a autodetecção falhar em classificar um link Full-Duplex como Point-to-Point.",
+    explanation: "A Seção 2.4 afirma que o comando é usado para alterar/forçar manualmente o tipo de link 'caso o autodetect falhe'. Isso garante que o RSTP saiba que pode usar o handshake Proposal/Agreement."
+  },
+  {
+    question: "Qual é o tipo de dispositivo que normalmente deve ser conectado a uma porta configurada como Edge Port (PortFast)?",
+    options: [
+      "Outro switch Cisco para formar uma topologia redundante.",
+      "Um hub para compartilhar a conexão com vários dispositivos.",
+      "Um servidor ou host final (PC, impressora, telefone IP).",
+      "Um roteador para fazer o roteamento entre VLANs."
+    ],
+    answer: "Um servidor ou host final (PC, impressora, telefone IP).",
+    explanation: "Conforme indicado na Seção 2.3, o Edge Port é habilitado em interfaces específicas para 'Servidor / Host'. Ele não deve ser usado para conectar switches, pois isso poderia criar loops sem a proteção do STP."
+  },
+  {
+    question: "Por que os comandos de Root Bridge (root primary e root secondary) são aplicados especificamente por VLAN no modo Rapid-PVST+?",
+    options: [
+      "Porque o Rapid-PVST+ executa uma instância separada do Spanning Tree para cada VLAN, permitindo o balanceamento de carga entre switches.",
+      "Porque o comando só funciona se a VLAN for a 10 ou a 20.",
+      "Porque o Rapid-PVST+ exige que todos os switches da rede tenham a mesma prioridade para todas as VLANs.",
+      "Porque o IOS da Cisco só permite configurar prioridade em VLANs nativas."
+    ],
+    answer: "Porque o Rapid-PVST+ executa uma instância separada do Spanning Tree para cada VLAN, permitindo o balanceamento de carga entre switches.",
+    explanation: "Embora a Seção 2.2 mostre os comandos para VLANs específicas (VLAN 10 e VLAN 20), isso reflete a característica do PVST+ (Per-VLAN Spanning Tree). Cada VLAN tem sua própria topologia, permitindo que um switch seja Root para a VLAN 10 e outro seja Root para a VLAN 20 (balanceamento de carga)."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

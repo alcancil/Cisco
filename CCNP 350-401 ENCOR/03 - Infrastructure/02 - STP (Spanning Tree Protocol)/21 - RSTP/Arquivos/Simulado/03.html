@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado RSTP - Handshake Proposal/Agreement e Mecanismo de Sync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado RSTP -Handshake Proposal/Agreement e Mecanismo de Sync</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Handshake Proposal/Agreement e Mecanismo de Sync. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual é o pré-requisito fundamental de Camada 2 para que o mecanismo de handshake (Proposal/Agreement) do RSTP ocorra e permita a convergência em milissegundos?",
+    options: [
+      "O link deve ser classificado como Shared (compartilhado).",
+      "O link deve ser obrigatoriamente um segmento Point-to-Point.",
+      "O link deve estar configurado como Half-Duplex.",
+      "O link deve estar em uma VLAN nativa diferente da VLAN de gerenciamento."
+    ],
+    answer: "O link deve ser obrigatoriamente um segmento Point-to-Point.",
+    explanation: "Conforme a Seção 1.2, o primeiro passo do handshake ativo é que o link suba em um segmento Point-to-Point. Em links Shared, o RSTP não consegue garantir a convergência rápida via handshake."
+  },
+  {
+    question: "No processo de convergência ativa do RSTP, qual é a primeira ação executada por uma Designated Port quando o link Point-to-Point sobe?",
+    options: [
+      "Enviar um BPDU com a flag Agreement ativada.",
+      "Bloquear todas as suas portas não-Edge.",
+      "Enviar um BPDU com a flag Proposal ativada.",
+      "Enviar um TCN (Topology Change Notification) para a Root Bridge."
+    ],
+    answer: "Enviar um BPDU com a flag Proposal ativada.",
+    explanation: "De acordo com a Seção 1.2 (passo 2), a Designated Port inicia o processo enviando um BPDU com a flag Proposal marcada para o switch vizinho."
+  },
+  {
+    question: "O que exatamente o switch vizinho faz ao receber um BPDU com a flag Proposal durante o processo de Sync?",
+    options: [
+      "Bloqueia temporariamente todas as suas portas não-Edge para evitar loops.",
+      "Eleva imediatamente sua prioridade para se tornar a nova Root Bridge.",
+      "Responde com uma Proposal para o switch anterior, criando um loop de negociação.",
+      "Limpa toda a sua tabela MAC (CAM) antes de encaminhar o tráfego."
+    ],
+    answer: "Bloqueia temporariamente todas as suas portas não-Edge para evitar loops.",
+    explanation: "Na Seção 1.2 (passo 3), é explicado que o switch vizinho inicia o processo de Sync, cujo objetivo é bloquear temporariamente as portas não-Edge. Isso é vital para garantir que não haja um loop de Camada 2 enquanto a topologia transita."
+  },
+  {
+    question: "Após concluir o processo de sincronização (Sync), por qual porta o switch vizinho envia a resposta com a flag Agreement ativada?",
+    options: [
+      "Por qualquer Designated Port disponível.",
+      "Por sua Root Port.",
+      "Por uma Alternate Port.",
+      "Por todas as portas da VLAN simultaneamente."
+    ],
+    answer: "Por sua Root Port.",
+    explanation: "Conforme a Seção 1.2 (passo 4), o vizinho responde imediatamente com a flag Agreement marcada, e essa resposta é enviada através de sua Root Port."
+  },
+  {
+    question: "Qual é o tempo aproximado de transição para o estado de Forwarding da Designated Port transmissora após receber o BPDU de Agreement?",
+    options: [
+      "Aguarda o Forward Delay de 15 segundos.",
+      "Aguarda o Max Age de 20 segundos.",
+      "Transita instantaneamente (em milissegundos / 1-2s).",
+      "Aguarda 3x o Hello Time (6 segundos)."
+    ],
+    answer: "Transita instantaneamente (em milissegundos / 1-2s).",
+    explanation: "De acordo com a Seção 1.2 (passo 5), após o recebimento do Agreement, a Designated Port do switch transmissor vai para Forwarding instantaneamente, concluindo a convergência em milissegundos."
+  },
+  {
+    question: "No campo de Flags do BPDU RSTP (Versão 2), qual é o Bit responsável por indicar a flag Proposal?",
+    options: [
+      "Bit 0",
+      "Bit 1",
+      "Bit 6",
+      "Bit 7"
+    ],
+    answer: "Bit 1",
+    explanation: "Conforme a tabela detalhada na Seção 4.2, o Bit 1 é a flag Proposal (Proposta). Ele é utilizado pela Designated Port para iniciar o processo de convergência em links Point-to-Point."
+  },
+  {
+    question: "Qual é a função exata da flag Agreement (Bit 6) no cabeçalho do BPDU RSTP?",
+    options: [
+      "Sinalizar que a porta remetente deseja se tornar a Root Bridge.",
+      "Indicar que a porta remetente está no estado de Learning.",
+      "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync), permitindo que a Designated Port abra instantaneamente.",
+      "Confirmar o recebimento de notificações de mudança de topologia (TCN)."
+    ],
+    answer: "Confirmar que o switch vizinho concluiu o processo de sincronização (Sync), permitindo que a Designated Port abra instantaneamente.",
+    explanation: "A Seção 4.2 explica que o Bit 6 (Agreement) é a resposta síncrona à Proposal recebida. Ele confirma que o vizinho fez o Sync de suas portas e permite que a porta transmissora vá direto para Forwarding."
+  },
+  {
+    question: "Por que o mecanismo de handshake Proposal/Agreement elimina a necessidade de esperar os temporizadores passivos (Listening e Learning) do STP clássico?",
+    options: [
+      "Porque o RSTP não utiliza tabela MAC, apenas tabela ARP.",
+      "Porque a rede é sincronizada proativamente (via Sync), garantindo que não há loops antes de liberar o tráfego.",
+      "Porque os temporizadores são substituídos por pacotes ICMP de verificação de loop.",
+      "Porque o RSTP desativa a eleição de Root Bridge sempre que um link cai."
+    ],
+    answer: "Porque a rede é sincronizada proativamente (via Sync), garantindo que não há loops antes de liberar o tráfego.",
+    explanation: "No STP, os timers existem para garantir (de forma passiva e lenta) que não há loops. No RSTP, o mecanismo Sync bloqueia as portas necessárias imediatamente e o vizinho confirma via Agreement. Como a segurança contra loops é ativa, não há necessidade de esperar 30 a 50 segundos."
+  },
+  {
+    question: "Durante um handshake bem-sucedido, quais são as flags que estarão ativas simultaneamente no BPDU que contém a confirmação final do vizinho?",
+    options: [
+      "Apenas Proposal.",
+      "Apenas Agreement.",
+      "Proposal e Agreement.",
+      "Agreement e TC (Topology Change)."
+    ],
+    answer: "Apenas Agreement.",
+    explanation: "O switch vizinho envia um BPDU com a flag Agreement ativada (Bit 6) para confirmar o Sync. A flag Proposal (Bit 1) foi enviada pelo transmissor inicial. Uma vez que o Agreement é recebido, a transição para Forwarding ocorre."
+  },
+  {
+    question: "Ao capturar o tráfego de um handshake RSTP no Wireshark, como você pode filtrar para ver APENAS os BPDUs que estão iniciando o processo de convergência rápida?",
+    options: [
+      "stp.flags.agreement == 1",
+      "stp.flags.proposal == 1",
+      "stp.flags.tc == 1",
+      "stp.version == 0"
+    ],
+    answer: "stp.flags.proposal == 1",
+    explanation: "Conforme a Seção 4.1, o filtro 'stp.flags.proposal == 1' é o comando utilizado no Wireshark para isolar os BPDUs que possuem a flag Proposal ativa, ou seja, os pacotes que estão iniciando o handshake."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
