@@ -482,7 +482,7 @@ Por essas saídas podemos confirmar que temos o **PVST+** ativado, com uma inst�
   
 **OBS:** temos 3 instâncias pois temos a vlan 1, antiga vlan nativa que não pode ser apagada e depois as vlans 10 e 20 que foram configuradas. Como não criamos a vlan 50, não temos a instância do **PVSTP+** para ela.  
   
-Agora vamos voltar ao wireshar e ajustar o filtro para:  
+Agora vamos voltar ao wireshark e ajustar o filtro para:  
   
 - **stp.type == 2**
 
