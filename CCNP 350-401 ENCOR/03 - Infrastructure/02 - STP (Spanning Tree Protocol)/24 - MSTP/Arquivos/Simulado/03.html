@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Hierarquia de Árvores: IST, CST e a Grande Árvore CIST</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado MSTP - Hierarquia de Árvores: IST, CST e a Grande Árvore CIST</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre MSTP - Hierarquia de Árvores: IST, CST e a Grande Árvore CIST. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual é a definição e o escopo de atuação do IST (Internal Spanning Tree / MSTI 0) dentro de uma arquitetura MSTP?",
+    options: [
+      "É a instância responsável por conectar todas as regiões MST entre si através de links de operadora.",
+      "É a árvore lógica calculada exclusivamente dentro de uma região MST específica, conectando todos os switches internos e estendendo a CST para dentro da região.",
+      "É um protocolo proprietário da Cisco criado para substituir o Spanning Tree em redes de Camada 3.",
+      "É uma árvore lógica criada de forma isolada para cada VLAN individual existente na rede."
+    ],
+    answer: "É a árvore lógica calculada exclusivamente dentro de uma região MST específica, conectando todos os switches internos e estendendo a CST para dentro da região.",
+    explanation: "O IST (Internal Spanning Tree, correspondente à MSTI 0) opera dentro de uma Região MST, calculando a topologia interna, garantindo a ausência de loops na malha de switches daquela região e fazendo a ponte com o mundo externo."
+  },
+  {
+    question: "Como o CST (Common Spanning Tree) atua em conjunto com as Regiões MST em uma topologia de rede complexa?",
+    options: [
+      "O CST substitui completamente o IST quando há tráfego de voz e dados na mesma VLAN.",
+      "O CST é a árvore lógica que conecta todas as Regiões MST entre si e também aos switches legados (como 802.1D ou 802.1w) externos.",
+      "O CST opera apenas dentro das portas de borda, sem qualquer relação com o núcleo da rede.",
+      "O CST gerencia o balanceamento de carga de todas as instâncias MSTI criadas pelo administrador."
+    ],
+    answer: "O CST é a árvore lógica que conecta todas as Regiões MST entre si e também aos switches legados (como 802.1D ou 802.1w) externos.",
+    explanation: "Fora das regiões MST, o CST mantém a visão unificada, conectando as diferentes regiões e os switches tradicionais de camada 2 em uma topologia global sem loops."
+  },
+  {
+    question: "O que é o CIST (Common and Internal Spanning Tree) e como ele se forma na arquitetura do MSTP?",
+    options: [
+      "É uma tabela estática de roteamento IP utilizada para priorizar pacotes BGP.",
+      "É a grande árvore global da rede, formada pela junção do IST (dentro das regiões) com o CST (fora das regiões).",
+      "É o algoritmo de hash MD5 utilizado para calcular o Configuration Digest da região.",
+      "É uma ferramenta de linha de comando para monitorar o consumo de CPU das MSTIs."
+    ],
+    answer: "É a grande árvore global da rede, formada pela junção do IST (dentro das regiões) com o CST (fora das regiões).",
+    explanation: "O CIST é o resultado macroscópico da união entre o comportamento interno das regiões (IST) e a interconexão externa (CST), formando a árvore global que abrange toda a infraestrutura."
+  },
+  {
+    question: "Na perspectiva do restante da rede (fora de uma Região MST), como a malha de switches internos daquela região é enxergada?",
+    options: [
+      "Como dezenas de switches independentes rodando PVST+.",
+      "Como se fosse um único switch gigante de Camada 2 (uma única Virtual Bridge unificada).",
+      "Como um roteador de borda executando o protocolo OSPF.",
+      "Como uma única porta de acesso sem suporte a entroncamento (Trunk)."
+    ],
+    answer: "Como se fosse um único switch gigante de Camada 2 (uma única Virtual Bridge unificada).",
+    explanation: "Essa é a analogia central do MSTP: para o mundo externo, a Região MST inteira se oculta e se comporta como um único switch virtual massivo, simplificando drasticamente a topologia lógica global."
+  },
+  {
+    question: "Qual papel desempenha a Master Port na borda de uma Região MST em relação à hierarquia de árvores?",
+    options: [
+      "É a porta que conecta o switch de acesso ao telefone IP da rede.",
+      "É a porta na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root externo.",
+      "É a porta responsável por gerar o Configuration Digest da região.",
+      "É a porta que descarta todo o tráfego proveniente de redes legadas PVST+."
+    ],
+    answer: "É a porta na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root externo.",
+    explanation: "A Master Port é um conceito específico do MSTP: ela aponta para o caminho de custo ótimo dentro da região em direção à raiz global (CIST Root) que está situada fora daquela região."
+  },
+  {
+    question: "O que caracteriza uma Boundary Port (porta de fronteira) em uma topologia MSTP?",
+    options: [
+      "É uma porta física que conecta dois switches dentro da mesma região com a mesma revisão.",
+      "É uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um switch rodando STP/RSTP/PVST+ tradicional.",
+      "É a porta de gerência exclusiva utilizada para acessar a CLI do switch via SSH.",
+      "É a porta designada para o tráfego de voz na MSTI 2."
+    ],
+    answer: "É uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um switch rodando STP/RSTP/PVST+ tradicional.",
+    explanation: "A Boundary Port faz a adaptação e tradução de BPDUs entre a região MST moderna e domínios legados ou externos, garantindo a interoperabilidade sem quebrar a prevenção de loops."
+  },
+  {
+    question: "Qual é a relação direta entre a MSTI 0 e o IST (Internal Spanning Tree)?",
+    options: [
+      "São instâncias completamente independentes e sem relação de hierarquia.",
+      "A MSTI 0 é o próprio IST; trata-se da instância obrigatória padrão onde residem todas as VLANs não mapeadas explicitamente.",
+      "O IST é a MSTI número 4094, enquanto a MSTI 0 é reservada para o PVST+.",
+      "A MSTI 0 só pode ser ativada se o IST estiver desabilitado na CLI."
+    ],
+    answer: "A MSTI 0 é o próprio IST; trata-se da instância obrigatória padrão onde residem todas as VLANs não mapeadas explicitamente.",
+    explanation: "Por definição arquitetural, a MSTI 0 é o IST. Ela gerencia a topologia interna da região e carrega o controle global do CIST."
+  },
+  {
+    question: "Como o CIST Root (a raiz da árvore global CIST) é determinado em uma rede que mescla Regiões MST e switches legados?",
+    options: [
+      "Sempre será o switch que possuir o maior endereço IP configurado na VLAN 1.",
+      "É eleito globalmente com base nos critérios padrão de Spanning Tree (menor Bridge ID considerando prioridade e MAC) em toda a malha interconectada por CIST/CST.",
+      "É definido obrigatoriamente por um controlador SDN externo via OpenFlow.",
+      "Cada região escolhe sua própria raiz de forma isolada, ignorando o resto da rede."
+    ],
+    answer: "É eleito globalmente com base nos critérios padrão de Spanning Tree (menor Bridge ID considerando prioridade e MAC) em toda a malha interconectada por CIST/CST.",
+    explanation: "O CIST Root global é eleito utilizando as regras clássicas de Bridge ID (Priority + MAC) através da árvore global CIST, podendo residir dentro de uma região MST ou em um switch externo."
+  },
+  {
+    question: "Se a raiz da árvore global (CIST Root) estiver localizada *fora* de uma determinada Região MST, qual switch dentro da região será o ponto de entrada primário para essa árvore?",
+    options: [
+      "O switch que possuir a Master Port.",
+      "O switch com o maior número de revisão (Revision Number).",
+      "O switch de acesso da camada inferior conectado aos telefones IP.",
+      "Qualquer switch que possua uma porta Designated."
+    ],
+    answer: "O switch que possuir a Master Port.",
+    explanation: "A Master Port é exatamente a porta localizada na fronteira da região que representa o melhor caminho em direção ao CIST Root externo, servindo de âncora para a árvore interna."
+  },
+  {
+    question: "Por que a compreensão conjunta de IST, CST e CIST é fundamental para a engenharia de redes no CCNP ENCOR?",
+    options: [
+      "Porque permite configurar endereços IPv6 em portas de entroncamento.",
+      "Porque desmistifica como o MSTP consegue manter o isolamento e otimização interna de uma região ao mesmo tempo em que garante interoperabilidade segura com o restante da rede legada.",
+      "Porque substitui a necessidade de utilizar VLANs nas camadas de acesso e distribuição.",
+      "Porque elimina totalmente a necessidade de calcular custos de link nas portas gigabit."
+    ],
+    answer: "Porque desmistifica como o MSTP consegue manter o isolamento e otimização interna de uma região ao mesmo tempo em que garante interoperabilidade segura com o restante da rede legada.",
+    explanation: "Entender a hierarquia de árvores mostra a maestria do padrão 802.1s: otimizar o processamento interno (IST) sem perder a capacidade de coexistir com o ecossistema externo legado (CST/CIST)."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

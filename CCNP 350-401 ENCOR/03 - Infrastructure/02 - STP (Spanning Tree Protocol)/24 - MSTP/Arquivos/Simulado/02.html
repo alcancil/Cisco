@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Anatomia da Região MST: Atributos, Name, Revision e Digest MD5</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado MSTP - Anatomia da Região MST: Atributos, Name, Revision e Digest MD5</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre RSTP - Anatomia da Região MST: Atributos, Name, Revision e Digest MD5. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Para que dois switches físicos façam parte exatamente da mesma Região MST, quais são os três atributos obrigatórios que devem ser rigorosamente idênticos entre eles?",
+    options: [
+      "Bridge Priority, MAC Address e VLAN ID.",
+      "Configuration Name, Revision Number e VLAN-to-Instance Mapping.",
+      "Max Age, Hello Time e Forward Delay.",
+      "IP Address da gerência, IP do Gateway e CIST Root ID."
+    ],
+    answer: "Configuration Name, Revision Number e VLAN-to-Instance Mapping.",
+    explanation: "O padrão IEEE 802.1s define que a identidade de uma Região MST depende unicamente de três parâmetros de configuração: o Nome da Região, o Número de Revisão e a tabela de mapeamento de VLANs para instâncias."
+  },
+  {
+    question: "Qual é a função do Configuration Digest (hash MD5) transmitido dentro do BPDU MSTP?",
+    options: [
+      "Criptografar o tráfego de dados das VLANs para evitar ataques de sniffing.",
+      "Garantir que os switches compartilham o mesmo mapeamento VLAN-para-Instância sem precisar enviar a tabela inteira no BPDU.",
+      "Eleger automaticamente qual switch será o CIST Root da rede global.",
+      "Substituir o endereço MAC de origem do switch transmissor por um hash seguro."
+    ],
+    answer: "Garantir que os switches compartilham o mesmo mapeamento VLAN-para-Instância sem precisar enviar a tabela inteira no BPDU.",
+    explanation: "O Digest é um hash MD5 calculado localmente a partir da tabela de mapeamento de VLANs. Como a tabela completa seria grande demais para caber no BPDU, o hash permite que os switches validem instantaneamente se estão na mesma região."
+  },
+  {
+    question: "O que acontece se um único switch em uma malha MSTP estiver configurado com uma tabela de mapeamento de VLANs diferente dos demais vizinhos?",
+    options: [
+      "O switch se tornará automaticamente o CIST Root de toda a região.",
+      "O switch não fará parte da região e será tratado como um switch externo (Boundary), quebrando o balanceamento interno.",
+      "O switch entrará em estado de erro (err-disabled) em todas as portas de tronco.",
+      "O protocolo MSTP cairá automaticamente para o modo STP Clássico (802.1D)."
+    ],
+    answer: "O switch não fará parte da região e será tratado como um switch externo (Boundary), quebrando o balanceamento interno.",
+    explanation: "Qualquer divergência nos atributos de região (como no mapeamento ou no nome) faz com que o Digest gerado mude. O switch adjacente perceberá a divergência e tratará a porta como Boundary Port, isolando a consistência regional."
+  },
+  {
+    question: "Qual dos três atributos de configuração da Região MST *não* entra diretamente no cálculo matemático do Configuration Digest (hash MD5)?",
+    options: [
+      "Configuration Name",
+      "Revision Number",
+      "VLAN-to-Instance Mapping",
+      "Todos os três entram no cálculo do Digest."
+    ],
+    answer: "Revision Number",
+    explanation: "O Revision Number é enviado no BPDU e comparado diretamente pelos switches, mas ele não é processado matematicamente pelo algoritmo de hash MD5 que gera o Configuration Digest."
+  },
+  {
+    question: "O que é o Configuration Name em uma Região MST e qual é a sua limitação de tamanho estipulada pelo padrão?",
+    options: [
+      "É um endereço IP de 32 bits utilizado para identificar o switch raiz.",
+      "É uma string de texto de até 32 caracteres que identifica o nome da região administrativa.",
+      "É um identificador numérico de 16 bits exclusivo para cada MSTI.",
+      "É uma senha criptográfica de 64 caracteres para autenticação de BPDUs."
+    ],
+    answer: "É uma string de texto de até 32 caracteres que identifica o nome da região administrativa.",
+    explanation: "O Configuration Name é uma string sensível a maiúsculas/minúsculas de até 32 caracteres que compõe a assinatura da região junto ao Revision e ao Digest."
+  },
+  {
+    question: "Por que o número de revisão (Revision Number) é um parâmetro crítico ao alterar o mapeamento de VLANs em uma Região MST em produção?",
+    options: [
+      "Porque o switch raiz reseta automaticamente a cada alteração de revisão.",
+      "Porque alterar o mapeamento sem incrementar o número de revisão faz com que os switches vizinhos ignoreem a mudança de Digest devido a mecanismos de otimização/cache.",
+      "Porque o Revision Number precisa ser obrigatoriamente igual ao número total de VLANs da rede.",
+      "Porque ele define o tempo de retenção do Max Age na borda da região."
+    ],
+    answer: "Porque alterar o mapeamento sem incrementar o número de revisão faz com que os switches vizinhos ignoreem a mudança de Digest devido a mecanismos de otimização/cache.",
+    explanation: "Como o Digest é gerado localmente, alterar o mapeamento de VLANs muda o hash. Incrementar o Revision Number garante que os switches reconheçam que uma nova política de configuração foi aplicada."
+  },
+  {
+    question: "Como o Configuration Digest (MD5) é gerado em um switch operando com MSTP?",
+    options: [
+      "É gerado e distribuído centralizadamente por um servidor RADIUS na rede.",
+      "É calculado localmente por cada switch a partir da tabela exata de mapeamento entre VLANs e instâncias configurada na CLI.",
+      "É inserido manualmente pelo administrador com base em uma chave pré-compartilhada.",
+      "É obtido de forma dinâmica através de consultas ARP na VLAN nativa."
+    ],
+    answer: "É calculado localmente por cada switch a partir da tabela exata de mapeamento entre VLANs e instâncias configurada na CLI.",
+    explanation: "Os switches não trocam a tabela inteira de 4094 VLANs; cada um calcula localmente o hash MD5 da sua tabela de mapeamento e o compara com o valor recebido no BPDU dos vizinhos."
+  },
+  {
+    question: "Se o comando `show pending` (ou verificação de configuração pendente) for utilizado no Cisco IOS após alterar o mapeamento de VLANs, qual é o objetivo dessa verificação?",
+    options: [
+      "Verificar se há pacotes perdidos na porta de tronco.",
+      "Visualizar as alterações de configuração MSTP que ainda não foram aplicadas ativamente até que o comando de commit/ativação seja executado.",
+      "Checar a latência entre o switch local e o CIST Root.",
+      "Medir o consumo de memória RAM utilizado pelas instâncias MSTI."
+    ],
+    answer: "Visualizar as alterações de configuração MSTP que ainda não foram aplicadas ativamente até que o comando de commit/ativação seja executado.",
+    explanation: "No MSTP da Cisco, as alterações de parâmetros regionais exigem uma aplicação explícita (como sair do modo de configuração de região ou aplicar o comando de commit) para que o novo Digest entre em vigor."
+  },
+  {
+    question: "Qual comportamento é esperado em uma porta de interconexão quando um switch recebe um BPDU contendo um Configuration Name diferente do seu?",
+    options: [
+      "O switch local atualiza automaticamente seu Configuration Name para aceitar o do vizinho.",
+      "A porta é classificada como Boundary Port (fronteira), impedindo o comportamento unificado da região naquele link.",
+      "A porta entra imediatamente em estado de err-disabled por violação de segurança.",
+      "O link é desativado permanentemente até que um reboot seja realizado."
+    ],
+    answer: "A porta é classificada como Boundary Port (fronteira), impedindo o comportamento unificado da região naquele link.",
+    explanation: "Quando o nome, o digest ou a revisão divergem, o MSTP entende que o link cruza a fronteira para outra região (ou rede legada), fazendo com que a porta atue como Boundary Port."
+  },
+  {
+    question: "No contexto dos atributos da Região MST, por que o uso de ferramentas de automação ou scripts (como Ansible/Python) é altamente recomendado em grandes redes corporativas ao alterar o mapeamento de VLANs?",
+    options: [
+      "Porque o MSTP exige criptografia RSA obrigatória em todas as interfaces de gerência.",
+      "Porque garante a consistência atômica e simultânea dos três atributos (Name, Revision, Mapeamento) em dezenas de switches, evitando partições acidentais da região.",
+      "Porque o CLI tradicional da Cisco impede a criação de mais de duas instâncias MST.",
+      "Porque o protocolo MSTP não possui comandos manuais via console."
+    ],
+    answer: "Porque garante a consistência atômica e simultânea dos três atributos (Name, Revision, Mapeamento) em dezenas de switches, evitando partições acidentais da região.",
+    explanation: "Inconsistências manuais na aplicação de mudanças de mapeamento em switches diferentes criam descompassos no Digest, fragmentando a região MST e gerando instabilidade na rede."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

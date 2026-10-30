@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Multiple Spanning Tree Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">MSTP - Multiple Spanning Tree Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Multiple Spanning Tree Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Qual foi a principal limitação arquitetural do IEEE 802.1D (CST - Common Spanning Tree) que motivou o desenvolvimento de abordagens alternativas para redes corporativas?",
+    options: [
+      "A exigência de processar BPDUs individualmente para cada VLAN existente na rede.",
+      "O uso de uma única instância lógica de Spanning Tree compartilhada por todas as VLANs, impedindo o balanceamento de carga entre links redundantes.",
+      "A incapacidade de operar em switches de fabricantes diferentes (multivendor).",
+      "O tempo de convergência extremamente rápido que desestabilizava as tabelas CAM dos switches centrais."
+    ],
+    answer: "O uso de uma única instância lógica de Spanning Tree compartilhada por todas as VLANs, impedindo o balanceamento de carga entre links redundantes.",
+    explanation: "O CST clássico mantinha apenas uma árvore lógica para toda a rede. Caso houvesse links redundantes, eles ficavam bloqueados uniformemente, impedindo o uso ativo-ativo de caminhos diferentes para o tráfego de dados."
+  },
+  {
+    question: "Como o Cisco PVST+ (Per-VLAN Spanning Tree Plus) solucionou o problema de balanceamento de carga que existia no CST clássico?",
+    options: [
+      "Agrupando todas as VLANs em apenas duas instâncias lógicas independentes.",
+      "Mantendo uma instância de Spanning Tree totalmente independente para cada VLAN configurada na rede.",
+      "Eliminando completamente o uso de BPDUs e utilizando o algoritmo de roteamento OSPF em Camada 2.",
+      "Forçando o tráfego de todas as VLANs a passar obrigatoriamente pela mesma porta física (Root Port)."
+    ],
+    answer: "Mantendo uma instância de Spanning Tree totalmente independente para cada VLAN configurada na rede.",
+    explanation: "O PVST+ roda uma árvore de Spanning Tree separada para cada VLAN, permitindo que administradores definam Root Bridges diferentes por VLAN e distribuam o tráfego de forma otimizada pelos links redundantes."
+  },
+  {
+    question: "Apesar de permitir o balanceamento de carga por VLAN, qual é o principal calcanhar de Aquiles (desvantagem) operacional do PVST+ / Rapid-PVST+ em redes de grande porte?",
+    options: [
+      "A incompatibilidade com switches de Camada 3 de mercado.",
+      "O alto consumo de CPU e memória nos switches devido à necessidade de processar centenas ou milhares de instâncias e BPDUs independentes.",
+      "A obrigatoriedade de utilizar cabos de fibra óptica em todas as portas de acesso.",
+      "O tempo de convergência fixo de 50 segundos que não pode ser reduzido."
+    ],
+    answer: "O alto consumo de CPU e memória nos switches devido à necessidade de processar centenas ou milhares de instâncias e BPDUs independentes.",
+    explanation: "Com 1.000 VLANs, o PVST+ exige o processamento de 1.000 instâncias e o envio massivo de BPDUs a cada 2 segundos, sobrecarregando o plano de controle dos switches."
+  },
+  {
+    question: "Qual é a principal proposta de valor do IEEE 802.1s (MSTP - Multiple Spanning Tree Protocol) ao comparar com o PVST+ e o CST?",
+    options: [
+      "Criar uma única árvore para toda a rede sem suporte a VLANs.",
+      "Oferecer o equilíbrio perfeito: agrupar VLANs em instâncias lógicas reduzidas para garantir balanceamento de carga sem sobrecarregar a CPU com milhares de instâncias.",
+      "Substituir totalmente o protocolo IP por endereçamento MAC em redes corporativas.",
+      "Eliminar a necessidade de eleição de Root Bridge nas redes modernas."
+    ],
+    answer: "Oferecer o equilíbrio perfeito: agrupar VLANs em instâncias lógicas reduzidas para garantir balanceamento de carga sem sobrecarregar a CPU com milhares de instâncias.",
+    explanation: "O MSTP resolve o dilema de escala permitindo que o engenheiro agrupe milhares de VLANs em poucas instâncias (ex: 2 ou 3), unindo o melhor dos dois mundos (escalabilidade do CST + balanceamento do PVST+)."
+  },
+  {
+    question: "Do ponto de vista normativo e de ecossistema, qual é uma diferença fundamental entre o PVST+ e o MSTP (802.1s)?",
+    options: [
+      "O PVST+ é um padrão aberto do IEEE, enquanto o MSTP é um protocolo estritamente proprietário da Cisco.",
+      "O PVST+ é um protocolo proprietário da Cisco Systems, enquanto o MSTP é um padrão aberto IEEE (incorporado ao IEEE 802.1Q).",
+      "Ambos são protocolos proprietários criados exclusivamente para equipamentos da Cisco.",
+      "Ambos são padrões abertos da IETF regidos por RFCs de Camada 3."
+    ],
+    answer: "O PVST+ é um protocolo proprietário da Cisco Systems, enquanto o MSTP é um padrão aberto IEEE (incorporado ao IEEE 802.1Q).",
+    explanation: "O PVST+ utiliza extensões proprietárias da Cisco (frequentemente encapsulando BPDUs na VLAN 1 com endereços multicast específicos), ao passo que o MSTP (802.1s) é um padrão aberto da IEEE, garantindo interoperabilidade multi-vendor."
+  },
+  {
+    question: "No contexto da evolução histórica descrita no guia, qual é o padrão IEEE oficial associado diretamente à especificação do MSTP?",
+    options: [
+      "IEEE 802.1D",
+      "IEEE 802.1w",
+      "IEEE 802.1s",
+      "IEEE 802.3ad"
+    ],
+    answer: "IEEE 802.1s",
+    explanation: "O IEEE 802.1s foi a emenda original que introduziu o Multiple Spanning Tree Protocol, posteriormente consolidado dentro do padrão global de bridges e VLANs IEEE 802.1Q."
+  },
+  {
+    question: "Em uma rede Enterprise de grande porte com mais de 1.000 VLANs ativas em ambientes multi-vendor (misturando switches Cisco, HP e Aruba), qual tecnologia de Spanning Tree é fortemente recomendada pelo blueprint do CCNP ENCOR?",
+    options: [
+      "STP Clássico (802.1D)",
+      "Cisco PVST+",
+      "MSTP (IEEE 802.1s)",
+      "Spanning Tree desativado globalmente"
+    ],
+    answer: "MSTP (IEEE 802.1s)",
+    explanation: "O MSTP é a solução definitiva de engenharia para redes de grande porte e ambientes multi-vendor, pois suporta agrupamento de VLANs em instâncias e é um padrão aberto."
+  },
+  {
+    question: "Qual cenário técnico descrito no material justifica a *NÃO* utilização do MSTP em uma rede corporativa?",
+    options: [
+      "Redes de pequeno porte com menos de 20 VLANs, onde a complexidade de configuração supera os ganhos de otimização de CPU.",
+      "Redes que utilizam roteamento de Camada 3 nos switches de acesso.",
+      "Redes que operam estritamente com equipamentos de um único fabricante.",
+      "Redes que exigem convergência abaixo de 2 segundos."
+    ],
+    answer: "Redes de pequeno porte com menos de 20 VLANs, onde a complexidade de configuração supera os ganhos de otimização de CPU.",
+    explanation: "Em infraestruturas muito pequenas, o ganho de processamento de CPU é marginal, não compensando o overhead operacional e o cuidado necessário na configuração dos atributos de região (Digest, Nome, Revisão)."
+  },
+  {
+    question: "Comparando o uso de recursos de hardware, qual é a principal vantagem do MSTP em relação ao Rapid-PVST+?",
+    options: [
+      "O MSTP consome muita CPU, mas economiza espaço em disco nos switches.",
+      "O MSTP consome recursos de CPU proporcionais ao número de instâncias criadas (geralmente poucas), e não ao número massivo de VLANs.",
+      "O MSTP elimina totalmente o uso de memória RAM para tabelas de topologia.",
+      "O Rapid-PVST+ não utiliza BPDUs, o que sobrecarrega mais o hardware do que o MSTP."
+    ],
+    answer: "O MSTP consome recursos de CPU proporcionais ao número de instâncias criadas (geralmente poucas), e não ao número massivo de VLANs.",
+    explanation: "Enquanto o Rapid-PVST+ escala linearmente com o número de VLANs (1 VLAN = 1 instância), o MSTP desacopla essa relação por meio de mapeamento, mantendo o consumo de CPU baixo e estável."
+  },
+  {
+    question: "O que acontece com o tráfego de dados de uma VLAN específica que não foi explicitamente mapeada para nenhuma MSTI criada pelo administrador em uma região MST?",
+    options: [
+      "A VLAN é descartada automaticamente e perde conectividade.",
+      "A VLAN é tratada obrigatoriamente pela MSTI 0 (IST - Internal Spanning Tree).",
+      "A VLAN passa a rodar o protocolo PVST+ de forma isolada.",
+      "A VLAN assume o papel de Master Port na borda da região."
+    ],
+    answer: "A VLAN é tratada obrigatoriamente pela MSTI 0 (IST - Internal Spanning Tree).",
+    explanation: "Por padrão, todas as VLANs da rede pertencem inicialmente à MSTI 0 (IST) até que o administrador realize o mapeamento explícito delas para instâncias personalizadas (MSTI 1 a 4094)."
+  },
+  {
+    question: "Para que dois switches físicos façam parte exatamente da mesma Região MST, quais são os três atributos obrigatórios que devem ser rigorosamente idênticos entre eles?",
+    options: [
+      "Bridge Priority, MAC Address e VLAN ID.",
+      "Configuration Name, Revision Number e VLAN-to-Instance Mapping.",
+      "Max Age, Hello Time e Forward Delay.",
+      "IP Address da gerência, IP do Gateway e CIST Root ID."
+    ],
+    answer: "Configuration Name, Revision Number e VLAN-to-Instance Mapping.",
+    explanation: "O padrão IEEE 802.1s define que a identidade de uma Região MST depende unicamente de três parâmetros de configuração: o Nome da Região, o Número de Revisão e a tabela de mapeamento de VLANs para instâncias."
+  },
+  {
+    question: "Qual é a função do Configuration Digest (hash MD5) transmitido dentro do BPDU MSTP?",
+    options: [
+      "Criptografar o tráfego de dados das VLANs para evitar ataques de sniffing.",
+      "Garantir que os switches compartilham o mesmo mapeamento VLAN-para-Instância sem precisar enviar a tabela inteira no BPDU.",
+      "Eleger automaticamente qual switch será o CIST Root da rede global.",
+      "Substituir o endereço MAC de origem do switch transmissor por um hash seguro."
+    ],
+    answer: "Garantir que os switches compartilham o mesmo mapeamento VLAN-para-Instância sem precisar enviar a tabela inteira no BPDU.",
+    explanation: "O Digest é um hash MD5 calculado localmente a partir da tabela de mapeamento de VLANs. Como a tabela completa seria grande demais para caber no BPDU, o hash permite que os switches validem instantaneamente se estão na mesma região."
+  },
+  {
+    question: "O que acontece se um único switch em uma malha MSTP estiver configurado com uma tabela de mapeamento de VLANs diferente dos demais vizinhos?",
+    options: [
+      "O switch se tornará automaticamente o CIST Root de toda a região.",
+      "O switch não fará parte da região e será tratado como um switch externo (Boundary), quebrando o balanceamento interno.",
+      "O switch entrará em estado de erro (err-disabled) em todas as portas de tronco.",
+      "O protocolo MSTP cairá automaticamente para o modo STP Clássico (802.1D)."
+    ],
+    answer: "O switch não fará parte da região e será tratado como um switch externo (Boundary), quebrando o balanceamento interno.",
+    explanation: "Qualquer divergência nos atributos de região (como no mapeamento ou no nome) faz com que o Digest gerado mude. O switch adjacente perceberá a divergência e tratará a porta como Boundary Port, isolando a consistência regional."
+  },
+  {
+    question: "Qual dos três atributos de configuração da Região MST *não* entra diretamente no cálculo matemático do Configuration Digest (hash MD5)?",
+    options: [
+      "Configuration Name",
+      "Revision Number",
+      "VLAN-to-Instance Mapping",
+      "Todos os três entram no cálculo do Digest."
+    ],
+    answer: "Revision Number",
+    explanation: "O Revision Number é enviado no BPDU e comparado diretamente pelos switches, mas ele não é processado matematicamente pelo algoritmo de hash MD5 que gera o Configuration Digest."
+  },
+  {
+    question: "O que é o Configuration Name em uma Região MST e qual é a sua limitação de tamanho estipulada pelo padrão?",
+    options: [
+      "É um endereço IP de 32 bits utilizado para identificar o switch raiz.",
+      "É uma string de texto de até 32 caracteres que identifica o nome da região administrativa.",
+      "É um identificador numérico de 16 bits exclusivo para cada MSTI.",
+      "É uma senha criptográfica de 64 caracteres para autenticação de BPDUs."
+    ],
+    answer: "É uma string de texto de até 32 caracteres que identifica o nome da região administrativa.",
+    explanation: "O Configuration Name é uma string sensível a maiúsculas/minúsculas de até 32 caracteres que compõe a assinatura da região junto ao Revision e ao Digest."
+  },
+  {
+    question: "Por que o número de revisão (Revision Number) é um parâmetro crítico ao alterar o mapeamento de VLANs em uma Região MST em produção?",
+    options: [
+      "Porque o switch raiz reseta automaticamente a cada alteração de revisão.",
+      "Porque alterar o mapeamento sem incrementar o número de revisão faz com que os switches vizinhos ignoreem a mudança de Digest devido a mecanismos de otimização/cache.",
+      "Porque o Revision Number precisa ser obrigatoriamente igual ao número total de VLANs da rede.",
+      "Porque ele define o tempo de retenção do Max Age na borda da região."
+    ],
+    answer: "Porque alterar o mapeamento sem incrementar o número de revisão faz com que os switches vizinhos ignoreem a mudança de Digest devido a mecanismos de otimização/cache.",
+    explanation: "Como o Digest é gerado localmente, alterar o mapeamento de VLANs muda o hash. Incrementar o Revision Number garante que os switches reconheçam que uma nova política de configuração foi aplicada."
+  },
+  {
+    question: "Como o Configuration Digest (MD5) é gerado em um switch operando com MSTP?",
+    options: [
+      "É gerado e distribuído centralizadamente por um servidor RADIUS na rede.",
+      "É calculado localmente por cada switch a partir da tabela exata de mapeamento entre VLANs e instâncias configurada na CLI.",
+      "É inserido manualmente pelo administrador com base em uma chave pré-compartilhada.",
+      "É obtido de forma dinâmica através de consultas ARP na VLAN nativa."
+    ],
+    answer: "É calculado localmente por cada switch a partir da tabela exata de mapeamento entre VLANs e instâncias configurada na CLI.",
+    explanation: "Os switches não trocam a tabela inteira de 4094 VLANs; cada um calcula localmente o hash MD5 da sua tabela de mapeamento e o compara com o valor recebido no BPDU dos vizinhos."
+  },
+  {
+    question: "Se o comando `show pending` (ou verificação de configuração pendente) for utilizado no Cisco IOS após alterar o mapeamento de VLANs, qual é o objetivo dessa verificação?",
+    options: [
+      "Verificar se há pacotes perdidos na porta de tronco.",
+      "Visualizar as alterações de configuração MSTP que ainda não foram aplicadas ativamente até que o comando de commit/ativação seja executado.",
+      "Checar a latência entre o switch local e o CIST Root.",
+      "Medir o consumo de memória RAM utilizado pelas instâncias MSTI."
+    ],
+    answer: "Visualizar as alterações de configuração MSTP que ainda não foram aplicadas ativamente até que o comando de commit/ativação seja executado.",
+    explanation: "No MSTP da Cisco, as alterações de parâmetros regionais exigem uma aplicação explícita (como sair do modo de configuração de região ou aplicar o comando de commit) para que o novo Digest entre em vigor."
+  },
+  {
+    question: "Qual comportamento é esperado em uma porta de interconexão quando um switch recebe um BPDU contendo um Configuration Name diferente do seu?",
+    options: [
+      "O switch local atualiza automaticamente seu Configuration Name para aceitar o do vizinho.",
+      "A porta é classificada como Boundary Port (fronteira), impedindo o comportamento unificado da região naquele link.",
+      "A porta entra imediatamente em estado de err-disabled por violação de segurança.",
+      "O link é desativado permanentemente até que um reboot seja realizado."
+    ],
+    answer: "A porta é classificada como Boundary Port (fronteira), impedindo o comportamento unificado da região naquele link.",
+    explanation: "Quando o nome, o digest ou a revisão divergem, o MSTP entende que o link cruza a fronteira para outra região (ou rede legada), fazendo com que a porta atue como Boundary Port."
+  },
+  {
+    question: "No contexto dos atributos da Região MST, por que o uso de ferramentas de automação ou scripts (como Ansible/Python) é altamente recomendado em grandes redes corporativas ao alterar o mapeamento de VLANs?",
+    options: [
+      "Porque o MSTP exige criptografia RSA obrigatória em todas as interfaces de gerência.",
+      "Porque garante a consistência atômica e simultânea dos três atributos (Name, Revision, Mapeamento) em dezenas de switches, evitando partições acidentais da região.",
+      "Porque o CLI tradicional da Cisco impede a criação de mais de duas instâncias MST.",
+      "Porque o protocolo MSTP não possui comandos manuais via console."
+    ],
+    answer: "Porque garante a consistência atômica e simultânea dos três atributos (Name, Revision, Mapeamento) em dezenas de switches, evitando partições acidentais da região.",
+    explanation: "Inconsistências manuais na aplicação de mudanças de mapeamento em switches diferentes criam descompassos no Digest, fragmentando a região MST e gerando instabilidade na rede."
+  },
+  {
+    question: "Qual é a definição e o escopo de atuação do IST (Internal Spanning Tree / MSTI 0) dentro de uma arquitetura MSTP?",
+    options: [
+      "É a instância responsável por conectar todas as regiões MST entre si através de links de operadora.",
+      "É a árvore lógica calculada exclusivamente dentro de uma região MST específica, conectando todos os switches internos e estendendo a CST para dentro da região.",
+      "É um protocolo proprietário da Cisco criado para substituir o Spanning Tree em redes de Camada 3.",
+      "É uma árvore lógica criada de forma isolada para cada VLAN individual existente na rede."
+    ],
+    answer: "É a árvore lógica calculada exclusivamente dentro de uma região MST específica, conectando todos os switches internos e estendendo a CST para dentro da região.",
+    explanation: "O IST (Internal Spanning Tree, correspondente à MSTI 0) opera dentro de uma Região MST, calculando a topologia interna, garantindo a ausência de loops na malha de switches daquela região e fazendo a ponte com o mundo externo."
+  },
+  {
+    question: "Como o CST (Common Spanning Tree) atua em conjunto com as Regiões MST em uma topologia de rede complexa?",
+    options: [
+      "O CST substitui completamente o IST quando há tráfego de voz e dados na mesma VLAN.",
+      "O CST é a árvore lógica que conecta todas as Regiões MST entre si e também aos switches legados (como 802.1D ou 802.1w) externos.",
+      "O CST opera apenas dentro das portas de borda, sem qualquer relação com o núcleo da rede.",
+      "O CST gerencia o balanceamento de carga de todas as instâncias MSTI criadas pelo administrador."
+    ],
+    answer: "O CST é a árvore lógica que conecta todas as Regiões MST entre si e também aos switches legados (como 802.1D ou 802.1w) externos.",
+    explanation: "Fora das regiões MST, o CST mantém a visão unificada, conectando as diferentes regiões e os switches tradicionais de camada 2 em uma topologia global sem loops."
+  },
+  {
+    question: "O que é o CIST (Common and Internal Spanning Tree) e como ele se forma na arquitetura do MSTP?",
+    options: [
+      "É uma tabela estática de roteamento IP utilizada para priorizar pacotes BGP.",
+      "É a grande árvore global da rede, formada pela junção do IST (dentro das regiões) com o CST (fora das regiões).",
+      "É o algoritmo de hash MD5 utilizado para calcular o Configuration Digest da região.",
+      "É uma ferramenta de linha de comando para monitorar o consumo de CPU das MSTIs."
+    ],
+    answer: "É a grande árvore global da rede, formada pela junção do IST (dentro das regiões) com o CST (fora das regiões).",
+    explanation: "O CIST é o resultado macroscópico da união entre o comportamento interno das regiões (IST) e a interconexão externa (CST), formando a árvore global que abrange toda a infraestrutura."
+  },
+  {
+    question: "Na perspectiva do restante da rede (fora de uma Região MST), como a malha de switches internos daquela região é enxergada?",
+    options: [
+      "Como dezenas de switches independentes rodando PVST+.",
+      "Como se fosse um único switch gigante de Camada 2 (uma única Virtual Bridge unificada).",
+      "Como um roteador de borda executando o protocolo OSPF.",
+      "Como uma única porta de acesso sem suporte a entroncamento (Trunk)."
+    ],
+    answer: "Como se fosse um único switch gigante de Camada 2 (uma única Virtual Bridge unificada).",
+    explanation: "Essa é a analogia central do MSTP: para o mundo externo, a Região MST inteira se oculta e se comporta como um único switch virtual massivo, simplificando drasticamente a topologia lógica global."
+  },
+  {
+    question: "Qual papel desempenha a Master Port na borda de uma Região MST em relação à hierarquia de árvores?",
+    options: [
+      "É a porta que conecta o switch de acesso ao telefone IP da rede.",
+      "É a porta na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root externo.",
+      "É a porta responsável por gerar o Configuration Digest da região.",
+      "É a porta que descarta todo o tráfego proveniente de redes legadas PVST+."
+    ],
+    answer: "É a porta na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root externo.",
+    explanation: "A Master Port é um conceito específico do MSTP: ela aponta para o caminho de custo ótimo dentro da região em direção à raiz global (CIST Root) que está situada fora daquela região."
+  },
+  {
+    question: "O que caracteriza uma Boundary Port (porta de fronteira) em uma topologia MSTP?",
+    options: [
+      "É uma porta física que conecta dois switches dentro da mesma região com a mesma revisão.",
+      "É uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um switch rodando STP/RSTP/PVST+ tradicional.",
+      "É a porta de gerência exclusiva utilizada para acessar a CLI do switch via SSH.",
+      "É a porta designada para o tráfego de voz na MSTI 2."
+    ],
+    answer: "É uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um switch rodando STP/RSTP/PVST+ tradicional.",
+    explanation: "A Boundary Port faz a adaptação e tradução de BPDUs entre a região MST moderna e domínios legados ou externos, garantindo a interoperabilidade sem quebrar a prevenção de loops."
+  },
+  {
+    question: "Qual é a relação direta entre a MSTI 0 e o IST (Internal Spanning Tree)?",
+    options: [
+      "São instâncias completamente independentes e sem relação de hierarquia.",
+      "A MSTI 0 é o próprio IST; trata-se da instância obrigatória padrão onde residem todas as VLANs não mapeadas explicitamente.",
+      "O IST é a MSTI número 4094, enquanto a MSTI 0 é reservada para o PVST+.",
+      "A MSTI 0 só pode ser ativada se o IST estiver desabilitado na CLI."
+    ],
+    answer: "A MSTI 0 é o próprio IST; trata-se da instância obrigatória padrão onde residem todas as VLANs não mapeadas explicitamente.",
+    explanation: "Por definição arquitetural, a MSTI 0 é o IST. Ela gerencia a topologia interna da região e carrega o controle global do CIST."
+  },
+  {
+    question: "Como o CIST Root (a raiz da árvore global CIST) é determinado em uma rede que mescla Regiões MST e switches legados?",
+    options: [
+      "Sempre será o switch que possuir o maior endereço IP configurado na VLAN 1.",
+      "É eleito globalmente com base nos critérios padrão de Spanning Tree (menor Bridge ID considerando prioridade e MAC) em toda a malha interconectada por CIST/CST.",
+      "É definido obrigatoriamente por um controlador SDN externo via OpenFlow.",
+      "Cada região escolhe sua própria raiz de forma isolada, ignorando o resto da rede."
+    ],
+    answer: "É eleito globalmente com base nos critérios padrão de Spanning Tree (menor Bridge ID considerando prioridade e MAC) em toda a malha interconectada por CIST/CST.",
+    explanation: "O CIST Root global é eleito utilizando as regras clássicas de Bridge ID (Priority + MAC) através da árvore global CIST, podendo residir dentro de uma região MST ou em um switch externo."
+  },
+  {
+    question: "Se a raiz da árvore global (CIST Root) estiver localizada *fora* de uma determinada Região MST, qual switch dentro da região será o ponto de entrada primário para essa árvore?",
+    options: [
+      "O switch que possuir a Master Port.",
+      "O switch com o maior número de revisão (Revision Number).",
+      "O switch de acesso da camada inferior conectado aos telefones IP.",
+      "Qualquer switch que possua uma porta Designated."
+    ],
+    answer: "O switch que possuir a Master Port.",
+    explanation: "A Master Port é exatamente a porta localizada na fronteira da região que representa o melhor caminho em direção ao CIST Root externo, servindo de âncora para a árvore interna."
+  },
+  {
+    question: "Por que a compreensão conjunta de IST, CST e CIST é fundamental para a engenharia de redes no CCNP ENCOR?",
+    options: [
+      "Porque permite configurar endereços IPv6 em portas de entroncamento.",
+      "Porque desmistifica como o MSTP consegue manter o isolamento e otimização interna de uma região ao mesmo tempo em que garante interoperabilidade segura com o restante da rede legada.",
+      "Porque substitui a necessidade de utilizar VLANs nas camadas de acesso e distribuição.",
+      "Porque elimina totalmente a necessidade de calcular custos de link nas portas gigabit."
+    ],
+    answer: "Porque desmistifica como o MSTP consegue manter o isolamento e otimização interna de uma região ao mesmo tempo em que garante interoperabilidade segura com o restante da rede legada.",
+    explanation: "Entender a hierarquia de árvores mostra a maestria do padrão 802.1s: otimizar o processamento interno (IST) sem perder a capacidade de coexistir com o ecossistema externo legado (CST/CIST)."
+  },
+  {
+    question: "Como o MSTP otimiza a transmissão de mensagens de controle (BPDUs) em comparação com o modelo utilizado pelo Cisco PVST+?",
+    options: [
+      "O MSTP envia um BPDU separado para cada uma das 4094 VLANs suportadas.",
+      "O MSTP transmite apenas um único BPDU no link, independentemente da quantidade de instâncias configuradas.",
+      "O MSTP substitui os BPDUs por pacotes ICMP de Camada 3.",
+      "O MSTP transmite BPDUs apenas a cada 60 segundos para economizar largura de banda."
+    ],
+    answer: "O MSTP transmite apenas um único BPDU no link, independentemente da quantidade de instâncias configuradas.",
+    explanation: "Diferente do PVST+ que gera um BPDU por VLAN, o MSTP envia um único quadro de controle unificado, reduzindo drasticamente o consumo de banda e processamento na rede."
+  },
+  {
+    question: "O que compõe a estrutura básica de um quadro de BPDU transmitido no protocolo MSTP?",
+    options: [
+      "Um cabeçalho exclusivo para cada VLAN ativa na interface de tronco.",
+      "Um cabeçalho base que transporta as informações da MSTI 0 (IST), complementado por estruturas adicionais chamadas M-Records para as demais instâncias.",
+      "Apenas o Configuration Digest em formato MD5, sem informações de Bridge ID.",
+      "Uma tabela estática com os endereços MAC de todos os switches da rede."
+    ],
+    answer: "Um cabeçalho base que transporta as informações da MSTI 0 (IST), complementado por estruturas adicionais chamadas M-Records para as demais instâncias.",
+    explanation: "O BPDU do MSTP carrega o IST no cabeçalho principal e anexa os chamados M-Records (MST Records) no final para descrever o estado das instâncias adicionais (MSTI 1, 2, etc.)."
+  },
+  {
+    question: "Qual é a função direta dos M-Records (MST Records) anexados ao final do BPDU base do MSTP?",
+    options: [
+      "Armazenar o log de erros de segurança gerados por portas em estado de err-disabled.",
+      "Transportar os parâmetros específicos (como Root ID, custo e Bridge ID) de cada MSTI adicional configurada na região.",
+      "Criptografar o identificador da VLAN nativa para evitar ataques de trunk hopping.",
+      "Substituir o algoritmo de STP clássico por roteamento dinâmico OSPF."
+    ],
+    answer: "Transportar os parâmetros específicos (como Root ID, custo e Bridge ID) de cada MSTI adicional configurada na região.",
+    explanation: "Cada M-Record mapeia os dados de topologia de uma MSTI específica, permitindo que múltiplos caminhos lógicos sejam comunicados em um único quadro de BPDU."
+  },
+  {
+    question: "Qual instância do MSTP é representada e transportada diretamente no cabeçalho base do BPDU?",
+    options: [
+      "MSTI 1",
+      "MSTI 4094",
+      "MSTI 0 (IST - Internal Spanning Tree)",
+      "Nenhuma MSTI; o cabeçalho base carrega apenas dados do PVST+."
+    ],
+    answer: "MSTI 0 (IST - Internal Spanning Tree)",
+    explanation: "O cabeçalho base do BPDU do MSTP é dedicado exclusivamente ao IST (MSTI 0), que gerencia a árvore interna e carrega os metadados da região."
+  },
+  {
+    question: "Do ponto de vista de eficiência de hardware, qual é o impacto de utilizar M-Records no BPDU do MSTP?",
+    options: [
+      "Aumenta severamente o consumo de CPU devido ao empacotamento de dados.",
+      "Reduz de forma brutal o processamento e o uso de CPU na geração e análise de mensagens de controle nos switches.",
+      "Orquestra o tráfego de dados diretamente na Camada 3, desativando o plano de controle de Camada 2.",
+      "Gera uma sobrecarga de broadcast idêntica à do STP Clássico."
+    ],
+    answer: "Reduz de forma brutal o processamento e o uso de CPU na geração e análise de mensagens de controle nos switches.",
+    explanation: "Ao agrupar o estado de várias instâncias em um único BPDU via M-Records, o switch evita o overhead de processar centenas de BPDUs independentes."
+  },
+  {
+    question: "Onde o Configuration Name, o Revision Number e o Configuration Digest (MD5) são inseridos dentro da arquitetura do BPDU MSTP?",
+    options: [
+      "Na parte final de cada M-Record individual.",
+      "No cabeçalho estendido específico da extensão MSTP (dentro do BPDU comum), servindo para validar a consistência da região.",
+      "Nos campos reservados do cabeçalho IP de gerência.",
+      "Nos pacotes de handshake Proposal/Agreement do RSTP."
+    ],
+    answer: "No cabeçalho estendido específico da extensão MSTP (dentro do BPDU comum), servindo para validar a consistência da região.",
+    explanation: "Os atributos de identificação da região (Nome, Revisão e Digest) viajam no cabeçalho estendido do MSTP para que os vizinhos validem instantaneamente se pertencem à mesma região antes de processar os M-Records."
+  },
+  {
+    question: "Se um switch estiver configurado com 5 MSTIs ativas (além do IST), quantos blocos de M-Records aproximadamente serão anexados no BPDU enviado aos vizinhos?",
+    options: [
+      "Nenhum, pois o MSTP não utiliza M-Records quando há mais de 4 instâncias.",
+      "5 blocos de M-Records (um para cada MSTI adicional).",
+      "4094 blocos fixos, independentemente das instâncias ativas.",
+      "Apenas 1 M-Record global que resume todas as VLANs."
+    ],
+    answer: "5 blocos de M-Records (um para cada MSTI adicional).",
+    explanation: "Cada M-Record é anexado sob demanda para representar uma MSTI configurada, otimizando o tamanho do BPDU de acordo com o design da rede."
+  },
+  {
+    question: "O que ocorre se um switch receptor detectar uma divergência nos dados transportados pelo cabeçalho base ou pelos M-Records de um BPDU MSTP?",
+    options: [
+      "A porta que recebeu o BPDU é tratada como Boundary Port e o switch ajusta seu comportamento de acordo com as regras de fronteira.",
+      "O switch reinicia automaticamente o sistema operacional.",
+      "O switch apaga todas as entradas da tabela ARP.",
+      "A porta entra imediatamente em modo de escuta por 50 segundos."
+    ],
+    answer: "A porta que recebeu o BPDU é tratada como Boundary Port e o switch ajusta seu comportamento de acordo com as regras de fronteira.",
+    explanation: "Divergências estruturais ou de atributos fazem com que o switch entenda que a porta cruza para fora da região ou encontra uma inconsistência, classificando-a adequadamente como Boundary."
+  },
+  {
+    question: "Como o mecanismo de convergência rápida (herdados do RSTP, como Proposal e Agreement) interage com a estrutura de BPDUs base e M-Records no MSTP?",
+    options: [
+      "O handshake de Proposal/Agreement opera no nível do IST (MSTI 0) e sincroniza a topologia de toda a região e instâncias de uma só vez.",
+      "Cada M-Record precisa realizar um handshake Proposal/Agreement totalmente isolado e sequencial.",
+      "O RSTP e o MSTP não compartilham o mesmo mecanismo de flags no BPDU.",
+      "As flags de Proposal e Agreement só podem ser enviadas em portas de borda (Boundary Ports)."
+    ],
+    answer: "O handshake de Proposal/Agreement opera no nível do IST (MSTI 0) e sincroniza a topologia de toda a região e instâncias de uma só vez.",
+    explanation: "O IST (MSTI 0) conduz o processo de controle e convergência rápida da região usando as flags do RSTP no cabeçalho base, garantindo que a unificação e o bloqueio de loops ocorram de forma unificada."
+  },
+  {
+    question: "Por que a análise de BPDUs via Wireshark é uma ferramenta poderosa para engenheiros CCNP ao troubleshooting de redes MSTP?",
+    options: [
+      "Porque permite visualizar de forma clara o cabeçalho base do IST, os atributos de região e os detalhes internos de cada M-Record transmitido na rede.",
+      "Porque descodifica senhas de acesso à CLI dos switches.",
+      "Porque substitui o uso do comando `show spanning-tree` nos equipamentos Cisco.",
+      "Porque força a convergência do Spanning Tree para zero milissegundos."
+    ],
+    answer: "Porque permite visualizar de forma clara o cabeçalho base do IST, os atributos de região e os detalhes internos de cada M-Record transmitido na rede.",
+    explanation: "O Wireshark expõe a anatomia real do BPDU MSTP, permitindo inspecionar o Digest MD5, o Revision Number e o conteúdo exato dos M-Records para diagnosticar quebras de região ou falhas de mapeamento."
+  },
+  {
+    "question": "Qual é a definição e a função primária de uma Master Port dentro da arquitetura de uma Região MST?",
+    "options": [
+      "É a porta responsável por bloquear portas de acesso quando um switch não autorizada é conectado.",
+      "É a interface localizada na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root localizado fora da região.",
+      "É uma porta física que só pode ser configurada em switches de camada de acesso.",
+      "É a porta que envia BPDUs de Topology Change (TCN) exclusivamente para dispositivos PVST+."
+    ],
+    "answer": "É a interface localizada na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root localizado fora da região.",
+    "explanation": "A Master Port é um papel especial de porta no MSTP que representa o ponto de saída/encaminhamento de custo ótimo de toda a região MST em direção ao CIST Root externo."
+  },
+  {
+    "question": "Como uma porta de um switch MSTP é classificada automaticamente como uma Boundary Port (porta de fronteira)?",
+    "options": [
+      "Quando ela é configurada manualmente com o comando 'spanning-tree mst boundary' na interface.",
+      "Quando ela detecta que o switch vizinho pertence a outra Região MST (atributos divergentes) ou roda um protocolo legado como RSTP/PVST+.",
+      "Quando a porta atinge uma velocidade de transmissão superior a 10 Gbps.",
+      "Quando o número de VLANs na porta ultrapassa o limite de 64 instâncias."
+    ],
+    "answer": "Quando ela detecta que o switch vizinho pertence a outra Região MST (atributos divergentes) ou roda um protocolo legado como RSTP/PVST+.",
+    "explanation": "A detecção de Boundary Port é dinâmica: ao receber BPDUs com Name, Revision ou Digest diferentes (ou BPDUs legados), a porta reconhece que se conecta ao mundo externo à sua região."
+  },
+  {
+    "question": "No contexto da interoperabilidade em portas de fronteira (Boundary Ports), como uma Região MST inteira se apresenta para um switch vizinho rodando RSTP ou PVST+?",
+    "options": [
+      "Como uma topologia complexa e individual de dezenas de switches interconectados.",
+      "Como se fosse um único switch virtual de Camada 2 (uma única Virtual Bridge).",
+      "Como um roteador de borda rodando BGP.",
+      "Como um link desconectado devido a incompatibilidade de protocolos."
+    ],
+    "answer": "Como se fosse um único switch virtual de Camada 2 (uma única Virtual Bridge).",
+    "explanation": "Para preservar a compatibilidade e evitar loops globais, o MSTP mascara toda a complexidade interna da região, fazendo-a parecer um único switch de Camada 2 para o ecossistema externo."
+  },
+  {
+    "question": "Qual é a principal responsabilidade operacional executada em uma Boundary Port ao interagir com redes legadas?",
+    "options": [
+      "Tradução e adaptação de BPDUs entre o domínio MSTP e os domínios externos (como PVST+ ou RSTP).",
+      "Criptografia de ponta a ponta dos quadros de dados que saem da região.",
+      "Conversão de tráfego de Camada 2 em pacotes roteados de Camada 3.",
+      "Bloqueio permanente de todas as VLANs exceto a VLAN Nativa."
+    ],
+    "answer": "Tradução e adaptação de BPDUs entre o domínio MSTP e os domínios externos (como PVST+ ou RSTP).",
+    "explanation": "As Boundary Ports atuam como pontos de tradução, permitindo que as informações do CIST e do IST interoperem com BPDUs tradicionais (como os do PVST+ ou 802.1D/1w) mantendo a rede sem loops."
+  },
+  {
+    "question": "Em uma Região MST, onde a Master Port é calculada e posicionada na topologia?",
+    "options": [
+      "Apenas na porta que se conecta diretamente a servidores de arquivos.",
+      "No switch de borda da região que possui o caminho de menor custo interno até a raiz global do CIST (quando o CIST Root está fora da região).",
+      "Em todas as portas do switch que foi eleito o IST Regional Root.",
+      "Exclusivamente nas portas configuradas com o recurso BPDU Guard."
+    ],
+    "answer": "No switch de borda da região que possui o caminho de menor custo interno até a raiz global do CIST (quando o CIST Root está fora da região).",
+    "explanation": "Se o CIST Root reside fora da região, a porta de borda que fornece a melhor rota da região em direção a esse CIST Root assume o papel de Master Port para essa região."
+  },
+  {
+    "question": "O que acontece com o tráfego de uma MSTI interna (ex: MSTI 1 ou MSTI 2) quando ele precisa cruzar uma Boundary Port em direção a um domínio RSTP (802.1w) externo?",
+    "options": [
+      "O tráfego de todas as MSTIs é descartado na borda.",
+      "As informações de M-Records das MSTIs são agregadas e representadas pelo CIST/CST na borda para garantir que o switch externo veja a região de forma unificada.",
+      "Cada MSTI envia um BPDU RSTP independente gerando múltiplas instâncias no switch RSTP.",
+      "A porta transita imediatamente para o estado err-disabled."
+    ],
+    "answer": "As informações de M-Records das MSTIs são agregadas e representadas pelo CIST/CST na borda para garantir que o switch externo veja a região de forma unificada.",
+    "explanation": "Como o RSTP roda apenas uma instância (CST), as especificidades das MSTIs internas não são expostas individualmente em BPDUs separados; o CIST lida com a interoperabilidade no link de borda."
+  },
+  {
+    "question": "Ao analisar a tabela de Spanning Tree (`show spanning-tree`) em um switch MSTP de borda, qual papel de porta identifica a interface conectada ao CIST Root externo?",
+    "options": [
+      "Alternate Port (ALT)",
+      "Master Port (Master / MSTR)",
+      "Backup Port (BACK)",
+      "Designated Port (DESG)"
+    ],
+    "answer": "Master Port (Master / MSTR)",
+    "explanation": "Na CLI dos switches (como Cisco IOS XE), a porta de fronteira que aponta para o CIST Root externo é claramente identificada com o papel `Master` (ou `MSTR`)."
+  },
+  {
+    "question": "Por que a correta identificação das Boundary Ports é fundamental durante o diagnóstico de problemas (troubleshooting) de Spanning Tree?",
+    "options": [
+      "Porque indica onde a região MST termina e onde eventuais incompatibilidades ou quebras de regiões (por divergência de Digest/Name/Revision) estão ocorrendo.",
+      "Porque permite descobrir o endereço IP da interface de gerência do switch vizinho.",
+      "Porque determina quais portas físicas suportam velocidades de 100 Gbps.",
+      "Porque desativa automaticamente o envio de broadcasts na rede."
+    ],
+    "answer": "Porque indica onde a região MST termina e onde eventuais incompatibilidades ou quebras de regiões (por divergência de Digest/Name/Revision) estão ocorrendo.",
+    "explanation": "Se uma porta entre dois switches que deveriam estar na mesma região for sinalizada como Boundary Port, o engenheiro sabe imediatamente que há um descompasso de Name, Revision ou Mapeamento de VLANs."
+  },
+  {
+    "question": "Se o CIST Root de toda a rede global estiver localizado *dentro* de uma determinada Região MST, como ficam os papéis das portas de borda dessa região específica em relação à função de Master Port?",
+    "options": [
+      "Todas as portas da região viram Master Ports simultaneamente.",
+      "Essa região não precisará de uma Master Port apontando para fora, pois a própria raiz global está dentro dela.",
+      "A região entra em estado de bloqueio emergencial.",
+      "As portas de borda passam a operar obrigatoriamente como Backup Ports."
+    ],
+    "answer": "Essa região não precisará de uma Master Port apontando para fora, pois a própria raiz global está dentro dela.",
+    "explanation": "A Master Port só existe quando a região precisa alcançar o CIST Root localizado externamente. Se o CIST Root é um switch interno da própria região, a região é o centro da árvore CIST."
+  },
+  {
+    "question": "Qual é a relação entre o processo de Sync (Proposal/Agreement) e as Boundary Ports ao interconectar com um switch operando em Rapid-PVST+?",
+    "options": [
+      "O MSTP desativa completamente a porta ao detectar Rapid-PVST+.",
+      "O MSTP executa o mecanismo de convergência rápida ajustando a troca de BPDUs para responder em cada VLAN correspondente simulando o comportamento PVST+ (PVST Simulation).",
+      "O Rapid-PVST+ é forçado a converter todas as suas VLANs em instâncias MSTP automaticamente.",
+      "O handshake Proposal/Agreement é substituído por temporizadores de 300 segundos."
+    ],
+    "answer": "O MSTP executa o mecanismo de convergência rápida ajustando a troca de BPDUs para responder em cada VLAN correspondente simulando o comportamento PVST+ (PVST Simulation).",
+    "explanation": "Em switches Cisco, a Boundary Port executa o recurso 'PVST Simulation', enviando BPDUs MSTP replicados para cada VLAN para garantir que o switch Rapid-PVST+ vizinho consiga convergir de forma transparente."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

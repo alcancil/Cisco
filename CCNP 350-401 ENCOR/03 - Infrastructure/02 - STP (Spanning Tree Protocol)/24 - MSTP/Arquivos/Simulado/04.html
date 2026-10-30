@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Anatomia do BPDU MSTP: Cabeçalho Base e M-Records</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado MSTP - Anatomia do BPDU MSTP: Cabeçalho Base e M-Records</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre MSTP - Anatomia do BPDU MSTP: Cabeçalho Base e M-Records. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Como o MSTP otimiza a transmissão de mensagens de controle (BPDUs) em comparação com o modelo utilizado pelo Cisco PVST+?",
+    options: [
+      "O MSTP envia um BPDU separado para cada uma das 4094 VLANs suportadas.",
+      "O MSTP transmite apenas um único BPDU no link, independentemente da quantidade de instâncias configuradas.",
+      "O MSTP substitui os BPDUs por pacotes ICMP de Camada 3.",
+      "O MSTP transmite BPDUs apenas a cada 60 segundos para economizar largura de banda."
+    ],
+    answer: "O MSTP transmite apenas um único BPDU no link, independentemente da quantidade de instâncias configuradas.",
+    explanation: "Diferente do PVST+ que gera um BPDU por VLAN, o MSTP envia um único quadro de controle unificado, reduzindo drasticamente o consumo de banda e processamento na rede."
+  },
+  {
+    question: "O que compõe a estrutura básica de um quadro de BPDU transmitido no protocolo MSTP?",
+    options: [
+      "Um cabeçalho exclusivo para cada VLAN ativa na interface de tronco.",
+      "Um cabeçalho base que transporta as informações da MSTI 0 (IST), complementado por estruturas adicionais chamadas M-Records para as demais instâncias.",
+      "Apenas o Configuration Digest em formato MD5, sem informações de Bridge ID.",
+      "Uma tabela estática com os endereços MAC de todos os switches da rede."
+    ],
+    answer: "Um cabeçalho base que transporta as informações da MSTI 0 (IST), complementado por estruturas adicionais chamadas M-Records para as demais instâncias.",
+    explanation: "O BPDU do MSTP carrega o IST no cabeçalho principal e anexa os chamados M-Records (MST Records) no final para descrever o estado das instâncias adicionais (MSTI 1, 2, etc.)."
+  },
+  {
+    question: "Qual é a função direta dos M-Records (MST Records) anexados ao final do BPDU base do MSTP?",
+    options: [
+      "Armazenar o log de erros de segurança gerados por portas em estado de err-disabled.",
+      "Transportar os parâmetros específicos (como Root ID, custo e Bridge ID) de cada MSTI adicional configurada na região.",
+      "Criptografar o identificador da VLAN nativa para evitar ataques de trunk hopping.",
+      "Substituir o algoritmo de STP clássico por roteamento dinâmico OSPF."
+    ],
+    answer: "Transportar os parâmetros específicos (como Root ID, custo e Bridge ID) de cada MSTI adicional configurada na região.",
+    explanation: "Cada M-Record mapeia os dados de topologia de uma MSTI específica, permitindo que múltiplos caminhos lógicos sejam comunicados em um único quadro de BPDU."
+  },
+  {
+    question: "Qual instância do MSTP é representada e transportada diretamente no cabeçalho base do BPDU?",
+    options: [
+      "MSTI 1",
+      "MSTI 4094",
+      "MSTI 0 (IST - Internal Spanning Tree)",
+      "Nenhuma MSTI; o cabeçalho base carrega apenas dados do PVST+."
+    ],
+    answer: "MSTI 0 (IST - Internal Spanning Tree)",
+    explanation: "O cabeçalho base do BPDU do MSTP é dedicado exclusivamente ao IST (MSTI 0), que gerencia a árvore interna e carrega os metadados da região."
+  },
+  {
+    question: "Do ponto de vista de eficiência de hardware, qual é o impacto de utilizar M-Records no BPDU do MSTP?",
+    options: [
+      "Aumenta severamente o consumo de CPU devido ao empacotamento de dados.",
+      "Reduz de forma brutal o processamento e o uso de CPU na geração e análise de mensagens de controle nos switches.",
+      "Orquestra o tráfego de dados diretamente na Camada 3, desativando o plano de controle de Camada 2.",
+      "Gera uma sobrecarga de broadcast idêntica à do STP Clássico."
+    ],
+    answer: "Reduz de forma brutal o processamento e o uso de CPU na geração e análise de mensagens de controle nos switches.",
+    explanation: "Ao agrupar o estado de várias instâncias em um único BPDU via M-Records, o switch evita o overhead de processar centenas de BPDUs independentes."
+  },
+  {
+    question: "Onde o Configuration Name, o Revision Number e o Configuration Digest (MD5) são inseridos dentro da arquitetura do BPDU MSTP?",
+    options: [
+      "Na parte final de cada M-Record individual.",
+      "No cabeçalho estendido específico da extensão MSTP (dentro do BPDU comum), servindo para validar a consistência da região.",
+      "Nos campos reservados do cabeçalho IP de gerência.",
+      "Nos pacotes de handshake Proposal/Agreement do RSTP."
+    ],
+    answer: "No cabeçalho estendido específico da extensão MSTP (dentro do BPDU comum), servindo para validar a consistência da região.",
+    explanation: "Os atributos de identificação da região (Nome, Revisão e Digest) viajam no cabeçalho estendido do MSTP para que os vizinhos validem instantaneamente se pertencem à mesma região antes de processar os M-Records."
+  },
+  {
+    question: "Se um switch estiver configurado com 5 MSTIs ativas (além do IST), quantos blocos de M-Records aproximadamente serão anexados no BPDU enviado aos vizinhos?",
+    options: [
+      "Nenhum, pois o MSTP não utiliza M-Records quando há mais de 4 instâncias.",
+      "5 blocos de M-Records (um para cada MSTI adicional).",
+      "4094 blocos fixos, independentemente das instâncias ativas.",
+      "Apenas 1 M-Record global que resume todas as VLANs."
+    ],
+    answer: "5 blocos de M-Records (um para cada MSTI adicional).",
+    explanation: "Cada M-Record é anexado sob demanda para representar uma MSTI configurada, otimizando o tamanho do BPDU de acordo com o design da rede."
+  },
+  {
+    question: "O que ocorre se um switch receptor detectar uma divergência nos dados transportados pelo cabeçalho base ou pelos M-Records de um BPDU MSTP?",
+    options: [
+      "A porta que recebeu o BPDU é tratada como Boundary Port e o switch ajusta seu comportamento de acordo com as regras de fronteira.",
+      "O switch reinicia automaticamente o sistema operacional.",
+      "O switch apaga todas as entradas da tabela ARP.",
+      "A porta entra imediatamente em modo de escuta por 50 segundos."
+    ],
+    answer: "A porta que recebeu o BPDU é tratada como Boundary Port e o switch ajusta seu comportamento de acordo com as regras de fronteira.",
+    explanation: "Divergências estruturais ou de atributos fazem com que o switch entenda que a porta cruza para fora da região ou encontra uma inconsistência, classificando-a adequadamente como Boundary."
+  },
+  {
+    question: "Como o mecanismo de convergência rápida (herdados do RSTP, como Proposal e Agreement) interage com a estrutura de BPDUs base e M-Records no MSTP?",
+    options: [
+      "O handshake de Proposal/Agreement opera no nível do IST (MSTI 0) e sincroniza a topologia de toda a região e instâncias de uma só vez.",
+      "Cada M-Record precisa realizar um handshake Proposal/Agreement totalmente isolado e sequencial.",
+      "O RSTP e o MSTP não compartilham o mesmo mecanismo de flags no BPDU.",
+      "As flags de Proposal e Agreement só podem ser enviadas em portas de borda (Boundary Ports)."
+    ],
+    answer: "O handshake de Proposal/Agreement opera no nível do IST (MSTI 0) e sincroniza a topologia de toda a região e instâncias de uma só vez.",
+    explanation: "O IST (MSTI 0) conduz o processo de controle e convergência rápida da região usando as flags do RSTP no cabeçalho base, garantindo que a unificação e o bloqueio de loops ocorram de forma unificada."
+  },
+  {
+    question: "Por que a análise de BPDUs via Wireshark é uma ferramenta poderosa para engenheiros CCNP ao troubleshooting de redes MSTP?",
+    options: [
+      "Porque permite visualizar de forma clara o cabeçalho base do IST, os atributos de região e os detalhes internos de cada M-Record transmitido na rede.",
+      "Porque descodifica senhas de acesso à CLI dos switches.",
+      "Porque substitui o uso do comando `show spanning-tree` nos equipamentos Cisco.",
+      "Porque força a convergência do Spanning Tree para zero milissegundos."
+    ],
+    answer: "Porque permite visualizar de forma clara o cabeçalho base do IST, os atributos de região e os detalhes internos de cada M-Record transmitido na rede.",
+    explanation: "O Wireshark expõe a anatomia real do BPDU MSTP, permitindo inspecionar o Digest MD5, o Revision Number e o conteúdo exato dos M-Records para diagnosticar quebras de região ou falhas de mapeamento."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

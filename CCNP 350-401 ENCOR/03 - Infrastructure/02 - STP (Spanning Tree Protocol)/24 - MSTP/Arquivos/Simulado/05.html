@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Topologia de Fronteira: Master Ports e Boundary Ports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado MSTP - Topologia de Fronteira: Master Ports e Boundary Ports</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre MSTP - Topologia de Fronteira: Master Ports e Boundary Ports. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a definição e a função primária de uma Master Port dentro da arquitetura de uma Região MST?",
+    "options": [
+      "É a porta responsável por bloquear portas de acesso quando um switch não autorizada é conectado.",
+      "É a interface localizada na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root localizado fora da região.",
+      "É uma porta física que só pode ser configurada em switches de camada de acesso.",
+      "É a porta que envia BPDUs de Topology Change (TCN) exclusivamente para dispositivos PVST+."
+    ],
+    "answer": "É a interface localizada na borda da Região MST que fornece o melhor caminho interno em direção ao CIST Root localizado fora da região.",
+    "explanation": "A Master Port é um papel especial de porta no MSTP que representa o ponto de saída/encaminhamento de custo ótimo de toda a região MST em direção ao CIST Root externo."
+  },
+  {
+    "question": "Como uma porta de um switch MSTP é classificada automaticamente como uma Boundary Port (porta de fronteira)?",
+    "options": [
+      "Quando ela é configurada manualmente com o comando 'spanning-tree mst boundary' na interface.",
+      "Quando ela detecta que o switch vizinho pertence a outra Região MST (atributos divergentes) ou roda um protocolo legado como RSTP/PVST+.",
+      "Quando a porta atinge uma velocidade de transmissão superior a 10 Gbps.",
+      "Quando o número de VLANs na porta ultrapassa o limite de 64 instâncias."
+    ],
+    "answer": "Quando ela detecta que o switch vizinho pertence a outra Região MST (atributos divergentes) ou roda um protocolo legado como RSTP/PVST+.",
+    "explanation": "A detecção de Boundary Port é dinâmica: ao receber BPDUs com Name, Revision ou Digest diferentes (ou BPDUs legados), a porta reconhece que se conecta ao mundo externo à sua região."
+  },
+  {
+    "question": "No contexto da interoperabilidade em portas de fronteira (Boundary Ports), como uma Região MST inteira se apresenta para um switch vizinho rodando RSTP ou PVST+?",
+    "options": [
+      "Como uma topologia complexa e individual de dezenas de switches interconectados.",
+      "Como se fosse um único switch virtual de Camada 2 (uma única Virtual Bridge).",
+      "Como um roteador de borda rodando BGP.",
+      "Como um link desconectado devido a incompatibilidade de protocolos."
+    ],
+    "answer": "Como se fosse um único switch virtual de Camada 2 (uma única Virtual Bridge).",
+    "explanation": "Para preservar a compatibilidade e evitar loops globais, o MSTP mascara toda a complexidade interna da região, fazendo-a parecer um único switch de Camada 2 para o ecossistema externo."
+  },
+  {
+    "question": "Qual é a principal responsabilidade operacional executada em uma Boundary Port ao interagir com redes legadas?",
+    "options": [
+      "Tradução e adaptação de BPDUs entre o domínio MSTP e os domínios externos (como PVST+ ou RSTP).",
+      "Criptografia de ponta a ponta dos quadros de dados que saem da região.",
+      "Conversão de tráfego de Camada 2 em pacotes roteados de Camada 3.",
+      "Bloqueio permanente de todas as VLANs exceto a VLAN Nativa."
+    ],
+    "answer": "Tradução e adaptação de BPDUs entre o domínio MSTP e os domínios externos (como PVST+ ou RSTP).",
+    "explanation": "As Boundary Ports atuam como pontos de tradução, permitindo que as informações do CIST e do IST interoperem com BPDUs tradicionais (como os do PVST+ ou 802.1D/1w) mantendo a rede sem loops."
+  },
+  {
+    "question": "Em uma Região MST, onde a Master Port é calculada e posicionada na topologia?",
+    "options": [
+      "Apenas na porta que se conecta diretamente a servidores de arquivos.",
+      "No switch de borda da região que possui o caminho de menor custo interno até a raiz global do CIST (quando o CIST Root está fora da região).",
+      "Em todas as portas do switch que foi eleito o IST Regional Root.",
+      "Exclusivamente nas portas configuradas com o recurso BPDU Guard."
+    ],
+    "answer": "No switch de borda da região que possui o caminho de menor custo interno até a raiz global do CIST (quando o CIST Root está fora da região).",
+    "explanation": "Se o CIST Root reside fora da região, a porta de borda que fornece a melhor rota da região em direção a esse CIST Root assume o papel de Master Port para essa região."
+  },
+  {
+    "question": "O que acontece com o tráfego de uma MSTI interna (ex: MSTI 1 ou MSTI 2) quando ele precisa cruzar uma Boundary Port em direção a um domínio RSTP (802.1w) externo?",
+    "options": [
+      "O tráfego de todas as MSTIs é descartado na borda.",
+      "As informações de M-Records das MSTIs são agregadas e representadas pelo CIST/CST na borda para garantir que o switch externo veja a região de forma unificada.",
+      "Cada MSTI envia um BPDU RSTP independente gerando múltiplas instâncias no switch RSTP.",
+      "A porta transita imediatamente para o estado err-disabled."
+    ],
+    "answer": "As informações de M-Records das MSTIs são agregadas e representadas pelo CIST/CST na borda para garantir que o switch externo veja a região de forma unificada.",
+    "explanation": "Como o RSTP roda apenas uma instância (CST), as especificidades das MSTIs internas não são expostas individualmente em BPDUs separados; o CIST lida com a interoperabilidade no link de borda."
+  },
+  {
+    "question": "Ao analisar a tabela de Spanning Tree (`show spanning-tree`) em um switch MSTP de borda, qual papel de porta identifica a interface conectada ao CIST Root externo?",
+    "options": [
+      "Alternate Port (ALT)",
+      "Master Port (Master / MSTR)",
+      "Backup Port (BACK)",
+      "Designated Port (DESG)"
+    ],
+    "answer": "Master Port (Master / MSTR)",
+    "explanation": "Na CLI dos switches (como Cisco IOS XE), a porta de fronteira que aponta para o CIST Root externo é claramente identificada com o papel `Master` (ou `MSTR`)."
+  },
+  {
+    "question": "Por que a correta identificação das Boundary Ports é fundamental durante o diagnóstico de problemas (troubleshooting) de Spanning Tree?",
+    "options": [
+      "Porque indica onde a região MST termina e onde eventuais incompatibilidades ou quebras de regiões (por divergência de Digest/Name/Revision) estão ocorrendo.",
+      "Porque permite descobrir o endereço IP da interface de gerência do switch vizinho.",
+      "Porque determina quais portas físicas suportam velocidades de 100 Gbps.",
+      "Porque desativa automaticamente o envio de broadcasts na rede."
+    ],
+    "answer": "Porque indica onde a região MST termina e onde eventuais incompatibilidades ou quebras de regiões (por divergência de Digest/Name/Revision) estão ocorrendo.",
+    "explanation": "Se uma porta entre dois switches que deveriam estar na mesma região for sinalizada como Boundary Port, o engenheiro sabe imediatamente que há um descompasso de Name, Revision ou Mapeamento de VLANs."
+  },
+  {
+    "question": "Se o CIST Root de toda a rede global estiver localizado *dentro* de uma determinada Região MST, como ficam os papéis das portas de borda dessa região específica em relação à função de Master Port?",
+    "options": [
+      "Todas as portas da região viram Master Ports simultaneamente.",
+      "Essa região não precisará de uma Master Port apontando para fora, pois a própria raiz global está dentro dela.",
+      "A região entra em estado de bloqueio emergencial.",
+      "As portas de borda passam a operar obrigatoriamente como Backup Ports."
+    ],
+    "answer": "Essa região não precisará de uma Master Port apontando para fora, pois a própria raiz global está dentro dela.",
+    "explanation": "A Master Port só existe quando a região precisa alcançar o CIST Root localizado externamente. Se o CIST Root é um switch interno da própria região, a região é o centro da árvore CIST."
+  },
+  {
+    "question": "Qual é a relação entre o processo de Sync (Proposal/Agreement) e as Boundary Ports ao interconectar com um switch operando em Rapid-PVST+?",
+    "options": [
+      "O MSTP desativa completamente a porta ao detectar Rapid-PVST+.",
+      "O MSTP executa o mecanismo de convergência rápida ajustando a troca de BPDUs para responder em cada VLAN correspondente simulando o comportamento PVST+ (PVST Simulation).",
+      "O Rapid-PVST+ é forçado a converter todas as suas VLANs em instâncias MSTP automaticamente.",
+      "O handshake Proposal/Agreement é substituído por temporizadores de 300 segundos."
+    ],
+    "answer": "O MSTP executa o mecanismo de convergência rápida ajustando a troca de BPDUs para responder em cada VLAN correspondente simulando o comportamento PVST+ (PVST Simulation).",
+    "explanation": "Em switches Cisco, a Boundary Port executa o recurso 'PVST Simulation', enviando BPDUs MSTP replicados para cada VLAN para garantir que o switch Rapid-PVST+ vizinho consiga convergir de forma transparente."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
