@@ -270,7 +270,7 @@ Os simulados foram planejados para reforçar os conceitos estudados, testar seu 
 
 1. [Evolução do STP ao MSTP: CST, PVST+ e O Equilíbrio Perfeito](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/24%20-%20MSTP/Arquivos/Simulado/01.html)
 2. [Anatomia da Região MST: Atributos, Name, Revision e Digest MD5](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/24%20-%20MSTP/Arquivos/Simulado/02.html)
-3. [Hierarquia de Árvores: IST, CST e a Grande Árvore CIST](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/22%20-%20MSTP/Arquivos/Simulado/03.html)
+3. [Hierarquia de Árvores: IST, CST e a Grande Árvore CIST](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/24%20-%20MSTP/Arquivos/Simulado/03.html)
 4. [Anatomia do BPDU MSTP: Cabeçalho Base e M-Records](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/24%20-%20MSTP/Arquivos/Simulado/04.html)
 5. [Topologia de Fronteira: Master Ports e Boundary Ports](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/24%20-%20MSTP/Arquivos/Simulado/05.html)
 
