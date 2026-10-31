@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado MSTP - Multiple Spanning Tree Protocol</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">MSTP - Multiple Spanning Tree Protocol</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Multiple Spanning Tree Protocol. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Como o mecanismo de convergência rápida Proposal / Agreement do RSTP foi adaptado no MSTP para lidar com múltiplas instâncias (MSTIs) simultaneamente?",
+    "options": [
+      "O handshake ocorre de forma isolada e independente para cada MSTI configurada na rede, gerando múltiplos BPDUs por porta.",
+      "O processo de Proposal / Agreement ocorre exclusivamente dentro do CIST (MSTI 0), sincronizando e recalculando os estados das demais instâncias em lote.",
+      "O MSTP elimina o uso do Proposal / Agreement, retornando ao temporizador de Forward Delay de 15 segundos para segurança.",
+      "Apenas as instâncias com IDs pares participam do handshake de acordo com o padrão IEEE 802.1s."
+    ],
+    "answer": "O processo de Proposal / Agreement ocorre exclusivamente dentro do CIST (MSTI 0), sincronizando e recalculando os estados das demais instâncias em lote.",
+    "explanation": "No MSTP, o plano de controle unifica a sinalização na MSTI 0 (IST). Quando a MSTI 0 envia um Proposal, o switch receptor bloqueia as portas não-borda para sincronizar todas as instâncias em lote antes de responder com o Agreement."
+  },
+  {
+    "question": "O que ocorre imediatamente no plano de controle de um switch MSTP receptor quando ele processa um BPDU com a flag Proposal ativada na MSTI 0?",
+    "options": [
+      "Ele descarta imediatamente o BPDU para evitar loops de Camada 3.",
+      "Ele coloca em bloqueio (sync) as suas portas designadas não-borda para garantir a sincronização segura de todas as instâncias.",
+      "Ele eleva instantaneamente sua própria prioridade para assumir o papel de Root Bridge.",
+      "Ele converte todas as VLANs para o modo PVST+ legacy automaticamente."
+    ],
+    "answer": "Ele coloca em bloqueio (sync) as suas portas designadas não-borda para garantir a sincronização segura de todas as instâncias.",
+    "explanation": "Para prevenir loops durante a convergência rápida, o switch receptor precisa sincronizar sua topologia interna bloqueando temporariamente as portas designadas não-borda antes de confirmar o acordo (Agreement)."
+  },
+  {
+    "question": "Qual é a principal distinção operacional entre o ERPC (External Root Path Cost) e o IRPC (Internal Root Path Cost) no MSTP?",
+    "options": [
+      "O ERPC é acumulado apenas dentro da região MST, enquanto o IRPC mede o custo até o CIST Root global fora da região.",
+      "O ERPC mede o custo para alcançar o CIST Root global e permanece inalterado dentro da região, enquanto o IRPC acumula o custo interno até o Regional Root.",
+      "O ERPC é utilizado exclusivamente pelo protocolo PVST+, e o IRPC substitui o STP clássico.",
+      "Não há distinção; ambos utilizam a mesma métrica de 16 bits baseada no atraso de propagação do link."
+    ],
+    "answer": "O ERPC mede o custo para alcançar o CIST Root global e permanece inalterado dentro da região, enquanto o IRPC acumula o custo interno até o Regional Root.",
+    "explanation": "O ERPC representa o custo de chegada ao CIST Root e é mantido constante por toda a região MST, ao passo que o IRPC reflete o custo acumulado de saltos internos em direção à raiz regional."
+  },
+  {
+    "question": "Qual é a função do campo Hop Count (Remaining Hops) dentro de uma Região MST?",
+    "options": [
+      "Substituir os temporizadores tradicionais (Max Age, Hello Time, Forward Delay) e prevenir loops por tempestades de BPDUs decrementando o valor a cada salto.",
+      "Controlar o número máximo de VLANs que podem ser associadas a uma única MSTI.",
+      "Definir a prioridade padrão do Bridge ID para eleições automáticas de Root Bridge.",
+      "Medir o atraso de latência em microssegundos em enlaces de fibra óptica de longa distância."
+    ],
+    "answer": "Substituir os temporizadores tradicionais (Max Age, Hello Time, Forward Delay) e prevenir loops por tempestades de BPDUs decrementando o valor a cada salto.",
+    "explanation": "O Hop Count (com valor padrão de 20 no Cisco IOS XE) é decrementado a cada retransmissão de BPDU dentro da região. Quando atinge zero, o BPDU é descartado, evitando loops de controle."
+  },
+  {
+    "question": "Como o mecanismo de Topology Change Notification (TCN) opera no MSTP para otimizar o desempenho em comparação com o PVST+?",
+    "options": [
+      "O TCN do MSTP força o flush imediato da tabela CAM de todas as VLANs da empresa, independentemente da instância afetada.",
+      "O TCN é gerado por qualquer queda de link e propaga-se de forma síncrona por todas as regiões globais sem filtragem.",
+      "O TCN é isolado e associado ao M-Record da MSTI específica, gerando o flush da tabela MAC apenas para as VLANs mapeadas naquela instância.",
+      "O MSTP desativa completamente notificações de mudança de topologia, confiando apenas no envelhecimento natural do cache MAC."
+    ],
+    "answer": "O TCN é isolado e associado ao M-Record da MSTI específica, gerando o flush da tabela MAC apenas para as VLANs mapeadas naquela instância.",
+    "explanation": "Diferente do PVST+ que causa impacto global por VLAN, o MSTP propaga o TCN de forma granular na MSTI afetada, limitando o flush da tabela MAC estritamente ao grupo de VLANs correspondente."
+  },
+  {
+    "question": "Qual é a condição necessária para que o TCN seja gerado e propagado dentro de um domínio MSTP?",
+    "options": [
+      "A simples desconexão de qualquer cabo de rede conectado a um switch de acesso.",
+      "A transição de uma porta não-borda (non-edge) para o estado Forwarding.",
+      "A alteração manual do número de revisão (Revision Number) da região.",
+      "O recebimento de um BPDU legado proveniente de um switch HP ou Aruba."
+    ],
+    "answer": "A transição de uma porta não-borda (non-edge) para o estado Forwarding.",
+    "explanation": "No MSTP e RSTP, a queda de um link redundante que possui caminho alternativo imediato não gera TCN; a notificação ocorre estritamente quando uma porta não-borda passa a encaminhar tráfego ativamente."
+  },
+  {
+    "question": "Como o mecanismo de **PVST Simulation Engine** lida com as VLANs diferentes da VLAN 1 ao interagir com switches legados PVST+?",
+    "options": [
+      "Ele encapsula todas as VLANs em pacotes IP de Camada 3 utilizando roteamento estático.",
+      "Ele descarta todo o tráfego das VLANs superiores para proteger a integridade da Região MST.",
+      "Ele gera BPDUs em formato PVST+ (PVID BPDUs) com tags para cada VLAN ativa, replicando exatamente as informações do CIST.",
+      "Ele converte o switch legado para o modo MSTP de forma automática através do protocolo CDP."
+    ],
+    "answer": "Ele gera BPDUs em formato PVST+ (PVID BPDUs) com tags para cada VLAN ativa, replicando exatamente as informações do CIST.",
+    "explanation": "Para manter a interoperabilidade, o switch MSTP emite BPDUs SSTP dedicados nas VLANs não-nativas, enviando as mesmas decisões topológicas calculadas pelo CIST para que o switch PVST+ compreenda a rede."
+  },
+  {
+    "question": "O que caracteriza a ocorrência de uma inconsistência do tipo **PVST Simulation Inconsistent** (`*pvt-incons`) em uma porta de borda MSTP?",
+    "options": [
+      "O switch PVST+ externo tenta impor uma raiz (Root Bridge) diferente para uma VLAN específica do que a reportada pelo CIST da região.",
+      "Ocorre um erro de criptografia no cálculo do Digest MD5 entre os switches da mesma região.",
+      "O contador Hop Count atingiu o valor zero devido a um loop físico de cabos.",
+      "O Migration Delay Timer expirou antes que o switch pudesse negociar o protocolo RSTP."
+    ],
+    "answer": "O switch PVST+ externo tenta impor uma raiz (Root Bridge) diferente para uma VLAN específica do que a reportada pelo CIST da região.",
+    "explanation": "Se o domínio PVST+ externo apresentar topologias concorrentes ou tentar eleger uma raiz isolada para uma VLAN na porta de borda, o motor de simulação bloqueia a interface para evitar loops invisíveis."
+  },
+  {
+    "question": "Qual é o papel do **Migration Delay Timer** nas interfaces de um switch MSTP ao conectar-se a outros equipamentos?",
+    "options": [
+      "Atrasar o encaminhamento de dados por exatamente 50 segundos para cumprir o padrão IEEE 802.1D.",
+      "Garantir um tempo de espera fixo para a convergência de rotas OSPF em Camada 3.",
+      "Controlar o período (geralmente 3 segundos) em que a porta testa e negocia a compatibilidade com BPDUs legados (STP/PVST+) antes de fixar o modo.",
+      "Sincronizar os relógios internos dos switches para a geração correta do hash MD5."
+    ],
+    "answer": "Controlar o período (geralmente 3 segundos) em que a porta testa e negocia a compatibilidade com BPDUs legados (STP/PVST+) antes de fixar o modo.",
+    "explanation": "O timer de migração de 3 segundos permite que a porta detecte BPDUs antigos de vizinhos legados e altere seu formato de transmissão, podendo ser reiniciado manualmente via CLI."
+  },
+  {
+    "question": "O que acontece se uma porta de um switch MSTP chavear para o modo de compatibilidade legado após receber um BPDU antigo, e o switch vizinho legado for posteriormente substituído por um equipamento MSTP moderno?",
+    "options": [
+      "A porta retorna automaticamente ao modo MSTP em menos de um segundo.",
+      "A porta permanece travada em modo de compatibilidade legado até que ocorra uma intervenção manual via comando CLI (`clear spanning-tree detected-protocols`).",
+      "O switch entra em estado de reboot forçado para reconfigurar o plano de controle.",
+      "A VLAN nativa é apagada da memória flash do equipamento."
+    ],
+    "answer": "A porta permanece travada em modo de compatibilidade legado até que ocorra uma intervenção manual via comando CLI (`clear spanning-tree detected-protocols`).",
+    "explanation": "Uma vez que o modo de compatibilidade é fixado na interface, a troca física do equipamento vizinho exige o comando explícito de limpeza na CLI para forçar a re-negociação do protocolo MSTP."
+  },
+{
+    "question": "Qual é a definição exata do ERPC (External Root Path Cost) em um ambiente operando com MSTP?",
+    "options": [
+      "É o custo acumulado de caminho para alcançar o CIST Root global, o qual permanece inalterado enquanto o BPDU trafega internamente por toda a região MST.",
+      "É o custo somado de todas as interfaces físicas conectadas aos servidores de borda.",
+      "É a métrica estática que substitui o temporizador de Forward Delay nas portas de acesso.",
+      "É o valor do contador de saltos decrementado a cada transição de porta."
+    ],
+    "answer": "É o custo acumulado de caminho para alcançar o CIST Root global, o qual permanece inalterado enquanto o BPDU trafega internamente por toda a região MST.",
+    "explanation": "O ERPC representa o custo total desde a raiz global da rede até a entrada da região. Dentre os switches internos da mesma região, esse valor é mantido constante para unificar a visão externa da Virtual Bridge."
+  },
+  {
+    "question": "Como o IRPC (Internal Root Path Cost) se comporta à medida que os BPDUs se deslocam internamente de um switch para outro dentro de uma mesma Região MST?",
+    "options": [
+      "O IRPC diminui progressivamente até zerar na borda oposta da região.",
+      "O IRPC aumenta de forma acumulativa a cada salto dentro da região com base nos custos das portas intermediárias.",
+      "O IRPC permanece estático e idêntico em todos os nós da região.",
+      "O IRPC é zerado sempre que cruza uma porta designada."
+    ],
+    "answer": "O IRPC aumenta de forma acumulativa a cada salto dentro da região com base nos custos das portas intermediárias.",
+    "explanation": "Enquanto o ERPC é constante, o IRPC reflete o custo interno da região em direção à raiz regional, acumulando o valor do custo de link a cada salto percorrido."
+  },
+  {
+    "question": "Qual é a finalidade principal do campo Hop Count (Remaining Hops) inserido nos BPDUs dentro de uma Região MST?",
+    "options": [
+      "Garantir a criptografia simétrica dos pacotes de controle entre os switches.",
+      "Prevenir loops de Camada 2 causados por tempestades de BPDUs, decrementando o valor a cada salto até atingir zero e expirar a informação.",
+      "Aumentar artificialmente a velocidade de convergência do Rapid-PVST+.",
+      "Substituir o endereço MAC de origem da Root Bridge."
+    ],
+    "answer": "Prevenir loops de Camada 2 causados por tempestades de BPDUs, decrementando o valor a cada salto até atingir zero e expirar a informação.",
+    "explanation": "O contador de saltos (Hop Count) protege o plano de controle contra loops de BPDUs dentro da região MST, descartando o pacote se o limite de saltos remanescentes esgotar."
+  },
+  {
+    "question": "Qual é o valor padrão atribuído ao contador Hop Count (Max Hops) nas configurações de switches Cisco IOS XE rodando MSTP?",
+    "options": [
+      "10 saltos",
+      "20 saltos",
+      "50 saltos",
+      "255 saltos"
+    ],
+    "answer": "20 saltos",
+    "explanation": "O valor padrão configurado nos sistemas Cisco IOS XE para o limite de saltos (Max Hops) em uma região MST é 20, podendo ser ajustado pelo administrador se necessário."
+  },
+  {
+    "question": "Se um switch interno dentro de uma região MST recebe um BPDU cujo campo Hop Count chegou a 0, qual é a ação imediata executada pelo protocolo?",
+    "options": [
+      "O switch reinicia automaticamente o módulo Supervisor.",
+      "O BPDU é descartado e as informações daquela porta expiram, prevenindo loops na topologia.",
+      "O switch converte a porta para o modo de acesso inativo.",
+      "A prioridade da MSTI é duplicada de forma instantânea."
+    ],
+    "answer": "O BPDU é descartado e as informações daquela porta expiram, prevenindo loops na topologia.",
+    "explanation": "A contagem de saltos serve como mecanismo de segurança; quando atinge zero, indica que o BPDU circulou excessivamente ou a distância excedeu o planejado, resultando no seu descarte."
+  },
+  {
+    "question": "Como o custo total de caminho para o CIST (CIST Path Cost) é calculado por um switch interno que está situado dentro de uma Região MST?",
+    "options": [
+      "Apenas pelo valor do ERPC, desconsiderando o custo interno.",
+      "Através da soma matemática entre o ERPC (Custo Externo) e o IRPC (Custo Interno).",
+      "Multiplicando o número de VLANs ativas pelo valor do Revision Number.",
+      "Subtraindo o Hop Count do valor da prioridade do Bridge ID."
+    ],
+    "answer": "Através da soma matemática entre o ERPC (Custo Externo) e o IRPC (Custo Interno).",
+    "explanation": "Para que os switches internos saibam o custo completo até a raiz global situada fora da região, o custo total do caminho CIST é composto pela soma do custo externo (ERPC) com o custo interno acumulado (IRPC)."
+  },
+  {
+    "question": "O que ocorre com o valor do ERPC reportado por um Boundary Switch para os demais switches internos da sua região quando o link externo principal sofre alteração de largura de banda?",
+    "options": [
+      "O ERPC é recalculado e atualizado nos BPDUs propagados internamente para refletir o novo custo do caminho até o CIST Root global.",
+      "O ERPC é zerado permanentemente para evitar instabilidades.",
+      "O ERPC permanece fixo e imutável, exigindo reboot manual.",
+      "O ERPC é convertido em unidades de tempo de atraso."
+    ],
+    "answer": "O ERPC é recalculado e atualizado nos BPDUs propagados internamente para refletir o novo custo do caminho até o CIST Root global.",
+    "explanation": "Embora o ERPC seja constante dentro da região para um mesmo caminho, se a topologia externa mudar e o Boundary Switch recalcular a rota para o CIST Root global, o novo valor de ERPC será propagado para toda a região."
+  },
+  {
+    "question": "Qual comando de configuração global no Cisco IOS XE permite alterar o limite máximo de saltos (Hop Count) de uma região MST?",
+    "options": [
+      "spanning-tree mst max-hops <valor>",
+      "spanning-tree mst hop-limit <valor>",
+      "spanning-tree vlan max-path <valor>",
+      "spanning-tree mode mst limit-hops <valor>"
+    ],
+    "answer": "spanning-tree mst max-hops <valor>",
+    "explanation": "O comando de configuração global 'spanning-tree mst max-hops' define o valor inicial do contador de saltos que a raiz regional injeta nos BPDUs."
+  },
+  {
+    "question": "Por que o MSTP utiliza o conceito de Hop Count em vez de ajustar os temporizadores Max Age e Forward Delay a cada salto dentro de uma região?",
+    "options": [
+      "Porque o uso de temporizadores baseados em tempo em redes grandes causava convergência lenta e instabilidade de temporização a cada novo salto de switch.",
+      "Porque os temporizadores tradicionais consomem toda a memória flash do equipamento.",
+      "Porque o padrão IEEE 802.1s proíbe o uso de segundos em redes de Camada 2.",
+      "Porque o Hop Count acelera o roteamento IP de pacotes unicast."
+    ],
+    "answer": "Porque o uso de temporizadores baseados em tempo em redes grandes causava convergência lenta e instabilidade de temporização a cada novo salto de switch.",
+      "explanation": "Em redes corporativas extensas, recalcular timers baseados em tempo a cada salto gerava falhas de sincronização. O Hop Count baseado em contagem de saltos garante estabilidade e controle rígido do raio de propagação do BPDU."
+  },
+  {
+    "question": "Em uma topologia MSTP, se o administrador deseja que o raio máximo de propagação dos BPDUs internos seja restrito por motivos de segurança e design de rede, qual parâmetro ele deve ajustar?",
+    "options": [
+      "O Configuration Name da região.",
+      "O Max Hops (Contador de Saltos).",
+      "O Revision Number.",
+      "O System ID Extension da MSTI 0."
+    ],
+    "answer": "O Max Hops (Contador de Saltos).",
+    "explanation": "Ajustar o parâmetro Max Hops permite controlar estritamente a profundidade máxima em número de switches que um BPDU pode percorrer dentro da região antes de expirar."
+  },
+    {
+    "question": "Qual é a principal função do mecanismo de PVST Simulation Engine em switches operando com MSTP?",
+    "options": [
+      "Permitir que a região MSTP interopere e compreenda domínios legados que rodam PVST+ ou Rapid-PVST+ sem causar loops na rede.",
+      "Acelerar o roteamento de pacotes IP em redes de Camada 3.",
+      "Converter todos os BPDUs de 802.1Q em pacotes CDP proprietários da Cisco.",
+      "Eliminar a necessidade de configurar o Configuration Name e o Revision Number nos switches de borda."
+    ],
+    "answer": "Permitir que a região MSTP interopere e compreenda domínios legados que rodam PVST+ ou Rapid-PVST+ sem causar loops na rede.",
+    "explanation": "O motor de simulação de PVST atua na borda permitindo que o switch MSTP interaja com redes legadas Cisco PVST+, traduzindo e avaliando a compatibilidade topológica para evitar loops ocultos."
+  },
+  {
+    "question": "Como um switch operando em MSTP se comunica com um switch legado PVST+ em relação à VLAN 1 (CST)?",
+    "options": [
+      "Enviando e recebendo BPDUs sem tag (untagged) em formato IEEE padrão 802.1Q no endereço multicast padrão do STP.",
+      "Encapsulando os BPDUs dentro de pacotes UDP na porta 67.",
+      "Bloqueando totalmente o tráfego da VLAN 1 para forçar o uso da VLAN 10.",
+      "Utilizando exclusivamente o protocolo Spanning Tree clássico de 1998."
+    ],
+    "answer": "Enviando e recebendo BPDUs sem tag (untagged) em formato IEEE padrão 802.1Q no endereço multicast padrão do STP.",
+    "explanation": "A VLAN 1 opera como a base do Common Spanning Tree (CST/CIST), utilizando BPDUs sem tag enviados para o endereço multicast padrão IEEE para conectar a região ao mundo externo."
+  },
+  {
+    "question": "De que maneira o switch MSTP trata as VLANs ativas que são diferentes da VLAN 1 ao interagir com uma nuvem PVST+ legada?",
+    "options": [
+      "Ele descarta todas as VLANs que não sejam a VLAN nativa.",
+      "Ele gera BPDUs em formato PVST+ (SSTP - Shared Spanning Tree Protocol) com tags para cada VLAN, replicando as decisões do CIST.",
+      "Ele converte automaticamente o switch legado para o padrão 802.1s.",
+      "Ele cria uma MSTI isolada para cada VLAN individual de forma dinâmica."
+    ],
+    "answer": "Ele gera BPDUs em formato PVST+ (SSTP - Shared Spanning Tree Protocol) com tags para cada VLAN, replicando as decisões do CIST.",
+    "explanation": "Para as VLANs não-nativas, o MSTP emite BPDUs proprietários do tipo SSTP (tagged por VLAN) contendo exatamente as mesmas informações estruturais calculadas pelo CIST regional."
+  },
+  {
+    "question": "O que caracteriza o estado de uma porta de borda MSTP quando ocorre uma inconsistência de simulação de PVST?",
+    "options": [
+      "A porta vai para o estado de erro 'err-disable'.",
+      "A porta é bloqueada com o status 'PVST Simulation Inconsistent' (*pvt-incons).",
+      "A porta é promovida automaticamente para Root Port principal.",
+      "A porta desativa o Rapid-PVST+ e ativa o STP clássico de 30 segundos."
+    ],
+    "answer": "A porta é bloqueada com o status 'PVST Simulation Inconsistent' (*pvt-incons).",
+    "explanation": "Quando o motor de simulação detecta uma divergência topológica ou tentativa de imposição de raiz incompatível pelo domínio PVST+, ele bloqueia a porta e sinaliza o erro *pvt-incons."
+  },
+  {
+    "question": "Qual cenário típico aciona a mensagem de erro de inconsistência de PVST (`*pvt-incons`) em uma porta Boundary de um switch MSTP?",
+    "options": [
+      "Um switch PVST+ externo é configurado com uma prioridade superior (menor Bridge ID) e tenta se eleger como raiz para uma VLAN específica de forma isolada.",
+      "O cabo de rede de fibra óptica sofre uma atenuação de sinal física.",
+      "O número de revisão da região MSTP está configurado com o valor zero.",
+      "A VLAN nativa do tronco foi alterada para a VLAN 99."
+    ],
+    "answer": "Um switch PVST+ externo é configurado com uma prioridade superior (menor Bridge ID) e tenta se eleger como raiz para uma VLAN específica de forma isolada.",
+    "explanation": "Se o switch legado assume uma raiz diferente para uma VLAN na borda, o MSTP detecta uma topologia fragmentada e inconsistente, bloqueando a interface para impedir loops."
+  },
+  {
+    "question": "O que é um Boundary Port no contexto da arquitetura do MSTP?",
+    "options": [
+      "Uma porta interna que conecta dois switches da mesma Região MST.",
+      "Uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um domínio legado (STP/RSTP/PVST+).",
+      "Uma porta de acesso dedicada exclusivamente a impressoras de rede.",
+      "Um link físico que opera unicamente com o protocolo OSPF de Camada 3."
+    ],
+    "answer": "Uma interface localizada na borda da Região MST que se conecta a um switch de outra região ou a um domínio legado (STP/RSTP/PVST+).",
+    "explanation": "As Boundary Ports delimitam a fronteira da região MST, atuando como o ponto de tradução e compatibilidade com redes externas e switches legados."
+  },
+  {
+    "question": "Como o Migration Delay Timer atua quando uma interface de um switch MSTP sobe e precisa interagir com um dispositivo vizinho?",
+    "options": [
+      "Ele define um período de teste de 3 segundos no qual a porta monitora o tipo de BPDU recebido para decidir se operará em modo MSTP ou em modo legado.",
+      "Ele obriga a porta a aguardar 50 segundos antes de enviar qualquer tráfego de dados.",
+      "Ele criptografa o tráfego de gerenciamento do Spanning Tree.",
+      "Ele mede a latência exata do enlace óptico."
+    ],
+    "answer": "Ele define um período de teste de 3 segundos no qual a porta monitora o tipo de BPDU recebido para decidir se operará em modo MSTP ou em modo legado.",
+    "explanation": "O temporizador de migração de 3 segundos é o mecanismo que permite à porta detectar BPDUs antigos de equipamentos vizinhos e ajustar automaticamente o seu formato de transmissão."
+  },
+  {
+    "question": "O que é necessário fazer caso uma porta MSTP tenha chaveado para o modo legado após detectar um switch antigo, e o switch antigo tenha sido substituído por um modelo MSTP moderno?",
+    "options": [
+      "Reiniciar fisicamente todo o datacenter.",
+      "Executar o comando CLI 'clear spanning-tree detected-protocols' para forçar a re-negociação do protocolo na interface.",
+      "Alterar o Configuration Name da região para um valor aleatório.",
+      "Desativar e reativar as VLANs afetadas no entroncamento."
+    ],
+    "answer": "Executar o comando CLI 'clear spanning-tree detected-protocols' para forçar a re-negociação do protocolo na interface.",
+    "explanation": "Uma vez que o modo de compatibilidade legado é fixado na interface, a troca do hardware vizinho não reverte o comportamento automaticamente, exigindo o comando de limpeza para re-negociar."
+  },
+  {
+    "question": "Qual endereço multicast de destino é utilizado pelos BPDUs do tipo SSTP gerados pelo switch MSTP para interagir com as VLANs não-nativas do PVST+?",
+    "options": [
+      "01:80:C2:00:00:00",
+      "01:00:0C:CC:CC:CD",
+      "01:80:C2:00:00:10",
+      "FF02:0000:0000:0000:0000:0000:0000:0012"
+    ],
+    "answer": "01:00:0C:CC:CC:CD",
+    "explanation": "O endereço multicast proprietário da Cisco '01:00:0C:CC:CC:CD' é utilizado para o tráfego de controle do PVST+ e SSTP, sendo empregado pelo motor de simulação do MSTP nas VLANs com tag."
+  },
+  {
+    "question": "Por que o recurso de PVST Simulation vem ativado por padrão nas interfaces dos switches Cisco executando MSTP?",
+    "options": [
+      "Para garantir proteção automática e evitar loops acidentais quando a rede MSTP é conectada a infraestruturas legadas baseadas em PVST+.",
+      "Para aumentar a largura de banda dos links de tronco em até 50%.",
+      "Para substituir o protocolo STP por roteamento de Camada 3 de alta velocidade.",
+      "Para permitir a compatibilidade com switches de fabricantes que não suportam o padrão IEEE 802.1Q."
+    ],
+    "answer": "Para garantir proteção automática e evitar loops acidentais quando a rede MSTP é conectada a infraestruturas legadas baseadas em PVST+.",
+    "explanation": "O comportamento padrão de fábrica mantém o PVST Simulation habilitado para salvaguardar a rede de migrações parciais ou conexões imprevistas com domínios legados baseados por VLAN."
+  },
+ {
+    "question": "Qual comando no Cisco IOS XE exibe a tabela completa de mapeamento de VLANs por instância e permite comparar diretamente o Hash MD5 (Digest) da região MST?",
+    "options": [
+      "show spanning-tree mst configuration",
+      "show spanning-tree summary",
+      "show spanning-tree detail",
+      "show vlan brief"
+    ],
+    "answer": "show spanning-tree mst configuration",
+    "explanation": "O comando 'show spanning-tree mst configuration' lista o nome da região, o número de revisão e a distribuição exata de VLANs mapeadas em cada MSTI, essencial para validar a consistência entre switches."
+  },
+  {
+    "question": "Ao inspecionar a saída do comando `show spanning-tree mst configuration digest`, qual informação deve ser idêntica em todos os switches da mesma Região MST para evitar a fragmentação (partitioning)?",
+    "options": [
+      "O endereço MAC da interface VLAN 1.",
+      "A string hexadecimal de 16 bytes que representa a assinatura MD5 do mapeamento regional.",
+      "O tempo decorrido desde o último reboot da caixa.",
+      "O número da porta Ethernet conectada ao switch vizinho."
+    ],
+    "answer": "A string hexadecimal de 16 bytes que representa a assinatura MD5 do mapeamento regional.",
+    "explanation": "Se a hash MD5 gerada (Digest) for diferente entre dois switches por qualquer caractere, a região se fragmenta e a interconexão degrada para o comportamento de Boundary Port."
+  },
+  {
+    "question": "Qual comando fornece uma visão consolidada de todas as instâncias (MSTI 0, MSTI 1, etc.), indicando o papel do switch local (ROOT ou SUBORD) e o custo acumulado em cada uma delas?",
+    "options": [
+      "show spanning-tree mst summary",
+      "show interfaces trunk",
+      "show running-config | section mst",
+      "show cdp neighbors detail"
+    ],
+    "answer": "show spanning-tree mst summary",
+    "explanation": "O comando 'show spanning-tree mst summary' fornece um resumo em formato de tabela exibindo a identidade do switch, o papel em cada MSTI e os custos totais de caminho."
+  },
+  {
+    "question": "Ao analisar a captura de um BPDU MSTP no Wireshark, em qual seção do pacote estão contidas as informações específicas sobre o estado, prioridade e Root ID das instâncias MSTI 1 a 64?",
+    "options": [
+      "No cabeçalho Ethernet II de broadcast universal.",
+      "Nos campos de registro individual chamados M-Records (Multiple Spanning Tree Records) anexados à extensão do BPDU.",
+      "No campo Option 82 do protocolo DHCP.",
+      "No parâmetro Time-to-Live (TTL) do cabeçalho IPv4."
+    ],
+    "answer": "Nos campos de registro individual chamados M-Records (Multiple Spanning Tree Records) anexados à extensão do BPDU.",
+    "explanation": "O MSTP envia apenas um BPDU físico (baseado na MSTI 0) contendo estruturas chamadas M-Records ao final, onde cada M-Record carrega os dados de topologia de uma MSTI específica."
+  },
+  {
+    "question": "Ao inspecionar uma porta através do comando `show spanning-tree mst 1`, a coluna de tipo exibe `P2p Bound(PVST)`. O que esse status indica ao engenheiro de rede?",
+    "options": [
+      "A interface está enfrentando uma falha de hardware e desativou o envio de quadros.",
+      "A interface é uma Boundary Port conectada a um switch legado operando no modo PVST+.",
+      "A porta está agregada em um EtherChannel com protocolo LACP.",
+      "A instância MSTI 1 foi excluída da tabela de encaminhamento."
+    ],
+    "answer": "A interface é uma Boundary Port conectada a um switch legado operando no modo PVST+.",
+    "explanation": "A notificação 'P2p Bound(PVST)' sinaliza que a porta opera em modo Point-to-Point, mas detectou vizinhos legados PVST+, ativando o mecanismo de simulação e interconexão de borda."
+  },
+  {
+    "question": "Se uma porta de um switch MSTP estiver bloqueada exibindo a razão `*pvt-incons` na saída do comando `show spanning-tree interface`, qual comando de diagnóstico ajuda a confirmar o motivo da inconsistência?",
+    "options": [
+      "show log (ou show logging) para verificar os alertas do sistema `%SPANTREE-2-PVSTSIM_FAIL`.",
+      "show ip route para analisar a tabela de roteamento estático.",
+      "show processes cpu para medir o uso do processador.",
+      "show power inline para checar o fornecimento de energia PoE."
+    ],
+    "answer": "show log (ou show logging) para verificar os alertas do sistema `%SPANTREE-2-PVSTSIM_FAIL`.",
+    "explanation": "Alertas de falha na simulação de PVST são registrados no log do sistema com a mensagem `%SPANTREE-2-PVSTSIM_FAIL`, detalhando qual VLAN ou BPDU superior provocou o bloqueio da interface."
+  },
+  {
+    "question": "Qual comando no modo EXEC privilegioso força uma interface MSTP a reiniciar o Migration Delay Timer e tentar renegociar o protocolo MSTP nativo com o switch vizinho?",
+    "options": [
+      "clear spanning-tree detected-protocols",
+      "reload switch prompt",
+      "spanning-tree mst reset-interface",
+      "clear mac address-table dynamic"
+    ],
+    "answer": "clear spanning-tree detected-protocols",
+    "explanation": "O comando 'clear spanning-tree detected-protocols' faz com que a porta limpe o histórico de detecção de BPDUs antigos e envie novamente BPDUs 802.1s nativos para renegociar o modo de operação."
+  },
+  {
+    "question": "Ao analisar um BPDU MSTP capturado no Wireshark, qual valor no campo Protocol Version Identifier confirma que o quadro pertence ao padrão IEEE 802.1s (MSTP)?",
+    "options": [
+      "Protocol Version Identifier: 0 (STP Clássico)",
+      "Protocol Version Identifier: 2 (RSTP)",
+      "Protocol Version Identifier: 3 (MSTP)",
+      "Protocol Version Identifier: 4 (BGP)"
+    ],
+    "answer": "Protocol Version Identifier: 3 (MSTP)",
+    "explanation": "No Wireshark, o campo de versão do protocolo Spanning Tree define a norma utilizada: 0 para 802.1D clássico, 2 para 802.1w (RSTP) e 3 para 802.1s (MSTP)."
+  },
+  {
+    "question": "Qual filtro do Wireshark pode ser utilizado por um engenheiro para isolar estritamente o tráfego de BPDUs do Spanning Tree durante uma captura em uma porta trunk?",
+    "options": [
+      "stp ou stp.flags",
+      "ip.addr == 192.168.1.1",
+      "tcp.port == 80",
+      "dns || dhcp"
+    ],
+    "answer": "stp ou stp.flags",
+    "explanation": "O filtro de exibição 'stp' (ou especificidades como 'stp.flags' e 'stp.mst') isola todos os quadros de controle de Spanning Tree capturados na interface."
+  },
+  {
+    "question": "O que indica a presença da flag 'Agreement' marcada como 'True' no cabeçalho CIST de um BPDU MSTP analisado no Wireshark?",
+    "options": [
+      "O switch emissor concorda com a eleição da raiz e confirma a convergência rápida para a porta em transição.",
+      "O switch está solicitando o desligamento da interface por superaquecimento.",
+      "A Região MST foi dividida em duas áreas autônomas.",
+      "O pacote foi descartado devido ao esgotamento do Hop Count."
+    ],
+    "answer": "O switch emissor concorda com a eleição da raiz e confirma a convergência rápida para a porta em transição.",
+    "explanation": "A flag 'Agreement' ativada no BPDU sinaliza a conclusão bem-sucedida do handshake Proposal/Agreement do RSTP/MSTP, permitindo que a porta entre no estado de encaminhamento (Forwarding) sem esperas por temporizadores estáticos."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
