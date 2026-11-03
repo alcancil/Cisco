@@ -44,7 +44,7 @@ Esta segunda parte da documentação foca no **Blueprint do CCNP ENCOR 350-401**
 
 Para os cenários práticos e comandos de validação descritos neste documento, utilizamos a seguinte arquitetura com 4 switches em malha redundante, divididos em dois blocos de tráfego:
 
-![TOPOLOGIA](./Imagens/01.jpg)
+![TOPOLOGIA](./Imagens/01.png)
 
 - **VLANs Mapeadas:**
   - **MSTI 1:** VLANs 10, 20, 30 (Bloco Corporativo / Voz)
