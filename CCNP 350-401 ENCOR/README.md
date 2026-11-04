@@ -9,13 +9,13 @@ Este repositório é um **diário de engenharia** que documenta minha preparaç�
 ## 📊 Status da Jornada (Progress Tracking)
 
 **Progresso Total para a Certificação:**
-![Progresso Total](https://geps.dev/progress/20)  
+![Progresso Total](https://geps.dev/progress/16)  
 
 | Tópico | Domínio do Exame      | Peso  | Progresso                              | Status                 |
 | :---   | :---                  | :---: | :---                                   | :---                   |
 | 01     | **Architecture**      | 15%   | ![15%](https://geps.dev/progress/2.25) | 🏗️ Em andamento        |
-| 02     | **Virtualization**    | 10%   | ![0%](https://geps.dev/progress/4.55)  | 🏗️ Em andamento        |
-| 03     | **Infrastructure**    | 30%   | ![0%](https://geps.dev/progress/8.5)   | 🏗️ Em andamento        |
+| 02     | **Virtualization**    | 10%   | ![10%](https://geps.dev/progress/4.55) | 🏗️ Em andamento        |
+| 03     | **Infrastructure**    | 30%   | ![11%](https://geps.dev/progress/8.5)  | 🏗️ Em andamento        |
 | 04     | **Network Assurance** | 10%   | ![0%](https://geps.dev/progress/0)     | ⏳ Planejado           |
 | 05     | **Security**          | 20%   | ![0%](https://geps.dev/progress/0)     | ⏳ Planejado           |
 | 06     | **Automation**        | 15%   | ![0%](https://geps.dev/progress/0)     | ⏳ Planejado           |
