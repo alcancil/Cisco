@@ -11,7 +11,7 @@
 
 ## 🏗️ 1.0 ARQUITETURA (15%)
 
-### 1.1 Explain the different design principles used in an enterprise network
+### 1.1 Explain the different design principles used in an enterprise network ![0%](https://geps.dev/progress/0)
 
 - [ ] 1.1.a High-level enterprise network design such as 2-tier, 3-tier, fabric, and cloud
   - [ ] 01 - Architecture - 2-Tier Design
@@ -23,7 +23,7 @@
   - [ ] 06 - HA - First Hop Redundancy Protocols
   - [ ] 07 - HA - Stateful Switchover (SSO)
 
-### 1.2 Explain the working principles of the Cisco Catalyst SD-WAN solution
+### 1.2 Explain the working principles of the Cisco Catalyst SD-WAN solution ![0%](https://geps.dev/progress/0)
 
 - [ ] 1.2.a SD-WAN control and data planes elements
   - [ ] 08 - Catalyst SD-WAN - Control Plane
@@ -33,7 +33,7 @@
   - [ ] 11 - Catalyst SD-WAN - Benefits
   - [ ] 12 - Catalyst SD-WAN - Limitations
 
-### 1.3 Explain the working principles of the Cisco SD-Access solution
+### 1.3 Explain the working principles of the Cisco SD-Access solution ![0%](https://geps.dev/progress/0)
 
 - [ ] 1.3.a SD-Access control and data planes elements
   - [ ] 13 - SD-Access - Control Plane
@@ -43,17 +43,19 @@
   - [ ] 16 - SD-Access - Traditional Campus Integration
   - [ ] 17 - SD-Access - Migration Strategies
 
-### 1.4 Interpret QoS configurations
+### 1.4 Interpret QoS configurations ![100%](https://geps.dev/progress/100)
 
 - [x] 18 - QoS - Configuration Interpretation
 - [x] 19 - QoS - Policy Analysis
 - [x] 20 - QoS - Traffic Classification
 
+**Total do progresso do item 3:** ![15%](https://geps.dev/progress/15)
+
 ---
 
 ## 🔧 2.0 VIRTUALIZAÇÃO (10%)
 
-### 2.1 Describe device virtualization technologies
+### 2.1 Describe device virtualization technologies ![0%](https://geps.dev/progress/0)
 
 - [x] 2.1.a Hypervisor type 1 and 2
   - [x] 21 - Virtualization - Type 1 Hypervisor
@@ -63,7 +65,7 @@
 - [x] 2.1.c Virtual switching
   - [x] 24 - Virtualization - Virtual Switching
 
-### 2.2 Configure and verify data path virtualization technologies
+### 2.2 Configure and verify data path virtualization technologies ![0%](https://geps.dev/progress/0)
 
 - [ ] 2.2.a VRF
   - [ ] 25 - VRF - Configuration
@@ -75,7 +77,7 @@
   - [ ] 30 - IPsec - Configuration
   - [ ] 31 - IPsec - Verification
 
-### 2.3 Describe network virtualization concepts
+### 2.3 Describe network virtualization concepts ![0%](https://geps.dev/progress/0)
 
 - [ ] 2.3.a LISP
   - [ ] 32 - LISP - Concepts
@@ -84,11 +86,13 @@
   - [ ] 34 - VXLAN - Concepts
   - [ ] 35 - VXLAN - Implementation
 
+**Total do progresso do item 3:** ![0%](https://geps.dev/progress/0)
+
 ---
 
 ## 🌐 3.0 INFRAESTRUTURA (30%)
 
-### 3.1 Layer 2
+### 3.1 Layer 2 ![50%](https://geps.dev/progress/50)
 
 - [ ] 3.1.a Troubleshoot static and dynamic 802.1q trunking protocols
   - [ ] 36 - Trunking - Static 802.1q
@@ -99,16 +103,16 @@
   - [ ] 40 - EtherChannel - LACP
   - [ ] 41 - EtherChannel - PAgP
   - [ ] 42 - EtherChannel - Troubleshooting
-- [ ] 3.1.c Configure and verify common Spanning Tree Protocols (RSTP, MST) and Spanning Tree enhancements
+- [x] 3.1.c Configure and verify common Spanning Tree Protocols (RSTP, MST) and Spanning Tree enhancements
   - [x] 43 - STP - RSTP Configuration
   - [x] 44 - STP - RSTP Verification
   - [x] 45 - STP - MST Configuration
   - [x] 46 - STP - MST Verification
   - [x] 47 - STP - Root Guard
   - [x] 48 - STP - BPDU Guard
-  - [ ] 49 - STP - Additional Enhancements
+  - [x] 49 - STP - Additional Enhancements
 
-### 3.2 Layer 3
+### 3.2 Layer 3 ![0%](https://geps.dev/progress/0)
 
 - [ ] 3.2.a Compare routing concepts of EIGRP and OSPF
   - [ ] 50 - EIGRP vs OSPF - Advanced Distance Vector vs Link State
@@ -136,7 +140,7 @@
   - [ ] 69 - PBR - Concepts
   - [ ] 70 - PBR - Implementation
 
-### 3.3 IP Services
+### 3.3 IP Services ![57,14%](https://geps.dev/progress/57)
 
 - [ ] 3.3.a Interpret network time protocol configurations such as NTP and PTP
   - [ ] 71 - NTP - Configuration Interpretation
@@ -171,11 +175,13 @@
   - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
   - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
 
+**Total do progresso do item 3:** ![36,5%](https://geps.dev/progress/36)
+
 ---
 
 ## 📊 4.0 NETWORK ASSURANCE (10%)
 
-### 4.1 Diagnose network problems using tools
+### 4.1 Diagnose network problems using tools ![0%](https://geps.dev/progress/0)
 
 - [ ] 90 - Diagnostics - Debug Commands
 - [ ] 91 - Diagnostics - Conditional Debug
@@ -184,25 +190,25 @@
 - [ ] 94 - Diagnostics - SNMP
 - [ ] 95 - Diagnostics - Syslog
 
-### 4.2 Configure and verify Flexible NetFlow
+### 4.2 Configure and verify Flexible NetFlow ![0%](https://geps.dev/progress/0)
 
 - [ ] 96 - NetFlow - Configuration
 - [ ] 97 - NetFlow - Verification
 - [ ] 98 - NetFlow - Analysis
 
-### 4.3 Configure SPAN/RSPAN/ERSPAN
+### 4.3 Configure SPAN/RSPAN/ERSPAN ![0%](https://geps.dev/progress/0)
 
 - [ ] 99 - SPAN - Local SPAN Configuration
 - [ ] 100 - RSPAN - Remote SPAN Configuration
 - [ ] 101 - ERSPAN - Encapsulated Remote SPAN
 
-### 4.4 Configure and verify IPSLA
+### 4.4 Configure and verify IPSLA ![0%](https://geps.dev/progress/0)
 
 - [ ] 102 - IP SLA - Configuration
 - [ ] 103 - IP SLA - Verification
 - [ ] 104 - IP SLA - Monitoring
 
-### 4.5 Describe how Cisco Catalyst Center is used
+### 4.5 Describe how Cisco Catalyst Center is used ![0%](https://geps.dev/progress/0)
 
 - [ ] 105 - Catalyst Center - Traditional Workflows
 - [ ] 106 - Catalyst Center - AI-Powered Workflows
@@ -210,18 +216,20 @@
 - [ ] 108 - Catalyst Center - Monitoring
 - [ ] 109 - Catalyst Center - Management
 
-### 4.6 Configure and verify NETCONF and RESTCONF
+### 4.6 Configure and verify NETCONF and RESTCONF ![0%](https://geps.dev/progress/0)
 
 - [ ] 110 - NETCONF - Configuration
 - [ ] 111 - NETCONF - Verification
 - [ ] 112 - RESTCONF - Configuration
 - [ ] 113 - RESTCONF - Verification
 
+**Total do progresso do item 3:** ![0%](https://geps.dev/progress/0)
+
 ---
 
 ## 🔐 5.0 SEGURANÇA (20%)
 
-### 5.1 Configure and verify device access control
+### 5.1 Configure and verify device access control ![0%](https://geps.dev/progress/0)
 
 - [ ] 5.1.a Lines and local user authentication
   - [ ] 114 - Device Access - Console Line
@@ -233,7 +241,7 @@
   - [ ] 119 - AAA - TACACS+
   - [ ] 120 - AAA - RADIUS
 
-### 5.2 Configure and verify infrastructure security features
+### 5.2 Configure and verify infrastructure security features ![0%](https://geps.dev/progress/0)
 
 - [ ] 5.2.a ACLs
   - [ ] 121 - ACL - Standard ACLs
@@ -245,13 +253,13 @@
   - [ ] 126 - CoPP - Configuration
   - [ ] 127 - CoPP - Verification
 
-### 5.3 Describe REST API security
+### 5.3 Describe REST API security ![0%](https://geps.dev/progress/0)
 
 - [ ] 128 - REST API - Security Concepts
 - [ ] 129 - REST API - Authentication Methods
 - [ ] 130 - REST API - Authorization
 
-### 5.4 Describe the components of network security design
+### 5.4 Describe the components of network security design ![0%](https://geps.dev/progress/0)
 
 - [ ] 5.4.a Threat defense
   - [ ] 131 - Security Design - Threat Defense
@@ -263,53 +271,57 @@
   - [ ] 134 - Security Design - TrustSec
   - [ ] 135 - Security Design - MACsec
 
+**Total do progresso do item 3:** ![0%](https://geps.dev/progress/0)
+
 ---
 
 ## 🤖 6.0 AUTOMAÇÃO E INTELIGÊNCIA ARTIFICIAL (15%)
 
-### 6.1 Interpret basic Python components and scripts
+### 6.1 Interpret basic Python components and scripts ![0%](https://geps.dev/progress/0)
 
 - [ ] 136 - Python - Basic Components
 - [ ] 137 - Python - Script Interpretation
 - [ ] 138 - Python - Network Automation Scripts
 
-### 6.2 Construct valid JSON-encoded files
+### 6.2 Construct valid JSON-encoded files ![0%](https://geps.dev/progress/0)
 
 - [ ] 139 - JSON - Structure
 - [ ] 140 - JSON - Construction
 - [ ] 141 - JSON - Validation
 
-### 6.3 Describe the high-level principles and benefits of a data modeling language, such as YANG
+### 6.3 Describe the high-level principles and benefits of a data modeling language, such as YANG ![0%](https://geps.dev/progress/0)
 
 - [ ] 142 - YANG - Principles
 - [ ] 143 - YANG - Benefits
 - [ ] 144 - YANG - Data Models
 
-### 6.4 Describe APIs for Cisco Catalyst Center and SD-WAN Manager
+### 6.4 Describe APIs for Cisco Catalyst Center and SD-WAN Manager ![0%](https://geps.dev/progress/0)
 
 - [ ] 145 - APIs - Catalyst Center
 - [ ] 146 - APIs - SD-WAN Manager
 - [ ] 147 - APIs - Integration
 
-### 6.5 Interpret REST API response codes and results in payload
+### 6.5 Interpret REST API response codes and results in payload ![0%](https://geps.dev/progress/0)
 
 - [ ] 148 - REST API - Response Codes
 - [ ] 149 - REST API - Payload Analysis
 - [ ] 150 - REST API - Catalyst Center Integration
 - [ ] 151 - REST API - RESTCONF Integration
 
-### 6.6 Construct an EEM applet to automate configuration, troubleshooting, or data collection
+### 6.6 Construct an EEM applet to automate configuration, troubleshooting, or data collection ![0%](https://geps.dev/progress/0)
 
 - [ ] 152 - EEM - Applet Construction
 - [ ] 153 - EEM - Configuration Automation
 - [ ] 154 - EEM - Troubleshooting Automation
 - [ ] 155 - EEM - Data Collection
 
-### 6.7 Compare agent vs. agentless orchestration tools
+### 6.7 Compare agent vs. agentless orchestration tools ![0%](https://geps.dev/progress/0)
 
 - [ ] 156 - Orchestration - Agent-based Tools
 - [ ] 157 - Orchestration - Agentless Tools
 - [ ] 158 - Orchestration - Comparison
+
+**Total do progresso do item 3:** ![0%](https://geps.dev/progress/0)
 
 ---
 
@@ -319,7 +331,13 @@
 - **Concluídos:** 0
 - **Em Progresso:** 0
 - **Pendentes:** 158
-- **Progresso:** 0%
+- **Progresso:** 0%  
+  - **🏗️ 1.0 ARQUITETURA (15%)** : ![15%](https://geps.dev/progress/15)
+  - **🔧 2.0 VIRTUALIZAÇÃO (10%)** : ![0%](https://geps.dev/progress/0)  
+  - **🌐 3.0 INFRAESTRUTURA (30%)** : ![36,5%](https://geps.dev/progress/36)  
+  - **📊 4.0 NETWORK ASSURANCE (10%)** : ![0%](https://geps.dev/progress/0)  
+  - **5.0 SEGURANÇA (20%)** : ![0%](https://geps.dev/progress/0)
+  - **🤖 6.0 AUTOMAÇÃO E INTELIGÊNCIA ARTIFICIAL (15%)** : ![0%](https://geps.dev/progress/0)
 
 ---
 
