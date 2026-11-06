@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Trunking & DTP - Mitigação de Segurança e Hardening de Portas (VLAN Hopping)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Mitigação de Segurança e Hardening de Portas (VLAN Hopping)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Trunking & DTP - Mitigação de Segurança e Hardening de Portas (VLAN Hopping). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "O que caracteriza especificamente o ataque de segurança conhecido como Double-Tagging (VLAN Hopping)?",
+    "options": [
+      "A inserção de duas tags 802.1Q consecutivas em um frame, permitindo que pacotes saltem a segmentação e alcancem VLANs restritas.",
+      "O uso simultâneo de duas placas de rede físicas para duplicar o tráfego de broadcast.",
+      "A alteração do endereço MAC de origem para assumir a identidade do roteador de Camada 3.",
+      "O envio de pacotes STP falsificados para forçar a re-eleição de Root Bridge."
+    ],
+    "answer": "A inserção de duas tags 802.1Q consecutivas em um frame, permitindo que pacotes saltem a segmentação e alcancem VLANs restritas.",
+    "explanation": "No ataque de Double-Tagging, o atacante envia quadros contendo duas tags: a externa correspondente à VLAN nativa do trunk (que é removida pelo primeiro switch) e a interna que define a VLAN alvo da vítima."
+  },
+  {
+    "question": "Como o primeiro switch (SW1) processa um frame contendo dupla tag (Double-Tagging) recebido através de uma porta vulnerável?",
+    "options": [
+      "Ele descarta o pacote imediatamente por excesso de tamanho no cabeçalho.",
+      "Ele remove a tag externa (por corresponder à VLAN nativa e dever sair untagged no trunk) e encaminha o frame preservando a tag interna.",
+      "Ele converte o quadro em um pacote IP roteável de Camada 3.",
+      "Ele duplica o pacote e o envia para todas as portas de acesso ativas."
+    ],
+    "answer": "Ele remove a tag externa (por corresponder à VLAN nativa e dever sair untagged no trunk) e encaminha o frame preservando a tag interna.",
+    "explanation": "O primeiro switch processa a tag externa como sendo da VLAN nativa (removendo-a para o tráfego untagged do trunk) e acaba repassando adiante o quadro que ainda carrega a tag interna direcionada à vítima."
+  },
+  {
+    "question": "Qual é o papel do segundo switch ao receber o quadro remanescente do ataque de Double-Tagging enviado pelo primeiro switch?",
+    "options": [
+      "Ele lê a segunda tag 802.1Q remanescente e entrega o pacote diretamente dentro da VLAN alvo, pulando o firewall ou roteador.",
+      "Ele bloqueia a porta por violação de segurança do Port Security.",
+      "Ele reinsere a tag da VLAN 1 para manter o padrão de encapsulamento.",
+      "Ele traduz o pacote para o protocolo ISL legado."
+    ],
+    "answer": "Ele lê a segunda tag 802.1Q remanescente e entrega o pacote diretamente dentro da VLAN alvo, pulando o firewall ou roteador.",
+    "explanation": "Ao receber o quadro, o segundo switch lê a tag interna que restou, associando o pacote à VLAN de destino e entregando-o ao host vítima sem passar pelos controles de roteamento."
+  },
+  {
+    "question": "Por que manter a VLAN 1 configurada como a VLAN Nativa padrão de um link trunk representa um vetor crítico de risco de segurança?",
+    "options": [
+      "Porque a VLAN 1 consome todo o rendimento da CPU do switch em loops de STP.",
+      "Porque facilita a execução de ataques de Double-Tagging, já que os switches tratam tráfego não etiquetado baseado na nativa padrão.",
+      "Porque impede o funcionamento do protocolo DTP em portas de acesso.",
+      "Porque desativa automaticamente a tabela CAM do equipamento."
+    ],
+    "answer": "Porque facilita a execução de ataques de Double-Tagging, já que os switches tratam tráfego não etiquetado baseado na nativa padrão.",
+    "explanation": "Como a VLAN 1 é o padrão de fábrica em todos os switches Cisco para a nativa e acesso, os atacantes exploram essa previsibilidade para construir a tag externa do ataque."
+  },
+  {
+    "question": "Qual é a primeira recomendação prática de mitigação exigida pelo ENCOR para neutralizar o risco do ataque de VLAN Hopping nos links trunk?",
+    "options": [
+      "Alterar a VLAN Nativa de todos os trunks para uma VLAN não utilizada ou reservada (dummy, ex: VLAN 999).",
+      "Desativar completamente o suporte ao protocolo IEEE 802.1Q em toda a rede corporativa.",
+      "Configurar todas as interfaces de switch como portas de acesso estáticas.",
+      "Habilitar o DTP em modo Desirable em todas as portas de borda."
+    ],
+    "answer": "Alterar a VLAN Nativa de todos os trunks para uma VLAN não utilizada ou reservada (dummy, ex: VLAN 999).",
+    "explanation": "A alteração da VLAN nativa para uma VLAN fictícia ou não utilizada impede que o atacante acerte a tag externa correspondente caso tente explorar a VLAN 1."
+  },
+  {
+    "question": "O que estabelece a diretriz de segurança de nunca utilizar a VLAN 1 como VLAN Nativa?",
+    "options": [
+      "Evita que pacotes administrativos de controle sofram interferência de hosts comuns.",
+      "Protege contra a premissa básica que os atacantes utilizam ao assumir a VLAN 1 como padrão nativo em saltos de VLAN.",
+      "Garante a compatibilidade obrigatória com switches de fabricantes terceiros.",
+      "Acelera a convergência do protocolo RSTP em topologias complexas."
+    ],
+    "answer": "Protege contra a premissa básica que os atacantes utilizam ao assumir a VLAN 1 como padrão nativo em saltos de VLAN.",
+    "explanation": "Como a VLAN 1 vem configurada por padrão em todos os equipamentos, usá-la como nativa facilita o sucesso de scripts e ferramentas de ataque automatizadas."
+  },
+  {
+    "question": "Qual comando de configuração global do Cisco IOS força o switch a etiquetar (tag) inclusive os quadros pertencentes à VLAN Nativa em portas trunk?",
+    "options": [
+      "vlan dot1q tag native",
+      "switchport trunk encapsulation dot1q",
+      "spanning-tree portfast default",
+      "dtp disable native-tagging"
+    ],
+    "answer": "vlan dot1q tag native",
+    "explanation": "O comando global `vlan dot1q tag native` obriga o switch a colocar tags 802.1Q até mesmo nos pacotes da VLAN nativa, destruindo a premissa do Double-Tagging."
+  },
+  {
+    "question": "Como o comando `vlan dot1q tag native` neutraliza o mecanismo de ataque de Double-Tagging?",
+    "options": [
+      "Ele impede que o switch remova a tag externa, fazendo com que quadros com dupla tag sejam rejeitados ou tratados como inválidos.",
+      "Ele criptografa a tabela CAM contra consultas maliciosas.",
+      "Ele bloqueia qualquer tentativa de conexões via DTP em portas de acesso.",
+      "Ele converte todos os links trunk para o modo de acesso estático."
+    ],
+    "answer": "Ele impede que o switch remova a tag externa, fazendo com que quadros com dupla tag sejam rejeitados ou tratados como inválidos.",
+    "explanation": "Com o etiquetamento forçado da nativa, o switch espera ver tags válidas e processa o quadro de forma estruturada, impedindo que a tag externa seja simplesmente removida sem checagens."
+  },
+  {
+    "question": "Além da alteração da Native VLAN e do uso de tag native, qual outra medida complementar de hardening protege as portas de acesso contra a negociação de trunking maliciosa?",
+    "options": [
+      "Configurar as portas de acesso como `switchport mode access` e desativar o DTP com `switchport nonegotiate`.",
+      "Ativar o protocolo CDP em todas as portas conectadas a estações de trabalho.",
+      "Definir a prioridade do Spanning Tree para 61440 em portas de usuário.",
+      "Utilizar a faixa estendida de VLANs para conexões de servidores."
+    ],
+    "answer": "Configurar as portas de acesso como `switchport mode access` e desativar o DTP com `switchport nonegotiate`.",
+    "explanation": "O hardening completo de portas de acesso exige fixar o modo access e desligar o DTP para evitar que um host force a interface a virar um trunk."
+  },
+  {
+    "question": "O que ocorre se um atacante tentar conectar um dispositivo simulando um switch para negociar DTP em uma porta de acesso que foi adequadamente endurecida (Hardened)?",
+    "options": [
+      "A porta aceita o entroncamento e concede acesso total à rede.",
+      "A porta permanece firmemente no modo Access e ignora os quadros DTP enviados pelo atacante.",
+      "O switch inteiro entra em estado de reboot por falha de segurança.",
+      "A porta entra em erro crítico de Camada 3."
+    ],
+    "answer": "A porta permanece firmemente no modo Access e ignora os quadros DTP enviados pelo atacante.",
+    "explanation": "Com a porta configurada estaticamente como access e o DTP desativado, o switch recusa qualquer tentativa de negociação de trunking, bloqueando a brecha de ataque."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
