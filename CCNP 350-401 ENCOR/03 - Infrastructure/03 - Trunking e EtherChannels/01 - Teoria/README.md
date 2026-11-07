@@ -1,6 +1,6 @@
-# 02 - Layer 2 Infrastructure: Trunking (802.1Q) & Dynamic Trunking Protocol (DTP) - Teoria e Troubleshooting
+# Layer 2 Infrastructure: Trunking (802.1Q) & Dynamic Trunking Protocol (DTP) - Teoria e Troubleshooting
 
-- [02 - Layer 2 Infrastructure: Trunking (802.1Q) \& Dynamic Trunking Protocol (DTP) - Teoria e Troubleshooting](#02---layer-2-infrastructure-trunking-8021q--dynamic-trunking-protocol-dtp---teoria-e-troubleshooting)
+- [Layer 2 Infrastructure: Trunking (802.1Q) \& Dynamic Trunking Protocol (DTP) - Teoria e Troubleshooting](#layer-2-infrastructure-trunking-8021q--dynamic-trunking-protocol-dtp---teoria-e-troubleshooting)
   - [Glossário Técnico de Trunking (Dicionário de Camada 2)](#glossário-técnico-de-trunking-dicionário-de-camada-2)
   - [🎯 Objetivo do Documento](#-objetivo-do-documento)
   - [Como Este Documento Deve Ser Lido](#como-este-documento-deve-ser-lido)
@@ -385,19 +385,19 @@ Os simulados foram planejados para reforçar os conceitos de encapsulamento, o c
 
 👉 **Acesse os simulados de Trunking e DTP**
 
-🔗 [Abrir Simulados Trunking & DTP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/)  
+🔗 [Abrir Simulados Trunking & DTP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/)  
 
 **Simulados temáticos:**  
 
-1. [Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/01.html)
-2. [Dinâmica de Negociação do Dynamic Trunking Protocol (DTP)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/02.html)
-3. [Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/03.html)
-4. [Mitigação de Segurança e Hardening de Portas (VLAN Hopping)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/04.html)
-5. [Comandos de Diagnóstico, CLI e Verificação de Interfaces Trunk](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/05.html)
+1. [Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/01.html)
+2. [Dinâmica de Negociação do Dynamic Trunking Protocol (DTP)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/02.html)
+3. [Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/03.html)
+4. [Mitigação de Segurança e Hardening de Portas (VLAN Hopping)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/04.html)
+5. [Comandos de Diagnóstico, CLI e Verificação de Interfaces Trunk](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/05.html)
 
-**Simulado completo de Trunking & DTP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/completo.html)
+**Simulado completo de Trunking & DTP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/completo.html)
 
-**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/02%20-%20STP%20(Spanning%20Tree%20Protocol)/25%20-%20MSTP/Arquivos/Simulado/dashboard.html)
+**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/01%20-%20Teoria/Arquivos/Simulado/dashboard.html)
 
 👉 Próximo Passo: Na sequência, avançaremos para os tópicos de EtherChannels (Static, LACP e PAgP) para continuar fechando o bloco de infraestrutura de Camada 2 do CCNP ENCOR!
   
