@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Trunking & DTP - Completo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Completo</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Trunking & DTP - Completo. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Onde o cabeçalho 802.1Q de 4 bytes é inserido em um frame Ethernet II padrão?",
+    "options": [
+      "Logo após o campo Preamble & SFD, antes do Destination MAC.",
+      "Entre o campo Source MAC Address e o campo Type/Length.",
+      "Após o campo de dados (Payload), logo antes do Frame Check Sequence (FCS).",
+      "Substituindo inteiramente o campo Destination MAC para otimizar o roteamento de Camada 2."
+    ],
+    "answer": "Entre o campo Source MAC Address e o campo Type/Length.",
+    "explanation": "O padrão IEEE 802.1Q modifica o frame Ethernet inserindo um cabeçalho de 4 bytes exatamente entre o endereço MAC de origem (Source MAC) e o campo Type/Length."
+  },
+  {
+    "question": "Qual é o valor hexadecimal padrão e obrigatório do campo TPID (Tag Protocol Identifier) em um cabeçalho 802.1Q válido?",
+    "options": [
+      "0x0800",
+      "0x8100",
+      "0x0806",
+      "0xFFFF"
+    ],
+    "answer": "0x8100",
+    "explanation": "O TPID é fixado no valor hexadecimal 0x8100. Ele avisa à placa de rede ou switch que o quadro possui uma tag 802.1Q; caso contrário, se não suportado, o quadro é descartado."
+  },
+  {
+    "question": "Quantos bits compõem o campo VLAN ID (VID) dentro do TCI (Tag Control Information) e qual é o limite teórico de VLANs que ele permite endereçar?",
+    "options": [
+      "8 bits, permitindo até 256 VLANs.",
+      "12 bits, permitindo até 4096 VLANs (de 0 a 4095).",
+      "16 bits, permitindo até 65535 VLANs.",
+      "10 bits, permitindo até 1024 VLANs."
+    ],
+    "answer": "12 bits, permitindo até 4096 VLANs (de 0 a 4095).",
+    "explanation": "O VLAN ID possui 12 bits. Como 2 elevado a 12 resulta em 4096, o sistema suporta identificadores de VLAN na faixa de 0 a 4095."
+  },
+  {
+    "question": "Quais faixas numéricas de VLAN são classificadas como faixa normal (Normal Range) e faixa estendida (Extended Range) em switches Cisco?",
+    "options": [
+      "Normal Range: 1 a 1005; Extended Range: 1006 a 4094.",
+      "Normal Range: 1 a 500; Extended Range: 501 a 1024.",
+      "Normal Range: 10 a 100; Extended Range: 101 a 5000.",
+      "Normal Range: 1 a 4094; Extended Range: 4095 a 65535."
+    ],
+    "answer": "Normal Range: 1 a 1005; Extended Range: 1006 a 4094.",
+    "explanation": "A faixa normal compreende as VLANs de 1 a 1001 (além de 1002 a 1005 reservadas para legado), enquanto a faixa estendida abrange os IDs de 1006 a 4094."
+  },
+  {
+    "question": "Como os quadros pertencentes à VLAN Nativa (Native VLAN) trafegam por um link trunk configurado com o padrão IEEE 802.1Q?",
+    "options": [
+      "Eles trafegam obrigatoriamente etiquetados com a tag especial 0xFFF.",
+      "Eles trafegam de forma sem tag (untagged).",
+      "Eles são criptografados com uma chave temporária de Camada 2.",
+      "Eles são convertidos em pacotes IP e roteados dinamicamente."
+    ],
+    "answer": "Eles trafegam de forma sem tag (untagged).",
+    "explanation": "Por definição do padrão 802.1Q, os quadros que pertencem à Native VLAN do trunk cruzam o enlace sem nenhuma etiqueta[cite: 23]. Quando o switch receptor recebe um quadro sem tag no trunk, ele o associa à Native VLAN daquela porta."
+  },
+  {
+    "question": "Qual é a VLAN configurada por padrão em switches Cisco para atuar tanto como VLAN padrão de acesso quanto como VLAN Nativa em portas trunk?",
+    "options": [
+      "VLAN 10",
+      "VLAN 1",
+      "VLAN 999",
+      "VLAN 4094"
+    ],
+    "answer": "VLAN 1",
+    "explanation": "Por padrão nos switches Cisco, a VLAN 1 atua como a VLAN Default e também como a VLAN Nativa de todas as portas configuradas como trunk."
+  },
+  {
+    "question": "Qual é o principal risco de segurança associado a manter a VLAN Nativa configurada com o seu valor padrão (VLAN 1) em redes sem hardening?",
+    "options": [
+      "Exposição a ataques de negação de serviço em Camada 3 baseados em ICMP.",
+      "Vulnerabilidade ao ataque de Double-Tagging (VLAN Hopping), permitindo que pacotes saltem para VLANs restritas.",
+      "Sobrecarga imediata da CPU do switch devido à duplicação de pacotes STP.",
+      "Corrupção da tabela CAM por estouro de cache MAC."
+    ],
+    "answer": "Vulnerabilidade ao ataque de Double-Tagging (VLAN Hopping), permitindo que pacotes saltem para VLANs restritas.",
+    "explanation": "Se a VLAN nativa for a padrão (VLAN 1) e houver portas vulneráveis, um atacante pode injetar um quadro com duas tags (uma externa correspondente à nativa e uma interna da vítima) para burlar o roteamento e atingir outras VLANs."
+  },
+  {
+    "question": "Qual comando de hardening no Cisco IOS é recomendado para mitigar ataques de VLAN Hopping forçando o etiquetamento de quadros da Native VLAN?",
+    "options": [
+      "switchport trunk native vlan tag",
+      "switchport nonegotiate",
+      "spanning-tree bpduguard enable",
+      "switchport trunk allowed vlan remove 1"
+    ],
+    "answer": "switchport trunk native vlan tag",
+    "explanation": "O comando global `switchport trunk native vlan tag` força o switch a etiquetar (tag) inclusive os quadros pertencentes à VLAN nativa ao enviá-los por um trunk, impedindo o ataque de Double-Tagging."
+  },
+  {
+    "question": "O que ocorre se você emitir o comando `switchport trunk allowed vlan 30` em uma porta trunk que já estava configurada para permitir as VLANs 10 e 20?",
+    "options": [
+      "A VLAN 30 será adicionada de forma incremental à lista existente junto com a 10 e a 20.",
+      "O comando será rejeitado pelo interpretador de comandos (CLI) por conflito de sintaxe.",
+      "A lista anterior será totalmente sobrescrita, permitindo apenas a passagem da VLAN 30 e isolando as VLANs 10 e 20.",
+      "O switch reiniciará a interface física para aplicar o pruning automático."
+    ],
+    "answer": "A lista anterior será totalmente sobrescrita, permitindo apenas a passagem da VLAN 30 e isolando as VLANs 10 e 20.",
+    "explanation": "O comando `switchport trunk allowed vlan <vlan-list>` substitui a lista inteira. Para acrescentar uma VLAN sem apagar as anteriores, deve-se usar obrigatoriamente o parâmetro `add` (ex: `switchport trunk allowed vlan add 30`)."
+  },
+  {
+    "question": "Qual subcampo do cabeçalho 802.1Q TCI (Tag Control Information) é dedicado ao suporte de Quality of Service (QoS) em Camada 2, permitindo até 8 níveis de prioridade?",
+    "options": [
+      "DEI (Drop Eligible Indicator)",
+      "TPID (Tag Protocol Identifier)",
+      "PCP ou Priority Code Point (3 bits)",
+      "VLAN ID (12 bits)"
+    ],
+    "answer": "PCP ou Priority Code Point (3 bits)",
+    "explanation": "O subcampo Priority / PCP possui 3 bits e é utilizado pelo IEEE 802.1p para classificar o tráfego em até 8 níveis de prioridade (0 a 7) voltados para QoS em Camada 2."
+  },
+  {
+    "question": "Qual é a principal finalidade do Dynamic Trunking Protocol (DTP) em redes corporativas baseadas em switches Cisco?",
+    "options": [
+      "Negociar automaticamente o roteamento de pacotes IP em Camada 3 entre diferentes VLANs.",
+      "Automatizar a negociação e conversão de links Ethernet entre os modos Access e Trunk.",
+      "Controlar o envio de BPDUs para prevenir loops físicos em topologias redundantes.",
+      "Gerenciar o balanceamento de carga de pacotes em agrupamentos de interfaces EtherChannel."
+    ],
+    "answer": "Automatizar a negociação e conversão de links Ethernet entre os modos Access e Trunk.",
+    "explanation": "O DTP é um protocolo proprietário da Cisco de Camada 2 projetado para facilitar a configuração inicial da rede, permitindo que dois switches vizinhos negociem automaticamente o tipo de entroncamento do link."
+  },
+  {
+    "question": "Com qual frequência temporal e utilizando qual mecanismo de endereçamento os quadros DTP são transmitidos nativamente entre os switches Cisco?",
+    "options": [
+      "A cada 2 segundos via endereço multicast STP (01:80:C2:00:00:00).",
+      "A cada 30 segundos utilizando a VLAN Nativa e o endereço MAC multicast 01:00:0C:CC:CC:CC.",
+      "A cada 10 segundos utilizando pacotes unicasts direcionados ao IP de gerenciamento.",
+      "Apenas quando ocorre uma alteração física de cabo, sem periodicidade fixa."
+    ],
+    "answer": "A cada 30 segundos utilizando a VLAN Nativa e o endereço MAC multicast 01:00:0C:CC:CC:CC.",
+    "explanation": "Os quadros de controle DTP são enviados periodicamente a cada 30 segundos por meio da VLAN Nativa e empregam o endereço de multicast específico da Cisco (01:00:0C:CC:CC:CC)."
+  },
+  {
+    "question": "Qual é o comportamento operacional de uma interface de switch configurada estaticamente no modo Dynamic Auto?",
+    "options": [
+      "Ela busca ativamente iniciar e impor o encapsulamento trunk enviando quadros DTP constantemente.",
+      "Ela opera de forma passiva, aceitando virar trunk se o switch vizinho solicitar ativamente, mas sem iniciar a negociação.",
+      "Ela bloqueia permanentemente qualquer quadro DTP e força a porta a permanecer como acesso final.",
+      "Ela converte automaticamente a porta para o protocolo RSTP em caso de falha de Camada 2."
+    ],
+    "answer": "Ela opera de forma passiva, aceitando virar trunk se o switch vizinho solicitar ativamente, mas sem iniciar a negociação.",
+    "explanation": "O modo Dynamic Auto é passivo; a porta prefere o modo access e não toma a iniciativa de iniciar o entroncamento, mas converte-se para trunk se o parceiro de enlace solicitar ativamente."
+  },
+  {
+    "question": "Como se comporta uma interface de switch configurada com o modo Dynamic Desirable?",
+    "options": [
+      "Ela atua de maneira ativa, enviando quadros DTP para tentar forçar o switch vizinho a estabelecer um link trunk.",
+      "Ela recusa qualquer tentativa de entroncamento e desativa o envio de frames DTP na interface.",
+      "Ela opera exclusivamente como uma porta de acesso sem suporte a VLANs de Camada 2.",
+      "Ela descarta quadros 802.1Q e converte o tráfego para o padrão ISL legado."
+    ],
+    "answer": "Ela atua de maneira ativa, enviando quadros DTP para tentar forçar o switch vizinho a estabelecer um link trunk.",
+    "explanation": "O modo Dynamic Desirable busca ativamente transformar a conexão em trunk, despachando quadros DTP de solicitação periodicamente para o dispositivo conectado do outro lado."
+  },
+  {
+    "question": "O que acontece com o link físico se um switch configurado como Dynamic Auto for conectado diretamente a outro switch também configurado como Dynamic Auto?",
+    "options": [
+      "O link converte-se em um Trunk 802.1Q de alta velocidade.",
+      "O link opera em modo Access, pois nenhum dos dois lados iniciou ou solicitou ativamente a criação do trunk.",
+      "Ocorre um loop de Camada 2 imediato e as portas entram em estado de erro (err-disable).",
+      "O protocolo DTP trava e exige um reboot físico de ambos os equipamentos."
+    ],
+    "answer": "O link opera em modo Access, pois nenhum dos dois lados iniciou ou solicitou ativamente a criação do trunk.",
+    "explanation": "Como ambos os lados estão em Dynamic Auto (modo passivo), nenhum deles toma a iniciativa de pedir o entroncamento, resultando em um link operando no modo Access padrão."
+  },
+  {
+    "question": "Qual é o resultado da negociação DTP quando conectamos uma porta em Dynamic Desirable a outra porta configurada como Trunk estático?",
+    "options": [
+      "O link falha por incompatibilidade de DTP e fica permanentemente inoperante.",
+      "O link estabelece com sucesso o modo Trunk (802.1Q).",
+      "O link converte-se automaticamente para o protocolo de roteamento OSPF.",
+      "A porta de trunk reverte para o modo access por medida de segurança."
+    ],
+    "answer": "O link estabelece com sucesso o modo Trunk (802.1Q).",
+    "explanation": "Quando um lado está em Dynamic Desirable e o outro em Trunk estático, a negociação é bem-sucedida e o enlace levanta o entroncamento 802.1Q."
+  },
+  {
+    "question": "Qual é a principal função e o efeito prático do comando de interface `switchport nonegotiate`?",
+    "options": [
+      "Desativar a geração e o processamento de quadros DTP na interface física.",
+      "Forçar o switch a trocar o encapsulamento 802.1Q pelo padrão ISL proprietário.",
+      "Impedir que a porta aceite pacotes ARP provenientes de redes externas.",
+      "Acelerar a convergência do Spanning Tree eliminando os estados de listening."
+    ],
+    "answer": "Desativar a geração e o processamento de quadros DTP na interface física.",
+    "explanation": "O comando `switchport nonegotiate` desliga totalmente o DTP na porta, impedindo que ela envie ou interprete quadros de negociação dinâmica, garantindo estabilidade e segurança."
+  },
+  {
+    "question": "Para que uma interface aceite o comando `switchport nonegotiate`, qual condição prévia de configuração deve ser atendida?",
+    "options": [
+      "A porta deve estar previamente configurada de forma estática como Trunk (`switchport mode trunk`) ou Access (`switchport mode access`).",
+      "A porta precisa estar operando obrigatoriamente no modo Dynamic Auto.",
+      "O protocolo CDP deve estar desativado globalmente no switch.",
+      "A VLAN nativa deve ser alterada para um ID superior a 1000."
+    ],
+    "answer": "A porta deve estar previamente configurada de forma estática como Trunk (`switchport mode trunk`) ou Access (`switchport mode access`).",
+    "explanation": "O comando `switchport nonegotiate` só pode ser aplicado se a interface estiver fixada estaticamente nos modos Trunk ou Access, pois remove a capacidade de negociação dinâmica."
+  },
+  {
+    "question": "Qual é a recomendação de boas práticas de arquitetura e segurança (hardening) defendida para portas de infraestrutura interligando switches?",
+    "options": [
+      "Manter o DTP ativo no modo Dynamic Desirable em todas as portas para redundância.",
+      "Configurar os links estaticamente como Trunk e desativar o DTP utilizando `switchport nonegotiate`.",
+      "Utilizar exclusivamente portas em modo Access para evitar qualquer tráfego etiquetado.",
+      "Alternar o DTP entre os modos Auto e Desirable a cada 24 horas."
+    ],
+    "answer": "Configurar os links estaticamente como Trunk e desativar o DTP utilizando `switchport nonegotiate`.",
+    "explanation": "A recomendação de hardening é desativar o DTP em todas as portas de infraestrutura utilizando entroncamento estático combinado com o comando `switchport nonegotiate` para mitigar riscos de segurança."
+  },
+  {
+    "question": "O que ocorre quando uma interface configurada como Trunk estático sem DTP interage com uma porta configurada em Dynamic Auto?",
+    "options": [
+      "O link sobe perfeitamente porque o Trunk estático impõe o estado de entroncamento apesar de não enviar DTP.",
+      "O link falha ou entra em estado de inconsistência porque o lado Dynamic Auto aguarda por quadros DTP passivos que nunca chegam do lado estático sem negociação.",
+      "O switch automático converte o Trunk estático em uma porta de acesso padrão.",
+      "Ocorre um bloqueio de STP do tipo PVID-Inconsistent instantâneo."
+    ],
+    "answer": "O link sobe perfeitamente porque o Trunk estático impõe o estado de entroncamento apesar de não enviar DTP.",
+    "explanation": "Mesmo sem enviar quadros DTP (devido ao nonegotiate ou modo estático puro), um lado configurado rigidamente como trunk força a operação da interface ligada, fazendo o link subir com sucesso em muitas implementações, embora a matriz completa de DTP recomende cautela e padronização estática em ambas as pontas."
+  },
+  {
+    "question": "O que ocorre nas pontas de um link trunk quando existe uma divergência de VLAN Nativa (Native VLAN Mismatch) entre os switches?",
+    "options": [
+      "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
+      "O link físico inteiro é imediatamente desligado, mudando para o estado administrativamente down.",
+      "As tabelas MAC são apagadas globalmente a cada 2 segundos.",
+      "O tráfego de todas as VLANs é automaticamente convertido para a VLAN 1002."
+    ],
+    "answer": "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
+    "explanation": "Quando há divergência de VLAN nativa, o CDP identifica a inconsistência e emite mensagens de aviso contínuas no console e no syslog, além de poder gerar bloqueio por STP."
+  },
+  {
+    "question": "Qual é a mensagem de log típica gerada pelo CDP quando um switch identifica um problema de Native VLAN Mismatch em uma interface?",
+    "options": [
+      "%STP-2-ROOTGUARDBLOCK: Root guard blocking port...",
+      "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
+      "%DTP-5-TRUNKOPEN: Interface GigabitEthernet has changed to trunking",
+      "%LINK-3-UPDOWN: Interface GigabitEthernet1/0/1, changed state to down"
+    ],
+    "answer": "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
+    "explanation": "O Cisco Discovery Protocol emite o aviso específico informando o descobrimento de mismatch de VLAN nativa detalhando as portas e os IDs conflitantes."
+  },
+  {
+    "question": "Como o Spanning Tree Protocol (STP) reage tipicamente ao identificar um cenário persistente de Native VLAN Mismatch em uma porta trunk?",
+    "options": [
+      "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
+      "Ele eleva a prioridade do switch para 0 para assumir o papel de Root Bridge.",
+      "Ele força a conversão do link para o modo EtherChannel LACP.",
+      "Ele desativa o STP em toda a rede para evitar o recálculo de instâncias."
+    ],
+    "answer": "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
+    "explanation": "O mecanismo de proteção do STP detecta a inconsistência de PVID gerada pelo descasamento da VLAN nativa e bloqueia o tráfego daquela VLAN na interface para evitar loops."
+  },
+  {
+    "question": "O que é o fenômeno conhecido como *VLAN Leaking* em cenários de Native VLAN Mismatch?",
+    "options": [
+      "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
+      "A perda de pacotes de broadcast devido ao estouro da tabela CAM.",
+      "A cópia ilegal de dados de gerencia SNMP para roteadores externos.",
+      "O encadeamento de quadros 802.1Q sem a tag TPID válida."
+    ],
+    "answer": "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
+    "explanation": "Como os quadros da nativa trafegam sem tag, um pacote untagged enviado de um lado é interpretado pelo vizinho com base na Native VLAN local dele, causando vazamento de tráfego entre domínios distintos."
+  },
+  {
+    "question": "Qual é a ação corretiva recomendada para solucionar um problema de Native VLAN Mismatch em um link trunk?",
+    "options": [
+      "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
+      "Desativar permanentemente o protocolo CDP em todos os switches da topologia.",
+      "Remover todas as VLANs da allowed list e reiniciar o serviço de DTP.",
+      "Alterar a porta para o modo Access estático e ativar o RSTP."
+    ],
+    "answer": "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
+    "explanation": "A resolução exige que o administrador ajuste o ID da VLAN nativa para que coincida exatamente em ambas as extremidades do entroncamento."
+  },
+  {
+    "question": "O que caracteriza o Cenário 3 de Troubleshooting de Trunk relacionado à Allowed List Inconsistente?",
+    "options": [
+      "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
+      "Os switches estão rodando versões diferentes de firmware que quebram o encapsulamento 802.1Q.",
+      "O cabo físico possui atenuação excessiva gerando CRC errors.",
+      "O endereço IP do gateway padrão está configurado incorretamente na Camada 3."
+    ],
+    "answer": "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
+    "explanation": "Quando a lista de VLANs permitidas (allowed list) diverge ou a VLAN não existe na base de dados de uma das pontas, o link trunk físico permanece UP, mas a VLAN específica sofre pruning involuntário."
+  },
+  {
+    "question": "Qual comando de verificação exibe claramente a lista de VLANs permitidas (Allowed) e as ativas no domínio de gerenciamento de um trunk?",
+    "options": [
+      "show interfaces trunk",
+      "show vlan summary",
+      "show spanning-tree inconsistent",
+      "show dtp statistics"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O comando `show interfaces trunk` é a ferramenta principal para inspecionar o status das portas trunk, encapsulamento, native VLAN e as VLANs permitidas/ativas."
+  },
+  {
+    "question": "O que indica o comando `show interfaces GigabitEthernet1/0/1 switchport` quando o campo 'Negotiation of Trunking' exibe o status 'Off'?",
+    "options": [
+      "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
+      "Que a porta está com falha física na camada de enlace.",
+      "Que o Spanning Tree bloqueou a porta por PVID Inconsistent.",
+      "Que a interface foi convertida para o modo de roteamento IP puro."
+    ],
+    "answer": "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
+    "explanation": "O status 'Off' na negociação de trunking confirma que o comando `switchport nonegotiate` foi aplicado, desligando a troca de quadros DTP na porta."
+  },
+  {
+    "question": "Qual é o sintoma observado quando ocorre um erro de DTP Negotiation Mismatch (ex: um lado em Access estático e o outro em Trunk estático rodando DTP)?",
+    "options": [
+      "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
+      "O link muda automaticamente para o modo half-duplex para preservar os dados.",
+      "Ocorre um storm de broadcasts na VLAN 1.",
+      "O switch reinicia a controladora de interfaces para tentar nova sincronização."
+    ],
+    "answer": "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
+    "explanation": "Quando há conflito direto entre modo access estático e trunk forçado, a comunicação falha pois as portas esperam padrões de encapsulamento totalmente divergentes."
+  },
+  {
+    "question": "O que o comando `show vlan brief` exibe em relação às interfaces configuradas como entroncamento (Trunk)?",
+    "options": [
+      "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
+      "Mostra o status detalhado da lista allowed vlan e o ID da Native VLAN.",
+      "Exibe os contadores de quadros DTP enviados e recebidos em cada porta.",
+      "Mostra quais VLANs estão bloqueadas pelo Spanning Tree."
+    ],
+    "answer": "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
+    "explanation": "O comando `show vlan brief` mapeia apenas as VLANs da base de dados e suas respectivas portas de acesso; portas trunk não são listadas nele."
+  },
+  {
+    "question": "O que caracteriza especificamente o ataque de segurança conhecido como Double-Tagging (VLAN Hopping)?",
+    "options": [
+      "A inserção de duas tags 802.1Q consecutivas em um frame, permitindo que pacotes saltem a segmentação e alcancem VLANs restritas.",
+      "O uso simultâneo de duas placas de rede físicas para duplicar o tráfego de broadcast.",
+      "A alteração do endereço MAC de origem para assumir a identidade do roteador de Camada 3.",
+      "O envio de pacotes STP falsificados para forçar a re-eleição de Root Bridge."
+    ],
+    "answer": "A inserção de duas tags 802.1Q consecutivas em um frame, permitindo que pacotes saltem a segmentação e alcancem VLANs restritas.",
+    "explanation": "No ataque de Double-Tagging, o atacante envia quadros contendo duas tags: a externa correspondente à VLAN nativa do trunk (que é removida pelo primeiro switch) e a interna que define a VLAN alvo da vítima."
+  },
+  {
+    "question": "Como o primeiro switch (SW1) processa um frame contendo dupla tag (Double-Tagging) recebido através de uma porta vulnerável?",
+    "options": [
+      "Ele descarta o pacote imediatamente por excesso de tamanho no cabeçalho.",
+      "Ele remove a tag externa (por corresponder à VLAN nativa e dever sair untagged no trunk) e encaminha o frame preservando a tag interna.",
+      "Ele converte o quadro em um pacote IP roteável de Camada 3.",
+      "Ele duplica o pacote e o envia para todas as portas de acesso ativas."
+    ],
+    "answer": "Ele remove a tag externa (por corresponder à VLAN nativa e dever sair untagged no trunk) e encaminha o frame preservando a tag interna.",
+    "explanation": "O primeiro switch processa a tag externa como sendo da VLAN nativa (removendo-a para o tráfego untagged do trunk) e acaba repassando adiante o quadro que ainda carrega a tag interna direcionada à vítima."
+  },
+  {
+    "question": "Qual é o papel do segundo switch ao receber o quadro remanescente do ataque de Double-Tagging enviado pelo primeiro switch?",
+    "options": [
+      "Ele lê a segunda tag 802.1Q remanescente e entrega o pacote diretamente dentro da VLAN alvo, pulando o firewall ou roteador.",
+      "Ele bloqueia a porta por violação de segurança do Port Security.",
+      "Ele reinsere a tag da VLAN 1 para manter o padrão de encapsulamento.",
+      "Ele traduz o pacote para o protocolo ISL legado."
+    ],
+    "answer": "Ele lê a segunda tag 802.1Q remanescente e entrega o pacote diretamente dentro da VLAN alvo, pulando o firewall ou roteador.",
+    "explanation": "Ao receber o quadro, o segundo switch lê a tag interna que restou, associando o pacote à VLAN de destino e entregando-o ao host vítima sem passar pelos controles de roteamento."
+  },
+  {
+    "question": "Por que manter a VLAN 1 configurada como a VLAN Nativa padrão de um link trunk representa um vetor crítico de risco de segurança?",
+    "options": [
+      "Porque a VLAN 1 consome todo o rendimento da CPU do switch em loops de STP.",
+      "Porque facilita a execução de ataques de Double-Tagging, já que os switches tratam tráfego não etiquetado baseado na nativa padrão.",
+      "Porque impede o funcionamento do protocolo DTP em portas de acesso.",
+      "Porque desativa automaticamente a tabela CAM do equipamento."
+    ],
+    "answer": "Porque facilita a execução de ataques de Double-Tagging, já que os switches tratam tráfego não etiquetado baseado na nativa padrão.",
+    "explanation": "Como a VLAN 1 é o padrão de fábrica em todos os switches Cisco para a nativa e acesso, os atacantes exploram essa previsibilidade para construir a tag externa do ataque."
+  },
+  {
+    "question": "Qual é a primeira recomendação prática de mitigação exigida pelo ENCOR para neutralizar o risco do ataque de VLAN Hopping nos links trunk?",
+    "options": [
+      "Alterar a VLAN Nativa de todos os trunks para uma VLAN não utilizada ou reservada (dummy, ex: VLAN 999).",
+      "Desativar completamente o suporte ao protocolo IEEE 802.1Q em toda a rede corporativa.",
+      "Configurar todas as interfaces de switch como portas de acesso estáticas.",
+      "Habilitar o DTP em modo Desirable em todas as portas de borda."
+    ],
+    "answer": "Alterar a VLAN Nativa de todos os trunks para uma VLAN não utilizada ou reservada (dummy, ex: VLAN 999).",
+    "explanation": "A alteração da VLAN nativa para uma VLAN fictícia ou não utilizada impede que o atacante acerte a tag externa correspondente caso tente explorar a VLAN 1."
+  },
+  {
+    "question": "O que estabelece a diretriz de segurança de nunca utilizar a VLAN 1 como VLAN Nativa?",
+    "options": [
+      "Evita que pacotes administrativos de controle sofram interferência de hosts comuns.",
+      "Protege contra a premissa básica que os atacantes utilizam ao assumir a VLAN 1 como padrão nativo em saltos de VLAN.",
+      "Garante a compatibilidade obrigatória com switches de fabricantes terceiros.",
+      "Acelera a convergência do protocolo RSTP em topologias complexas."
+    ],
+    "answer": "Protege contra a premissa básica que os atacantes utilizam ao assumir a VLAN 1 como padrão nativo em saltos de VLAN.",
+    "explanation": "Como a VLAN 1 vem configurada por padrão em todos os equipamentos, usá-la como nativa facilita o sucesso de scripts e ferramentas de ataque automatizadas."
+  },
+  {
+    "question": "Qual comando de configuração global do Cisco IOS força o switch a etiquetar (tag) inclusive os quadros pertencentes à VLAN Nativa em portas trunk?",
+    "options": [
+      "vlan dot1q tag native",
+      "switchport trunk encapsulation dot1q",
+      "spanning-tree portfast default",
+      "dtp disable native-tagging"
+    ],
+    "answer": "vlan dot1q tag native",
+    "explanation": "O comando global `vlan dot1q tag native` obriga o switch a colocar tags 802.1Q até mesmo nos pacotes da VLAN nativa, destruindo a premissa do Double-Tagging."
+  },
+  {
+    "question": "Como o comando `vlan dot1q tag native` neutraliza o mecanismo de ataque de Double-Tagging?",
+    "options": [
+      "Ele impede que o switch remova a tag externa, fazendo com que quadros com dupla tag sejam rejeitados ou tratados como inválidos.",
+      "Ele criptografa a tabela CAM contra consultas maliciosas.",
+      "Ele bloqueia qualquer tentativa de conexões via DTP em portas de acesso.",
+      "Ele converte todos os links trunk para o modo de acesso estático."
+    ],
+    "answer": "Ele impede que o switch remova a tag externa, fazendo com que quadros com dupla tag sejam rejeitados ou tratados como inválidos.",
+    "explanation": "Com o etiquetamento forçado da nativa, o switch espera ver tags válidas e processa o quadro de forma estruturada, impedindo que a tag externa seja simplesmente removida sem checagens."
+  },
+  {
+    "question": "Além da alteração da Native VLAN e do uso de tag native, qual outra medida complementar de hardening protege as portas de acesso contra a negociação de trunking maliciosa?",
+    "options": [
+      "Configurar as portas de acesso como `switchport mode access` e desativar o DTP com `switchport nonegotiate`.",
+      "Ativar o protocolo CDP em todas as portas conectadas a estações de trabalho.",
+      "Definir a prioridade do Spanning Tree para 61440 em portas de usuário.",
+      "Utilizar a faixa estendida de VLANs para conexões de servidores."
+    ],
+    "answer": "Configurar as portas de acesso como `switchport mode access` e desativar o DTP com `switchport nonegotiate`.",
+    "explanation": "O hardening completo de portas de acesso exige fixar o modo access e desligar o DTP para evitar que um host force a interface a virar um trunk."
+  },
+  {
+    "question": "O que ocorre se um atacante tentar conectar um dispositivo simulando um switch para negociar DTP em uma porta de acesso que foi adequadamente endurecida (Hardened)?",
+    "options": [
+      "A porta aceita o entroncamento e concede acesso total à rede.",
+      "A porta permanece firmemente no modo Access e ignora os quadros DTP enviados pelo atacante.",
+      "O switch inteiro entra em estado de reboot por falha de segurança.",
+      "A porta entra em erro crítico de Camada 3."
+    ],
+    "answer": "A porta permanece firmemente no modo Access e ignora os quadros DTP enviados pelo atacante.",
+    "explanation": "Com a porta configurada estaticamente como access e o DTP desativado, o switch recusa qualquer tentativa de negociação de trunking, bloqueando a brecha de ataque."
+  },
+{
+    "question": "Qual é considerado o comando principal e mais utilizado para inspecionar o status das interfaces que operam ativamente como trunk, incluindo a VLAN nativa e as VLANs permitidas?",
+    "options": [
+      "show interfaces trunk",
+      "show vlan brief",
+      "show dtp summary",
+      "show spanning-tree interface brief"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O comando `show interfaces trunk` é a ferramenta número um de diagnóstico para verificar portas em entroncamento, exibindo o modo, encapsulamento, status, VLAN nativa e as VLANs permitidas e ativas."
+  },
+  {
+    "question": "O que o comando `show interfaces <interface> switchport` permite analisar em detalhe em uma porta de switch Cisco?",
+    "options": [
+      "Os modos administrativo e operacional da interface, além do estado da negociação DTP e da VLAN nativa configurada.",
+      "Apenas a quantidade de quadros descartados por erros de CRC na Camada Física.",
+      "O mapeamento completo de rotas IP estáticas em Camada 3 associadas à porta.",
+      "A prioridade atual do switch na eleição de Root Bridge do Spanning Tree."
+    ],
+    "answer": "Os modos administrativo e operacional da interface, além do estado da negociação DTP e da VLAN nativa configurada.",
+    "explanation": "Esse comando detalha a configuração estática e o comportamento atual da interface, mostrando se o DTP está ativo (On/Off) e quais VLANs e encapsulamentos estão operando."
+  },
+  {
+    "question": "O que indica a saída 'Administrative Mode: trunk' combinada com 'Negotiation of Trunking: Off' na execução do comando `show interfaces switchport`?",
+    "options": [
+      "Que a porta está configurada estaticamente como Trunk e o protocolo DTP foi desativado com o comando nonegotiate.",
+      "Que a porta sofreu uma falha de hardware e desativou a Camada 2.",
+      "Que o switch está operando em modo de acesso final com DTP ativo.",
+      "Que o Spanning Tree bloqueou a interface por PVID-Inconsistent."
+    ],
+    "answer": "Que a porta está configurada estaticamente como Trunk e o protocolo DTP foi desativado com o comando nonegotiate.",
+    "explanation": "O modo administrativo trunk combinado com a negociação de trunking desligada ('Off') confirma a aplicação correta da melhor prática de hardening com o comando `switchport nonegotiate`."
+  },
+  {
+    "question": "Qual é a finalidade do comando `show vlan brief` ao ser utilizado em um processo de diagnóstico de Camada 2?",
+    "options": [
+      "Mapear todas as VLANs existentes na base de dados (VLAN Database) do switch e exibir quais portas de acesso estão atribuídas a elas.",
+      "Exibir o tráfego em tempo real cruzando os links trunk.",
+      "Mostrar os contadores de quadros DTP transmitidos para os switches vizinhos.",
+      "Listar as portas que se encontram em estado de bloqueio de segurança pelo Spanning Tree."
+    ],
+    "answer": "Mapear todas as VLANs existentes na base de dados (VLAN Database) do switch e exibir quais portas de acesso estão atribuídas a elas.",
+    "explanation": "O comando exibe o banco de dados de VLANs locais e suas respectivas portas de acesso. (Nota: Portas trunk não aparecem listadas neste comando)."
+  },
+  {
+    "question": "O que o comando `show dtp interface <interface>` exibe especificamente ao ser executado na CLI de um switch Cisco?",
+    "options": [
+      "Os contadores internos de pacotes DTP enviados e recebidos, bem como o estado de negociação atual da interface.",
+      "O custo acumulado do caminho até a raiz do Spanning Tree.",
+      "A lista completa de endereços MAC aprendidos na tabela CAM daquela porta.",
+      "O status da criptografia do cabeçalho 802.1Q."
+    ],
+    "answer": "Os contadores internos de pacotes DTP enviados e recebidos, bem como o estado de negociação atual da interface.",
+    "explanation": "O comando foca na inspeção do Dynamic Trunking Protocol, mostrando o status operacional do protocolo e estatísticas dos pacotes de negociação trocados na interface."
+  },
+  {
+    "question": "Em uma saída do comando `show interfaces trunk`, qual é a diferença prática entre a linha 'Vlans allowed on trunk' e a linha 'Vlans allowed and active in management domain'?",
+    "options": [
+      "A primeira mostra todas as VLANs permitidas por configuração, enquanto a segunda filtra apenas aquelas que também estão criadas e ativas na base de dados do switch.",
+      "A primeira exibe apenas as VLANs da faixa estendida e a segunda a faixa normal.",
+      "Não há diferença; ambas mostram exatamente os mesmos valores em qualquer cenário.",
+      "A primeira lista as VLANs bloqueadas pelo STP e a segunda as liberadas."
+    ],
+    "answer": "A primeira mostra todas as VLANs permitidas por configuração, enquanto a segunda filtra apenas aquelas que também estão criadas e ativas na base de dados do switch.",
+    "explanation": "Uma VLAN pode estar na lista permitida do trunk, mas se ela não estiver criada na base de dados (`vlan <id>`), ela não passará tráfego, o que é distinguido nessas linhas do comando."
+  },
+  {
+    "question": "O que é indicado na seção 'Vlans in spanning tree forwarding state and not pruned' exibida pelo comando `show interfaces trunk`?",
+    "options": [
+      "As VLANs que estão efetivamente encaminhando tráfego pelo trunk, sem bloqueios de Spanning Tree ou podagem ativa.",
+      "As VLANs que foram bloqueadas permanentemente devido a ataques de VLAN Hopping.",
+      "O número de saltos restantes permitidos pelo campo Hop Count do MSTP.",
+      "As VLANs reservadas para uso legado de Token Ring."
+    ],
+    "answer": "As VLANs que estão efetivamente encaminhando tráfego pelo trunk, sem bloqueios de Spanning Tree ou podagem ativa.",
+    "explanation": "Esta linha confirma quais VLANs estão livres de bloqueios lógicos do STP e aptas para o tráfego real de dados naquele entroncamento."
+  },
+  {
+    "question": "Se um administrador precisar verificar rapidamente se o entroncamento físico está ativo e qual encapsulamento está sendo utilizado em uma porta específica, qual comando fornece essa resposta de forma resumida?",
+    "options": [
+      "show interfaces trunk",
+      "show ip route",
+      "show cdp neighbors detail",
+      "show mac address-table"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O `show interfaces trunk` lista imediatamente as portas operando em trunk, o tipo de encapsulamento (ex: 802.1q), o status e a native VLAN correspondente."
+  },
+  {
+    "question": "Por que as portas configuradas estaticamente como Trunk não aparecem na listagem do comando `show vlan brief`?",
+    "options": [
+      "Porque o comando exibe estritamente o mapeamento de portas de acesso e suas respectivas VLANs locais, sendo as portas trunk geridas no nível de entroncamento.",
+      "Porque portas trunk não possuem suporte a VLANs da faixa normal.",
+      "Porque o protocolo DTP oculta as portas trunk por motivos de segurança.",
+      "Porque o comando só funciona se o switch estiver em modo de roteamento."
+    ],
+    "answer": "Porque o comando exibe estritamente o mapeamento de portas de acesso e suas respectivas VLANs locais, sendo as portas trunk geridas no nível de entroncamento.",
+    "explanation": "O escopo do `show vlan brief` restringe-se às portas de acesso atribuídas a VLANs individuais, enquanto o tráfego do trunk gerencia múltiplos IDs simultaneamente através de outra tabela."
+  },
+  {
+    "question": "Qual comando em nível de interface deve ser verificado na CLI caso o administrador queira confirmar se a negociação dinâmica DTP foi completamente desativada em um link entre switches?",
+    "options": [
+      "show interfaces <interface> switchport",
+      "show interfaces summary",
+      "show spanning-tree summary",
+      "show vtp status"
+    ],
+    "answer": "show interfaces <interface> switchport",
+    "explanation": "O comando exibe o parâmetro 'Negotiation of Trunking', cujo valor 'Off' confirma que o comando `switchport nonegotiate` foi aplicado com sucesso na interface."
+  },
+  {
+    "question": "Qual é considerado o comando principal e mais utilizado para inspecionar o status das interfaces que operam ativamente como trunk, incluindo a VLAN nativa e as VLANs permitidas?",
+    "options": [
+      "show interfaces trunk",
+      "show vlan brief",
+      "show dtp summary",
+      "show spanning-tree interface brief"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O comando `show interfaces trunk` é a ferramenta número um de diagnóstico para verificar portas em entroncamento, exibindo o modo, encapsulamento, status, VLAN nativa e as VLANs permitidas e ativas."
+  },
+  {
+    "question": "O que o comando `show interfaces <interface> switchport` permite analisar em detalhe em uma porta de switch Cisco?",
+    "options": [
+      "Os modos administrativo e operacional da interface, além do estado da negociação DTP e da VLAN nativa configurada.",
+      "Apenas a quantidade de quadros descartados por erros de CRC na Camada Física.",
+      "O mapeamento completo de rotas IP estáticas em Camada 3 associadas à porta.",
+      "A prioridade atual do switch na eleição de Root Bridge do Spanning Tree."
+    ],
+    "answer": "Os modos administrativo e operacional da interface, além do estado da negociação DTP e da VLAN nativa configurada.",
+    "explanation": "Esse comando detalha a configuração estática e o comportamento atual da interface, mostrando se o DTP está ativo (On/Off) e quais VLANs e encapsulamentos estão operando."
+  },
+  {
+    "question": "O que indica a saída 'Administrative Mode: trunk' combinada com 'Negotiation of Trunking: Off' na execução do comando `show interfaces switchport`?",
+    "options": [
+      "Que a porta está configurada estaticamente como Trunk e o protocolo DTP foi desativado com o comando nonegotiate.",
+      "Que a porta sofreu uma falha de hardware e desativou a Camada 2.",
+      "Que o switch está operando em modo de acesso final com DTP ativo.",
+      "Que o Spanning Tree bloqueou a interface por PVID-Inconsistent."
+    ],
+    "answer": "Que a porta está configurada estaticamente como Trunk e o protocolo DTP foi desativado com o comando nonegotiate.",
+    "explanation": "O modo administrativo trunk combinado com a negociação de trunking desligada ('Off') confirma a aplicação correta da melhor prática de hardening com o comando `switchport nonegotiate`."
+  },
+  {
+    "question": "Qual é a finalidade do comando `show vlan brief` ao ser utilizado em um processo de diagnóstico de Camada 2?",
+    "options": [
+      "Mapear todas as VLANs existentes na base de dados (VLAN Database) do switch e exibir quais portas de acesso estão atribuídas a elas.",
+      "Exibir o tráfego em tempo real cruzando os links trunk.",
+      "Mostrar os contadores de quadros DTP transmitidos para os switches vizinhos.",
+      "Listar as portas que se encontram em estado de bloqueio de segurança pelo Spanning Tree."
+    ],
+    "answer": "Mapear todas as VLANs existentes na base de dados (VLAN Database) do switch e exibir quais portas de acesso estão atribuídas a elas.",
+    "explanation": "O comando exibe o banco de dados de VLANs locais e suas respectivas portas de acesso. (Nota: Portas trunk não aparecem listadas neste comando)."
+  },
+  {
+    "question": "O que o comando `show dtp interface <interface>` exibe especificamente ao ser executado na CLI de um switch Cisco?",
+    "options": [
+      "Os contadores internos de pacotes DTP enviados e recebidos, bem como o estado de negociação atual da interface.",
+      "O custo acumulado do caminho até a raiz do Spanning Tree.",
+      "A lista completa de endereços MAC aprendidos na tabela CAM daquela porta.",
+      "O status da criptografia do cabeçalho 802.1Q."
+    ],
+    "answer": "Os contadores internos de pacotes DTP enviados e recebidos, bem como o estado de negociação atual da interface.",
+    "explanation": "O comando foca na inspeção do Dynamic Trunking Protocol, mostrando o status operacional do protocolo e estatísticas dos pacotes de negociação trocados na interface."
+  },
+  {
+    "question": "Em uma saída do comando `show interfaces trunk`, qual é a diferença prática entre a linha 'Vlans allowed on trunk' e a linha 'Vlans allowed and active in management domain'?",
+    "options": [
+      "A primeira mostra todas as VLANs permitidas por configuração, enquanto a segunda filtra apenas aquelas que também estão criadas e ativas na base de dados do switch.",
+      "A primeira exibe apenas as VLANs da faixa estendida e a segunda a faixa normal.",
+      "Não há diferença; ambas mostram exatamente os mesmos valores em qualquer cenário.",
+      "A primeira lista as VLANs bloqueadas pelo STP e a segunda as liberadas."
+    ],
+    "answer": "A primeira mostra todas as VLANs permitidas por configuração, enquanto a segunda filtra apenas aquelas que também estão criadas e ativas na base de dados do switch.",
+    "explanation": "Uma VLAN pode estar na lista permitida do trunk, mas se ela não estiver criada na base de dados (`vlan <id>`), ela não passará tráfego, o que é distinguido nessas linhas do comando."
+  },
+  {
+    "question": "O que é indicado na seção 'Vlans in spanning tree forwarding state and not pruned' exibida pelo comando `show interfaces trunk`?",
+    "options": [
+      "As VLANs que estão efetivamente encaminhando tráfego pelo trunk, sem bloqueios de Spanning Tree ou podagem ativa.",
+      "As VLANs que foram bloqueadas permanentemente devido a ataques de VLAN Hopping.",
+      "O número de saltos restantes permitidos pelo campo Hop Count do MSTP.",
+      "As VLANs reservadas para uso legado de Token Ring."
+    ],
+    "answer": "As VLANs que estão efetivamente encaminhando tráfego pelo trunk, sem bloqueios de Spanning Tree ou podagem ativa.",
+    "explanation": "Esta linha confirma quais VLANs estão livres de bloqueios lógicos do STP e aptas para o tráfego real de dados naquele entroncamento."
+  },
+  {
+    "question": "Se um administrador precisar verificar rapidamente se o entroncamento físico está ativo e qual encapsulamento está sendo utilizado em uma porta específica, qual comando fornece essa resposta de forma resumida?",
+    "options": [
+      "show interfaces trunk",
+      "show ip route",
+      "show cdp neighbors detail",
+      "show mac address-table"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O `show interfaces trunk` lista imediatamente as portas operando em trunk, o tipo de encapsulamento (ex: 802.1q), o status e a native VLAN correspondente."
+  },
+  {
+    "question": "Por que as portas configuradas estaticamente como Trunk não aparecem na listagem do comando `show vlan brief`?",
+    "options": [
+      "Porque o comando exibe estritamente o mapeamento de portas de acesso e suas respectivas VLANs locais, sendo as portas trunk geridas no nível de entroncamento.",
+      "Porque portas trunk não possuem suporte a VLANs da faixa normal.",
+      "Porque o protocolo DTP oculta as portas trunk por motivos de segurança.",
+      "Porque o comando só funciona se o switch estiver em modo de roteamento."
+    ],
+    "answer": "Porque o comando exibe estritamente o mapeamento de portas de acesso e suas respectivas VLANs locais, sendo as portas trunk geridas no nível de entroncamento.",
+    "explanation": "O escopo do `show vlan brief` restringe-se às portas de acesso atribuídas a VLANs individuais, enquanto o tráfego do trunk gerencia múltiplos IDs simultaneamente através de outra tabela."
+  },
+  {
+    "question": "Qual comando em nível de interface deve ser verificado na CLI caso o administrador queira confirmar se a negociação dinâmica DTP foi completamente desativada em um link entre switches?",
+    "options": [
+      "show interfaces <interface> switchport",
+      "show interfaces summary",
+      "show spanning-tree summary",
+      "show vtp status"
+    ],
+    "answer": "show interfaces <interface> switchport",
+    "explanation": "O comando exibe o parâmetro 'Negotiation of Trunking', cujo valor 'Off' confirma que o comando `switchport nonegotiate` foi aplicado com sucesso na interface."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

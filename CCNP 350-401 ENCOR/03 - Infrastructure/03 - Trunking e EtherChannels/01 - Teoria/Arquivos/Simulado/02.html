@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Trunking & DTP - Dinâmica de Negociação do Dynamic Trunking Protocol (DTP)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Trunking & DTP - Dinâmica de Negociação do Dynamic Trunking Protocol (DTP)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Trunking & DTP - Dinâmica de Negociação do Dynamic Trunking Protocol (DTP). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a principal finalidade do Dynamic Trunking Protocol (DTP) em redes corporativas baseadas em switches Cisco?",
+    "options": [
+      "Negociar automaticamente o roteamento de pacotes IP em Camada 3 entre diferentes VLANs.",
+      "Automatizar a negociação e conversão de links Ethernet entre os modos Access e Trunk.",
+      "Controlar o envio de BPDUs para prevenir loops físicos em topologias redundantes.",
+      "Gerenciar o balanceamento de carga de pacotes em agrupamentos de interfaces EtherChannel."
+    ],
+    "answer": "Automatizar a negociação e conversão de links Ethernet entre os modos Access e Trunk.",
+    "explanation": "O DTP é um protocolo proprietário da Cisco de Camada 2 projetado para facilitar a configuração inicial da rede, permitindo que dois switches vizinhos negociem automaticamente o tipo de entroncamento do link."
+  },
+  {
+    "question": "Com qual frequência temporal e utilizando qual mecanismo de endereçamento os quadros DTP são transmitidos nativamente entre os switches Cisco?",
+    "options": [
+      "A cada 2 segundos via endereço multicast STP (01:80:C2:00:00:00).",
+      "A cada 30 segundos utilizando a VLAN Nativa e o endereço MAC multicast 01:00:0C:CC:CC:CC.",
+      "A cada 10 segundos utilizando pacotes unicasts direcionados ao IP de gerenciamento.",
+      "Apenas quando ocorre uma alteração física de cabo, sem periodicidade fixa."
+    ],
+    "answer": "A cada 30 segundos utilizando a VLAN Nativa e o endereço MAC multicast 01:00:0C:CC:CC:CC.",
+    "explanation": "Os quadros de controle DTP são enviados periodicamente a cada 30 segundos por meio da VLAN Nativa e empregam o endereço de multicast específico da Cisco (01:00:0C:CC:CC:CC)."
+  },
+  {
+    "question": "Qual é o comportamento operacional de uma interface de switch configurada estaticamente no modo Dynamic Auto?",
+    "options": [
+      "Ela busca ativamente iniciar e impor o encapsulamento trunk enviando quadros DTP constantemente.",
+      "Ela opera de forma passiva, aceitando virar trunk se o switch vizinho solicitar ativamente, mas sem iniciar a negociação.",
+      "Ela bloqueia permanentemente qualquer quadro DTP e força a porta a permanecer como acesso final.",
+      "Ela converte automaticamente a porta para o protocolo RSTP em caso de falha de Camada 2."
+    ],
+    "answer": "Ela opera de forma passiva, aceitando virar trunk se o switch vizinho solicitar ativamente, mas sem iniciar a negociação.",
+    "explanation": "O modo Dynamic Auto é passivo; a porta prefere o modo access e não toma a iniciativa de iniciar o entroncamento, mas converte-se para trunk se o parceiro de enlace solicitar ativamente."
+  },
+  {
+    "question": "Como se comporta uma interface de switch configurada com o modo Dynamic Desirable?",
+    "options": [
+      "Ela atua de maneira ativa, enviando quadros DTP para tentar forçar o switch vizinho a estabelecer um link trunk.",
+      "Ela recusa qualquer tentativa de entroncamento e desativa o envio de frames DTP na interface.",
+      "Ela opera exclusivamente como uma porta de acesso sem suporte a VLANs de Camada 2.",
+      "Ela descarta quadros 802.1Q e converte o tráfego para o padrão ISL legado."
+    ],
+    "answer": "Ela atua de maneira ativa, enviando quadros DTP para tentar forçar o switch vizinho a estabelecer um link trunk.",
+    "explanation": "O modo Dynamic Desirable busca ativamente transformar a conexão em trunk, despachando quadros DTP de solicitação periodicamente para o dispositivo conectado do outro lado."
+  },
+  {
+    "question": "O que acontece com o link físico se um switch configurado como Dynamic Auto for conectado diretamente a outro switch também configurado como Dynamic Auto?",
+    "options": [
+      "O link converte-se em um Trunk 802.1Q de alta velocidade.",
+      "O link opera em modo Access, pois nenhum dos dois lados iniciou ou solicitou ativamente a criação do trunk.",
+      "Ocorre um loop de Camada 2 imediato e as portas entram em estado de erro (err-disable).",
+      "O protocolo DTP trava e exige um reboot físico de ambos os equipamentos."
+    ],
+    "answer": "O link opera em modo Access, pois nenhum dos dois lados iniciou ou solicitou ativamente a criação do trunk.",
+    "explanation": "Como ambos os lados estão em Dynamic Auto (modo passivo), nenhum deles toma a iniciativa de pedir o entroncamento, resultando em um link operando no modo Access padrão."
+  },
+  {
+    "question": "Qual é o resultado da negociação DTP quando conectamos uma porta em Dynamic Desirable a outra porta configurada como Trunk estático?",
+    "options": [
+      "O link falha por incompatibilidade de DTP e fica permanentemente inoperante.",
+      "O link estabelece com sucesso o modo Trunk (802.1Q).",
+      "O link converte-se automaticamente para o protocolo de roteamento OSPF.",
+      "A porta de trunk reverte para o modo access por medida de segurança."
+    ],
+    "answer": "O link estabelece com sucesso o modo Trunk (802.1Q).",
+    "explanation": "Quando um lado está em Dynamic Desirable e o outro em Trunk estático, a negociação é bem-sucedida e o enlace levanta o entroncamento 802.1Q."
+  },
+  {
+    "question": "Qual é a principal função e o efeito prático do comando de interface `switchport nonegotiate`?",
+    "options": [
+      "Desativar a geração e o processamento de quadros DTP na interface física.",
+      "Forçar o switch a trocar o encapsulamento 802.1Q pelo padrão ISL proprietário.",
+      "Impedir que a porta aceite pacotes ARP provenientes de redes externas.",
+      "Acelerar a convergência do Spanning Tree eliminando os estados de listening."
+    ],
+    "answer": "Desativar a geração e o processamento de quadros DTP na interface física.",
+    "explanation": "O comando `switchport nonegotiate` desliga totalmente o DTP na porta, impedindo que ela envie ou interprete quadros de negociação dinâmica, garantindo estabilidade e segurança."
+  },
+  {
+    "question": "Para que uma interface aceite o comando `switchport nonegotiate`, qual condição prévia de configuração deve ser atendida?",
+    "options": [
+      "A porta deve estar previamente configurada de forma estática como Trunk (`switchport mode trunk`) ou Access (`switchport mode access`).",
+      "A porta precisa estar operando obrigatoriamente no modo Dynamic Auto.",
+      "O protocolo CDP deve estar desativado globalmente no switch.",
+      "A VLAN nativa deve ser alterada para um ID superior a 1000."
+    ],
+    "answer": "A porta deve estar previamente configurada de forma estática como Trunk (`switchport mode trunk`) ou Access (`switchport mode access`).",
+    "explanation": "O comando `switchport nonegotiate` só pode ser aplicado se a interface estiver fixada estaticamente nos modos Trunk ou Access, pois remove a capacidade de negociação dinâmica."
+  },
+  {
+    "question": "Qual é a recomendação de boas práticas de arquitetura e segurança (hardening) defendida para portas de infraestrutura interligando switches?",
+    "options": [
+      "Manter o DTP ativo no modo Dynamic Desirable em todas as portas para redundância.",
+      "Configurar os links estaticamente como Trunk e desativar o DTP utilizando `switchport nonegotiate`.",
+      "Utilizar exclusivamente portas em modo Access para evitar qualquer tráfego etiquetado.",
+      "Alternar o DTP entre os modos Auto e Desirable a cada 24 horas."
+    ],
+    "answer": "Configurar os links estaticamente como Trunk e desativar o DTP utilizando `switchport nonegotiate`.",
+    "explanation": "A recomendação de hardening é desativar o DTP em todas as portas de infraestrutura utilizando entroncamento estático combinado com o comando `switchport nonegotiate` para mitigar riscos de segurança."
+  },
+  {
+    "question": "O que ocorre quando uma interface configurada como Trunk estático sem DTP interage com uma porta configurada em Dynamic Auto?",
+    "options": [
+      "O link sobe perfeitamente porque o Trunk estático impõe o estado de entroncamento apesar de não enviar DTP.",
+      "O link falha ou entra em estado de inconsistência porque o lado Dynamic Auto aguarda por quadros DTP passivos que nunca chegam do lado estático sem negociação.",
+      "O switch automático converte o Trunk estático em uma porta de acesso padrão.",
+      "Ocorre um bloqueio de STP do tipo PVID-Inconsistent instantâneo."
+    ],
+    "answer": "O link sobe perfeitamente porque o Trunk estático impõe o estado de entroncamento apesar de não enviar DTP.",
+    "explanation": "Mesmo sem enviar quadros DTP (devido ao nonegotiate ou modo estático puro), um lado configurado rigidamente como trunk força a operação da interface ligada, fazendo o link subir com sucesso em muitas implementações, embora a matriz completa de DTP recomende cautela e padronização estática em ambas as pontas."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

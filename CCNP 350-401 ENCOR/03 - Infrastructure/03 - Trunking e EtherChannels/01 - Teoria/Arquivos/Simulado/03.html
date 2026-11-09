@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "O que ocorre nas pontas de um link trunk quando existe uma divergência de VLAN Nativa (Native VLAN Mismatch) entre os switches?",
+    "options": [
+      "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
+      "O link físico inteiro é imediatamente desligado, mudando para o estado administrativamente down.",
+      "As tabelas MAC são apagadas globalmente a cada 2 segundos.",
+      "O tráfego de todas as VLANs é automaticamente convertido para a VLAN 1002."
+    ],
+    "answer": "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
+    "explanation": "Quando há divergência de VLAN nativa, o CDP identifica a inconsistência e emite mensagens de aviso contínuas no console e no syslog, além de poder gerar bloqueio por STP."
+  },
+  {
+    "question": "Qual é a mensagem de log típica gerada pelo CDP quando um switch identifica um problema de Native VLAN Mismatch em uma interface?",
+    "options": [
+      "%STP-2-ROOTGUARDBLOCK: Root guard blocking port...",
+      "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
+      "%DTP-5-TRUNKOPEN: Interface GigabitEthernet has changed to trunking",
+      "%LINK-3-UPDOWN: Interface GigabitEthernet1/0/1, changed state to down"
+    ],
+    "answer": "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
+    "explanation": "O Cisco Discovery Protocol emite o aviso específico informando o descobrimento de mismatch de VLAN nativa detalhando as portas e os IDs conflitantes."
+  },
+  {
+    "question": "Como o Spanning Tree Protocol (STP) reage tipicamente ao identificar um cenário persistente de Native VLAN Mismatch em uma porta trunk?",
+    "options": [
+      "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
+      "Ele eleva a prioridade do switch para 0 para assumir o papel de Root Bridge.",
+      "Ele força a conversão do link para o modo EtherChannel LACP.",
+      "Ele desativa o STP em toda a rede para evitar o recálculo de instâncias."
+    ],
+    "answer": "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
+    "explanation": "O mecanismo de proteção do STP detecta a inconsistência de PVID gerada pelo descasamento da VLAN nativa e bloqueia o tráfego daquela VLAN na interface para evitar loops."
+  },
+  {
+    "question": "O que é o fenômeno conhecido como *VLAN Leaking* em cenários de Native VLAN Mismatch?",
+    "options": [
+      "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
+      "A perda de pacotes de broadcast devido ao estouro da tabela CAM.",
+      "A cópia ilegal de dados de gerencia SNMP para roteadores externos.",
+      "O encadeamento de quadros 802.1Q sem a tag TPID válida."
+    ],
+    "answer": "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
+    "explanation": "Como os quadros da nativa trafegam sem tag, um pacote untagged enviado de um lado é interpretado pelo vizinho com base na Native VLAN local dele, causando vazamento de tráfego entre domínios distintos."
+  },
+  {
+    "question": "Qual é a ação corretiva recomendada para solucionar um problema de Native VLAN Mismatch em um link trunk?",
+    "options": [
+      "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
+      "Desativar permanentemente o protocolo CDP em todos os switches da topologia.",
+      "Remover todas as VLANs da allowed list e reiniciar o serviço de DTP.",
+      "Alterar a porta para o modo Access estático e ativar o RSTP."
+    ],
+    "answer": "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
+    "explanation": "A resolução exige que o administrador ajuste o ID da VLAN nativa para que coincida exatamente em ambas as extremidades do entroncamento."
+  },
+  {
+    "question": "O que caracteriza o Cenário 3 de Troubleshooting de Trunk relacionado à Allowed List Inconsistente?",
+    "options": [
+      "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
+      "Os switches estão rodando versões diferentes de firmware que quebram o encapsulamento 802.1Q.",
+      "O cabo físico possui atenuação excessiva gerando CRC errors.",
+      "O endereço IP do gateway padrão está configurado incorretamente na Camada 3."
+    ],
+    "answer": "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
+    "explanation": "Quando a lista de VLANs permitidas (allowed list) diverge ou a VLAN não existe na base de dados de uma das pontas, o link trunk físico permanece UP, mas a VLAN específica sofre pruning involuntário."
+  },
+  {
+    "question": "Qual comando de verificação exibe claramente a lista de VLANs permitidas (Allowed) e as ativas no domínio de gerenciamento de um trunk?",
+    "options": [
+      "show interfaces trunk",
+      "show vlan summary",
+      "show spanning-tree inconsistent",
+      "show dtp statistics"
+    ],
+    "answer": "show interfaces trunk",
+    "explanation": "O comando `show interfaces trunk` é a ferramenta principal para inspecionar o status das portas trunk, encapsulamento, native VLAN e as VLANs permitidas/ativas."
+  },
+  {
+    "question": "O que indica o comando `show interfaces GigabitEthernet1/0/1 switchport` quando o campo 'Negotiation of Trunking' exibe o status 'Off'?",
+    "options": [
+      "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
+      "Que a porta está com falha física na camada de enlace.",
+      "Que o Spanning Tree bloqueou a porta por PVID Inconsistent.",
+      "Que a interface foi convertida para o modo de roteamento IP puro."
+    ],
+    "answer": "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
+    "explanation": "O status 'Off' na negociação de trunking confirma que o comando `switchport nonegotiate` foi aplicado, desligando a troca de quadros DTP na porta."
+  },
+  {
+    "question": "Qual é o sintoma observado quando ocorre um erro de DTP Negotiation Mismatch (ex: um lado em Access estático e o outro em Trunk estático rodando DTP)?",
+    "options": [
+      "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
+      "O link muda automaticamente para o modo half-duplex para preservar os dados.",
+      "Ocorre um storm de broadcasts na VLAN 1.",
+      "O switch reinicia a controladora de interfaces para tentar nova sincronização."
+    ],
+    "answer": "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
+    "explanation": "Quando há conflito direto entre modo access estático e trunk forçado, a comunicação falha pois as portas esperam padrões de encapsulamento totalmente divergentes."
+  },
+  {
+    "question": "O que o comando `show vlan brief` exibe em relação às interfaces configuradas como entroncamento (Trunk)?",
+    "options": [
+      "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
+      "Mostra o status detalhado da lista allowed vlan e o ID da Native VLAN.",
+      "Exibe os contadores de quadros DTP enviados e recebidos em cada porta.",
+      "Mostra quais VLANs estão bloqueadas pelo Spanning Tree."
+    ],
+    "answer": "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
+    "explanation": "O comando `show vlan brief` mapeia apenas as VLANs da base de dados e suas respectivas portas de acesso; portas trunk não são listadas nele."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
