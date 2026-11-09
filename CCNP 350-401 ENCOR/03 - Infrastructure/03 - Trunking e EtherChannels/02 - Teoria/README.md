@@ -397,11 +397,11 @@ Agora é a hora de consolidar o aprendizado e testar seu raciocínio em questõe
 
 **Simulados temáticos:**
 
-1. [Fundamentos de Arquitetura de EtherChannel e Funcionamento com STP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/06.html)
-2. [Operação e Negociação de EtherChannel Estático (Mode On)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/07.html)
-3. [Deep Dive no Protocolo LACP (IEEE 802.3ad / Prioridades e Standby)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/08.html)
-4. [Protocolo Proprietário PAgP (Modos Auto e Desirable)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/09.html)
-5. [Troubleshooting Avançado: Inconsistências, Load Balancing e Err-Disable](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/10.html)
+1. [Fundamentos de Arquitetura de EtherChannel e Funcionamento com STP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/01.html)
+2. [Operação e Negociação de EtherChannel Estático (Mode On)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/02.html)
+3. [Deep Dive no Protocolo LACP (IEEE 802.3ad / Prioridades e Standby)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/03.html)
+4. [Protocolo Proprietário PAgP (Modos Auto e Desirable)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/04.html)
+5. [Troubleshooting Avançado: Inconsistências, Load Balancing e Err-Disable](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/5.html)
 
 **Simulado completo de Trunking & EtherChannels:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/03%20-%20Trunking%20e%20EtherChannels/02%20-%20Teoria/Arquivos/Simulado/completo.html)
 
