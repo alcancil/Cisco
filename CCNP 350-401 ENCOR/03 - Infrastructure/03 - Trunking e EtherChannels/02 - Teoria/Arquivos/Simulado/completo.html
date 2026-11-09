@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Trunking & DTP - Completo 02</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Completo 02</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Trunking & DTP - Completo 02. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é o principal problema de Camada 2 enfrentado em uma topologia com cabos redundantes paralelos entre switches quando o EtherChannel não é utilizado?",
+    "options": [
+      "O Spanning Tree Protocol (STP) identifica os links redundantes e coloca as portas sobressalentes em estado de bloqueio (Blocking), limitando a largura de banda efetiva a apenas um link físico.",
+      "Ocorre um estouro imediato na tabela CAM devido à duplicação de endereços MAC nas portas vizinhas.",
+      "Os switches entram em loop de Camada 3 e descartam todos os pacotes IP.",
+      "As interfaces físicas reduzem automaticamente a velocidade para 10 Mbps para evitar colisão."
+    ],
+    "answer": "O Spanning Tree Protocol (STP) identifica os links redundantes e coloca as portas sobressalentes em estado de bloqueio (Blocking), limitando a largura de banda efetiva a apenas um link físico.",
+    "explanation": "Sem o EtherChannel, adicionar cabos extras gera loops de Camada 2, fazendo com que o STP bloqueie as portas redundantes e desperdice largura de banda."
+  },
+  {
+    "question": "Como o Spanning Tree Protocol (STP) enxerga um grupo de interfaces físicas unidas em um EtherChannel (Port-Channel)?",
+    "options": [
+      "Como um conjunto de links independentes onde cada porta executa instâncias separadas de STP.",
+      "Como uma única interface lógica agregada, mantendo todas as portas encaminhando tráfego sem causar loops lógicos.",
+      "Como uma porta de Camada 3 desprovida de custos de STP.",
+      "Como um erro de configuração que aciona o estado de err-disable instantaneamente."
+    ],
+    "answer": "Como uma única interface lógica agregada, mantendo todas as portas encaminhando tráfego sem causar loops lógicos.",
+    "explanation": "O STP enxerga o Port-Channel como um único link lógico de alta capacidade, permitindo que todas as portas físicas membros encaminhem tráfego simultaneamente sem disparar o bloqueio por loops."
+  },
+  {
+    "question": "O que ocorre se você alterar individualmente a VLAN de acesso de uma porta física membro que já faz parte de um Port-Channel operacional?",
+    "options": [
+      "A alteração é replicada automaticamente para todas as outras portas do grupo.",
+      "A porta modificada é suspensa do EtherChannel devido a inconsistência de parâmetros operacionais.",
+      "O switch converte o Port-Channel inteiro em uma porta de acesso estática.",
+      "A largura de banda total do canal é dobrada para compensar a alteração."
+    ],
+    "answer": "A porta modificada é suspensa do EtherChannel devido a inconsistência de parâmetros operacionais.",
+    "explanation": "Todas as configurações operacionais de Camada 2 e Camada 3 devem ser idênticas nas portas membro ou aplicadas diretamente na interface Port-Channel. Alterações avulsas causam a suspensão da porta."
+  },
+  {
+    "question": "Qual é o limite máximo padrão de portas físicas ativas simultaneamente em um único Port-Channel configurado com LACP?",
+    "options": [
+      "Até 4 portas ativas.",
+      "Até 8 portas ativas (com mais 8 em modo standby opcional).",
+      "Até 16 portas ativas sem restrições.",
+      "Até 32 portas ativas."
+    ],
+    "answer": "Até 8 portas ativas (com mais 8 em modo standby opcional).",
+    "explanation": "O LACP suporta até 16 interfaces associadas a um Port-Channel, mas restringe a quantidade de links ativos simultâneos transmitindo dados a no máximo 8."
+  },
+  {
+    "question": "Como o EtherChannel lida com a distribuição de tráfego de dados entre os vários cabos físicos que compõem a interface lógica?",
+    "options": [
+      "Ele realiza a multiplexação de pacotes individuais de uma mesma sessão de Camada 4 alternando cada pacote entre os cabos.",
+      "Ele utiliza um algoritmo matemático de Hash baseado em endereços ou portas para atribuir cada fluxo de comunicação a um link físico específico.",
+      "Ele envia todo o tráfego replicado por igual em todas as portas ao mesmo tempo.",
+      "Ele escolhe o link com menor latência dinamicamente a cada milissegundo por inteligência artificial."
+    ],
+    "answer": "Ele utiliza um algoritmo matemático de Hash baseado em endereços ou portas para atribuir cada fluxo de comunicação a um link físico específico.",
+    "explanation": "O balanceamento de carga do EtherChannel opera por fluxo (usando hash de MAC, IP ou portas TCP/UDP) para evitar a entrega de pacotes fora de ordem na Camada 4."
+  },
+  {
+    "question": "O que caracteriza o fenômeno de 'Hash Polarization' em um ambiente de EtherChannel?",
+    "options": [
+      "A divisão exata e perfeita de 50% do tráfego para cada cabo físico.",
+      "A saturação de apenas um link físico da agregação enquanto os demais permanecem com 0% de uso devido a uma escolha inadequada do algoritmo de hash.",
+      "A inversão da polaridade elétrica nos cabos de cobre de Camada 1.",
+      "O bloqueio total do canal por interferência eletromagnética."
+    ],
+    "answer": "A saturação de apenas um link físico da agregação enquanto os demais permanecem com 0% de uso devido a uma escolha inadequada do algoritmo de hash.",
+    "explanation": "A polarização de hash acontece quando o método de hash selecionado falha em distribuir os fluxos de forma equilibrada, fazendo com que o tráfego caia desproporcionalmente em um único link físico."
+  },
+  {
+    "question": "Qual critério de balanceamento de carga é geralmente recomendado para a maioria das redes corporativas modernas com roteamento e comutação mista?",
+    "options": [
+      "src-mac",
+      "dst-mac",
+      "src-dst-ip (combinação de IP de origem e destino)",
+      "Nenhum, pois o switch usa balanceamento aleatório por padrão."
+    ],
+    "answer": "src-dst-ip (combinação de IP de origem e destino)",
+    "explanation": "O uso de endereços IP de origem e destino combinados (src-dst-ip ou src-dst-mixed-ip-port) garante uma variação de hash muito superior em redes corporativas com múltiplos fluxos de dados."
+  },
+  {
+    "question": "Onde devem ser aplicadas preferencialmente as configurações operacionais, como o modo Trunk e a lista de Allowed VLANs, em um ambiente com EtherChannel?",
+    "options": [
+      "Apenas na primeira porta física do grupo.",
+      "Diretamente na interface lógica Port-Channel (além de manter as portas membro perfeitamente alinhadas).",
+      "Exclusivamente no arquivo de configuração do roteuter core de borda.",
+      "Na tabela CAM de cada switch individual."
+    ],
+    "answer": "Diretamente na interface lógica Port-Channel (além de manter as portas membro perfeitamente alinhadas).",
+    "explanation": "Aplicar as configurações na interface Port-Channel garante que o comportamento seja propagado de forma unificada para as portas físicas membros do grupo."
+  },
+  {
+    "question": "Qual é o comportamento esperado se um único host transferir um arquivo grande via FTP para um único servidor através de um EtherChannel de 4 Gbps (4 portas de 1 Gbps)?",
+    "options": [
+      "O arquivo será transferido a uma velocidade máxima combinada de 4 Gbps.",
+      "Todo o fluxo daquela sessão específica fluirá por apenas um único link físico de 1 Gbps, limitando a velocidade máxima àquela interface.",
+      "O switch dividirá os bytes do arquivo igualmente entre os 4 cabos em nível de pacote.",
+      "A sessão cairá por excesso de largura de banda alocada."
+    ],
+    "answer": "Todo o fluxo daquela sessão específica fluirá por apenas um único link físico de 1 Gbps, limitando a velocidade máxima àquela interface.",
+    "explanation": "Como o EtherChannel faz balanceamento de carga por fluxo e não por pacote individual, uma única sessão entre o mesmo par de origem e destino utilizará apenas um link físico do grupo."
+  },
+  {
+    "question": "O que acontece com a tabela de endereços MAC do switch em relação a uma interface Port-Channel?",
+    "options": [
+      "A tabela MAC enxerga a interface Port-Channel como uma única interface lógica de saída (egress), independentemente de quantas portas físicas compõem o grupo.",
+      "A tabela MAC duplica os endereços de todas as portas físicas de forma independente.",
+      "A tabela MAC descarta todos os endereços aprendidos através de links agregados.",
+      "A tabela MAC é desativada sempre que um Port-Channel é ativado."
+    ],
+    "answer": "A tabela MAC enxerga a interface Port-Channel como uma única interface lógica de saída (egress), independentemente de quantas portas físicas compõem o grupo.",
+    "explanation": "Para a tabela MAC e para o STP, o Port-Channel atua como uma interface única e coesa, abstraindo a complexidade dos múltiplos cabos físicos subjacentes."
+  },
+  {
+    "question": "Como o modo de agregação estático 'channel-group X mode on' opera em termos de troca de pacotes de controle entre os switches?",
+    "options": [
+      "Ele envia pacotes LACPDU a cada 1 segundos para verificar a estabilidade do enlace.",
+      "Ele força a agregação sem utilizar nenhum protocolo de sinalização ou negociação de controle, assumindo passivamente que o vizinho está configurado da mesma forma.",
+      "Ele troca quadros PAgP proprietários exclusivos da Cisco a cada 30 segundos.",
+      "Ele exige autenticação prévia via CHAP antes de unir as interfaces."
+    ],
+    "answer": "Ele força a agregação sem utilizar nenhum protocolo de sinalização ou negociação de controle, assumindo passivamente que o vizinho está configurado da mesma forma.",
+    "explanation": "No modo estático 'On', a agregação é forçada manualmente sem a troca de pacotes de controle ou negociação de link, o que exige alinhamento manual perfeito na outra ponta."
+  },
+  {
+    "question": "O que ocorre na rede se um switch for configurado com 'channel-group 1 mode on' e o switch vizinho estiver com portas normais de acesso ou trunk sem EtherChannel ativado?",
+    "options": [
+      "O link cai imediatamente por falha de sincronismo e entra em estado de hibernação.",
+      "Ocorrem loops severos de Camada 2 ou queda massiva de pacotes, pois o switch vizinho tratará os cabos como portas independentes e receberá tráfego duplicado.",
+      "O Spanning Tree bloqueia todas as portas por padrão de segurança port-security.",
+      "O switch converte automaticamente a outra ponta para o modo estático."
+    ],
+    "answer": "Ocorrem loops severos de Camada 2 ou queda massiva de pacotes, pois o switch vizinho tratará os cabos como portas independentes e receberá tráfego duplicado.",
+    "explanation": "Como o modo estático não envia pacotes de sinalização para avisar o vizinho, se a outra ponta não estiver configurada corretamente, o tráfego gerará loops de Camada 2."
+  },
+  {
+    "question": "Qual é a principal limitação ou risco operacional de utilizar o EtherChannel em modo estático (Mode On) em redes corporativas?",
+    "options": [
+      "Ele suporta no máximo 2 portas físicas no grupo.",
+      "Ele não possui mecanismos de detecção de erros de configuração ou links unidirecionais, aumentando o risco de loops e falhas silenciosas.",
+      "Ele consome o dobro de memória RAM na CPU do switch em comparação ao LACP.",
+      "Ele é incompatível com troncos 802.1Q."
+    ],
+    "answer": "Ele não possui mecanismos de detecção de erros de configuração ou links unidirecionais, aumentando o risco de loops e falhas silenciosas.",
+    "explanation": "A ausência de um protocolo de controle (como LACP ou PAgP) significa que o modo estático não valida a configuração da outra ponta dinamicamente."
+  },
+  {
+    "question": "O que o comando 'channel-group 1 mode on' exige obrigatoriamente nas interfaces físicas do switch antes de consolidar o agrupamento?",
+    "options": [
+      "Que todas as portas estejam operando estritamente na mesma velocidade, duplex, modo de switchport e VLAN nativa.",
+      "Que os cabos sejam de fibra óptica multimodo obrigatoriamente.",
+      "Que o STP seja desativado em todo o domínio de broadcast.",
+      "Que o roteamento estático esteja habilitado no núcleo."
+    ],
+    "answer": "Que todas as portas estejam operando estritamente na mesma velocidade, duplex, modo de switchport e VLAN nativa.",
+    "explanation": "Como o modo estático não negocia parâmetros dinamicamente, as portas físicas membros devem possuir configuração idêntica de camada física e enlace para evitar inconsistências."
+  },
+  {
+    "question": "Como o comando 'show etherchannel summary' exibe o estado de uma interface Port-Channel estática que está operando perfeitamente em Camada 2?",
+    "options": [
+      "Po1(RU) e protocolo 'Not Applicable' ou 'Static'",
+      "Po1(SU) e protocolo LACP ou PAgP (ou sem protocolo de sinalização dependendo da versão do IOS)",
+      "Po1(LD) com flag de erro",
+      "Po1(RR) com Layer 3 ativo"
+    ],
+    "answer": "Po1(SU) e protocolo LACP ou PAgP (ou sem protocolo de sinalização dependendo da versão do IOS)",
+    "explanation": "A flag 'S' indica Camada 2 (Layer 2) e 'U' indica Operacional (In use / Up)."
+  },
+  {
+    "question": "Qual flag é exibida no comando 'show etherchannel summary' quando uma porta física membro é suspensa ou rejeitada do grupo devido a uma inconsistência de parâmetros?",
+    "options": [
+      "(P) - Bundled in port-channel",
+      "(s) - Suspended ou (I) - Stand-alone",
+      "(D) - Down físico",
+      "(H) - Hot-standby"
+    ],
+    "answer": "(s) - Suspended ou (I) - Stand-alone",
+    "explanation": "Portas com parâmetros desalinhados são colocadas em estado stand-alone (I) ou suspensas (s) para evitar corrupção de tráfego."
+  },
+  {
+    "question": "O que acontece com o tráfego de dados de uma sessão TCP específica que cruza um EtherChannel estático configurado com múltiplos links físicos?",
+    "options": [
+      "Os pacotes individuais da sessão são divididos e alternados byte a byte em todos os cabos físicos simultaneamente.",
+      "Todo o fluxo daquela sessão específica é direcionado por hash para apenas um único link físico do grupo.",
+      "O switch duplica a sessão em todos os cabos para garantir redundância em tempo real.",
+      "O tráfego é bloqueado até que o LACP valide a conexão."
+    ],
+    "answer": "Todo o fluxo daquela sessão específica é direcionado por hash para apenas um único link físico do grupo.",
+    "explanation": "O balanceamento de carga do EtherChannel opera por fluxo (usando hash), mantendo todos os pacotes de uma mesma conexão no mesmo link físico para evitar entrega fora de ordem."
+  },
+  {
+    "question": "Se um administrador configurar o balanceamento de carga com 'port-channel load-balance src-dst-ip', quais campos do pacote são avaliados pelo algoritmo de hash?",
+    "options": [
+      "Apenas os endereços MAC de origem e destino.",
+      "A combinação matemática (XOR) dos endereços IP de origem e IP de destino.",
+      "Apenas a porta TCP de origem.",
+      "A prioridade PCP do cabeçalho 802.1Q."
+    ],
+    "answer": "A combinação matemática (XOR) dos endereços IP de origem e IP de destino.",
+    "explanation": "O método 'src-dst-ip' utiliza os endereços IP de origem e destino do pacote para calcular o hash que define o link físico de saída."
+  },
+  {
+    "question": "Qual comando global no Cisco IOS é utilizado para alterar o método de hash do balanceamento de carga em um switch com EtherChannels?",
+    "options": [
+      "port-channel load-balance <método>",
+      "channel-group load-share <método>",
+      "etherchannel hashing algorithm <método>",
+      "switchport load-interval <método>"
+    ],
+    "answer": "port-channel load-balance <método>",
+    "explanation": "O comando global 'port-channel load-balance' define o critério de distribuição de tráfego para todos os Port-Channels do switch."
+  },
+  {
+    "question": "Por que o modo estático (Mode On) é considerado desfavorável em ambientes corporativos em comparação aos protocolos dinâmicos como LACP?",
+    "options": [
+      "Porque ele consome muita largura de banda com o envio excessivo de pacotes de controle.",
+      "Porque ele não previne falhas de configuração humana e não protege contra loops em caso de conexões incorretas na outra ponta.",
+      "Porque ele impede totalmente a passagem de trunks 802.1Q.",
+      "Porque ele só funciona em portas FastEthernet legadas."
+    ],
+    "answer": "Porque ele não previne falhas de configuração humana e não protege contra loops em caso de conexões incorretas na outra ponta.",
+    "explanation": "A ausência de mensagens de controle impede que o switch detecte se o vizinho configurou errado, tornando o modo estático propenso a loops se houver erro humano."
+  },
+  {
+    "question": "Qual é a organização de padronização internacional responsável pela especificação e manutenção do protocolo LACP (Link Aggregation Control Protocol)?",
+    "options": [
+      "Cisco Systems (Protocolo proprietário de Camada 2)",
+      "IEEE (Padrão 802.3ad / 802.1AX)",
+      "IETF (Internet Engineering Task Force)",
+      "TIA/EIA (Telecommunications Industry Association)"
+    ],
+    "answer": "IEEE (Padrão 802.3ad / 802.1AX)",
+    "explanation": "O LACP é um padrão aberto mantido pela IEEE, permitindo a interoperabilidade entre equipamentos de diferentes fabricantes."
+  },
+  {
+    "question": "Qual endereço MAC multicast é utilizado pelos switches para a troca de quadros de controle LACPDU (LACP Data Units)?",
+    "options": [
+      "01:00:0C:CC:CC:CC",
+      "01:80:C2:00:00:02",
+      "FF:FF:FF:FF:FF:FF",
+      "01:00:5E:00:00:01"
+    ],
+    "answer": "01:80:C2:00:00:02",
+    "explanation": "Os quadros LACPDU são transmitidos usando o endereço MAC multicast reservado 01:80:C2:00:00:02."
+  },
+  {
+    "question": "Quais são os dois modos de configuração disponíveis para uma interface em um EtherChannel rodando o protocolo LACP?",
+    "options": [
+      "Auto e Desirable",
+      "Active e Passive",
+      "On e Off",
+      "Master e Slave"
+    ],
+    "answer": "Active e Passive",
+    "explanation": "O LACP opera nos modos Active (inicia ativamente a negociação enviando LACPDUs) e Passive (responde aos LACPDUs recebidos)."
+  },
+  {
+    "question": "O que acontece se ambos os switches conectados por um link LACP estiverem configurados com suas interfaces no modo 'Passive'?",
+    "options": [
+      "O EtherChannel sobe instantaneamente utilizando o modo de fallback estático.",
+      "O canal não se forma, pois nenhuma das pontas toma a iniciativa de enviar pacotes LACPDU.",
+      "Ocorre um loop de Camada 2 que aciona o protetor EtherChannel Guard.",
+      "Os switches alternam automaticamente para o protocolo proprietário PAgP."
+    ],
+    "answer": "O canal não se forma, pois nenhuma das pontas toma a iniciativa de enviar pacotes LACPDU.",
+    "explanation": "Para que o LACP negocie com sucesso, pelo menos uma das pontas precisa estar configurada no modo Active."
+  },
+  {
+    "question": "Qual é o limite máximo de interfaces físicas associadas a um único Port-Channel LACP que podem ficar ativas simultaneamente transmitindo dados?",
+    "options": [
+      "Até 4 portas ativas",
+      "Até 8 portas ativas",
+      "Até 16 portas ativas",
+      "Até 32 portas ativas"
+    ],
+    "answer": "Até 8 portas ativas",
+    "explanation": "O LACP suporta até 16 interfaces associadas ao canal, mas restringe a quantidade de links ativos simultâneos a no máximo 8."
+  },
+  {
+    "question": "O que acontece com as demais interfaces físicas (além do limite de portas ativas) em um Port-Channel LACP que possui 10 ou mais cabos conectados?",
+    "options": [
+      "Elas são colocados permanentemente em estado de erro (err-disable).",
+      "Elas permanecem em modo Hot-Standby, aguardando a falha de um dos links ativos para assumir imediatamente.",
+      "Elas operam isoladamente como portas de acesso independentes.",
+      "Elas dividem o tráfego de vídeo e voz separadamente."
+    ],
+    "answer": "Elas permanecem em modo Hot-Standby, aguardando a falha de um dos links ativos para assumir imediatamente.",
+    "explanation": "As portas excedentes (até o total de 16) ficam em modo Hot-Standby de prontidão para assumir o tráfego caso algum link ativo caia."
+  },
+  {
+    "question": "Qual é a função do parâmetro 'LACP System Priority' configurado em um switch?",
+    "options": [
+      "Definir qual switch possui prioridade para dominar a tomada de decisão sobre quais links físicos específicos do canal ficam ativos.",
+      "Determinar a versão do firmware IOS que gerencia o Spanning Tree.",
+      "Estabelecer a prioridade de tráfego QoS para pacotes de voz VoIP.",
+      "Forçar a criptografia de Camada 2 nas portas do trunk."
+    ],
+    "answer": "Definir qual switch possui prioridade para dominar a tomada de decisão sobre quais links físicos específicos do canal ficam ativos.",
+    "explanation": "O LACP System Priority define qual dos dois switches gerencia a seleção das portas ativas (o switch com o menor valor numérico vence)."
+  },
+  {
+    "question": "Qual é o valor padrão da prioridade do sistema LACP (LACP System Priority) nos switches Cisco?",
+    "options": [
+      "1",
+      "100",
+      "32768",
+      "65535"
+    ],
+    "answer": "32768",
+    "explanation": "O valor padrão para o LACP System Priority é 32768. O menor valor numérico vence a eleição."
+  },
+  {
+    "question": "Onde o parâmetro 'LACP Port Priority' deve ser configurado para influenciar diretamente quais interfaces serão escolhidas como ativas?",
+    "options": [
+      "No switch que possui a MAIOR prioridade de sistema (system priority).",
+      "No switch que possui a MENOR prioridade de sistema (o switch mestre que toma as decisões).",
+      "Igualmente em ambos os switches, independentemente do sistema.",
+      "Exclusivamente na interface virtual Port-Channel."
+    ],
+    "answer": "No switch que possui a MENOR prioridade de sistema (o switch mestre que toma as decisões).",
+    "explanation": "A prioridade de porta é avaliada no switch que ganhou a eleição de System Priority (o de menor valor numérico)."
+  },
+  {
+    "question": "Se um switch estiver configurado com o comando 'lacp system-priority 16384', o que esse comando indica em comparação ao valor padrão?",
+    "options": [
+      "Indica que o switch terá uma preferência maior (vencerá a eleição) para controlar a seleção de portas ativas em relação a um switch com o valor padrão 32768.",
+      "Indica que o switch desativará totalmente o protocolo LACP.",
+      "Indica que o número máximo de portas ativas será reduzido para 4.",
+      "Indica que o switch funcionará apenas como escravo passivo."
+    ],
+    "answer": "Indica que o switch terá uma preferência maior (vencerá a eleição) para controlar a seleção de portas ativas em relação a um switch com o valor padrão 32768.",
+    "explanation": "Como o menor valor numérico vence, definir 16384 torna o switch prioritário (mestre) frente ao padrão 32768."
+  },
+    {
+    "question": "O que caracteriza o protocolo PAgP (Port Aggregation Protocol) em termos de sua origem e ecossistema de fabricação?",
+    "options": [
+      "É um protocolo padrão aberto mantido pelo IEEE sob a especificação 802.3ad.",
+      "É um protocolo proprietário desenvolvido exclusivamente pela Cisco para negociação de EtherChannels.",
+      "É um protocolo de Camada 3 criado pela IETF para roteamento dinâmico de alta velocidade.",
+      "É um protocolo de segurança para prevenção de ataques de Camada 2 em portas de acesso."
+    ],
+    "answer": "É um protocolo proprietário desenvolvido exclusivamente pela Cisco para negociação de EtherChannels.",
+    "explanation": "O PAgP é um protocolo proprietário da Cisco criado para automatizar a formação de agrupamentos de links entre switches que suportem essa tecnologia."
+  },
+  {
+    "question": "Qual endereço MAC multicast é utilizado pelos switches Cisco para a transmissão periódica de pacotes de controle do protocolo PAgP?",
+    "options": [
+      "01:80:C2:00:00:02",
+      "01:00:0C:CC:CC:CC",
+      "FF:FF:FF:FF:FF:FF",
+      "01:00:5E:00:00:01"
+    ],
+    "answer": "01:00:0C:CC:CC:CC",
+    "explanation": "Os pacotes do PAgP utilizam o endereço MAC multicast exclusivo da Cisco 01:00:0C:CC:CC:CC para a troca de informações entre os dispositivos."
+  },
+  {
+    "question": "Quais são os dois modos de configuração disponíveis para uma interface em um EtherChannel rodando o protocolo proprietário PAgP?",
+    "options": [
+      "Active e Passive",
+      "Auto e Desirable",
+      "On e Off",
+      "Master e Slave"
+    ],
+    "answer": "Auto e Desirable",
+    "explanation": "O PAgP opera nos modos Auto (aguarda passivamente solicitações) e Desirable (solicita ativamente o estabelecimento do EtherChannel)."
+  },
+  {
+    "question": "O que ocorre se dois switches conectados por um enlace PAgP tiverem suas portas configuradas respectivamente com os modos 'Auto' e 'Auto'?",
+    "options": [
+      "O EtherChannel sobe instantaneamente por compatibilidade mútua.",
+      "O canal não se forma, pois nenhuma das pontas toma a iniciativa de iniciar a negociação PAgP.",
+      "Os switches alternam automaticamente para o modo LACP Active.",
+      "O Spanning Tree bloqueia todas as portas por inconsistência de PVID."
+    ],
+    "answer": "O canal não se forma, pois nenhuma das pontas toma a iniciativa de iniciar a negociação PAgP.",
+    "explanation": "Para que o PAgP estabeleça o canal com sucesso, pelo menos uma das pontas deve estar configurada no modo Desirable para tomar a iniciativa."
+  },
+  {
+    "question": "Qual será o resultado da negociação PAgP se o Switch A estiver configurado como 'Desirable' e o Switch B estiver configurado como 'Desirable'?",
+    "options": [
+      "O EtherChannel será formado com sucesso, pois ambos enviam pacotes PAgP e negociam o canal.",
+      "O link falhará devido a conflito de mestre e escravo.",
+      "Apenas uma porta física subirá, mantendo as demais em estado stand-alone.",
+      "Ocorre um erro de incompatibilidade de protocolo de Camada 2."
+    ],
+    "answer": "O EtherChannel será formado com sucesso, pois ambos enviam pacotes PAgP e negociam o canal.",
+    "explanation": "Quando ambas as pontas estão em modo Desirable, as duas iniciam ativamente a negociação e o EtherChannel é formado sem problemas."
+  },
+  {
+    "question": "O que acontece se uma porta for configurada com o comando 'channel-group 1 mode desirable' e a outra ponta estiver travada no modo estático 'mode on'?",
+    "options": [
+      "O EtherChannel é formado com restrições de largura de banda.",
+      "O canal não se forma, pois o modo 'On' ignora completamente os pacotes de controle PAgP enviados pela ponta Desirable.",
+      "O switch em modo Desirable converte automaticamente a outra ponta para PAgP.",
+      "As portas entram em estado err-disable por violação de segurança PAgP Guard."
+    ],
+    "answer": "O canal não se forma, pois o modo 'On' ignora completamente os pacotes de controle PAgP enviados pela ponta Desirable.",
+    "explanation": "O modo estático 'On' não processa nem envia pacotes de protocolo; portanto, ele é incompatível e falha ao se comunicar com portas rodando PAgP."
+  },
+  {
+    "question": "O que significa o recurso PAgP Non-Silent em termos de proteção contra links unidirecionais?",
+    "options": [
+      "Ele exige a recepção contínua de pacotes de dados ou PAgP para manter o link ativo, prevenindo operação em links de fibra com falha em um sentido.",
+      "Ele silencia todos os logs de Syslog gerados pelo DTP e CDP.",
+      "Ele criptografa o tráfego de controle multicast para evitar interceptação.",
+      "Ele desativa o envio de pacotes em segundo plano para economizar CPU."
+    ],
+    "answer": "Ele exige a recepção contínua de pacotes de dados ou PAgP para manter o link ativo, prevenindo operação em links de fibra com falha em um sentido.",
+    "explanation": "O modo non-silent do PAgP garante que a porta seja colocada emdown caso o enlace deixe de receber tráfego de retorno, evitando problemas de unidirecionalidade."
+  },
+  {
+    "question": "Como o comando 'show etherchannel summary' ajuda a identificar se o protocolo PAgP está operando e agrupando as portas corretamente?",
+    "options": [
+      "Exibindo a letra 'P' (Bundled in port-channel) ao lado das portas físicas e a sigla PAgP na coluna de protocolo.",
+      "Exibindo a mensagem 'Err-Disable' em todas as interfaces ativas.",
+      "Mostrando o endereço IP do roteador de borda na tabela CAM.",
+      "Listando a quantidade exata de pacotes ICMP descartados."
+    ],
+    "answer": "Exibindo a letra 'P' (Bundled in port-channel) ao lado das portas físicas e a sigla PAgP na coluna de protocolo.",
+    "explanation": "A saída do sumário do EtherChannel detalha o protocolo ativo (como PAgP) e usa a flag (P) para indicar que a interface física integrou-se com sucesso ao canal."
+  },
+  {
+    "question": "Se um switch Cisco precisar ser conectado a um switch de outro fabricante (ex: HP ou Arista) utilizando agregação de links dinâmica, por que o PAgP NÃO deve ser escolhido?",
+    "options": [
+      "Porque o PAgP suporta no máximo 2 portas físicas no grupo.",
+      "Porque o PAgP é um protocolo proprietário exclusivo da Cisco, sendo incompatível com equipamentos de terceiros.",
+      "Porque o PAgP consome 100% da largura de banda com criptografia.",
+      "Porque o PAgP exige cabos seriais dedicados para a troca de assinaturas."
+    ],
+    "answer": "Porque o PAgP é um protocolo proprietário exclusivo da Cisco, sendo incompatível com equipamentos de terceiros.",
+    "explanation": "Como o PAgP é proprietário da Cisco, switches de outros fabricantes não o compreendem; nesses cenários, deve-se utilizar o LACP (padrão aberto IEEE)."
+  },
+  {
+    "question": "Qual comando no modo de configuração de interface do Cisco IOS é utilizado para associar uma porta a um canal de agregação utilizando o PAgP no modo ativo (desirable)?",
+    "options": [
+      "channel-group 1 mode desirable",
+      "channel-group 1 mode active",
+      "channel-group 1 mode auto",
+      "channel-group 1 mode on"
+    ],
+    "answer": "channel-group 1 mode desirable",
+    "explanation": "O parâmetro 'mode desirable' ativa o protocolo PAgP de forma ativa na interface para negociar a criação do Port-Channel 1."
+  },
+    {
+    "question": "O que ocorre com uma interface Port-Channel e suas portas membro quando o recurso EtherChannel Guard detecta um erro de configuração de agregação vindo do switch vizinho?",
+    "options": [
+      "A interface é colocada automaticamente no estado de segurança err-disable.",
+      "O switch desativa o Spanning Tree e reinicia o sistema operacional.",
+      "A porta é convertida instantaneamente para o modo de acesso estático.",
+      "O tráfego é criptografado com chaves temporárias de Camada 2."
+    ],
+    "answer": "A interface é colocada automaticamente no estado de segurança err-disable.",
+    "explanation": "O EtherChannel Guard protege a rede contra loops isolando a porta com erro e colocando-a no estado err-disable ao detectar descasamento de configuração."
+  },
+  {
+    "question": "Qual comando de recuperação automática pode ser configurado no Cisco IOS para que o switch tente reativar por conta própria interfaces colocadas em estado err-disable por violações de EtherChannel Guard?",
+    "options": [
+      "errdisable recovery cause etherchannel-guard",
+      "spanning-tree portfast errdisable recovery",
+      "channel-group auto-recovery enable",
+      "interface errdisable restore time 30"
+    ],
+    "answer": "errdisable recovery cause etherchannel-guard",
+    "explanation": "O comando global 'errdisable recovery cause etherchannel-guard' instrui o switch a tentar reativar automaticamente as interfaces após um intervalo predefinido."
+  },
+  {
+    "question": "Como um administrador pode reativar manualmente uma interface que foi colocada em estado err-disable devido a um problema de consistência em EtherChannel?",
+    "options": [
+      "Executando os comandos shutdown e em seguida no shutdown na interface afetada.",
+      "Utilizando apenas o comando clear cam-table.",
+      "Reiniciando a fonte de alimentação primária do switch.",
+      "Alterando o endereço MAC da interface lógica."
+    ],
+    "answer": "Executando os comandos shutdown e em seguida no shutdown na interface afetada.",
+    "explanation": "A reativação manual de portas em err-disable exige a execução do ciclo de reinicialização lógica com shutdown seguido de no shutdown."
+  },
+  {
+    "question": "O que a flag (I) ou a sigla stand-alone exibida no comando 'show etherchannel summary' indica a respeito de uma porta física membro?",
+    "options": [
+      "Que a porta foi isolada do grupo por apresentar inconsistência de parâmetros operacionais em relação ao restante do Port-Channel.",
+      "Que a porta está operando perfeitamente a 10 Gbps em modo full-duplex.",
+      "Que a porta está funcionando como a principal mestre do LACP.",
+      "Que a porta foi bloqueada pelo Spanning Tree para evitar loops de Camada 2."
+    ],
+    "answer": "Que a porta foi isolada do grupo por apresentar inconsistência de parâmetros operacionais em relação ao restante do Port-Channel.",
+    "explanation": "A flag (I) significa stand-alone, indicando que a interface física não conseguiu se integrar ao canal devido a divergências de configuração."
+  },
+  {
+    "question": "Qual é o sintoma observado no comando 'show etherchannel summary' quando um Port-Channel de Camada 2 está perfeitamente operacional e ativo?",
+    "options": [
+      "A menção da sigla Po1(SU) e a presença da letra (P) nas portas físicas membros.",
+      "A indicação de portas com a sigla (SD) e erro de CRC.",
+      "A exibição exclusiva de portas em estado err-disable.",
+      "A ausência total de qualquer protocolo listado na tabela de resumo."
+    ],
+    "answer": "A menção da sigla Po1(SU) e a presença da letra (P) nas portas físicas membros.",
+    "explanation": "A letra S indica Camada 2, U indica Up (operacional) e (P) nas portas físicas confirma que elas foram agrupadas com sucesso no canal."
+  },
+  {
+    "question": "O que caracteriza o cenário de falha conhecido como 'Native VLAN Mismatch' em um enlace trunk?",
+    "options": [
+      "As duas pontas do trunk estão configuradas com IDs de VLAN nativa diferentes, gerando vazamento de tráfego e alertas no CDP.",
+      "A largura de banda máxima do canal é reduzida pela metade.",
+      "O protocolo LACP entra em loop infinito de reinicialização.",
+      "Os endereços IP das portas de acesso entram em conflito de ARP."
+    ],
+    "answer": "As duas pontas do trunk estão configuradas com IDs de VLAN nativa diferentes, gerando vazamento de tráfego e alertas no CDP.",
+    "explanation": "O Native VLAN Mismatch ocorre quando os switches possuem VLANs nativas divergentes, provocando mensagens de syslog do CDP e bloqueios por STP PVID-Inconsistent."
+  },
+  {
+    "question": "Como o Spanning Tree Protocol reage tipicamente ao detectar um erro de Native VLAN Mismatch em um link trunk?",
+    "options": [
+      "Ele bloqueia a porta afetada colocando-a no estado PVID-Inconsistent para impedir loops lógicos.",
+      "Ele converte o link inteiro em uma interface de acesso estática.",
+      "Ele duplica a velocidade de transmissão dos pacotes para compensar o erro.",
+      "Ele desativa o protocolo STP em todo o switch por medida de segurança."
+    ],
+    "answer": "Ele bloqueia a porta afetada colocando-a no estado PVID-Inconsistent para impedir loops lógicos.",
+    "explanation": "Para evitar falhas de encaminhamento e loops decorrentes da divergência de nativas, o STP bloqueia a porta e a classifica como PVID-Inconsistent."
+  },
+  {
+    "question": "Qual comando no Cisco IOS permite visualizar detalhadamente se a negociação DTP está ativa, qual o modo operacional e qual a VLAN nativa de uma interface específica?",
+    "options": [
+      "show interfaces <interface> switchport",
+      "show etherchannel summary",
+      "show vlan brief",
+      "show dtp global-status"
+    ],
+    "answer": "show interfaces <interface> switchport",
+    "explanation": "O comando 'show interfaces <interface> switchport' exibe os modos administrativo e operacional, encapsulamento e o status da negociação DTP da porta."
+  },
+  {
+    "question": "O que indica a linha 'Negotiation of Trunking: Off' na saída do comando 'show interfaces switchport'?",
+    "options": [
+      "Que o comando 'switchport nonegotiate' foi aplicado, desativando totalmente a geração e a leitura de frames DTP na interface.",
+      "Que a placa de rede física está queimada ou sem cabo conectado.",
+      "Que o protocolo LACP foi substituído pelo PAgP de forma forçada.",
+      "Que a porta foi bloqueada por violação de segurança de Camada 3."
+    ],
+    "answer": "Que o comando 'switchport nonegotiate' foi aplicado, desativando totalmente a geração e a leitura de frames DTP na interface.",
+    "explanation": "A opção 'Negotiation of Trunking: Off' confirma que o DTP foi desativado com sucesso através do comando 'switchport nonegotiate'."
+  },
+  {
+    "question": "Por que o comando 'switchport trunk allowed vlan' deve ser utilizado com cautela ao adicionar novas VLANs em um trunk já configurado?",
+    "options": [
+      "Porque omitir o parâmetro 'add' faz com que a lista anterior seja totalmente sobrescrita, isolando o tráfego das VLANs preexistentes.",
+      "Porque ele apaga imediatamente o banco de dados de VLANs de todo o domínio VTP.",
+      "Porque ele força o switch a reiniciar a CPU por estouro de memória flash.",
+      "Porque ele desativa o Spanning Tree em todas as portas de acesso associadas."
+    ],
+    "answer": "Porque omitir o parâmetro 'add' faz com que a lista anterior seja totalmente sobrescrita, isolando o tráfego das VLANs preexistentes.",
+    "explanation": "Digitar apenas 'switchport trunk allowed vlan <id>' substitui a lista inteira de permissões. É obrigatório usar o argumento 'add' para inclusão incremental."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

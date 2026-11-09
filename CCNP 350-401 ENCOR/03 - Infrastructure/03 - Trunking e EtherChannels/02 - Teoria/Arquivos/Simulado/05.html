@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN</title>
+  <title>Simulado de Trunking & DTP - Troubleshooting Avançado: Inconsistências, Load Balancing e Err-Disable</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
 
   <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
     <div id="start-screen" class="text-center">
-      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN</h1>
-      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN. Você terá 10 minutos para concluir.</p>
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Troubleshooting Avançado: Inconsistências, Load Balancing e Err-Disable</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Trunking & DTP - Troubleshooting Avançado: Inconsistências, Load Balancing e Err-Disable. Você terá 10 minutos para concluir.</p>
       <div class="max-w-sm mx-auto mb-4">
   <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
   <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
@@ -45,114 +45,114 @@
   <script>
     const quizData = [
   {
-    "question": "Onde o cabeçalho 802.1Q de 4 bytes é inserido em um frame Ethernet II padrão?",
+    "question": "O que ocorre com uma interface Port-Channel e suas portas membro quando o recurso EtherChannel Guard detecta um erro de configuração de agregação vindo do switch vizinho?",
     "options": [
-      "Logo após o campo Preamble & SFD, antes do Destination MAC.",
-      "Entre o campo Source MAC Address e o campo Type/Length.",
-      "Após o campo de dados (Payload), logo antes do Frame Check Sequence (FCS).",
-      "Substituindo inteiramente o campo Destination MAC para otimizar o roteamento de Camada 2."
+      "A interface é colocada automaticamente no estado de segurança err-disable.",
+      "O switch desativa o Spanning Tree e reinicia o sistema operacional.",
+      "A porta é convertida instantaneamente para o modo de acesso estático.",
+      "O tráfego é criptografado com chaves temporárias de Camada 2."
     ],
-    "answer": "Entre o campo Source MAC Address e o campo Type/Length.",
-    "explanation": "O padrão IEEE 802.1Q modifica o frame Ethernet inserindo um cabeçalho de 4 bytes exatamente entre o endereço MAC de origem (Source MAC) e o campo Type/Length."
+    "answer": "A interface é colocada automaticamente no estado de segurança err-disable.",
+    "explanation": "O EtherChannel Guard protege a rede contra loops isolando a porta com erro e colocando-a no estado err-disable ao detectar descasamento de configuração."
   },
   {
-    "question": "Qual é o valor hexadecimal padrão e obrigatório do campo TPID (Tag Protocol Identifier) em um cabeçalho 802.1Q válido?",
+    "question": "Qual comando de recuperação automática pode ser configurado no Cisco IOS para que o switch tente reativar por conta própria interfaces colocadas em estado err-disable por violações de EtherChannel Guard?",
     "options": [
-      "0x0800",
-      "0x8100",
-      "0x0806",
-      "0xFFFF"
+      "errdisable recovery cause etherchannel-guard",
+      "spanning-tree portfast errdisable recovery",
+      "channel-group auto-recovery enable",
+      "interface errdisable restore time 30"
     ],
-    "answer": "0x8100",
-    "explanation": "O TPID é fixado no valor hexadecimal 0x8100. Ele avisa à placa de rede ou switch que o quadro possui uma tag 802.1Q; caso contrário, se não suportado, o quadro é descartado."
+    "answer": "errdisable recovery cause etherchannel-guard",
+    "explanation": "O comando global 'errdisable recovery cause etherchannel-guard' instrui o switch a tentar reativar automaticamente as interfaces após um intervalo predefinido."
   },
   {
-    "question": "Quantos bits compõem o campo VLAN ID (VID) dentro do TCI (Tag Control Information) e qual é o limite teórico de VLANs que ele permite endereçar?",
+    "question": "Como um administrador pode reativar manualmente uma interface que foi colocada em estado err-disable devido a um problema de consistência em EtherChannel?",
     "options": [
-      "8 bits, permitindo até 256 VLANs.",
-      "12 bits, permitindo até 4096 VLANs (de 0 a 4095).",
-      "16 bits, permitindo até 65535 VLANs.",
-      "10 bits, permitindo até 1024 VLANs."
+      "Executando os comandos shutdown e em seguida no shutdown na interface afetada.",
+      "Utilizando apenas o comando clear cam-table.",
+      "Reiniciando a fonte de alimentação primária do switch.",
+      "Alterando o endereço MAC da interface lógica."
     ],
-    "answer": "12 bits, permitindo até 4096 VLANs (de 0 a 4095).",
-    "explanation": "O VLAN ID possui 12 bits. Como 2 elevado a 12 resulta em 4096, o sistema suporta identificadores de VLAN na faixa de 0 a 4095."
+    "answer": "Executando os comandos shutdown e em seguida no shutdown na interface afetada.",
+    "explanation": "A reativação manual de portas em err-disable exige a execução do ciclo de reinicialização lógica com shutdown seguido de no shutdown."
   },
   {
-    "question": "Quais faixas numéricas de VLAN são classificadas como faixa normal (Normal Range) e faixa estendida (Extended Range) em switches Cisco?",
+    "question": "O que a flag (I) ou a sigla stand-alone exibida no comando 'show etherchannel summary' indica a respeito de uma porta física membro?",
     "options": [
-      "Normal Range: 1 a 1005; Extended Range: 1006 a 4094.",
-      "Normal Range: 1 a 500; Extended Range: 501 a 1024.",
-      "Normal Range: 10 a 100; Extended Range: 101 a 5000.",
-      "Normal Range: 1 a 4094; Extended Range: 4095 a 65535."
+      "Que a porta foi isolada do grupo por apresentar inconsistência de parâmetros operacionais em relação ao restante do Port-Channel.",
+      "Que a porta está operando perfeitamente a 10 Gbps em modo full-duplex.",
+      "Que a porta está funcionando como a principal mestre do LACP.",
+      "Que a porta foi bloqueada pelo Spanning Tree para evitar loops de Camada 2."
     ],
-    "answer": "Normal Range: 1 a 1005; Extended Range: 1006 a 4094.",
-    "explanation": "A faixa normal compreende as VLANs de 1 a 1001 (além de 1002 a 1005 reservadas para legado), enquanto a faixa estendida abrange os IDs de 1006 a 4094."
+    "answer": "Que a porta foi isolada do grupo por apresentar inconsistência de parâmetros operacionais em relação ao restante do Port-Channel.",
+    "explanation": "A flag (I) significa stand-alone, indicando que a interface física não conseguiu se integrar ao canal devido a divergências de configuração."
   },
   {
-    "question": "Como os quadros pertencentes à VLAN Nativa (Native VLAN) trafegam por um link trunk configurado com o padrão IEEE 802.1Q?",
+    "question": "Qual é o sintoma observado no comando 'show etherchannel summary' quando um Port-Channel de Camada 2 está perfeitamente operacional e ativo?",
     "options": [
-      "Eles trafegam obrigatoriamente etiquetados com a tag especial 0xFFF.",
-      "Eles trafegam de forma sem tag (untagged).",
-      "Eles são criptografados com uma chave temporária de Camada 2.",
-      "Eles são convertidos em pacotes IP e roteados dinamicamente."
+      "A menção da sigla Po1(SU) e a presença da letra (P) nas portas físicas membros.",
+      "A indicação de portas com a sigla (SD) e erro de CRC.",
+      "A exibição exclusiva de portas em estado err-disable.",
+      "A ausência total de qualquer protocolo listado na tabela de resumo."
     ],
-    "answer": "Eles trafegam de forma sem tag (untagged).",
-    "explanation": "Por definição do padrão 802.1Q, os quadros que pertencem à Native VLAN do trunk cruzam o enlace sem nenhuma etiqueta[cite: 23]. Quando o switch receptor recebe um quadro sem tag no trunk, ele o associa à Native VLAN daquela porta."
+    "answer": "A menção da sigla Po1(SU) e a presença da letra (P) nas portas físicas membros.",
+    "explanation": "A letra S indica Camada 2, U indica Up (operacional) e (P) nas portas físicas confirma que elas foram agrupadas com sucesso no canal."
   },
   {
-    "question": "Qual é a VLAN configurada por padrão em switches Cisco para atuar tanto como VLAN padrão de acesso quanto como VLAN Nativa em portas trunk?",
+    "question": "O que caracteriza o cenário de falha conhecido como 'Native VLAN Mismatch' em um enlace trunk?",
     "options": [
-      "VLAN 10",
-      "VLAN 1",
-      "VLAN 999",
-      "VLAN 4094"
+      "As duas pontas do trunk estão configuradas com IDs de VLAN nativa diferentes, gerando vazamento de tráfego e alertas no CDP.",
+      "A largura de banda máxima do canal é reduzida pela metade.",
+      "O protocolo LACP entra em loop infinito de reinicialização.",
+      "Os endereços IP das portas de acesso entram em conflito de ARP."
     ],
-    "answer": "VLAN 1",
-    "explanation": "Por padrão nos switches Cisco, a VLAN 1 atua como a VLAN Default e também como a VLAN Nativa de todas as portas configuradas como trunk."
+    "answer": "As duas pontas do trunk estão configuradas com IDs de VLAN nativa diferentes, gerando vazamento de tráfego e alertas no CDP.",
+    "explanation": "O Native VLAN Mismatch ocorre quando os switches possuem VLANs nativas divergentes, provocando mensagens de syslog do CDP e bloqueios por STP PVID-Inconsistent."
   },
   {
-    "question": "Qual é o principal risco de segurança associado a manter a VLAN Nativa configurada com o seu valor padrão (VLAN 1) em redes sem hardening?",
+    "question": "Como o Spanning Tree Protocol reage tipicamente ao detectar um erro de Native VLAN Mismatch em um link trunk?",
     "options": [
-      "Exposição a ataques de negação de serviço em Camada 3 baseados em ICMP.",
-      "Vulnerabilidade ao ataque de Double-Tagging (VLAN Hopping), permitindo que pacotes saltem para VLANs restritas.",
-      "Sobrecarga imediata da CPU do switch devido à duplicação de pacotes STP.",
-      "Corrupção da tabela CAM por estouro de cache MAC."
+      "Ele bloqueia a porta afetada colocando-a no estado PVID-Inconsistent para impedir loops lógicos.",
+      "Ele converte o link inteiro em uma interface de acesso estática.",
+      "Ele duplica a velocidade de transmissão dos pacotes para compensar o erro.",
+      "Ele desativa o protocolo STP em todo o switch por medida de segurança."
     ],
-    "answer": "Vulnerabilidade ao ataque de Double-Tagging (VLAN Hopping), permitindo que pacotes saltem para VLANs restritas.",
-    "explanation": "Se a VLAN nativa for a padrão (VLAN 1) e houver portas vulneráveis, um atacante pode injetar um quadro com duas tags (uma externa correspondente à nativa e uma interna da vítima) para burlar o roteamento e atingir outras VLANs."
+    "answer": "Ele bloqueia a porta afetada colocando-a no estado PVID-Inconsistent para impedir loops lógicos.",
+    "explanation": "Para evitar falhas de encaminhamento e loops decorrentes da divergência de nativas, o STP bloqueia a porta e a classifica como PVID-Inconsistent."
   },
   {
-    "question": "Qual comando de hardening no Cisco IOS é recomendado para mitigar ataques de VLAN Hopping forçando o etiquetamento de quadros da Native VLAN?",
+    "question": "Qual comando no Cisco IOS permite visualizar detalhadamente se a negociação DTP está ativa, qual o modo operacional e qual a VLAN nativa de uma interface específica?",
     "options": [
-      "switchport trunk native vlan tag",
-      "switchport nonegotiate",
-      "spanning-tree bpduguard enable",
-      "switchport trunk allowed vlan remove 1"
+      "show interfaces <interface> switchport",
+      "show etherchannel summary",
+      "show vlan brief",
+      "show dtp global-status"
     ],
-    "answer": "switchport trunk native vlan tag",
-    "explanation": "O comando global `switchport trunk native vlan tag` força o switch a etiquetar (tag) inclusive os quadros pertencentes à VLAN nativa ao enviá-los por um trunk, impedindo o ataque de Double-Tagging."
+    "answer": "show interfaces <interface> switchport",
+    "explanation": "O comando 'show interfaces <interface> switchport' exibe os modos administrativo e operacional, encapsulamento e o status da negociação DTP da porta."
   },
   {
-    "question": "O que ocorre se você emitir o comando `switchport trunk allowed vlan 30` em uma porta trunk que já estava configurada para permitir as VLANs 10 e 20?",
+    "question": "O que indica a linha 'Negotiation of Trunking: Off' na saída do comando 'show interfaces switchport'?",
     "options": [
-      "A VLAN 30 será adicionada de forma incremental à lista existente junto com a 10 e a 20.",
-      "O comando será rejeitado pelo interpretador de comandos (CLI) por conflito de sintaxe.",
-      "A lista anterior será totalmente sobrescrita, permitindo apenas a passagem da VLAN 30 e isolando as VLANs 10 e 20.",
-      "O switch reiniciará a interface física para aplicar o pruning automático."
+      "Que o comando 'switchport nonegotiate' foi aplicado, desativando totalmente a geração e a leitura de frames DTP na interface.",
+      "Que a placa de rede física está queimada ou sem cabo conectado.",
+      "Que o protocolo LACP foi substituído pelo PAgP de forma forçada.",
+      "Que a porta foi bloqueada por violação de segurança de Camada 3."
     ],
-    "answer": "A lista anterior será totalmente sobrescrita, permitindo apenas a passagem da VLAN 30 e isolando as VLANs 10 e 20.",
-    "explanation": "O comando `switchport trunk allowed vlan <vlan-list>` substitui a lista inteira. Para acrescentar uma VLAN sem apagar as anteriores, deve-se usar obrigatoriamente o parâmetro `add` (ex: `switchport trunk allowed vlan add 30`)."
+    "answer": "Que o comando 'switchport nonegotiate' foi aplicado, desativando totalmente a geração e a leitura de frames DTP na interface.",
+    "explanation": "A opção 'Negotiation of Trunking: Off' confirma que o DTP foi desativado com sucesso através do comando 'switchport nonegotiate'."
   },
   {
-    "question": "Qual subcampo do cabeçalho 802.1Q TCI (Tag Control Information) é dedicado ao suporte de Quality of Service (QoS) em Camada 2, permitindo até 8 níveis de prioridade?",
+    "question": "Por que o comando 'switchport trunk allowed vlan' deve ser utilizado com cautela ao adicionar novas VLANs em um trunk já configurado?",
     "options": [
-      "DEI (Drop Eligible Indicator)",
-      "TPID (Tag Protocol Identifier)",
-      "PCP ou Priority Code Point (3 bits)",
-      "VLAN ID (12 bits)"
+      "Porque omitir o parâmetro 'add' faz com que a lista anterior seja totalmente sobrescrita, isolando o tráfego das VLANs preexistentes.",
+      "Porque ele apaga imediatamente o banco de dados de VLANs de todo o domínio VTP.",
+      "Porque ele força o switch a reiniciar a CPU por estouro de memória flash.",
+      "Porque ele desativa o Spanning Tree em todas as portas de acesso associadas."
     ],
-    "answer": "PCP ou Priority Code Point (3 bits)",
-    "explanation": "O subcampo Priority / PCP possui 3 bits e é utilizado pelo IEEE 802.1p para classificar o tráfego em até 8 níveis de prioridade (0 a 7) voltados para QoS em Camada 2."
+    "answer": "Porque omitir o parâmetro 'add' faz com que a lista anterior seja totalmente sobrescrita, isolando o tráfego das VLANs preexistentes.",
+    "explanation": "Digitar apenas 'switchport trunk allowed vlan <id>' substitui a lista inteira de permissões. É obrigatório usar o argumento 'add' para inclusão incremental."
   }
 
       // 👉 Adicione mais questões aqui

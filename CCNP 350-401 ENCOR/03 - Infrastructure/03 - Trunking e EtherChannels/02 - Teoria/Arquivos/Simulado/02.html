@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch</title>
+  <title>Simulado Trunking & DTP - Operação e Negociação de EtherChannel Estático (Mode On)</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
 
   <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
     <div id="start-screen" class="text-center">
-      <h1 class="text-2xl font-bold mb-4">Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch</h1>
-      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado Trunking & DTP - Troubleshooting de Links Trunk: Native VLAN e Allowed List Mismatch. Você terá 10 minutos para concluir.</p>
+      <h1 class="text-2xl font-bold mb-4">Simulado Trunking & DTP - Operação e Negociação de EtherChannel Estático (Mode On)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Trunking & DTP - Operação e Negociação de EtherChannel Estático (Mode On). Você terá 10 minutos para concluir.</p>
       <div class="max-w-sm mx-auto mb-4">
   <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
   <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
@@ -45,116 +45,116 @@
   <script>
     const quizData = [
   {
-    "question": "O que ocorre nas pontas de um link trunk quando existe uma divergência de VLAN Nativa (Native VLAN Mismatch) entre os switches?",
+    "question": "Como o modo de agregação estático 'channel-group X mode on' opera em termos de troca de pacotes de controle entre os switches?",
     "options": [
-      "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
-      "O link físico inteiro é imediatamente desligado, mudando para o estado administrativamente down.",
-      "As tabelas MAC são apagadas globalmente a cada 2 segundos.",
-      "O tráfego de todas as VLANs é automaticamente convertido para a VLAN 1002."
+      "Ele envia pacotes LACPDU a cada 1 segundos para verificar a estabilidade do enlace.",
+      "Ele força a agregação sem utilizar nenhum protocolo de sinalização ou negociação de controle, assumindo passivamente que o vizinho está configurado da mesma forma.",
+      "Ele troca quadros PAgP proprietários exclusivos da Cisco a cada 30 segundos.",
+      "Ele exige autenticação prévia via CHAP antes de unir as interfaces."
     ],
-    "answer": "O protocolo CDP detecta o erro e gera mensagens constantes de alerta no syslog do equipamento.",
-    "explanation": "Quando há divergência de VLAN nativa, o CDP identifica a inconsistência e emite mensagens de aviso contínuas no console e no syslog, além de poder gerar bloqueio por STP."
+    "answer": "Ele força a agregação sem utilizar nenhum protocolo de sinalização ou negociação de controle, assumindo passivamente que o vizinho está configurado da mesma forma.",
+    "explanation": "No modo estático 'On', a agregação é forçada manualmente sem a troca de pacotes de controle ou negociação de link, o que exige alinhamento manual perfeito na outra ponta."
   },
   {
-    "question": "Qual é a mensagem de log típica gerada pelo CDP quando um switch identifica um problema de Native VLAN Mismatch em uma interface?",
+    "question": "O que ocorre na rede se um switch for configurado com 'channel-group 1 mode on' e o switch vizinho estiver com portas normais de acesso ou trunk sem EtherChannel ativado?",
     "options": [
-      "%STP-2-ROOTGUARDBLOCK: Root guard blocking port...",
-      "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
-      "%DTP-5-TRUNKOPEN: Interface GigabitEthernet has changed to trunking",
-      "%LINK-3-UPDOWN: Interface GigabitEthernet1/0/1, changed state to down"
+      "O link cai imediatamente por falha de sincronismo e entra em estado de hibernação.",
+      "Ocorrem loops severos de Camada 2 ou queda massiva de pacotes, pois o switch vizinho tratará os cabos como portas independentes e receberá tráfego duplicado.",
+      "O Spanning Tree bloqueia todas as portas por padrão de segurança port-security.",
+      "O switch converte automaticamente a outra ponta para o modo estático."
     ],
-    "answer": "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered...",
-    "explanation": "O Cisco Discovery Protocol emite o aviso específico informando o descobrimento de mismatch de VLAN nativa detalhando as portas e os IDs conflitantes."
+    "answer": "Ocorrem loops severos de Camada 2 ou queda massiva de pacotes, pois o switch vizinho tratará os cabos como portas independentes e receberá tráfego duplicado.",
+    "explanation": "Como o modo estático não envia pacotes de sinalização para avisar o vizinho, se a outra ponta não estiver configurada corretamente, o tráfego gerará loops de Camada 2."
   },
   {
-    "question": "Como o Spanning Tree Protocol (STP) reage tipicamente ao identificar um cenário persistente de Native VLAN Mismatch em uma porta trunk?",
+    "question": "Qual é a principal limitação ou risco operacional de utilizar o EtherChannel em modo estático (Mode On) em redes corporativas?",
     "options": [
-      "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
-      "Ele eleva a prioridade do switch para 0 para assumir o papel de Root Bridge.",
-      "Ele força a conversão do link para o modo EtherChannel LACP.",
-      "Ele desativa o STP em toda a rede para evitar o recálculo de instâncias."
+      "Ele suporta no máximo 2 portas físicas no grupo.",
+      "Ele não possui mecanismos de detecção de erros de configuração ou links unidirecionais, aumentando o risco de loops e falhas silenciosas.",
+      "Ele consome o dobro de memória RAM na CPU do switch em comparação ao LACP.",
+      "Ele é incompatível com troncos 802.1Q."
     ],
-    "answer": "Ele coloca a porta afetada em estado de bloqueio de segurança sob o status PVID-Inconsistent.",
-    "explanation": "O mecanismo de proteção do STP detecta a inconsistência de PVID gerada pelo descasamento da VLAN nativa e bloqueia o tráfego daquela VLAN na interface para evitar loops."
+    "answer": "Ele não possui mecanismos de detecção de erros de configuração ou links unidirecionais, aumentando o risco de loops e falhas silenciosas.",
+    "explanation": "A ausência de um protocolo de controle (como LACP ou PAgP) significa que o modo estático não valida a configuração da outra ponta dinamicamente."
   },
   {
-    "question": "O que é o fenômeno conhecido como *VLAN Leaking* em cenários de Native VLAN Mismatch?",
+    "question": "O que o comando 'channel-group 1 mode on' exige obrigatoriamente nas interfaces físicas do switch antes de consolidar o agrupamento?",
     "options": [
-      "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
-      "A perda de pacotes de broadcast devido ao estouro da tabela CAM.",
-      "A cópia ilegal de dados de gerencia SNMP para roteadores externos.",
-      "O encadeamento de quadros 802.1Q sem a tag TPID válida."
+      "Que todas as portas estejam operando estritamente na mesma velocidade, duplex, modo de switchport e VLAN nativa.",
+      "Que os cabos sejam de fibra óptica multimodo obrigatoriamente.",
+      "Que o STP seja desativado em todo o domínio de broadcast.",
+      "Que o roteamento estático esteja habilitado no núcleo."
     ],
-    "answer": "O vazamento ou tráfego cruzado de pacotes não etiquetados (untagged) de uma VLAN sendo interpretados na outra ponta como pertencentes à VLAN nativa configurada ali.",
-    "explanation": "Como os quadros da nativa trafegam sem tag, um pacote untagged enviado de um lado é interpretado pelo vizinho com base na Native VLAN local dele, causando vazamento de tráfego entre domínios distintos."
+    "answer": "Que todas as portas estejam operando estritamente na mesma velocidade, duplex, modo de switchport e VLAN nativa.",
+    "explanation": "Como o modo estático não negocia parâmetros dinamicamente, as portas físicas membros devem possuir configuração idêntica de camada física e enlace para evitar inconsistências."
   },
   {
-    "question": "Qual é a ação corretiva recomendada para solucionar um problema de Native VLAN Mismatch em um link trunk?",
+    "question": "Como o comando 'show etherchannel summary' exibe o estado de uma interface Port-Channel estática que está operando perfeitamente em Camada 2?",
     "options": [
-      "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
-      "Desativar permanentemente o protocolo CDP em todos os switches da topologia.",
-      "Remover todas as VLANs da allowed list e reiniciar o serviço de DTP.",
-      "Alterar a porta para o modo Access estático e ativar o RSTP."
+      "Po1(RU) e protocolo 'Not Applicable' ou 'Static'",
+      "Po1(SU) e protocolo LACP ou PAgP (ou sem protocolo de sinalização dependendo da versão do IOS)",
+      "Po1(LD) com flag de erro",
+      "Po1(RR) com Layer 3 ativo"
     ],
-    "answer": "Alinhar e configurar idêntico o comando `switchport trunk native vlan <id>` em ambas as pontas do link.",
-    "explanation": "A resolução exige que o administrador ajuste o ID da VLAN nativa para que coincida exatamente em ambas as extremidades do entroncamento."
+    "answer": "Po1(SU) e protocolo LACP ou PAgP (ou sem protocolo de sinalização dependendo da versão do IOS)",
+    "explanation": "A flag 'S' indica Camada 2 (Layer 2) e 'U' indica Operacional (In use / Up)."
   },
   {
-    "question": "O que caracteriza o Cenário 3 de Troubleshooting de Trunk relacionado à Allowed List Inconsistente?",
+    "question": "Qual flag é exibida no comando 'show etherchannel summary' quando uma porta física membro é suspensa ou rejeitada do grupo devido a uma inconsistência de parâmetros?",
     "options": [
-      "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
-      "Os switches estão rodando versões diferentes de firmware que quebram o encapsulamento 802.1Q.",
-      "O cabo físico possui atenuação excessiva gerando CRC errors.",
-      "O endereço IP do gateway padrão está configurado incorretamente na Camada 3."
+      "(P) - Bundled in port-channel",
+      "(s) - Suspended ou (I) - Stand-alone",
+      "(D) - Down físico",
+      "(H) - Hot-standby"
     ],
-    "answer": "Uma VLAN foi permitida no SW1 mas removida ou não criada na base de dados/allowed list do SW2, impedindo a comunicação nessa VLAN específica.",
-    "explanation": "Quando a lista de VLANs permitidas (allowed list) diverge ou a VLAN não existe na base de dados de uma das pontas, o link trunk físico permanece UP, mas a VLAN específica sofre pruning involuntário."
+    "answer": "(s) - Suspended ou (I) - Stand-alone",
+    "explanation": "Portas com parâmetros desalinhados são colocadas em estado stand-alone (I) ou suspensas (s) para evitar corrupção de tráfego."
   },
   {
-    "question": "Qual comando de verificação exibe claramente a lista de VLANs permitidas (Allowed) e as ativas no domínio de gerenciamento de um trunk?",
+    "question": "O que acontece com o tráfego de dados de uma sessão TCP específica que cruza um EtherChannel estático configurado com múltiplos links físicos?",
     "options": [
-      "show interfaces trunk",
-      "show vlan summary",
-      "show spanning-tree inconsistent",
-      "show dtp statistics"
+      "Os pacotes individuais da sessão são divididos e alternados byte a byte em todos os cabos físicos simultaneamente.",
+      "Todo o fluxo daquela sessão específica é direcionado por hash para apenas um único link físico do grupo.",
+      "O switch duplica a sessão em todos os cabos para garantir redundância em tempo real.",
+      "O tráfego é bloqueado até que o LACP valide a conexão."
     ],
-    "answer": "show interfaces trunk",
-    "explanation": "O comando `show interfaces trunk` é a ferramenta principal para inspecionar o status das portas trunk, encapsulamento, native VLAN e as VLANs permitidas/ativas."
+    "answer": "Todo o fluxo daquela sessão específica é direcionado por hash para apenas um único link físico do grupo.",
+    "explanation": "O balanceamento de carga do EtherChannel opera por fluxo (usando hash), mantendo todos os pacotes de uma mesma conexão no mesmo link físico para evitar entrega fora de ordem."
   },
   {
-    "question": "O que indica o comando `show interfaces GigabitEthernet1/0/1 switchport` quando o campo 'Negotiation of Trunking' exibe o status 'Off'?",
+    "question": "Se um administrador configurar o balanceamento de carga com 'port-channel load-balance src-dst-ip', quais campos do pacote são avaliados pelo algoritmo de hash?",
     "options": [
-      "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
-      "Que a porta está com falha física na camada de enlace.",
-      "Que o Spanning Tree bloqueou a porta por PVID Inconsistent.",
-      "Que a interface foi convertida para o modo de roteamento IP puro."
+      "Apenas os endereços MAC de origem e destino.",
+      "A combinação matemática (XOR) dos endereços IP de origem e IP de destino.",
+      "Apenas a porta TCP de origem.",
+      "A prioridade PCP do cabeçalho 802.1Q."
     ],
-    "answer": "Que o protocolo DTP está desativado na interface, indicando o uso do comando `switchport nonegotiate`.",
-    "explanation": "O status 'Off' na negociação de trunking confirma que o comando `switchport nonegotiate` foi aplicado, desligando a troca de quadros DTP na porta."
+    "answer": "A combinação matemática (XOR) dos endereços IP de origem e IP de destino.",
+    "explanation": "O método 'src-dst-ip' utiliza os endereços IP de origem e destino do pacote para calcular o hash que define o link físico de saída."
   },
   {
-    "question": "Qual é o sintoma observado quando ocorre um erro de DTP Negotiation Mismatch (ex: um lado em Access estático e o outro em Trunk estático rodando DTP)?",
+    "question": "Qual comando global no Cisco IOS é utilizado para alterar o método de hash do balanceamento de carga em um switch com EtherChannels?",
     "options": [
-      "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
-      "O link muda automaticamente para o modo half-duplex para preservar os dados.",
-      "Ocorre um storm de broadcasts na VLAN 1.",
-      "O switch reinicia a controladora de interfaces para tentar nova sincronização."
+      "port-channel load-balance <método>",
+      "channel-group load-share <método>",
+      "etherchannel hashing algorithm <método>",
+      "switchport load-interval <método>"
     ],
-    "answer": "Perda de conectividade no link, com a porta de um lado operando como access e a do outro tentando forçar o trunk.",
-    "explanation": "Quando há conflito direto entre modo access estático e trunk forçado, a comunicação falha pois as portas esperam padrões de encapsulamento totalmente divergentes."
+    "answer": "port-channel load-balance <método>",
+    "explanation": "O comando global 'port-channel load-balance' define o critério de distribuição de tráfego para todos os Port-Channels do switch."
   },
   {
-    "question": "O que o comando `show vlan brief` exibe em relação às interfaces configuradas como entroncamento (Trunk)?",
+    "question": "Por que o modo estático (Mode On) é considerado desfavorável em ambientes corporativos em comparação aos protocolos dinâmicos como LACP?",
     "options": [
-      "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
-      "Mostra o status detalhado da lista allowed vlan e o ID da Native VLAN.",
-      "Exibe os contadores de quadros DTP enviados e recebidos em cada porta.",
-      "Mostra quais VLANs estão bloqueadas pelo Spanning Tree."
+      "Porque ele consome muita largura de banda com o envio excessivo de pacotes de controle.",
+      "Porque ele não previne falhas de configuração humana e não protege contra loops em caso de conexões incorretas na outra ponta.",
+      "Porque ele impede totalmente a passagem de trunks 802.1Q.",
+      "Porque ele só funciona em portas FastEthernet legadas."
     ],
-    "answer": "As interfaces trunk NÃO aparecem na saída do `show vlan brief`, pois listam apenas portas de acesso.",
-    "explanation": "O comando `show vlan brief` mapeia apenas as VLANs da base de dados e suas respectivas portas de acesso; portas trunk não são listadas nele."
+    "answer": "Porque ele não previne falhas de configuração humana e não protege contra loops em caso de conexões incorretas na outra ponta.",
+    "explanation": "A ausência de mensagens de controle impede que o switch detecte se o vizinho configurou errado, tornando o modo estático propenso a loops se houver erro humano."
   }
-
+      
       // 👉 Adicione mais questões aqui
     ];
 

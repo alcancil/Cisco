@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Trunking & DTP - MProtocolo Proprietário PAgP (Modos Auto e Desirable)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - MProtocolo Proprietário PAgP (Modos Auto e Desirable)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Trunking & DTP - MProtocolo Proprietário PAgP (Modos Auto e Desirable). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "O que caracteriza o protocolo PAgP (Port Aggregation Protocol) em termos de sua origem e ecossistema de fabricação?",
+    "options": [
+      "É um protocolo padrão aberto mantido pelo IEEE sob a especificação 802.3ad.",
+      "É um protocolo proprietário desenvolvido exclusivamente pela Cisco para negociação de EtherChannels.",
+      "É um protocolo de Camada 3 criado pela IETF para roteamento dinâmico de alta velocidade.",
+      "É um protocolo de segurança para prevenção de ataques de Camada 2 em portas de acesso."
+    ],
+    "answer": "É um protocolo proprietário desenvolvido exclusivamente pela Cisco para negociação de EtherChannels.",
+    "explanation": "O PAgP é um protocolo proprietário da Cisco criado para automatizar a formação de agrupamentos de links entre switches que suportem essa tecnologia."
+  },
+  {
+    "question": "Qual endereço MAC multicast é utilizado pelos switches Cisco para a transmissão periódica de pacotes de controle do protocolo PAgP?",
+    "options": [
+      "01:80:C2:00:00:02",
+      "01:00:0C:CC:CC:CC",
+      "FF:FF:FF:FF:FF:FF",
+      "01:00:5E:00:00:01"
+    ],
+    "answer": "01:00:0C:CC:CC:CC",
+    "explanation": "Os pacotes do PAgP utilizam o endereço MAC multicast exclusivo da Cisco 01:00:0C:CC:CC:CC para a troca de informações entre os dispositivos."
+  },
+  {
+    "question": "Quais são os dois modos de configuração disponíveis para uma interface em um EtherChannel rodando o protocolo proprietário PAgP?",
+    "options": [
+      "Active e Passive",
+      "Auto e Desirable",
+      "On e Off",
+      "Master e Slave"
+    ],
+    "answer": "Auto e Desirable",
+    "explanation": "O PAgP opera nos modos Auto (aguarda passivamente solicitações) e Desirable (solicita ativamente o estabelecimento do EtherChannel)."
+  },
+  {
+    "question": "O que ocorre se dois switches conectados por um enlace PAgP tiverem suas portas configuradas respectivamente com os modos 'Auto' e 'Auto'?",
+    "options": [
+      "O EtherChannel sobe instantaneamente por compatibilidade mútua.",
+      "O canal não se forma, pois nenhuma das pontas toma a iniciativa de iniciar a negociação PAgP.",
+      "Os switches alternam automaticamente para o modo LACP Active.",
+      "O Spanning Tree bloqueia todas as portas por inconsistência de PVID."
+    ],
+    "answer": "O canal não se forma, pois nenhuma das pontas toma a iniciativa de iniciar a negociação PAgP.",
+    "explanation": "Para que o PAgP estabeleça o canal com sucesso, pelo menos uma das pontas deve estar configurada no modo Desirable para tomar a iniciativa."
+  },
+  {
+    "question": "Qual será o resultado da negociação PAgP se o Switch A estiver configurado como 'Desirable' e o Switch B estiver configurado como 'Desirable'?",
+    "options": [
+      "O EtherChannel será formado com sucesso, pois ambos enviam pacotes PAgP e negociam o canal.",
+      "O link falhará devido a conflito de mestre e escravo.",
+      "Apenas uma porta física subirá, mantendo as demais em estado stand-alone.",
+      "Ocorre um erro de incompatibilidade de protocolo de Camada 2."
+    ],
+    "answer": "O EtherChannel será formado com sucesso, pois ambos enviam pacotes PAgP e negociam o canal.",
+    "explanation": "Quando ambas as pontas estão em modo Desirable, as duas iniciam ativamente a negociação e o EtherChannel é formado sem problemas."
+  },
+  {
+    "question": "O que acontece se uma porta for configurada com o comando 'channel-group 1 mode desirable' e a outra ponta estiver travada no modo estático 'mode on'?",
+    "options": [
+      "O EtherChannel é formado com restrições de largura de banda.",
+      "O canal não se forma, pois o modo 'On' ignora completamente os pacotes de controle PAgP enviados pela ponta Desirable.",
+      "O switch em modo Desirable converte automaticamente a outra ponta para PAgP.",
+      "As portas entram em estado err-disable por violação de segurança PAgP Guard."
+    ],
+    "answer": "O canal não se forma, pois o modo 'On' ignora completamente os pacotes de controle PAgP enviados pela ponta Desirable.",
+    "explanation": "O modo estático 'On' não processa nem envia pacotes de protocolo; portanto, ele é incompatível e falha ao se comunicar com portas rodando PAgP."
+  },
+  {
+    "question": "O que significa o recurso PAgP Non-Silent em termos de proteção contra links unidirecionais?",
+    "options": [
+      "Ele exige a recepção contínua de pacotes de dados ou PAgP para manter o link ativo, prevenindo operação em links de fibra com falha em um sentido.",
+      "Ele silencia todos os logs de Syslog gerados pelo DTP e CDP.",
+      "Ele criptografa o tráfego de controle multicast para evitar interceptação.",
+      "Ele desativa o envio de pacotes em segundo plano para economizar CPU."
+    ],
+    "answer": "Ele exige a recepção contínua de pacotes de dados ou PAgP para manter o link ativo, prevenindo operação em links de fibra com falha em um sentido.",
+    "explanation": "O modo non-silent do PAgP garante que a porta seja colocada emdown caso o enlace deixe de receber tráfego de retorno, evitando problemas de unidirecionalidade."
+  },
+  {
+    "question": "Como o comando 'show etherchannel summary' ajuda a identificar se o protocolo PAgP está operando e agrupando as portas corretamente?",
+    "options": [
+      "Exibindo a letra 'P' (Bundled in port-channel) ao lado das portas físicas e a sigla PAgP na coluna de protocolo.",
+      "Exibindo a mensagem 'Err-Disable' em todas as interfaces ativas.",
+      "Mostrando o endereço IP do roteador de borda na tabela CAM.",
+      "Listando a quantidade exata de pacotes ICMP descartados."
+    ],
+    "answer": "Exibindo a letra 'P' (Bundled in port-channel) ao lado das portas físicas e a sigla PAgP na coluna de protocolo.",
+    "explanation": "A saída do sumário do EtherChannel detalha o protocolo ativo (como PAgP) e usa a flag (P) para indicar que a interface física integrou-se com sucesso ao canal."
+  },
+  {
+    "question": "Se um switch Cisco precisar ser conectado a um switch de outro fabricante (ex: HP ou Arista) utilizando agregação de links dinâmica, por que o PAgP NÃO deve ser escolhido?",
+    "options": [
+      "Porque o PAgP suporta no máximo 2 portas físicas no grupo.",
+      "Porque o PAgP é um protocolo proprietário exclusivo da Cisco, sendo incompatível com equipamentos de terceiros.",
+      "Porque o PAgP consome 100% da largura de banda com criptografia.",
+      "Porque o PAgP exige cabos seriais dedicados para a troca de assinaturas."
+    ],
+    "answer": "Porque o PAgP é um protocolo proprietário exclusivo da Cisco, sendo incompatível com equipamentos de terceiros.",
+    "explanation": "Como o PAgP é proprietário da Cisco, switches de outros fabricantes não o compreendem; nesses cenários, deve-se utilizar o LACP (padrão aberto IEEE)."
+  },
+  {
+    "question": "Qual comando no modo de configuração de interface do Cisco IOS é utilizado para associar uma porta a um canal de agregação utilizando o PAgP no modo ativo (desirable)?",
+    "options": [
+      "channel-group 1 mode desirable",
+      "channel-group 1 mode active",
+      "channel-group 1 mode auto",
+      "channel-group 1 mode on"
+    ],
+    "answer": "channel-group 1 mode desirable",
+    "explanation": "O parâmetro 'mode desirable' ativa o protocolo PAgP de forma ativa na interface para negociar a criação do Port-Channel 1."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

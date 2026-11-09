@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado Trunking & DTP - Deep Dive no Protocolo LACP (IEEE 802.3ad / Prioridades e Standby)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado Trunking & DTP - Deep Dive no Protocolo LACP (IEEE 802.3ad / Prioridades e Standby)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado Trunking & DTP - Deep Dive no Protocolo LACP (IEEE 802.3ad / Prioridades e Standby). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a organização de padronização internacional responsável pela especificação e manutenção do protocolo LACP (Link Aggregation Control Protocol)?",
+    "options": [
+      "Cisco Systems (Protocolo proprietário de Camada 2)",
+      "IEEE (Padrão 802.3ad / 802.1AX)",
+      "IETF (Internet Engineering Task Force)",
+      "TIA/EIA (Telecommunications Industry Association)"
+    ],
+    "answer": "IEEE (Padrão 802.3ad / 802.1AX)",
+    "explanation": "O LACP é um padrão aberto mantido pela IEEE, permitindo a interoperabilidade entre equipamentos de diferentes fabricantes."
+  },
+  {
+    "question": "Qual endereço MAC multicast é utilizado pelos switches para a troca de quadros de controle LACPDU (LACP Data Units)?",
+    "options": [
+      "01:00:0C:CC:CC:CC",
+      "01:80:C2:00:00:02",
+      "FF:FF:FF:FF:FF:FF",
+      "01:00:5E:00:00:01"
+    ],
+    "answer": "01:80:C2:00:00:02",
+    "explanation": "Os quadros LACPDU são transmitidos usando o endereço MAC multicast reservado 01:80:C2:00:00:02."
+  },
+  {
+    "question": "Quais são os dois modos de configuração disponíveis para uma interface em um EtherChannel rodando o protocolo LACP?",
+    "options": [
+      "Auto e Desirable",
+      "Active e Passive",
+      "On e Off",
+      "Master e Slave"
+    ],
+    "answer": "Active e Passive",
+    "explanation": "O LACP opera nos modos Active (inicia ativamente a negociação enviando LACPDUs) e Passive (responde aos LACPDUs recebidos)."
+  },
+  {
+    "question": "O que acontece se ambos os switches conectados por um link LACP estiverem configurados com suas interfaces no modo 'Passive'?",
+    "options": [
+      "O EtherChannel sobe instantaneamente utilizando o modo de fallback estático.",
+      "O canal não se forma, pois nenhuma das pontas toma a iniciativa de enviar pacotes LACPDU.",
+      "Ocorre um loop de Camada 2 que aciona o protetor EtherChannel Guard.",
+      "Os switches alternam automaticamente para o protocolo proprietário PAgP."
+    ],
+    "answer": "O canal não se forma, pois nenhuma das pontas toma a iniciativa de enviar pacotes LACPDU.",
+    "explanation": "Para que o LACP negocie com sucesso, pelo menos uma das pontas precisa estar configurada no modo Active."
+  },
+  {
+    "question": "Qual é o limite máximo de interfaces físicas associadas a um único Port-Channel LACP que podem ficar ativas simultaneamente transmitindo dados?",
+    "options": [
+      "Até 4 portas ativas",
+      "Até 8 portas ativas",
+      "Até 16 portas ativas",
+      "Até 32 portas ativas"
+    ],
+    "answer": "Até 8 portas ativas",
+    "explanation": "O LACP suporta até 16 interfaces associadas ao canal, mas restringe a quantidade de links ativos simultâneos a no máximo 8."
+  },
+  {
+    "question": "O que acontece com as demais interfaces físicas (além do limite de portas ativas) em um Port-Channel LACP que possui 10 ou mais cabos conectados?",
+    "options": [
+      "Elas são colocados permanentemente em estado de erro (err-disable).",
+      "Elas permanecem em modo Hot-Standby, aguardando a falha de um dos links ativos para assumir imediatamente.",
+      "Elas operam isoladamente como portas de acesso independentes.",
+      "Elas dividem o tráfego de vídeo e voz separadamente."
+    ],
+    "answer": "Elas permanecem em modo Hot-Standby, aguardando a falha de um dos links ativos para assumir imediatamente.",
+    "explanation": "As portas excedentes (até o total de 16) ficam em modo Hot-Standby de prontidão para assumir o tráfego caso algum link ativo caia."
+  },
+  {
+    "question": "Qual é a função do parâmetro 'LACP System Priority' configurado em um switch?",
+    "options": [
+      "Definir qual switch possui prioridade para dominar a tomada de decisão sobre quais links físicos específicos do canal ficam ativos.",
+      "Determinar a versão do firmware IOS que gerencia o Spanning Tree.",
+      "Estabelecer a prioridade de tráfego QoS para pacotes de voz VoIP.",
+      "Forçar a criptografia de Camada 2 nas portas do trunk."
+    ],
+    "answer": "Definir qual switch possui prioridade para dominar a tomada de decisão sobre quais links físicos específicos do canal ficam ativos.",
+    "explanation": "O LACP System Priority define qual dos dois switches gerencia a seleção das portas ativas (o switch com o menor valor numérico vence)."
+  },
+  {
+    "question": "Qual é o valor padrão da prioridade do sistema LACP (LACP System Priority) nos switches Cisco?",
+    "options": [
+      "1",
+      "100",
+      "32768",
+      "65535"
+    ],
+    "answer": "32768",
+    "explanation": "O valor padrão para o LACP System Priority é 32768. O menor valor numérico vence a eleição."
+  },
+  {
+    "question": "Onde o parâmetro 'LACP Port Priority' deve ser configurado para influenciar diretamente quais interfaces serão escolhidas como ativas?",
+    "options": [
+      "No switch que possui a MAIOR prioridade de sistema (system priority).",
+      "No switch que possui a MENOR prioridade de sistema (o switch mestre que toma as decisões).",
+      "Igualmente em ambos os switches, independentemente do sistema.",
+      "Exclusivamente na interface virtual Port-Channel."
+    ],
+    "answer": "No switch que possui a MENOR prioridade de sistema (o switch mestre que toma as decisões).",
+    "explanation": "A prioridade de porta é avaliada no switch que ganhou a eleição de System Priority (o de menor valor numérico)."
+  },
+  {
+    "question": "Se um switch estiver configurado com o comando 'lacp system-priority 16384', o que esse comando indica em comparação ao valor padrão?",
+    "options": [
+      "Indica que o switch terá uma preferência maior (vencerá a eleição) para controlar a seleção de portas ativas em relação a um switch com o valor padrão 32768.",
+      "Indica que o switch desativará totalmente o protocolo LACP.",
+      "Indica que o número máximo de portas ativas será reduzido para 4.",
+      "Indica que o switch funcionará apenas como escravo passivo."
+    ],
+    "answer": "Indica que o switch terá uma preferência maior (vencerá a eleição) para controlar a seleção de portas ativas em relação a um switch com o valor padrão 32768.",
+    "explanation": "Como o menor valor numérico vence, definir 16384 torna o switch prioritário (mestre) frente ao padrão 32768."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

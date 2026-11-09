@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Trunking & DTP - Anatomia do Encapsulamento 802.1Q, Tagging e Native VLAN. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é o principal problema de Camada 2 enfrentado em uma topologia com cabos redundantes paralelos entre switches quando o EtherChannel não é utilizado?",
+    "options": [
+      "O Spanning Tree Protocol (STP) identifica os links redundantes e coloca as portas sobressalentes em estado de bloqueio (Blocking), limitando a largura de banda efetiva a apenas um link físico.",
+      "Ocorre um estouro imediato na tabela CAM devido à duplicação de endereços MAC nas portas vizinhas.",
+      "Os switches entram em loop de Camada 3 e descartam todos os pacotes IP.",
+      "As interfaces físicas reduzem automaticamente a velocidade para 10 Mbps para evitar colisão."
+    ],
+    "answer": "O Spanning Tree Protocol (STP) identifica os links redundantes e coloca as portas sobressalentes em estado de bloqueio (Blocking), limitando a largura de banda efetiva a apenas um link físico.",
+    "explanation": "Sem o EtherChannel, adicionar cabos extras gera loops de Camada 2, fazendo com que o STP bloqueie as portas redundantes e desperdice largura de banda."
+  },
+  {
+    "question": "Como o Spanning Tree Protocol (STP) enxerga um grupo de interfaces físicas unidas em um EtherChannel (Port-Channel)?",
+    "options": [
+      "Como um conjunto de links independentes onde cada porta executa instâncias separadas de STP.",
+      "Como uma única interface lógica agregada, mantendo todas as portas encaminhando tráfego sem causar loops lógicos.",
+      "Como uma porta de Camada 3 desprovida de custos de STP.",
+      "Como um erro de configuração que aciona o estado de err-disable instantaneamente."
+    ],
+    "answer": "Como uma única interface lógica agregada, mantendo todas as portas encaminhando tráfego sem causar loops lógicos.",
+    "explanation": "O STP enxerga o Port-Channel como um único link lógico de alta capacidade, permitindo que todas as portas físicas membros encaminhem tráfego simultaneamente sem disparar o bloqueio por loops."
+  },
+  {
+    "question": "O que ocorre se você alterar individualmente a VLAN de acesso de uma porta física membro que já faz parte de um Port-Channel operacional?",
+    "options": [
+      "A alteração é replicada automaticamente para todas as outras portas do grupo.",
+      "A porta modificada é suspensa do EtherChannel devido a inconsistência de parâmetros operacionais.",
+      "O switch converte o Port-Channel inteiro em uma porta de acesso estática.",
+      "A largura de banda total do canal é dobrada para compensar a alteração."
+    ],
+    "answer": "A porta modificada é suspensa do EtherChannel devido a inconsistência de parâmetros operacionais.",
+    "explanation": "Todas as configurações operacionais de Camada 2 e Camada 3 devem ser idênticas nas portas membro ou aplicadas diretamente na interface Port-Channel. Alterações avulsas causam a suspensão da porta."
+  },
+  {
+    "question": "Qual é o limite máximo padrão de portas físicas ativas simultaneamente em um único Port-Channel configurado com LACP?",
+    "options": [
+      "Até 4 portas ativas.",
+      "Até 8 portas ativas (com mais 8 em modo standby opcional).",
+      "Até 16 portas ativas sem restrições.",
+      "Até 32 portas ativas."
+    ],
+    "answer": "Até 8 portas ativas (com mais 8 em modo standby opcional).",
+    "explanation": "O LACP suporta até 16 interfaces associadas a um Port-Channel, mas restringe a quantidade de links ativos simultâneos transmitindo dados a no máximo 8."
+  },
+  {
+    "question": "Como o EtherChannel lida com a distribuição de tráfego de dados entre os vários cabos físicos que compõem a interface lógica?",
+    "options": [
+      "Ele realiza a multiplexação de pacotes individuais de uma mesma sessão de Camada 4 alternando cada pacote entre os cabos.",
+      "Ele utiliza um algoritmo matemático de Hash baseado em endereços ou portas para atribuir cada fluxo de comunicação a um link físico específico.",
+      "Ele envia todo o tráfego replicado por igual em todas as portas ao mesmo tempo.",
+      "Ele escolhe o link com menor latência dinamicamente a cada milissegundo por inteligência artificial."
+    ],
+    "answer": "Ele utiliza um algoritmo matemático de Hash baseado em endereços ou portas para atribuir cada fluxo de comunicação a um link físico específico.",
+    "explanation": "O balanceamento de carga do EtherChannel opera por fluxo (usando hash de MAC, IP ou portas TCP/UDP) para evitar a entrega de pacotes fora de ordem na Camada 4."
+  },
+  {
+    "question": "O que caracteriza o fenômeno de 'Hash Polarization' em um ambiente de EtherChannel?",
+    "options": [
+      "A divisão exata e perfeita de 50% do tráfego para cada cabo físico.",
+      "A saturação de apenas um link físico da agregação enquanto os demais permanecem com 0% de uso devido a uma escolha inadequada do algoritmo de hash.",
+      "A inversão da polaridade elétrica nos cabos de cobre de Camada 1.",
+      "O bloqueio total do canal por interferência eletromagnética."
+    ],
+    "answer": "A saturação de apenas um link físico da agregação enquanto os demais permanecem com 0% de uso devido a uma escolha inadequada do algoritmo de hash.",
+    "explanation": "A polarização de hash acontece quando o método de hash selecionado falha em distribuir os fluxos de forma equilibrada, fazendo com que o tráfego caia desproporcionalmente em um único link físico."
+  },
+  {
+    "question": "Qual critério de balanceamento de carga é geralmente recomendado para a maioria das redes corporativas modernas com roteamento e comutação mista?",
+    "options": [
+      "src-mac",
+      "dst-mac",
+      "src-dst-ip (combinação de IP de origem e destino)",
+      "Nenhum, pois o switch usa balanceamento aleatório por padrão."
+    ],
+    "answer": "src-dst-ip (combinação de IP de origem e destino)",
+    "explanation": "O uso de endereços IP de origem e destino combinados (src-dst-ip ou src-dst-mixed-ip-port) garante uma variação de hash muito superior em redes corporativas com múltiplos fluxos de dados."
+  },
+  {
+    "question": "Onde devem ser aplicadas preferencialmente as configurações operacionais, como o modo Trunk e a lista de Allowed VLANs, em um ambiente com EtherChannel?",
+    "options": [
+      "Apenas na primeira porta física do grupo.",
+      "Diretamente na interface lógica Port-Channel (além de manter as portas membro perfeitamente alinhadas).",
+      "Exclusivamente no arquivo de configuração do roteuter core de borda.",
+      "Na tabela CAM de cada switch individual."
+    ],
+    "answer": "Diretamente na interface lógica Port-Channel (além de manter as portas membro perfeitamente alinhadas).",
+    "explanation": "Aplicar as configurações na interface Port-Channel garante que o comportamento seja propagado de forma unificada para as portas físicas membros do grupo."
+  },
+  {
+    "question": "Qual é o comportamento esperado se um único host transferir um arquivo grande via FTP para um único servidor através de um EtherChannel de 4 Gbps (4 portas de 1 Gbps)?",
+    "options": [
+      "O arquivo será transferido a uma velocidade máxima combinada de 4 Gbps.",
+      "Todo o fluxo daquela sessão específica fluirá por apenas um único link físico de 1 Gbps, limitando a velocidade máxima àquela interface.",
+      "O switch dividirá os bytes do arquivo igualmente entre os 4 cabos em nível de pacote.",
+      "A sessão cairá por excesso de largura de banda alocada."
+    ],
+    "answer": "Todo o fluxo daquela sessão específica fluirá por apenas um único link físico de 1 Gbps, limitando a velocidade máxima àquela interface.",
+    "explanation": "Como o EtherChannel faz balanceamento de carga por fluxo e não por pacote individual, uma única sessão entre o mesmo par de origem e destino utilizará apenas um link físico do grupo."
+  },
+  {
+    "question": "O que acontece com a tabela de endereços MAC do switch em relação a uma interface Port-Channel?",
+    "options": [
+      "A tabela MAC enxerga a interface Port-Channel como uma única interface lógica de saída (egress), independentemente de quantas portas físicas compõem o grupo.",
+      "A tabela MAC duplica os endereços de todas as portas físicas de forma independente.",
+      "A tabela MAC descarta todos os endereços aprendidos através de links agregados.",
+      "A tabela MAC é desativada sempre que um Port-Channel é ativado."
+    ],
+    "answer": "A tabela MAC enxerga a interface Port-Channel como uma única interface lógica de saída (egress), independentemente de quantas portas físicas compõem o grupo.",
+    "explanation": "Para a tabela MAC e para o STP, o Port-Channel atua como uma interface única e coesa, abstraindo a complexidade dos múltiplos cabos físicos subjacentes."
+  }
+  
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
