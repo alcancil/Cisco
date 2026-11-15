@@ -92,17 +92,17 @@
 
 ## 🌐 3.0 INFRAESTRUTURA (30%)
 
-### 3.1 Layer 2 ![50%](https://geps.dev/progress/50)
+### 3.1 Layer 2 ![100%](https://geps.dev/progress/100)
 
-- [ ] 3.1.a Troubleshoot static and dynamic 802.1q trunking protocols
-  - [ ] 36 - Trunking - Static 802.1q
-  - [ ] 37 - Trunking - Dynamic (DTP)
-  - [ ] 38 - Trunking - Troubleshooting
-- [ ] 3.1.b Troubleshoot static and dynamic EtherChannels
-  - [ ] 39 - EtherChannel - Static (On)
-  - [ ] 40 - EtherChannel - LACP
-  - [ ] 41 - EtherChannel - PAgP
-  - [ ] 42 - EtherChannel - Troubleshooting
+- [x] 3.1.a Troubleshoot static and dynamic 802.1q trunking protocols
+  - [x] 36 - Trunking - Static 802.1q
+  - [x] 37 - Trunking - Dynamic (DTP)
+  - [x] 38 - Trunking - Troubleshooting
+- [x] 3.1.b Troubleshoot static and dynamic EtherChannels
+  - [x] 39 - EtherChannel - Static (On)
+  - [x] 40 - EtherChannel - LACP
+  - [x] 41 - EtherChannel - PAgP
+  - [x] 42 - EtherChannel - Troubleshooting
 - [x] 3.1.c Configure and verify common Spanning Tree Protocols (RSTP, MST) and Spanning Tree enhancements
   - [x] 43 - STP - RSTP Configuration
   - [x] 44 - STP - RSTP Verification
@@ -175,7 +175,7 @@
   - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
   - [x] 89 - PIM MSDP (Multicast Source Discovery Protocol) - Parte 01 - Exemplo Prático ( 01 )
 
-**Total do progresso do item 3:** ![36,5%](https://geps.dev/progress/36)
+**Total do progresso do item 3:** ![62%](https://geps.dev/progress/62)
 
 ---
 
