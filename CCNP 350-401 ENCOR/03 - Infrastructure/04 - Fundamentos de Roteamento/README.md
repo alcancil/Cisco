@@ -14,6 +14,9 @@
     - [Fluxograma de Instalação na RIB e Encaminhamento](#fluxograma-de-instalação-na-rib-e-encaminhamento)
   - [3. Roteamento Estático: Tipos, Contingência e Prevenção de Loops](#3-roteamento-estático-tipos-contingência-e-prevenção-de-loops)
     - [Os 3 Tipos de Rotas Estáticas (e a Armadilha do ARP)](#os-3-tipos-de-rotas-estáticas-e-a-armadilha-do-arp)
+    - [Default Route (`0.0.0.0/0` / `::/0`): O Gateway de Último Recurso](#default-route-00000--0-o-gateway-de-último-recurso)
+      - [Como ela funciona na prática?](#como-ela-funciona-na-prática)
+      - [Sintaxe e Validação (IPv4 e IPv6)](#sintaxe-e-validação-ipv4-e-ipv6)
     - [Floating Static Routes (Rota Estática Flutuante para Contingência)](#floating-static-routes-rota-estática-flutuante-para-contingência)
     - [Static Null Routes (`Null0`): Matando Loops de Sumarização na Raiz](#static-null-routes-null0-matando-loops-de-sumarização-na-raiz)
     - [Roteamento Estático em IPv6 (Detalhe Crítico de Link-Local)](#roteamento-estático-em-ipv6-detalhe-crítico-de-link-local)
@@ -197,6 +200,35 @@ Rotas estáticas oferecem controle determinístico e consumo zero de banda de re
 3. **Fully Specified Static Route (Interface de Saída + IP do Next-Hop):**
    - **Sintaxe:** `ip route 10.22.22.0 255.255.255.0 GigabitEthernet0/0 10.12.1.2`
    - **Comportamento:** É a **melhor prática absoluta em interfaces Ethernet/Multi-acesso**. Elimina a busca recursiva extra na RIB, evita o problema de tempestade ARP e garante que, se a interface `Gi0/0` cair, a rota seja imediatamente removida da tabela sem tentar resolver o *next-hop* por outro caminho indesejado.
+
+### Default Route (`0.0.0.0/0` / `::/0`): O Gateway de Último Recurso
+
+A **Rota Padrão (*Default Route*)**, conhecida no Cisco IOS como **Gateway of Last Resort**, é uma rota estática "coringa" configurada com prefixo e máscara zerados (`0.0.0.0 0.0.0.0` em IPv4 e `::/0` em IPv6).
+
+#### Como ela funciona na prática?
+
+- **Menor especificidade absoluta:** Por ter comprimento de prefixo `/0`, ela perde para **qualquer** outra rota presente na RIB na regra de *Longest Prefix Match*. Ela só é acionada quando o roteador não conhece nenhum caminho mais específico para o IP de destino.
+- **Onde usar:** Indispensável em roteadores de borda (*Edge*), filiais (*Stub networks*) e firewalls para encaminhar tráfego destinado à Internet ou ao Core sem precisar carregar milhões de prefixos externos.
+
+#### Sintaxe e Validação (IPv4 e IPv6)
+
+```ios
+! Configurando a Rota Padrão IPv4 apontando para o Next-Hop do ISP
+R1(config)# ip route 0.0.0.0 0.0.0.0 192.168.1.2
+
+! Configurando a Rota Padrão IPv6
+R1(config)# ipv6 route ::/0 2001:db8:12::2
+```
+
+Na tabela de roteamento (`show ip route`), ela aparece identificada com o código **`S*`** (onde `*` indica candidata à rota padrão) e atualiza o topo da saída:
+
+```text
+Gateway of last resort is 192.168.1.2 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 192.168.1.2
+```
+
+> ⚠️ **Regra Crítica de Recursividade:** Uma rota estática recursiva **nunca** pode usar a rota padrão (`0.0.0.0/0`) para resolver o seu próprio *Next-Hop*. Se o IP do próximo salto não for alcançável por uma rota conectada ou mais específica que `/0`, a rota estática não será instalada na RIB.
 
 ### Floating Static Routes (Rota Estática Flutuante para Contingência)
 
