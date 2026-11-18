@@ -397,4 +397,4 @@ Agora é a hora de consolidar o aprendizado e testar seu raciocínio em questõe
 
 **Simulado completo de Fundamentos de Roteamento IP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/completo.html)
 
-**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco)
+**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/dashboard.html)
