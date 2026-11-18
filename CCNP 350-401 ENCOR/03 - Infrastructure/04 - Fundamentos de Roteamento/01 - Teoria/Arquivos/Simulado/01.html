@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Protocolos de Roteamento (IGP vs. EGP) e Famílias de Algoritmos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Protocolos de Roteamento (IGP vs. EGP) e Famílias de Algoritmos</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Protocolos de Roteamento (IGP vs. EGP) e Famílias de Algoritmos. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a diferença fundamental entre a RIB (Routing Information Base) e a FIB (Forwarding Information Base) na arquitetura de um roteador Cisco?",
+    "options": [
+      "A RIB opera no plano de controle na CPU para eleger as melhores rotas entre protocolos, enquanto a FIB é uma tabela otimizada em hardware/CEF para encaminhamento rápido de pacotes no plano de dados.",
+      "A FIB armazena apenas rotas estáticas configuradas manualmente, enquanto a RIB armazena exclusivamente rotas dinâmicas.",
+      "A RIB é utilizada apenas para tráfego IPv6 e a FIB exclusivamente para tráfego IPv4.",
+      "A FIB executa o algoritmo de Dijkstra antes de enviar as rotas para a RIB."
+    ],
+    "answer": "A RIB opera no plano de controle na CPU para eleger as melhores rotas entre protocolos, enquanto a FIB é uma tabela otimizada em hardware/CEF para encaminhamento rápido de pacotes no plano de dados.",
+    "explanation": "A RIB reside no Control Plane (CPU) onde os protocolos competem para instalar as melhores rotas; a partir dela, o roteador popula a FIB no Data Plane (CEF) para despachar pacotes em alta velocidade sem sobrecarga de CPU."
+  },
+  {
+    "question": "Qual protocolo de roteamento pertence à categoria Exterior Gateway Protocol (EGP) e como ele previne loops entre diferentes Sistemas Autônomos (AS)?",
+    "options": [
+      "OSPF, utilizando o algoritmo Dijkstra SPF e áreas hierárquicas.",
+      "EIGRP, utilizando a Condição de Viabilidade (RD < FD) do algoritmo DUAL.",
+      "BGP (eBGP), verificando se o seu próprio número de AS já consta no atributo AS_Path do anúncio recebido.",
+      "IS-IS, utilizando inundação de LSPs e contagem máxima de 15 saltos."
+    ],
+    "answer": "BGP (eBGP), verificando se o seu próprio número de AS já consta no atributo AS_Path do anúncio recebido.",
+    "explanation": "O BGP é o padrão EGP (Path Vector) usado para conectar diferentes Sistemas Autônomos; cada AS adiciona seu número ao atributo AS_Path e descarta imediatamente anúncios que já contenham seu próprio número de AS."
+  },
+  {
+    "question": "Um roteador possui três rotas na RIB: 10.0.3.0/24 via OSPF (AD 110), 10.0.3.0/26 via EIGRP (AD 90) e 10.0.3.0/28 via RIPv2 (AD 120). Qual caminho será escolhido para encaminhar um pacote destinado ao IP 10.0.3.14?",
+    "options": [
+      "O caminho via EIGRP (10.0.3.0/26), pois possui a menor Administrative Distance (90).",
+      "O caminho via RIPv2 (10.0.3.0/28), pois o critério soberano de encaminhamento é o Longest Prefix Match (/28 é mais específico que /26 e /24).",
+      "O caminho via OSPF (10.0.3.0/24), pois cobre toda a faixa de endereços da sub-rede.",
+      "O roteador realizará balanceamento ECMP entre os três protocolos."
+    ],
+    "answer": "O caminho via RIPv2 (10.0.3.0/28), pois o critério soberano de encaminhamento é o Longest Prefix Match (/28 é mais específico que /26 e /24).",
+    "explanation": "Na hora de encaminhar pacotes na FIB, o Longest Prefix Match vence qualquer protocolo ou Distância Administrativa. Como 10.0.3.14 pertence a todas as três redes, a máscara /28 vence por ser a mais específica."
+  },
+  {
+    "question": "Um roteador recebe o mesmo prefixo exato 10.3.3.0/24 tanto via OSPF (AD 110) quanto via iBGP (AD 200) e eBGP (AD 20), sendo que o processo BGP elegeu internamente a rota iBGP como sua melhor rota. Qual rota será instalada na RIB?",
+    "options": [
+      "A rota eBGP (AD 20), pois o BGP sempre envia todas as suas rotas para a RIB.",
+      "A rota OSPF (AD 110), pois o processo BGP apresenta à RIB apenas sua rota eleita internamente (iBGP com AD 200), perdendo para a AD 110 do OSPF.",
+      "A rota iBGP (AD 200), pois protocolos Path Vector têm prioridade sobre protocolos Link-State.",
+      "Ambas as rotas OSPF e iBGP são instaladas simultaneamente na RIB."
+    ],
+    "answer": "A rota OSPF (AD 110), pois o processo BGP apresenta à RIB apenas sua rota eleita internamente (iBGP com AD 200), perdendo para a AD 110 do OSPF.",
+    "explanation": "Cada protocolo executa seu próprio processo de seleção antes de falar com a RIB e apresenta apenas o seu vencedor. Como o BGP elegeu a rota iBGP (AD 200), ela perde a disputa na RIB para o OSPF (AD 110)."
+  },
+  {
+    "question": "Por que configurar uma rota estática 'Directly Attached' apontando apenas para uma interface Ethernet (ex: ip route 10.22.22.0 255.255.255.0 Gi0/0) é considerado uma má prática crítica?",
+    "options": [
+      "Porque o Cisco IOS rejeita o comando e desativa a interface física.",
+      "Porque o roteador assume que todos os IPs da rede de destino estão diretamente conectados no enlace e dispara requisições ARP para cada IP acessado, esgotando a CPU e a tabela ARP.",
+      "Porque rotas estáticas sem Next-Hop IP recebem Administrative Distance 255 e nunca entram na RIB.",
+      "Porque interfaces Ethernet suportam apenas roteamento dinâmico via OSPF ou EIGRP."
+    ],
+    "answer": "Porque o roteador assume que todos os IPs da rede de destino estão diretamente conectados no enlace e dispara requisições ARP para cada IP acessado, esgotando a CPU e a tabela ARP.",
+    "explanation": "Em interfaces multiacesso Ethernet que dependem de ARP, omitir o IP do Next-Hop faz o roteador tentar resolver o MAC de cada host remoto individualmente. A melhor prática é usar uma Fully Specified Static Route (interface + Next-Hop IP)."
+  },
+  {
+    "question": "Qual característica operacional define uma Rota Padrão (Default Route 0.0.0.0/0) e como ela se comporta na resolução de rotas estáticas recursivas?",
+    "options": [
+      "Ela aparece com código S* na RIB, possui a menor especificidade (/0) no Longest Prefix Match e nunca pode ser usada para resolver o Next-Hop de outra rota estática recursiva.",
+      "Ela vence qualquer rota /24 na RIB e serve automaticamente como Next-Hop para rotas estáticas recursivas sem rota específica.",
+      "Ela possui Administrative Distance padrão igual a 0 e é anunciada automaticamente pelo OSPF sem comandos extras.",
+      "Ela é usada exclusivamente para descartar tráfego não alocado em blocos sumarizados."
+    ],
+    "answer": "Ela aparece com código S* na RIB, possui a menor especificidade (/0) no Longest Prefix Match e nunca pode ser usada para resolver o Next-Hop de outra rota estática recursiva.",
+    "explanation": "A rota padrão (0.0.0.0/0 ou ::/0) é o Gateway of Last Resort (código S*), acionada apenas quando não há rota mais específica na RIB, e o IOS proíbe que uma rota estática recursiva resolva seu Next-Hop através dela."
+  },
+  {
+    "question": "Como deve ser configurada uma Floating Static Route para atuar como backup de uma rota aprendida via OSPF (AD 110) sem interferir no tráfego enquanto o link principal estiver ativo?",
+    "options": [
+      "Configurando a rota estática com Administrative Distance 1 (padrão).",
+      "Configurando a rota estática com uma Administrative Distance superior a 110 (por exemplo, AD 210).",
+      "Apontando a rota estática de backup para a interface Null0.",
+      "Configurando o comando variance 2 no modo de configuração global."
+    ],
+    "answer": "Configurando a rota estática com uma Administrative Distance superior a 110 (por exemplo, AD 210).",
+    "explanation": "Uma Floating Static Route precisa ter uma AD maior que a da rota primária (AD > 110 no caso do OSPF) para permanecer oculta em standby, assumindo a RIB somente se a rota principal falhar."
+  },
+  {
+    "question": "Qual problema de rede é evitado ao configurar uma rota estática sumarizada apontando para a interface virtual Null0 (ex: ip route 192.168.0.0 255.255.240.0 Null0) em um roteador de borda?",
+    "options": [
+      "Tempestades de broadcast de Camada 2 causadas por falhas no Spanning Tree.",
+      "Loops de roteamento entre o roteador de borda e o ISP quando chegam pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado e existe uma rota padrão 0.0.0.0/0.",
+      "Conflitos de endereços IP sobrepostos entre diferentes instâncias VRF.",
+      "Falhas de adjacência BGP na porta TCP 179."
+    ],
+    "answer": "Loops de roteamento entre o roteador de borda e o ISP quando chegam pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado e existe uma rota padrão 0.0.0.0/0.",
+    "explanation": "Como a rota /20 para Null0 é mais específica que a rota padrão /0 (Longest Prefix Match), pacotes destinados a sub-redes inexistentes dentro do bloco são descartados imediatamente na borda em vez de serem devolvidos ao ISP."
+  },
+  {
+    "question": "Em relação ao Policy-Based Routing (PBR), qual afirmação descreve corretamente seu comportamento no Cisco IOS?",
+    "options": [
+      "O PBR altera diretamente as métricas na RIB, visíveis no comando show ip route, e é aplicado na interface de saída (egress) do tráfego.",
+      "O PBR intercepta pacotes na interface de entrada (ingress) antes da consulta tradicional da RIB, não altera o show ip route e realiza fallback automático para o roteamento normal caso o Next-Hop definido fique inacessível.",
+      "O PBR afeta automaticamente tanto o tráfego que atravessa o roteador quanto o tráfego gerado localmente pela própria caixa sem comandos adicionais.",
+      "O PBR utiliza exclusivamente o endereço IP de destino para tomar decisões de encaminhamento."
+    ],
+    "answer": "O PBR intercepta pacotes na interface de entrada (ingress) antes da consulta tradicional da RIB, não altera o show ip route e realiza fallback automático para o roteamento normal caso o Next-Hop definido fique inacessível.",
+    "explanation": "O PBR é aplicado na entrada da interface (ip policy route-map), permite rotear por origem, protocolo ou porta sem modificar a RIB e volta ao roteamento padrão se o Next-Hop do route-map cair."
+  },
+  {
+    "question": "Qual cuidado obrigatório de ordem de configuração deve ser tomado ao associar uma interface a uma instância VRF no Cisco IOS-XE, e qual é o principal benefício dessa tecnologia?",
+    "options": [
+      "Configurar o endereço IP antes do comando vrf forwarding; seu benefício é aumentar a largura de banda física dos enlaces.",
+      "Configurar o endereço IP sempre depois do comando vrf forwarding (pois o IOS remove o IP existente ao associar a VRF); seu benefício é isolar tabelas de roteamento na Camada 3 permitindo Overlapping IPs.",
+      "Habilitar o Spanning Tree dentro da VRF; seu benefício é eliminar a necessidade de rotas padrão.",
+      "Configurar o comando ip policy route-map antes da VRF; seu benefício é compartilhar a mesma RIB entre todas as interfaces."
+    ],
+    "answer": "Configurar o endereço IP sempre depois do comando vrf forwarding (pois o IOS remove o IP existente ao associar a VRF); seu benefício é isolar tabelas de roteamento na Camada 3 permitindo Overlapping IPs.",
+    "explanation": "Ao aplicar 'vrf forwarding <nome>' em uma interface, o IOS apaga o endereço IP anterior por segurança. A VRF virtualiza a Camada 3 com RIB/FIB isoladas, permitindo que redes idênticas (Overlapping IPs) coexistam no mesmo roteador sem conflito."
+  }
+  
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

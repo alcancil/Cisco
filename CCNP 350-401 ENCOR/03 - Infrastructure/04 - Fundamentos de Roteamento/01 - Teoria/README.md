@@ -27,6 +27,8 @@
   - [Comandos Essenciais de Diagnóstico e Validação](#comandos-essenciais-de-diagnóstico-e-validação)
   - [Consolidação do Conhecimento](#consolidação-do-conhecimento)
   - [🧪 Próximos Passos](#-próximos-passos)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento)
+  - [🧪 Pronto para Testar seu Conhecimento?](#-pronto-para-testar-seu-conhecimento-1)
 
 ## Glossário Técnico de Roteamento IP (Dicionário de Infraestrutura)
 
@@ -368,3 +370,31 @@ Antes de mergulhar na configuração detalhada de cada protocolo dinâmico, gara
 ## 🧪 Próximos Passos
 
 Com os fundamentos de roteamento IP, seleção de caminhos, rotas estáticas avançadas, PBR e VRF consolidados na teoria, o próximo passo é partir para os **laboratórios práticos** validando cada um desses cenários (tabelas de roteamento, *Floating Static Routes*, prevenção de loops com `Null0`, *Policy-Based Routing* e segmentação com VRF-Lite) antes de avançar para os protocolos dinâmicos do bloco **3.2 Layer 3** (**EIGRP**, **OSPFv2/v3** e **eBGP**).
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Parabéns por concluir a teoria de **EtherChannel Estático, LACP, PAgP e Troubleshooting**!
+
+Agora é a hora de consolidar o aprendizado e testar seu raciocínio em questões no mesmo formato cobrado na prova do CCNP ENCOR 350-401.
+
+## 🧪 Pronto para Testar seu Conhecimento?
+
+Parabéns por concluir a teoria de **Fundamentos de Roteamento IP, Seleção de Caminhos, Rotas Estáticas, PBR e VRF**!
+
+Agora é a hora de consolidar o aprendizado e testar seu raciocínio em questões no mesmo formato cobrado na prova do CCNP ENCOR 350-401[cite: 18].
+
+👉 **Acesse os simulados de Fundamentos de Roteamento IP**
+
+🔗 [Abrir Simulados de Fundamentos de Roteamento IP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/)
+
+**Simulados temáticos:**
+
+1. [Protocolos de Roteamento (IGP vs. EGP) e Famílias de Algoritmos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/01.html)
+2. [Critérios de Seleção de Caminhos: Longest Prefix Match, AD e Métrica](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/02.html)
+3. [Roteamento Estático Avançado: Default Route, Floating Static e Null0](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/03.html)
+4. [Roteamento Condicional com Policy-Based Routing (PBR)](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/04.html)
+5. [Virtualização de Camada 3 e Segmentação com VRF-Lite](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/05.html)
+
+**Simulado completo de Fundamentos de Roteamento IP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/completo.html)
+
+**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco)

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Critérios de Seleção de Caminhos: Longest Prefix Match, AD e Métrica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Critérios de Seleção de Caminhos: Longest Prefix Match, AD e Métrica</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Critérios de Seleção de Caminhos: Longest Prefix Match, AD e Métrica. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a ordem exata e imutável de critérios utilizada por um roteador Cisco para decidir a instalação de rotas e o encaminhamento de pacotes?",
+    "options": [
+      "Longest Prefix Match -> Administrative Distance (AD) -> Métrica.",
+      "Administrative Distance (AD) -> Métrica -> Longest Prefix Match.",
+      "Métrica -> Longest Prefix Match -> Administrative Distance (AD).",
+      "Administrative Distance (AD) -> Longest Prefix Match -> Métrica."
+    ],
+    "answer": "Longest Prefix Match -> Administrative Distance (AD) -> Métrica.",
+    "explanation": "O roteador sempre aplica primeiro o Longest Prefix Match na FIB para encaminhamento; para rotas com o mesmo prefixo e máscara na RIB, desempata pela menor Administrative Distance; e, dentro do mesmo protocolo, escolhe a menor Métrica."
+  },
+  {
+    "question": "Na hora de encaminhar um pacote IP na FIB, por que o critério de Longest Prefix Match vence qualquer protocolo de roteamento ou valor de Administrative Distance?",
+    "options": [
+      "Porque o roteador busca sempre a máscara de sub-rede com o maior número de bits 1 à esquerda que englobe o IP de destino, garantindo a entrega ao destino mais específico.",
+      "Porque rotas com máscaras maiores têm automaticamente Administrative Distance igual a zero.",
+      "Porque a FIB ignora completamente as rotas aprendidas por protocolos dinâmicos quando há mais de uma entrada.",
+      "Porque o Longest Prefix Match só é aplicado quando existe empate de métrica entre dois protocolos diferentes."
+    ],
+    "answer": "Porque o roteador busca sempre a máscara de sub-rede com o maior número de bits 1 à esquerda que englobe o IP de destino, garantindo a entrega ao destino mais específico.",
+    "explanation": "Ao consultar a FIB, o roteador seleciona o prefixo mais longo (mais específico) que cubra o endereço de destino, independentemente de qual protocolo instalou a rota ou qual seja sua AD."
+  },
+  {
+    "question": "Qual é a definição técnica e a regra de preferência da Administrative Distance (AD) na população da tabela de roteamento principal (RIB)?",
+    "options": [
+      "É uma nota de confiabilidade da fonte da rota (de 0 a 255) utilizada quando protocolos diferentes anunciam exatamente o mesmo prefixo e máscara; quanto menor o valor, mais confiável é a fonte.",
+      "É o custo acumulado de largura de banda e atraso dos enlaces até o destino; quanto maior o valor, melhor o caminho.",
+      "É um identificador de área usado para desempatar rotas com máscaras diferentes (/24 vs. /28) na FIB.",
+      "É o número máximo de saltos permitidos antes que o pacote seja descartado na interface Null0."
+    ],
+    "answer": "É uma nota de confiabilidade da fonte da rota (de 0 a 255) utilizada quando protocolos diferentes anunciam exatamente o mesmo prefixo e máscara; quanto menor o valor, mais confiável é a fonte.",
+    "explanation": "A Administrative Distance varia de 0 a 255 e serve para classificar a confiabilidade da origem da rota quando dois ou mais protocolos concorrem pelo mesmo prefixo e máscara exatos na RIB, vencendo sempre o menor valor."
+  },
+  {
+    "question": "De acordo com a tabela de valores padrão da Cisco, qual é a ordem correta de confiabilidade (da mais confiável para a menos confiável) entre as fontes de roteamento abaixo?",
+    "options": [
+      "Directly Connected (0) -> Static Route (1) -> eBGP (20) -> EIGRP Internal (90) -> OSPF (110) -> IS-IS (115) -> RIPv2 (120) -> iBGP (200).",
+      "Directly Connected (0) -> Static Route (1) -> OSPF (90) -> EIGRP Internal (110) -> eBGP (120) -> iBGP (200).",
+      "Static Route (0) -> Directly Connected (1) -> EIGRP Internal (20) -> eBGP (90) -> IS-IS (110) -> OSPF (115) -> RIPv2 (120).",
+      "Directly Connected (0) -> eBGP (1) -> Static Route (20) -> EIGRP External (90) -> OSPF (110) -> RIPv2 (200)."
+    ],
+    "answer": "Directly Connected (0) -> Static Route (1) -> eBGP (20) -> EIGRP Internal (90) -> OSPF (110) -> IS-IS (115) -> RIPv2 (120) -> iBGP (200).",
+    "explanation": "Os valores padrão de AD na Cisco são: Conectada (0), Estática com Next-Hop (1), EIGRP Summary (5), eBGP (20), EIGRP Interno (90), OSPF (110), IS-IS (115), RIPv2 (120), EIGRP Externo (170) e iBGP (200)."
+  },
+  {
+    "question": "Qual é a diferença de Administrative Distance padrão entre rotas internas, rotas sumarizadas e rotas externas (redistribuídas) no protocolo EIGRP?",
+    "options": [
+      "EIGRP Summary possui AD 5, EIGRP Internal possui AD 90 e EIGRP External possui AD 170.",
+      "EIGRP Internal possui AD 5, EIGRP Summary possui AD 90 e EIGRP External possui AD 110.",
+      "Todas as rotas EIGRP possuem AD 90, independentemente de serem internas, sumarizadas ou externas.",
+      "EIGRP External possui AD 20, EIGRP Internal possui AD 90 e EIGRP Summary possui AD 200."
+    ],
+    "answer": "EIGRP Summary possui AD 5, EIGRP Internal possui AD 90 e EIGRP External possui AD 170.",
+    "explanation": "O EIGRP diferencia suas origens com três valores distintos de AD: rotas sumarizadas recebem AD 5, rotas internas do domínio EIGRP recebem AD 90 e rotas redistribuídas (externas) recebem AD 170."
+  },
+  {
+    "question": "Quando um protocolo de roteamento apresenta uma rota para o mesmo prefixo já existente na RIB com a mesma máscara, porém com uma Administrative Distance MAIOR do que a rota atual, o que acontece?",
+    "options": [
+      "A nova rota é rejeitada na RIB e mantida apenas em standby na tabela interna do respectivo protocolo de roteamento.",
+      "A nova rota substitui a rota atual na RIB e o protocolo antigo é encerrado.",
+      "As duas rotas são instaladas juntas na RIB para realizar balanceamento de carga ECMP.",
+      "O roteador soma as duas Distâncias Administrativas e divide o resultado por dois."
+    ],
+    "answer": "A nova rota é rejeitada na RIB e mantida apenas em standby na tabela interna do respectivo protocolo de roteamento.",
+    "explanation": "Se a nova rota tiver uma AD maior (menos confiável) que a rota já instalada para o mesmo prefixo/máscara, a RIB rejeita a instalação, mas o protocolo mantém a informação em sua base interna caso a rota principal caia."
+  },
+  {
+    "question": "Qual é a diferença entre Equal-Cost Multi-Path (ECMP) e Unequal-Cost Load Balancing na seleção de caminhos por métrica?",
+    "options": [
+      "O ECMP instala múltiplos caminhos com exatamente a mesma métrica dentro de um mesmo protocolo (suportado por RIP, EIGRP, OSPF e IS-IS), enquanto o Unequal-Cost Load Balancing instala caminhos de custos diferentes e é exclusivo do EIGRP via comando variance.",
+      "O ECMP é exclusivo do BGP, enquanto o Unequal-Cost Load Balancing é padrão no OSPF.",
+      "O ECMP balanceia tráfego entre protocolos diferentes (ex: OSPF e RIP simultaneamente), enquanto o Unequal-Cost exige máscaras diferentes.",
+      "Ambos são suportados nativamente por todos os protocolos IGP sem necessidade de configuração adicional."
+    ],
+    "answer": "O ECMP instala múltiplos caminhos com exatamente a mesma métrica dentro de um mesmo protocolo (suportado por RIP, EIGRP, OSPF e IS-IS), enquanto o Unequal-Cost Load Balancing instala caminhos de custos diferentes e é exclusivo do EIGRP via comando variance.",
+    "explanation": "O ECMP ocorre quando um mesmo protocolo encontra caminhos de métrica idêntica (limitado pelo parâmetro maximum-paths, geralmente 4 por padrão). Já o balanceamento de custo desigual é uma capacidade exclusiva do EIGRP habilitada pelo comando variance."
+  },
+  {
+    "question": "Em um roteador Cisco, qual é o limite padrão típico de rotas de mesmo custo (ECMP) que podem ser instaladas simultaneamente na RIB por um protocolo de roteamento?",
+    "options": [
+      "Geralmente 4 caminhos por padrão (controlado pelo comando maximum-paths).",
+      "Apenas 2 caminhos no máximo, sem possibilidade de alteração.",
+      "Até 16 caminhos ativos por padrão em todos os protocolos IGP.",
+      "Apenas 1 caminho, pois a RIB não permite múltiplas entradas para o mesmo prefixo."
+    ],
+    "answer": "Geralmente 4 caminhos por padrão (controlado pelo comando maximum-paths).",
+    "explanation": "Quando um protocolo encontra múltiplos caminhos com a mesma métrica mínima, o roteador os instala na RIB para balanceamento ECMP até o limite definido pelo parâmetro maximum-paths, que geralmente é 4 por padrão."
+  },
+  {
+    "question": "Considere que um roteador possui na RIB a rota 192.168.10.0/24 via EIGRP (AD 90, métrica 30720) e a rota 192.168.10.128/25 via OSPF (AD 110, métrica 20). Se chegar um pacote para 192.168.10.130, qual será a decisão do roteador e por quê?",
+    "options": [
+      "Encaminhará via OSPF (192.168.10.128/25), pois /25 é um prefixo mais específico que /24 e o Longest Prefix Match tem precedência sobre a Administrative Distance.",
+      "Encaminhará via EIGRP (192.168.10.0/24), pois a AD 90 do EIGRP é menor que a AD 110 do OSPF.",
+      "Descartará o pacote, pois existe conflito de máscaras entre EIGRP e OSPF na RIB.",
+      "Realizará balanceamento de carga 50/50 entre os dois caminhos por terem métricas baixas."
+    ],
+    "answer": "Encaminhará via OSPF (192.168.10.128/25), pois /25 é um prefixo mais específico que /24 e o Longest Prefix Match tem precedência sobre a Administrative Distance.",
+    "explanation": "A AD só é comparada quando dois protocolos concorrem por exatamente o mesmo prefixo e máscara. Como 192.168.10.130 pertence a ambas as redes, vence o prefixo mais longo (/25 do OSPF) sobre o /24 do EIGRP."
+  },
+  {
+    "question": "O que acontece quando um protocolo de roteamento dinâmico (como o OSPF) possui dois caminhos para o mesmo destino 172.16.5.0/24, um com custo 15 e outro com custo 30?",
+    "options": [
+      "O próprio OSPF compara sua métrica interna e apresenta apenas o caminho de menor custo (custo 15) para ser instalado na RIB.",
+      "O OSPF envia ambos os caminhos para a RIB e deixa que a Administrative Distance decida entre eles.",
+      "O roteador instala ambos os caminhos na RIB usando ECMP porque ambos pertencem ao mesmo protocolo.",
+      "O caminho de custo 30 é instalado com Administrative Distance 111 para servir de backup na RIB."
+    ],
+    "answer": "O próprio OSPF compara sua métrica interna e apresenta apenas o caminho de menor custo (custo 15) para ser instalado na RIB.",
+    "explanation": "A métrica é o critério utilizado internamente por um mesmo protocolo para eleger seu melhor caminho. Como os custos são diferentes (15 vs. 30) e o OSPF não faz balanceamento de custo desigual, apenas a rota de custo 15 é apresentada à RIB."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

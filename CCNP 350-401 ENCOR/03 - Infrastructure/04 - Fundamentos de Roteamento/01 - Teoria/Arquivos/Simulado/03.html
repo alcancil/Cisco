@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Roteamento Estático Avançado: Default Route, Floating Static e Null0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Roteamento Estático Avançado: Default Route, Floating Static e Null0</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Roteamento Estático Avançado: Default Route, Floating Static e Null0. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a diferença de comportamento na RIB entre uma rota estática 'Directly Attached' (apenas interface de saída) e uma 'Recursive Static Route' (apenas IP do Next-Hop)?",
+    "options": [
+      "A Directly Attached aparece como 'is directly connected' (comportando-se com AD 0), enquanto a Recursive exige duas buscas na RIB: uma para o destino e outra para descobrir a interface física que alcança o Next-Hop.",
+      "A Recursive Static Route possui Administrative Distance 0, enquanto a Directly Attached possui AD 1 e realiza busca recursiva.",
+      "Ambas realizam busca recursiva na RIB e aparecem com o código S* na tabela de roteamento.",
+      "A Directly Attached é obrigatória em interfaces Ethernet modernas, enquanto a Recursive funciona apenas em links Seriais."
+    ],
+    "answer": "A Directly Attached aparece como 'is directly connected' (comportando-se com AD 0), enquanto a Recursive exige duas buscas na RIB: uma para o destino e outra para descobrir a interface física que alcança o Next-Hop.",
+    "explanation": "Quando configurada apenas com interface de saída, a rota estática aparece como diretamente conectada (sem exibir [AD/Metric]). Quando configurada apenas com o IP do Next-Hop, o roteador precisa fazer uma segunda consulta na RIB para resolver a interface de saída."
+  },
+  {
+    "question": "Por que a configuração de uma rota estática 'Fully Specified' (informando tanto a interface de saída quanto o IP do Next-Hop) é considerada a melhor prática absoluta em interfaces Ethernet?",
+    "options": [
+      "Porque elimina a busca recursiva extra na RIB, evita tempestades de requisições ARP e garante a remoção imediata da rota caso a interface física caia.",
+      "Porque reduz a Administrative Distance da rota para 0, superando rotas diretamente conectadas.",
+      "Porque permite que a rota estática resolva seu Next-Hop através de uma rota padrão 0.0.0.0/0.",
+      "Porque habilita automaticamente o balanceamento de carga assimétrico entre múltiplas interfaces."
+    ],
+    "answer": "Porque elimina a busca recursiva extra na RIB, evita tempestades de requisições ARP e garante a remoção imediata da rota caso a interface física caia.",
+    "explanation": "Em interfaces multiacesso Ethernet, especificar interface e Next-Hop evita que o roteador dispare ARP para cada IP de destino, dispensa a busca recursiva na RIB e impede que o roteador tente resolver o Next-Hop por outro caminho se a interface cair."
+  },
+  {
+    "question": "Qual é a regra crítica de recursividade aplicada pelo Cisco IOS ao tentar resolver o Next-Hop de uma rota estática recursiva?",
+    "options": [
+      "Uma rota estática recursiva nunca pode usar uma rota padrão (0.0.0.0/0) para resolver o seu próprio Next-Hop; se não houver uma rota mais específica que /0 para alcançar o próximo salto, a rota não entra na RIB.",
+      "Uma rota estática recursiva utiliza prioritariamente a rota padrão 0.0.0.0/0 sempre que o Next-Hop estiver em outra sub-rede.",
+      "A recursividade funciona apenas se a rota padrão estiver apontando para a interface virtual Null0.",
+      "O IOS permite até 15 níveis de recursividade usando exclusivamente rotas padrão em cascata."
+    ],
+    "answer": "Uma rota estática recursiva nunca pode usar uma rota padrão (0.0.0.0/0) para resolver o seu próprio Next-Hop; se não houver uma rota mais específica que /0 para alcançar o próximo salto, a rota não entra na RIB.",
+    "explanation": "Por segurança contra loops e instabilidade, o Cisco IOS proíbe que uma rota estática recursiva dependa da rota padrão (0.0.0.0/0) para alcançar seu Next-Hop. É necessário haver uma rota conectada ou mais específica que /0."
+  },
+  {
+    "question": "Como uma Rota Padrão (Default Route) IPv4 é identificada na saída do comando 'show ip route' e qual é a sua posição na regra de Longest Prefix Match?",
+    "options": [
+      "Aparece marcada com o código 'S*' (candidata à rota padrão), atualiza o cabeçalho 'Gateway of last resort' e possui a menor especificidade (/0), perdendo para qualquer outra rota da RIB.",
+      "Aparece marcada com o código 'D*' e tem precedência sobre todas as rotas /24 por ser o Gateway of Last Resort.",
+      "Aparece marcada com o código 'C*' e possui Administrative Distance igual a zero.",
+      "Aparece marcada com o código 'S0' e só é utilizada quando o CEF está desativado."
+    ],
+    "answer": "Aparece marcada com o código 'S*' (candidata à rota padrão), atualiza o cabeçalho 'Gateway of last resort' e possui a menor especificidade (/0), perdendo para qualquer outra rota da RIB.",
+    "explanation": "Configurada com 0.0.0.0 0.0.0.0 (ou ::/0 em IPv6), a rota padrão recebe o código S* na RIB e tem comprimento de prefixo /0, sendo acionada somente quando nenhum prefixo mais específico corresponde ao destino."
+  },
+  {
+    "question": "Qual comando configura corretamente uma rota padrão IPv6 no modo de configuração global do Cisco IOS?",
+    "options": [
+      "ipv6 route ::/0 2001:db8:12::2",
+      "ipv6 route 0.0.0.0/0 2001:db8:12::2",
+      "ip route ::/0 2001:db8:12::2",
+      "ipv6 default-gateway 2001:db8:12::2"
+    ],
+    "answer": "ipv6 route ::/0 2001:db8:12::2",
+    "explanation": "Em IPv6, o prefixo e máscara zerados são representados por ::/0, utilizando o comando 'ipv6 route ::/0 <next-hop>' (após habilitar 'ipv6 unicast-routing')."
+  },
+  {
+    "question": "Um engenheiro deseja configurar uma Floating Static Route para servir de contingência caso uma rota aprendida via EIGRP Interno (AD 90) falhe. Qual valor de Administrative Distance deve ser atribuído à rota estática?",
+    "options": [
+      "Qualquer valor superior a 90 (por exemplo, 100 ou 210).",
+      "Qualquer valor inferior a 90 (por exemplo, 10 ou 50).",
+      "Exatamente o valor 90 para que o roteador faça balanceamento de carga.",
+      "O valor 0, garantindo que ela só suba quando o EIGRP cair."
+    ],
+    "answer": "Qualquer valor superior a 90 (por exemplo, 100 ou 210).",
+    "explanation": "Para que a rota estática fique oculta em standby enquanto a rota EIGRP (AD 90) estiver ativa, sua Administrative Distance deve ser configurada com um valor maior que 90, flutuando para a RIB apenas se a primária desaparecer."
+  },
+  {
+    "question": "Em um roteador com uma rota estática primária via GigabitEthernet0/0 (AD 10) e uma Floating Static Route via Serial1/0 (AD 210) para o mesmo destino 192.168.22.0/24, o que ocorre quando a interface GigabitEthernet0/0 sofre uma falha física (down/down)?",
+    "options": [
+      "A rota primária (AD 10) é removida da RIB e a rota estática flutuante (AD 210) é imediatamente instalada na RIB, assumindo o encaminhamento pela Serial1/0.",
+      "Ambas as rotas permanecem na RIB, mas o tráfego continua tentando sair pela GigabitEthernet0/0 até o timer de hold expirar.",
+      "A rota flutuante é descartada porque sua AD é maior que 200.",
+      "O roteador envia os pacotes para a interface Null0 até que a interface Ethernet seja restaurada."
+    ],
+    "answer": "A rota primária (AD 10) é removida da RIB e a rota estática flutuante (AD 210) é imediatamente instalada na RIB, assumindo o encaminhamento pela Serial1/0.",
+    "explanation": "Enquanto a interface primária está ativa, a rota de menor AD (10) domina a RIB. Assim que a interface cai, essa rota sai da tabela e a Floating Static Route (AD 210) entra automaticamente na RIB."
+  },
+  {
+    "question": "Qual é a mecânica exata de um loop de roteamento entre um roteador de borda (R1) e o ISP quando R1 possui uma rota padrão (0.0.0.0/0) para o ISP e recebe tráfego para um IP não alocado dentro do seu bloco sumarizado (ex: 192.168.0.0/20)?",
+    "options": [
+      "R1 não possui uma rota específica para a sub-rede não alocada, encaminha o pacote de volta ao ISP via rota padrão 0.0.0.0/0, e o ISP devolve o pacote para R1 pela rota sumarizada /20 até o TTL expirar.",
+      "O ISP descarta o pacote na borda e envia mensagens ICMP Redirect em loop infinito para os hosts internos.",
+      "R1 duplica o pacote em todas as interfaces locais, saturando a tabela MAC dos switches.",
+      "O protocolo BGP derruba a sessão TCP 179 entre R1 e o ISP ao detectar o prefixo /20."
+    ],
+    "answer": "R1 não possui uma rota específica para a sub-rede não alocada, encaminha o pacote de volta ao ISP via rota padrão 0.0.0.0/0, e o ISP devolve o pacote para R1 pela rota sumarizada /20 até o TTL expirar.",
+    "explanation": "Sem uma rota de descarte para o bloco sumarizado, R1 usa sua rota padrão (/0) para devolver ao ISP pacotes de sub-redes internas ainda não utilizadas, enquanto o ISP continua roteando o bloco /20 de volta para R1 até o TTL zerar."
+  },
+  {
+    "question": "Por que configurar 'ip route 192.168.0.0 255.255.240.0 Null0' elimina o loop de sumarização sem afetar o tráfego legítimo das sub-redes ativas como 192.168.2.0/24 e 192.168.3.0/24?",
+    "options": [
+      "Porque /20 vence a rota padrão /0 (descartando sub-redes inexistentes na interface Null0 sem custo de CPU), enquanto as sub-redes ativas /24 vencem o /20 pela regra de Longest Prefix Match.",
+      "Porque a interface Null0 inspeciona a camada de aplicação e bloqueia apenas pacotes com TTL menor que 10.",
+      "Porque rotas apontando para Null0 possuem Administrative Distance 255 e só atuam quando não há nenhuma outra rota na RIB.",
+      "Porque o comando redireciona automaticamente o tráfego inválido para uma VRF de quarentena."
+    ],
+    "answer": "Porque /20 vence a rota padrão /0 (descartando sub-redes inexistentes na interface Null0 sem custo de CPU), enquanto as sub-redes ativas /24 vencem o /20 pela regra de Longest Prefix Match.",
+    "explanation": "A hierarquia do Longest Prefix Match garante que destinos válidos nas sub-redes /24 sigam normalmente (/24 > /20), enquanto IPs não alocados dentro do bloco /20 casam com a rota /20 -> Null0 antes de atingir a rota padrão /0."
+  },
+  {
+    "question": "Ao configurar uma rota estática IPv6 cujo Next-Hop é um endereço Link-Local (ex: FE80::2), qual requisito técnico é obrigatório no Cisco IOS?",
+    "options": [
+      "Configurar uma Fully Specified Static Route informando obrigatoriamente a interface de saída junto com o endereço Link-Local (ex: ipv6 route 2001:db8:22::/64 GigabitEthernet0/1 FE80::2).",
+      "Informar apenas o endereço FE80::2, pois o protocolo NDP resolve automaticamente qual interface física utilizar.",
+      "Configurar a Administrative Distance como 0 para que endereços FE80::/10 sejam roteáveis entre diferentes sub-redes.",
+      "Associar a rota estática à interface virtual Null0 antes de ativar o comando ipv6 unicast-routing."
+    ],
+    "answer": "Configurar uma Fully Specified Static Route informando obrigatoriamente a interface de saída junto com o endereço Link-Local (ex: ipv6 route 2001:db8:22::/64 GigabitEthernet0/1 FE80::2).",
+    "explanation": "Como endereços IPv6 Link-Local (FE80::/10) não são roteáveis e existem em todos os enlaces simultaneamente, o roteador não consegue determinar a interface de saída apenas pelo IP, exigindo a sintaxe Fully Specified (interface + Link-Local)."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

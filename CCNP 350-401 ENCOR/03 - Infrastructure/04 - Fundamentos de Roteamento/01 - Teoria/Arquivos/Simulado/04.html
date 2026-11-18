@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Roteamento Condicional com Policy-Based Routing (PBR)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Roteamento Condicional com Policy-Based Routing (PBR)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Roteamento Condicional com Policy-Based Routing (PBR). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual regra fundamental do roteamento IP tradicional o Policy-Based Routing (PBR) quebra ao encaminhar pacotes?",
+    "options": [
+      "Enquanto o roteamento tradicional olha exclusivamente o endereço IP de destino, o PBR permite encaminhar pacotes com base em critérios personalizados como IP de origem, protocolo/porta TCP/UDP, tamanho do pacote ou marcações QoS.",
+      "O PBR elimina a necessidade de endereçamento IP de Camada 3, encaminhando pacotes exclusivamente pela tabela de endereços MAC.",
+      "O PBR substitui a Administrative Distance de todos os protocolos dinâmicos pela métrica de contagem de saltos do RIP.",
+      "O PBR permite que pacotes trafeguem sem cabeçalho IPv4 ou IPv6 entre roteadores Cisco."
+    ],
+    "answer": "Enquanto o roteamento tradicional olha exclusivamente o endereço IP de destino, o PBR permite encaminhar pacotes com base em critérios personalizados como IP de origem, protocolo/porta TCP/UDP, tamanho do pacote ou marcações QoS.",
+    "explanation": "Por padrão, todo roteador consulta a tabela de roteamento olhando apenas o destino. O PBR intercepta o tráfego para tomar decisões condicionais baseadas em origem, portas TCP/UDP, tamanho do pacote ou marcas DSCP/IP Precedence."
+  },
+  {
+    "question": "Quais são os três componentes estruturais obrigatórios para implementar uma política de Policy-Based Routing (PBR) para tráfego em trânsito no Cisco IOS?",
+    "options": [
+      "Uma ACL para classificar o tráfego, um Route-Map com 'match' e 'set ip next-hop' para definir a ação, e a aplicação do comando 'ip policy route-map' na interface de entrada (ingress).",
+      "Um prefix-list global, uma instância VRF dedicada e a aplicação do comando 'ip route-map' na interface de saída (egress).",
+      "Uma rota estática apontando para Null0, uma interface Loopback e o comando 'variance' no processo EIGRP.",
+      "Uma tabela ARP estática, um túnel GRE e o comando 'ip cef' desativado na interface de saída."
+    ],
+    "answer": "Uma ACL para classificar o tráfego, um Route-Map com 'match' e 'set ip next-hop' para definir a ação, e a aplicação do comando 'ip policy route-map' na interface de entrada (ingress).",
+    "explanation": "A construção clássica do PBR exige: (1) ACL para identificar o fluxo desejado, (2) Route-Map associando a ACL (match ip address) e definindo o próximo salto (set ip next-hop), e (3) ativação na interface onde o pacote entra (ip policy route-map)."
+  },
+  {
+    "question": "Em qual direção e interface um Route-Map de Policy-Based Routing (PBR) deve ser aplicado para desviar o tráfego proveniente de uma sub-rede de usuários?",
+    "options": [
+      "Na interface de entrada (ingress) por onde os pacotes chegam ao roteador, utilizando o comando 'ip policy route-map <nome>'.",
+      "Na interface de saída (egress) que aponta para o link de backup, utilizando o comando 'ip policy route-map <nome> out'.",
+      "Exclusivamente na interface Loopback0 do roteador de borda.",
+      "Em todas as interfaces do roteador simultaneamente, independentemente do fluxo de tráfego."
+    ],
+    "answer": "Na interface de entrada (ingress) por onde os pacotes chegam ao roteador, utilizando o comando 'ip policy route-map <nome>'.",
+    "explanation": "O PBR atua antes da consulta tradicional da RIB; portanto, a política precisa ser aplicada na interface de entrada (ingress) onde o pacote é recebido pelo roteador."
+  },
+  {
+    "question": "Ao executar o comando 'show ip route' em um roteador com Policy-Based Routing (PBR) ativo desviando pacotes para um Next-Hop alternativo, o que será exibido na saída?",
+    "options": [
+      "A tabela continuará exibindo apenas o caminho normal aprendido pelos protocolos de roteamento (como OSPF ou EIGRP) ou rotas estáticas, pois o PBR não altera a RIB.",
+      "As rotas desviadas pelo PBR aparecerão marcadas com o código 'P*' e Administrative Distance 0.",
+      "A RIB será esvaziada e substituída pelas entradas configuradas dentro do Route-Map.",
+      "As rotas originais do OSPF serão removidas da RIB enquanto o Route-Map tiver contadores ativos."
+    ],
+    "answer": "A tabela continuará exibindo apenas o caminho normal aprendido pelos protocolos de roteamento (como OSPF ou EIGRP) ou rotas estáticas, pois o PBR não altera a RIB.",
+    "explanation": "Um ponto crítico de troubleshooting é que o PBR é invisível no 'show ip route'. Ele intercepta o pacote na entrada da interface antes da consulta padrão à RIB, sem modificar a tabela de roteamento."
+  },
+  {
+    "question": "Qual é o comportamento de fallback automático do Policy-Based Routing (PBR) caso o endereço IP configurado no comando 'set ip next-hop' fique inacessível ou desapareça da RIB?",
+    "options": [
+      "A ação do PBR é ignorada e o pacote volta a ser encaminhado normalmente seguindo a tabela de roteamento (RIB/FIB), evitando buracos negros.",
+      "O roteador descarta imediatamente todos os pacotes que deram match na ACL e envia mensagens ICMP Unreachable.",
+      "O roteador desativa administrativamente a interface de entrada onde o 'ip policy route-map' foi aplicado.",
+      "O pacote entra em loop interno na CPU até que o Next-Hop configurado no Route-Map volte a ficar ativo."
+    ],
+    "answer": "A ação do PBR é ignorada e o pacote volta a ser encaminhado normalmente seguindo a tabela de roteamento (RIB/FIB), evitando buracos negros.",
+    "explanation": "O PBR possui um mecanismo de fallback nativo: se o Next-Hop especificado no Route-Map cair ou não estiver mais alcançável na RIB, o roteador ignora o desvio do PBR e encaminha o pacote pelo caminho normal da tabela."
+  },
+  {
+    "question": "Por que o comando 'ip policy route-map <nome>' aplicado em uma interface não afeta pacotes de ping ou SSH gerados pelo próprio roteador?",
+    "options": [
+      "Porque o PBR de interface atua apenas sobre tráfego em trânsito que atravessa o roteador; para afetar tráfego originado na própria caixa, é necessário o comando global 'ip local policy route-map <nome>'.",
+      "Porque o Cisco IOS proíbe que pacotes ICMP ou TCP gerados localmente sejam processados por Route-Maps.",
+      "Porque o tráfego gerado localmente pelo roteador sempre utiliza a interface Null0 como origem.",
+      "Porque o comando 'ip policy route-map' funciona apenas para pacotes UDP e tráfego de voz (RTP)."
+    ],
+    "answer": "Porque o PBR de interface atua apenas sobre tráfego em trânsito que atravessa o roteador; para afetar tráfego originado na própria caixa, é necessário o comando global 'ip local policy route-map <nome>'.",
+    "explanation": "Pacotes gerados localmente pelo próprio roteador não entram por nenhuma interface física, logo não passam pelo 'ip policy route-map' de interface. Para aplicar PBR ao tráfego local, usa-se 'ip local policy route-map <nome>' no modo global."
+  },
+  {
+    "question": "Quais comandos de diagnóstico permitem verificar se uma política de PBR está vinculada às interfaces corretas e quantos pacotes já deram match nas regras configuradas?",
+    "options": [
+      "'show ip policy' (para listar interfaces com PBR ativo) e 'show route-map' (para inspecionar os contadores de pacotes e bytes que deram match).",
+      "'show ip route policy' e 'show cdp neighbors detail'.",
+      "'show ip cef summary' e 'show interfaces trunk'.",
+      "'show ip protocols' e 'show vrf detail'."
+    ],
+    "answer": "'show ip policy' (para listar interfaces com PBR ativo) e 'show route-map' (para inspecionar os contadores de pacotes e bytes que deram match).",
+    "explanation": "Como o 'show ip route' não mostra o PBR, o administrador deve usar 'show ip policy' para confirmar em quais interfaces o Route-Map está aplicado e 'show route-map' para auditar os contadores de match."
+  },
+  {
+    "question": "Considere a configuração:\naccess-list 101 permit ip 10.1.1.0 0.0.0.255 10.5.5.0 0.0.0.255\nroute-map DESVIO_VIP permit 10\n match ip address 101\n set ip next-hop 10.23.1.3\n\nO que acontecerá com um pacote originado em 10.1.2.50 destinado a 10.5.5.10 ao entrar na interface onde 'DESVIO_VIP' está aplicado?",
+    "options": [
+      "Ele não dará match na ACL 101 e seguirá o encaminhamento normal da tabela de roteamento (RIB/FIB), pois não há nenhuma ação de bloqueio implícita no PBR.",
+      "Ele será descartado imediatamente pelo 'deny any' implícito da ACL 101 e do Route-Map.",
+      "Ele será desviado para 10.23.1.3 porque o IP de destino pertence à rede 10.5.5.0/24.",
+      "Ele será enviado para a interface Null0 até que uma sequência 20 seja adicionada ao Route-Map."
+    ],
+    "answer": "Ele não dará match na ACL 101 e seguirá o encaminhamento normal da tabela de roteamento (RIB/FIB), pois não há nenhuma ação de bloqueio implícita no PBR.",
+    "explanation": "No Policy-Based Routing, o 'deny' implícito da ACL ou o fim do Route-Map sem match não descarta o pacote; apenas significa que o pacote não será desviado pela política e seguirá o roteamento tradicional da RIB."
+  },
+  {
+    "question": "Em um cenário corporativo onde o tráfego da diretoria precisa sair por um link dedicado e o tráfego de visitantes por uma banda larga comum para o mesmo destino na Internet, qual recurso permite essa separação sem alterar as rotas globais?",
+    "options": [
+      "Policy-Based Routing (PBR) classificando as sub-redes de origem via ACL e definindo diferentes 'set ip next-hop' no Route-Map.",
+      "Floating Static Route alterando a Administrative Distance da rota padrão para 255.",
+      "Equal-Cost Multi-Path (ECMP) configurando o comando 'maximum-paths 2' no OSPF.",
+      "Rota estática apontando para Null0 na interface LAN dos visitantes."
+    ],
+    "answer": "Policy-Based Routing (PBR) classificando as sub-redes de origem via ACL e definindo diferentes 'set ip next-hop' no Route-Map.",
+    "explanation": "O PBR é a ferramenta ideal para roteamento baseado na origem (Source-Based Routing), permitindo direcionar sub-redes internas distintas para gateways diferentes mantendo a mesma tabela de roteamento global."
+  },
+  {
+    "question": "Além do endereço IP de origem e destino, quais outros critérios podem ser utilizados pelo Policy-Based Routing (PBR) para classificar e desviar fluxos de tráfego?",
+    "options": [
+      "Protocolo ou porta TCP/UDP (como tráfego VoIP/RTP), tamanho do pacote e marcações de QoS (DSCP / IP Precedence).",
+      "Apenas o endereço MAC de origem e o número da VLAN nativa do trunk 802.1Q.",
+      "Exclusivamente o atributo AS_Path do BGP e o Router-ID do OSPF.",
+      "Apenas a velocidade física da interface de saída e o estado do Spanning Tree."
+    ],
+    "answer": "Protocolo ou porta TCP/UDP (como tráfego VoIP/RTP), tamanho do pacote e marcações de QoS (DSCP / IP Precedence).",
+    "explanation": "O PBR oferece granularidade avançada na entrada da interface, permitindo tomar decisões de encaminhamento baseadas em origem, protocolo/portas TCP/UDP, tamanho do pacote ou valores de QoS (DSCP/IP Precedence)."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

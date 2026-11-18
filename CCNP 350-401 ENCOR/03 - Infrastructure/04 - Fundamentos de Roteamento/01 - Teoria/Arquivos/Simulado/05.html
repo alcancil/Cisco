@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Virtualização de Camada 3 e Segmentação com VRF-Lite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Virtualização de Camada 3 e Segmentação com VRF-Lite</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Virtualização de Camada 3 e Segmentação com VRF-Lite. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a analogia arquitetural e a função principal do Virtual Routing and Forwarding (VRF) dentro de um roteador físico?",
+    "options": [
+      "Assim como as VLANs segmentam um switch na Camada 2, o VRF virtualiza um roteador físico em múltiplos roteadores virtuais independentes na Camada 3, cada um com sua própria RIB e FIB isoladas.",
+      "O VRF funciona como um protocolo de agregação de links físicos semelhante ao EtherChannel para dobrar a largura de banda.",
+      "O VRF unifica todas as tabelas de roteamento de diferentes equipamentos em uma única RIB global compartilhada.",
+      "O VRF opera exclusivamente na Camada 1 para isolar sinais elétricos entre portas GigabitEthernet adjacentes."
+    ],
+    "answer": "Assim como as VLANs segmentam um switch na Camada 2, o VRF virtualiza um roteador físico em múltiplos roteadores virtuais independentes na Camada 3, cada um com sua própria RIB e FIB isoladas.",
+    "explanation": "O VRF atua como 'VLANs de Camada 3', criando instâncias de roteamento completamente segregadas no mesmo equipamento físico, cada uma com sua própria RIB, FIB, interfaces dedicadas e processos de roteamento independentes."
+  },
+  {
+    "question": "Qual é o principal benefício proporcionado pelo isolamento das tabelas de roteamento (RIB/FIB) entre diferentes instâncias VRF no mesmo equipamento?",
+    "options": [
+      "Permite o uso de Overlapping IPs (endereços IP idênticos, como 192.168.3.0/24) em duas VRFs diferentes no mesmo roteador sem qualquer conflito ou comunicação entre elas.",
+      "Elimina a necessidade de configurar máscaras de sub-rede ou gateways padrão nas interfaces físicas.",
+      "Permite que hosts de diferentes VRFs se comuniquem diretamente por broadcast de Camada 2 sem roteamento.",
+      "Reduz a Administrative Distance de todas as rotas dinâmicas para 0 automaticamente."
+    ],
+    "answer": "Permite o uso de Overlapping IPs (endereços IP idênticos, como 192.168.3.0/24) em duas VRFs diferentes no mesmo roteador sem qualquer conflito ou comunicação entre elas.",
+    "explanation": "Como cada VRF mantém sua própria RIB e FIB totalmente isoladas, exatamente as mesmas faixas de IP (Overlapping IPs) podem coexistir no mesmo roteador físico sem conflito, sendo ideal para multitenancy e redes de gerência Out-of-Band."
+  },
+  {
+    "question": "O que o Cisco IOS faz automaticamente por segurança no momento em que você aplica o comando 'vrf forwarding <NOME>' em uma interface que já possuía um endereço IP configurado?",
+    "options": [
+      "Remove imediatamente o endereço IP que estava configurado na interface, exigindo que o IP seja configurado sempre depois do comando 'vrf forwarding'.",
+      "Migra automaticamente o endereço IP antigo e todas as rotas estáticas globais para dentro da nova VRF.",
+      "Coloca a interface em estado err-disable até que o roteador seja reiniciado.",
+      "Converte o endereço IPv4 da interface em um endereço IPv6 Link-Local."
+    ],
+    "answer": "Remove imediatamente o endereço IP que estava configurado na interface, exigindo que o IP seja configurado sempre depois do comando 'vrf forwarding'.",
+    "explanation": "Para evitar vazamento acidental de rotas entre a tabela global e a VRF, o IOS apaga o endereço IP da interface assim que 'vrf forwarding' é inserido. Portanto, o IP deve ser sempre configurado após associar a interface à VRF."
+  },
+  {
+    "question": "Qual é a sequência correta de comandos para criar uma VRF multiprotocolo chamada 'MGMT' com suporte a IPv4 e associá-la à interface GigabitEthernet0/3 com o IP 192.168.3.1/24?",
+    "options": [
+      "vrf definition MGMT -> address-family ipv4 -> exit -> interface Gi0/3 -> vrf forwarding MGMT -> ip address 192.168.3.1 255.255.255.0",
+      "ip vrf MGMT -> interface Gi0/3 -> ip address 192.168.3.1 255.255.255.0 -> vrf forwarding MGMT",
+      "vrf definition MGMT -> interface Gi0/3 -> ip vrf receive MGMT -> ip address 192.168.3.1 255.255.255.0",
+      "interface Gi0/3 -> vrf definition MGMT -> address-family ipv4 -> ip address 192.168.3.1 255.255.255.0"
+    ],
+    "answer": "vrf definition MGMT -> address-family ipv4 -> exit -> interface Gi0/3 -> vrf forwarding MGMT -> ip address 192.168.3.1 255.255.255.0",
+    "explanation": "No formato multiprotocolo moderno ('vrf definition'), primeiro ativa-se a 'address-family ipv4' dentro da VRF, depois entra-se na interface, aplica-se 'vrf forwarding MGMT' e somente em seguida configura-se o endereço IP."
+  },
+  {
+    "question": "Por que o comando 'vrf definition <NOME>' com 'address-family ipv4' é preferido em implementações modernas de VRF-Lite no Cisco IOS/IOS-XE?",
+    "options": [
+      "Porque cria uma definição multiprotocolo capaz de suportar tanto IPv4 quanto IPv6 de forma estruturada na mesma instância VRF.",
+      "Porque dispensa a necessidade de atribuir interfaces físicas ou sub-interfaces à VRF.",
+      "Porque habilita automaticamente o protocolo BGP entre todas as VRFs locais.",
+      "Porque permite que uma mesma interface física pertença a duas VRFs simultaneamente."
+    ],
+    "answer": "Porque cria uma definição multiprotocolo capaz de suportar tanto IPv4 quanto IPv6 de forma estruturada na mesma instância VRF.",
+    "explanation": "A sintaxe 'vrf definition' substitui o legado 'ip vrf' justamente por ser multiprotocolo, permitindo ativar separadamente 'address-family ipv4' e 'address-family ipv6' sob a mesma instância VRF."
+  },
+  {
+    "question": "Ao executar o comando 'show ip route' sem parâmetros adicionais em um roteador configurado com a instância VRF 'MGMT', o que acontece com as rotas pertencentes à VRF 'MGMT'?",
+    "options": [
+      "Elas não aparecem na saída, pois 'show ip route' exibe apenas a Global Routing Table; para vê-las é obrigatório usar 'show ip route vrf MGMT'.",
+      "Elas aparecem normalmente na tabela global marcadas com a letra 'V' ao lado do prefixo.",
+      "Elas aparecem no topo da saída antes do cabeçalho 'Gateway of last resort'.",
+      "O roteador exibe uma mensagem de erro informando que a tabela global foi desativada pela VRF."
+    ],
+    "answer": "Elas não aparecem na saída, pois 'show ip route' exibe apenas a Global Routing Table; para vê-las é obrigatório usar 'show ip route vrf MGMT'.",
+    "explanation": "Cada VRF possui sua própria RIB completamente isolada da tabela global. O comando 'show ip route' consulta apenas a tabela global, exigindo 'show ip route vrf <nome>' para inspecionar uma instância específica."
+  },
+  {
+    "question": "Um administrador tenta testar a conectividade com o IP 10.0.3.2 (que pertence à VRF 'MGMT') digitando apenas 'ping 10.0.3.2', mas o teste falha. Qual é o motivo e qual comando corrige o diagnóstico?",
+    "options": [
+      "O comando 'ping' padrão utiliza a Global Routing Table; para testar dentro da instância isolada é obrigatório especificar 'ping vrf MGMT 10.0.3.2'.",
+      "O tráfego ICMP é bloqueado por padrão dentro de qualquer VRF; é necessário habilitar 'ip icmp vrf' na interface.",
+      "O comando 'ping' funciona apenas com endereços IPv6 quando há VRFs configuradas no roteador.",
+      "É necessário especificar a interface de saída antes do IP, usando 'ping GigabitEthernet0/3 10.0.3.2'."
+    ],
+    "answer": "O comando 'ping' padrão utiliza a Global Routing Table; para testar dentro da instância isolada é obrigatório especificar 'ping vrf MGMT 10.0.3.2'.",
+    "explanation": "Ferramentas de diagnóstico como 'ping' e 'traceroute' usam a tabela de roteamento global por padrão. Para gerar pacotes a partir da tabela de uma VRF específica, deve-se incluir o parâmetro 'vrf <nome>'."
+  },
+  {
+    "question": "Quais elementos são mantidos de forma totalmente independente para cada instância VRF configurada em um roteador?",
+    "options": [
+      "Sua própria RIB (tabela de roteamento), sua própria FIB, suas próprias interfaces/sub-interfaces dedicadas e processos de roteamento dinâmico independentes.",
+      "Apenas a tabela ARP, enquanto a RIB e a FIB permanecem compartilhadas com a tabela global.",
+      "Apenas o endereço MAC das interfaces físicas e a velocidade de negociação Ethernet.",
+      "Apenas as listas de controle de acesso (ACLs) aplicadas na saída do console."
+    ],
+    "answer": "Sua própria RIB (tabela de roteamento), sua própria FIB, suas próprias interfaces/sub-interfaces dedicadas e processos de roteamento dinâmico independentes.",
+    "explanation": "Cada VRF funciona como um roteador virtual completo na Camada 3, possuindo RIB, FIB, interfaces ou sub-interfaces exclusivas e instâncias de roteamento próprias sem comunicação padrão entre si."
+  },
+  {
+    "question": "Em quais cenários corporativos e de provedores a implementação de VRF-Lite é tipicamente aplicada para segmentação de Camada 3?",
+    "options": [
+      "Isolamento de redes de gerência Out-of-Band (OOB), ambientes multitenancy em Data Centers e separação de clientes em operadoras MPLS.",
+      "Substituição do protocolo Spanning Tree (STP) em switches de acesso de Camada 2.",
+      "Aumento da velocidade de convergência do algoritmo de hash em EtherChannels LACP.",
+      "Eliminação de loops de sumarização em rotas padrão sem o uso da interface Null0."
+    ],
+    "answer": "Isolamento de redes de gerência Out-of-Band (OOB), ambientes multitenancy em Data Centers e separação de clientes em operadoras MPLS.",
+    "explanation": "O VRF é o padrão arquitetural para segregar completamente domínios de roteamento no mesmo hardware físico, sendo amplamente empregado em redes de gerência Out-of-Band, multitenancy em Data Centers e infraestruturas MPLS."
+  },
+  {
+    "question": "Em um roteador com a interface Gi0/1 (192.168.3.1/24) na Global Routing Table e a interface Gi0/3 (192.168.3.1/24) associada à 'VRF MGMT', o que ocorre quando pacotes chegam simultaneamente nessas duas interfaces?",
+    "options": [
+      "O roteador encaminha cada fluxo de forma totalmente independente usando a FIB da respectiva tabela (Global vs. VRF MGMT), sem conflito de endereçamento e sem comunicação direta entre os dois domínios.",
+      "O roteador gera um alerta de IP duplicado no syslog e coloca a interface Gi0/3 em estado administrativamente down.",
+      "Os pacotes recebidos na Gi0/3 são encaminhados automaticamente para os hosts conectados na Gi0/1.",
+      "O protocolo ARP sobreescreve a entrada da Gi0/1 com o endereço MAC aprendido na Gi0/3."
+    ],
+    "answer": "O roteador encaminha cada fluxo de forma totalmente independente usando a FIB da respectiva tabela (Global vs. VRF MGMT), sem conflito de endereçamento e sem comunicação direta entre os dois domínios.",
+    "explanation": "Como a Global Routing Table e a VRF MGMT possuem planos de encaminhamento (FIB) e tabelas de roteamento completamente isolados, os mesmos prefixos e IPs operam em paralelo sem interferência ou vazamento de tráfego."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Fundamentos de Roteamento - Completo 02</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de TFundamentos de Roteamento</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Fundamentos de Roteamento. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a diferença fundamental entre a RIB (Routing Information Base) e a FIB (Forwarding Information Base) na arquitetura de um roteador Cisco?",
+    "options": [
+      "A RIB opera no plano de controle na CPU para eleger as melhores rotas entre protocolos, enquanto a FIB é uma tabela otimizada em hardware/CEF para encaminhamento rápido de pacotes no plano de dados.",
+      "A FIB armazena apenas rotas estáticas configuradas manualmente, enquanto a RIB armazena exclusivamente rotas dinâmicas.",
+      "A RIB é utilizada apenas para tráfego IPv6 e a FIB exclusivamente para tráfego IPv4.",
+      "A FIB executa o algoritmo de Dijkstra antes de enviar as rotas para a RIB."
+    ],
+    "answer": "A RIB opera no plano de controle na CPU para eleger as melhores rotas entre protocolos, enquanto a FIB é uma tabela otimizada em hardware/CEF para encaminhamento rápido de pacotes no plano de dados.",
+    "explanation": "A RIB reside no Control Plane (CPU) onde os protocolos competem para instalar as melhores rotas; a partir dela, o roteador popula a FIB no Data Plane (CEF) para despachar pacotes em alta velocidade sem sobrecarga de CPU."
+  },
+  {
+    "question": "Qual protocolo de roteamento pertence à categoria Exterior Gateway Protocol (EGP) e como ele previne loops entre diferentes Sistemas Autônomos (AS)?",
+    "options": [
+      "OSPF, utilizando o algoritmo Dijkstra SPF e áreas hierárquicas.",
+      "EIGRP, utilizando a Condição de Viabilidade (RD < FD) do algoritmo DUAL.",
+      "BGP (eBGP), verificando se o seu próprio número de AS já consta no atributo AS_Path do anúncio recebido.",
+      "IS-IS, utilizando inundação de LSPs e contagem máxima de 15 saltos."
+    ],
+    "answer": "BGP (eBGP), verificando se o seu próprio número de AS já consta no atributo AS_Path do anúncio recebido.",
+    "explanation": "O BGP é o padrão EGP (Path Vector) usado para conectar diferentes Sistemas Autônomos; cada AS adiciona seu número ao atributo AS_Path e descarta imediatamente anúncios que já contenham seu próprio número de AS."
+  },
+  {
+    "question": "Um roteador possui três rotas na RIB: 10.0.3.0/24 via OSPF (AD 110), 10.0.3.0/26 via EIGRP (AD 90) e 10.0.3.0/28 via RIPv2 (AD 120). Qual caminho será escolhido para encaminhar um pacote destinado ao IP 10.0.3.14?",
+    "options": [
+      "O caminho via EIGRP (10.0.3.0/26), pois possui a menor Administrative Distance (90).",
+      "O caminho via RIPv2 (10.0.3.0/28), pois o critério soberano de encaminhamento é o Longest Prefix Match (/28 é mais específico que /26 e /24).",
+      "O caminho via OSPF (10.0.3.0/24), pois cobre toda a faixa de endereços da sub-rede.",
+      "O roteador realizará balanceamento ECMP entre os três protocolos."
+    ],
+    "answer": "O caminho via RIPv2 (10.0.3.0/28), pois o critério soberano de encaminhamento é o Longest Prefix Match (/28 é mais específico que /26 e /24).",
+    "explanation": "Na hora de encaminhar pacotes na FIB, o Longest Prefix Match vence qualquer protocolo ou Distância Administrativa. Como 10.0.3.14 pertence a todas as três redes, a máscara /28 vence por ser a mais específica."
+  },
+  {
+    "question": "Um roteador recebe o mesmo prefixo exato 10.3.3.0/24 tanto via OSPF (AD 110) quanto via iBGP (AD 200) e eBGP (AD 20), sendo que o processo BGP elegeu internamente a rota iBGP como sua melhor rota. Qual rota será instalada na RIB?",
+    "options": [
+      "A rota eBGP (AD 20), pois o BGP sempre envia todas as suas rotas para a RIB.",
+      "A rota OSPF (AD 110), pois o processo BGP apresenta à RIB apenas sua rota eleita internamente (iBGP com AD 200), perdendo para a AD 110 do OSPF.",
+      "A rota iBGP (AD 200), pois protocolos Path Vector têm prioridade sobre protocolos Link-State.",
+      "Ambas as rotas OSPF e iBGP são instaladas simultaneamente na RIB."
+    ],
+    "answer": "A rota OSPF (AD 110), pois o processo BGP apresenta à RIB apenas sua rota eleita internamente (iBGP com AD 200), perdendo para a AD 110 do OSPF.",
+    "explanation": "Cada protocolo executa seu próprio processo de seleção antes de falar com a RIB e apresenta apenas o seu vencedor. Como o BGP elegeu a rota iBGP (AD 200), ela perde a disputa na RIB para o OSPF (AD 110)."
+  },
+  {
+    "question": "Por que configurar uma rota estática 'Directly Attached' apontando apenas para uma interface Ethernet (ex: ip route 10.22.22.0 255.255.255.0 Gi0/0) é considerado uma má prática crítica?",
+    "options": [
+      "Porque o Cisco IOS rejeita o comando e desativa a interface física.",
+      "Porque o roteador assume que todos os IPs da rede de destino estão diretamente conectados no enlace e dispara requisições ARP para cada IP acessado, esgotando a CPU e a tabela ARP.",
+      "Porque rotas estáticas sem Next-Hop IP recebem Administrative Distance 255 e nunca entram na RIB.",
+      "Porque interfaces Ethernet suportam apenas roteamento dinâmico via OSPF ou EIGRP."
+    ],
+    "answer": "Porque o roteador assume que todos os IPs da rede de destino estão diretamente conectados no enlace e dispara requisições ARP para cada IP acessado, esgotando a CPU e a tabela ARP.",
+    "explanation": "Em interfaces multiacesso Ethernet que dependem de ARP, omitir o IP do Next-Hop faz o roteador tentar resolver o MAC de cada host remoto individualmente. A melhor prática é usar uma Fully Specified Static Route (interface + Next-Hop IP)."
+  },
+  {
+    "question": "Qual característica operacional define uma Rota Padrão (Default Route 0.0.0.0/0) e como ela se comporta na resolução de rotas estáticas recursivas?",
+    "options": [
+      "Ela aparece com código S* na RIB, possui a menor especificidade (/0) no Longest Prefix Match e nunca pode ser usada para resolver o Next-Hop de outra rota estática recursiva.",
+      "Ela vence qualquer rota /24 na RIB e serve automaticamente como Next-Hop para rotas estáticas recursivas sem rota específica.",
+      "Ela possui Administrative Distance padrão igual a 0 e é anunciada automaticamente pelo OSPF sem comandos extras.",
+      "Ela é usada exclusivamente para descartar tráfego não alocado em blocos sumarizados."
+    ],
+    "answer": "Ela aparece com código S* na RIB, possui a menor especificidade (/0) no Longest Prefix Match e nunca pode ser usada para resolver o Next-Hop de outra rota estática recursiva.",
+    "explanation": "A rota padrão (0.0.0.0/0 ou ::/0) é o Gateway of Last Resort (código S*), acionada apenas quando não há rota mais específica na RIB, e o IOS proíbe que uma rota estática recursiva resolva seu Next-Hop através dela."
+  },
+  {
+    "question": "Como deve ser configurada uma Floating Static Route para atuar como backup de uma rota aprendida via OSPF (AD 110) sem interferir no tráfego enquanto o link principal estiver ativo?",
+    "options": [
+      "Configurando a rota estática com Administrative Distance 1 (padrão).",
+      "Configurando a rota estática com uma Administrative Distance superior a 110 (por exemplo, AD 210).",
+      "Apontando a rota estática de backup para a interface Null0.",
+      "Configurando o comando variance 2 no modo de configuração global."
+    ],
+    "answer": "Configurando a rota estática com uma Administrative Distance superior a 110 (por exemplo, AD 210).",
+    "explanation": "Uma Floating Static Route precisa ter uma AD maior que a da rota primária (AD > 110 no caso do OSPF) para permanecer oculta em standby, assumindo a RIB somente se a rota principal falhar."
+  },
+  {
+    "question": "Qual problema de rede é evitado ao configurar uma rota estática sumarizada apontando para a interface virtual Null0 (ex: ip route 192.168.0.0 255.255.240.0 Null0) em um roteador de borda?",
+    "options": [
+      "Tempestades de broadcast de Camada 2 causadas por falhas no Spanning Tree.",
+      "Loops de roteamento entre o roteador de borda e o ISP quando chegam pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado e existe uma rota padrão 0.0.0.0/0.",
+      "Conflitos de endereços IP sobrepostos entre diferentes instâncias VRF.",
+      "Falhas de adjacência BGP na porta TCP 179."
+    ],
+    "answer": "Loops de roteamento entre o roteador de borda e o ISP quando chegam pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado e existe uma rota padrão 0.0.0.0/0.",
+    "explanation": "Como a rota /20 para Null0 é mais específica que a rota padrão /0 (Longest Prefix Match), pacotes destinados a sub-redes inexistentes dentro do bloco são descartados imediatamente na borda em vez de serem devolvidos ao ISP."
+  },
+  {
+    "question": "Em relação ao Policy-Based Routing (PBR), qual afirmação descreve corretamente seu comportamento no Cisco IOS?",
+    "options": [
+      "O PBR altera diretamente as métricas na RIB, visíveis no comando show ip route, e é aplicado na interface de saída (egress) do tráfego.",
+      "O PBR intercepta pacotes na interface de entrada (ingress) antes da consulta tradicional da RIB, não altera o show ip route e realiza fallback automático para o roteamento normal caso o Next-Hop definido fique inacessível.",
+      "O PBR afeta automaticamente tanto o tráfego que atravessa o roteador quanto o tráfego gerado localmente pela própria caixa sem comandos adicionais.",
+      "O PBR utiliza exclusivamente o endereço IP de destino para tomar decisões de encaminhamento."
+    ],
+    "answer": "O PBR intercepta pacotes na interface de entrada (ingress) antes da consulta tradicional da RIB, não altera o show ip route e realiza fallback automático para o roteamento normal caso o Next-Hop definido fique inacessível.",
+    "explanation": "O PBR é aplicado na entrada da interface (ip policy route-map), permite rotear por origem, protocolo ou porta sem modificar a RIB e volta ao roteamento padrão se o Next-Hop do route-map cair."
+  },
+  {
+    "question": "Qual cuidado obrigatório de ordem de configuração deve ser tomado ao associar uma interface a uma instância VRF no Cisco IOS-XE, e qual é o principal benefício dessa tecnologia?",
+    "options": [
+      "Configurar o endereço IP antes do comando vrf forwarding; seu benefício é aumentar a largura de banda física dos enlaces.",
+      "Configurar o endereço IP sempre depois do comando vrf forwarding (pois o IOS remove o IP existente ao associar a VRF); seu benefício é isolar tabelas de roteamento na Camada 3 permitindo Overlapping IPs.",
+      "Habilitar o Spanning Tree dentro da VRF; seu benefício é eliminar a necessidade de rotas padrão.",
+      "Configurar o comando ip policy route-map antes da VRF; seu benefício é compartilhar a mesma RIB entre todas as interfaces."
+    ],
+    "answer": "Configurar o endereço IP sempre depois do comando vrf forwarding (pois o IOS remove o IP existente ao associar a VRF); seu benefício é isolar tabelas de roteamento na Camada 3 permitindo Overlapping IPs.",
+    "explanation": "Ao aplicar 'vrf forwarding <nome>' em uma interface, o IOS apaga o endereço IP anterior por segurança. A VRF virtualiza a Camada 3 com RIB/FIB isoladas, permitindo que redes idênticas (Overlapping IPs) coexistam no mesmo roteador sem conflito."
+  },
+{
+    "question": "Qual é a ordem exata e imutável de critérios utilizada por um roteador Cisco para decidir a instalação de rotas e o encaminhamento de pacotes?",
+    "options": [
+      "Longest Prefix Match -> Administrative Distance (AD) -> Métrica.",
+      "Administrative Distance (AD) -> Métrica -> Longest Prefix Match.",
+      "Métrica -> Longest Prefix Match -> Administrative Distance (AD).",
+      "Administrative Distance (AD) -> Longest Prefix Match -> Métrica."
+    ],
+    "answer": "Longest Prefix Match -> Administrative Distance (AD) -> Métrica.",
+    "explanation": "O roteador sempre aplica primeiro o Longest Prefix Match na FIB para encaminhamento; para rotas com o mesmo prefixo e máscara na RIB, desempata pela menor Administrative Distance; e, dentro do mesmo protocolo, escolhe a menor Métrica."
+  },
+  {
+    "question": "Na hora de encaminhar um pacote IP na FIB, por que o critério de Longest Prefix Match vence qualquer protocolo de roteamento ou valor de Administrative Distance?",
+    "options": [
+      "Porque o roteador busca sempre a máscara de sub-rede com o maior número de bits 1 à esquerda que englobe o IP de destino, garantindo a entrega ao destino mais específico.",
+      "Porque rotas com máscaras maiores têm automaticamente Administrative Distance igual a zero.",
+      "Porque a FIB ignora completamente as rotas aprendidas por protocolos dinâmicos quando há mais de uma entrada.",
+      "Porque o Longest Prefix Match só é aplicado quando existe empate de métrica entre dois protocolos diferentes."
+    ],
+    "answer": "Porque o roteador busca sempre a máscara de sub-rede com o maior número de bits 1 à esquerda que englobe o IP de destino, garantindo a entrega ao destino mais específico.",
+    "explanation": "Ao consultar a FIB, o roteador seleciona o prefixo mais longo (mais específico) que cubra o endereço de destino, independentemente de qual protocolo instalou a rota ou qual seja sua AD."
+  },
+  {
+    "question": "Qual é a definição técnica e a regra de preferência da Administrative Distance (AD) na população da tabela de roteamento principal (RIB)?",
+    "options": [
+      "É uma nota de confiabilidade da fonte da rota (de 0 a 255) utilizada quando protocolos diferentes anunciam exatamente o mesmo prefixo e máscara; quanto menor o valor, mais confiável é a fonte.",
+      "É o custo acumulado de largura de banda e atraso dos enlaces até o destino; quanto maior o valor, melhor o caminho.",
+      "É um identificador de área usado para desempatar rotas com máscaras diferentes (/24 vs. /28) na FIB.",
+      "É o número máximo de saltos permitidos antes que o pacote seja descartado na interface Null0."
+    ],
+    "answer": "É uma nota de confiabilidade da fonte da rota (de 0 a 255) utilizada quando protocolos diferentes anunciam exatamente o mesmo prefixo e máscara; quanto menor o valor, mais confiável é a fonte.",
+    "explanation": "A Administrative Distance varia de 0 a 255 e serve para classificar a confiabilidade da origem da rota quando dois ou mais protocolos concorrem pelo mesmo prefixo e máscara exatos na RIB, vencendo sempre o menor valor."
+  },
+  {
+    "question": "De acordo com a tabela de valores padrão da Cisco, qual é a ordem correta de confiabilidade (da mais confiável para a menos confiável) entre as fontes de roteamento abaixo?",
+    "options": [
+      "Directly Connected (0) -> Static Route (1) -> eBGP (20) -> EIGRP Internal (90) -> OSPF (110) -> IS-IS (115) -> RIPv2 (120) -> iBGP (200).",
+      "Directly Connected (0) -> Static Route (1) -> OSPF (90) -> EIGRP Internal (110) -> eBGP (120) -> iBGP (200).",
+      "Static Route (0) -> Directly Connected (1) -> EIGRP Internal (20) -> eBGP (90) -> IS-IS (110) -> OSPF (115) -> RIPv2 (120).",
+      "Directly Connected (0) -> eBGP (1) -> Static Route (20) -> EIGRP External (90) -> OSPF (110) -> RIPv2 (200)."
+    ],
+    "answer": "Directly Connected (0) -> Static Route (1) -> eBGP (20) -> EIGRP Internal (90) -> OSPF (110) -> IS-IS (115) -> RIPv2 (120) -> iBGP (200).",
+    "explanation": "Os valores padrão de AD na Cisco são: Conectada (0), Estática com Next-Hop (1), EIGRP Summary (5), eBGP (20), EIGRP Interno (90), OSPF (110), IS-IS (115), RIPv2 (120), EIGRP Externo (170) e iBGP (200)."
+  },
+  {
+    "question": "Qual é a diferença de Administrative Distance padrão entre rotas internas, rotas sumarizadas e rotas externas (redistribuídas) no protocolo EIGRP?",
+    "options": [
+      "EIGRP Summary possui AD 5, EIGRP Internal possui AD 90 e EIGRP External possui AD 170.",
+      "EIGRP Internal possui AD 5, EIGRP Summary possui AD 90 e EIGRP External possui AD 110.",
+      "Todas as rotas EIGRP possuem AD 90, independentemente de serem internas, sumarizadas ou externas.",
+      "EIGRP External possui AD 20, EIGRP Internal possui AD 90 e EIGRP Summary possui AD 200."
+    ],
+    "answer": "EIGRP Summary possui AD 5, EIGRP Internal possui AD 90 e EIGRP External possui AD 170.",
+    "explanation": "O EIGRP diferencia suas origens com três valores distintos de AD: rotas sumarizadas recebem AD 5, rotas internas do domínio EIGRP recebem AD 90 e rotas redistribuídas (externas) recebem AD 170."
+  },
+  {
+    "question": "Quando um protocolo de roteamento apresenta uma rota para o mesmo prefixo já existente na RIB com a mesma máscara, porém com uma Administrative Distance MAIOR do que a rota atual, o que acontece?",
+    "options": [
+      "A nova rota é rejeitada na RIB e mantida apenas em standby na tabela interna do respectivo protocolo de roteamento.",
+      "A nova rota substitui a rota atual na RIB e o protocolo antigo é encerrado.",
+      "As duas rotas são instaladas juntas na RIB para realizar balanceamento de carga ECMP.",
+      "O roteador soma as duas Distâncias Administrativas e divide o resultado por dois."
+    ],
+    "answer": "A nova rota é rejeitada na RIB e mantida apenas em standby na tabela interna do respectivo protocolo de roteamento.",
+    "explanation": "Se a nova rota tiver uma AD maior (menos confiável) que a rota já instalada para o mesmo prefixo/máscara, a RIB rejeita a instalação, mas o protocolo mantém a informação em sua base interna caso a rota principal caia."
+  },
+  {
+    "question": "Qual é a diferença entre Equal-Cost Multi-Path (ECMP) e Unequal-Cost Load Balancing na seleção de caminhos por métrica?",
+    "options": [
+      "O ECMP instala múltiplos caminhos com exatamente a mesma métrica dentro de um mesmo protocolo (suportado por RIP, EIGRP, OSPF e IS-IS), enquanto o Unequal-Cost Load Balancing instala caminhos de custos diferentes e é exclusivo do EIGRP via comando variance.",
+      "O ECMP é exclusivo do BGP, enquanto o Unequal-Cost Load Balancing é padrão no OSPF.",
+      "O ECMP balanceia tráfego entre protocolos diferentes (ex: OSPF e RIP simultaneamente), enquanto o Unequal-Cost exige máscaras diferentes.",
+      "Ambos são suportados nativamente por todos os protocolos IGP sem necessidade de configuração adicional."
+    ],
+    "answer": "O ECMP instala múltiplos caminhos com exatamente a mesma métrica dentro de um mesmo protocolo (suportado por RIP, EIGRP, OSPF e IS-IS), enquanto o Unequal-Cost Load Balancing instala caminhos de custos diferentes e é exclusivo do EIGRP via comando variance.",
+    "explanation": "O ECMP ocorre quando um mesmo protocolo encontra caminhos de métrica idêntica (limitado pelo parâmetro maximum-paths, geralmente 4 por padrão). Já o balanceamento de custo desigual é uma capacidade exclusiva do EIGRP habilitada pelo comando variance."
+  },
+  {
+    "question": "Em um roteador Cisco, qual é o limite padrão típico de rotas de mesmo custo (ECMP) que podem ser instaladas simultaneamente na RIB por um protocolo de roteamento?",
+    "options": [
+      "Geralmente 4 caminhos por padrão (controlado pelo comando maximum-paths).",
+      "Apenas 2 caminhos no máximo, sem possibilidade de alteração.",
+      "Até 16 caminhos ativos por padrão em todos os protocolos IGP.",
+      "Apenas 1 caminho, pois a RIB não permite múltiplas entradas para o mesmo prefixo."
+    ],
+    "answer": "Geralmente 4 caminhos por padrão (controlado pelo comando maximum-paths).",
+    "explanation": "Quando um protocolo encontra múltiplos caminhos com a mesma métrica mínima, o roteador os instala na RIB para balanceamento ECMP até o limite definido pelo parâmetro maximum-paths, que geralmente é 4 por padrão."
+  },
+  {
+    "question": "Considere que um roteador possui na RIB a rota 192.168.10.0/24 via EIGRP (AD 90, métrica 30720) e a rota 192.168.10.128/25 via OSPF (AD 110, métrica 20). Se chegar um pacote para 192.168.10.130, qual será a decisão do roteador e por quê?",
+    "options": [
+      "Encaminhará via OSPF (192.168.10.128/25), pois /25 é um prefixo mais específico que /24 e o Longest Prefix Match tem precedência sobre a Administrative Distance.",
+      "Encaminhará via EIGRP (192.168.10.0/24), pois a AD 90 do EIGRP é menor que a AD 110 do OSPF.",
+      "Descartará o pacote, pois existe conflito de máscaras entre EIGRP e OSPF na RIB.",
+      "Realizará balanceamento de carga 50/50 entre os dois caminhos por terem métricas baixas."
+    ],
+    "answer": "Encaminhará via OSPF (192.168.10.128/25), pois /25 é um prefixo mais específico que /24 e o Longest Prefix Match tem precedência sobre a Administrative Distance.",
+    "explanation": "A AD só é comparada quando dois protocolos concorrem por exatamente o mesmo prefixo e máscara. Como 192.168.10.130 pertence a ambas as redes, vence o prefixo mais longo (/25 do OSPF) sobre o /24 do EIGRP."
+  },
+  {
+    "question": "O que acontece quando um protocolo de roteamento dinâmico (como o OSPF) possui dois caminhos para o mesmo destino 172.16.5.0/24, um com custo 15 e outro com custo 30?",
+    "options": [
+      "O próprio OSPF compara sua métrica interna e apresenta apenas o caminho de menor custo (custo 15) para ser instalado na RIB.",
+      "O OSPF envia ambos os caminhos para a RIB e deixa que a Administrative Distance decida entre eles.",
+      "O roteador instala ambos os caminhos na RIB usando ECMP porque ambos pertencem ao mesmo protocolo.",
+      "O caminho de custo 30 é instalado com Administrative Distance 111 para servir de backup na RIB."
+    ],
+    "answer": "O próprio OSPF compara sua métrica interna e apresenta apenas o caminho de menor custo (custo 15) para ser instalado na RIB.",
+    "explanation": "A métrica é o critério utilizado internamente por um mesmo protocolo para eleger seu melhor caminho. Como os custos são diferentes (15 vs. 30) e o OSPF não faz balanceamento de custo desigual, apenas a rota de custo 15 é apresentada à RIB."
+  },
+  {
+    "question": "Qual é a diferença de comportamento na RIB entre uma rota estática 'Directly Attached' (apenas interface de saída) e uma 'Recursive Static Route' (apenas IP do Next-Hop)?",
+    "options": [
+      "A Directly Attached aparece como 'is directly connected' (comportando-se com AD 0), enquanto a Recursive exige duas buscas na RIB: uma para o destino e outra para descobrir a interface física que alcança o Next-Hop.",
+      "A Recursive Static Route possui Administrative Distance 0, enquanto a Directly Attached possui AD 1 e realiza busca recursiva.",
+      "Ambas realizam busca recursiva na RIB e aparecem com o código S* na tabela de roteamento.",
+      "A Directly Attached é obrigatória em interfaces Ethernet modernas, enquanto a Recursive funciona apenas em links Seriais."
+    ],
+    "answer": "A Directly Attached aparece como 'is directly connected' (comportando-se com AD 0), enquanto a Recursive exige duas buscas na RIB: uma para o destino e outra para descobrir a interface física que alcança o Next-Hop.",
+    "explanation": "Quando configurada apenas com interface de saída, a rota estática aparece como diretamente conectada (sem exibir [AD/Metric]). Quando configurada apenas com o IP do Next-Hop, o roteador precisa fazer uma segunda consulta na RIB para resolver a interface de saída."
+  },
+  {
+    "question": "Por que a configuração de uma rota estática 'Fully Specified' (informando tanto a interface de saída quanto o IP do Next-Hop) é considerada a melhor prática absoluta em interfaces Ethernet?",
+    "options": [
+      "Porque elimina a busca recursiva extra na RIB, evita tempestades de requisições ARP e garante a remoção imediata da rota caso a interface física caia.",
+      "Porque reduz a Administrative Distance da rota para 0, superando rotas diretamente conectadas.",
+      "Porque permite que a rota estática resolva seu Next-Hop através de uma rota padrão 0.0.0.0/0.",
+      "Porque habilita automaticamente o balanceamento de carga assimétrico entre múltiplas interfaces."
+    ],
+    "answer": "Porque elimina a busca recursiva extra na RIB, evita tempestades de requisições ARP e garante a remoção imediata da rota caso a interface física caia.",
+    "explanation": "Em interfaces multiacesso Ethernet, especificar interface e Next-Hop evita que o roteador dispare ARP para cada IP de destino, dispensa a busca recursiva na RIB e impede que o roteador tente resolver o Next-Hop por outro caminho se a interface cair."
+  },
+  {
+    "question": "Qual é a regra crítica de recursividade aplicada pelo Cisco IOS ao tentar resolver o Next-Hop de uma rota estática recursiva?",
+    "options": [
+      "Uma rota estática recursiva nunca pode usar uma rota padrão (0.0.0.0/0) para resolver o seu próprio Next-Hop; se não houver uma rota mais específica que /0 para alcançar o próximo salto, a rota não entra na RIB.",
+      "Uma rota estática recursiva utiliza prioritariamente a rota padrão 0.0.0.0/0 sempre que o Next-Hop estiver em outra sub-rede.",
+      "A recursividade funciona apenas se a rota padrão estiver apontando para a interface virtual Null0.",
+      "O IOS permite até 15 níveis de recursividade usando exclusivamente rotas padrão em cascata."
+    ],
+    "answer": "Uma rota estática recursiva nunca pode usar uma rota padrão (0.0.0.0/0) para resolver o seu próprio Next-Hop; se não houver uma rota mais específica que /0 para alcançar o próximo salto, a rota não entra na RIB.",
+    "explanation": "Por segurança contra loops e instabilidade, o Cisco IOS proíbe que uma rota estática recursiva dependa da rota padrão (0.0.0.0/0) para alcançar seu Next-Hop. É necessário haver uma rota conectada ou mais específica que /0."
+  },
+  {
+    "question": "Como uma Rota Padrão (Default Route) IPv4 é identificada na saída do comando 'show ip route' e qual é a sua posição na regra de Longest Prefix Match?",
+    "options": [
+      "Aparece marcada com o código 'S*' (candidata à rota padrão), atualiza o cabeçalho 'Gateway of last resort' e possui a menor especificidade (/0), perdendo para qualquer outra rota da RIB.",
+      "Aparece marcada com o código 'D*' e tem precedência sobre todas as rotas /24 por ser o Gateway of Last Resort.",
+      "Aparece marcada com o código 'C*' e possui Administrative Distance igual a zero.",
+      "Aparece marcada com o código 'S0' e só é utilizada quando o CEF está desativado."
+    ],
+    "answer": "Aparece marcada com o código 'S*' (candidata à rota padrão), atualiza o cabeçalho 'Gateway of last resort' e possui a menor especificidade (/0), perdendo para qualquer outra rota da RIB.",
+    "explanation": "Configurada com 0.0.0.0 0.0.0.0 (ou ::/0 em IPv6), a rota padrão recebe o código S* na RIB e tem comprimento de prefixo /0, sendo acionada somente quando nenhum prefixo mais específico corresponde ao destino."
+  },
+  {
+    "question": "Qual comando configura corretamente uma rota padrão IPv6 no modo de configuração global do Cisco IOS?",
+    "options": [
+      "ipv6 route ::/0 2001:db8:12::2",
+      "ipv6 route 0.0.0.0/0 2001:db8:12::2",
+      "ip route ::/0 2001:db8:12::2",
+      "ipv6 default-gateway 2001:db8:12::2"
+    ],
+    "answer": "ipv6 route ::/0 2001:db8:12::2",
+    "explanation": "Em IPv6, o prefixo e máscara zerados são representados por ::/0, utilizando o comando 'ipv6 route ::/0 <next-hop>' (após habilitar 'ipv6 unicast-routing')."
+  },
+  {
+    "question": "Um engenheiro deseja configurar uma Floating Static Route para servir de contingência caso uma rota aprendida via EIGRP Interno (AD 90) falhe. Qual valor de Administrative Distance deve ser atribuído à rota estática?",
+    "options": [
+      "Qualquer valor superior a 90 (por exemplo, 100 ou 210).",
+      "Qualquer valor inferior a 90 (por exemplo, 10 ou 50).",
+      "Exatamente o valor 90 para que o roteador faça balanceamento de carga.",
+      "O valor 0, garantindo que ela só suba quando o EIGRP cair."
+    ],
+    "answer": "Qualquer valor superior a 90 (por exemplo, 100 ou 210).",
+    "explanation": "Para que a rota estática fique oculta em standby enquanto a rota EIGRP (AD 90) estiver ativa, sua Administrative Distance deve ser configurada com um valor maior que 90, flutuando para a RIB apenas se a primária desaparecer."
+  },
+  {
+    "question": "Em um roteador com uma rota estática primária via GigabitEthernet0/0 (AD 10) e uma Floating Static Route via Serial1/0 (AD 210) para o mesmo destino 192.168.22.0/24, o que ocorre quando a interface GigabitEthernet0/0 sofre uma falha física (down/down)?",
+    "options": [
+      "A rota primária (AD 10) é removida da RIB e a rota estática flutuante (AD 210) é imediatamente instalada na RIB, assumindo o encaminhamento pela Serial1/0.",
+      "Ambas as rotas permanecem na RIB, mas o tráfego continua tentando sair pela GigabitEthernet0/0 até o timer de hold expirar.",
+      "A rota flutuante é descartada porque sua AD é maior que 200.",
+      "O roteador envia os pacotes para a interface Null0 até que a interface Ethernet seja restaurada."
+    ],
+    "answer": "A rota primária (AD 10) é removida da RIB e a rota estática flutuante (AD 210) é imediatamente instalada na RIB, assumindo o encaminhamento pela Serial1/0.",
+    "explanation": "Enquanto a interface primária está ativa, a rota de menor AD (10) domina a RIB. Assim que a interface cai, essa rota sai da tabela e a Floating Static Route (AD 210) entra automaticamente na RIB."
+  },
+  {
+    "question": "Qual é a mecânica exata de um loop de roteamento entre um roteador de borda (R1) e o ISP quando R1 possui uma rota padrão (0.0.0.0/0) para o ISP e recebe tráfego para um IP não alocado dentro do seu bloco sumarizado (ex: 192.168.0.0/20)?",
+    "options": [
+      "R1 não possui uma rota específica para a sub-rede não alocada, encaminha o pacote de volta ao ISP via rota padrão 0.0.0.0/0, e o ISP devolve o pacote para R1 pela rota sumarizada /20 até o TTL expirar.",
+      "O ISP descarta o pacote na borda e envia mensagens ICMP Redirect em loop infinito para os hosts internos.",
+      "R1 duplica o pacote em todas as interfaces locais, saturando a tabela MAC dos switches.",
+      "O protocolo BGP derruba a sessão TCP 179 entre R1 e o ISP ao detectar o prefixo /20."
+    ],
+    "answer": "R1 não possui uma rota específica para a sub-rede não alocada, encaminha o pacote de volta ao ISP via rota padrão 0.0.0.0/0, e o ISP devolve o pacote para R1 pela rota sumarizada /20 até o TTL expirar.",
+    "explanation": "Sem uma rota de descarte para o bloco sumarizado, R1 usa sua rota padrão (/0) para devolver ao ISP pacotes de sub-redes internas ainda não utilizadas, enquanto o ISP continua roteando o bloco /20 de volta para R1 até o TTL zerar."
+  },
+  {
+    "question": "Por que configurar 'ip route 192.168.0.0 255.255.240.0 Null0' elimina o loop de sumarização sem afetar o tráfego legítimo das sub-redes ativas como 192.168.2.0/24 e 192.168.3.0/24?",
+    "options": [
+      "Porque /20 vence a rota padrão /0 (descartando sub-redes inexistentes na interface Null0 sem custo de CPU), enquanto as sub-redes ativas /24 vencem o /20 pela regra de Longest Prefix Match.",
+      "Porque a interface Null0 inspeciona a camada de aplicação e bloqueia apenas pacotes com TTL menor que 10.",
+      "Porque rotas apontando para Null0 possuem Administrative Distance 255 e só atuam quando não há nenhuma outra rota na RIB.",
+      "Porque o comando redireciona automaticamente o tráfego inválido para uma VRF de quarentena."
+    ],
+    "answer": "Porque /20 vence a rota padrão /0 (descartando sub-redes inexistentes na interface Null0 sem custo de CPU), enquanto as sub-redes ativas /24 vencem o /20 pela regra de Longest Prefix Match.",
+    "explanation": "A hierarquia do Longest Prefix Match garante que destinos válidos nas sub-redes /24 sigam normalmente (/24 > /20), enquanto IPs não alocados dentro do bloco /20 casam com a rota /20 -> Null0 antes de atingir a rota padrão /0."
+  },
+  {
+    "question": "Ao configurar uma rota estática IPv6 cujo Next-Hop é um endereço Link-Local (ex: FE80::2), qual requisito técnico é obrigatório no Cisco IOS?",
+    "options": [
+      "Configurar uma Fully Specified Static Route informando obrigatoriamente a interface de saída junto com o endereço Link-Local (ex: ipv6 route 2001:db8:22::/64 GigabitEthernet0/1 FE80::2).",
+      "Informar apenas o endereço FE80::2, pois o protocolo NDP resolve automaticamente qual interface física utilizar.",
+      "Configurar a Administrative Distance como 0 para que endereços FE80::/10 sejam roteáveis entre diferentes sub-redes.",
+      "Associar a rota estática à interface virtual Null0 antes de ativar o comando ipv6 unicast-routing."
+    ],
+    "answer": "Configurar uma Fully Specified Static Route informando obrigatoriamente a interface de saída junto com o endereço Link-Local (ex: ipv6 route 2001:db8:22::/64 GigabitEthernet0/1 FE80::2).",
+    "explanation": "Como endereços IPv6 Link-Local (FE80::/10) não são roteáveis e existem em todos os enlaces simultaneamente, o roteador não consegue determinar a interface de saída apenas pelo IP, exigindo a sintaxe Fully Specified (interface + Link-Local)."
+  },
+  {
+    "question": "Qual regra fundamental do roteamento IP tradicional o Policy-Based Routing (PBR) quebra ao encaminhar pacotes?",
+    "options": [
+      "Enquanto o roteamento tradicional olha exclusivamente o endereço IP de destino, o PBR permite encaminhar pacotes com base em critérios personalizados como IP de origem, protocolo/porta TCP/UDP, tamanho do pacote ou marcações QoS.",
+      "O PBR elimina a necessidade de endereçamento IP de Camada 3, encaminhando pacotes exclusivamente pela tabela de endereços MAC.",
+      "O PBR substitui a Administrative Distance de todos os protocolos dinâmicos pela métrica de contagem de saltos do RIP.",
+      "O PBR permite que pacotes trafeguem sem cabeçalho IPv4 ou IPv6 entre roteadores Cisco."
+    ],
+    "answer": "Enquanto o roteamento tradicional olha exclusivamente o endereço IP de destino, o PBR permite encaminhar pacotes com base em critérios personalizados como IP de origem, protocolo/porta TCP/UDP, tamanho do pacote ou marcações QoS.",
+    "explanation": "Por padrão, todo roteador consulta a tabela de roteamento olhando apenas o destino. O PBR intercepta o tráfego para tomar decisões condicionais baseadas em origem, portas TCP/UDP, tamanho do pacote ou marcas DSCP/IP Precedence."
+  },
+  {
+    "question": "Quais são os três componentes estruturais obrigatórios para implementar uma política de Policy-Based Routing (PBR) para tráfego em trânsito no Cisco IOS?",
+    "options": [
+      "Uma ACL para classificar o tráfego, um Route-Map com 'match' e 'set ip next-hop' para definir a ação, e a aplicação do comando 'ip policy route-map' na interface de entrada (ingress).",
+      "Um prefix-list global, uma instância VRF dedicada e a aplicação do comando 'ip route-map' na interface de saída (egress).",
+      "Uma rota estática apontando para Null0, uma interface Loopback e o comando 'variance' no processo EIGRP.",
+      "Uma tabela ARP estática, um túnel GRE e o comando 'ip cef' desativado na interface de saída."
+    ],
+    "answer": "Uma ACL para classificar o tráfego, um Route-Map com 'match' e 'set ip next-hop' para definir a ação, e a aplicação do comando 'ip policy route-map' na interface de entrada (ingress).",
+    "explanation": "A construção clássica do PBR exige: (1) ACL para identificar o fluxo desejado, (2) Route-Map associando a ACL (match ip address) e definindo o próximo salto (set ip next-hop), e (3) ativação na interface onde o pacote entra (ip policy route-map)."
+  },
+  {
+    "question": "Em qual direção e interface um Route-Map de Policy-Based Routing (PBR) deve ser aplicado para desviar o tráfego proveniente de uma sub-rede de usuários?",
+    "options": [
+      "Na interface de entrada (ingress) por onde os pacotes chegam ao roteador, utilizando o comando 'ip policy route-map <nome>'.",
+      "Na interface de saída (egress) que aponta para o link de backup, utilizando o comando 'ip policy route-map <nome> out'.",
+      "Exclusivamente na interface Loopback0 do roteador de borda.",
+      "Em todas as interfaces do roteador simultaneamente, independentemente do fluxo de tráfego."
+    ],
+    "answer": "Na interface de entrada (ingress) por onde os pacotes chegam ao roteador, utilizando o comando 'ip policy route-map <nome>'.",
+    "explanation": "O PBR atua antes da consulta tradicional da RIB; portanto, a política precisa ser aplicada na interface de entrada (ingress) onde o pacote é recebido pelo roteador."
+  },
+  {
+    "question": "Ao executar o comando 'show ip route' em um roteador com Policy-Based Routing (PBR) ativo desviando pacotes para um Next-Hop alternativo, o que será exibido na saída?",
+    "options": [
+      "A tabela continuará exibindo apenas o caminho normal aprendido pelos protocolos de roteamento (como OSPF ou EIGRP) ou rotas estáticas, pois o PBR não altera a RIB.",
+      "As rotas desviadas pelo PBR aparecerão marcadas com o código 'P*' e Administrative Distance 0.",
+      "A RIB será esvaziada e substituída pelas entradas configuradas dentro do Route-Map.",
+      "As rotas originais do OSPF serão removidas da RIB enquanto o Route-Map tiver contadores ativos."
+    ],
+    "answer": "A tabela continuará exibindo apenas o caminho normal aprendido pelos protocolos de roteamento (como OSPF ou EIGRP) ou rotas estáticas, pois o PBR não altera a RIB.",
+    "explanation": "Um ponto crítico de troubleshooting é que o PBR é invisível no 'show ip route'. Ele intercepta o pacote na entrada da interface antes da consulta padrão à RIB, sem modificar a tabela de roteamento."
+  },
+  {
+    "question": "Qual é o comportamento de fallback automático do Policy-Based Routing (PBR) caso o endereço IP configurado no comando 'set ip next-hop' fique inacessível ou desapareça da RIB?",
+    "options": [
+      "A ação do PBR é ignorada e o pacote volta a ser encaminhado normalmente seguindo a tabela de roteamento (RIB/FIB), evitando buracos negros.",
+      "O roteador descarta imediatamente todos os pacotes que deram match na ACL e envia mensagens ICMP Unreachable.",
+      "O roteador desativa administrativamente a interface de entrada onde o 'ip policy route-map' foi aplicado.",
+      "O pacote entra em loop interno na CPU até que o Next-Hop configurado no Route-Map volte a ficar ativo."
+    ],
+    "answer": "A ação do PBR é ignorada e o pacote volta a ser encaminhado normalmente seguindo a tabela de roteamento (RIB/FIB), evitando buracos negros.",
+    "explanation": "O PBR possui um mecanismo de fallback nativo: se o Next-Hop especificado no Route-Map cair ou não estiver mais alcançável na RIB, o roteador ignora o desvio do PBR e encaminha o pacote pelo caminho normal da tabela."
+  },
+  {
+    "question": "Por que o comando 'ip policy route-map <nome>' aplicado em uma interface não afeta pacotes de ping ou SSH gerados pelo próprio roteador?",
+    "options": [
+      "Porque o PBR de interface atua apenas sobre tráfego em trânsito que atravessa o roteador; para afetar tráfego originado na própria caixa, é necessário o comando global 'ip local policy route-map <nome>'.",
+      "Porque o Cisco IOS proíbe que pacotes ICMP ou TCP gerados localmente sejam processados por Route-Maps.",
+      "Porque o tráfego gerado localmente pelo roteador sempre utiliza a interface Null0 como origem.",
+      "Porque o comando 'ip policy route-map' funciona apenas para pacotes UDP e tráfego de voz (RTP)."
+    ],
+    "answer": "Porque o PBR de interface atua apenas sobre tráfego em trânsito que atravessa o roteador; para afetar tráfego originado na própria caixa, é necessário o comando global 'ip local policy route-map <nome>'.",
+    "explanation": "Pacotes gerados localmente pelo próprio roteador não entram por nenhuma interface física, logo não passam pelo 'ip policy route-map' de interface. Para aplicar PBR ao tráfego local, usa-se 'ip local policy route-map <nome>' no modo global."
+  },
+  {
+    "question": "Quais comandos de diagnóstico permitem verificar se uma política de PBR está vinculada às interfaces corretas e quantos pacotes já deram match nas regras configuradas?",
+    "options": [
+      "'show ip policy' (para listar interfaces com PBR ativo) e 'show route-map' (para inspecionar os contadores de pacotes e bytes que deram match).",
+      "'show ip route policy' e 'show cdp neighbors detail'.",
+      "'show ip cef summary' e 'show interfaces trunk'.",
+      "'show ip protocols' e 'show vrf detail'."
+    ],
+    "answer": "'show ip policy' (para listar interfaces com PBR ativo) e 'show route-map' (para inspecionar os contadores de pacotes e bytes que deram match).",
+    "explanation": "Como o 'show ip route' não mostra o PBR, o administrador deve usar 'show ip policy' para confirmar em quais interfaces o Route-Map está aplicado e 'show route-map' para auditar os contadores de match."
+  },
+  {
+    "question": "Considere a configuração:\naccess-list 101 permit ip 10.1.1.0 0.0.0.255 10.5.5.0 0.0.0.255\nroute-map DESVIO_VIP permit 10\n match ip address 101\n set ip next-hop 10.23.1.3\n\nO que acontecerá com um pacote originado em 10.1.2.50 destinado a 10.5.5.10 ao entrar na interface onde 'DESVIO_VIP' está aplicado?",
+    "options": [
+      "Ele não dará match na ACL 101 e seguirá o encaminhamento normal da tabela de roteamento (RIB/FIB), pois não há nenhuma ação de bloqueio implícita no PBR.",
+      "Ele será descartado imediatamente pelo 'deny any' implícito da ACL 101 e do Route-Map.",
+      "Ele será desviado para 10.23.1.3 porque o IP de destino pertence à rede 10.5.5.0/24.",
+      "Ele será enviado para a interface Null0 até que uma sequência 20 seja adicionada ao Route-Map."
+    ],
+    "answer": "Ele não dará match na ACL 101 e seguirá o encaminhamento normal da tabela de roteamento (RIB/FIB), pois não há nenhuma ação de bloqueio implícita no PBR.",
+    "explanation": "No Policy-Based Routing, o 'deny' implícito da ACL ou o fim do Route-Map sem match não descarta o pacote; apenas significa que o pacote não será desviado pela política e seguirá o roteamento tradicional da RIB."
+  },
+  {
+    "question": "Em um cenário corporativo onde o tráfego da diretoria precisa sair por um link dedicado e o tráfego de visitantes por uma banda larga comum para o mesmo destino na Internet, qual recurso permite essa separação sem alterar as rotas globais?",
+    "options": [
+      "Policy-Based Routing (PBR) classificando as sub-redes de origem via ACL e definindo diferentes 'set ip next-hop' no Route-Map.",
+      "Floating Static Route alterando a Administrative Distance da rota padrão para 255.",
+      "Equal-Cost Multi-Path (ECMP) configurando o comando 'maximum-paths 2' no OSPF.",
+      "Rota estática apontando para Null0 na interface LAN dos visitantes."
+    ],
+    "answer": "Policy-Based Routing (PBR) classificando as sub-redes de origem via ACL e definindo diferentes 'set ip next-hop' no Route-Map.",
+    "explanation": "O PBR é a ferramenta ideal para roteamento baseado na origem (Source-Based Routing), permitindo direcionar sub-redes internas distintas para gateways diferentes mantendo a mesma tabela de roteamento global."
+  },
+  {
+    "question": "Além do endereço IP de origem e destino, quais outros critérios podem ser utilizados pelo Policy-Based Routing (PBR) para classificar e desviar fluxos de tráfego?",
+    "options": [
+      "Protocolo ou porta TCP/UDP (como tráfego VoIP/RTP), tamanho do pacote e marcações de QoS (DSCP / IP Precedence).",
+      "Apenas o endereço MAC de origem e o número da VLAN nativa do trunk 802.1Q.",
+      "Exclusivamente o atributo AS_Path do BGP e o Router-ID do OSPF.",
+      "Apenas a velocidade física da interface de saída e o estado do Spanning Tree."
+    ],
+    "answer": "Protocolo ou porta TCP/UDP (como tráfego VoIP/RTP), tamanho do pacote e marcações de QoS (DSCP / IP Precedence).",
+    "explanation": "O PBR oferece granularidade avançada na entrada da interface, permitindo tomar decisões de encaminhamento baseadas em origem, protocolo/portas TCP/UDP, tamanho do pacote ou valores de QoS (DSCP/IP Precedence)."
+  },
+  {
+    "question": "Qual é a analogia arquitetural e a função principal do Virtual Routing and Forwarding (VRF) dentro de um roteador físico?",
+    "options": [
+      "Assim como as VLANs segmentam um switch na Camada 2, o VRF virtualiza um roteador físico em múltiplos roteadores virtuais independentes na Camada 3, cada um com sua própria RIB e FIB isoladas.",
+      "O VRF funciona como um protocolo de agregação de links físicos semelhante ao EtherChannel para dobrar a largura de banda.",
+      "O VRF unifica todas as tabelas de roteamento de diferentes equipamentos em uma única RIB global compartilhada.",
+      "O VRF opera exclusivamente na Camada 1 para isolar sinais elétricos entre portas GigabitEthernet adjacentes."
+    ],
+    "answer": "Assim como as VLANs segmentam um switch na Camada 2, o VRF virtualiza um roteador físico em múltiplos roteadores virtuais independentes na Camada 3, cada um com sua própria RIB e FIB isoladas.",
+    "explanation": "O VRF atua como 'VLANs de Camada 3', criando instâncias de roteamento completamente segregadas no mesmo equipamento físico, cada uma com sua própria RIB, FIB, interfaces dedicadas e processos de roteamento independentes."
+  },
+  {
+    "question": "Qual é o principal benefício proporcionado pelo isolamento das tabelas de roteamento (RIB/FIB) entre diferentes instâncias VRF no mesmo equipamento?",
+    "options": [
+      "Permite o uso de Overlapping IPs (endereços IP idênticos, como 192.168.3.0/24) em duas VRFs diferentes no mesmo roteador sem qualquer conflito ou comunicação entre elas.",
+      "Elimina a necessidade de configurar máscaras de sub-rede ou gateways padrão nas interfaces físicas.",
+      "Permite que hosts de diferentes VRFs se comuniquem diretamente por broadcast de Camada 2 sem roteamento.",
+      "Reduz a Administrative Distance de todas as rotas dinâmicas para 0 automaticamente."
+    ],
+    "answer": "Permite o uso de Overlapping IPs (endereços IP idênticos, como 192.168.3.0/24) em duas VRFs diferentes no mesmo roteador sem qualquer conflito ou comunicação entre elas.",
+    "explanation": "Como cada VRF mantém sua própria RIB e FIB totalmente isoladas, exatamente as mesmas faixas de IP (Overlapping IPs) podem coexistir no mesmo roteador físico sem conflito, sendo ideal para multitenancy e redes de gerência Out-of-Band."
+  },
+  {
+    "question": "O que o Cisco IOS faz automaticamente por segurança no momento em que você aplica o comando 'vrf forwarding <NOME>' em uma interface que já possuía um endereço IP configurado?",
+    "options": [
+      "Remove imediatamente o endereço IP que estava configurado na interface, exigindo que o IP seja configurado sempre depois do comando 'vrf forwarding'.",
+      "Migra automaticamente o endereço IP antigo e todas as rotas estáticas globais para dentro da nova VRF.",
+      "Coloca a interface em estado err-disable até que o roteador seja reiniciado.",
+      "Converte o endereço IPv4 da interface em um endereço IPv6 Link-Local."
+    ],
+    "answer": "Remove imediatamente o endereço IP que estava configurado na interface, exigindo que o IP seja configurado sempre depois do comando 'vrf forwarding'.",
+    "explanation": "Para evitar vazamento acidental de rotas entre a tabela global e a VRF, o IOS apaga o endereço IP da interface assim que 'vrf forwarding' é inserido. Portanto, o IP deve ser sempre configurado após associar a interface à VRF."
+  },
+  {
+    "question": "Qual é a sequência correta de comandos para criar uma VRF multiprotocolo chamada 'MGMT' com suporte a IPv4 e associá-la à interface GigabitEthernet0/3 com o IP 192.168.3.1/24?",
+    "options": [
+      "vrf definition MGMT -> address-family ipv4 -> exit -> interface Gi0/3 -> vrf forwarding MGMT -> ip address 192.168.3.1 255.255.255.0",
+      "ip vrf MGMT -> interface Gi0/3 -> ip address 192.168.3.1 255.255.255.0 -> vrf forwarding MGMT",
+      "vrf definition MGMT -> interface Gi0/3 -> ip vrf receive MGMT -> ip address 192.168.3.1 255.255.255.0",
+      "interface Gi0/3 -> vrf definition MGMT -> address-family ipv4 -> ip address 192.168.3.1 255.255.255.0"
+    ],
+    "answer": "vrf definition MGMT -> address-family ipv4 -> exit -> interface Gi0/3 -> vrf forwarding MGMT -> ip address 192.168.3.1 255.255.255.0",
+    "explanation": "No formato multiprotocolo moderno ('vrf definition'), primeiro ativa-se a 'address-family ipv4' dentro da VRF, depois entra-se na interface, aplica-se 'vrf forwarding MGMT' e somente em seguida configura-se o endereço IP."
+  },
+  {
+    "question": "Por que o comando 'vrf definition <NOME>' com 'address-family ipv4' é preferido em implementações modernas de VRF-Lite no Cisco IOS/IOS-XE?",
+    "options": [
+      "Porque cria uma definição multiprotocolo capaz de suportar tanto IPv4 quanto IPv6 de forma estruturada na mesma instância VRF.",
+      "Porque dispensa a necessidade de atribuir interfaces físicas ou sub-interfaces à VRF.",
+      "Porque habilita automaticamente o protocolo BGP entre todas as VRFs locais.",
+      "Porque permite que uma mesma interface física pertença a duas VRFs simultaneamente."
+    ],
+    "answer": "Porque cria uma definição multiprotocolo capaz de suportar tanto IPv4 quanto IPv6 de forma estruturada na mesma instância VRF.",
+    "explanation": "A sintaxe 'vrf definition' substitui o legado 'ip vrf' justamente por ser multiprotocolo, permitindo ativar separadamente 'address-family ipv4' e 'address-family ipv6' sob a mesma instância VRF."
+  },
+  {
+    "question": "Ao executar o comando 'show ip route' sem parâmetros adicionais em um roteador configurado com a instância VRF 'MGMT', o que acontece com as rotas pertencentes à VRF 'MGMT'?",
+    "options": [
+      "Elas não aparecem na saída, pois 'show ip route' exibe apenas a Global Routing Table; para vê-las é obrigatório usar 'show ip route vrf MGMT'.",
+      "Elas aparecem normalmente na tabela global marcadas com a letra 'V' ao lado do prefixo.",
+      "Elas aparecem no topo da saída antes do cabeçalho 'Gateway of last resort'.",
+      "O roteador exibe uma mensagem de erro informando que a tabela global foi desativada pela VRF."
+    ],
+    "answer": "Elas não aparecem na saída, pois 'show ip route' exibe apenas a Global Routing Table; para vê-las é obrigatório usar 'show ip route vrf MGMT'.",
+    "explanation": "Cada VRF possui sua própria RIB completamente isolada da tabela global. O comando 'show ip route' consulta apenas a tabela global, exigindo 'show ip route vrf <nome>' para inspecionar uma instância específica."
+  },
+  {
+    "question": "Um administrador tenta testar a conectividade com o IP 10.0.3.2 (que pertence à VRF 'MGMT') digitando apenas 'ping 10.0.3.2', mas o teste falha. Qual é o motivo e qual comando corrige o diagnóstico?",
+    "options": [
+      "O comando 'ping' padrão utiliza a Global Routing Table; para testar dentro da instância isolada é obrigatório especificar 'ping vrf MGMT 10.0.3.2'.",
+      "O tráfego ICMP é bloqueado por padrão dentro de qualquer VRF; é necessário habilitar 'ip icmp vrf' na interface.",
+      "O comando 'ping' funciona apenas com endereços IPv6 quando há VRFs configuradas no roteador.",
+      "É necessário especificar a interface de saída antes do IP, usando 'ping GigabitEthernet0/3 10.0.3.2'."
+    ],
+    "answer": "O comando 'ping' padrão utiliza a Global Routing Table; para testar dentro da instância isolada é obrigatório especificar 'ping vrf MGMT 10.0.3.2'.",
+    "explanation": "Ferramentas de diagnóstico como 'ping' e 'traceroute' usam a tabela de roteamento global por padrão. Para gerar pacotes a partir da tabela de uma VRF específica, deve-se incluir o parâmetro 'vrf <nome>'."
+  },
+  {
+    "question": "Quais elementos são mantidos de forma totalmente independente para cada instância VRF configurada em um roteador?",
+    "options": [
+      "Sua própria RIB (tabela de roteamento), sua própria FIB, suas próprias interfaces/sub-interfaces dedicadas e processos de roteamento dinâmico independentes.",
+      "Apenas a tabela ARP, enquanto a RIB e a FIB permanecem compartilhadas com a tabela global.",
+      "Apenas o endereço MAC das interfaces físicas e a velocidade de negociação Ethernet.",
+      "Apenas as listas de controle de acesso (ACLs) aplicadas na saída do console."
+    ],
+    "answer": "Sua própria RIB (tabela de roteamento), sua própria FIB, suas próprias interfaces/sub-interfaces dedicadas e processos de roteamento dinâmico independentes.",
+    "explanation": "Cada VRF funciona como um roteador virtual completo na Camada 3, possuindo RIB, FIB, interfaces ou sub-interfaces exclusivas e instâncias de roteamento próprias sem comunicação padrão entre si."
+  },
+  {
+    "question": "Em quais cenários corporativos e de provedores a implementação de VRF-Lite é tipicamente aplicada para segmentação de Camada 3?",
+    "options": [
+      "Isolamento de redes de gerência Out-of-Band (OOB), ambientes multitenancy em Data Centers e separação de clientes em operadoras MPLS.",
+      "Substituição do protocolo Spanning Tree (STP) em switches de acesso de Camada 2.",
+      "Aumento da velocidade de convergência do algoritmo de hash em EtherChannels LACP.",
+      "Eliminação de loops de sumarização em rotas padrão sem o uso da interface Null0."
+    ],
+    "answer": "Isolamento de redes de gerência Out-of-Band (OOB), ambientes multitenancy em Data Centers e separação de clientes em operadoras MPLS.",
+    "explanation": "O VRF é o padrão arquitetural para segregar completamente domínios de roteamento no mesmo hardware físico, sendo amplamente empregado em redes de gerência Out-of-Band, multitenancy em Data Centers e infraestruturas MPLS."
+  },
+  {
+    "question": "Em um roteador com a interface Gi0/1 (192.168.3.1/24) na Global Routing Table e a interface Gi0/3 (192.168.3.1/24) associada à 'VRF MGMT', o que ocorre quando pacotes chegam simultaneamente nessas duas interfaces?",
+    "options": [
+      "O roteador encaminha cada fluxo de forma totalmente independente usando a FIB da respectiva tabela (Global vs. VRF MGMT), sem conflito de endereçamento e sem comunicação direta entre os dois domínios.",
+      "O roteador gera um alerta de IP duplicado no syslog e coloca a interface Gi0/3 em estado administrativamente down.",
+      "Os pacotes recebidos na Gi0/3 são encaminhados automaticamente para os hosts conectados na Gi0/1.",
+      "O protocolo ARP sobreescreve a entrada da Gi0/1 com o endereço MAC aprendido na Gi0/3."
+    ],
+    "answer": "O roteador encaminha cada fluxo de forma totalmente independente usando a FIB da respectiva tabela (Global vs. VRF MGMT), sem conflito de endereçamento e sem comunicação direta entre os dois domínios.",
+    "explanation": "Como a Global Routing Table e a VRF MGMT possuem planos de encaminhamento (FIB) e tabelas de roteamento completamente isolados, os mesmos prefixos e IPs operam em paralelo sem interferência ou vazamento de tráfego."
+  }
+
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
