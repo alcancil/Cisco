@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Fundamentos de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Fundamentos de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Fundamentos de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Quais parâmetros de enlace compõem a métrica composta padrão do EIGRP e qual é o impacto imediato de alterar os pesos (K-values) de apenas um lado do enlace?",
+    "options": [
+      "A métrica padrão baseia-se em largura de banda e delay; alterar os K-values em apenas um dos lados quebra a adjacência entre os vizinhos.",
+      "A métrica padrão baseia-se em contagem de saltos e MTU; alterar os K-values apenas ajusta a RIB sem afetar a vizinhança.",
+      "A métrica padrão baseia-se em carga e confiabilidade; alterar os K-values apenas altera o Hello Timer.",
+      "A métrica padrão baseia-se apenas no IP do next-hop; alterar os K-values permite trocar rotas entre AS distintos."
+    ],
+    "answer": "A métrica padrão baseia-se em largura de banda e delay; alterar os K-values em apenas um dos lados quebra a adjacência entre os vizinhos.",
+    "explanation": "O EIGRP calcula métricas com base em parâmetros como largura de banda e delay, e a incompatibilidade de K-values entre vizinhos impede ou derruba a formação de adjacência."
+  },
+  {
+    "question": "Qual é a diferença arquitetural entre o Classic Mode e o Named Mode do EIGRP em relação às métricas utilizadas?",
+    "options": [
+      "O Classic Mode ativa automaticamente Wide Metrics (64-bit), enquanto o Named Mode força métricas de 16 bits.",
+      "O Named Mode centraliza a configuração sob address-family e ativa automaticamente Wide Metrics (64-bit), mantendo interoperabilidade com vizinhos em Classic Mode.",
+      "O Named Mode não suporta IPv4 e exige desativar o DUAL para calcular métricas.",
+      "O Classic Mode e o Named Mode não conseguem trocar rotas entre si no mesmo Autonomous System."
+    ],
+    "answer": "O Named Mode centraliza a configuração sob address-family e ativa automaticamente Wide Metrics (64-bit), mantendo interoperabilidade com vizinhos em Classic Mode.",
+    "explanation": "O Named Mode organiza a instância em address-families, habilita por padrão as Wide Metrics (64-bit) e opera de forma interoperável com roteadores configurados em Classic Mode."
+  },
+  {
+    "question": "Ao propagar uma rota de R1 para R2 e em seguida para R3, como se comportam Minimum Bandwidth e Total Delay no cálculo da métrica?",
+    "options": [
+      "Minimum Bandwidth soma os valores de todos os enlaces e Total Delay mantém o menor delay do caminho.",
+      "Minimum Bandwidth reflete o menor valor (gargalo) ao longo do caminho e Total Delay acumula os atrasos salto a salto.",
+      "Ambos os valores permanecem constantes desde a origem sem alteração nos saltos intermediários.",
+      "Minimum Bandwidth calcula a média dos links e Total Delay é zerado a cada roteador."
+    ],
+    "answer": "Minimum Bandwidth reflete o menor valor (gargalo) ao longo do caminho e Total Delay acumula os atrasos salto a salto.",
+    "explanation": "Durante a propagação nos Updates, o EIGRP preserva o gargalo de largura de banda do caminho (menor bandwidth) e soma o delay acumulado a cada salto."
+  },
+  {
+    "question": "Como a Reported Distance (RD) se relaciona com a Feasible Distance (FD) na avaliação de caminhos do EIGRP?",
+    "options": [
+      "A RD é o custo total da sua porta até o destino, enquanto a FD é o custo anunciado pelo vizinho.",
+      "A RD corresponde à FD do vizinho até o destino, e a FD é o menor custo total calculado da sua própria porta até o destino.",
+      "A RD e a FD são sempre iguais em todos os roteadores do domínio, independentemente do enlace local.",
+      "A RD é usada apenas para rotas estáticas e a FD apenas para rotas redistribuídas."
+    ],
+    "answer": "A RD corresponde à FD do vizinho até o destino, e a FD é o menor custo total calculado da sua própria porta até o destino.",
+    "explanation": "O vizinho informa sua FD como Reported Distance (RD) para você, e você calcula sua FD somando o custo do caminho até o destino, elegendo o menor custo total como FD."
+  },
+  {
+    "question": "Qual condição matemática deve ser satisfeita para que um vizinho não-Successor seja aceito como Feasible Successor pelo EIGRP?",
+    "options": [
+      "A Reported Distance (RD) do vizinho deve ser estritamente menor que a Feasible Distance (FD) local (RD < FD).",
+      "A Reported Distance (RD) do vizinho deve ser maior que a métrica total do Successor (RD > FD).",
+      "O Hop Count do vizinho deve ser sempre igual a zero.",
+      "O Hold Time do vizinho deve ser maior que o Hello Timer."
+    ],
+    "answer": "A Reported Distance (RD) do vizinho deve ser estritamente menor que a Feasible Distance (FD) local (RD < FD).",
+    "explanation": "A Feasibility Condition exige RD < FD para garantir matematicamente que o caminho anunciado pelo vizinho não retorna pelo roteador local, evitando loops."
+  },
+  {
+    "question": "Em um cenário de laboratório, um caminho alternativo via R3 tem métrica total maior que o Successor via R2, mas sua RD é menor que a FD de R1. O que ocorre?",
+    "options": [
+      "O caminho via R3 é descartado por ter custo total maior que o de R2.",
+      "O caminho via R3 satisfaz RD < FD e qualifica-se como Feasible Successor na tabela de topologia.",
+      "R1 altera automaticamente seu Autonomous System para igualar ao de R3.",
+      "O caminho via R3 entra imediatamente como rota padrão (0.0.0.0/0) na RIB."
+    ],
+    "answer": "O caminho via R3 satisfaz RD < FD e qualifica-se como Feasible Successor na tabela de topologia.",
+    "explanation": "Mesmo com custo total superior ao do Successor, cumprir RD < FD permite que a rota seja mantida como Feasible Successor livre de loops."
+  },
+  {
+    "question": "Qual é a função do comando variance no EIGRP e qual restrição existe sobre os caminhos incluídos no balanceamento?",
+    "options": [
+      "Habilita unequal-cost load balancing multiplicando a FD pela variance para incluir caminhos elegíveis (como Feasible Successors) dentro do limite.",
+      "Altera o intervalo de pacotes Hello para permitir balanceamento em enlaces seriais lentos.",
+      "Reduz a Administrative Distance do EIGRP de 90 para 1 em rotas sumarizadas.",
+      "Permite balancear rotas entre processos EIGRP de diferentes números de AS."
+    ],
+    "answer": "Habilita unequal-cost load balancing multiplicando a FD pela variance para incluir caminhos elegíveis (como Feasible Successors) dentro do limite.",
+    "explanation": "A variance define um multiplicador sobre a FD para permitir unequal-cost load balancing entre rotas que atendem aos critérios do EIGRP/DUAL."
+  },
+  {
+    "question": "Qual é a diferença entre ECMP e o balanceamento com variance no EIGRP?",
+    "options": [
+      "ECMP distribui tráfego entre rotas de mesma métrica, enquanto variance permite balanceamento entre rotas de custos diferentes.",
+      "ECMP funciona apenas no EIGRP, enquanto variance funciona em OSPF, RIP e EIGRP.",
+      "ECMP exige alterar os K-values, enquanto variance exige alterar o Hello Timer.",
+      "Não há diferença; ambos exigem métricas exatamente iguais."
+    ],
+    "answer": "ECMP distribui tráfego entre rotas de mesma métrica, enquanto variance permite balanceamento entre rotas de custos diferentes.",
+    "explanation": "ECMP balanceia caminhos de custo igual (suportado por vários IGPs), ao passo que variance habilita o balanceamento de custo desigual exclusivo do EIGRP."
+  },
+  {
+    "question": "Ao aplicar variance no EIGRP e inspecionar a rota na RIB com show ip route <prefixo>, qual campo ajuda a verificar a proporção de tráfego entre os caminhos?",
+    "options": [
+      "O campo traffic share count.",
+      "O campo Hello Timer.",
+      "O campo Hold Time.",
+      "O campo Opcode."
+    ],
+    "answer": "O campo traffic share count.",
+    "explanation": "A saída de show ip route para o prefixo exibe o traffic share count, refletindo como o tráfego é distribuído entre as rotas instaladas."
+  },
+  {
+    "question": "Qual é o efeito de configurar bandwidth ou delay manualmente em uma interface que participa do EIGRP?",
+    "options": [
+      "Altera os parâmetros usados no cálculo da métrica e na propagação de atributos nos Updates sem modificar a velocidade física real do cabo.",
+      "Altera fisicamente a taxa de transmissão elétrica do enlace e reinicia a interface.",
+      "Desativa o envio de pacotes Hello na interface configurada.",
+      "Converte automaticamente a interface em passive-interface."
+    ],
+    "answer": "Altera os parâmetros usados no cálculo da métrica e na propagação de atributos nos Updates sem modificar a velocidade física real do cabo.",
+    "explanation": "Comandos de bandwidth e delay ajustam os valores usados pelo EIGRP para calcular métricas e propagar atributos (como delay acumulado e gargalo), simulando características de enlace nos cálculos do protocolo."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

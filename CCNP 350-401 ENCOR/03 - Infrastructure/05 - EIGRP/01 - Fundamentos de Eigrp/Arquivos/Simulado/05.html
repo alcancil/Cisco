@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Fundamentos de EIGRP: Sumarização, EIGRP Stub e Autenticação</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Fundamentos Simulado de Fundamentos de EIGRP: Sumarização, EIGRP Stub e Autenticação</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Fundamentos de EIGRP: Sumarização, EIGRP Stub e Autenticação. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a Administrative Distance (AD) padrão atribuída a uma rota sumarizada gerada pelo EIGRP?",
+    "options": [
+      "AD 5.",
+      "AD 90.",
+      "AD 170.",
+      "AD 1."
+    ],
+    "answer": "AD 5.",
+    "explanation": "Rotas sumarizadas no EIGRP possuem Administrative Distance padrão igual a 5."
+  },
+  {
+    "question": "Qual problema de rede ocorre quando existe uma rota sumarizada para um bloco maior e uma rota padrão 0.0.0.0/0, sem descarte local para sub-redes não alocadas dentro do bloco?",
+    "options": [
+      "Loops de roteamento entre o roteador de borda e o vizinho/provedor para destinos inexistentes dentro do bloco sumarizado.",
+      "Conflito de endereços IP entre diferentes instâncias VRF no mesmo roteador.",
+      "Alteração automática do número do Autonomous System de 100 para 200.",
+      "Desativação do envio de pacotes Hello na interface de saída."
+    ],
+    "answer": "Loops de roteamento entre o roteador de borda e o vizinho/provedor para destinos inexistentes dentro do bloco sumarizado.",
+    "explanation": "Sem descarte local para endereços não alocados dentro do bloco sumarizado, um pacote pode seguir pela rota padrão e ser devolvido pelo vizinho que conhece o bloco maior, gerando loop."
+  },
+  {
+    "question": "Como o princípio do Longest Prefix Match protege o encaminhamento quando há um bloco sumarizado mais específico do que a rota padrão 0.0.0.0/0?",
+    "options": [
+      "O prefixo sumarizado (por exemplo, /19 ou /20) tem máscara mais específica que /0, vencendo a rota padrão para pacotes destinados ao bloco.",
+      "A rota padrão /0 sempre tem prioridade sobre qualquer prefixo sumarizado na FIB.",
+      "O Longest Prefix Match ignora a máscara e escolhe sempre o menor endereço IP de destino.",
+      "O Longest Prefix Match só se aplica a rotas aprendidas via BGP e não a rotas sumarizadas."
+    ],
+    "answer": "O prefixo sumarizado (por exemplo, /19 ou /20) tem máscara mais específica que /0, vencendo a rota padrão para pacotes destinados ao bloco.",
+    "explanation": "Na seleção de encaminhamento, o prefixo com máscara mais longa/específica vence sobre rotas menos específicas, como a rota padrão /0."
+  },
+  {
+    "question": "Ao comparar o EIGRP Stub com o funcionamento padrão de roteadores EIGRP durante a convergência, qual é o efeito prático de restringir a propagação de consultas (Queries)?",
+    "options": [
+      "Evita que roteadores de borda/filial recebam ou precisem participar de buscas amplas por caminhos alternativos, reduzindo o escopo das Queries.",
+      "Substitui todos os pacotes Update por pacotes Hello vazios em unicast.",
+      "Permite que rotas de diferentes Autonomous Systems sejam trocadas automaticamente sem redistribuição.",
+      "Desativa a verificação de vizinhos via Hold Time em toda a rede."
+    ],
+    "answer": "Evita que roteadores de borda/filial recebam ou precisem participar de buscas amplas por caminhos alternativos, reduzindo o escopo das Queries.",
+    "explanation": "A contenção de consultas é um dos pilares da convergência avançada do EIGRP, limitando o alcance das buscas durante alterações de topologia."
+  },
+  {
+    "question": "Em cenários de borda ou filiais (Stub networks), qual combinação de recursos ajuda a evitar envio de tráfego para destinos não alocados ou caminhos desnecessários?",
+    "options": [
+      "Uso de rota padrão (0.0.0.0/0 ou ::/0) para saída e descarte de prefixos não alocados de um bloco sumarizado.",
+      "Configuração de múltiplos Autonomous Systems idênticos em todas as interfaces.",
+      "Substituição da RIB pela Neighbor Table para encaminhamento de pacotes.",
+      "Alteração do Hold Time para 0 em todas as interfaces seriais."
+    ],
+    "answer": "Uso de rota padrão (0.0.0.0/0 ou ::/0) para saída e descarte de prefixos não alocados de um bloco sumarizado.",
+    "explanation": "Em bordas e redes stub, a rota padrão encaminha o tráfego genérico para fora enquanto rotas de descarte evitam loops para endereços não utilizados dentro do bloco."
+  },
+  {
+    "question": "Qual é o papel da autenticação na troca de mensagens entre roteadores em um domínio de roteamento?",
+    "options": [
+      "Garantir que apenas vizinhos legítimos e autenticados participem da troca de informações de roteamento.",
+      "Aumentar a largura de banda física dos enlaces Ethernet e Seriais.",
+      "Substituir a necessidade de comparar a Administrative Distance na RIB.",
+      "Permitir que o IPv6 dispense o uso de endereços Link-Local em rotas estáticas."
+    ],
+    "answer": "Garantir que apenas vizinhos legítimos e autenticados participem da troca de informações de roteamento.",
+    "explanation": "A autenticação protege o plano de controle contra vizinhos não autorizados na troca de rotas e mensagens do protocolo."
+  },
+  {
+    "question": "Por que é importante validar parâmetros como Autonomous System (AS) e condições de vizinhança antes de aceitar rotas no EIGRP?",
+    "options": [
+      "Porque o EIGRP isola domínios por AS e exige compatibilidade de parâmetros operacionais para manter a adjacência e a integridade das rotas.",
+      "Porque o protocolo IP 88 não aceita pacotes unicast sem alteração prévia do AS.",
+      "Porque o Hold Time só funciona se o AS for maior que 200.",
+      "Porque a Topology Table só armazena rotas de vizinhos em AS diferentes."
+    ],
+    "answer": "Porque o EIGRP isola domínios por AS e exige compatibilidade de parâmetros operacionais para manter a adjacência e a integridade das rotas.",
+    "explanation": "A validação de parâmetros de vizinhança e o isolamento por AS garantem que apenas vizinhos compatíveis do mesmo domínio troquem rotas."
+  },
+  {
+    "question": "Quando um bloco de endereços é sumarizado em um roteador de borda, qual é a diferença entre pacotes destinados a sub-redes internas ativas e pacotes destinados a sub-redes não alocadas dentro do mesmo bloco?",
+    "options": [
+      "Sub-redes ativas possuem rotas mais específicas na tabela e são encaminhadas normalmente; sub-redes não alocadas caem na rota de descarte do bloco sumarizado em vez de gerarem loop.",
+      "Ambas são enviadas de volta ao vizinho externo até o TTL expirar.",
+      "Sub-redes ativas usam a RIB e sub-redes não alocadas usam a Neighbor Table.",
+      "Sub-redes não alocadas recebem Administrative Distance 0 e entram como conectadas."
+    ],
+    "answer": "Sub-redes ativas possuem rotas mais específicas na tabela e são encaminhadas normalmente; sub-redes não alocadas caem na rota de descarte do bloco sumarizado em vez de gerarem loop.",
+    "explanation": "Rotas mais específicas continuam atendendo aos destinos ativos, enquanto a rota sumarizada de descarte elimina pacotes para endereços inexistentes dentro do bloco."
+  },
+  {
+    "question": "Qual é a relação entre a sumarização de rotas, o consumo de recursos e o tamanho das tabelas de roteamento?",
+    "options": [
+      "Sumarizar agrega vários prefixos em um único anúncio menor, reduzindo o número de entradas propagadas e o tamanho das tabelas.",
+      "Sumarizar duplica cada prefixo na RIB e aumenta o consumo de CPU e memória.",
+      "Sumarizar impede o uso de rotas estáticas e desativa a FIB.",
+      "Sumarizar força o envio da tabela completa via broadcast a cada 5 segundos."
+    ],
+    "answer": "Sumarizar agrega vários prefixos em um único anúncio menor, reduzindo o número de entradas propagadas e o tamanho das tabelas.",
+    "explanation": "A sumarização consolida sub-redes contíguas em um prefixo único, tornando os anúncios e as tabelas mais enxutos."
+  },
+  {
+    "question": "Em uma arquitetura com múltiplos domínios ou bordas, como o EIGRP evita que rotas de um domínio ou prefixos não desejados vazem indevidamente?",
+    "options": [
+      "Por meio do isolamento de domínios (como diferentes AS sem transferência automática), filtragem/sumarização e políticas de controle no plano de controle.",
+      "Enviando todos os pacotes Update exclusivamente em broadcast para toda a rede.",
+      "Igualando a Administrative Distance de todos os protocolos ao valor 255.",
+      "Desativando o uso da RIB e encaminhando pacotes apenas pela Neighbor Table."
+    ],
+    "answer": "Por meio do isolamento de domínios (como diferentes AS sem transferência automática), filtragem/sumarização e políticas de controle no plano de controle.",
+    "explanation": "O isolamento entre domínios/AS e o controle de anúncios e rotas evitam vazamentos indesejados e loops no roteamento."
+  },
+  {
+    "question": "Qual é a Administrative Distance (AD) padrão atribuída a uma rota sumarizada gerada pelo EIGRP?",
+    "options": [
+      "AD 5.",
+      "AD 90.",
+      "AD 170.",
+      "AD 1."
+    ],
+    "answer": "AD 5.",
+    "explanation": "Rotas sumarizadas no EIGRP possuem Administrative Distance padrão igual a 5."
+  },
+  {
+    "question": "Qual problema de rede ocorre quando existe uma rota sumarizada para um bloco maior e uma rota padrão 0.0.0.0/0, sem descarte local para sub-redes não alocadas dentro do bloco?",
+    "options": [
+      "Loops de roteamento entre o roteador de borda e o vizinho/provedor para destinos inexistentes dentro do bloco sumarizado.",
+      "Conflito de endereços IP entre diferentes instâncias VRF no mesmo roteador.",
+      "Alteração automática do número do Autonomous System de 100 para 200.",
+      "Desativação do envio de pacotes Hello na interface de saída."
+    ],
+    "answer": "Loops de roteamento entre o roteador de borda e o vizinho/provedor para destinos inexistentes dentro do bloco sumarizado.",
+    "explanation": "Sem descarte local para endereços não alocados dentro do bloco sumarizado, um pacote pode seguir pela rota padrão e ser devolvido pelo vizinho que conhece o bloco maior, gerando loop."
+  },
+  {
+    "question": "Como o princípio do Longest Prefix Match protege o encaminhamento quando há um bloco sumarizado mais específico do que a rota padrão 0.0.0.0/0?",
+    "options": [
+      "O prefixo sumarizado (por exemplo, /19 ou /20) tem máscara mais específica que /0, vencendo a rota padrão para pacotes destinados ao bloco.",
+      "A rota padrão /0 sempre tem prioridade sobre qualquer prefixo sumarizado na FIB.",
+      "O Longest Prefix Match ignora a máscara e escolhe sempre o menor endereço IP de destino.",
+      "O Longest Prefix Match só se aplica a rotas aprendidas via BGP e não a rotas sumarizadas."
+    ],
+    "answer": "O prefixo sumarizado (por exemplo, /19 ou /20) tem máscara mais específica que /0, vencendo a rota padrão para pacotes destinados ao bloco.",
+    "explanation": "Na seleção de encaminhamento, o prefixo com máscara mais longa/específica vence sobre rotas menos específicas, como a rota padrão /0."
+  },
+  {
+    "question": "Ao comparar o EIGRP Stub com o funcionamento padrão de roteadores EIGRP durante a convergência, qual é o efeito prático de restringir a propagação de consultas (Queries)?",
+    "options": [
+      "Evita que roteadores de borda/filial recebam ou precisem participar de buscas amplas por caminhos alternativos, reduzindo o escopo das Queries.",
+      "Substitui todos os pacotes Update por pacotes Hello vazios em unicast.",
+      "Permite que rotas de diferentes Autonomous Systems sejam trocadas automaticamente sem redistribuição.",
+      "Desativa a verificação de vizinhos via Hold Time em toda a rede."
+    ],
+    "answer": "Evita que roteadores de borda/filial recebam ou precisem participar de buscas amplas por caminhos alternativos, reduzindo o escopo das Queries.",
+    "explanation": "A contenção de consultas é um dos pilares da convergência avançada do EIGRP, limitando o alcance das buscas durante alterações de topologia."
+  },
+  {
+    "question": "Em cenários de borda ou filiais (Stub networks), qual combinação de recursos ajuda a evitar envio de tráfego para destinos não alocados ou caminhos desnecessários?",
+    "options": [
+      "Uso de rota padrão (0.0.0.0/0 ou ::/0) para saída e descarte de prefixos não alocados de um bloco sumarizado.",
+      "Configuração de múltiplos Autonomous Systems idênticos em todas as interfaces.",
+      "Substituição da RIB pela Neighbor Table para encaminhamento de pacotes.",
+      "Alteração do Hold Time para 0 em todas as interfaces seriais."
+    ],
+    "answer": "Uso de rota padrão (0.0.0.0/0 ou ::/0) para saída e descarte de prefixos não alocados de um bloco sumarizado.",
+    "explanation": "Em bordas e redes stub, a rota padrão encaminha o tráfego genérico para fora enquanto rotas de descarte evitam loops para endereços não utilizados dentro do bloco."
+  },
+  {
+    "question": "Qual é o papel da autenticação na troca de mensagens entre roteadores em um domínio de roteamento?",
+    "options": [
+      "Garantir que apenas vizinhos legítimos e autenticados participem da troca de informações de roteamento.",
+      "Aumentar a largura de banda física dos enlaces Ethernet e Seriais.",
+      "Substituir a necessidade de comparar a Administrative Distance na RIB.",
+      "Permitir que o IPv6 dispense o uso de endereços Link-Local em rotas estáticas."
+    ],
+    "answer": "Garantir que apenas vizinhos legítimos e autenticados participem da troca de informações de roteamento.",
+    "explanation": "A autenticação protege o plano de controle contra vizinhos não autorizados na troca de rotas e mensagens do protocolo."
+  },
+  {
+    "question": "Por que é importante validar parâmetros como Autonomous System (AS) e condições de vizinhança antes de aceitar rotas no EIGRP?",
+    "options": [
+      "Porque o EIGRP isola domínios por AS e exige compatibilidade de parâmetros operacionais para manter a adjacência e a integridade das rotas.",
+      "Porque o protocolo IP 88 não aceita pacotes unicast sem alteração prévia do AS.",
+      "Porque o Hold Time só funciona se o AS for maior que 200.",
+      "Porque a Topology Table só armazena rotas de vizinhos em AS diferentes."
+    ],
+    "answer": "Porque o EIGRP isola domínios por AS e exige compatibilidade de parâmetros operacionais para manter a adjacência e a integridade das rotas.",
+    "explanation": "A validação de parâmetros de vizinhança e o isolamento por AS garantem que apenas vizinhos compatíveis do mesmo domínio troquem rotas."
+  },
+  {
+    "question": "Quando um bloco de endereços é sumarizado em um roteador de borda, qual é a diferença entre pacotes destinados a sub-redes internas ativas e pacotes destinados a sub-redes não alocadas dentro do mesmo bloco?",
+    "options": [
+      "Sub-redes ativas possuem rotas mais específicas na tabela e são encaminhadas normalmente; sub-redes não alocadas caem na rota de descarte do bloco sumarizado em vez de gerarem loop.",
+      "Ambas são enviadas de volta ao vizinho externo até o TTL expirar.",
+      "Sub-redes ativas usam a RIB e sub-redes não alocadas usam a Neighbor Table.",
+      "Sub-redes não alocadas recebem Administrative Distance 0 e entram como conectadas."
+    ],
+    "answer": "Sub-redes ativas possuem rotas mais específicas na tabela e são encaminhadas normalmente; sub-redes não alocadas caem na rota de descarte do bloco sumarizado em vez de gerarem loop.",
+    "explanation": "Rotas mais específicas continuam atendendo aos destinos ativos, enquanto a rota sumarizada de descarte elimina pacotes para endereços inexistentes dentro do bloco."
+  },
+  {
+    "question": "Qual é a relação entre a sumarização de rotas, o consumo de recursos e o tamanho das tabelas de roteamento?",
+    "options": [
+      "Sumarizar agrega vários prefixos em um único anúncio menor, reduzindo o número de entradas propagadas e o tamanho das tabelas.",
+      "Sumarizar duplica cada prefixo na RIB e aumenta o consumo de CPU e memória.",
+      "Sumarizar impede o uso de rotas estáticas e desativa a FIB.",
+      "Sumarizar força o envio da tabela completa via broadcast a cada 5 segundos."
+    ],
+    "answer": "Sumarizar agrega vários prefixos em um único anúncio menor, reduzindo o número de entradas propagadas e o tamanho das tabelas.",
+    "explanation": "A sumarização consolida sub-redes contíguas em um prefixo único, tornando os anúncios e as tabelas mais enxutos."
+  },
+  {
+    "question": "Em uma arquitetura com múltiplos domínios ou bordas, como o EIGRP evita que rotas de um domínio ou prefixos não desejados vazem indevidamente?",
+    "options": [
+      "Por meio do isolamento de domínios (como diferentes AS sem transferência automática), filtragem/sumarização e políticas de controle no plano de controle.",
+      "Enviando todos os pacotes Update exclusivamente em broadcast para toda a rede.",
+      "Igualando a Administrative Distance de todos os protocolos ao valor 255.",
+      "Desativando o uso da RIB e encaminhando pacotes apenas pela Neighbor Table."
+    ],
+    "answer": "Por meio do isolamento de domínios (como diferentes AS sem transferência automática), filtragem/sumarização e políticas de controle no plano de controle.",
+    "explanation": "O isolamento entre domínios/AS e o controle de anúncios e rotas evitam vazamentos indesejados e loops no roteamento."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

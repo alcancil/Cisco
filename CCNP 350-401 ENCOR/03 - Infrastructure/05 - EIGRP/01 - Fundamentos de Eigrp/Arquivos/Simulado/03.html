@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Fundamentos de EIGRP: Algoritmo DUAL, Feasibility Condition, Successor e Feasible Successor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Fundamentos de EIGRP: Algoritmo DUAL, Feasibility Condition, Successor e Feasible Successor</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Fundamentos de EIGRP: Algoritmo DUAL, Feasibility Condition, Successor e Feasible Successor. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é o papel central do algoritmo DUAL (Diffusing Update Algorithm) na operação do EIGRP?",
+    "options": [
+      "Calcular rotas de backup pré-validadas livres de loops e gerenciar a convergência sem depender de mapas globais da rede ou temporizadores longos.",
+      "Substituir a tabela de vizinhos por uma base de dados idêntica (LSDB) e executar o algoritmo Dijkstra SPF.",
+      "Controlar exclusivamente o envio periódico de broadcasts a cada 30 segundos para manter as tabelas sincronizadas.",
+      "Traduzir endereços IPv4 em endereços Link-Local IPv6 para encaminhamento na RIB."
+    ],
+    "answer": "Calcular rotas de backup pré-validadas livres de loops e gerenciar a convergência sem depender de mapas globais da rede ou temporizadores longos.",
+    "explanation": "O DUAL permite ao EIGRP manter rotas alternativas aprovadas sem loops e convergir rapidamente, operando com base nas informações dos vizinhos sem exigir uma visão global completa da topologia."
+  },
+  {
+    "question": "Na terminologia do EIGRP e do algoritmo DUAL, o que define o Successor de uma rota?",
+    "options": [
+      "É o vizinho (e o caminho associado) com a menor métrica total até o destino, selecionado para encaminhar o tráfego na tabela de roteamento.",
+      "É qualquer vizinho que possui a mesma Administrative Distance que a rota estática.",
+      "É o vizinho que envia pacotes Hello a cada 60 segundos em enlaces Gigabit.",
+      "É o roteador de borda que conecta dois Autonomous Systems distintos sem troca automática de rotas."
+    ],
+    "answer": "É o vizinho (e o caminho associado) com a menor métrica total até o destino, selecionado para encaminhar o tráfego na tabela de roteamento.",
+    "explanation": "O Successor representa o melhor caminho atual até o prefixo de destino de acordo com a métrica do EIGRP, sendo utilizado para o encaminhamento ativo do tráfego."
+  },
+  {
+    "question": "O que é a Feasible Distance (FD) de um prefixo na perspectiva de um roteador que executa EIGRP?",
+    "options": [
+      "É o menor custo total (métrica) calculado da própria porta do roteador até a rede de destino.",
+      "É o valor do Hold Time configurado no vizinho adjacente.",
+      "É o número de saltos (hop count) inicial definido na origem antes do primeiro Update.",
+      "É a soma da Administrative Distance do EIGRP com a do OSPF."
+    ],
+    "answer": "É o menor custo total (métrica) calculado da própria porta do roteador até a rede de destino.",
+    "explanation": "A Feasible Distance (FD) corresponde à melhor métrica total local do roteador até o destino, servindo também como referência na Feasibility Condition."
+  },
+  {
+    "question": "O que representa a Reported Distance (RD) anunciada por um vizinho EIGRP em um pacote Update?",
+    "options": [
+      "Representa a Feasible Distance (FD) do vizinho até o destino, informada ao roteador local.",
+      "Representa apenas o atraso (delay) do enlace local entre o roteador e o vizinho.",
+      "Representa o número de pacotes Hello recebidos sem resposta no último minuto.",
+      "Representa a máscara de sub-rede mais específica usada no Longest Prefix Match."
+    ],
+    "answer": "Representa a Feasible Distance (FD) do vizinho até o destino, informada ao roteador local.",
+    "explanation": "A Reported Distance (RD) é o custo que o vizinho reporta ter da perspectiva dele até a rede de destino, correspondendo à FD desse vizinho."
+  },
+  {
+    "question": "Qual é a fórmula exata da Feasibility Condition utilizada pelo DUAL para qualificar um Feasible Successor?",
+    "options": [
+      "RD do vizinho < FD local.",
+      "RD do vizinho > FD local.",
+      "Hop Count do vizinho = 0.",
+      "Hold Time local < Hello Timer do vizinho."
+    ],
+    "answer": "RD do vizinho < FD local.",
+    "explanation": "Para ser aceito como Feasible Successor sem risco de loop, a Reported Distance (RD) anunciada pelo vizinho deve ser estritamente menor que a Feasible Distance (FD) local."
+  },
+  {
+    "question": "Por que a exigência de RD < FD garante matematicamente que um Feasible Successor não cria um loop de roteamento?",
+    "options": [
+      "Porque se o vizinho estivesse encaminhando o pacote de volta pelo roteador local, sua distância até o destino não poderia ser menor que a FD local.",
+      "Porque o EIGRP bloqueia pacotes multicast 224.0.0.10 em interfaces que possuem rota de backup.",
+      "Porque o roteador zera o hop count toda vez que recebe um pacote Reply.",
+      "Porque rotas com RD menor que a FD são convertidas automaticamente em rotas estáticas."
+    ],
+    "answer": "Porque se o vizinho estivesse encaminhando o pacote de volta pelo roteador local, sua distância até o destino não poderia ser menor que a FD local.",
+    "explanation": "Se o caminho do vizinho passasse pelo roteador local, ele teria ao menos a FD local mais o custo adicional do trajeto, tornando impossível que sua RD fosse menor que a FD local."
+  },
+  {
+    "question": "Em um roteador EIGRP, onde ficam armazenadas as rotas alternativas que não são o Successor principal, incluindo aquelas que atendem ou não à Feasibility Condition?",
+    "options": [
+      "Na Topology Table (Tabela de Topologia).",
+      "Apenas na interface Null0.",
+      "Exclusivamente na FIB do plano de dados sem passar pelo plano de controle.",
+      "Apenas no cabeçalho do protocolo IP (protocolo 88)."
+    ],
+    "answer": "Na Topology Table (Tabela de Topologia).",
+    "explanation": "A Topology Table mantém todos os prefixos anunciados no domínio EIGRP, os vizinhos que os anunciaram e as métricas/atributos associados, permitindo ao DUAL identificar Successor e Feasible Successor."
+  },
+  {
+    "question": "Um vizinho alternativo possui métrica total maior que a do Successor atual, mas sua Reported Distance (RD) é menor que a Feasible Distance (FD) local. Como ele é classificado?",
+    "options": [
+      "Como Feasible Successor, podendo assumir o encaminhamento rapidamente caso o Successor falhe.",
+      "Como rota inválida e descartada imediatamente da Topology Table.",
+      "Como rota conectada diretamente (AD 0) na tabela global.",
+      "Como rota externa EIGRP com Administrative Distance 170."
+    ],
+    "answer": "Como Feasible Successor, podendo assumir o encaminhamento rapidamente caso o Successor falhe.",
+    "explanation": "Mesmo tendo custo total superior ao do Successor, o cumprimento de RD < FD qualifica o caminho como Feasible Successor pronto para contingência."
+  },
+  {
+    "question": "O que ocorre na visão de topologia se um caminho alternativo tiver métrica total maior que a do Successor e Reported Distance (RD) maior ou igual à Feasible Distance (FD) local?",
+    "options": [
+      "Ele não se qualifica como Feasible Successor por não atender à Feasibility Condition (RD < FD).",
+      "Ele passa a ter prioridade sobre o Successor na RIB por causa do Longest Prefix Match.",
+      "Ele força a alteração automática do Autonomous System para o mesmo do vizinho.",
+      "Ele desativa o envio de pacotes Hello na interface de saída."
+    ],
+    "answer": "Ele não se qualifica como Feasible Successor por não atender à Feasibility Condition (RD < FD).",
+    "explanation": "Sem satisfazer RD < FD, o vizinho não é aprovado como Feasible Successor imediato na condição de viabilidade."
+  },
+  {
+    "question": "Qual é a vantagem operacional de já possuir um Feasible Successor na Topology Table quando o Successor atual falha?",
+    "options": [
+      "A rota de backup pré-validada e livre de loops pode ser promovida rapidamente sem necessidade de aguardar respostas de consultas amplas pela rede.",
+      "O roteador dispensa o uso de pacotes Hello e passa a usar broadcasts periódicos a cada 5 segundos.",
+      "A Administrative Distance do EIGRP cai para 0 até que o link principal volte.",
+      "O roteador passa a aceitar rotas de qualquer Autonomous System sem isolamento."
+    ],
+    "answer": "A rota de backup pré-validada e livre de loops pode ser promovida rapidamente sem necessidade de aguardar respostas de consultas amplas pela rede.",
+    "explanation": "Como o Feasible Successor já passou pela verificação RD < FD, ele já é garantidamente livre de loops, permitindo uma transição ágil quando o Successor cai."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

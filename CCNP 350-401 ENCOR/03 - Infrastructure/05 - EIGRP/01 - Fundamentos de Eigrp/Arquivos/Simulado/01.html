@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Protocolos de Roteamento  - Fundamentos, Adjacência, Vizinhança e Tipos de Pacotes EIGRP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Protocolos de Roteamento  - Fundamentos, Adjacência, Vizinhança e Tipos de Pacotes EIGRP</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Protocolos de Roteamento  - Fundamentos, Adjacência, Vizinhança e Tipos de Pacotes EIGRP. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é o número de protocolo IP utilizado pelo EIGRP e quais endereços multicast ele utiliza para IPv4 e IPv6, respectivamente?",
+    "options": [
+      "Protocolo IP 89, com multicast 224.0.0.5 para IPv4 e FF02::5 para IPv6.",
+      "Protocolo IP 88, com multicast 224.0.0.10 (MAC 01:00:5E:00:00:0A) para IPv4 e FF02::A para IPv6.",
+      "Protocolo TCP 179, com multicast 224.0.0.10 para IPv4 e FF02::9 para IPv6.",
+      "Protocolo UDP 520, com multicast 224.0.0.9 para IPv4 e FF02::A para IPv6."
+    ],
+    "answer": "Protocolo IP 88, com multicast 224.0.0.10 (MAC 01:00:5E:00:00:0A) para IPv4 e FF02::A para IPv6.",
+    "explanation": "O EIGRP é encapsulado diretamente sobre o IP utilizando o número de protocolo 88, enviando pacotes multicast para 224.0.0.10 (MAC 01:00:5E:00:00:0A) em IPv4 e para FF02::A em IPv6."
+  },
+  {
+    "question": "Qual é o comportamento padrão do EIGRP em relação ao envio de atualizações de rotas após a troca inicial de tabelas com um vizinho adjacente?",
+    "options": [
+      "Envia a tabela de roteamento completa via broadcast a cada 30 segundos, independentemente de alterações na rede.",
+      "Envia atualizações parciais e incrementais apenas quando ocorrem mudanças na topologia, sem broadcasts periódicos.",
+      "Inunda toda a área com LSAs sempre que um novo vizinho é descoberto ou um temporizador de 60 segundos expira.",
+      "Envia apenas pacotes Hello contendo a tabela completa a cada 5 segundos."
+    ],
+    "answer": "Envia atualizações parciais e incrementais apenas quando ocorrem mudanças na topologia, sem broadcasts periódicos.",
+    "explanation": "Após a formação de vizinhança e a troca inicial completa, o EIGRP não faz envios periódicos da tabela inteira; ele envia atualizações parciais e incrementais apenas quando há mudanças de topologia."
+  },
+  {
+    "question": "Quais são os 5 tipos oficiais de pacotes (Opcodes) do EIGRP e como o pacote ACK é tratado na arquitetura do protocolo?",
+    "options": [
+      "Hello, DBD, LSR, LSU e LSAck; o ACK é um pacote de confirmação independente com Opcode 6.",
+      "Update, Request, Query, Reply e Hello; o ACK é um pacote Hello sem carga útil (vazio) enviado via unicast para confirmar pacotes confiáveis.",
+      "Open, Update, Notification, Keepalive e Route-Refresh; o ACK é enviado via multicast para 224.0.0.10.",
+      "Hello, Query, Reply, Ack e Update; o ACK exige retransmissão confiável pelo RTP."
+    ],
+    "answer": "Update, Request, Query, Reply e Hello; o ACK é um pacote Hello sem carga útil (vazio) enviado via unicast para confirmar pacotes confiáveis.",
+    "explanation": "Os cinco pacotes oficiais do EIGRP são Update, Request, Query, Reply e Hello. O ACK é implementado como um pacote Hello vazio enviado em unicast para confirmar a recepção gerenciada pelo RTP."
+  },
+  {
+    "question": "Na classificação de pacotes do EIGRP sob o transporte RTP (Reliable Transport Protocol), quais pacotes exigem entrega confiável (ACK) e quais são enviados de forma não confiável?",
+    "options": [
+      "Update, Query e Reply são confiáveis; Request e Hello são não confiáveis.",
+      "Hello e Query são confiáveis; Update, Request e Reply são não confiáveis.",
+      "Apenas Update é confiável; Request, Query, Reply e Hello são não confiáveis.",
+      "Todos os 5 pacotes do EIGRP exigem confirmação explícita via ACK."
+    ],
+    "answer": "Update, Query e Reply são confiáveis; Request e Hello são não confiáveis.",
+    "explanation": "O RTP gerencia a confiabilidade com números de sequência e ACKs para Update, Query e Reply, enquanto Request e Hello são enviados sem exigência de confirmação."
+  },
+  {
+    "question": "Como o Autonomous System (AS) funciona no EIGRP e o que ocorre quando um roteador participa simultaneamente do EIGRP AS 100 e do EIGRP AS 200?",
+    "options": [
+      "O AS define um domínio interno de roteamento EIGRP; processos em AS diferentes mantêm tabelas isoladas e não trocam rotas automaticamente entre si.",
+      "O AS funciona exatamente como o AS do BGP e redistribui automaticamente todas as rotas entre AS 100 e AS 200.",
+      "Apenas roteadores com o mesmo número de AS podem formar vizinhança, mas todas as rotas de todos os ASs são misturadas na mesma Topology Table.",
+      "O AS identifica o número de versão do IOS rodando no roteador."
+    ],
+    "answer": "O AS define um domínio interno de roteamento EIGRP; processos em AS diferentes mantêm tabelas isoladas e não trocam rotas automaticamente entre si.",
+    "explanation": "No EIGRP, o Autonomous System delimita um domínio de roteamento interno. Cada processo mantém sua estrutura isolada e não transfere rotas automaticamente de um AS para outro."
+  },
+  {
+    "question": "Qual é a função específica de cada uma das três estruturas de memória (tabelas) mantidas por um roteador executando EIGRP?",
+    "options": [
+      "Neighbor Table rastreia vizinhos adjacentes; Topology Table armazena todos os prefixos anunciados, métricas e parâmetros (RD, hop count, delay, bandwidth); Routing Table (RIB) consolida as melhores rotas para encaminhamento.",
+      "Topology Table armazena apenas o próximo salto; Neighbor Table guarda rotas estáticas; RIB armazena pacotes Hello recebidos.",
+      "Neighbor Table guarda apenas rotas de backup; Topology Table guarda apenas a rota vencedora; RIB guarda a configuração do processo.",
+      "As três tabelas são idênticas e duplicam exatamente as mesmas entradas para redundância de memória."
+    ],
+    "answer": "Neighbor Table rastreia vizinhos adjacentes; Topology Table armazena todos os prefixos anunciados, métricas e parâmetros (RD, hop count, delay, bandwidth); Routing Table (RIB) consolida as melhores rotas para encaminhamento.",
+    "explanation": "O EIGRP mantém a Neighbor Table para adjacências, a Topology Table para todos os prefixos recebidos e seus atributos/métricas (suportando o DUAL), e a RIB para as melhores rotas eleitas."
+  },
+  {
+    "question": "Quais são os valores padrão de Hello Timer e Hold Time em interfaces de alta velocidade versus interfaces lentas (T1 ou inferiores) no EIGRP?",
+    "options": [
+      "Interfaces rápidas: Hello 10s e Hold 40s; interfaces lentas: Hello 30s e Hold 120s.",
+      "Interfaces rápidas: Hello 5s e Hold 15s; interfaces lentas (T1 ou inferiores): Hello 60s e Hold 180s.",
+      "Interfaces rápidas: Hello 1s e Hold 3s; interfaces lentas: Hello 5s e Hold 15s.",
+      "Interfaces rápidas: Hello 5s e Hold 10s; interfaces lentas: Hello 60s e Hold 120s."
+    ],
+    "answer": "Interfaces rápidas: Hello 5s e Hold 15s; interfaces lentas (T1 ou inferiores): Hello 60s e Hold 180s.",
+    "explanation": "Por padrão, o EIGRP usa Hello de 5s e Hold Time de 15s em enlaces rápidos, e Hello de 60s com Hold Time de 180s em enlaces lentos (T1 ou inferiores), sempre com o Hold Time equivalente a três vezes o Hello."
+  },
+  {
+    "question": "O que acontece quando um roteador EIGRP deixa de receber pacotes Hello de um vizinho até que o Hold Time chegue a zero?",
+    "options": [
+      "O roteador mantém a adjacência ativa por mais 15 segundos enviando pacotes Request em unicast.",
+      "O roteador declara o vizinho inalcançável e notifica o algoritmo DUAL sobre a mudança de topologia.",
+      "O roteador altera automaticamente o número do Autonomous System para restabelecer a conexão.",
+      "O roteador desabilita a interface física e limpa a RIB inteira."
+    ],
+    "answer": "O roteador declara o vizinho inalcançável e notifica o algoritmo DUAL sobre a mudança de topologia.",
+    "explanation": "Cada pacote Hello recebido reinicia o Hold Time. Se o contador chegar a zero, o vizinho é considerado inalcançável e o DUAL é acionado para tratar a mudança de topologia."
+  },
+  {
+    "question": "Como os atributos de caminho são atualizados salto a salto quando um pacote EIGRP Update propaga um prefixo de R1 para R2 e depois para R3?",
+    "options": [
+      "Hop count permanece sempre em 0, minimum bandwidth soma a cada salto e total delay mantém o menor valor do caminho.",
+      "Hop count incrementa a cada salto, minimum bandwidth reflete o menor valor (gargalo) ao longo do caminho, total delay acumula os atrasos e a RD se atualiza a cada salto.",
+      "Todos os atributos permanecem fixos desde a origem em R1 até o último roteador do AS.",
+      "Hop count decrementa até zero, minimum bandwidth faz a média aritmética dos enlaces e o delay é ignorado."
+    ],
+    "answer": "Hop count incrementa a cada salto, minimum bandwidth reflete o menor valor (gargalo) ao longo do caminho, total delay acumula os atrasos e a RD se atualiza a cada salto.",
+    "explanation": "Nos Updates, o hop count sobe a cada salto, a minimum bandwidth mantém o gargalo do trajeto, o total delay soma os atrasos acumulados e a Reported Distance (RD) é recalculada/atualizada a cada salto."
+  },
+  {
+    "question": "Por que o EIGRP é classificado como um protocolo Advanced Distance Vector (ou híbrido) em comparação a um Distance Vector clássico como o RIPv2?",
+    "options": [
+      "Porque utiliza o algoritmo Dijkstra SPF e mantém um mapa topológico idêntico (LSDB) em todos os roteadores da área.",
+      "Porque mantém a lógica de aprender rotas com vizinhos, mas adiciona Hellos para vizinhança, atualizações parciais sob demanda, métricas compostas (banda e delay) e rotas de backup pré-validadas livres de loops via DUAL.",
+      "Porque usa apenas contagem de saltos limitada a 15 hops e envia tabelas completas a cada 30 segundos.",
+      "Porque opera exclusivamente sobre TCP na porta 179 e toma decisões apenas por atributos BGP."
+    ],
+    "answer": "Porque mantém a lógica de aprender rotas com vizinhos, mas adiciona Hellos para vizinhança, atualizações parciais sob demanda, métricas compostas (banda e delay) e rotas de backup pré-validadas livres de loops via DUAL.",
+    "explanation": "O EIGRP supera as limitações de Distance Vector clássicos (como o limite de 15 saltos do RIPv2 e decisão apenas por hop count) ao combinar a operação baseada em vizinhos com DUAL, atualizações parciais e métricas compostas."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
