@@ -175,24 +175,24 @@ Nos pacotes *Update*, cada prefixo vem acompanhado de atributos de caminho — c
 
 ## 🧪 Pronto para Testar seu Conhecimento?
 
-Parabéns por concluir a teoria e os laboratórios de **EIGRP** (Tópico 3.2.a do CCNP ENCOR)
+Parabéns por concluir a teoria e os laboratórios de **EIGRP** (Tópico 3.2.a do CCNP ENCOR)!
 
 Agora é o momento de consolidar o aprendizado e testar sua rapidez e precisão em questões no mesmo formato cobrado no exame de certificação.
 
 👉 **Acesse os simulados de EIGRP (CCNP ENCOR 350-401)**
 
-🔗 [Abrir Simulados de EIGRP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/04%20-%20Fundamentos%20de%20Roteamento/01%20-%20Teoria/Arquivos/Simulado/)
+🔗 [Abrir Simulados de EIGRP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/)
 
 **Simulados temáticos:**
 
-1. [Fundamentos, Adjacência, Vizinhança e Tipos de Pacotes EIGRP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/01.html)
-2. [Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/02.html)
-3. [Algoritmo DUAL, Feasibility Condition, Successor e Feasible Successor](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/03.html)
-4. [Convergência, Queries, Reply e Estados Active/Passive](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/04.html)
-5. [Sumarização, EIGRP Stub e Autenticação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/05.html)
+1. [Fundamentos, Adjacência, Vizinhança e Tipos de Pacotes EIGRP](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/01.html)
+2. [Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/02.html)
+3. [Algoritmo DUAL, Feasibility Condition, Successor e Feasible Successor](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/03.html)
+4. [Convergência, Queries, Reply e Estados Active/Passive](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/04.html)
+5. [Sumarização, EIGRP Stub e Autenticação](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/05.html)
 
-**Simulado completo de EIGRP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/completo.html)
+**Simulado completo de EIGRP:** [50 questões — 75 minutos](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/completo.html)
 
-**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20EIGRP/Arquivos/Simulado/dashboard.html)
+**📊 Painel de Estatísticas:** [Acompanhe seu desempenho](https://alcancil.github.io/Cisco/CCNP%20350-401%20ENCOR/03%20-%20Infrastructure/05%20-%20EIGRP/01%20-%20Fundamentos%20de%20Eigrp/Arquivos/Simulado/dashboard.html)
 
 **Próximo passo:** Avançar para a **Parte 02 (Algoritmo DUAL, Métricas Classic vs. Wide e Variance)** para detalhar como o roteador utiliza esses atributos para eleger *Successor* e *Feasible Successor*, calcular métricas e balancear tráfego de forma assimétrica.  
