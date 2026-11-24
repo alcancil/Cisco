@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de EIGRP - Sumarização Manual (Null0) e Modos Classic vs. Named</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de EIGRP - Sumarização Manual (Null0) e Modos Classic vs. Named</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre  EIGRP - Sumarização Manual (Null0) e Modos Classic vs. Named. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+ {
+    "question": "Qual é a Administrative Distance (AD) padrão atribuída a uma rota sumarizada gerada pelo EIGRP na tabela de roteamento (RIB)?",
+    "options": [
+      "AD 5.",
+      "AD 90.",
+      "AD 170.",
+      "AD 1."
+    ],
+    "answer": "AD 5.",
+    "explanation": "A rota sumarizada gerada pelo EIGRP e instalada localmente na RIB recebe Administrative Distance padrão igual a 5[cite: 5]."
+  },
+  {
+    "question": "Para qual interface virtual uma rota sumarizada manual do EIGRP aponta localmente e qual é a função de segurança desse comportamento?",
+    "options": [
+      "Aponta para Null0, atuando contra loops ao descartar localmente pacotes para sub-redes não alocadas dentro do bloco sumarizado quando há rota padrão 0.0.0.0/0.",
+      "Aponta para Loopback0, garantindo que pacotes sem destino retornem ao vizinho que enviou a atualização.",
+      "Aponta para a interface física de maior largura de banda, forçando balanceamento ECMP.",
+      "Aponta para o endereço multicast 224.0.0.10, enviando pacotes Query contínuos."
+    ],
+    "answer": "Aponta para Null0, atuando contra loops ao descartar localmente pacotes para sub-redes não alocadas dentro do bloco sumarizado quando há rota padrão 0.0.0.0/0.",
+    "explanation": "A rota para Null0 intercepta e descarta pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado (mais específico que 0.0.0.0/0 pelo Longest Prefix Match), evitando loops com o vizinho[cite: 5]."
+  },
+  {
+    "question": "Como é calculada ou definida a métrica de uma rota sumarizada manual no EIGRP em relação às sub-redes específicas que ela agrega?",
+    "options": [
+      "Reflete a menor métrica entre os prefixos específicos componentes que estão ativos na tabela de topologia.",
+      "Soma as métricas de todas as sub-redes específicas e divide pelo número de interfaces ativas.",
+      "Recebe sempre uma métrica fixa igual a 5, independentemente dos enlaces componentes.",
+      "Herda a métrica da rota padrão 0.0.0.0/0 instalada na RIB."
+    ],
+    "answer": "Reflete a menor métrica entre os prefixos específicos componentes que estão ativos na tabela de topologia.",
+    "explanation": "A métrica da rota sumarizada corresponde à menor métrica dentre os prefixos específicos componentes ativos na tabela de topologia[cite: 5]."
+  },
+  {
+    "question": "Qual comando é utilizado em uma interface no Classic Mode para configurar uma rota sumarizada EIGRP no AS 100 para o bloco 192.168.0.0/22?",
+    "options": [
+      "ip summary-address eigrp 100 192.168.0.0 255.255.252.0.",
+      "eigrp stub connected summary.",
+      "variance 2.",
+      "router eigrp ENCOR_EIGRP."
+    ],
+    "answer": "ip summary-address eigrp 100 192.168.0.0 255.255.252.0.",
+    "explanation": "No modo de configuração de interface, o comando ip summary-address eigrp <AS> <rede> <máscara> configura a sumarização manual no EIGRP[cite: 5]."
+  },
+  {
+    "question": "Por que um prefixo sumarizado como 192.168.0.0/22 vence uma rota padrão 0.0.0.0/0 no encaminhamento de pacotes destinados a sub-redes não alocadas dentro desse bloco?",
+    "options": [
+      "Pelo princípio do Longest Prefix Match, pois a máscara /22 é mais específica que /0.",
+      "Porque rotas sumarizadas têm Administrative Distance 0, menor que a rota padrão.",
+      "Porque o protocolo IP 88 ignora rotas padrão sempre que existe um AS configurado.",
+      "Porque o roteador envia um pacote Query para o destino antes de consultar a RIB."
+    ],
+    "answer": "Pelo princípio do Longest Prefix Match, pois a máscara /22 é mais específica que /0.",
+    "explanation": "O prefixo sumarizado possui máscara mais específica que 0.0.0.0/0, prevalecendo na correspondência de prefixo mais longo para encaminhar ou descartar o pacote via Null0[cite: 5]."
+  },
+  {
+    "question": "Qual é a principal diferença estrutural de configuração entre o Classic Mode e o Named Mode do EIGRP?",
+    "options": [
+      "O Classic Mode configura o processo tradicional por família de endereços, enquanto o Named Mode centraliza a configuração sob um nome de instância e address-family, ativando Wide Metrics (64 bits) por padrão.",
+      "O Named Mode não suporta IPv4 unicast e exige desativar a tabela de topologia.",
+      "O Classic Mode ativa Wide Metrics de 64 bits por padrão, enquanto o Named Mode usa apenas métricas de 16 bits.",
+      "O Named Mode impede a configuração de variance e de timers na interface."
+    ],
+    "answer": "O Classic Mode configura o processo tradicional por família de endereços, enquanto o Named Mode centraliza a configuração sob um nome de instância e address-family, ativando Wide Metrics (64 bits) por padrão.",
+    "explanation": "O Named Mode organiza a instância por nome e address-family (como address-family ipv4 unicast autonomous-system 100) e habilita Wide Metrics de 64 bits por padrão[cite: 5]."
+  },
+  {
+    "question": "No exemplo de configuração em Named Mode, em qual submodo são configurados os parâmetros de variance e os parâmetros específicos de interface (como hello-interval e hold-time)?",
+    "options": [
+      "variance é configurada em topology base (submodo de topologia da address-family) e hello-interval/hold-time em af-interface (submodo de interface da address-family).",
+      "Ambos são configurados diretamente na interface física com o comando ip summary-address eigrp.",
+      "Ambos são configurados no modo global fora de router eigrp.",
+      "variance é configurada no af-interface e hello-interval no topology base."
+    ],
+    "answer": "variance é configurada em topology base (submodo de topologia da address-family) e hello-interval/hold-time em af-interface (submodo de interface da address-family).",
+    "explanation": "No Named Mode, variance fica em topology base (dentro da address-family) e os ajustes de interface como hello-interval e hold-time ficam em af-interface[cite: 5]."
+  },
+  {
+    "question": "Como a sumarização de rotas beneficia o roteador e a rede de forma geral na operação do EIGRP?",
+    "options": [
+      "Reduz o tamanho das tabelas de roteamento e a quantidade de anúncios propagados na rede.",
+      "Aumenta o número de entradas específicas enviadas em cada pacote Hello.",
+      "Dispensa a necessidade de manter adjacências com vizinhos do mesmo Autonomous System.",
+      "Substitui o algoritmo DUAL por envio periódico de broadcast a cada 15 segundos."
+    ],
+    "answer": "Reduz o tamanho das tabelas de roteamento e a quantidade de anúncios propagados na rede.",
+    "explanation": "A sumarização manual agrega prefixos, diminuindo o tamanho das tabelas de roteamento e o volume de anúncios propagados[cite: 5]."
+  },
+  {
+    "question": "Em um roteador de borda com sumarização ativa para um bloco interno, o que acontece com o tráfego destinado a sub-redes internas ativas versus sub-redes não alocadas dentro do mesmo bloco?",
+    "options": [
+      "Sub-redes ativas seguem por rotas mais específicas para os destinos internos, enquanto sub-redes não alocadas caem na rota para Null0 e são descartadas.",
+      "Ambas são enviadas de volta ao vizinho externo pela rota padrão 0.0.0.0/0.",
+      "Sub-redes ativas são descartadas na Null0 e sub-redes não alocadas vão para a Neighbor Table.",
+      "Ambas recebem Administrative Distance 170 como rotas externas."
+    ],
+    "answer": "Sub-redes ativas seguem por rotas mais específicas para os destinos internos, enquanto sub-redes não alocadas caem na rota para Null0 e são descartadas.",
+    "explanation": "Rotas mais específicas encaminham para sub-redes ativas, enquanto a rota sumarizada com destino Null0 descarta pacotes para sub-redes inexistentes dentro do bloco sumarizado[cite: 5]."
+  },
+  {
+    "question": "Qual é a largura de banda de referência na métrica clássica do EIGRP e como as Wide Metrics do Named Mode tratam enlaces de alta velocidade (como 10 Gbps ou superiores)?",
+    "options": [
+      "A métrica clássica usa referência de 10^7 Kbps (10 Gbps), onde enlaces >= 10 Gbps não se distinguem entre si, enquanto as Wide Metrics (64 bits) no Named Mode ampliam a escala para lidar com alta velocidade.",
+      "A métrica clássica usa 100 Gbps como base e as Wide Metrics usam 1,544 Mbps (T1).",
+      "Ambas usam a mesma escala de 16 bits e não diferenciam enlaces acima de 100 Mbps.",
+      "As Wide Metrics desativam o uso de Delay no cálculo da métrica."
+    ],
+    "answer": "A métrica clássica usa referência de 10^7 Kbps (10 Gbps), onde enlaces >= 10 Gbps não se distinguem entre si, enquanto as Wide Metrics (64 bits) no Named Mode ampliam a escala para lidar com alta velocidade.",
+    "explanation": "Na fórmula clássica, a referência é 10^7 Kbps (10 Gbps), limitando a distinção em enlaces de 10G ou superiores; já as Wide Metrics (64 bits), ativas por padrão no Named Mode, ampliam a escala de banda e delay[cite: 5]."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

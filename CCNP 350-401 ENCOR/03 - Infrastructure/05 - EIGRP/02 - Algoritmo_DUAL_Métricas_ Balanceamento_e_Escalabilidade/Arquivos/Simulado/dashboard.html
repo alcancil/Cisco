@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel de Estatísticas dos Simulados</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .chart-wrap { position: relative; height: 16rem; }
+    .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header class="bg-white border-b sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-bold">Painel de Estatísticas dos Simulados</h1>
+    </div>
+  </header>
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Simulados feitos</p>
+        <p id="kpi-total" class="text-3xl font-semibold mt-1">0</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Questões respondidas (total)</p>
+        <p id="kpi-questions" class="text-3xl font-semibold mt-1">0</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">% de acerto (geral)</p>
+        <p id="kpi-accuracy" class="text-3xl font-semibold mt-1">0%</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <p class="text-slate-500 text-sm">Tempo médio por simulado</p>
+        <p id="kpi-avgtime" class="text-3xl font-semibold mt-1">00:00</p>
+      </div>
+    </section>
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Nota por tentativa</h2>
+        <div class="chart-wrap"><canvas id="scoresChart"></canvas></div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Tempo por tentativa</h2>
+        <div class="chart-wrap"><canvas id="timeChart"></canvas></div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border">
+        <h2 class="font-semibold mb-2">Acertos x Erros (geral)</h2>
+        <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+      </div>
+    </section>
+    <section class="bg-white rounded-xl p-4 shadow-sm border">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead><tr class="text-left bg-slate-100">
+            <th class="p-2">Data</th><th class="p-2">Simulado</th><th class="p-2">Nome</th>
+            <th class="p-2">Nota</th><th class="p-2">Percentual</th><th class="p-2">Tempo</th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    function loadResults(){try{const raw=localStorage.getItem("simulados");return raw?JSON.parse(raw):[]}catch(e){return[]}}
+    function formatSeconds(s){const m=Math.floor(s/60);const r=s%60;return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`}
+    function toPercent(num){return (Math.round(num*10)/10).toFixed(1)}
+    function localeDate(iso){try{return new Date(iso).toLocaleString('pt-BR')}catch(e){return iso}}
+    function normalizeRecord(r,idx){return{
+      id:r.id||String(Date.now()+idx),simuladoTitle:r.simuladoTitle||r.simuladoId||'Simulado',
+      name:r.name||'(sem nome)',score:r.score||0,total:r.total||0,
+      timeSeconds:r.timeSeconds||0,timeFormatted:r.timeFormatted||formatSeconds(r.timeSeconds||0),
+      percent:r.percent||((r.score||0)/(r.total||1)*100),date:r.date||new Date().toISOString()}}
+    let DATA=loadResults().map(normalizeRecord);let scoresChart,timeChart,pieChart;
+    function renderKPIs(){const total=DATA.length,totalQ=DATA.reduce((a,r)=>a+(r.total||0),0),
+      totalC=DATA.reduce((a,r)=>a+(r.score||0),0),totalT=DATA.reduce((a,r)=>a+(r.timeSeconds||0),0),
+      avgT=total?Math.round(totalT/total):0,acc=totalQ?(totalC/totalQ)*100:0;
+      document.getElementById("kpi-total").textContent=total;
+      document.getElementById("kpi-questions").textContent=totalQ;
+      document.getElementById("kpi-accuracy").textContent=toPercent(acc)+"%";
+      document.getElementById("kpi-avgtime").textContent=formatSeconds(avgT);}
+    function renderCharts(){if(scoresChart)scoresChart.destroy();if(timeChart)timeChart.destroy();if(pieChart)pieChart.destroy();
+      const labels=DATA.map((r,i)=>`${i+1} • ${r.simuladoTitle}`),
+      scores=DATA.map(r=>r.score),totals=DATA.map(r=>r.total),times=DATA.map(r=>r.timeSeconds),
+      overallC=DATA.reduce((a,r)=>a+r.score,0),overallT=DATA.reduce((a,r)=>a+r.total,0),overallW=Math.max(overallT-overallC,0),
+      ctx1=document.getElementById('scoresChart').getContext('2d');scoresChart=new Chart(ctx1,{type:'bar',
+        data:{labels,datasets:[{label:'Acertos',data:scores},{label:'Total',data:totals}]},options:{responsive:true,maintainAspectRatio:false}});
+      const ctx2=document.getElementById('timeChart').getContext('2d');timeChart=new Chart(ctx2,{type:'line',
+        data:{labels,datasets:[{label:'Tempo (s)',data:times}]},options:{responsive:true,maintainAspectRatio:false}});
+      const ctx3=document.getElementById('pieChart').getContext('2d');pieChart=new Chart(ctx3,{type:'doughnut',
+        data:{labels:['Acertos','Erros'],datasets:[{data:[overallC,overallW]}]},options:{responsive:true,maintainAspectRatio:false}});}
+    function renderTable(){const tbody=document.getElementById('tableBody');
+      if(!DATA.length){tbody.innerHTML='<tr><td colspan="6" class="p-3 text-center text-slate-500">Sem registros</td></tr>';return}
+      tbody.innerHTML=DATA.map(r=>`<tr><td class="p-2">${localeDate(r.date)}</td><td class="p-2">${r.simuladoTitle}</td><td class="p-2">${r.name}</td><td class="p-2">${r.score}/${r.total}</td><td class="p-2">${toPercent(r.percent)}%</td><td class="p-2">${r.timeFormatted}</td></tr>`).join('');}
+    renderKPIs();renderCharts();renderTable();
+  </script>
+</body>
+</html>

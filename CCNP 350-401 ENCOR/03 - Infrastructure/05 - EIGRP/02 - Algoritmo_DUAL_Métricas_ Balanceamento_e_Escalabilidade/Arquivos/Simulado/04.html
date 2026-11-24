@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de EIGRP - EIGRP Stub Routing e Contenção de Consultas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de EIGRP - EIGRP Stub Routing e Contenção de Consultas</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre  EIGRP - EIGRP Stub Routing e Contenção de Consultas. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é o objetivo arquitetural do recurso EIGRP Stub em topologias corporativas, especialmente em cenários Hub-and-Spoke?",
+    "options": [
+      "Instruir vizinhos a não enviarem pacotes Query para roteadores de borda ou filiais, reduzindo o escopo de buscas durante mudanças de topologia.",
+      "Permitir que um roteador de filial atue como trânsito obrigatório entre diferentes Autonomous Systems sem isolamento.",
+      "Substituir a tabela de topologia por uma base de dados Link-State completa em todos os roteadores Spoke.",
+      "Desativar o cálculo de métrica e encaminhar pacotes apenas por contagem de saltos limitada a 15."
+    ],
+    "answer": "Instruir vizinhos a não enviarem pacotes Query para roteadores de borda ou filiais, reduzindo o escopo de buscas durante mudanças de topologia.",
+    "explanation": "O EIGRP Stub evita que vizinhos enviem Queries para roteadores de borda/filial que não devem servir de trânsito, delimitando as buscas durante alterações de topologia."
+  },
+  {
+    "question": "Como um roteador configurado como EIGRP Stub sinaliza aos roteadores vizinhos que ele não deve ser consultado para buscar caminhos alternativos?",
+    "options": [
+      "Por meio de um bit específico anunciado dentro dos pacotes Hello.",
+      "Alterando o número de protocolo IP de 88 para 89 nos pacotes Update.",
+      "Configurando uma rota estática com Administrative Distance 0 para o endereço multicast 224.0.0.10.",
+      "Enviando pacotes Reply em broadcast a cada 5 segundos."
+    ],
+    "answer": "Por meio de um bit específico anunciado dentro dos pacotes Hello.",
+    "explanation": "O roteador Stub anuncia sua condição aos vizinhos por meio de um bit específico no pacote Hello, fazendo com que os vizinhos suprimam o envio de Queries para ele."
+  },
+  {
+    "question": "Qual problema crítico em redes Hub-and-Spoke o EIGRP Stub ajuda a prevenir ao suprimir o envio de Queries para os roteadores Spoke?",
+    "options": [
+      "Tempestades de consultas (Query Storms) e falhas de Stuck-in-Active (SIA) causadas por demora ou ausência de Reply em enlaces de filiais.",
+      "Conflito de endereçamento Link-Local IPv6 (FE80::/10) entre interfaces Ethernet.",
+      "Excesso de rotas estáticas recursivas apontando para a interface Null0.",
+      "Incompatibilidade de Administrative Distance entre rotas conectadas (AD 0) e estáticas (AD 1)."
+    ],
+    "answer": "Tempestades de consultas (Query Storms) e falhas de Stuck-in-Active (SIA) causadas por demora ou ausência de Reply em enlaces de filiais.",
+    "explanation": "Ao evitar que o Hub envie Queries para filiais que não possuem rotas de trânsito, o EIGRP Stub reduz o volume de consultas e mitiga o risco de Stuck-in-Active (SIA)."
+  },
+  {
+    "question": "Qual comando é exibido na documentação como exemplo recomendado de configuração de EIGRP Stub em um roteador de filial (Spoke) no AS 100?",
+    "options": [
+      "eigrp stub connected summary, dentro do modo de configuração do roteador EIGRP.",
+      "ip summary-address eigrp 100 0.0.0.0 0.0.0.0, na interface de saída.",
+      "variance 128, no modo de configuração de interface.",
+      "passive-interface default, no modo de configuração global."
+    ],
+    "answer": "eigrp stub connected summary, dentro do modo de configuração do roteador EIGRP.",
+    "explanation": "Em roteadores de borda ou filiais (Spokes), o comando eigrp stub connected summary (sob router eigrp 100) é o exemplo indicado para restringir consultas."
+  },
+  {
+    "question": "Se um roteador Hub perde o caminho do Successor de um prefixo e não tem Feasible Successor, o que acontece em relação a um vizinho Spoke configurado como EIGRP Stub?",
+    "options": [
+      "O Hub não envia pacote Query para o Spoke stub, contendo o domínio da consulta aos roteadores não-stub elegíveis.",
+      "O Hub envia Query apenas para o Spoke stub e ignora todos os roteadores centrais.",
+      "O Spoke stub é obrigado a responder com SIA-Query a cada 90 segundos para manter a rota na RIB.",
+      "O Hub derruba imediatamente a adjacência com o Spoke stub por falta de resposta."
+    ],
+    "answer": "O Hub não envia pacote Query para o Spoke stub, contendo o domínio da consulta aos roteadores não-stub elegíveis.",
+    "explanation": "Como o Spoke está configurado como Stub, os roteadores vizinhos suprimem o envio de Queries para ele, evitando consultas desnecessárias a filiais."
+  },
+  {
+    "question": "Qual é o papel dos mecanismos SIA-Query e SIA-Reply quando um roteador não-stub está aguardando respostas a um Query?",
+    "options": [
+      "Na metade do Active Timer (90 segundos), verificam se o vizinho ainda está ativo e aguardando Replies downstream, renovando a espera em vez de derrubar a adjacência indevidamente.",
+      "Substituem os pacotes Hello em enlaces de alta velocidade para reduzir o Hold Time para 15 segundos.",
+      "Convertem rotas em estado Active em rotas sumarizadas com Administrative Distance 5.",
+      "Permitem que o roteador stub passe a aceitar Queries de múltiplos Autonomous Systems."
+    ],
+    "answer": "Na metade do Active Timer (90 segundos), verificam se o vizinho ainda está ativo e aguardando Replies downstream, renovando a espera em vez de derrubar a adjacência indevidamente.",
+    "explanation": "SIA-Query e SIA-Reply atuam aos 90 segundos para checar se o vizinho continua operacional aguardando respostas downstream, evitando quedas prematuras por lentidão em outro trecho."
+  },
+  {
+    "question": "Qual comando permite verificar, entre os parâmetros globais do processo EIGRP, o status de Stub configurado no roteador?",
+    "options": [
+      "show ip protocols.",
+      "show ipv6 route.",
+      "show ip interface brief.",
+      "show running-config interface."
+    ],
+    "answer": "show ip protocols.",
+    "explanation": "O comando show ip protocols exibe informações globais do processo EIGRP, incluindo o status de Stub, valores de K1-K5, AS, distância administrativa e variance."
+  },
+  {
+    "question": "Por que faz sentido combinar EIGRP Stub em filiais com sumarização de rotas em roteadores de borda ou agregação?",
+    "options": [
+      "Porque ambas as técnicas reduzem a complexidade e o alcance de informações/consultas na rede, tornando a topologia mais escalável e previsível.",
+      "Porque o EIGRP Stub exige que todas as rotas tenham Administrative Distance igual a 5 na RIB.",
+      "Porque a sumarização desativa a necessidade de verificar K-values e Autonomous System na vizinhança.",
+      "Porque o EIGRP Stub só funciona se a rota padrão 0.0.0.0/0 for removida da tabela."
+    ],
+    "answer": "Porque ambas as técnicas reduzem a complexidade e o alcance de informações/consultas na rede, tornando a topologia mais escalável e previsível.",
+    "explanation": "Tanto o EIGRP Stub (contenção de Queries) quanto a sumarização (agregação de prefixos e redução de anúncios) são práticas voltadas à escalabilidade e estabilidade da rede."
+  },
+  {
+    "question": "O que ocorre se um vizinho não responde a um pacote Query dentro do tempo limite do Active Timer (padrão de 3 minutos) sem resolução de espera?",
+    "options": [
+      "A rota enfrenta a condição Stuck-in-Active (SIA), podendo provocar a queda da adjacência com o vizinho que não respondeu.",
+      "O roteador promove automaticamente a rota para Successor com métrica zero.",
+      "O pacote Query é reenviado via broadcast para todos os roteadores fora do Autonomous System.",
+      "O Hold Time é dobrado automaticamente para 360 segundos."
+    ],
+    "answer": "A rota enfrenta a condição Stuck-in-Active (SIA), podendo provocar a queda da adjacência com o vizinho que não respondeu.",
+    "explanation": "Se a espera por Reply ultrapassar o tempo limite do Active Timer (3 minutos), ocorre Stuck-in-Active (SIA), podendo derrubar a adjacência com o vizinho não responsivo."
+  },
+  {
+    "question": "Qual é a diferença entre uma rota em estado Passive (P) e uma rota em estado Active (A) durante um evento de falha e consulta de rotas?",
+    "options": [
+      "Passive (P) indica rota estável e convergente; Active (A) indica rota sem Feasible Successor que está aguardando Replies após o envio de Queries.",
+      "Passive (P) indica que o roteador está em Stub; Active (A) indica que o roteador está usando variance maior que 1.",
+      "Passive (P) indica que o pacote Hello não foi enviado; Active (A) indica que o RTP está desativado.",
+      "Passive (P) indica rota para Null0; Active (A) indica rota conectada diretamente."
+    ],
+    "answer": "Passive (P) indica rota estável e convergente; Active (A) indica rota sem Feasible Successor que está aguardando Replies após o envio de Queries.",
+    "explanation": "Rotas estáveis ficam em Passive (P), enquanto rotas que perderam o caminho sem Feasible Successor entram em Active (A) enquanto aguardam respostas Reply às Queries."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

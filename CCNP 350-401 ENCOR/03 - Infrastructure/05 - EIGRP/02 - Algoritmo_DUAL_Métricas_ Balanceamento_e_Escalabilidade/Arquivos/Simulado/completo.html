@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Fundamentos de EIGRP Pate 02</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de Fundamentos de EIGRP Parte 02</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 50 questões sobre Simulado de Fundamentos de EIGRP Parte 02. Você terá 75 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 75:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Qual é a função principal do algoritmo DUAL (Diffusing Update Algorithm) na operação do EIGRP?",
+    "options": [
+      "Garantir rotas livres de loops e convergência ágil sem depender de mapas globais da rede.",
+      "Construir um mapa completo da rede (LSDB) e executar o algoritmo SPF em todos os roteadores.",
+      "Enviar tabelas de roteamento completas via broadcast a cada 30 segundos.",
+      "Substituir o protocolo IP 88 por sessões TCP na porta 179."
+    ],
+    "answer": "Garantir rotas livres de loops e convergência ágil sem depender de mapas globais da rede.",
+    "explanation": "O DUAL é o algoritmo central do EIGRP responsável por manter rotas livres de loops e permitir convergência rápida sem exigir uma visão global da topologia."
+  },
+  {
+    "question": "Na terminologia do algoritmo DUAL, o que define o Successor de uma rota?",
+    "options": [
+      "O roteador vizinho (e caminho associado) com a menor métrica total até o destino, selecionado para o encaminhamento ativo na RIB.",
+      "Qualquer vizinho alternativo na tabela de topologia que tenha custo maior que o melhor caminho.",
+      "A interface virtual que descarta pacotes para sub-redes não alocadas com AD 5.",
+      "O vizinho que anuncia o maior Hold Time dentro do pacote Hello."
+    ],
+    "answer": "O roteador vizinho (e caminho associado) com a menor métrica total até o destino, selecionado para o encaminhamento ativo na RIB.",
+    "explanation": "O Successor representa o melhor caminho com a menor métrica total até o destino, sendo instalado na tabela de roteamento (RIB) para encaminhar o tráfego."
+  },
+  {
+    "question": "O que é a Feasible Distance (FD) de um prefixo na perspectiva do roteador local?",
+    "options": [
+      "A menor métrica total calculada pelo roteador local até a rede de destino.",
+      "A métrica que o roteador vizinho informa ter da perspectiva dele até o destino.",
+      "O multiplicador inteiro de 1 a 128 usado para balanceamento desigual.",
+      "O tempo de espera de 3 minutos para declarar uma rota em Stuck-in-Active."
+    ],
+    "answer": "A menor métrica total calculada pelo roteador local até a rede de destino.",
+    "explanation": "A Feasible Distance (FD) é a menor métrica total calculada do roteador local até o destino e serve de referência para avaliar a Feasibility Condition."
+  },
+  {
+    "question": "O que representa a Reported Distance (RD), também chamada de Advertised Distance (AD), anunciada por um vizinho?",
+    "options": [
+      "A métrica total que o roteador vizinho informa ter da perspectiva dele até o destino.",
+      "A soma de todos os atrasos das interfaces do roteador local até o vizinho.",
+      "O número de pacotes Query enviados em multicast durante uma falha de link.",
+      "A distância administrativa padrão atribuída a rotas sumarizadas na RIB."
+    ],
+    "answer": "A métrica total que o roteador vizinho informa ter da perspectiva dele até o destino.",
+    "explanation": "A Reported Distance (RD) ou Advertised Distance (AD) corresponde à métrica que o vizinho reporta ter da sua posição até a rede de destino."
+  },
+  {
+    "question": "Qual é a fórmula matemática da Feasibility Condition (FC) que qualifica um caminho alternativo como Feasible Successor?",
+    "options": [
+      "RD do vizinho < FD local.",
+      "RD do vizinho > FD local.",
+      "FD local < RD do vizinho.",
+      "RD do vizinho = FD local."
+    ],
+    "answer": "RD do vizinho < FD local.",
+    "explanation": "A Feasibility Condition exige que a Reported Distance (RD) do vizinho seja estritamente menor que a Feasible Distance (FD) local."
+  },
+  {
+    "question": "Por que a condição RD < FD garante matematicamente que um Feasible Successor não cria um loop de roteamento?",
+    "options": [
+      "Porque se o vizinho encaminhasse de volta pelo roteador local, sua RD teria de incluir ao menos a FD local mais o trajeto até ele, tornando impossível RD < FD.",
+      "Porque pacotes com RD menor que a FD são enviados apenas em pacotes Hello sem carga útil.",
+      "Porque o roteador local bloqueia todas as respostas Reply vindas de vizinhos com métrica maior.",
+      "Porque a RD é sempre igual a zero para rotas aprendidas via Update."
+    ],
+    "answer": "Porque se o vizinho encaminhasse de volta pelo roteador local, sua RD teria de incluir ao menos a FD local mais o trajeto até ele, tornando impossível RD < FD.",
+    "explanation": "Se o caminho do vizinho retornasse pelo roteador local, sua distância até o destino não seria menor que a FD local, garantindo que RD < FD evita loops."
+  },
+  {
+    "question": "Na imagem de validação da Feasibility Condition, R1 tem FD = 15 para 10.10.10.0/24 via R2 (Successor). Se R3 anuncia RD = 12 (com custo total de R1 via R3 igual a 22) e R5 anuncia RD = 20, qual é o status de R3 e R5?",
+    "options": [
+      "R3 qualifica-se como Feasible Successor (12 < 15), enquanto R5 é rejeitado como Feasible Successor (20 não é menor que 15).",
+      "R5 qualifica-se como Feasible Successor (20 > 15), enquanto R3 é rejeitado por ter custo total 22.",
+      "Ambos R3 e R5 tornam-se Successors simultâneos na tabela de roteamento.",
+      "Ambos R3 e R5 são rejeitados porque nenhuma rota alternativa pode ter custo total maior que 15."
+    ],
+    "answer": "R3 qualifica-se como Feasible Successor (12 < 15), enquanto R5 é rejeitado como Feasible Successor (20 não é menor que 15).",
+    "explanation": "R3 atende à Feasibility Condition porque sua RD (12) é menor que a FD local (15), mesmo tendo custo total maior (22); já R5 não atende porque sua RD (20) é maior que a FD (15)."
+  },
+  {
+    "question": "Qual é o comportamento do DUAL quando o link para o Successor cai e existe um Feasible Successor na Topology Table?",
+    "options": [
+      "Promove o Feasible Successor a novo Successor, atualiza a RIB e converge rapidamente sem necessidade de enviar pacotes Query.",
+      "Coloca a rota em estado Active e aguarda 3 minutos antes de consultar a Topology Table.",
+      "Apaga a Topology Table e envia pacotes Request em broadcast para todos os vizinhos.",
+      "Desativa a interface do Feasible Successor para evitar balanceamento desigual."
+    ],
+    "answer": "Promove o Feasible Successor a novo Successor, atualiza a RIB e converge rapidamente sem necessidade de enviar pacotes Query.",
+    "explanation": "Quando há um Feasible Successor válido na Topology Table, ele já está livre de loops e pode assumir como novo Successor sem depender de envio de Queries."
+  },
+  {
+    "question": "Qual é a diferença entre uma rota em estado Passive (P) e uma rota em estado Active (A) na saída de show ip eigrp topology?",
+    "options": [
+      "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando Replies a Queries.",
+      "Passive (P) indica que o roteador está enviando Queries; Active (A) indica que o caminho está em standby sem uso.",
+      "Passive (P) indica falha de adjacência por K-values; Active (A) indica rota sumarizada para Null0.",
+      "Não há diferença; ambos indicam que o roteador está em convergência."
+    ],
+    "answer": "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando Replies a Queries.",
+    "explanation": "O estado Passive (P) mostra estabilidade após a convergência, enquanto Active (A) mostra que o DUAL perdeu o caminho sem Feasible Successor e aguarda respostas às Queries enviadas."
+  },
+  {
+    "question": "Onde ficam armazenadas as rotas alternativas (incluindo Feasible Successors e rotas que não atendem à Feasibility Condition) antes da seleção final para a RIB?",
+    "options": [
+      "Na Topology Table (Tabela de Topologia).",
+      "Apenas na interface Null0.",
+      "Exclusivamente na Neighbor Table.",
+      "Apenas no cabeçalho de protocolo IP 88."
+    ],
+    "answer": "Na Topology Table (Tabela de Topologia).",
+    "explanation": "A Topology Table armazena todos os prefixos anunciados, os vizinhos, os valores de FD e RD e os caminhos alternativos avaliados pelo DUAL, enquanto a RIB recebe os Successors eleitos."
+  },
+  {
+    "question": "Quais são os cinco parâmetros associados aos coeficientes K1 a K5 na métrica composta do EIGRP e quais vêm habilitados por padrão?",
+    "options": [
+      "K1 (Bandwidth), K2 (Load), K3 (Delay), K4 (Reliability) e K5 (MTU); por padrão, apenas K1 e K3 estão ativos (K1=1, K2=0, K3=1, K4=0, K5=0).",
+      "K1 (Hop Count), K2 (Delay), K3 (Bandwidth), K4 (Cost) e K5 (Hold Time); por padrão, todos os cinco ficam ativos.",
+      "K1 (Reliability), K2 (MTU), K3 (Hop Count), K4 (Bandwidth) e K5 (Load); por padrão, apenas K2 e K4 estão ativos.",
+      "K1 (Delay), K2 (Hop Count), K3 (Load), K4 (Bandwidth) e K5 (AD); por padrão, K1, K2 e K3 estão ativos."
+    ],
+    "answer": "K1 (Bandwidth), K2 (Load), K3 (Delay), K4 (Reliability) e K5 (MTU); por padrão, apenas K1 e K3 estão ativos (K1=1, K2=0, K3=1, K4=0, K5=0).",
+    "explanation": "A métrica do EIGRP utiliza até cinco parâmetros ponderados por K1 a K5 (Bandwidth, Load, Delay, Reliability e MTU), sendo Bandwidth (K1) e Delay (K3) os únicos ativos por padrão."
+  },
+  {
+    "question": "Qual é o efeito imediato de configurar K-values diferentes entre dois roteadores EIGRP vizinhos?",
+    "options": [
+      "Impede a formação de adjacência entre os vizinhos.",
+      "Mantém a adjacência ativa, mas força a rota a entrar em estado Active.",
+      "Altera automaticamente a Administrative Distance de 90 para 170.",
+      "Converte o roteador em EIGRP Stub para evitar consultas."
+    ],
+    "answer": "Impede a formação de adjacência entre os vizinhos.",
+    "explanation": "Para estabelecer e manter uma adjacência EIGRP funcional, os valores de K (K1 a K5) devem coincidir estritamente entre os vizinhos."
+  },
+  {
+    "question": "Na fórmula clássica do EIGRP com os K-values padrão (K1=1 e K3=1), como é calculada a métrica e como ocorre o arredondamento da largura de banda?",
+    "options": [
+      "Multiplica-se 256 pela soma da divisão inteira de 10^7 pela menor Bandwidth (em Kbps) com a soma dos Delays (em microssegundos divididos por 10).",
+      "Soma-se a largura de banda média de todos os enlaces ao maior Delay e multiplica-se por 10.",
+      "Divide-se 10^7 pela soma das larguras de banda e multiplica-se pelo Hold Time.",
+      "Multiplica-se o Hop Count por 256 e soma-se a largura de banda em Mbps."
+    ],
+    "answer": "Multiplica-se 256 pela soma da divisão inteira de 10^7 pela menor Bandwidth (em Kbps) com a soma dos Delays (em microssegundos divididos por 10).",
+    "explanation": "Na métrica clássica padrão, o cálculo faz 256 * (floor(10^7 / menor Bandwidth em Kbps) + soma(Delay em us / 10)), utilizando divisão inteira na parcela de banda."
+  },
+  {
+    "question": "Por que a métrica clássica de 32 bits do EIGRP apresenta limitação em enlaces de alta velocidade iguais ou superiores a 10 Gbps?",
+    "options": [
+      "Porque a referência de banda é 10^7 Kbps (10 Gbps), fazendo com que enlaces de 10 Gbps ou superiores resultem no mesmo valor mínimo inteiro na divisão, sem distinguir 10G de 40G ou 100G.",
+      "Porque interfaces acima de 10 Gbps desativam o envio de pacotes Hello multicast.",
+      "Porque o EIGRP clássico limita o Autonomous System a valores abaixo de 10.",
+      "Porque a fórmula clássica ignora a menor largura de banda quando o delay é maior que 10."
+    ],
+    "answer": "Porque a referência de banda é 10^7 Kbps (10 Gbps), fazendo com que enlaces de 10 Gbps ou superiores resultem no mesmo valor mínimo inteiro na divisão, sem distinguir 10G de 40G ou 100G.",
+    "explanation": "Com referência de 10^7 Kbps (10 Gbps), a métrica clássica não diferencia enlaces de 10 Gbps de outros de maior velocidade, limitação superada pelas Wide Metrics (64 bits) no Named Mode."
+  },
+  {
+    "question": "Qual é a principal vantagem das Wide Metrics (64 bits) habilitadas por padrão no EIGRP Named Mode em relação à métrica clássica?",
+    "options": [
+      "Ampliam a escala de referência de largura de banda e a precisão de delay, superando a limitação da fórmula clássica em enlaces de alta velocidade e aplicando escala na instalação na RIB.",
+      "Eliminam a necessidade de calcular a Feasibility Condition (RD < FD) para rotas de backup.",
+      "Permitem que roteadores com valores de K diferentes formem adjacência sem restrições.",
+      "Substituem a tabela de topologia por uma tabela única de vizinhos."
+    ],
+    "answer": "Ampliam a escala de referência de largura de banda e a precisão de delay, superando a limitação da fórmula clássica em enlaces de alta velocidade e aplicando escala na instalação na RIB.",
+    "explanation": "As Wide Metrics (64 bits), ativas por padrão no Named Mode, ampliam a escala de banda e delay para lidar com enlaces de alta velocidade e ajustam a métrica via fator de escala ao instalar na RIB."
+  },
+  {
+    "question": "Qual é o intervalo permitido para o multiplicador do comando variance no EIGRP e qual é o seu valor padrão?",
+    "options": [
+      "Vai de 1 a 128, com valor padrão igual a 1.",
+      "Vai de 0 a 255, com valor padrão igual a 90.",
+      "Vai de 1 a 16, com valor padrão igual a 4.",
+      "Vai de 5 a 170, com valor padrão igual a 5."
+    ],
+    "answer": "Vai de 1 a 128, com valor padrão igual a 1.",
+    "explanation": "O variance é um multiplicador inteiro configurável de 1 a 128 (padrão 1) usado para habilitar unequal-cost load balancing."
+  },
+  {
+    "question": "Para que uma rota alternativa participe do balanceamento de carga desigual (unequal-cost load balancing) com o comando variance, quais duas condições devem ser atendidas simultaneamente?",
+    "options": [
+      "Ser um Feasible Successor (RD < FD) e ter métrica total menor ou igual a (FD do Successor * Variance).",
+      "Ter Administrative Distance menor que 5 e pertencer a outro Autonomous System.",
+      "Estar em estado Active na tabela de topologia e ter Hold Time igual a 180 segundos.",
+      "Ter o mesmo valor de delay que o enlace da rota padrão 0.0.0.0/0."
+    ],
+    "answer": "Ser um Feasible Successor (RD < FD) e ter métrica total menor ou igual a (FD do Successor * Variance).",
+    "explanation": "A rota alternativa precisa ser um Feasible Successor (garantindo ausência de loop via RD < FD) e apresentar métrica total <= FD do Successor * Variance."
+  },
+  {
+    "question": "Quando o balanceamento com variance é aplicado e múltiplas rotas são instaladas na RIB, como o tráfego é distribuído entre os caminhos?",
+    "options": [
+      "De forma proporcional às métricas de cada caminho, enviando maior proporção de tráfego pelos caminhos de menor métrica.",
+      "Enviando 100% do tráfego apenas pelo caminho com maior métrica até ele falhar.",
+      "Alternando pacote a pacote de forma estritamente igual independentemente da métrica.",
+      "Enviando apenas pacotes Hello por um caminho e dados pelo outro."
+    ],
+    "answer": "De forma proporcional às métricas de cada caminho, enviando maior proporção de tráfego pelos caminhos de menor métrica.",
+    "explanation": "No unequal-cost load balancing via variance, o tráfego é distribuído proporcionalmente às métricas dos caminhos elegíveis instalados na RIB."
+  },
+  {
+    "question": "Qual é a diferença fundamental entre ECMP (Equal-Cost Multi-Path) e o balanceamento com variance no EIGRP?",
+    "options": [
+      "ECMP distribui tráfego entre caminhos de custo idêntico, enquanto variance permite balanceamento entre caminhos de custos diferentes que atendam aos critérios do EIGRP.",
+      "ECMP só funciona em rotas estáticas e variance só funciona em rotas conectadas diretamente.",
+      "ECMP exige variance 128 e variance exige desativar a tabela de topologia.",
+      "Não há diferença; ambos exigem métricas exatamente iguais."
+    ],
+    "answer": "ECMP distribui tráfego entre caminhos de custo idêntico, enquanto variance permite balanceamento entre caminhos de custos diferentes que atendam aos critérios do EIGRP.",
+    "explanation": "O ECMP instala caminhos de mesma métrica total, enquanto o variance habilita o balanceamento de custo desigual entre rotas alternativas elegíveis."
+  },
+  {
+    "question": "Qual comando permite verificar o Autonomous System, os valores ativos de K1 a K5, a distância administrativa e a configuração de variance do processo EIGRP?",
+    "options": [
+      "show ip protocols.",
+      "show ip route 0.0.0.0.",
+      "show ipv6 interface brief.",
+      "show mac address-table."
+    ],
+    "answer": "show ip protocols.",
+    "explanation": "O comando show ip protocols exibe os parâmetros globais do processo EIGRP, incluindo AS, valores de K1-K5, distância administrativa padrão e configuração de variance."
+  },
+  {
+    "question": "Na saída do comando show ip eigrp topology, o que indicam respectivamente os estados Passive (P) e Active (A) de uma rota?",
+    "options": [
+      "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando respostas Reply a Queries enviadas na rede.",
+      "Passive (P) indica que o roteador está enviando Queries para outros ASs; Active (A) indica que o link está desabilitado administrativamente.",
+      "Passive (P) indica falha de adjacência por K-values; Active (A) indica rota sumarizada com AD 5 para Null0.",
+      "Passive (P) e Active (A) significam que a rota está em balanceamento ECMP na RIB."
+    ],
+    "answer": "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando respostas Reply a Queries enviadas na rede.",
+    "explanation": "O estado Passive (P) representa estabilidade e convergência concluída, enquanto o estado Active (A) mostra que o roteador perdeu o caminho principal sem ter um Feasible Successor e aguarda Replys às Queries enviadas."
+  },
+  {
+    "question": "Quando um roteador perde o caminho do Successor e não possui um Feasible Successor com RD < FD, qual é o primeiro passo da convergência no algoritmo DUAL?",
+    "options": [
+      "A rota entra em estado Active e o roteador envia pacotes Query para buscar um caminho alternativo.",
+      "O roteador instala imediatamente uma rota estática para Null0 com AD 5.",
+      "O roteador ignora a falha por 180 segundos até o Hold Time expirar em todos os vizinhos.",
+      "O roteador altera automaticamente seu número de Autonomous System para reiniciar a tabela."
+    ],
+    "answer": "A rota entra em estado Active e o roteador envia pacotes Query para buscar um caminho alternativo.",
+    "explanation": "Sem um Feasible Successor disponível na Topology Table, a rota transita para Active e o roteador dispara pacotes Query para localizar uma rota alternativa."
+  },
+  {
+    "question": "Como o RTP trata o envio de pacotes Query e Reply em relação à confiabilidade e como ocorre a retransmissão caso um pacote não seja confirmado?",
+    "options": [
+      "Query e Reply são pacotes confiáveis que exigem ACK e controle de sequência; se um pacote não for confirmado dentro do RTO, o RTP faz retransmissões via unicast.",
+      "Query e Reply são pacotes não confiáveis enviados em broadcast sem necessidade de ACK.",
+      "Query é não confiável e Reply é enviado apenas em pacotes Hello vazios.",
+      "A retransmissão ocorre apenas a cada 60 segundos em interfaces Ethernet."
+    ],
+    "answer": "Query e Reply são pacotes confiáveis que exigem ACK e controle de sequência; se um pacote não for confirmado dentro do RTO, o RTP faz retransmissões via unicast.",
+    "explanation": "Sob o RTP, Query e Reply exigem confirmação via ACK; se não houver confirmação dentro do RTO, o RTP retransmite via unicast até o limite antes de encerrar a adjacência."
+  },
+  {
+    "question": "Qual é a diferença de convergência quando existe um Feasible Successor na Topology Table em comparação a quando não existe?",
+    "options": [
+      "Com Feasible Successor (RD < FD), o DUAL promove a rota de backup rapidamente sem enviar Queries; sem ele, a rota vai para Active e envia Queries aguardando Replies.",
+      "Com Feasible Successor, o roteador aguarda 3 minutos em Active; sem ele, a convergência é instantânea sem consultas.",
+      "A existência de Feasible Successor só afeta rotas estáticas com AD 1.",
+      "Sem Feasible Successor, o roteador usa a Neighbor Table como RIB sem esperar Replies."
+    ],
+    "answer": "Com Feasible Successor (RD < FD), o DUAL promove a rota de backup rapidamente sem enviar Queries; sem ele, a rota vai para Active e envia Queries aguardando Replies.",
+    "explanation": "Um Feasible Successor pré-validado (RD < FD) permite transição rápida sem Queries, ao passo que a ausência dele leva a rota ao estado Active com envio de Queries e espera de Replies."
+  },
+  {
+    "question": "O que caracteriza a condição Stuck-in-Active (SIA) durante a convergência de uma rota no EIGRP?",
+    "options": [
+      "Ocorre quando uma rota permanece aguardando respostas Reply a Queries além do tempo limite do Active Timer (padrão de 3 minutos), podendo levar à queda da adjacência.",
+      "Ocorre quando dois vizinhos possuem Hello Timer de 5s e 60s no mesmo enlace.",
+      "Ocorre quando uma rota sumarizada aponta para Null0 com Administrative Distance 5.",
+      "Ocorre quando a RIB possui mais de 4 rotas com a mesma métrica ECMP."
+    ],
+    "answer": "Ocorre quando uma rota permanece aguardando respostas Reply a Queries além do tempo limite do Active Timer (padrão de 3 minutos), podendo levar à queda da adjacência.",
+    "explanation": "A condição Stuck-in-Active (SIA) acontece quando a espera por Replies a Queries ultrapassa o tempo limite do Active Timer (3 minutos), podendo derrubar a adjacência com o vizinho não responsivo."
+  },
+  {
+    "question": "Como funcionam os mecanismos SIA-Query e SIA-Reply na metade do Active Timer (90 segundos)?",
+    "options": [
+      "O roteador envia um SIA-Query para verificar se o vizinho ainda está operacional e aguardando Replies downstream; se o vizinho responder com SIA-Reply, o tempo de espera é renovado.",
+      "O SIA-Query força o encerramento imediato de todas as adjacências do Autonomous System aos 90 segundos.",
+      "O SIA-Reply substitui o pacote Hello para manter a sub-rede primária ativa.",
+      "Eles são usados apenas em interfaces configuradas como passive-interface."
+    ],
+    "answer": "O roteador envia um SIA-Query para verificar se o vizinho ainda está operacional e aguardando Replies downstream; se o vizinho responder com SIA-Reply, o tempo de espera é renovado.",
+    "explanation": "Aos 90 segundos (metade do Active Timer de 3 minutos), o SIA-Query consulta se o vizinho continua ativo aguardando respostas downstream, e o SIA-Reply renova a espera evitando quedas indevidas."
+  },
+  {
+    "question": "Em cenários Hub-and-Spoke, como a configuração de EIGRP Stub ajuda a prevenir tempestades de Queries e falhas de SIA?",
+    "options": [
+      "Informa aos roteadores centrais que o Spoke não deve ser consultado para buscar caminhos alternativos, suprimindo o envio de Queries para a filial.",
+      "Aumenta o Active Timer do Hub de 3 minutos para 30 minutos em todas as interfaces.",
+      "Permite que o Spoke roteie automaticamente pacotes entre diferentes Autonomous Systems sem isolamento.",
+      "Desativa a necessidade de pacotes Hello na interface WAN do Spoke."
+    ],
+    "answer": "Informa aos roteadores centrais que o Spoke não deve ser consultado para buscar caminhos alternativos, suprimindo o envio de Queries para a filial.",
+    "explanation": "Com eigrp stub, o roteador de filial sinaliza que não atua como trânsito para buscas de rotas alternativas, evitando que o Hub envie Queries para ele e reduzindo o risco de SIA."
+  },
+  {
+    "question": "Qual é o significado da coluna Q Cnt na saída do comando show ip eigrp neighbors durante a análise de adjacência e convergência?",
+    "options": [
+      "Indica a quantidade de pacotes EIGRP na fila pendente de envio/confirmação; valores persistentemente altos sugerem atraso ou perda na confirmação de pacotes confiáveis.",
+      "Indica o número de rotas em estado Passive na tabela de topologia.",
+      "Indica o valor do multiplicador variance configurado no processo.",
+      "Indica o número de interfaces em modo passive-interface."
+    ],
+    "answer": "Indica a quantidade de pacotes EIGRP na fila pendente de envio/confirmação; valores persistentemente altos sugerem atraso ou perda na confirmação de pacotes confiáveis.",
+    "explanation": "Na saída de show ip eigrp neighbors, a coluna Q Cnt mostra pacotes pendentes na fila; valores continuamente acima de zero apontam congestionamento ou perda na confirmação de pacotes confiáveis."
+  },
+  {
+    "question": "Se um roteador envia Queries para vizinhos durante uma mudança de topologia, quais condições determinam o retorno da rota ao estado Passive (P)?",
+    "options": [
+      "O recebimento das respostas Reply dos vizinhos consultados dentro do prazo, permitindo recalcular a FD e eleger o novo Successor.",
+      "A alteração manual do comando ip summary-address eigrp para Null0.",
+      "A expiração do Hold Time de todos os vizinhos para zero.",
+      "A desativação do RTP sobre o protocolo IP 88."
+    ],
+    "answer": "O recebimento das respostas Reply dos vizinhos consultados dentro do prazo, permitindo recalcular a FD e eleger o novo Successor.",
+    "explanation": "Após enviar Queries e aguardar os Replys, quando as respostas chegam no prazo, o DUAL recalcula a FD, elege o novo Successor e retorna a rota ao estado Passive."
+  },
+  {
+    "question": "Por que um roteador EIGRP que possui um Feasible Successor não precisa enviar Queries ao perder o caminho atual do Successor?",
+    "options": [
+      "Porque o Feasible Successor já satisfaz a Feasibility Condition (RD < FD), sendo um caminho alternativo livre de loops pronto para assumir.",
+      "Porque o Feasible Successor já vem instalado como rota estática com AD 1 na RIB.",
+      "Porque o EIGRP nunca envia Queries quando o protocolo IP é o número 88.",
+      "Porque o Feasible Successor zera o delay de todas as interfaces do caminho."
+    ],
+    "answer": "Porque o Feasible Successor já satisfaz a Feasibility Condition (RD < FD), sendo um caminho alternativo livre de loops pronto para assumir.",
+    "explanation": "Como o Feasible Successor atende à Feasibility Condition (RD < FD), o DUAL já o valida como livre de loops, permitindo promovê-lo rapidamente sem disparar Queries."
+  },
+  {
+    "question": "Qual é o objetivo arquitetural do recurso EIGRP Stub em topologias corporativas, especialmente em cenários Hub-and-Spoke?",
+    "options": [
+      "Instruir vizinhos a não enviarem pacotes Query para roteadores de borda ou filiais, reduzindo o escopo de buscas durante mudanças de topologia.",
+      "Permitir que um roteador de filial atue como trânsito obrigatório entre diferentes Autonomous Systems sem isolamento.",
+      "Substituir a tabela de topologia por uma base de dados Link-State completa em todos os roteadores Spoke.",
+      "Desativar o cálculo de métrica e encaminhar pacotes apenas por contagem de saltos limitada a 15."
+    ],
+    "answer": "Instruir vizinhos a não enviarem pacotes Query para roteadores de borda ou filiais, reduzindo o escopo de buscas durante mudanças de topologia.",
+    "explanation": "O EIGRP Stub evita que vizinhos enviem Queries para roteadores de borda/filial que não devem servir de trânsito, delimitando as buscas durante alterações de topologia."
+  },
+  {
+    "question": "Como um roteador configurado como EIGRP Stub sinaliza aos roteadores vizinhos que ele não deve ser consultado para buscar caminhos alternativos?",
+    "options": [
+      "Por meio de um bit específico anunciado dentro dos pacotes Hello.",
+      "Alterando o número de protocolo IP de 88 para 89 nos pacotes Update.",
+      "Configurando uma rota estática com Administrative Distance 0 para o endereço multicast 224.0.0.10.",
+      "Enviando pacotes Reply em broadcast a cada 5 segundos."
+    ],
+    "answer": "Por meio de um bit específico anunciado dentro dos pacotes Hello.",
+    "explanation": "O roteador Stub anuncia sua condição aos vizinhos por meio de um bit específico no pacote Hello, fazendo com que os vizinhos suprimam o envio de Queries para ele."
+  },
+  {
+    "question": "Qual problema crítico em redes Hub-and-Spoke o EIGRP Stub ajuda a prevenir ao suprimir o envio de Queries para os roteadores Spoke?",
+    "options": [
+      "Tempestades de consultas (Query Storms) e falhas de Stuck-in-Active (SIA) causadas por demora ou ausência de Reply em enlaces de filiais.",
+      "Conflito de endereçamento Link-Local IPv6 (FE80::/10) entre interfaces Ethernet.",
+      "Excesso de rotas estáticas recursivas apontando para a interface Null0.",
+      "Incompatibilidade de Administrative Distance entre rotas conectadas (AD 0) e estáticas (AD 1)."
+    ],
+    "answer": "Tempestades de consultas (Query Storms) e falhas de Stuck-in-Active (SIA) causadas por demora ou ausência de Reply em enlaces de filiais.",
+    "explanation": "Ao evitar que o Hub envie Queries para filiais que não possuem rotas de trânsito, o EIGRP Stub reduz o volume de consultas e mitiga o risco de Stuck-in-Active (SIA)."
+  },
+  {
+    "question": "Qual comando é exibido na documentação como exemplo recomendado de configuração de EIGRP Stub em um roteador de filial (Spoke) no AS 100?",
+    "options": [
+      "eigrp stub connected summary, dentro do modo de configuração do roteador EIGRP.",
+      "ip summary-address eigrp 100 0.0.0.0 0.0.0.0, na interface de saída.",
+      "variance 128, no modo de configuração de interface.",
+      "passive-interface default, no modo de configuração global."
+    ],
+    "answer": "eigrp stub connected summary, dentro do modo de configuração do roteador EIGRP.",
+    "explanation": "Em roteadores de borda ou filiais (Spokes), o comando eigrp stub connected summary (sob router eigrp 100) é o exemplo indicado para restringir consultas."
+  },
+  {
+    "question": "Se um roteador Hub perde o caminho do Successor de um prefixo e não tem Feasible Successor, o que acontece em relação a um vizinho Spoke configurado como EIGRP Stub?",
+    "options": [
+      "O Hub não envia pacote Query para o Spoke stub, contendo o domínio da consulta aos roteadores não-stub elegíveis.",
+      "O Hub envia Query apenas para o Spoke stub e ignora todos os roteadores centrais.",
+      "O Spoke stub é obrigado a responder com SIA-Query a cada 90 segundos para manter a rota na RIB.",
+      "O Hub derruba imediatamente a adjacência com o Spoke stub por falta de resposta."
+    ],
+    "answer": "O Hub não envia pacote Query para o Spoke stub, contendo o domínio da consulta aos roteadores não-stub elegíveis.",
+    "explanation": "Como o Spoke está configurado como Stub, os roteadores vizinhos suprimem o envio de Queries para ele, evitando consultas desnecessárias a filiais."
+  },
+  {
+    "question": "Qual é o papel dos mecanismos SIA-Query e SIA-Reply quando um roteador não-stub está aguardando respostas a um Query?",
+    "options": [
+      "Na metade do Active Timer (90 segundos), verificam se o vizinho ainda está ativo e aguardando Replies downstream, renovando a espera em vez de derrubar a adjacência indevidamente.",
+      "Substituem os pacotes Hello em enlaces de alta velocidade para reduzir o Hold Time para 15 segundos.",
+      "Convertem rotas em estado Active em rotas sumarizadas com Administrative Distance 5.",
+      "Permitem que o roteador stub passe a aceitar Queries de múltiplos Autonomous Systems."
+    ],
+    "answer": "Na metade do Active Timer (90 segundos), verificam se o vizinho ainda está ativo e aguardando Replies downstream, renovando a espera em vez de derrubar a adjacência indevidamente.",
+    "explanation": "SIA-Query e SIA-Reply atuam aos 90 segundos para checar se o vizinho continua operacional aguardando respostas downstream, evitando quedas prematuras por lentidão em outro trecho."
+  },
+  {
+    "question": "Qual comando permite verificar, entre os parâmetros globais do processo EIGRP, o status de Stub configurado no roteador?",
+    "options": [
+      "show ip protocols.",
+      "show ipv6 route.",
+      "show ip interface brief.",
+      "show running-config interface."
+    ],
+    "answer": "show ip protocols.",
+    "explanation": "O comando show ip protocols exibe informações globais do processo EIGRP, incluindo o status de Stub, valores de K1-K5, AS, distância administrativa e variance."
+  },
+  {
+    "question": "Por que faz sentido combinar EIGRP Stub em filiais com sumarização de rotas em roteadores de borda ou agregação?",
+    "options": [
+      "Porque ambas as técnicas reduzem a complexidade e o alcance de informações/consultas na rede, tornando a topologia mais escalável e previsível.",
+      "Porque o EIGRP Stub exige que todas as rotas tenham Administrative Distance igual a 5 na RIB.",
+      "Porque a sumarização desativa a necessidade de verificar K-values e Autonomous System na vizinhança.",
+      "Porque o EIGRP Stub só funciona se a rota padrão 0.0.0.0/0 for removida da tabela."
+    ],
+    "answer": "Porque ambas as técnicas reduzem a complexidade e o alcance de informações/consultas na rede, tornando a topologia mais escalável e previsível.",
+    "explanation": "Tanto o EIGRP Stub (contenção de Queries) quanto a sumarização (agregação de prefixos e redução de anúncios) são práticas voltadas à escalabilidade e estabilidade da rede."
+  },
+  {
+    "question": "O que ocorre se um vizinho não responde a um pacote Query dentro do tempo limite do Active Timer (padrão de 3 minutos) sem resolução de espera?",
+    "options": [
+      "A rota enfrenta a condição Stuck-in-Active (SIA), podendo provocar a queda da adjacência com o vizinho que não respondeu.",
+      "O roteador promove automaticamente a rota para Successor com métrica zero.",
+      "O pacote Query é reenviado via broadcast para todos os roteadores fora do Autonomous System.",
+      "O Hold Time é dobrado automaticamente para 360 segundos."
+    ],
+    "answer": "A rota enfrenta a condição Stuck-in-Active (SIA), podendo provocar a queda da adjacência com o vizinho que não respondeu.",
+    "explanation": "Se a espera por Reply ultrapassar o tempo limite do Active Timer (3 minutos), ocorre Stuck-in-Active (SIA), podendo derrubar a adjacência com o vizinho não responsivo."
+  },
+  {
+    "question": "Qual é a diferença entre uma rota em estado Passive (P) e uma rota em estado Active (A) durante um evento de falha e consulta de rotas?",
+    "options": [
+      "Passive (P) indica rota estável e convergente; Active (A) indica rota sem Feasible Successor que está aguardando Replies após o envio de Queries.",
+      "Passive (P) indica que o roteador está em Stub; Active (A) indica que o roteador está usando variance maior que 1.",
+      "Passive (P) indica que o pacote Hello não foi enviado; Active (A) indica que o RTP está desativado.",
+      "Passive (P) indica rota para Null0; Active (A) indica rota conectada diretamente."
+    ],
+    "answer": "Passive (P) indica rota estável e convergente; Active (A) indica rota sem Feasible Successor que está aguardando Replies após o envio de Queries.",
+    "explanation": "Rotas estáveis ficam em Passive (P), enquanto rotas que perderam o caminho sem Feasible Successor entram em Active (A) enquanto aguardam respostas Reply às Queries."
+  },
+  {
+    "question": "Qual é a Administrative Distance (AD) padrão atribuída a uma rota sumarizada gerada pelo EIGRP na tabela de roteamento (RIB)?",
+    "options": [
+      "AD 5.",
+      "AD 90.",
+      "AD 170.",
+      "AD 1."
+    ],
+    "answer": "AD 5.",
+    "explanation": "A rota sumarizada gerada pelo EIGRP e instalada localmente na RIB recebe Administrative Distance padrão igual a 5[cite: 5]."
+  },
+  {
+    "question": "Para qual interface virtual uma rota sumarizada manual do EIGRP aponta localmente e qual é a função de segurança desse comportamento?",
+    "options": [
+      "Aponta para Null0, atuando contra loops ao descartar localmente pacotes para sub-redes não alocadas dentro do bloco sumarizado quando há rota padrão 0.0.0.0/0.",
+      "Aponta para Loopback0, garantindo que pacotes sem destino retornem ao vizinho que enviou a atualização.",
+      "Aponta para a interface física de maior largura de banda, forçando balanceamento ECMP.",
+      "Aponta para o endereço multicast 224.0.0.10, enviando pacotes Query contínuos."
+    ],
+    "answer": "Aponta para Null0, atuando contra loops ao descartar localmente pacotes para sub-redes não alocadas dentro do bloco sumarizado quando há rota padrão 0.0.0.0/0.",
+    "explanation": "A rota para Null0 intercepta e descarta pacotes destinados a sub-redes não alocadas dentro do bloco sumarizado (mais específico que 0.0.0.0/0 pelo Longest Prefix Match), evitando loops com o vizinho[cite: 5]."
+  },
+  {
+    "question": "Como é calculada ou definida a métrica de uma rota sumarizada manual no EIGRP em relação às sub-redes específicas que ela agrega?",
+    "options": [
+      "Reflete a menor métrica entre os prefixos específicos componentes que estão ativos na tabela de topologia.",
+      "Soma as métricas de todas as sub-redes específicas e divide pelo número de interfaces ativas.",
+      "Recebe sempre uma métrica fixa igual a 5, independentemente dos enlaces componentes.",
+      "Herda a métrica da rota padrão 0.0.0.0/0 instalada na RIB."
+    ],
+    "answer": "Reflete a menor métrica entre os prefixos específicos componentes que estão ativos na tabela de topologia.",
+    "explanation": "A métrica da rota sumarizada corresponde à menor métrica dentre os prefixos específicos componentes ativos na tabela de topologia[cite: 5]."
+  },
+  {
+    "question": "Qual comando é utilizado em uma interface no Classic Mode para configurar uma rota sumarizada EIGRP no AS 100 para o bloco 192.168.0.0/22?",
+    "options": [
+      "ip summary-address eigrp 100 192.168.0.0 255.255.252.0.",
+      "eigrp stub connected summary.",
+      "variance 2.",
+      "router eigrp ENCOR_EIGRP."
+    ],
+    "answer": "ip summary-address eigrp 100 192.168.0.0 255.255.252.0.",
+    "explanation": "No modo de configuração de interface, o comando ip summary-address eigrp <AS> <rede> <máscara> configura a sumarização manual no EIGRP[cite: 5]."
+  },
+  {
+    "question": "Por que um prefixo sumarizado como 192.168.0.0/22 vence uma rota padrão 0.0.0.0/0 no encaminhamento de pacotes destinados a sub-redes não alocadas dentro desse bloco?",
+    "options": [
+      "Pelo princípio do Longest Prefix Match, pois a máscara /22 é mais específica que /0.",
+      "Porque rotas sumarizadas têm Administrative Distance 0, menor que a rota padrão.",
+      "Porque o protocolo IP 88 ignora rotas padrão sempre que existe um AS configurado.",
+      "Porque o roteador envia um pacote Query para o destino antes de consultar a RIB."
+    ],
+    "answer": "Pelo princípio do Longest Prefix Match, pois a máscara /22 é mais específica que /0.",
+    "explanation": "O prefixo sumarizado possui máscara mais específica que 0.0.0.0/0, prevalecendo na correspondência de prefixo mais longo para encaminhar ou descartar o pacote via Null0[cite: 5]."
+  },
+  {
+    "question": "Qual é a principal diferença estrutural de configuração entre o Classic Mode e o Named Mode do EIGRP?",
+    "options": [
+      "O Classic Mode configura o processo tradicional por família de endereços, enquanto o Named Mode centraliza a configuração sob um nome de instância e address-family, ativando Wide Metrics (64 bits) por padrão.",
+      "O Named Mode não suporta IPv4 unicast e exige desativar a tabela de topologia.",
+      "O Classic Mode ativa Wide Metrics de 64 bits por padrão, enquanto o Named Mode usa apenas métricas de 16 bits.",
+      "O Named Mode impede a configuração de variance e de timers na interface."
+    ],
+    "answer": "O Classic Mode configura o processo tradicional por família de endereços, enquanto o Named Mode centraliza a configuração sob um nome de instância e address-family, ativando Wide Metrics (64 bits) por padrão.",
+    "explanation": "O Named Mode organiza a instância por nome e address-family (como address-family ipv4 unicast autonomous-system 100) e habilita Wide Metrics de 64 bits por padrão[cite: 5]."
+  },
+  {
+    "question": "No exemplo de configuração em Named Mode, em qual submodo são configurados os parâmetros de variance e os parâmetros específicos de interface (como hello-interval e hold-time)?",
+    "options": [
+      "variance é configurada em topology base (submodo de topologia da address-family) e hello-interval/hold-time em af-interface (submodo de interface da address-family).",
+      "Ambos são configurados diretamente na interface física com o comando ip summary-address eigrp.",
+      "Ambos são configurados no modo global fora de router eigrp.",
+      "variance é configurada no af-interface e hello-interval no topology base."
+    ],
+    "answer": "variance é configurada em topology base (submodo de topologia da address-family) e hello-interval/hold-time em af-interface (submodo de interface da address-family).",
+    "explanation": "No Named Mode, variance fica em topology base (dentro da address-family) e os ajustes de interface como hello-interval e hold-time ficam em af-interface[cite: 5]."
+  },
+  {
+    "question": "Como a sumarização de rotas beneficia o roteador e a rede de forma geral na operação do EIGRP?",
+    "options": [
+      "Reduz o tamanho das tabelas de roteamento e a quantidade de anúncios propagados na rede.",
+      "Aumenta o número de entradas específicas enviadas em cada pacote Hello.",
+      "Dispensa a necessidade de manter adjacências com vizinhos do mesmo Autonomous System.",
+      "Substitui o algoritmo DUAL por envio periódico de broadcast a cada 15 segundos."
+    ],
+    "answer": "Reduz o tamanho das tabelas de roteamento e a quantidade de anúncios propagados na rede.",
+    "explanation": "A sumarização manual agrega prefixos, diminuindo o tamanho das tabelas de roteamento e o volume de anúncios propagados[cite: 5]."
+  },
+  {
+    "question": "Em um roteador de borda com sumarização ativa para um bloco interno, o que acontece com o tráfego destinado a sub-redes internas ativas versus sub-redes não alocadas dentro do mesmo bloco?",
+    "options": [
+      "Sub-redes ativas seguem por rotas mais específicas para os destinos internos, enquanto sub-redes não alocadas caem na rota para Null0 e são descartadas.",
+      "Ambas são enviadas de volta ao vizinho externo pela rota padrão 0.0.0.0/0.",
+      "Sub-redes ativas são descartadas na Null0 e sub-redes não alocadas vão para a Neighbor Table.",
+      "Ambas recebem Administrative Distance 170 como rotas externas."
+    ],
+    "answer": "Sub-redes ativas seguem por rotas mais específicas para os destinos internos, enquanto sub-redes não alocadas caem na rota para Null0 e são descartadas.",
+    "explanation": "Rotas mais específicas encaminham para sub-redes ativas, enquanto a rota sumarizada com destino Null0 descarta pacotes para sub-redes inexistentes dentro do bloco sumarizado[cite: 5]."
+  },
+  {
+    "question": "Qual é a largura de banda de referência na métrica clássica do EIGRP e como as Wide Metrics do Named Mode tratam enlaces de alta velocidade (como 10 Gbps ou superiores)?",
+    "options": [
+      "A métrica clássica usa referência de 10^7 Kbps (10 Gbps), onde enlaces >= 10 Gbps não se distinguem entre si, enquanto as Wide Metrics (64 bits) no Named Mode ampliam a escala para lidar com alta velocidade.",
+      "A métrica clássica usa 100 Gbps como base e as Wide Metrics usam 1,544 Mbps (T1).",
+      "Ambas usam a mesma escala de 16 bits e não diferenciam enlaces acima de 100 Mbps.",
+      "As Wide Metrics desativam o uso de Delay no cálculo da métrica."
+    ],
+    "answer": "A métrica clássica usa referência de 10^7 Kbps (10 Gbps), onde enlaces >= 10 Gbps não se distinguem entre si, enquanto as Wide Metrics (64 bits) no Named Mode ampliam a escala para lidar com alta velocidade.",
+    "explanation": "Na fórmula clássica, a referência é 10^7 Kbps (10 Gbps), limitando a distinção em enlaces de 10G ou superiores; já as Wide Metrics (64 bits), ativas por padrão no Named Mode, ampliam a escala de banda e delay[cite: 5]."
+  }
+
+
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 75 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

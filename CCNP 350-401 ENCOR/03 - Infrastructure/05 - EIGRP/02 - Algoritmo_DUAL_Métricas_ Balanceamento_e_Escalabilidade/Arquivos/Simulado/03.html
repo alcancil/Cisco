@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de EIGRP - Convergência, Queries, Reply e Estados Active/Passive (SIA)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado de EIGRP - Convergência, Queries, Reply e Estados Active/Passive (SIA)</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre EIGRP - Convergência, Queries, Reply e Estados Active/Passive (SIA). Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Na saída do comando show ip eigrp topology, o que indicam respectivamente os estados Passive (P) e Active (A) de uma rota?",
+    "options": [
+      "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando respostas Reply a Queries enviadas na rede.",
+      "Passive (P) indica que o roteador está enviando Queries para outros ASs; Active (A) indica que o link está desabilitado administrativamente.",
+      "Passive (P) indica falha de adjacência por K-values; Active (A) indica rota sumarizada com AD 5 para Null0.",
+      "Passive (P) e Active (A) significam que a rota está em balanceamento ECMP na RIB."
+    ],
+    "answer": "Passive (P) indica rota estável e convergente; Active (A) indica que o roteador perdeu o caminho sem Feasible Successor e está aguardando respostas Reply a Queries enviadas na rede.",
+    "explanation": "O estado Passive (P) representa estabilidade e convergência concluída, enquanto o estado Active (A) mostra que o roteador perdeu o caminho principal sem ter um Feasible Successor e aguarda Replys às Queries enviadas."
+  },
+  {
+    "question": "Quando um roteador perde o caminho do Successor e não possui um Feasible Successor com RD < FD, qual é o primeiro passo da convergência no algoritmo DUAL?",
+    "options": [
+      "A rota entra em estado Active e o roteador envia pacotes Query para buscar um caminho alternativo.",
+      "O roteador instala imediatamente uma rota estática para Null0 com AD 5.",
+      "O roteador ignora a falha por 180 segundos até o Hold Time expirar em todos os vizinhos.",
+      "O roteador altera automaticamente seu número de Autonomous System para reiniciar a tabela."
+    ],
+    "answer": "A rota entra em estado Active e o roteador envia pacotes Query para buscar um caminho alternativo.",
+    "explanation": "Sem um Feasible Successor disponível na Topology Table, a rota transita para Active e o roteador dispara pacotes Query para localizar uma rota alternativa."
+  },
+  {
+    "question": "Como o RTP trata o envio de pacotes Query e Reply em relação à confiabilidade e como ocorre a retransmissão caso um pacote não seja confirmado?",
+    "options": [
+      "Query e Reply são pacotes confiáveis que exigem ACK e controle de sequência; se um pacote não for confirmado dentro do RTO, o RTP faz retransmissões via unicast.",
+      "Query e Reply são pacotes não confiáveis enviados em broadcast sem necessidade de ACK.",
+      "Query é não confiável e Reply é enviado apenas em pacotes Hello vazios.",
+      "A retransmissão ocorre apenas a cada 60 segundos em interfaces Ethernet."
+    ],
+    "answer": "Query e Reply são pacotes confiáveis que exigem ACK e controle de sequência; se um pacote não for confirmado dentro do RTO, o RTP faz retransmissões via unicast.",
+    "explanation": "Sob o RTP, Query e Reply exigem confirmação via ACK; se não houver confirmação dentro do RTO, o RTP retransmite via unicast até o limite antes de encerrar a adjacência."
+  },
+  {
+    "question": "Qual é a diferença de convergência quando existe um Feasible Successor na Topology Table em comparação a quando não existe?",
+    "options": [
+      "Com Feasible Successor (RD < FD), o DUAL promove a rota de backup rapidamente sem enviar Queries; sem ele, a rota vai para Active e envia Queries aguardando Replies.",
+      "Com Feasible Successor, o roteador aguarda 3 minutos em Active; sem ele, a convergência é instantânea sem consultas.",
+      "A existência de Feasible Successor só afeta rotas estáticas com AD 1.",
+      "Sem Feasible Successor, o roteador usa a Neighbor Table como RIB sem esperar Replies."
+    ],
+    "answer": "Com Feasible Successor (RD < FD), o DUAL promove a rota de backup rapidamente sem enviar Queries; sem ele, a rota vai para Active e envia Queries aguardando Replies.",
+    "explanation": "Um Feasible Successor pré-validado (RD < FD) permite transição rápida sem Queries, ao passo que a ausência dele leva a rota ao estado Active com envio de Queries e espera de Replies."
+  },
+  {
+    "question": "O que caracteriza a condição Stuck-in-Active (SIA) durante a convergência de uma rota no EIGRP?",
+    "options": [
+      "Ocorre quando uma rota permanece aguardando respostas Reply a Queries além do tempo limite do Active Timer (padrão de 3 minutos), podendo levar à queda da adjacência.",
+      "Ocorre quando dois vizinhos possuem Hello Timer de 5s e 60s no mesmo enlace.",
+      "Ocorre quando uma rota sumarizada aponta para Null0 com Administrative Distance 5.",
+      "Ocorre quando a RIB possui mais de 4 rotas com a mesma métrica ECMP."
+    ],
+    "answer": "Ocorre quando uma rota permanece aguardando respostas Reply a Queries além do tempo limite do Active Timer (padrão de 3 minutos), podendo levar à queda da adjacência.",
+    "explanation": "A condição Stuck-in-Active (SIA) acontece quando a espera por Replies a Queries ultrapassa o tempo limite do Active Timer (3 minutos), podendo derrubar a adjacência com o vizinho não responsivo."
+  },
+  {
+    "question": "Como funcionam os mecanismos SIA-Query e SIA-Reply na metade do Active Timer (90 segundos)?",
+    "options": [
+      "O roteador envia um SIA-Query para verificar se o vizinho ainda está operacional e aguardando Replies downstream; se o vizinho responder com SIA-Reply, o tempo de espera é renovado.",
+      "O SIA-Query força o encerramento imediato de todas as adjacências do Autonomous System aos 90 segundos.",
+      "O SIA-Reply substitui o pacote Hello para manter a sub-rede primária ativa.",
+      "Eles são usados apenas em interfaces configuradas como passive-interface."
+    ],
+    "answer": "O roteador envia um SIA-Query para verificar se o vizinho ainda está operacional e aguardando Replies downstream; se o vizinho responder com SIA-Reply, o tempo de espera é renovado.",
+    "explanation": "Aos 90 segundos (metade do Active Timer de 3 minutos), o SIA-Query consulta se o vizinho continua ativo aguardando respostas downstream, e o SIA-Reply renova a espera evitando quedas indevidas."
+  },
+  {
+    "question": "Em cenários Hub-and-Spoke, como a configuração de EIGRP Stub ajuda a prevenir tempestades de Queries e falhas de SIA?",
+    "options": [
+      "Informa aos roteadores centrais que o Spoke não deve ser consultado para buscar caminhos alternativos, suprimindo o envio de Queries para a filial.",
+      "Aumenta o Active Timer do Hub de 3 minutos para 30 minutos em todas as interfaces.",
+      "Permite que o Spoke roteie automaticamente pacotes entre diferentes Autonomous Systems sem isolamento.",
+      "Desativa a necessidade de pacotes Hello na interface WAN do Spoke."
+    ],
+    "answer": "Informa aos roteadores centrais que o Spoke não deve ser consultado para buscar caminhos alternativos, suprimindo o envio de Queries para a filial.",
+    "explanation": "Com eigrp stub, o roteador de filial sinaliza que não atua como trânsito para buscas de rotas alternativas, evitando que o Hub envie Queries para ele e reduzindo o risco de SIA."
+  },
+  {
+    "question": "Qual é o significado da coluna Q Cnt na saída do comando show ip eigrp neighbors durante a análise de adjacência e convergência?",
+    "options": [
+      "Indica a quantidade de pacotes EIGRP na fila pendente de envio/confirmação; valores persistentemente altos sugerem atraso ou perda na confirmação de pacotes confiáveis.",
+      "Indica o número de rotas em estado Passive na tabela de topologia.",
+      "Indica o valor do multiplicador variance configurado no processo.",
+      "Indica o número de interfaces em modo passive-interface."
+    ],
+    "answer": "Indica a quantidade de pacotes EIGRP na fila pendente de envio/confirmação; valores persistentemente altos sugerem atraso ou perda na confirmação de pacotes confiáveis.",
+    "explanation": "Na saída de show ip eigrp neighbors, a coluna Q Cnt mostra pacotes pendentes na fila; valores continuamente acima de zero apontam congestionamento ou perda na confirmação de pacotes confiáveis."
+  },
+  {
+    "question": "Se um roteador envia Queries para vizinhos durante uma mudança de topologia, quais condições determinam o retorno da rota ao estado Passive (P)?",
+    "options": [
+      "O recebimento das respostas Reply dos vizinhos consultados dentro do prazo, permitindo recalcular a FD e eleger o novo Successor.",
+      "A alteração manual do comando ip summary-address eigrp para Null0.",
+      "A expiração do Hold Time de todos os vizinhos para zero.",
+      "A desativação do RTP sobre o protocolo IP 88."
+    ],
+    "answer": "O recebimento das respostas Reply dos vizinhos consultados dentro do prazo, permitindo recalcular a FD e eleger o novo Successor.",
+    "explanation": "Após enviar Queries e aguardar os Replys, quando as respostas chegam no prazo, o DUAL recalcula a FD, elege o novo Successor e retorna a rota ao estado Passive."
+  },
+  {
+    "question": "Por que um roteador EIGRP que possui um Feasible Successor não precisa enviar Queries ao perder o caminho atual do Successor?",
+    "options": [
+      "Porque o Feasible Successor já satisfaz a Feasibility Condition (RD < FD), sendo um caminho alternativo livre de loops pronto para assumir.",
+      "Porque o Feasible Successor já vem instalado como rota estática com AD 1 na RIB.",
+      "Porque o EIGRP nunca envia Queries quando o protocolo IP é o número 88.",
+      "Porque o Feasible Successor zera o delay de todas as interfaces do caminho."
+    ],
+    "answer": "Porque o Feasible Successor já satisfaz a Feasibility Condition (RD < FD), sendo um caminho alternativo livre de loops pronto para assumir.",
+    "explanation": "Como o Feasible Successor atende à Feasibility Condition (RD < FD), o DUAL já o valida como livre de loops, permitindo promovê-lo rapidamente sem disparar Queries."
+  }
+
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

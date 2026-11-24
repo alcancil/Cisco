@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulado de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6">
+    <div id="start-screen" class="text-center">
+      <h1 class="text-2xl font-bold mb-4">Simulado deSimulado de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance</h1>
+      <p class="mb-6 text-slate-600">Este simulado contém 10 questões sobre Simulado de Eigrp - Métrica Composta (K-values), Cálculo (Classic vs. Wide) e Variance. Você terá 10 minutos para concluir.</p>
+      <div class="max-w-sm mx-auto mb-4">
+  <label for="user-name" class="block text-left text-sm font-medium text-slate-700 mb-1">Seu nome</label>
+  <input id="user-name" type="text" placeholder="Digite seu nome" class="w-full px-3 py-2 rounded-lg border" />
+</div>
+<button onclick="startQuiz()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Iniciar</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <span id="timer" class="font-semibold text-slate-700">Tempo: 10:00</span>
+        <span id="question-number" class="font-semibold text-slate-700">1</span>
+      </div>
+
+      <div class="w-full bg-slate-200 rounded-full h-3 mb-6">
+        <div id="progress-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+
+      <h2 id="question-text" class="text-lg font-semibold mb-4"></h2>
+      <div id="options" class="space-y-3"></div>
+      <button id="next-btn" onclick="nextQuestion()" disabled class="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Próxima Questão</button>
+    </div>
+
+    <div id="result-screen" class="hidden text-center">
+      <h2 class="text-2xl font-bold mb-4">Resultado</h2>
+      <p id="score" class="mb-4 text-lg"></p>
+      <div id="review" class="text-left space-y-4"></div>
+      <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Refazer Simulado</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    "question": "Quais são os cinco parâmetros associados aos coeficientes K1 a K5 na métrica composta do EIGRP e quais vêm habilitados por padrão?",
+    "options": [
+      "K1 (Bandwidth), K2 (Load), K3 (Delay), K4 (Reliability) e K5 (MTU); por padrão, apenas K1 e K3 estão ativos (K1=1, K2=0, K3=1, K4=0, K5=0).",
+      "K1 (Hop Count), K2 (Delay), K3 (Bandwidth), K4 (Cost) e K5 (Hold Time); por padrão, todos os cinco ficam ativos.",
+      "K1 (Reliability), K2 (MTU), K3 (Hop Count), K4 (Bandwidth) e K5 (Load); por padrão, apenas K2 e K4 estão ativos.",
+      "K1 (Delay), K2 (Hop Count), K3 (Load), K4 (Bandwidth) e K5 (AD); por padrão, K1, K2 e K3 estão ativos."
+    ],
+    "answer": "K1 (Bandwidth), K2 (Load), K3 (Delay), K4 (Reliability) e K5 (MTU); por padrão, apenas K1 e K3 estão ativos (K1=1, K2=0, K3=1, K4=0, K5=0).",
+    "explanation": "A métrica do EIGRP utiliza até cinco parâmetros ponderados por K1 a K5 (Bandwidth, Load, Delay, Reliability e MTU), sendo Bandwidth (K1) e Delay (K3) os únicos ativos por padrão."
+  },
+  {
+    "question": "Qual é o efeito imediato de configurar K-values diferentes entre dois roteadores EIGRP vizinhos?",
+    "options": [
+      "Impede a formação de adjacência entre os vizinhos.",
+      "Mantém a adjacência ativa, mas força a rota a entrar em estado Active.",
+      "Altera automaticamente a Administrative Distance de 90 para 170.",
+      "Converte o roteador em EIGRP Stub para evitar consultas."
+    ],
+    "answer": "Impede a formação de adjacência entre os vizinhos.",
+    "explanation": "Para estabelecer e manter uma adjacência EIGRP funcional, os valores de K (K1 a K5) devem coincidir estritamente entre os vizinhos."
+  },
+  {
+    "question": "Na fórmula clássica do EIGRP com os K-values padrão (K1=1 e K3=1), como é calculada a métrica e como ocorre o arredondamento da largura de banda?",
+    "options": [
+      "Multiplica-se 256 pela soma da divisão inteira de 10^7 pela menor Bandwidth (em Kbps) com a soma dos Delays (em microssegundos divididos por 10).",
+      "Soma-se a largura de banda média de todos os enlaces ao maior Delay e multiplica-se por 10.",
+      "Divide-se 10^7 pela soma das larguras de banda e multiplica-se pelo Hold Time.",
+      "Multiplica-se o Hop Count por 256 e soma-se a largura de banda em Mbps."
+    ],
+    "answer": "Multiplica-se 256 pela soma da divisão inteira de 10^7 pela menor Bandwidth (em Kbps) com a soma dos Delays (em microssegundos divididos por 10).",
+    "explanation": "Na métrica clássica padrão, o cálculo faz 256 * (floor(10^7 / menor Bandwidth em Kbps) + soma(Delay em us / 10)), utilizando divisão inteira na parcela de banda."
+  },
+  {
+    "question": "Por que a métrica clássica de 32 bits do EIGRP apresenta limitação em enlaces de alta velocidade iguais ou superiores a 10 Gbps?",
+    "options": [
+      "Porque a referência de banda é 10^7 Kbps (10 Gbps), fazendo com que enlaces de 10 Gbps ou superiores resultem no mesmo valor mínimo inteiro na divisão, sem distinguir 10G de 40G ou 100G.",
+      "Porque interfaces acima de 10 Gbps desativam o envio de pacotes Hello multicast.",
+      "Porque o EIGRP clássico limita o Autonomous System a valores abaixo de 10.",
+      "Porque a fórmula clássica ignora a menor largura de banda quando o delay é maior que 10."
+    ],
+    "answer": "Porque a referência de banda é 10^7 Kbps (10 Gbps), fazendo com que enlaces de 10 Gbps ou superiores resultem no mesmo valor mínimo inteiro na divisão, sem distinguir 10G de 40G ou 100G.",
+    "explanation": "Com referência de 10^7 Kbps (10 Gbps), a métrica clássica não diferencia enlaces de 10 Gbps de outros de maior velocidade, limitação superada pelas Wide Metrics (64 bits) no Named Mode."
+  },
+  {
+    "question": "Qual é a principal vantagem das Wide Metrics (64 bits) habilitadas por padrão no EIGRP Named Mode em relação à métrica clássica?",
+    "options": [
+      "Ampliam a escala de referência de largura de banda e a precisão de delay, superando a limitação da fórmula clássica em enlaces de alta velocidade e aplicando escala na instalação na RIB.",
+      "Eliminam a necessidade de calcular a Feasibility Condition (RD < FD) para rotas de backup.",
+      "Permitem que roteadores com valores de K diferentes formem adjacência sem restrições.",
+      "Substituem a tabela de topologia por uma tabela única de vizinhos."
+    ],
+    "answer": "Ampliam a escala de referência de largura de banda e a precisão de delay, superando a limitação da fórmula clássica em enlaces de alta velocidade e aplicando escala na instalação na RIB.",
+    "explanation": "As Wide Metrics (64 bits), ativas por padrão no Named Mode, ampliam a escala de banda e delay para lidar com enlaces de alta velocidade e ajustam a métrica via fator de escala ao instalar na RIB."
+  },
+  {
+    "question": "Qual é o intervalo permitido para o multiplicador do comando variance no EIGRP e qual é o seu valor padrão?",
+    "options": [
+      "Vai de 1 a 128, com valor padrão igual a 1.",
+      "Vai de 0 a 255, com valor padrão igual a 90.",
+      "Vai de 1 a 16, com valor padrão igual a 4.",
+      "Vai de 5 a 170, com valor padrão igual a 5."
+    ],
+    "answer": "Vai de 1 a 128, com valor padrão igual a 1.",
+    "explanation": "O variance é um multiplicador inteiro configurável de 1 a 128 (padrão 1) usado para habilitar unequal-cost load balancing."
+  },
+  {
+    "question": "Para que uma rota alternativa participe do balanceamento de carga desigual (unequal-cost load balancing) com o comando variance, quais duas condições devem ser atendidas simultaneamente?",
+    "options": [
+      "Ser um Feasible Successor (RD < FD) e ter métrica total menor ou igual a (FD do Successor * Variance).",
+      "Ter Administrative Distance menor que 5 e pertencer a outro Autonomous System.",
+      "Estar em estado Active na tabela de topologia e ter Hold Time igual a 180 segundos.",
+      "Ter o mesmo valor de delay que o enlace da rota padrão 0.0.0.0/0."
+    ],
+    "answer": "Ser um Feasible Successor (RD < FD) e ter métrica total menor ou igual a (FD do Successor * Variance).",
+    "explanation": "A rota alternativa precisa ser um Feasible Successor (garantindo ausência de loop via RD < FD) e apresentar métrica total <= FD do Successor * Variance."
+  },
+  {
+    "question": "Quando o balanceamento com variance é aplicado e múltiplas rotas são instaladas na RIB, como o tráfego é distribuído entre os caminhos?",
+    "options": [
+      "De forma proporcional às métricas de cada caminho, enviando maior proporção de tráfego pelos caminhos de menor métrica.",
+      "Enviando 100% do tráfego apenas pelo caminho com maior métrica até ele falhar.",
+      "Alternando pacote a pacote de forma estritamente igual independentemente da métrica.",
+      "Enviando apenas pacotes Hello por um caminho e dados pelo outro."
+    ],
+    "answer": "De forma proporcional às métricas de cada caminho, enviando maior proporção de tráfego pelos caminhos de menor métrica.",
+    "explanation": "No unequal-cost load balancing via variance, o tráfego é distribuído proporcionalmente às métricas dos caminhos elegíveis instalados na RIB."
+  },
+  {
+    "question": "Qual é a diferença fundamental entre ECMP (Equal-Cost Multi-Path) e o balanceamento com variance no EIGRP?",
+    "options": [
+      "ECMP distribui tráfego entre caminhos de custo idêntico, enquanto variance permite balanceamento entre caminhos de custos diferentes que atendam aos critérios do EIGRP.",
+      "ECMP só funciona em rotas estáticas e variance só funciona em rotas conectadas diretamente.",
+      "ECMP exige variance 128 e variance exige desativar a tabela de topologia.",
+      "Não há diferença; ambos exigem métricas exatamente iguais."
+    ],
+    "answer": "ECMP distribui tráfego entre caminhos de custo idêntico, enquanto variance permite balanceamento entre caminhos de custos diferentes que atendam aos critérios do EIGRP.",
+    "explanation": "O ECMP instala caminhos de mesma métrica total, enquanto o variance habilita o balanceamento de custo desigual entre rotas alternativas elegíveis."
+  },
+  {
+    "question": "Qual comando permite verificar o Autonomous System, os valores ativos de K1 a K5, a distância administrativa e a configuração de variance do processo EIGRP?",
+    "options": [
+      "show ip protocols.",
+      "show ip route 0.0.0.0.",
+      "show ipv6 interface brief.",
+      "show mac address-table."
+    ],
+    "answer": "show ip protocols.",
+    "explanation": "O comando show ip protocols exibe os parâmetros globais do processo EIGRP, incluindo AS, valores de K1-K5, distância administrativa padrão e configuração de variance."
+  }
+      
+      // 👉 Adicione mais questões aqui
+    ];
+
+    // Randomiza ordem das questões
+    quizData.sort(() => Math.random() - 0.5);
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10 * 60;
+    
+    // Armazena as respostas do usuário para revisão
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreEl = document.getElementById("score");
+    const questionNumberEl = document.getElementById("question-number");
+    const timerEl = document.getElementById("timer");
+    const reviewEl = document.getElementById("review");
+
+const SIMULADO_ID = "teste01";
+const SIMULADO_TITULO = document.title || "Simulado";
+let startTime = null;
+let currentUserName = "";
+
+// Helpers para salvar resultados no LocalStorage
+function formatSeconds(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+function saveResult(record) {
+  try {
+    const raw = localStorage.getItem("simulados");
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem("simulados", JSON.stringify(arr));
+  } catch (e) { console.warn("Falha ao salvar resultado:", e); }
+}
+
+
+    function startQuiz() {
+  const nameInput = document.getElementById("user-name");
+  const nameVal = (nameInput?.value || "").trim();
+  if (!nameVal) { alert("Por favor, informe seu nome antes de iniciar."); return; }
+  currentUserName = nameVal;
+  startTime = Date.now();
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = totalTime;
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerEl.textContent = `Tempo: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (timeLeft-- <= 0) {
+          clearInterval(timer);
+          showResults();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `${currentQuestionIndex+1}/${quizData.length}`;
+      questionTextEl.textContent = q.question;
+      optionsContainer.innerHTML = '';
+
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      shuffled.forEach(opt => {
+        const b = document.createElement("button");
+        b.textContent = opt;
+        b.classList.add("quiz-option","w-full","text-left","p-4","border-2","rounded-lg","transition-colors","duration-200","hover:bg-blue-100","hover:border-blue-400");
+        b.onclick = () => selectOption(b, opt);
+        optionsContainer.appendChild(b);
+      });
+
+      nextBtn.textContent = currentQuestionIndex === quizData.length - 1 ? "Ver Resultados" : "Próxima Questão";
+      nextBtn.disabled = true;
+
+      updateProgressBar();
+    }
+
+    function selectOption(button, selected) {
+      const q = quizData[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".quiz-option");
+
+      buttons.forEach(b => b.disabled = true);
+
+      // Armazena a resposta do usuário para a revisão
+      userAnswers[currentQuestionIndex] = selected;
+
+      if (selected === q.answer) {
+        button.classList.add("bg-green-200","border-green-600");
+        score++;
+      } else {
+        button.classList.add("bg-red-200","border-red-600");
+        buttons.forEach(b => {
+          if (b.textContent === q.answer) b.classList.add("bg-green-200","border-green-600");
+        });
+      }
+
+      nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+  const endTime = Date.now();
+  const timeSpentSeconds = startTime ? Math.round((endTime - startTime) / 1000) : 0;
+  const resultRecord = {
+    id: String(Date.now()),
+    simuladoId: SIMULADO_ID,
+    simuladoTitle: SIMULADO_TITULO,
+    name: currentUserName,
+    score: score,
+    total: quizData.length,
+    percent: quizData.length ? (score / quizData.length) * 100 : 0,
+    timeSeconds: timeSpentSeconds,
+    timeFormatted: formatSeconds(timeSpentSeconds),
+    date: new Date().toISOString()
+  };
+  saveResult(resultRecord);
+      clearInterval(timer);
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const pct = quizData.length ? Math.round((score/quizData.length)*100) : 0;
+scoreEl.textContent = `Você acertou ${score} de ${quizData.length} questões (${pct}%). Tempo: ${formatSeconds(timeSpentSeconds)}.`;
+
+      reviewEl.innerHTML = quizData.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const resultClass = isCorrect ? "bg-green-100 border-green-600" : "bg-red-100 border-red-600";
+        return `
+          <div class="p-4 border rounded-lg ${resultClass}">
+            <p class="font-semibold">Q${i+1}: ${q.question}</p>
+            <p class="text-sm">Sua resposta: <span class="font-semibold">${userAnswers[i] || 'Não respondida'}</span></p>
+            <p class="text-sm">Resposta correta: <span class="font-semibold">${q.answer}</span></p>
+            <p class="text-slate-600 text-sm mt-1">${q.explanation}</p>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
